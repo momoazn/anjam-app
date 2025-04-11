@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, getUserInitials } from "@/lib/utils";
 import {
   priorityColors,
   priorityIcons,
@@ -16,15 +16,6 @@ const formatDateShort = (dateString: string) => {
     month: "short",
     day: "numeric",
   });
-};
-
-// Helper to get user initials
-const getUserInitials = (username?: string) => {
-  // Assuming assignedTo contains usernames like 'user-1'
-  // If it contains full names, this logic needs adjustment
-  return username
-    ? username.substring(0, 2).toUpperCase() // Simple initials for 'user-X'
-    : "?";
 };
 
 interface TaskListItemProps {
@@ -97,10 +88,6 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
 
         {/* Assignee Avatar */}
         <Avatar className="h-5 w-5">
-          <AvatarImage
-            src={`https://avatar.vercel.sh/${assignee}.png`}
-            alt={assignee}
-          />
           <AvatarFallback className="bg-gray-200 text-[10px]">
             {getUserInitials(assignee)}
           </AvatarFallback>

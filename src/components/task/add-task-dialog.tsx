@@ -1,3 +1,6 @@
+import { ChevronRight, MoreHorizontal } from "lucide-react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -7,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,129 +17,127 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { departments, TaskPriority, useTaskStore } from "@/store/task-store";
-import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import users from "@/data/users.json";
+import { cn, getUserInitials } from "@/lib/utils";
+import {
+  priorityColors,
+  priorityIcons,
+  TaskPriority,
+  TaskStatus,
+  taskStatusColors,
+  taskStatusIcons,
+  useTaskStore,
+} from "@/store/task-store";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface AddTaskDialogProps {
   children: React.ReactNode;
+  initialStatus?: TaskStatus;
 }
 
-export function AddTaskDialog({ children }: AddTaskDialogProps) {
+export function AddTaskDialog({
+  children,
+  initialStatus = "todo",
+}: AddTaskDialogProps) {
   const addTask = useTaskStore((state) => state.addTask);
-  const [open, setOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    assignedUser: "",
-    department: departments[0],
-    priority: "medium" as TaskPriority,
-    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
-  });
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [assignedUser, setAssignedUser] = useState("unassigned");
+  const [priority, setPriority] = useState<TaskPriority>("medium");
+  const [status, setStatus] = useState<TaskStatus>(initialStatus);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addTask({
-      ...formData,
-      status: "todo",
-      comments: [],
-    });
-    setOpen(false);
-    setFormData({
-      title: "",
-      description: "",
-      assignedUser: "",
-      department: departments[0],
-      priority: "medium",
+      title,
+      description,
+      assignedUser,
+      priority,
+      status,
+      department: "Unassigned",
       deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         .toISOString()
         .split("T")[0],
+      comments: [],
     });
+
+    setOpen(false);
+    setTitle("");
+    setDescription("");
+    setAssignedUser("unassigned");
+    setPriority("medium");
+    setStatus(initialStatus);
   };
+
+  const StatusIcon = taskStatusIcons[status];
+  const statusIconColor = taskStatusColors[status];
+  const PriorityIcon = priorityIcons[priority];
+  const priorityIconColor = priorityColors[priority];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="p-4 sm:max-w-[800px]">
-        <DialogHeader>
-          <DialogTitle className="text-sm font-bold">
-            Create New Task
+      <DialogContent className="gap-0 border-none p-0 sm:max-w-[640px]">
+        <DialogHeader className="mt-1 flex flex-row items-center justify-between border-b px-4 py-2">
+          <DialogTitle className="text-muted-foreground flex items-center gap-2 text-sm font-normal">
+            <ChevronRight className="size-4" />
+            <span>New issue</span>
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-1 p-4">
           <div className="space-y-0">
             <Input
               id="title"
-              className="border-none text-2xl shadow-none focus-visible:ring-0"
+              className="h-auto border-none p-0 text-xl font-semibold shadow-none focus-visible:ring-0"
               required
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              placeholder="Task title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Issue title"
             />
+          </div>
 
-            <textarea
+          <div className="mt-4 space-y-0">
+            <Textarea
               id="description"
-              required
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
+              value={description}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setDescription(e.target.value)
               }
-              className="h-24 w-full min-w-0 border-none bg-transparent px-3 py-1 text-base shadow-none outline-none focus-visible:ring-0"
-              placeholder="Enter task description"
+              className="min-h-[60px] w-full resize-none border-none bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0"
+              placeholder="Add description..."
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="assignedUser">Assigned To</Label>
-            <Input
-              id="assignedUser"
-              required
-              value={formData.assignedUser}
-              onChange={(e) =>
-                setFormData({ ...formData, assignedUser: e.target.value })
-              }
-              placeholder="Enter username"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="department">Department</Label>
+          <div className="flex flex-wrap items-center gap-2 py-2">
+            {/* Status Select */}
             <Select
-              value={formData.department}
-              onValueChange={(value) =>
-                setFormData({ ...formData, department: value })
-              }
+              value={status}
+              onValueChange={(value) => setStatus(value as TaskStatus)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select department" />
+              <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
+                <StatusIcon className={cn("size-4", statusIconColor)} />
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                {departments.map((dept) => (
-                  <SelectItem key={dept} value={dept}>
-                    {dept}
-                  </SelectItem>
-                ))}
+                <SelectItem value="todo">Todo</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+                <SelectItem value="canceled">Canceled</SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="priority">Priority</Label>
+            {/* Priority Select */}
             <Select
-              value={formData.priority}
-              onValueChange={(value) =>
-                setFormData({
-                  ...formData,
-                  priority: value as TaskPriority,
-                })
-              }
+              value={priority}
+              onValueChange={(value) => setPriority(value as TaskPriority)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
+              <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
+                <PriorityIcon className={cn("size-4", priorityIconColor)} />
+                <SelectValue placeholder="Priority" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="low">Low</SelectItem>
@@ -146,31 +146,43 @@ export function AddTaskDialog({ children }: AddTaskDialogProps) {
                 <SelectItem value="urgent">Urgent</SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="deadline">Deadline</Label>
-            <Input
-              id="deadline"
-              type="date"
-              required
-              value={formData.deadline}
-              onChange={(e) =>
-                setFormData({ ...formData, deadline: e.target.value })
-              }
-              min={new Date().toISOString().split("T")[0]}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4">
+            {/* Assignee Select */}
+            <Select
+              value={assignedUser}
+              onValueChange={(value) => setAssignedUser(value)}
+            >
+              <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
+                <Avatar className="h-5 w-5">
+                  <AvatarFallback className="bg-gray-200 text-[10px]">
+                    {getUserInitials(assignedUser)}
+                  </AvatarFallback>
+                </Avatar>
+                <SelectValue placeholder="Assignee" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned">Unassigned</SelectItem>
+                {users.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.username}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              size="icon"
+              className="h-7 w-7 border-dashed"
             >
-              Cancel
+              <MoreHorizontal className="h-3 w-3" />
             </Button>
-            <Button type="submit">Create Task</Button>
+          </div>
+
+          <div className="flex items-center justify-end pt-0">
+            <Button size="sm" type="submit">
+              Create Task
+            </Button>
           </div>
         </form>
       </DialogContent>

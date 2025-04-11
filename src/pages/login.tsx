@@ -1,7 +1,16 @@
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore, UserRole } from "../store/auth-store";
-
+import { Button } from "@/components/ui/button";
 export default function Login() {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
@@ -22,10 +31,10 @@ export default function Login() {
         <h2 className="text-center text-3xl font-bold text-gray-900">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <Label className="block text-sm font-medium text-gray-700">
               Username
-            </label>
-            <input
+            </Label>
+            <Input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -33,26 +42,28 @@ export default function Login() {
               required
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <Label className="block text-sm font-medium text-gray-700">
               Role
-            </label>
-            <select
+            </Label>
+            <Select
               value={role}
-              onChange={(e) => setRole(e.target.value as UserRole)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+              onValueChange={(value) => setRole(value as UserRole)}
             >
-              <option value="employee">Employee</option>
-              <option value="supervisor">Supervisor</option>
-              <option value="admin">Admin</option>
-            </select>
+              <SelectTrigger className="mt-1 w-full">
+                <SelectValue placeholder="Select a role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="employee">Employee</SelectItem>
+                <SelectItem value="supervisor">Supervisor</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <button
-            type="submit"
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
+          <Button type="submit" className="mt-2 w-full">
             Login
-          </button>
+          </Button>
         </form>
       </div>
     </div>

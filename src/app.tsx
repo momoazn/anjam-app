@@ -5,17 +5,20 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./router";
+import { useAuthStore } from "./store/auth-store";
 
 const queryClient = new QueryClient();
 
 function App() {
+  const { user } = useAuthStore();
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
         <SidebarProvider>
-          <AppSidebar variant="inset" />
+          {user && <AppSidebar variant="inset" />}
           <SidebarInset>
-            <SiteHeader />
+            {user && <SiteHeader />}
             <Suspense
               fallback={
                 <div className="flex min-h-screen items-center justify-center">

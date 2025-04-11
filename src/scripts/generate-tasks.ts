@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import users from "../data/users.json";
 import { Task } from "../store/task-store";
 
 const priorities = ["low", "medium", "high", "urgent"] as const;
@@ -19,7 +20,7 @@ function capitalize(str: string) {
 function generateComment(): Task["comments"][0] {
   return {
     id: faker.string.uuid(),
-    userId: faker.string.uuid(),
+    userId: faker.helpers.arrayElement(users).id,
     content: faker.lorem.sentence(),
     createdAt: faker.date.recent().toISOString(),
   };
@@ -38,7 +39,7 @@ function generateTask(): Task {
       " " +
       capitalize(faker.hacker.noun()),
     description: capitalize(faker.lorem.paragraph()),
-    assignedUser: faker.string.uuid(),
+    assignedUser: faker.helpers.arrayElement(users).id,
     department: faker.helpers.arrayElement(departments),
     priority: faker.helpers.arrayElement(priorities),
     status: faker.helpers.arrayElement(statuses),

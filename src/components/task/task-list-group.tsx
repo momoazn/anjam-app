@@ -23,9 +23,11 @@ export function TaskListGroup({
         status={status}
       />
       <div className="mt-2 space-y-1 pe-1">
-        {tasks.map((task) => (
-          <TaskListItem key={task.id} task={task} />
-        ))}
+        {tasks?.length > 0 ? (
+          tasks?.map((task) => <TaskListItem key={task.id} task={task} />)
+        ) : (
+          <div className="text-center text-sm text-gray-500">No Tasks</div>
+        )}
       </div>
     </section>
   );

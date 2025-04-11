@@ -1,8 +1,14 @@
-import { TaskListGroup } from "@/components/task/task-list-group";
+// import { TaskListGroup } from "@/components/task/task-list-group";
 import { statusLabels, statusOrder } from "@/store/task-store";
-import { useMemo } from "react";
+import { lazy, useMemo } from "react";
 import { useAuthStore } from "../store/auth-store";
 import { Task, TaskStatus, useTaskStore } from "../store/task-store";
+
+const TaskListGroup = lazy(() =>
+  import("@/components/task/task-list-group").then((module) => ({
+    default: module.TaskListGroup,
+  })),
+);
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
@@ -26,14 +32,11 @@ export default function Dashboard() {
 
   return (
     <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
-      {statusOrder.map((status) => {
-        if (!groupedTasks[status].length)
-          return <div key={status}>No Tasks</div>;
-
-        const sortedTasks = groupedTasks[status].sort((a, b) => {
+      {statusOrder?.map((status) => {
+        const sortedTasks = groupedTasks[status]?.sort((a, b) => {
           if (a.priority === b.priority) {
             return (
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
           }
           if (a.priority === "urgent") return -1;
@@ -51,9 +54,9 @@ export default function Dashboard() {
           <TaskListGroup
             key={status}
             statusTitle={statusLabels[status]}
-            taskCount={sortedTasks.length}
+            taskCount={sortedTasks?.length}
             status={status}
-            tasks={sortedTasks}
+            tasks={sortedTasks ?? []}
           />
         );
       })}
