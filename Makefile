@@ -1,15 +1,15 @@
-build-all: build-frontend build-backend
+build-all: build-frontend build-pocketbase
 
-run-all: run-frontend run-backend
+run-all: run-frontend run-pocketbase
 
-build-backend:
-	cd backend && go build -o task-manager.out main.go
+build-pocketbase:
+	go build -o task-manager.out main.go
 
-run-backend:
-	cd backend && go run main.go
+run-pocketbase:
+	go run main.go
 
-install-backend:
-	cd backend && go mod tidy
+install-pocketbase:
+	go mod tidy
 
 build-frontend:
 	pnpm run build
@@ -21,4 +21,4 @@ install-frontend:
 	pnpm install
 
 clean:
-	rm -rf node_modules backend/dist backend/task-manager.out
+	rm -rf node_modules dist task-manager.out
