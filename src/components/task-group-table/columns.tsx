@@ -1,15 +1,16 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Task } from "@/store/task-store";
-import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 import {
   IconAntennaBars2,
   IconAntennaBars3,
   IconAntennaBars4,
   IconAntennaBars5,
 } from "@tabler/icons-react";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,15 +18,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip";
-import { MoreHorizontal } from "lucide-react";
-import { Checkbox } from "../ui/checkbox";
+} from "@/components/ui/tooltip";
 
 // Helper to get user initials
 const getUserInitials = (username?: string) => {
@@ -65,6 +64,14 @@ export const columns: ColumnDef<Task>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    id: "Title",
+    header: ({ table }) => {
+      // @ts-expect-error meta is not typed
+      const groupName = table.options.meta?.groupName;
+      return <h3 className="ps-2 text-xs font-bold">{groupName}</h3>;
+    },
   },
   {
     accessorKey: "priority",

@@ -40,8 +40,11 @@ export default function Dashboard() {
 
         return (
           <div key={status}>
-            <h2 className="ps-2 text-lg font-bold">{statusLabels[status]}</h2>
-            <TasksTable columns={columns} data={tasksInGroup} />
+            <TasksTable
+              groupName={statusLabels[status]}
+              columns={columns}
+              data={tasksInGroup}
+            />
           </div>
         );
         // return (

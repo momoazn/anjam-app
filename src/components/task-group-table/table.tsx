@@ -18,11 +18,13 @@ import {
 } from "@/components/ui/table";
 
 interface TasksTableProps<TData, TValue> {
+  groupName: string;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
 export function TasksTable<TData, TValue>({
+  groupName,
   columns,
   data,
 }: TasksTableProps<TData, TValue>) {
@@ -40,10 +42,13 @@ export function TasksTable<TData, TValue>({
       sorting,
       rowSelection,
     },
+    meta: {
+      groupName,
+    },
   });
 
   return (
-    <Table className="">
+    <Table>
       <TableHeader className="bg-gray-100 ps-8">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
