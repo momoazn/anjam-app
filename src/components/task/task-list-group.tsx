@@ -26,6 +26,14 @@ const statusIcons: Record<TaskStatus, React.ElementType> = {
   overdue: CircleHelp, // Default for Overdue (not in image, but kept)
 };
 
+const statusColors: Record<TaskStatus, string> = {
+  pending: "text-gray-400",
+  in_progress: "text-yellow-500",
+  completed: "text-purple-600",
+  canceled: "text-gray-500",
+  overdue: "text-gray-500",
+};
+
 export function TaskListGroup({
   statusTitle,
   taskCount,
@@ -38,22 +46,12 @@ export function TaskListGroup({
     <div className="mb-4">
       {" "}
       {/* Slightly reduced margin */}
-      <div className="mb-2 flex items-center justify-between px-1">
+      <div className="mb-2 flex items-center justify-between rounded bg-gray-200 px-2 py-1">
         {" "}
         {/* Adjusted margin and padding */}
         <div className="flex items-center">
           <IconComponent
-            className={`mr-2 h-3.5 w-3.5 ${
-              status === "pending"
-                ? "text-gray-400"
-                : status === "in_progress"
-                  ? "text-yellow-500"
-                  : status === "completed"
-                    ? "text-purple-600"
-                    : status === "canceled"
-                      ? "text-gray-500"
-                      : "text-gray-500"
-            }`}
+            className={`mr-2 h-3.5 w-3.5 ${statusColors[status]}`}
             strokeWidth={status === "pending" ? 1.5 : 2} // Thinner stroke for Todo icon
           />
           <h2 className="mr-2 text-sm font-medium text-gray-800">

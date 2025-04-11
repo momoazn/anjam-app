@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuthStore } from "../store/auth-store";
+import NewDashboard from "@/pages/new-dashboard";
 
 // Lazy load pages
 const Login = React.lazy(() => import("@/pages/login"));
@@ -34,6 +35,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Tasks />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/new-dashboard"
+        element={
+          <ProtectedRoute>
+            <NewDashboard />
           </ProtectedRoute>
         }
       />
