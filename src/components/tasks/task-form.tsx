@@ -28,7 +28,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
 
     addTask({
       ...formData,
-      status: "pending",
+      status: "todo",
       comments: [],
     });
 

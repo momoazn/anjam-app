@@ -4,18 +4,18 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
-import { AppRoutes } from "./routes";
+import { AppRoutes } from "./router";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader />
-          <Router>
+      <Router>
+        <SidebarProvider>
+          <AppSidebar variant="inset" />
+          <SidebarInset>
+            <SiteHeader />
             <Suspense
               fallback={
                 <div className="flex min-h-screen items-center justify-center">
@@ -31,9 +31,9 @@ function App() {
                 </div>
               </div>
             </Suspense>
-          </Router>
-        </SidebarInset>
-      </SidebarProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      </Router>
     </QueryClientProvider>
   );
 }

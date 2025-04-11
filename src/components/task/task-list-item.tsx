@@ -46,11 +46,11 @@ export function TaskListItem({ task }: TaskListItemProps) {
     LeftIcon = AlertCircle; // Yellow ! for In Progress TSK-12
     iconColor = "text-yellow-500";
   }
-  if (task.status === "pending") {
+  if (task.status === "todo") {
     LeftIcon = Circle; // Empty circle for Todo
     iconColor = "text-gray-400";
   }
-  if (task.status === "completed") {
+  if (task.status === "done") {
     LeftIcon = CheckCircle2; // Checkmark for Done TSK-13
     iconColor = "text-purple-600";
   }
@@ -75,7 +75,7 @@ export function TaskListItem({ task }: TaskListItemProps) {
       <div className="mr-4 flex min-w-0 flex-grow items-center">
         <LeftIcon
           className={`mr-2.5 h-4 w-4 flex-shrink-0 ${iconColor}`}
-          strokeWidth={task.status === "pending" ? 1.5 : 2}
+          strokeWidth={task.status === "todo" ? 1.5 : 2}
         />
         <span className="mr-2 flex-shrink-0 font-mono text-xs text-gray-400 group-hover:text-gray-600">
           {task.id}

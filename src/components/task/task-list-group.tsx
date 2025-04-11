@@ -52,7 +52,7 @@ export function TaskListGroup({
         <div className="flex items-center">
           <IconComponent
             className={`mr-2 h-3.5 w-3.5 ${statusColors[status]}`}
-            strokeWidth={status === "pending" ? 1.5 : 2} // Thinner stroke for Todo icon
+            strokeWidth={status === "todo" ? 1.5 : 2} // Thinner stroke for Todo icon
           />
           <h2 className="mr-2 text-sm font-medium text-gray-800">
             {" "}

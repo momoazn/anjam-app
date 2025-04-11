@@ -1,13 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type TaskPriority = "low" | "medium" | "high";
-export type TaskStatus =
-  | "pending"
-  | "in_progress"
-  | "completed"
-  | "overdue"
-  | "canceled";
+export type TaskPriority = "low" | "medium" | "high" | "urgent";
+export type TaskStatus = "todo" | "in_progress" | "done" | "canceled";
 
 export interface Task {
   id: string;
@@ -49,13 +44,13 @@ export const departments = [
 // Create mock tasks
 const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
   const statusOptions: TaskStatus[] = [
-    "pending",
+    "todo",
     "in_progress",
-    "completed",
-    "overdue",
+    "done",
     "canceled",
+    "in_progress",
   ];
-  const priorityOptions: TaskPriority[] = ["low", "medium", "high"];
+  const priorityOptions: TaskPriority[] = ["low", "medium", "high", "urgent"];
   const possibleTags = ["Bug", "Feature", "Improvement"];
 
   const taskIndex = i + 1;
@@ -76,17 +71,17 @@ const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
   }
   if (taskIndex === 11) {
     title = "Testttt";
-    currentStatus = "pending";
+    currentStatus = "todo";
     currentTags = ["Bug"];
   }
   if (taskIndex === 10) {
     title = "Test";
-    currentStatus = "pending";
+    currentStatus = "todo";
     currentTags = ["Bug"];
   }
   if (taskIndex === 13) {
     title = "Another one yet";
-    currentStatus = "completed";
+    currentStatus = "done";
     currentTags = ["Bug", "Feature"];
   }
   if (taskIndex === 14) {
@@ -95,12 +90,12 @@ const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
     currentTags = ["Bug", "Feature", "Improvement"];
   }
   if (taskIndex === 1) {
-    title = "Welcome to Linear 👋";
+    title = "Welcome to Task Manager 👋";
     currentStatus = "canceled";
     currentTags = ["Feature"];
   }
   if (taskIndex === 2) {
-    title = "Try 3 ways to navigate Linear: Command line, keyboard or mouse";
+    title = "Try 3 ways to navigate";
     currentStatus = "canceled";
     currentTags = [];
   }
@@ -133,7 +128,7 @@ export const useTaskStore = create<TaskState>()(
             ...state.tasks,
             {
               ...task,
-              id: `task-${state.tasks.length + 1}`,
+              id: `TSK-${state.tasks.length + 1}`,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             },

@@ -5,31 +5,22 @@ import { useAuthStore } from "../store/auth-store";
 import { Task, TaskStatus, useTaskStore } from "../store/task-store";
 
 const statusLabels: Record<TaskStatus, string> = {
-  pending: "Todo",
+  todo: "Todo",
   in_progress: "In Progress",
-  completed: "Done",
-  overdue: "Overdue",
+  done: "Done",
   canceled: "Canceled",
 };
 
-const statusOrder: TaskStatus[] = [
-  "in_progress",
-  "pending",
-  "completed",
-  "canceled",
-];
+const statusOrder: TaskStatus[] = ["todo", "in_progress", "done", "canceled"];
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
   const tasks = useTaskStore((state) => state.tasks);
 
   const userTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      if (user?.role === "employee") {
-        return task.assignedTo.includes(user?.username ?? "");
-      }
-      return true;
-    });
+    return user?.role === "employee"
+      ? tasks.filter((task) => task.assignedTo.includes(user?.username ?? ""))
+      : tasks;
   }, [tasks, user]);
 
   const groupedTasks = useMemo(() => {

@@ -1,4 +1,5 @@
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
+import { NavLink } from "react-router-dom";
 
 import {
   SidebarGroup,
@@ -7,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 export function NavMain({
   items,
@@ -33,15 +35,24 @@ export function NavMain({
         </SidebarMenu>
         <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                tooltip={item.title}
-                className="cursor-pointer"
-              >
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <NavLink to={item.url} key={item.title}>
+              {({ isActive }) => (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={cn(
+                      "cursor-pointer transition-colors duration-200 ease-linear",
+                      isActive &&
+                        "bg-primary/15 text-foreground hover:bg-primary/15",
+                      !isActive && "text-foreground hover:bg-primary/5",
+                    )}
+                  >
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+            </NavLink>
           ))}
         </SidebarMenu>
       </SidebarGroupContent>
