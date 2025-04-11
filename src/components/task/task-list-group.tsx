@@ -29,16 +29,16 @@ export function TaskListGroup({
   const IconComponent = taskStatusIcons[status] || CircleHelp;
 
   return (
-    <div className="">
-      <div
+    <section className="">
+      <header
         className={cn(
-          "mb-2 flex items-center justify-between py-1 ps-4",
+          "flex items-center justify-between border-t border-b px-4 py-2",
           taskStatusBgColors[status],
         )}
       >
         <div className="flex items-center">
           <IconComponent
-            className={`mr-2 h-3.5 w-3.5 ${taskStatusColors[status]}`}
+            className={cn("mr-2 h-3.5 w-3.5", taskStatusColors[status])}
             strokeWidth={status === "todo" ? 1.5 : 2}
           />
           <h2 className="mr-2 text-sm font-medium text-gray-800">
@@ -49,16 +49,16 @@ export function TaskListGroup({
         <Button
           variant="ghost"
           size="icon"
-          className="h-6 w-6 rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          className="size-6 rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         >
           <Plus className="h-4 w-4" />
         </Button>
-      </div>
-      <div className="space-y-1 pl-1">
+      </header>
+      <div className="mt-2 space-y-1 pe-1">
         {tasks.map((task) => (
           <TaskListItem key={task.id} task={task} />
         ))}
       </div>
-    </div>
+    </section>
   );
 }

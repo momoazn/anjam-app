@@ -43,7 +43,7 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
   return (
     <div
       className={cn(
-        "group flex cursor-pointer items-center justify-between rounded px-2 py-1.5 transition-colors duration-150 hover:bg-gray-50",
+        "group flex cursor-pointer items-center justify-between px-2 py-1.5 transition-colors duration-200 ease-in-out hover:bg-gray-50",
         className,
       )}
     >
@@ -52,7 +52,7 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
         <PriorityIcon
           className={cn(`size-6 flex-shrink-0`, priorityIconColor)}
         />
-        <span className="w-16 flex-shrink-0 font-mono text-xs text-gray-400 group-hover:text-gray-600">
+        <span className="w-16 flex-shrink-0 font-mono text-xs text-gray-400 transition-colors duration-200 ease-in-out group-hover:text-gray-600">
           {task.id}
         </span>
         <StatusIcon className={cn(`size-4 flex-shrink-0`, statusIconColor)} />

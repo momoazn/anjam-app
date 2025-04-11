@@ -4,8 +4,11 @@ import {
   IconAntennaBars3,
   IconAntennaBars4,
   IconAntennaBars5,
+  IconCircle,
+  IconCircleCheck,
+  IconCircleHalf2,
+  IconCircleX,
 } from "@tabler/icons-react";
-import { CheckCircle2, Circle, CircleDotDashed, XCircle } from "lucide-react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -75,11 +78,11 @@ export const taskStatusColors: Record<TaskStatus, string> = {
   done: "text-purple-600",
   canceled: "text-gray-500",
 };
-export const taskStatusIcons: Record<TaskStatus, React.ElementType> = {
-  todo: Circle,
-  in_progress: CircleDotDashed,
-  done: CheckCircle2,
-  canceled: XCircle,
+export const taskStatusIcons: Record<TaskStatus, Icon> = {
+  todo: IconCircle,
+  in_progress: IconCircleHalf2,
+  done: IconCircleCheck,
+  canceled: IconCircleX,
 };
 
 export const statusOrder: TaskStatus[] = [
