@@ -8,6 +8,7 @@ import {
   taskStatusIcons,
 } from "@/store/task-store";
 import { Button } from "../ui/button";
+import { AddTaskDialog } from "./add-task-dialog";
 
 interface TaskListHeaderProps {
   statusTitle: string;
@@ -39,13 +40,16 @@ export function TaskListHeader({
         </h2>
         <span className="text-sm text-gray-400">{taskCount}</span>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-6 rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+      <AddTaskDialog>
+        <Button
+          id="add-task-button"
+          variant="ghost"
+          size="icon"
+          className="size-6 rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </AddTaskDialog>
     </header>
   );
 }
