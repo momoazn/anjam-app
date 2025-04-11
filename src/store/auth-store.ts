@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export type UserRole = 'admin' | 'supervisor' | 'employee';
+export type UserRole = "admin" | "supervisor" | "employee";
 
 interface User {
   username: string;
@@ -31,13 +31,11 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ user: null }),
       updateLastActive: () =>
         set((state) => ({
-          user: state.user
-            ? { ...state.user, lastActive: Date.now() }
-            : null,
+          user: state.user ? { ...state.user, lastActive: Date.now() } : null,
         })),
     }),
     {
-      name: 'auth-storage',
-    }
-  )
-); 
+      name: "auth-storage",
+    },
+  ),
+);

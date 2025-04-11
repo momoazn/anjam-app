@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-export type TaskPriority = 'low' | 'medium' | 'high';
+export type TaskPriority = "low" | "medium" | "high";
 export type TaskStatus =
-  | 'pending'
-  | 'in_progress'
-  | 'completed'
-  | 'overdue'
-  | 'canceled';
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "overdue"
+  | "canceled";
 
 export interface Task {
   id: string;
@@ -31,7 +31,7 @@ export interface Task {
 
 interface TaskState {
   tasks: Task[];
-  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addTask: (task: Omit<Task, "id" | "createdAt" | "updatedAt">) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   bulkAssign: (taskIds: string[], userIds: string[]) => void;
@@ -39,43 +39,43 @@ interface TaskState {
 
 // Mock departments
 export const departments = [
-  'مالی',
-  'منابع انسانی',
-  'فنی',
-  'بازاریابی',
-  'پشتیبانی',
+  "Finance",
+  "Human Resources",
+  "Technical",
+  "Marketing",
+  "Support",
 ];
 
 // Create mock tasks
 const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
   const statusOptions: TaskStatus[] = [
-    'pending',
-    'in_progress',
-    'completed',
-    'overdue',
-    'canceled',
+    "pending",
+    "in_progress",
+    "completed",
+    "overdue",
+    "canceled",
   ];
-  const priorityOptions: TaskPriority[] = ['low', 'medium', 'high'];
-  const possibleTags = ['باگ', 'ویژگی', 'بهبود', 'سوال'];
+  const priorityOptions: TaskPriority[] = ["low", "medium", "high"];
+  const possibleTags = ["Bug", "Feature", "Improvement", "Question"];
 
   return {
     id: `TSK-${i + 1}`,
-    title: `وظیفه نمونه ${i + 1}`,
-    description: `این توضیحات برای وظیفه شماره ${i + 1} است.`,
+    title: `Sample Task ${i + 1}`,
+    description: `This is the description for task number ${i + 1}.`,
     assignedTo: [`user-${(i % 3) + 1}`],
     department: departments[i % departments.length],
     priority: priorityOptions[i % priorityOptions.length],
     status: statusOptions[i % statusOptions.length],
     deadline: new Date(
-      Date.now() + (i - 5) * 24 * 60 * 60 * 1000
+      Date.now() + (i - 5) * 24 * 60 * 60 * 1000,
     ).toISOString(),
     createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(
-      Date.now() - (i % 5) * 12 * 60 * 60 * 1000
+      Date.now() - (i % 5) * 12 * 60 * 60 * 1000,
     ).toISOString(),
     tags: Array.from(
       { length: Math.floor(Math.random() * 3) },
-      () => possibleTags[Math.floor(Math.random() * possibleTags.length)]
+      () => possibleTags[Math.floor(Math.random() * possibleTags.length)],
     ),
     comments: [],
   };
@@ -106,7 +106,7 @@ export const useTaskStore = create<TaskState>()(
                   ...updates,
                   updatedAt: new Date().toISOString(),
                 }
-              : task
+              : task,
           ),
         })),
       deleteTask: (id) =>
@@ -122,12 +122,12 @@ export const useTaskStore = create<TaskState>()(
                   assignedTo: [...new Set([...task.assignedTo, ...userIds])],
                   updatedAt: new Date().toISOString(),
                 }
-              : task
+              : task,
           ),
         })),
     }),
     {
-      name: 'task-storage',
-    }
-  )
-); 
+      name: "task-storage",
+    },
+  ),
+);

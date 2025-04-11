@@ -1,37 +1,39 @@
-import { useState, useMemo } from 'react';
-import { useTaskStore, Task, TaskStatus, TaskPriority } from '../../store/task-store';
-import { useAuthStore } from '../../store/auth-store';
+import { useState, useMemo } from "react";
+import { useTaskStore, TaskStatus, TaskPriority } from "../../store/task-store"; // Removed Task import
+import { useAuthStore } from "../../store/auth-store";
 
 interface TaskFilterState {
-  status: TaskStatus | 'all';
-  priority: TaskPriority | 'all';
-  department: string | 'all';
+  status: TaskStatus | "all";
+  priority: TaskPriority | "all";
+  department: string | "all";
 }
 
 const statusLabels: Record<TaskStatus, string> = {
-  pending: 'در انتظار',
-  in_progress: 'در حال انجام',
-  completed: 'تکمیل شده',
-  overdue: 'تاخیر دار',
+  pending: "Pending",
+  in_progress: "In Progress",
+  completed: "Completed",
+  overdue: "Overdue",
+  canceled: "Canceled", // Added canceled label
 };
 
 const priorityLabels: Record<TaskPriority, string> = {
-  low: 'کم',
-  medium: 'متوسط',
-  high: 'زیاد',
+  low: "Low",
+  medium: "Medium",
+  high: "High",
 };
 
 const priorityColors: Record<TaskPriority, string> = {
-  low: 'bg-blue-100 text-blue-800',
-  medium: 'bg-yellow-100 text-yellow-800',
-  high: 'bg-red-100 text-red-800',
+  low: "bg-blue-100 text-blue-800",
+  medium: "bg-yellow-100 text-yellow-800",
+  high: "bg-red-100 text-red-800",
 };
 
 const statusColors: Record<TaskStatus, string> = {
-  pending: 'bg-gray-100 text-gray-800',
-  in_progress: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  overdue: 'bg-red-100 text-red-800',
+  pending: "bg-gray-100 text-gray-800",
+  in_progress: "bg-blue-100 text-blue-800",
+  completed: "bg-green-100 text-green-800",
+  overdue: "bg-red-100 text-red-800",
+  canceled: "bg-gray-100 text-gray-500", // Added canceled color
 };
 
 export default function TaskList() {
@@ -40,26 +42,32 @@ export default function TaskList() {
   const updateTask = useTaskStore((state) => state.updateTask);
 
   const [filters, setFilters] = useState<TaskFilterState>({
-    status: 'all',
-    priority: 'all',
-    department: 'all',
+    status: "all",
+    priority: "all",
+    department: "all",
   });
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
-      if (user?.role === 'employee' && !task.assignedTo.includes(user.username)) {
+      if (
+        user?.role === "employee" &&
+        !task.assignedTo.includes(user.username)
+      ) {
         return false;
       }
 
-      if (filters.status !== 'all' && task.status !== filters.status) {
+      if (filters.status !== "all" && task.status !== filters.status) {
         return false;
       }
 
-      if (filters.priority !== 'all' && task.priority !== filters.priority) {
+      if (filters.priority !== "all" && task.priority !== filters.priority) {
         return false;
       }
 
-      if (filters.department !== 'all' && task.department !== filters.department) {
+      if (
+        filters.department !== "all" &&
+        task.department !== filters.department
+      ) {
         return false;
       }
 
@@ -77,10 +85,15 @@ export default function TaskList() {
       <div className="flex gap-4 p-4 bg-white rounded-lg shadow">
         <select
           value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value as TaskStatus | 'all' })}
+          onChange={(e) =>
+            setFilters({
+              ...filters,
+              status: e.target.value as TaskStatus | "all",
+            })
+          }
           className="px-3 py-2 border rounded-md"
         >
-          <option value="all">همه وضعیت‌ها</option>
+          <option value="all">All Statuses</option>
           {Object.entries(statusLabels).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -90,10 +103,15 @@ export default function TaskList() {
 
         <select
           value={filters.priority}
-          onChange={(e) => setFilters({ ...filters, priority: e.target.value as TaskPriority | 'all' })}
+          onChange={(e) =>
+            setFilters({
+              ...filters,
+              priority: e.target.value as TaskPriority | "all",
+            })
+          }
           className="px-3 py-2 border rounded-md"
         >
-          <option value="all">همه اولویت‌ها</option>
+          <option value="all">All Priorities</option>
           {Object.entries(priorityLabels).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -112,26 +130,36 @@ export default function TaskList() {
                 <p className="text-gray-600 mt-1">{task.description}</p>
               </div>
               <div className="flex gap-2">
-                <span className={`px-2 py-1 rounded-full text-sm ${priorityColors[task.priority]}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-sm ${priorityColors[task.priority]}`}
+                >
                   {priorityLabels[task.priority]}
                 </span>
-                <span className={`px-2 py-1 rounded-full text-sm ${statusColors[task.status]}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-sm ${statusColors[task.status]}`}
+                >
                   {statusLabels[task.status]}
                 </span>
               </div>
             </div>
-            
+
             <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
               <div>
-                <span>دپارتمان: {task.department}</span>
+                <span>Department: {task.department}</span>
                 <span className="mx-2">•</span>
-                <span>مهلت: {new Date(task.deadline).toLocaleDateString('fa-IR')}</span>
+                <span>
+                  Deadline:{" "}
+                  {new Date(task.deadline).toLocaleDateString("en-US")}
+                </span>
               </div>
-              
-              {(user?.role === 'supervisor' || task.assignedTo.includes(user?.username ?? '')) && (
+
+              {(user?.role === "supervisor" ||
+                task.assignedTo.includes(user?.username ?? "")) && (
                 <select
                   value={task.status}
-                  onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatus)}
+                  onChange={(e) =>
+                    handleStatusChange(task.id, e.target.value as TaskStatus)
+                  }
                   className="px-2 py-1 border rounded-md text-sm"
                 >
                   {Object.entries(statusLabels).map(([value, label]) => (
@@ -147,4 +175,4 @@ export default function TaskList() {
       </div>
     </div>
   );
-} 
+}
