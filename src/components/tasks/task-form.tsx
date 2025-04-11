@@ -38,7 +38,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
           Task Title
         </label>
         <input
@@ -46,12 +46,12 @@ export default function TaskForm({ onClose }: TaskFormProps) {
           required
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-3 py-2 border rounded-md"
+          className="w-full rounded-md border px-3 py-2"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
           Description
         </label>
         <textarea
@@ -60,12 +60,12 @@ export default function TaskForm({ onClose }: TaskFormProps) {
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
-          className="w-full px-3 py-2 border rounded-md h-24"
+          className="h-24 w-full rounded-md border px-3 py-2"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
           Department
         </label>
         <select
@@ -73,7 +73,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
           onChange={(e) =>
             setFormData({ ...formData, department: e.target.value })
           }
-          className="w-full px-3 py-2 border rounded-md"
+          className="w-full rounded-md border px-3 py-2"
         >
           {departments.map((dept) => (
             <option key={dept} value={dept}>
@@ -84,7 +84,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
           Priority
         </label>
         <select
@@ -95,7 +95,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
               priority: e.target.value as TaskPriority,
             })
           }
-          className="w-full px-3 py-2 border rounded-md"
+          className="w-full rounded-md border px-3 py-2"
         >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -104,7 +104,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
           Deadline
         </label>
         <input
@@ -114,13 +114,13 @@ export default function TaskForm({ onClose }: TaskFormProps) {
           onChange={(e) =>
             setFormData({ ...formData, deadline: e.target.value })
           }
-          className="w-full px-3 py-2 border rounded-md"
+          className="w-full rounded-md border px-3 py-2"
           min={new Date().toISOString().split("T")[0]}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
           Assigned Users
         </label>
         <input
@@ -136,7 +136,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
                 .filter(Boolean),
             })
           }
-          className="w-full px-3 py-2 border rounded-md"
+          className="w-full rounded-md border px-3 py-2"
         />
       </div>
 
@@ -144,13 +144,13 @@ export default function TaskForm({ onClose }: TaskFormProps) {
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-gray-700 border rounded-md hover:bg-gray-50"
+          className="rounded-md border px-4 py-2 text-gray-700 hover:bg-gray-50"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           Create Task
         </button>

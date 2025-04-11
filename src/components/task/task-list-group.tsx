@@ -38,12 +38,12 @@ export function TaskListGroup({
     <div className="mb-4">
       {" "}
       {/* Slightly reduced margin */}
-      <div className="flex items-center justify-between mb-2 px-1">
+      <div className="mb-2 flex items-center justify-between px-1">
         {" "}
         {/* Adjusted margin and padding */}
         <div className="flex items-center">
           <IconComponent
-            className={`w-3.5 h-3.5 mr-2 ${
+            className={`mr-2 h-3.5 w-3.5 ${
               status === "pending"
                 ? "text-gray-400"
                 : status === "in_progress"
@@ -56,7 +56,7 @@ export function TaskListGroup({
             }`}
             strokeWidth={status === "pending" ? 1.5 : 2} // Thinner stroke for Todo icon
           />
-          <h2 className="text-sm font-medium text-gray-800 mr-2">
+          <h2 className="mr-2 text-sm font-medium text-gray-800">
             {" "}
             {/* Darker text */}
             {statusTitle}
@@ -66,9 +66,9 @@ export function TaskListGroup({
         <Button
           variant="ghost"
           size="icon"
-          className="w-6 h-6 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+          className="h-6 w-6 rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
       <div className="space-y-1 pl-1">{children}</div>{" "}

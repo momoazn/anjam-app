@@ -46,10 +46,13 @@ export default function Dashboard() {
   }, [tasks, user]);
 
   const groupedTasks = useMemo(() => {
-    return userTasks.reduce((acc, task) => {
-      (acc[task.status] = acc[task.status] || []).push(task);
-      return acc;
-    }, {} as Record<TaskStatus, Task[]>);
+    return userTasks.reduce(
+      (acc, task) => {
+        (acc[task.status] = acc[task.status] || []).push(task);
+        return acc;
+      },
+      {} as Record<TaskStatus, Task[]>,
+    );
   }, [userTasks]);
 
   const getUserInitials = (username?: string) => {
@@ -63,36 +66,36 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white text-gray-900">
-      <header className="border-b border-gray-200 px-4 py-2 flex items-center justify-between sticky top-0 bg-white z-10">
+    <div className="flex h-screen flex-col bg-white text-gray-900">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2">
         <Tabs defaultValue="all" className="flex-grow">
-          <TabsList className="bg-transparent p-0 space-x-1">
+          <TabsList className="space-x-1 bg-transparent p-0">
             <TabsTrigger
               value="all"
-              className="text-sm font-medium px-3 py-1.5 rounded-md data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900"
             >
               All Issues
             </TabsTrigger>
             <TabsTrigger
               value="active"
-              className="text-sm font-medium px-3 py-1.5 rounded-md data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900"
             >
-              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>{" "}
+              <div className="mr-2 h-2 w-2 rounded-full bg-blue-500"></div>{" "}
               Active
             </TabsTrigger>
             <TabsTrigger
               value="backlog"
-              className="text-sm font-medium px-3 py-1.5 rounded-md data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900"
             >
-              <div className="w-2 h-2 border border-gray-400 rounded-full mr-2"></div>{" "}
+              <div className="mr-2 h-2 w-2 rounded-full border border-gray-400"></div>{" "}
               Backlog
             </TabsTrigger>
             <Button
               variant="ghost"
               size="icon"
-              className="w-8 h-8 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+              className="h-8 w-8 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
             >
-              <ClipboardList className="w-4 h-4" />
+              <ClipboardList className="h-4 w-4" />
             </Button>
           </TabsList>
         </Tabs>
@@ -101,17 +104,17 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             size="icon"
-            className="w-8 h-8 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+            className="h-8 w-8 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="h-4 w-4" />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className="w-6 h-6 cursor-pointer">
+              <Avatar className="h-6 w-6 cursor-pointer">
                 <AvatarImage
                   src={`https://avatar.vercel.sh/${user?.username}.png`}
                 />
-                <AvatarFallback className="text-xs bg-gray-200">
+                <AvatarFallback className="bg-gray-200 text-xs">
                   {getUserInitials(user?.username)}
                 </AvatarFallback>
               </Avatar>
@@ -132,13 +135,13 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="border-b border-gray-200 px-4 py-2 flex items-center justify-between sticky top-[57px] bg-white z-10">
+      <div className="sticky top-[57px] z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2">
         <Button
           variant="ghost"
           size="sm"
           className="text-sm text-gray-600 hover:bg-gray-100"
         >
-          <Filter className="w-3.5 h-3.5 mr-1.5" />
+          <Filter className="mr-1.5 h-3.5 w-3.5" />
           Filter
         </Button>
         <DropdownMenu>
@@ -148,8 +151,8 @@ export default function Dashboard() {
               size="sm"
               className="text-sm text-gray-600 hover:bg-gray-100"
             >
-              <List className="w-3.5 h-3.5 mr-1.5" /> Display{" "}
-              <ChevronDown className="w-3.5 h-3.5 ml-1" />
+              <List className="mr-1.5 h-3.5 w-3.5" /> Display{" "}
+              <ChevronDown className="ml-1 h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

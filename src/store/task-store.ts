@@ -65,7 +65,7 @@ const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
   let currentStatus = statusOptions[i % statusOptions.length];
   let currentTags = Array.from(
     { length: Math.floor(Math.random() * 2) + 1 },
-    () => possibleTags[Math.floor(Math.random() * possibleTags.length)]
+    () => possibleTags[Math.floor(Math.random() * possibleTags.length)],
   );
   let title = `Sample Task ${taskIndex}`;
 
@@ -116,7 +116,7 @@ const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
     deadline: deadlineDate.toISOString(),
     createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(
-      Date.now() - (i % 5) * 12 * 60 * 60 * 1000
+      Date.now() - (i % 5) * 12 * 60 * 60 * 1000,
     ).toISOString(),
     tags: [...new Set(currentTags)],
     comments: [],
@@ -148,7 +148,7 @@ export const useTaskStore = create<TaskState>()(
                   ...updates,
                   updatedAt: new Date().toISOString(),
                 }
-              : task
+              : task,
           ),
         })),
       deleteTask: (id) =>
@@ -164,12 +164,12 @@ export const useTaskStore = create<TaskState>()(
                   assignedTo: [...new Set([...task.assignedTo, ...userIds])],
                   updatedAt: new Date().toISOString(),
                 }
-              : task
+              : task,
           ),
         })),
     }),
     {
       name: "task-storage",
-    }
-  )
+    },
+  ),
 );

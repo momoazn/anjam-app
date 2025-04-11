@@ -82,7 +82,7 @@ export default function TaskList() {
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex gap-4 p-4 bg-white rounded-lg shadow">
+      <div className="flex gap-4 rounded-lg bg-white p-4 shadow">
         <select
           value={filters.status}
           onChange={(e) =>
@@ -91,7 +91,7 @@ export default function TaskList() {
               status: e.target.value as TaskStatus | "all",
             })
           }
-          className="px-3 py-2 border rounded-md"
+          className="rounded-md border px-3 py-2"
         >
           <option value="all">All Statuses</option>
           {Object.entries(statusLabels).map(([value, label]) => (
@@ -109,7 +109,7 @@ export default function TaskList() {
               priority: e.target.value as TaskPriority | "all",
             })
           }
-          className="px-3 py-2 border rounded-md"
+          className="rounded-md border px-3 py-2"
         >
           <option value="all">All Priorities</option>
           {Object.entries(priorityLabels).map(([value, label]) => (
@@ -123,27 +123,27 @@ export default function TaskList() {
       {/* Task List */}
       <div className="space-y-4">
         {filteredTasks.map((task) => (
-          <div key={task.id} className="p-4 bg-white rounded-lg shadow">
-            <div className="flex justify-between items-start">
+          <div key={task.id} className="rounded-lg bg-white p-4 shadow">
+            <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-lg font-semibold">{task.title}</h3>
-                <p className="text-gray-600 mt-1">{task.description}</p>
+                <p className="mt-1 text-gray-600">{task.description}</p>
               </div>
               <div className="flex gap-2">
                 <span
-                  className={`px-2 py-1 rounded-full text-sm ${priorityColors[task.priority]}`}
+                  className={`rounded-full px-2 py-1 text-sm ${priorityColors[task.priority]}`}
                 >
                   {priorityLabels[task.priority]}
                 </span>
                 <span
-                  className={`px-2 py-1 rounded-full text-sm ${statusColors[task.status]}`}
+                  className={`rounded-full px-2 py-1 text-sm ${statusColors[task.status]}`}
                 >
                   {statusLabels[task.status]}
                 </span>
               </div>
             </div>
 
-            <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
               <div>
                 <span>Department: {task.department}</span>
                 <span className="mx-2">•</span>
@@ -160,7 +160,7 @@ export default function TaskList() {
                   onChange={(e) =>
                     handleStatusChange(task.id, e.target.value as TaskStatus)
                   }
-                  className="px-2 py-1 border rounded-md text-sm"
+                  className="rounded-md border px-2 py-1 text-sm"
                 >
                   {Object.entries(statusLabels).map(([value, label]) => (
                     <option key={value} value={value}>

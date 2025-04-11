@@ -9,10 +9,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-background text-foreground">
+        <div className="bg-background text-foreground min-h-screen">
           <Suspense
             fallback={
-              <div className="min-h-screen flex items-center justify-center">
+              <div className="flex min-h-screen items-center justify-center">
                 <div className="text-xl">Loading...</div>
               </div>
             }

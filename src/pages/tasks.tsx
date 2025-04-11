@@ -9,12 +9,12 @@ export default function TasksPage() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Task Management</h1>
         {user?.role === "supervisor" && (
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
             New Task
           </button>
@@ -24,9 +24,9 @@ export default function TasksPage() {
       <TaskList />
 
       {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full">
-            <h2 className="text-xl font-semibold mb-4">Create New Task</h2>
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+          <div className="w-full max-w-lg rounded-lg bg-white p-6">
+            <h2 className="mb-4 text-xl font-semibold">Create New Task</h2>
             <TaskForm onClose={() => setIsCreateModalOpen(false)} />
           </div>
         </div>

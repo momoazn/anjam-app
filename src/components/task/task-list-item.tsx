@@ -70,26 +70,26 @@ export function TaskListItem({ task }: TaskListItemProps) {
   const assignee = task.assignedTo.length > 0 ? task.assignedTo[0] : undefined;
 
   return (
-    <div className="flex items-center justify-between px-2 py-1.5 hover:bg-gray-50 rounded transition-colors duration-150 cursor-pointer group">
+    <div className="group flex cursor-pointer items-center justify-between rounded px-2 py-1.5 transition-colors duration-150 hover:bg-gray-50">
       {/* Left side: Icon, ID, Title */}
-      <div className="flex items-center min-w-0 flex-grow mr-4">
+      <div className="mr-4 flex min-w-0 flex-grow items-center">
         <LeftIcon
-          className={`w-4 h-4 mr-2.5 flex-shrink-0 ${iconColor}`}
+          className={`mr-2.5 h-4 w-4 flex-shrink-0 ${iconColor}`}
           strokeWidth={task.status === "pending" ? 1.5 : 2}
         />
-        <span className="text-xs text-gray-400 mr-2 font-mono flex-shrink-0 group-hover:text-gray-600">
+        <span className="mr-2 flex-shrink-0 font-mono text-xs text-gray-400 group-hover:text-gray-600">
           {task.id}
         </span>
-        <span className="text-sm text-gray-800 truncate" title={task.title}>
+        <span className="truncate text-sm text-gray-800" title={task.title}>
           {task.title}
         </span>
       </div>
 
       {/* Right side: Tags, Date, Assignee */}
-      <div className="flex items-center flex-shrink-0 space-x-3">
+      <div className="flex flex-shrink-0 items-center space-x-3">
         {/* Tags */}
         {task.tags && task.tags.length > 0 && (
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden items-center space-x-1 md:flex">
             {task.tags.slice(0, 2).map((tag) => {
               // Limit tags shown
               // Simple color logic for tags
@@ -104,7 +104,7 @@ export function TaskListItem({ task }: TaskListItemProps) {
                 <Badge
                   key={tag}
                   variant="outline"
-                  className={`px-1.5 py-0.5 text-xs font-medium rounded ${tagColor}`}
+                  className={`rounded px-1.5 py-0.5 text-xs font-medium ${tagColor}`}
                 >
                   {tag}
                 </Badge>
@@ -114,18 +114,18 @@ export function TaskListItem({ task }: TaskListItemProps) {
         )}
 
         {/* Date */}
-        <span className="text-xs text-gray-500 flex-shrink-0 w-[50px] text-right">
+        <span className="w-[50px] flex-shrink-0 text-right text-xs text-gray-500">
           {formatDateShort(task.deadline)}{" "}
           {/* Using deadline date from image */}
         </span>
 
         {/* Assignee Avatar */}
-        <Avatar className="w-5 h-5">
+        <Avatar className="h-5 w-5">
           <AvatarImage
             src={`https://avatar.vercel.sh/${assignee}.png`}
             alt={assignee}
           />
-          <AvatarFallback className="text-[10px] bg-gray-200">
+          <AvatarFallback className="bg-gray-200 text-[10px]">
             {getUserInitials(assignee)}
           </AvatarFallback>
         </Avatar>
