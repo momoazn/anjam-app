@@ -1,6 +1,6 @@
+import { columns } from "@/components/task-group-table/columns";
+import { TasksTable } from "@/components/task-group-table/table";
 import { useMemo } from "react";
-import { TaskListGroup } from "../components/task/task-list-group";
-import { TaskListItem } from "../components/task/task-list-item";
 import { useAuthStore } from "../store/auth-store";
 import { Task, TaskStatus, useTaskStore } from "../store/task-store";
 
@@ -19,7 +19,7 @@ export default function Dashboard() {
 
   const userTasks = useMemo(() => {
     return user?.role === "employee"
-      ? tasks.filter((task) => task.assignedTo.includes(user?.username ?? ""))
+      ? tasks.filter((task) => task.assignedUser.includes(user?.username ?? ""))
       : tasks;
   }, [tasks, user]);
 
@@ -34,22 +34,28 @@ export default function Dashboard() {
   }, [userTasks]);
 
   return (
-    <div className="flex h-screen flex-col bg-white text-gray-900">
+    <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
       {statusOrder.map((status) => {
-        const tasksInGroup = groupedTasks[status] || [];
+        const tasksInGroup = groupedTasks[status] ?? [];
 
         return (
-          <TaskListGroup
-            key={status}
-            statusTitle={statusLabels[status]}
-            taskCount={tasksInGroup.length}
-            status={status}
-          >
-            {tasksInGroup.map((task) => (
-              <TaskListItem key={task.id} task={task} />
-            ))}
-          </TaskListGroup>
+          <div key={status}>
+            <h2 className="ps-2 text-lg font-bold">{statusLabels[status]}</h2>
+            <TasksTable columns={columns} data={tasksInGroup} />
+          </div>
         );
+        // return (
+        //   <TaskListGroup
+        //     key={status}
+        //     statusTitle={statusLabels[status]}
+        //     taskCount={tasksInGroup.length}
+        //     status={status}
+        //   >
+        //     {tasksInGroup.map((task) => (
+        //       <TaskListItem key={task.id} task={task} />
+        //     ))}
+        //   </TaskListGroup>
+        // );
       })}
     </div>
   );

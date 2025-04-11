@@ -51,7 +51,7 @@ export default function TaskList() {
     return tasks.filter((task) => {
       if (
         user?.role === "employee" &&
-        !task.assignedTo.includes(user.username)
+        !task.assignedUser.includes(user.username)
       ) {
         return false;
       }
@@ -154,7 +154,7 @@ export default function TaskList() {
               </div>
 
               {(user?.role === "supervisor" ||
-                task.assignedTo.includes(user?.username ?? "")) && (
+                task.assignedUser.includes(user?.username ?? "")) && (
                 <select
                   value={task.status}
                   onChange={(e) =>

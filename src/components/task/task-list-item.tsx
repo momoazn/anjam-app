@@ -67,7 +67,7 @@ export function TaskListItem({ task }: TaskListItemProps) {
   // }
 
   // Placeholder logic for assignee avatar - assuming single assignee for simplicity
-  const assignee = task.assignedTo.length > 0 ? task.assignedTo[0] : undefined;
+  const assignee = task.assignedUser.length > 0 ? task.assignedUser[0] : undefined;
 
   return (
     <div className="group flex cursor-pointer items-center justify-between rounded px-2 py-1.5 transition-colors duration-150 hover:bg-gray-50">

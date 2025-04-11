@@ -8,7 +8,7 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  assignedTo: string[];
+  assignedUser: string;
   department: string;
   priority: TaskPriority;
   status: TaskStatus;
@@ -29,7 +29,6 @@ interface TaskState {
   addTask: (task: Omit<Task, "id" | "createdAt" | "updatedAt">) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  bulkAssign: (taskIds: string[], userIds: string[]) => void;
 }
 
 // Mock departments
@@ -104,7 +103,7 @@ const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
     id: `TSK-${taskIndex}`,
     title: title,
     description: `This is the description for task TSK-${taskIndex}.`,
-    assignedTo: [`user-${(i % 3) + 1}`],
+    assignedUser: `user-${(i % 3) + 1}`,
     department: departments[i % departments.length],
     priority: priorityOptions[i % priorityOptions.length],
     status: currentStatus,
@@ -149,18 +148,6 @@ export const useTaskStore = create<TaskState>()(
       deleteTask: (id) =>
         set((state) => ({
           tasks: state.tasks.filter((task) => task.id !== id),
-        })),
-      bulkAssign: (taskIds, userIds) =>
-        set((state) => ({
-          tasks: state.tasks.map((task) =>
-            taskIds.includes(task.id)
-              ? {
-                  ...task,
-                  assignedTo: [...new Set([...task.assignedTo, ...userIds])],
-                  updatedAt: new Date().toISOString(),
-                }
-              : task,
-          ),
         })),
     }),
     {
