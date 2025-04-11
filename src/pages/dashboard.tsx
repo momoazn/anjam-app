@@ -1,8 +1,14 @@
-// import { TaskListGroup } from "@/components/task/task-list-group";
-import { statusLabels, statusOrder } from "@/store/task-store";
 import { lazy, useMemo } from "react";
-import { useAuthStore } from "../store/auth-store";
-import { Task, TaskStatus, useTaskStore } from "../store/task-store";
+
+import { pb } from "@/lib/pocketbase";
+import { UsersRecord, UsersRoleOptions } from "@/lib/pocketbase-types";
+import {
+  statusLabels,
+  statusOrder,
+  Task,
+  TaskStatus,
+  useTaskStore,
+} from "@/store/task-store";
 
 const TaskListGroup = lazy(() =>
   import("@/components/task/task-list-group").then((module) => ({
@@ -11,11 +17,11 @@ const TaskListGroup = lazy(() =>
 );
 
 export default function Dashboard() {
-  const user = useAuthStore((state) => state.user);
+  const user = pb.authStore.record as unknown as UsersRecord;
   const tasks = useTaskStore((state) => state.tasks);
 
   const userTasks = useMemo(() => {
-    return user?.role === "employee"
+    return user?.role === UsersRoleOptions.employee
       ? tasks.filter((task) => task.assignedUser.includes(user?.username ?? ""))
       : tasks;
   }, [tasks, user]);
@@ -30,15 +36,9 @@ export default function Dashboard() {
     );
   }, [userTasks]);
 
-  console.log("groupedTasks", groupedTasks);
-  console.log("statusOrder", statusOrder);
-  console.log("userTasks", userTasks);
-
   return (
     <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
       {statusOrder?.map((status) => {
-        console.log("========", groupedTasks[status]);
-
         const sortedTasks = groupedTasks[status]?.sort((a, b) => {
           if (a.priority === b.priority) {
             return (

@@ -1,13 +1,16 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { useAuthStore } from "./store/auth-store";
+
+import { pb } from "@/lib/pocketbase";
 
 // Lazy load pages
 const Login = React.lazy(() => import("@/pages/login"));
+const Register = React.lazy(() => import("@/pages/register"));
 const Dashboard = React.lazy(() => import("@/pages/dashboard"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const user = useAuthStore((state) => state.user);
+  // const user = useAuthStore((state) => state.user);
+  const user = pb.authStore.isValid;
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -32,6 +35,11 @@ const routes: RouteType[] = [
   {
     path: "/login",
     element: <Login />,
+    protected: false,
+  },
+  {
+    path: "/register",
+    element: <Register />,
     protected: false,
   },
 ];

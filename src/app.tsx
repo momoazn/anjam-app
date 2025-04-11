@@ -1,24 +1,25 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
+
+import { AppSidebar } from "@/components/app-sidebar";
+import { SiteHeader } from "@/components/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { pb } from "./lib/pocketbase";
 import { AppRoutes } from "./router";
-import { useAuthStore } from "./store/auth-store";
 
 const queryClient = new QueryClient();
 
 function App() {
-  const { user } = useAuthStore();
+  const isLoggedIn = pb.authStore.isValid;
 
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
         <SidebarProvider>
-          {user && <AppSidebar variant="inset" />}
+          {isLoggedIn && <AppSidebar variant="inset" />}
           <SidebarInset>
-            {user && <SiteHeader />}
+            {isLoggedIn && <SiteHeader />}
             <Suspense
               fallback={
                 <div className="flex min-h-screen items-center justify-center">

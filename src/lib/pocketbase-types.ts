@@ -131,14 +131,20 @@ export type TasksRecord = {
   updated?: IsoDateString;
 };
 
+export enum UsersRoleOptions {
+  "admin" = "admin",
+  "supervisor" = "supervisor",
+  "employee" = "employee",
+}
 export type UsersRecord = {
   avatar?: string;
   created?: IsoDateString;
-  email: string;
+  email?: string;
   emailVisibility?: boolean;
   id: string;
   name?: string;
   password: string;
+  role: UsersRoleOptions;
   tokenKey: string;
   updated?: IsoDateString;
   username: string;
@@ -146,7 +152,6 @@ export type UsersRecord = {
 };
 
 export enum UsersProjectsAccessLevelOptions {
-  "admin" = "admin",
   "supervisor" = "supervisor",
   "employee" = "employee",
 }
