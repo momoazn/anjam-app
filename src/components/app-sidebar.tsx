@@ -1,13 +1,10 @@
 import {
-  IconChartBar,
   IconDashboard,
   IconFolder,
   IconInnerShadowTop,
   IconListDetails,
   IconSettings,
-  IconUsers,
 } from "@tabler/icons-react";
-import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -36,24 +33,14 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
       title: "Projects",
       url: "#",
       icon: IconFolder,
     },
     {
-      title: "Team",
+      title: "Tasks",
       url: "#",
-      icon: IconUsers,
+      icon: IconListDetails,
     },
   ],
 

@@ -46,7 +46,7 @@ export function TaskListGroup({
     <div className="mb-4">
       {" "}
       {/* Slightly reduced margin */}
-      <div className="mb-2 flex items-center justify-between rounded bg-gray-200 px-2 py-1">
+      <div className="mb-2 flex items-center justify-between bg-gray-200 px-2 py-1">
         {" "}
         {/* Adjusted margin and padding */}
         <div className="flex items-center">
