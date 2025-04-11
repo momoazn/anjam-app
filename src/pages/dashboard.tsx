@@ -1,13 +1,16 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore, UserRole } from "../store/auth-store";
-import { TaskPriority, TaskStatus, useTaskStore } from "../store/task-store";
+import { Task, TaskPriority, TaskStatus, useTaskStore } from "../store/task-store";
+import { TaskListGroup } from "../components/task/task-list-group";
+import { TaskListItem } from "../components/task/task-list-item";
 
 const statusLabels: Record<TaskStatus, string> = {
   pending: "در انتظار",
   in_progress: "در حال انجام",
   completed: "تکمیل شده",
   overdue: "تاخیر دار",
+  canceled: "لغو شده",
 };
 
 const priorityLabels: Record<TaskPriority, string> = {
@@ -29,6 +32,15 @@ const userRoles: Record<UserRole, string> = {
   admin: "مدیر سیستم",
 };
 
+// Define the order of statuses for display
+const statusOrder: TaskStatus[] = [
+  'in_progress',
+  'pending',
+  'completed',
+  'canceled',
+  'overdue',
+];
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
@@ -43,6 +55,17 @@ export default function Dashboard() {
       return true;
     });
   }, [tasks, user]);
+
+  // Group tasks by status
+  const groupedTasks = useMemo(() => {
+    return userTasks.reduce(
+      (acc, task) => {
+        (acc[task.status] = acc[task.status] || []).push(task);
+        return acc;
+      },
+      {} as Record<TaskStatus, Task[]>
+    );
+  }, [userTasks]);
 
   const taskStats = useMemo(() => {
     const stats = {
@@ -64,17 +87,8 @@ export default function Dashboard() {
     return stats;
   }, [userTasks]);
 
-  const recentTasks = useMemo(() => {
-    return [...userTasks]
-      .sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )
-      .slice(0, 5);
-  }, [userTasks]);
-
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">
@@ -134,46 +148,24 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Recent Tasks */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-4 border-b flex justify-between items-center">
-              <h2 className="text-lg font-semibold">وظایف اخیر</h2>
-              <button
-                onClick={() => navigate("/tasks")}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                مشاهده همه
-              </button>
-            </div>
-            <div className="divide-y">
-              {recentTasks.map((task) => (
-                <div key={task.id} className="p-4 hover:bg-gray-50">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">{task.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {task.description}
-                      </p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-sm ${
-                        statusColors[task.status]
-                      }`}
-                    >
-                      {statusLabels[task.status]}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-sm text-gray-500">
-                    <span>
-                      مهلت:{" "}
-                      {new Date(task.deadline).toLocaleDateString("fa-IR")}
-                    </span>
-                    <span className="mx-2">•</span>
-                    <span>دپارتمان: {task.department}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {/* NEW Task List Section */}
+          <div className="mt-8">
+            {statusOrder.map((status) => {
+              const tasksInGroup = groupedTasks[status] || [];
+              if (tasksInGroup.length === 0) return null; // Don't render empty groups
+
+              return (
+                <TaskListGroup
+                  key={status}
+                  statusTitle={statusLabels[status]}
+                  tasks={tasksInGroup}
+                >
+                  {tasksInGroup.map((task) => (
+                    <TaskListItem key={task.id} task={task} />
+                  ))}
+                </TaskListGroup>
+              );
+            })}
           </div>
 
           {/* Role-specific Actions */}

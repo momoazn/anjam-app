@@ -2,7 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export type TaskPriority = 'low' | 'medium' | 'high';
-export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'overdue';
+export type TaskStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'overdue'
+  | 'canceled';
 
 export interface Task {
   id: string;
@@ -15,6 +20,7 @@ export interface Task {
   deadline: string;
   createdAt: string;
   updatedAt: string;
+  tags?: string[];
   comments: {
     id: string;
     userId: string;
@@ -41,19 +47,39 @@ export const departments = [
 ];
 
 // Create mock tasks
-const mockTasks: Task[] = Array.from({ length: 10 }, (_, i) => ({
-  id: `task-${i + 1}`,
-  title: `وظیفه شماره ${i + 1}`,
-  description: `توضیحات مربوط به وظیفه شماره ${i + 1}`,
-  assignedTo: [`user-${i % 3 + 1}`],
-  department: departments[i % departments.length],
-  priority: ['low', 'medium', 'high'][i % 3] as TaskPriority,
-  status: ['pending', 'in_progress', 'completed', 'overdue'][i % 4] as TaskStatus,
-  deadline: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000).toISOString(),
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  comments: [],
-}));
+const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
+  const statusOptions: TaskStatus[] = [
+    'pending',
+    'in_progress',
+    'completed',
+    'overdue',
+    'canceled',
+  ];
+  const priorityOptions: TaskPriority[] = ['low', 'medium', 'high'];
+  const possibleTags = ['باگ', 'ویژگی', 'بهبود', 'سوال'];
+
+  return {
+    id: `TSK-${i + 1}`,
+    title: `وظیفه نمونه ${i + 1}`,
+    description: `این توضیحات برای وظیفه شماره ${i + 1} است.`,
+    assignedTo: [`user-${(i % 3) + 1}`],
+    department: departments[i % departments.length],
+    priority: priorityOptions[i % priorityOptions.length],
+    status: statusOptions[i % statusOptions.length],
+    deadline: new Date(
+      Date.now() + (i - 5) * 24 * 60 * 60 * 1000
+    ).toISOString(),
+    createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(
+      Date.now() - (i % 5) * 12 * 60 * 60 * 1000
+    ).toISOString(),
+    tags: Array.from(
+      { length: Math.floor(Math.random() * 3) },
+      () => possibleTags[Math.floor(Math.random() * possibleTags.length)]
+    ),
+    comments: [],
+  };
+});
 
 export const useTaskStore = create<TaskState>()(
   persist(
