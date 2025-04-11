@@ -1,17 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
-  AlertCircle,
-  CheckCircle2,
-  Circle,
-  SignalLow,
-  XCircle,
-} from "lucide-react";
-import { Task } from "../../store/task-store";
-import { Badge } from "../ui/badge";
-
-interface TaskListItemProps {
-  task: Task;
-}
+  priorityColors,
+  priorityIcons,
+  Task,
+  taskStatusColors,
+  taskStatusIcons,
+} from "@/store/task-store";
 
 // Helper to format date like "Apr 11"
 const formatDateShort = (dateString: string) => {
@@ -31,55 +27,35 @@ const getUserInitials = (username?: string) => {
     : "?";
 };
 
-export function TaskListItem({ task }: TaskListItemProps) {
-  // Use priority icon if available, otherwise default based on a tag or status
-  // In the image, TSK-12 (In Progress) has a yellow ! which matches high priority/Bug
-  // TSK-13 (Done) has a checkmark
-  // TSK-14 (Canceled) has a gray !
-  // Others (Canceled) have gray X
+interface TaskListItemProps {
+  task: Task;
+  className?: string;
+}
 
-  let LeftIcon = SignalLow; // Default icon
-  let iconColor = "text-gray-400";
+export function TaskListItem({ task, className }: TaskListItemProps) {
+  const StatusIcon = taskStatusIcons[task.status];
+  const statusIconColor = taskStatusColors[task.status];
+  const PriorityIcon = priorityIcons[task.priority];
+  const priorityIconColor = priorityColors[task.priority];
 
-  // Determine icon based on status first (like the image does)
-  if (task.status === "in_progress") {
-    LeftIcon = AlertCircle; // Yellow ! for In Progress TSK-12
-    iconColor = "text-yellow-500";
-  }
-  if (task.status === "todo") {
-    LeftIcon = Circle; // Empty circle for Todo
-    iconColor = "text-gray-400";
-  }
-  if (task.status === "done") {
-    LeftIcon = CheckCircle2; // Checkmark for Done TSK-13
-    iconColor = "text-purple-600";
-  }
-  if (task.status === "canceled") {
-    // Image shows gray ! for TSK-14 and X for others
-    LeftIcon = task.id === "TSK-14" ? AlertCircle : XCircle;
-    iconColor = "text-gray-500";
-  }
-
-  // Override with priority icon if it makes sense (e.g., high priority bug)
-  // if (task.priority === "high") {
-  //   LeftIcon = priorityIcons[task.priority];
-  //   iconColor = "text-red-500"; // High priority often red
-  // }
-
-  // Placeholder logic for assignee avatar - assuming single assignee for simplicity
-  const assignee = task.assignedUser.length > 0 ? task.assignedUser[0] : undefined;
+  const assignee = task.assignedUser.length > 0 ? task.assignedUser : undefined;
 
   return (
-    <div className="group flex cursor-pointer items-center justify-between rounded px-2 py-1.5 transition-colors duration-150 hover:bg-gray-50">
+    <div
+      className={cn(
+        "group flex cursor-pointer items-center justify-between rounded px-2 py-1.5 transition-colors duration-150 hover:bg-gray-50",
+        className,
+      )}
+    >
       {/* Left side: Icon, ID, Title */}
-      <div className="mr-4 flex min-w-0 flex-grow items-center">
-        <LeftIcon
-          className={`mr-2.5 h-4 w-4 flex-shrink-0 ${iconColor}`}
-          strokeWidth={task.status === "todo" ? 1.5 : 2}
+      <div className="ms-1 flex min-w-0 flex-grow items-center gap-2">
+        <PriorityIcon
+          className={cn(`size-6 flex-shrink-0`, priorityIconColor)}
         />
-        <span className="mr-2 flex-shrink-0 font-mono text-xs text-gray-400 group-hover:text-gray-600">
+        <span className="w-16 flex-shrink-0 font-mono text-xs text-gray-400 group-hover:text-gray-600">
           {task.id}
         </span>
+        <StatusIcon className={cn(`size-4 flex-shrink-0`, statusIconColor)} />
         <span className="truncate text-sm text-gray-800" title={task.title}>
           {task.title}
         </span>

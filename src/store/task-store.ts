@@ -1,5 +1,15 @@
+import {
+  Icon,
+  IconAntennaBars2,
+  IconAntennaBars3,
+  IconAntennaBars4,
+  IconAntennaBars5,
+} from "@tabler/icons-react";
+import { CheckCircle2, Circle, CircleDotDashed, XCircle } from "lucide-react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+import mockTasks from "@/data/tasks.json";
 
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 export type TaskStatus = "todo" | "in_progress" | "done" | "canceled";
@@ -31,6 +41,54 @@ interface TaskState {
   deleteTask: (id: string) => void;
 }
 
+export const priorityColors: Record<TaskPriority, string> = {
+  low: "text-green-500",
+  medium: "text-yellow-500",
+  high: "text-orange-500",
+  urgent: "text-red-500",
+};
+
+export const priorityIcons: Record<TaskPriority, Icon> = {
+  low: IconAntennaBars2,
+  medium: IconAntennaBars3,
+  high: IconAntennaBars4,
+  urgent: IconAntennaBars5,
+};
+
+export const statusLabels: Record<TaskStatus, string> = {
+  todo: "Todo",
+  in_progress: "In Progress",
+  done: "Done",
+  canceled: "Canceled",
+};
+
+export const taskStatusBgColors: Record<TaskStatus, string> = {
+  todo: "bg-slate-50",
+  in_progress: "bg-yellow-50",
+  done: "bg-purple-50",
+  canceled: "bg-gray-100",
+};
+
+export const taskStatusColors: Record<TaskStatus, string> = {
+  todo: "text-gray-400",
+  in_progress: "text-yellow-500",
+  done: "text-purple-600",
+  canceled: "text-gray-500",
+};
+export const taskStatusIcons: Record<TaskStatus, React.ElementType> = {
+  todo: Circle,
+  in_progress: CircleDotDashed,
+  done: CheckCircle2,
+  canceled: XCircle,
+};
+
+export const statusOrder: TaskStatus[] = [
+  "todo",
+  "in_progress",
+  "done",
+  "canceled",
+];
+
 // Mock departments
 export const departments = [
   "Finance",
@@ -40,87 +98,10 @@ export const departments = [
   "Support",
 ];
 
-// Create mock tasks
-const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
-  const statusOptions: TaskStatus[] = [
-    "todo",
-    "in_progress",
-    "done",
-    "canceled",
-    "in_progress",
-  ];
-  const priorityOptions: TaskPriority[] = ["low", "medium", "high", "urgent"];
-  const possibleTags = ["Bug", "Feature", "Improvement"];
-
-  const taskIndex = i + 1;
-  const deadlineDate = new Date();
-  deadlineDate.setDate(deadlineDate.getDate() + (i - 7));
-
-  let currentStatus = statusOptions[i % statusOptions.length];
-  let currentTags = Array.from(
-    { length: Math.floor(Math.random() * 2) + 1 },
-    () => possibleTags[Math.floor(Math.random() * possibleTags.length)],
-  );
-  let title = `Sample Task ${taskIndex}`;
-
-  if (taskIndex === 12) {
-    title = "Another test";
-    currentStatus = "in_progress";
-    currentTags = ["Bug", "Feature"];
-  }
-  if (taskIndex === 11) {
-    title = "Testttt";
-    currentStatus = "todo";
-    currentTags = ["Bug"];
-  }
-  if (taskIndex === 10) {
-    title = "Test";
-    currentStatus = "todo";
-    currentTags = ["Bug"];
-  }
-  if (taskIndex === 13) {
-    title = "Another one yet";
-    currentStatus = "done";
-    currentTags = ["Bug", "Feature"];
-  }
-  if (taskIndex === 14) {
-    title = "Just testing things out";
-    currentStatus = "canceled";
-    currentTags = ["Bug", "Feature", "Improvement"];
-  }
-  if (taskIndex === 1) {
-    title = "Welcome to Task Manager 👋";
-    currentStatus = "canceled";
-    currentTags = ["Feature"];
-  }
-  if (taskIndex === 2) {
-    title = "Try 3 ways to navigate";
-    currentStatus = "canceled";
-    currentTags = [];
-  }
-
-  return {
-    id: `TSK-${taskIndex}`,
-    title: title,
-    description: `This is the description for task TSK-${taskIndex}.`,
-    assignedUser: `user-${(i % 3) + 1}`,
-    department: departments[i % departments.length],
-    priority: priorityOptions[i % priorityOptions.length],
-    status: currentStatus,
-    deadline: deadlineDate.toISOString(),
-    createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(
-      Date.now() - (i % 5) * 12 * 60 * 60 * 1000,
-    ).toISOString(),
-    tags: [...new Set(currentTags)],
-    comments: [],
-  };
-});
-
 export const useTaskStore = create<TaskState>()(
   persist(
     (set) => ({
-      tasks: mockTasks,
+      tasks: mockTasks as Task[],
       addTask: (task) =>
         set((state) => ({
           tasks: [

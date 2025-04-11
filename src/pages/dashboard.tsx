@@ -1,17 +1,8 @@
-import { columns } from "@/components/task-group-table/columns";
-import { TasksTable } from "@/components/task-group-table/table";
+import { TaskListGroup } from "@/components/task/task-list-group";
+import { statusLabels, statusOrder } from "@/store/task-store";
 import { useMemo } from "react";
 import { useAuthStore } from "../store/auth-store";
 import { Task, TaskStatus, useTaskStore } from "../store/task-store";
-
-const statusLabels: Record<TaskStatus, string> = {
-  todo: "Todo",
-  in_progress: "In Progress",
-  done: "Done",
-  canceled: "Canceled",
-};
-
-const statusOrder: TaskStatus[] = ["todo", "in_progress", "done", "canceled"];
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
@@ -36,29 +27,35 @@ export default function Dashboard() {
   return (
     <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
       {statusOrder.map((status) => {
-        const tasksInGroup = groupedTasks[status] ?? [];
+        if (!groupedTasks[status].length)
+          return <div key={status}>No Tasks</div>;
+
+        const sortedTasks = groupedTasks[status].sort((a, b) => {
+          if (a.priority === b.priority) {
+            return (
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            );
+          }
+          if (a.priority === "urgent") return -1;
+          if (b.priority === "urgent") return 1;
+          if (a.priority === "high") return -1;
+          if (b.priority === "high") return 1;
+          if (a.priority === "medium") return -1;
+          if (b.priority === "medium") return 1;
+          if (a.priority === "low") return -1;
+          if (b.priority === "low") return 1;
+          return 0;
+        });
 
         return (
-          <div key={status}>
-            <TasksTable
-              groupName={statusLabels[status]}
-              columns={columns}
-              data={tasksInGroup}
-            />
-          </div>
+          <TaskListGroup
+            key={status}
+            statusTitle={statusLabels[status]}
+            taskCount={sortedTasks.length}
+            status={status}
+            tasks={sortedTasks}
+          />
         );
-        // return (
-        //   <TaskListGroup
-        //     key={status}
-        //     statusTitle={statusLabels[status]}
-        //     taskCount={tasksInGroup.length}
-        //     status={status}
-        //   >
-        //     {tasksInGroup.map((task) => (
-        //       <TaskListItem key={task.id} task={task} />
-        //     ))}
-        //   </TaskListGroup>
-        // );
       })}
     </div>
   );
