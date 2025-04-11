@@ -1,31 +1,33 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Bell, ChevronDown, ClipboardList, Filter, List } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore, UserRole } from "../store/auth-store";
-import { Task, TaskStatus, useTaskStore } from "../store/task-store"; // Removed TaskPriority
 import { TaskListGroup } from "../components/task/task-list-group";
 import { TaskListItem } from "../components/task/task-list-item";
+import { useAuthStore } from "../store/auth-store";
+import { Task, TaskStatus, useTaskStore } from "../store/task-store";
 
 const statusLabels: Record<TaskStatus, string> = {
-  pending: "Pending",
+  pending: "Todo",
   in_progress: "In Progress",
-  completed: "Completed",
+  completed: "Done",
   overdue: "Overdue",
   canceled: "Canceled",
 };
 
-const userRoles: Record<UserRole, string> = {
-  employee: "Employee",
-  supervisor: "Supervisor",
-  admin: "Admin",
-};
-
-// Define the order of statuses for display
 const statusOrder: TaskStatus[] = [
   "in_progress",
   "pending",
   "completed",
   "canceled",
-  "overdue",
 ];
 
 export default function Dashboard() {
@@ -37,148 +39,145 @@ export default function Dashboard() {
   const userTasks = useMemo(() => {
     return tasks.filter((task) => {
       if (user?.role === "employee") {
-        return task.assignedTo.includes(user.username);
+        return task.assignedTo.includes(user?.username ?? "");
       }
       return true;
     });
   }, [tasks, user]);
 
-  // Group tasks by status
   const groupedTasks = useMemo(() => {
-    return userTasks.reduce(
-      (acc, task) => {
-        (acc[task.status] = acc[task.status] || []).push(task);
-        return acc;
-      },
-      {} as Record<TaskStatus, Task[]>,
-    );
+    return userTasks.reduce((acc, task) => {
+      (acc[task.status] = acc[task.status] || []).push(task);
+      return acc;
+    }, {} as Record<TaskStatus, Task[]>);
   }, [userTasks]);
 
-  const taskStats = useMemo(() => {
-    const stats = {
-      total: userTasks.length,
-      pending: 0,
-      in_progress: 0,
-      completed: 0,
-      overdue: 0,
-      canceled: 0, // Add canceled status
-      high_priority: 0,
-    };
-
-    userTasks.forEach((task) => {
-      if (task.status in stats) {
-        // Check if status exists before incrementing
-        stats[task.status as keyof typeof stats]++; // Type assertion needed here
-      }
-      if (task.priority === "high") {
-        stats.high_priority++;
-      }
-    });
-
-    return stats;
-  }, [userTasks]);
+  const getUserInitials = (username?: string) => {
+    return username
+      ? username
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+      : "U";
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Task Management System
-          </h1>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-700">{user?.username}</span>
-            <span className="text-gray-700">•</span>
-            <span className="text-gray-700">
-              {userRoles[user?.role as UserRole]}
-            </span>
-            <button
-              onClick={() => {
-                logout();
-                navigate("/login");
-              }}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+    <div className="flex flex-col h-screen bg-white text-gray-900">
+      <header className="border-b border-gray-200 px-4 py-2 flex items-center justify-between sticky top-0 bg-white z-10">
+        <Tabs defaultValue="all" className="flex-grow">
+          <TabsList className="bg-transparent p-0 space-x-1">
+            <TabsTrigger
+              value="all"
+              className="text-sm font-medium px-3 py-1.5 rounded-md data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
             >
-              Logout
-            </button>
-          </div>
+              All Issues
+            </TabsTrigger>
+            <TabsTrigger
+              value="active"
+              className="text-sm font-medium px-3 py-1.5 rounded-md data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            >
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>{" "}
+              Active
+            </TabsTrigger>
+            <TabsTrigger
+              value="backlog"
+              className="text-sm font-medium px-3 py-1.5 rounded-md data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            >
+              <div className="w-2 h-2 border border-gray-400 rounded-full mr-2"></div>{" "}
+              Backlog
+            </TabsTrigger>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-8 h-8 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+            >
+              <ClipboardList className="w-4 h-4" />
+            </Button>
+          </TabsList>
+        </Tabs>
+
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+          >
+            <Bell className="w-4 h-4" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="w-6 h-6 cursor-pointer">
+                <AvatarImage
+                  src={`https://avatar.vercel.sh/${user?.username}.png`}
+                />
+                <AvatarFallback className="text-xs bg-gray-200">
+                  {getUserInitials(user?.username)}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>{user?.username}</DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+              >
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Total Tasks</h3>
-              <p className="mt-1 text-2xl font-semibold">{taskStats.total}</p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Pending</h3>
-              <p className="mt-1 text-2xl font-semibold text-yellow-600">
-                {taskStats.pending}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">In Progress</h3>
-              <p className="mt-1 text-2xl font-semibold text-blue-600">
-                {taskStats.in_progress}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Completed</h3>
-              <p className="mt-1 text-2xl font-semibold text-green-600">
-                {taskStats.completed}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">
-                High Priority
-              </h3>
-              <p className="mt-1 text-2xl font-semibold text-red-600">
-                {taskStats.high_priority}
-              </p>
-            </div>
-          </div>
 
-          {/* NEW Task List Section */}
-          <div className="mt-8">
-            {statusOrder.map((status) => {
-              const tasksInGroup = groupedTasks[status] || [];
-              if (tasksInGroup.length === 0) return null; // Don't render empty groups
+      <div className="border-b border-gray-200 px-4 py-2 flex items-center justify-between sticky top-[57px] bg-white z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-sm text-gray-600 hover:bg-gray-100"
+        >
+          <Filter className="w-3.5 h-3.5 mr-1.5" />
+          Filter
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sm text-gray-600 hover:bg-gray-100"
+            >
+              <List className="w-3.5 h-3.5 mr-1.5" /> Display{" "}
+              <ChevronDown className="w-3.5 h-3.5 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>Group by: Status</DropdownMenuItem>
+            <DropdownMenuItem>Sort by: Priority</DropdownMenuItem>
+            <DropdownMenuItem>Show completed</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
-              return (
-                <TaskListGroup
-                  key={status}
-                  statusTitle={statusLabels[status]}
-                  tasks={tasksInGroup}
-                >
-                  {tasksInGroup.map((task) => (
-                    <TaskListItem key={task.id} task={task} />
-                  ))}
-                </TaskListGroup>
-              );
-            })}
-          </div>
+      <main className="flex-grow overflow-y-auto p-4">
+        <div className="space-y-0">
+          {statusOrder.map((status) => {
+            const tasksInGroup = groupedTasks[status] || [];
 
-          {/* Role-specific Actions */}
-          {user?.role === "supervisor" && (
-            <div className="mt-8 bg-white rounded-lg shadow p-4">
-              <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => navigate("/tasks")}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  Create New Task
-                </button>
-                <button
-                  onClick={() => navigate("/tasks")}
-                  className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Manage Tasks
-                </button>
-              </div>
-            </div>
-          )}
+            return (
+              <TaskListGroup
+                key={status}
+                statusTitle={statusLabels[status]}
+                taskCount={tasksInGroup.length}
+                status={status}
+              >
+                {tasksInGroup.map((task) => (
+                  <TaskListItem key={task.id} task={task} />
+                ))}
+              </TaskListGroup>
+            );
+          })}
         </div>
       </main>
     </div>

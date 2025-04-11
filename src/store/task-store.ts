@@ -56,27 +56,69 @@ const mockTasks: Task[] = Array.from({ length: 15 }, (_, i) => {
     "canceled",
   ];
   const priorityOptions: TaskPriority[] = ["low", "medium", "high"];
-  const possibleTags = ["Bug", "Feature", "Improvement", "Question"];
+  const possibleTags = ["Bug", "Feature", "Improvement"];
+
+  const taskIndex = i + 1;
+  const deadlineDate = new Date();
+  deadlineDate.setDate(deadlineDate.getDate() + (i - 7));
+
+  let currentStatus = statusOptions[i % statusOptions.length];
+  let currentTags = Array.from(
+    { length: Math.floor(Math.random() * 2) + 1 },
+    () => possibleTags[Math.floor(Math.random() * possibleTags.length)]
+  );
+  let title = `Sample Task ${taskIndex}`;
+
+  if (taskIndex === 12) {
+    title = "Another test";
+    currentStatus = "in_progress";
+    currentTags = ["Bug", "Feature"];
+  }
+  if (taskIndex === 11) {
+    title = "Testttt";
+    currentStatus = "pending";
+    currentTags = ["Bug"];
+  }
+  if (taskIndex === 10) {
+    title = "Test";
+    currentStatus = "pending";
+    currentTags = ["Bug"];
+  }
+  if (taskIndex === 13) {
+    title = "Another one yet";
+    currentStatus = "completed";
+    currentTags = ["Bug", "Feature"];
+  }
+  if (taskIndex === 14) {
+    title = "Just testing things out";
+    currentStatus = "canceled";
+    currentTags = ["Bug", "Feature", "Improvement"];
+  }
+  if (taskIndex === 1) {
+    title = "Welcome to Linear 👋";
+    currentStatus = "canceled";
+    currentTags = ["Feature"];
+  }
+  if (taskIndex === 2) {
+    title = "Try 3 ways to navigate Linear: Command line, keyboard or mouse";
+    currentStatus = "canceled";
+    currentTags = [];
+  }
 
   return {
-    id: `TSK-${i + 1}`,
-    title: `Sample Task ${i + 1}`,
-    description: `This is the description for task number ${i + 1}.`,
+    id: `TSK-${taskIndex}`,
+    title: title,
+    description: `This is the description for task TSK-${taskIndex}.`,
     assignedTo: [`user-${(i % 3) + 1}`],
     department: departments[i % departments.length],
     priority: priorityOptions[i % priorityOptions.length],
-    status: statusOptions[i % statusOptions.length],
-    deadline: new Date(
-      Date.now() + (i - 5) * 24 * 60 * 60 * 1000,
-    ).toISOString(),
+    status: currentStatus,
+    deadline: deadlineDate.toISOString(),
     createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(
-      Date.now() - (i % 5) * 12 * 60 * 60 * 1000,
+      Date.now() - (i % 5) * 12 * 60 * 60 * 1000
     ).toISOString(),
-    tags: Array.from(
-      { length: Math.floor(Math.random() * 3) },
-      () => possibleTags[Math.floor(Math.random() * possibleTags.length)],
-    ),
+    tags: [...new Set(currentTags)],
     comments: [],
   };
 });
@@ -106,7 +148,7 @@ export const useTaskStore = create<TaskState>()(
                   ...updates,
                   updatedAt: new Date().toISOString(),
                 }
-              : task,
+              : task
           ),
         })),
       deleteTask: (id) =>
@@ -122,12 +164,12 @@ export const useTaskStore = create<TaskState>()(
                   assignedTo: [...new Set([...task.assignedTo, ...userIds])],
                   updatedAt: new Date().toISOString(),
                 }
-              : task,
+              : task
           ),
         })),
     }),
     {
       name: "task-storage",
-    },
-  ),
+    }
+  )
 );
