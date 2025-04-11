@@ -2,7 +2,6 @@
 
 ## 🎯 Project Overview
 A frontend-only task management web application for internal organization operations, featuring:
-- RTL layout and Persian language UI
 - Role-based access control
 - Task management and reporting
 - Client-side data persistence
@@ -70,8 +69,6 @@ src/
   - Mobile: < 768px
 
 ## 🎨 UI/UX Guidelines
-- RTL layout support
-- Persian language throughout
 - Professional color scheme:
   ```
   Primary: #2563eb (Blue)

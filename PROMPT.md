@@ -26,7 +26,7 @@ The app structure is already in place required packages installed.
 
 ## 🚀 Goal
 
-Your task is to **develop and implement the full set of features** described below on top of the existing project. This is a **frontend-only**, browser-based, **desktop-first** application that uses **RTL layout** and **Persian** language for all UI elements.
+Your task is to **develop and implement the full set of features** described below on top of the existing project. This is a **frontend-only**, browser-based, **desktop-first** application.
 
 ---
 
@@ -34,8 +34,6 @@ Your task is to **develop and implement the full set of features** described bel
 
 - **Desktop-first layout** — optimized primarily for organization desktop setups
 - Use a **responsive grid** to support mobile/tablet views
-- Full **RTL support** (`dir="rtl"` on the root element)
-- The entire application UI — labels, buttons, menus, messages — should be in **Persian**
 - Use **neutral, professional colors**, clean typography, and high contrast for readability
 - Consistent use of ShadCN UI components (modals, inputs, tables, alerts)
 
@@ -179,14 +177,13 @@ src/
 - ❌ Do not use Redux or Context API
 - ❌ Do not over-abstract state logic or routing
 - ❌ Do not create unnecessary layers or wrappers
-- ❌ Do not manually create ShadcnUI components, install them using shadcn cli like this for button component: `npx shadcn@latest add button`
+- ❌ Do not manually create ShadcnUI components, install them using shadcn cli like this for button component: `pnpm dlx shadcn@latest add button`
 
 ---
 
 ## 🔚 Summary
 
 - Use **React + React Router + Zustand + TailwindCSS** to simulate a task management SPA
-- Frontend-only React app with full RTL and Persian language support
 - Desktop-first, responsive UI using Tailwind and ShadCN
 - Simple login, task management, reporting, and export
 - All data is **mocked and managed client-side**
