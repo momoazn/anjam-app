@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
@@ -19,56 +20,64 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import users from "@/data/users.json";
+import { pb } from "@/lib/pocketbase";
+import {
+  TasksPriorityOptions,
+  TasksRecord,
+  TasksStatusOptions,
+} from "@/lib/pocketbase-types";
 import { cn, getUserInitials } from "@/lib/utils";
 import {
   priorityColors,
   priorityIcons,
-  TaskPriority,
-  TaskStatus,
   taskStatusColors,
   taskStatusIcons,
-  useTaskStore,
 } from "@/store/task-store";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface AddTaskDialogProps {
   children: React.ReactNode;
-  initialStatus?: TaskStatus;
+  initialStatus?: TasksStatusOptions;
 }
 
 export function AddTaskDialog({
   children,
-  initialStatus = "todo",
+  initialStatus = TasksStatusOptions.todo,
 }: AddTaskDialogProps) {
-  const addTask = useTaskStore((state) => state.addTask);
-
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [assignedUser, setAssignedUser] = useState("unassigned");
-  const [priority, setPriority] = useState<TaskPriority>("medium");
-  const [status, setStatus] = useState<TaskStatus>(initialStatus);
+  const [priority, setPriority] = useState<TasksPriorityOptions>(
+    TasksPriorityOptions.medium,
+  );
+  const [status, setStatus] = useState<TasksStatusOptions>(
+    TasksStatusOptions.todo,
+  );
+
+  const { mutate: createTask, isPending: isCreatingTask } = useMutation({
+    mutationFn: (task: Omit<TasksRecord, "id" | "created" | "updated">) =>
+      pb.collection("tasks").create(task),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addTask({
+    createTask({
       title,
       description,
-      assignedUser,
+      assignee: assignedUser,
       priority,
       status,
-      department: "Unassigned",
       deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         .toISOString()
         .split("T")[0],
-      comments: [],
     });
 
     setOpen(false);
     setTitle("");
     setDescription("");
     setAssignedUser("unassigned");
-    setPriority("medium");
+    setPriority(TasksPriorityOptions.medium);
     setStatus(initialStatus);
   };
 
@@ -119,7 +128,7 @@ export function AddTaskDialog({
             {/* Status Select */}
             <Select
               value={status}
-              onValueChange={(value) => setStatus(value as TaskStatus)}
+              onValueChange={(value) => setStatus(value as TasksStatusOptions)}
             >
               <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
                 <StatusIcon className={cn("size-4", statusIconColor)} />
@@ -136,7 +145,9 @@ export function AddTaskDialog({
             {/* Priority Select */}
             <Select
               value={priority}
-              onValueChange={(value) => setPriority(value as TaskPriority)}
+              onValueChange={(value) =>
+                setPriority(value as TasksPriorityOptions)
+              }
             >
               <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
                 <PriorityIcon className={cn("size-4", priorityIconColor)} />
@@ -183,8 +194,8 @@ export function AddTaskDialog({
           </div>
 
           <div className="flex items-center justify-end pt-0">
-            <Button size="sm" type="submit">
-              Create Task
+            <Button size="sm" type="submit" disabled={isCreatingTask}>
+              {isCreatingTask ? "Creating..." : "Create Task"}
             </Button>
           </div>
         </form>

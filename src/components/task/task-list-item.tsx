@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { TasksRecord } from "@/lib/pocketbase-types";
 import { cn, getUserInitials } from "@/lib/utils";
 import {
   priorityColors,
   priorityIcons,
-  Task,
   taskStatusColors,
   taskStatusIcons,
 } from "@/store/task-store";
@@ -19,7 +19,7 @@ const formatDateShort = (dateString: string) => {
 };
 
 interface TaskListItemProps {
-  task: Task;
+  task: TasksRecord;
   className?: string;
 }
 
@@ -28,8 +28,6 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
   const statusIconColor = taskStatusColors[task.status];
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
-
-  const assignee = task.assignedUser.length > 0 ? task.assignedUser : undefined;
 
   return (
     <div
@@ -44,7 +42,7 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
           className={cn(`size-6 flex-shrink-0`, priorityIconColor)}
         />
         <span className="w-16 flex-shrink-0 font-mono text-xs text-gray-400 transition-colors duration-200 ease-in-out group-hover:text-gray-600">
-          {task.id}
+          {task.display_id}
         </span>
         <StatusIcon className={cn(`size-4 flex-shrink-0`, statusIconColor)} />
         <span className="truncate text-sm text-gray-800" title={task.title}>
@@ -82,14 +80,14 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
 
         {/* Date */}
         <span className="w-[50px] flex-shrink-0 text-right text-xs text-gray-500">
-          {formatDateShort(task.deadline)}{" "}
+          {formatDateShort(task.deadline ?? "")}{" "}
           {/* Using deadline date from image */}
         </span>
 
         {/* Assignee Avatar */}
         <Avatar className="h-5 w-5">
           <AvatarFallback className="bg-gray-200 text-[10px]">
-            {getUserInitials(assignee)}
+            {getUserInitials("")}
           </AvatarFallback>
         </Avatar>
       </div>

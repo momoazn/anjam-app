@@ -1,12 +1,12 @@
 import { TaskListItem } from "@/components/task/task-list-item";
-import { Task, TaskStatus } from "@/store/task-store";
+import { TasksRecord, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { TaskListHeader } from "./task-list-header";
 
 interface TaskListGroupProps {
   statusTitle: string;
   taskCount: number;
-  status: TaskStatus;
-  tasks: Task[];
+  status: TasksStatusOptions;
+  tasks: TasksRecord[];
 }
 
 export function TaskListGroup({
