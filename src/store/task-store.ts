@@ -78,6 +78,7 @@ export const taskStatusColors: Record<TaskStatus, string> = {
   done: "text-purple-600",
   canceled: "text-gray-500",
 };
+
 export const taskStatusIcons: Record<TaskStatus, Icon> = {
   todo: IconCircle,
   in_progress: IconCircleHalf2,

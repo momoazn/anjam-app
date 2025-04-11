@@ -80,7 +80,10 @@ export function AddTaskDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="gap-0 border-none p-0 sm:max-w-[640px]">
+      <DialogContent
+        aria-describedby=""
+        className="gap-0 border-none p-0 sm:max-w-[640px]"
+      >
         <DialogHeader className="mt-1 flex flex-row items-center justify-between border-b px-4 py-2">
           <DialogTitle className="text-muted-foreground flex items-center gap-2 text-sm font-normal">
             <ChevronRight className="size-4" />

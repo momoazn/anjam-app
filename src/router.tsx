@@ -5,7 +5,6 @@ import { useAuthStore } from "./store/auth-store";
 // Lazy load pages
 const Login = React.lazy(() => import("@/pages/login"));
 const Dashboard = React.lazy(() => import("@/pages/dashboard"));
-const Tasks = React.lazy(() => import("@/pages/tasks"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((state) => state.user);
@@ -29,11 +28,7 @@ const routes: RouteType[] = [
     element: <Dashboard />,
     protected: true,
   },
-  {
-    path: "/tasks",
-    element: <Tasks />,
-    protected: true,
-  },
+
   {
     path: "/login",
     element: <Login />,

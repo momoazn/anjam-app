@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -8,7 +9,12 @@ import {
   taskStatusIcons,
 } from "@/store/task-store";
 import { Button } from "../ui/button";
-import { AddTaskDialog } from "./add-task-dialog";
+
+const AddTaskDialog = lazy(() =>
+  import("./add-task-dialog").then((module) => ({
+    default: module.AddTaskDialog,
+  })),
+);
 
 interface TaskListHeaderProps {
   statusTitle: string;

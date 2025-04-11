@@ -30,9 +30,15 @@ export default function Dashboard() {
     );
   }, [userTasks]);
 
+  console.log("groupedTasks", groupedTasks);
+  console.log("statusOrder", statusOrder);
+  console.log("userTasks", userTasks);
+
   return (
     <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
       {statusOrder?.map((status) => {
+        console.log("========", groupedTasks[status]);
+
         const sortedTasks = groupedTasks[status]?.sort((a, b) => {
           if (a.priority === b.priority) {
             return (

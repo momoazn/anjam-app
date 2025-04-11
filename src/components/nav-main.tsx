@@ -1,7 +1,6 @@
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
 
-import { AddTaskDialog } from "@/components/task/add-task-dialog";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,6 +9,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { lazy } from "react";
+
+const AddTaskDialog = lazy(() =>
+  import("./task/add-task-dialog").then((module) => ({
+    default: module.AddTaskDialog,
+  })),
+);
 
 export function NavMain({
   items,
