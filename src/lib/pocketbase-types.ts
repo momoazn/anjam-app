@@ -90,6 +90,7 @@ export type SuperusersRecord = {
 }
 
 export type ProjectsRecord = {
+	code?: string
 	created?: IsoDateString
 	id: string
 	name?: string
@@ -123,9 +124,10 @@ export type TasksRecord = {
 	creator: RecordIdString
 	deadline?: IsoDateString
 	description?: HTMLString
-	display_id: string
+	display_id?: string
 	id: string
 	priority: TasksPriorityOptions
+	project: RecordIdString
 	status: TasksStatusOptions
 	tags?: RecordIdString[]
 	title?: string

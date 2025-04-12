@@ -10,11 +10,14 @@ import (
 	"os/exec"
 	"path"
 	"runtime"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/cmd"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/tools/security"
 )
 
 //go:embed dist
@@ -77,18 +80,84 @@ func main() {
 			return staticHandler(staticFS, e.Response, e.Request)
 		})
 
-		openBrowser("127.0.0.1:8090")
+		if !app.IsDev() {
+			openBrowser("127.0.0.1:8090")
+		}
 
 		return e.Next()
 	})
 
-	// if err := app.Start(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	app.OnRecordCreateExecute("projects").BindFunc(func(e *core.RecordEvent) error {
+		projectCode := e.Record.Get("code").(string)
+		if projectCode != "" {
+			return e.Next()
+		}
 
-	app.Bootstrap()
-	serveCmd := cmd.NewServeCommand(app, true)
-	serveCmd.Execute()
+		for {
+			projectCode = generateRandomCode()
+			projectCodeExists, err := app.FindFirstRecordByData("projects", "code", projectCode)
+			if err != nil && err.Error() != "sql: no rows in result set" {
+				return err
+			}
+
+			if projectCodeExists == nil {
+				break
+			}
+		}
+
+		e.Record.Set("code", projectCode)
+
+		// Set default values if not set
+		if e.Record.Get("status").(string) == "" {
+			e.Record.Set("status", "todo")
+		}
+		if e.Record.Get("priority").(string) == "" {
+			e.Record.Set("priority", "medium")
+		}
+
+		return e.Next()
+	})
+
+	app.OnRecordCreateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
+		projectId := e.Record.Get("project").(string)
+		project, err := app.FindRecordById("projects", projectId)
+		if err != nil {
+			return err
+		}
+
+		lastTask, err := app.FindFirstRecordByData("tasks", "project", projectId)
+		if err != nil && err.Error() != "sql: no rows in result set" {
+			return err
+		}
+
+		if lastTask == nil {
+			e.Record.Set("display_id", fmt.Sprintf("%s-001", project.Get("code").(string)))
+			return e.Next()
+		}
+
+		lastTaskDisplayID := lastTask.Get("display_id").(string)
+		lastTaskNumber, err := strconv.Atoi(strings.Split(lastTaskDisplayID, "-")[1])
+		if err != nil {
+			return err
+		}
+
+		e.Record.Set("display_id", fmt.Sprintf("%s-%03d", project.Get("code").(string), lastTaskNumber+1))
+		return e.Next()
+	})
+
+	if app.IsDev() {
+		if err := app.Start(); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		app.Bootstrap()
+		serveCmd := cmd.NewServeCommand(app, true)
+		err := serveCmd.Execute()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 }
 
 func openBrowser(serverAddr string) {
@@ -143,4 +212,8 @@ func staticHandler(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error
 
 	http.FileServer(http.FS(staticFS)).ServeHTTP(w, r)
 	return nil
+}
+
+func generateRandomCode() string {
+	return security.RandomStringWithAlphabet(3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 }
