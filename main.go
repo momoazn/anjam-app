@@ -27,6 +27,9 @@ import (
 //go:embed dist
 var staticFiles embed.FS
 
+//go:embed pb_schema.json
+var schemaJSON []byte
+
 const (
 	adminAccessRule                    = `@request.auth.role = "admin"`
 	accessOnlyParticipatedProjectsRule = `@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id`
@@ -122,16 +125,16 @@ func generateRandomCode() string {
 
 func startApp(app *pocketbase.PocketBase) {
 	if app.IsDev() {
-		log.Println("Starting PocketBase in development mode...")
+		log.Println("Starting App in development mode...")
 		if err := app.Start(); err != nil {
-			log.Fatalf("Failed to start PocketBase in dev mode: %v", err)
+			log.Fatalf("Failed to start App in dev mode: %v", err)
 		}
 	} else {
-		log.Println("Starting PocketBase in production mode...")
+		log.Println("Starting App in production mode...")
 		if err := app.Bootstrap(); err != nil {
-			log.Fatalf("Failed to bootstrap PocketBase: %v", err)
+			log.Fatalf("Failed to bootstrap App: %v", err)
 		}
-		serveCmd := cmd.NewServeCommand(app, true) // Assuming true means daemonize=false
+		serveCmd := cmd.NewServeCommand(app, false) // Assuming true means daemonize=false
 		if err := serveCmd.Execute(); err != nil {
 			log.Fatalf("Failed to execute serve command: %v", err)
 		}
@@ -141,24 +144,18 @@ func startApp(app *pocketbase.PocketBase) {
 // --- Serve Event Handlers ---
 
 func importSchema(e *core.ServeEvent) error {
-	schemaContent, err := os.ReadFile("./pb_schema.json")
-	if err != nil {
-		// If schema doesn't exist, maybe it's the first run, log but continue
-		if os.IsNotExist(err) {
-			log.Println("pb_schema.json not found, skipping import. Collections might be created manually or on subsequent runs.")
-			return nil // Continue without importing
-		}
-		log.Printf("Error reading pb_schema.json: %v", err)
-		return err // Return fatal error for other read issues
+	// Use the embedded schemaJSON instead of reading from file
+	if len(schemaJSON) == 0 {
+		log.Println("Warning: schema is empty. Skipping schema import.")
+		return e.Next() // Continue without importing if schema is empty
 	}
 
-	if err := e.App.ImportCollectionsByMarshaledJSON(schemaContent, false); err != nil {
-		log.Printf("Error importing collections from pb_schema.json: %v", err)
+	if err := e.App.ImportCollectionsByMarshaledJSON(schemaJSON, false); err != nil {
+		log.Printf("Error importing collections from schema: %v", err)
 		return err
 	}
-	log.Println("Successfully imported collections from pb_schema.json.")
+	log.Println("Successfully imported collections from schema.")
 	return e.Next()
-
 }
 
 func ensureSuperuserExists(e *core.ServeEvent) error {
@@ -176,7 +173,7 @@ func ensureSuperuserExists(e *core.ServeEvent) error {
 	}
 
 	if totalAdmins > 0 {
-		log.Println("Superuser(s) already exist.")
+		log.Println("Superuser(s) already exist (admin@example.com / admin12345).")
 		return e.Next() // Superuser exists, nothing more to do
 	}
 
