@@ -11,6 +11,7 @@ export enum Collections {
 	Mfas = "_mfas",
 	Otps = "_otps",
 	Superusers = "_superusers",
+	Comments = "comments",
 	Projects = "projects",
 	Tags = "tags",
 	Tasks = "tasks",
@@ -89,6 +90,15 @@ export type SuperusersRecord = {
 	verified?: boolean
 }
 
+export type CommentsRecord = {
+	content?: HTMLString
+	created?: IsoDateString
+	id: string
+	task?: RecordIdString
+	updated?: IsoDateString
+	user?: RecordIdString
+}
+
 export type ProjectsRecord = {
 	code?: string
 	created?: IsoDateString
@@ -155,12 +165,7 @@ export type UsersRecord = {
 	verified?: boolean
 }
 
-export enum UsersProjectsAccessLevelOptions {
-	"supervisor" = "supervisor",
-	"employee" = "employee",
-}
 export type UsersProjectsRecord = {
-	access_level?: UsersProjectsAccessLevelOptions
 	created?: IsoDateString
 	id: string
 	project?: RecordIdString
@@ -174,6 +179,7 @@ export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRec
 export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
+export type CommentsResponse<Texpand = unknown> = Required<CommentsRecord> & BaseSystemFields<Texpand>
 export type ProjectsResponse<Texpand = unknown> = Required<ProjectsRecord> & BaseSystemFields<Texpand>
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> & BaseSystemFields<Texpand>
 export type TasksResponse<Texpand = unknown> = Required<TasksRecord> & BaseSystemFields<Texpand>
@@ -188,6 +194,7 @@ export type CollectionRecords = {
 	_mfas: MfasRecord
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
+	comments: CommentsRecord
 	projects: ProjectsRecord
 	tags: TagsRecord
 	tasks: TasksRecord
@@ -201,6 +208,7 @@ export type CollectionResponses = {
 	_mfas: MfasResponse
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
+	comments: CommentsResponse
 	projects: ProjectsResponse
 	tags: TagsResponse
 	tasks: TasksResponse
@@ -217,6 +225,7 @@ export type TypedPocketBase = PocketBase & {
 	collection(idOrName: '_mfas'): RecordService<MfasResponse>
 	collection(idOrName: '_otps'): RecordService<OtpsResponse>
 	collection(idOrName: '_superusers'): RecordService<SuperusersResponse>
+	collection(idOrName: 'comments'): RecordService<CommentsResponse>
 	collection(idOrName: 'projects'): RecordService<ProjectsResponse>
 	collection(idOrName: 'tags'): RecordService<TagsResponse>
 	collection(idOrName: 'tasks'): RecordService<TasksResponse>

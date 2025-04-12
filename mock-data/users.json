@@ -1,0 +1,146 @@
+[
+  {
+    "username": "Hubert_Tremblay59",
+    "first_name": "Nova",
+    "last_name": "Rolfson",
+    "password": "_uB8XypeyC",
+    "passwordConfirm": "_uB8XypeyC",
+    "role": "admin"
+  },
+  {
+    "username": "Graham.Stanton",
+    "first_name": "Adolf",
+    "last_name": "Prosacco",
+    "password": "PvqtrXyKUT",
+    "passwordConfirm": "PvqtrXyKUT",
+    "role": "admin"
+  },
+  {
+    "username": "Maurine11",
+    "first_name": "Gordon",
+    "last_name": "Thiel",
+    "password": "eDWQr3KD11",
+    "passwordConfirm": "eDWQr3KD11",
+    "role": "admin"
+  },
+  {
+    "username": "Dolores76",
+    "first_name": "Cecil",
+    "last_name": "Braun",
+    "password": "DTTmvvEbkX",
+    "passwordConfirm": "DTTmvvEbkX",
+    "role": "supervisor"
+  },
+  {
+    "username": "Spencer.Farrell3",
+    "first_name": "Nils",
+    "last_name": "Ortiz",
+    "password": "8S3yxgXJAZ",
+    "passwordConfirm": "8S3yxgXJAZ",
+    "role": "supervisor"
+  },
+  {
+    "username": "Isac.Parker29",
+    "first_name": "Evalyn",
+    "last_name": "Hermann-Lemke",
+    "password": "9e7Ksi6ceJ",
+    "passwordConfirm": "9e7Ksi6ceJ",
+    "role": "supervisor"
+  },
+  {
+    "username": "Moshe_Kautzer",
+    "first_name": "Marjolaine",
+    "last_name": "Roob",
+    "password": "TA9ozpnSZM",
+    "passwordConfirm": "TA9ozpnSZM",
+    "role": "supervisor"
+  },
+  {
+    "username": "Alia_Greenholt67",
+    "first_name": "Lura",
+    "last_name": "Schultz",
+    "password": "fBWCbccde9",
+    "passwordConfirm": "fBWCbccde9",
+    "role": "supervisor"
+  },
+  {
+    "username": "Paxton.McGlynn28",
+    "first_name": "Alvena",
+    "last_name": "Mann",
+    "password": "lMA3xqXyA3",
+    "passwordConfirm": "lMA3xqXyA3",
+    "role": "employee"
+  },
+  {
+    "username": "Obie.Bogisich59",
+    "first_name": "Arely",
+    "last_name": "Hegmann",
+    "password": "d6BHzVXNBB",
+    "passwordConfirm": "d6BHzVXNBB",
+    "role": "employee"
+  },
+  {
+    "username": "Diamond98",
+    "first_name": "Albina",
+    "last_name": "Lemke",
+    "password": "CGI4RUysTo",
+    "passwordConfirm": "CGI4RUysTo",
+    "role": "employee"
+  },
+  {
+    "username": "Hilma3",
+    "first_name": "Theresia",
+    "last_name": "Mann",
+    "password": "_MNJieaeuY",
+    "passwordConfirm": "_MNJieaeuY",
+    "role": "employee"
+  },
+  {
+    "username": "Rosemary64",
+    "first_name": "Micheal",
+    "last_name": "Langosh",
+    "password": "Hnrt5SlfjN",
+    "passwordConfirm": "Hnrt5SlfjN",
+    "role": "employee"
+  },
+  {
+    "username": "Hadley32",
+    "first_name": "Winnifred",
+    "last_name": "Kuhic",
+    "password": "xbSY1MqMUb",
+    "passwordConfirm": "xbSY1MqMUb",
+    "role": "employee"
+  },
+  {
+    "username": "Mable_Morissette",
+    "first_name": "Immanuel",
+    "last_name": "Williamson",
+    "password": "2CaNBWkK8m",
+    "passwordConfirm": "2CaNBWkK8m",
+    "role": "employee"
+  },
+  {
+    "username": "Gudrun.Jones",
+    "first_name": "Chadrick",
+    "last_name": "Romaguera",
+    "password": "KYCB6fkFEy",
+    "passwordConfirm": "KYCB6fkFEy",
+    "role": "employee"
+  },
+  {
+    "username": "Rosalia_Emmerich49",
+    "first_name": "Aleen",
+    "last_name": "McKenzie",
+    "password": "8BhyNjzPPB",
+    "passwordConfirm": "8BhyNjzPPB",
+    "role": "employee"
+  },
+  {
+    "username": "Adell.Feeney",
+    "first_name": "Joel",
+    "last_name": "Hauck",
+    "password": "9pwwNH1dhm",
+    "passwordConfirm": "9pwwNH1dhm",
+    "role": "employee"
+  }
+]

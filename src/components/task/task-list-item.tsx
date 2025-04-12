@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { TasksRecord } from "@/lib/pocketbase-types";
+import { TasksResponse } from "@/lib/pocketbase-types";
 import { cn, getUserInitials } from "@/lib/utils";
 import {
   priorityColors,
@@ -19,7 +19,7 @@ const formatDateShort = (dateString: string) => {
 };
 
 interface TaskListItemProps {
-  task: TasksRecord;
+  task: TasksResponse;
   className?: string;
 }
 

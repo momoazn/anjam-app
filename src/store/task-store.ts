@@ -12,8 +12,6 @@ import {
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import mockTasks from "@/data/tasks.json";
-
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 export type TaskStatus = "todo" | "in_progress" | "done" | "canceled";
 
@@ -105,7 +103,7 @@ export const departments = [
 export const useTaskStore = create<TaskState>()(
   persist(
     (set) => ({
-      tasks: mockTasks as Task[],
+      tasks: [],
       addTask: (task) =>
         set((state) => ({
           tasks: [

@@ -18,10 +18,18 @@ import (
 	"github.com/pocketbase/pocketbase/cmd"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 //go:embed dist
 var staticFiles embed.FS
+
+const (
+	adminAccessRule                    = `@request.auth.role = "admin"`
+	accessOnlyParticipatedProjectsRule = `@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id`
+	supervisorAccessRule               = `@request.auth.role = "supervisor"`
+	accessOnlyParticipatedTasksRule    = `@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id`
+)
 
 func main() {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
@@ -71,6 +79,62 @@ func main() {
 	})
 
 	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
+		projectsCollection, err := app.FindCollectionByNameOrId("projects")
+		if err != nil {
+			return err
+		}
+
+		projectsCollection.ListRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedProjectsRule),
+		)
+		projectsCollection.ViewRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedProjectsRule),
+		)
+		projectsCollection.CreateRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedProjectsRule, supervisorAccessRule),
+		)
+		projectsCollection.UpdateRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedProjectsRule, supervisorAccessRule),
+		)
+		projectsCollection.DeleteRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedProjectsRule, supervisorAccessRule),
+		)
+
+		tasksCollection, err := app.FindCollectionByNameOrId("tasks")
+		if err != nil {
+			return err
+		}
+
+		tasksCollection.ListRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedTasksRule),
+		)
+		tasksCollection.ViewRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedTasksRule),
+		)
+		tasksCollection.CreateRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedTasksRule),
+		)
+		tasksCollection.UpdateRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedTasksRule, supervisorAccessRule),
+		)
+		tasksCollection.DeleteRule = types.Pointer(
+			fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedTasksRule, supervisorAccessRule),
+		)
+
+		err = app.Save(projectsCollection)
+		if err != nil {
+			return err
+		}
+
+		err = app.Save(tasksCollection)
+		if err != nil {
+			return err
+		}
+
+		return e.Next()
+	})
+
+	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
 		staticFS, err := fs.Sub(staticFiles, "dist")
 		if err != nil {
 			log.Fatal(err)
@@ -107,6 +171,36 @@ func main() {
 
 		e.Record.Set("code", projectCode)
 
+		return e.Next()
+	})
+
+	app.OnRecordCreateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
+		if e.Record.Get("display_id").(string) == "" {
+			projectId := e.Record.Get("project").(string)
+			project, err := app.FindRecordById("projects", projectId)
+			if err != nil {
+				return err
+			}
+
+			lastTask, err := app.FindFirstRecordByData("tasks", "project", projectId)
+			if err != nil && err.Error() != "sql: no rows in result set" {
+				return err
+			}
+
+			if lastTask == nil {
+				e.Record.Set("display_id", fmt.Sprintf("%s-001", project.Get("code").(string)))
+				return e.Next()
+			}
+
+			lastTaskDisplayID := lastTask.Get("display_id").(string)
+			lastTaskNumber, err := strconv.Atoi(strings.Split(lastTaskDisplayID, "-")[1])
+			if err != nil {
+				return err
+			}
+
+			e.Record.Set("display_id", fmt.Sprintf("%s-%03d", project.Get("code").(string), lastTaskNumber+1))
+		}
+
 		// Set default values if not set
 		if e.Record.Get("status").(string) == "" {
 			e.Record.Set("status", "todo")
@@ -114,34 +208,6 @@ func main() {
 		if e.Record.Get("priority").(string) == "" {
 			e.Record.Set("priority", "medium")
 		}
-
-		return e.Next()
-	})
-
-	app.OnRecordCreateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
-		projectId := e.Record.Get("project").(string)
-		project, err := app.FindRecordById("projects", projectId)
-		if err != nil {
-			return err
-		}
-
-		lastTask, err := app.FindFirstRecordByData("tasks", "project", projectId)
-		if err != nil && err.Error() != "sql: no rows in result set" {
-			return err
-		}
-
-		if lastTask == nil {
-			e.Record.Set("display_id", fmt.Sprintf("%s-001", project.Get("code").(string)))
-			return e.Next()
-		}
-
-		lastTaskDisplayID := lastTask.Get("display_id").(string)
-		lastTaskNumber, err := strconv.Atoi(strings.Split(lastTaskDisplayID, "-")[1])
-		if err != nil {
-			return err
-		}
-
-		e.Record.Set("display_id", fmt.Sprintf("%s-%03d", project.Get("code").(string), lastTaskNumber+1))
 		return e.Next()
 	})
 

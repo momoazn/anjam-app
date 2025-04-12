@@ -9,11 +9,11 @@
     "lint": "bunx --bun eslint .",
     "preview": "bunx --bun vite preview",
     "format": "bunx --bun prettier --write .",
-    "generate:tasks": "bun run src/scripts/generate-tasks.ts > ./src/data/tasks.json",
-    "generate:types": "bunx --bun pocketbase-typegen --db ./pb_data/data.db --out ./src/pocketbase-types.ts",
     "pb:serve": "go run main.go",
     "pb:build": "go build -o app main.go",
     "pb:typegen": "bunx --bun pocketbase-typegen --db ./pb_data/data.db --out src/lib/pocketbase-types.ts",
+    "pb:generate-data": "bun run scripts/generate-data.ts",
+    "pb:seed-data": "bun run scripts/seed-data.ts",
     "dev:all": "concurrently \"bun run dev\" \"bun run pb:serve\" -n \"Dev Server,PocketBase Server\""
   },
   "dependencies": {
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/bun": "^1.2.9",
     "@types/node": "^22.14.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

@@ -7,6 +7,7 @@ import { useAuthStore } from "./store/auth-store";
 const Login = React.lazy(() => import("@/pages/login"));
 const Register = React.lazy(() => import("@/pages/register"));
 const Dashboard = React.lazy(() => import("@/pages/dashboard"));
+const Projects = React.lazy(() => import("@/pages/projects"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore().isLoggedIn;
@@ -30,7 +31,11 @@ const routes: RouteType[] = [
     element: <Dashboard />,
     protected: true,
   },
-
+  {
+    path: "/projects",
+    element: <Projects />,
+    protected: true,
+  },
   {
     path: "/login",
     element: <Login />,

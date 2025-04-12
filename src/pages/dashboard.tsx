@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { pb } from "@/lib/pocketbase";
 import {
-  TasksRecord,
+  TasksResponse,
   TasksStatusOptions,
   UsersRoleOptions,
 } from "@/lib/pocketbase-types";
@@ -17,26 +17,26 @@ export default function Dashboard() {
   const { data: userTasks, isPending: isLoadingTasks } = useQuery({
     queryKey: ["tasks", user?.id],
     queryFn: () => {
-      return pb.collection("tasks").getFullList<TasksRecord>({
+      return pb.collection("tasks").getFullList<TasksResponse>({
         batch: 100,
         filter:
           user?.role === UsersRoleOptions.employee
             ? `assignee = "${user?.id}"`
             : "",
-        expand: "creator,assignee",
+        // expand: "creator,assignee",
       });
     },
   });
 
   const groupedTasks = useMemo(() => {
     return isLoadingTasks
-      ? ([] as unknown as Record<TasksStatusOptions, TasksRecord[]>)
+      ? ([] as unknown as Record<TasksStatusOptions, TasksResponse[]>)
       : userTasks?.reduce(
           (acc, task) => {
             (acc[task.status] = acc[task.status] || []).push(task);
             return acc;
           },
-          {} as Record<TasksStatusOptions, TasksRecord[]>,
+          {} as Record<TasksStatusOptions, TasksResponse[]>,
         );
   }, [userTasks, isLoadingTasks]);
 

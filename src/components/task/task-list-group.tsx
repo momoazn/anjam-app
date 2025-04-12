@@ -1,4 +1,4 @@
-import { TasksRecord, TasksStatusOptions } from "@/lib/pocketbase-types";
+import { TasksResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { TaskListHeader } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
@@ -6,7 +6,7 @@ interface TaskListGroupProps {
   statusTitle: string;
   taskCount: number;
   status: TasksStatusOptions;
-  tasks: TasksRecord[];
+  tasks: TasksResponse[];
 }
 
 export function TaskListGroup({
