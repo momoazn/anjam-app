@@ -105,12 +105,12 @@
 
 export const TEXT = {
   app: {
-    name: "مدیر وظایف",
+    name: "مدیر تسک‌ها",
   },
   navigation: {
     dashboard: "داشبورد",
     projects: "پروژه‌ها",
-    tasks: "وظایف",
+    tasks: "تسک‌ها",
     settings: "تنظیمات",
     quickCreate: {
       button: "ایجاد سریع",
@@ -118,7 +118,7 @@ export const TEXT = {
     },
   },
   header: {
-    title: "مدیر وظایف",
+    title: "مدیر تسک‌ها",
   },
   user: {
     dropdown: {
@@ -204,7 +204,7 @@ export const TEXT = {
       selectRow: "انتخاب ردیف",
       dropdownMenu: {
         label: "اقدامات",
-        copyId: "کپی شناسه وظیفه",
+        copyId: "کپی شناسه تسک",
         viewCustomer: "مشاهده مشتری",
         viewDetails: "مشاهده جزئیات پرداخت",
       },
@@ -235,13 +235,13 @@ export const TEXT = {
       priority: "اولویت",
       status: "وضعیت",
       buttons: {
-        create: "ایجاد وظیفه",
+        create: "ایجاد تسک",
         creating: "در حال ایجاد...",
         more: "گزینه‌های بیشتر",
       },
     },
     list: {
-      noTasks: "هیچ وظیفه‌ای موجود نیست",
+      noTasks: "هیچ تسک‌ای موجود نیست",
       openMenu: "باز کردن منو",
     },
   },
