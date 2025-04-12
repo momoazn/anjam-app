@@ -7,6 +7,19 @@ export const TEXT = {
     projects: "Projects",
     tasks: "Tasks",
     settings: "Settings",
+    quickCreate: {
+      button: "Quick Create",
+      tooltip: "Quick Create",
+    },
+  },
+  header: {
+    title: "Task Manager",
+  },
+  user: {
+    dropdown: {
+      account: "Account",
+      logout: "Log out",
+    },
   },
   auth: {
     login: {
@@ -45,6 +58,12 @@ export const TEXT = {
       },
       selectAll: "Select all",
       selectRow: "Select row",
+      dropdownMenu: {
+        label: "Actions",
+        copyId: "Copy task ID",
+        viewCustomer: "View customer",
+        viewDetails: "View payment details",
+      },
     },
     priority: {
       urgent: "Urgent",
@@ -52,15 +71,34 @@ export const TEXT = {
       medium: "Medium",
       low: "Low",
     },
+    status: {
+      todo: "Todo",
+      in_progress: "In Progress",
+      done: "Done",
+      canceled: "Canceled",
+    },
     tags: {
       bug: "Bug",
       feature: "Feature",
       improvement: "Improvement",
     },
     addTask: {
-      title: "Add Task",
+      title: "New issue",
       issueTitle: "Issue title",
+      description: "Add description...",
       unassigned: "Unassigned",
+      assignee: "Assignee",
+      priority: "Priority",
+      status: "Status",
+      buttons: {
+        create: "Create Task",
+        creating: "Creating...",
+        more: "More options",
+      },
+    },
+    list: {
+      noTasks: "No Tasks",
+      openMenu: "Open menu",
     },
   },
 } as const;

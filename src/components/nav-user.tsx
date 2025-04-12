@@ -21,6 +21,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { TEXT } from "@/constants/text";
 import { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -94,13 +95,13 @@ export function NavUser({ user }: NavUserProps) {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <IconUserCircle />
-                Account
+                {TEXT.user.dropdown.account}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
-              Log out
+              {TEXT.user.dropdown.logout}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

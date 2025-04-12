@@ -33,6 +33,7 @@ import {
   taskStatusIcons,
 } from "@/store/task-store";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import { TEXT } from "@/constants/text";
 
 interface AddTaskDialogProps {
   children: React.ReactNode;
@@ -46,7 +47,7 @@ export function AddTaskDialog({
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assignedUser, setAssignedUser] = useState("unassigned");
+  const [assignedUser, setAssignedUser] = useState(TEXT.tasks.addTask.unassigned);
   const [priority, setPriority] = useState<TasksPriorityOptions>(
     TasksPriorityOptions.medium,
   );
@@ -75,7 +76,7 @@ export function AddTaskDialog({
     setOpen(false);
     setTitle("");
     setDescription("");
-    setAssignedUser("unassigned");
+    setAssignedUser(TEXT.tasks.addTask.unassigned);
     setPriority(TasksPriorityOptions.medium);
     setStatus(initialStatus);
   };
@@ -95,7 +96,7 @@ export function AddTaskDialog({
         <DialogHeader className="mt-1 flex flex-row items-center justify-between border-b px-4 py-2">
           <DialogTitle className="text-muted-foreground flex items-center gap-2 text-sm font-normal">
             <ChevronRight className="size-4" />
-            <span>New issue</span>
+            <span>{TEXT.tasks.addTask.title}</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -107,7 +108,7 @@ export function AddTaskDialog({
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Issue title"
+              placeholder={TEXT.tasks.addTask.issueTitle}
             />
           </div>
 
@@ -119,7 +120,7 @@ export function AddTaskDialog({
                 setDescription(e.target.value)
               }
               className="min-h-[60px] w-full resize-none border-none bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0"
-              placeholder="Add description..."
+              placeholder={TEXT.tasks.addTask.description}
             />
           </div>
 
@@ -131,13 +132,13 @@ export function AddTaskDialog({
             >
               <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
                 <StatusIcon className={cn("size-4", statusIconColor)} />
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={TEXT.tasks.addTask.status} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todo">Todo</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="canceled">Canceled</SelectItem>
+                <SelectItem value="todo">{TEXT.tasks.status.todo}</SelectItem>
+                <SelectItem value="in_progress">{TEXT.tasks.status.in_progress}</SelectItem>
+                <SelectItem value="done">{TEXT.tasks.status.done}</SelectItem>
+                <SelectItem value="canceled">{TEXT.tasks.status.canceled}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -150,13 +151,13 @@ export function AddTaskDialog({
             >
               <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
                 <PriorityIcon className={cn("size-4", priorityIconColor)} />
-                <SelectValue placeholder="Priority" />
+                <SelectValue placeholder={TEXT.tasks.addTask.priority} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="urgent">Urgent</SelectItem>
+                <SelectItem value="low">{TEXT.tasks.priority.low}</SelectItem>
+                <SelectItem value="medium">{TEXT.tasks.priority.medium}</SelectItem>
+                <SelectItem value="high">{TEXT.tasks.priority.high}</SelectItem>
+                <SelectItem value="urgent">{TEXT.tasks.priority.urgent}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -171,10 +172,10 @@ export function AddTaskDialog({
                     {getUserInitials(assignedUser)}
                   </AvatarFallback>
                 </Avatar>
-                <SelectValue placeholder="Assignee" />
+                <SelectValue placeholder={TEXT.tasks.addTask.assignee} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="unassigned">Unassigned</SelectItem>
+                <SelectItem value="unassigned">{TEXT.tasks.addTask.unassigned}</SelectItem>
                 {/* {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.username}
@@ -187,6 +188,7 @@ export function AddTaskDialog({
               variant="outline"
               size="icon"
               className="h-7 w-7 border-dashed"
+              aria-label={TEXT.tasks.addTask.buttons.more}
             >
               <MoreHorizontal className="h-3 w-3" />
             </Button>
@@ -194,7 +196,7 @@ export function AddTaskDialog({
 
           <div className="flex items-center justify-end pt-0">
             <Button size="sm" type="submit" disabled={isCreatingTask}>
-              {isCreatingTask ? "Creating..." : "Create Task"}
+              {isCreatingTask ? TEXT.tasks.addTask.buttons.creating : TEXT.tasks.addTask.buttons.create}
             </Button>
           </div>
         </form>

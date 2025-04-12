@@ -156,20 +156,26 @@ export const columns: ColumnDef<Task>[] = [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">{TEXT.tasks.list.openMenu}</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {TEXT.tasks.table.dropdownMenu.label}
+            </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(task.id)}
             >
-              Copy payment ID
+              {TEXT.tasks.table.dropdownMenu.copyId}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>
+              {TEXT.tasks.table.dropdownMenu.viewCustomer}
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              {TEXT.tasks.table.dropdownMenu.viewDetails}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

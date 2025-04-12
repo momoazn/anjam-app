@@ -1,4 +1,5 @@
 import { TasksResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
+import { TEXT } from "@/constants/text";
 import { TaskListHeader } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
@@ -26,7 +27,7 @@ export function TaskListGroup({
         {tasks?.length > 0 ? (
           tasks?.map((task) => <TaskListItem key={task.id} task={task} />)
         ) : (
-          <div className="text-center text-sm text-gray-500">No Tasks</div>
+          <div className="text-center text-sm text-gray-500">{TEXT.tasks.list.noTasks}</div>
         )}
       </div>
     </section>
