@@ -8,9 +8,9 @@ import {
   UsersRecord,
   UsersRoleOptions,
 } from "@/lib/pocketbase-types";
-import { faker } from "@faker-js/faker";
-import { join } from "path";
+import { faker } from "@faker-js/faker/locale/fa";
 import { mkdir } from "node:fs/promises"; // Use Node's fs for directory creation
+import { join } from "path";
 
 // --- Constants ---
 const ADMIN_COUNT = 3;
@@ -20,11 +20,19 @@ const PROJECT_COUNT = 5;
 const TASKS_COUNT = 30;
 const COMMENTS_COUNT = 100;
 const MOCK_DATA_DIR = join(import.meta.dirname, "..", "mock-data");
+const DEFAULT_USER: GeneratedUser = {
+  username: "gyw_myrzadh90",
+  first_name: "پیمان",
+  last_name: "قانونی",
+  password: "qtmy941lZR",
+  passwordConfirm: "qtmy941lZR",
+  role: UsersRoleOptions.admin,
+};
 
 // --- Utility Functions ---
-function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+// function capitalize(str: string): string {
+//   return str.charAt(0).toUpperCase() + str.slice(1);
+// }
 
 // --- Type Definitions ---
 type GeneratedUser = Omit<UsersRecord, "id" | "tokenKey"> & {
@@ -124,14 +132,9 @@ function generateTasks(
     projectCodeToTaskCount[projectCode] = taskCount + 1;
 
     return {
-      title:
-        capitalize(faker.hacker.verb()) +
-        " " +
-        capitalize(faker.hacker.adjective()) +
-        " " +
-        capitalize(faker.hacker.noun()),
+      title: faker.lorem.sentence(),
       display_id: projectCode + "-" + taskCount.toString().padStart(3, "0"),
-      description: capitalize(faker.lorem.paragraph()),
+      description: faker.lorem.paragraph(),
       project: projectCode, // Link by code
       creator: faker.helpers.arrayElement(supervisors).username, // Link by username
       assignee: faker.helpers.arrayElement(employees).username, // Link by username
@@ -184,7 +187,7 @@ function generateUserProjects(
 
 // --- Main Generation Logic ---
 async function generate() {
-  const users = generateUsers();
+  const users = [DEFAULT_USER, ...generateUsers()];
   const supervisors = users.filter(
     (user) => user.role === UsersRoleOptions.supervisor,
   );
