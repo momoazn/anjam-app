@@ -7,7 +7,6 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
 	"path"
 	"runtime"
@@ -26,20 +25,20 @@ func main() {
 		DefaultDataDir: "./pb_data",
 	})
 
-	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
-		json, err := os.ReadFile("./pb_schema.json")
-		if err != nil {
-			log.Default().Println(err)
-			return err
-		}
+	// app.OnServe().BindFunc(func(e *core.ServeEvent) error {
+	// 	json, err := os.ReadFile("./pb_schema.json")
+	// 	if err != nil {
+	// 		log.Default().Println(err)
+	// 		return err
+	// 	}
 
-		if err := app.ImportCollectionsByMarshaledJSON(json, true); err != nil {
-			log.Default().Println(err)
-			return err
-		}
+	// 	if err := app.ImportCollectionsByMarshaledJSON(json, true); err != nil {
+	// 		log.Default().Println(err)
+	// 		return err
+	// 	}
 
-		return e.Next()
-	})
+	// 	return e.Next()
+	// })
 
 	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
 		collection, err := app.FindCollectionByNameOrId("_superusers")

@@ -87,7 +87,7 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
         {/* Assignee Avatar */}
         <Avatar className="h-5 w-5">
           <AvatarFallback className="bg-gray-200 text-[10px]">
-            {getUserInitials("")}
+            {getUserInitials(task.assignee ?? "")}
           </AvatarFallback>
         </Avatar>
       </div>

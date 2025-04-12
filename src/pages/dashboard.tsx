@@ -1,41 +1,32 @@
-import { lazy, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
+import { TaskListGroup } from "@/components/task/task-list-group";
 import { pb } from "@/lib/pocketbase";
 import {
   TasksRecord,
   TasksStatusOptions,
-  UsersRecord,
   UsersRoleOptions,
 } from "@/lib/pocketbase-types";
+import { useAuthStore } from "@/store/auth-store";
 import { statusLabels, statusOrder } from "@/store/task-store";
-import { useQuery } from "@tanstack/react-query";
-
-const TaskListGroup = lazy(() =>
-  import("@/components/task/task-list-group").then((module) => ({
-    default: module.TaskListGroup,
-  })),
-);
 
 export default function Dashboard() {
-  const user = pb.authStore.record as unknown as UsersRecord;
+  const user = useAuthStore().user;
 
   const { data: userTasks, isPending: isLoadingTasks } = useQuery({
     queryKey: ["tasks", user?.id],
-    queryFn: () =>
-      pb.collection("tasks").getFullList<TasksRecord>({
+    queryFn: () => {
+      return pb.collection("tasks").getFullList<TasksRecord>({
         batch: 100,
         filter:
-          user.role === UsersRoleOptions.employee
+          user?.role === UsersRoleOptions.employee
             ? `assignee = "${user?.id}"`
             : "",
-      }),
+        expand: "creator,assignee",
+      });
+    },
   });
-
-  // const userTasks = useMemo(() => {
-  //   return user?.role === UsersRoleOptions.employee
-  //     ? tasks.filter((task) => task.assignedUser.includes(user?.username ?? ""))
-  //     : tasks;
-  // }, [tasks, user]);
 
   const groupedTasks = useMemo(() => {
     return isLoadingTasks

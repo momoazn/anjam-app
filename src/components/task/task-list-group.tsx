@@ -1,6 +1,6 @@
-import { TaskListItem } from "@/components/task/task-list-item";
 import { TasksRecord, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { TaskListHeader } from "./task-list-header";
+import { TaskListItem } from "./task-list-item";
 
 interface TaskListGroupProps {
   statusTitle: string;

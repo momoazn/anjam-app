@@ -120,10 +120,10 @@ export enum TasksStatusOptions {
 export type TasksRecord = {
 	assignee?: RecordIdString
 	created?: IsoDateString
-	creator?: RecordIdString
+	creator: RecordIdString
 	deadline?: IsoDateString
 	description?: HTMLString
-	display_id?: string
+	display_id: string
 	id: string
 	priority: TasksPriorityOptions
 	status: TasksStatusOptions
@@ -142,8 +142,9 @@ export type UsersRecord = {
 	created?: IsoDateString
 	email?: string
 	emailVisibility?: boolean
+	first_name?: string
 	id: string
-	name?: string
+	last_name?: string
 	password: string
 	role: UsersRoleOptions
 	tokenKey: string

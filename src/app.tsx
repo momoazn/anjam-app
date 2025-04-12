@@ -5,13 +5,13 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { pb } from "./lib/pocketbase";
+import { useAuthStore } from "@/store/auth-store";
 import { AppRoutes } from "./router";
 
 const queryClient = new QueryClient();
 
 function App() {
-  const isLoggedIn = pb.authStore.isValid;
+  const isLoggedIn = useAuthStore().isLoggedIn;
 
   return (
     <QueryClientProvider client={queryClient}>
