@@ -37,7 +37,9 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow">
-        <h2 className="text-center text-3xl font-bold text-gray-900">{TEXT.auth.login.title}</h2>
+        <h2 className="text-center text-3xl font-bold text-gray-900">
+          {TEXT.auth.login.title}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label className="block text-sm font-medium text-gray-700">

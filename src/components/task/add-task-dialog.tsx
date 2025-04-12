@@ -47,7 +47,9 @@ export function AddTaskDialog({
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assignedUser, setAssignedUser] = useState(TEXT.tasks.addTask.unassigned);
+  const [assignedUser, setAssignedUser] = useState(
+    TEXT.tasks.addTask.unassigned,
+  );
   const [priority, setPriority] = useState<TasksPriorityOptions>(
     TasksPriorityOptions.medium,
   );
@@ -136,9 +138,13 @@ export function AddTaskDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todo">{TEXT.tasks.status.todo}</SelectItem>
-                <SelectItem value="in_progress">{TEXT.tasks.status.in_progress}</SelectItem>
+                <SelectItem value="in_progress">
+                  {TEXT.tasks.status.in_progress}
+                </SelectItem>
                 <SelectItem value="done">{TEXT.tasks.status.done}</SelectItem>
-                <SelectItem value="canceled">{TEXT.tasks.status.canceled}</SelectItem>
+                <SelectItem value="canceled">
+                  {TEXT.tasks.status.canceled}
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -155,9 +161,13 @@ export function AddTaskDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="low">{TEXT.tasks.priority.low}</SelectItem>
-                <SelectItem value="medium">{TEXT.tasks.priority.medium}</SelectItem>
+                <SelectItem value="medium">
+                  {TEXT.tasks.priority.medium}
+                </SelectItem>
                 <SelectItem value="high">{TEXT.tasks.priority.high}</SelectItem>
-                <SelectItem value="urgent">{TEXT.tasks.priority.urgent}</SelectItem>
+                <SelectItem value="urgent">
+                  {TEXT.tasks.priority.urgent}
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -175,7 +185,9 @@ export function AddTaskDialog({
                 <SelectValue placeholder={TEXT.tasks.addTask.assignee} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="unassigned">{TEXT.tasks.addTask.unassigned}</SelectItem>
+                <SelectItem value="unassigned">
+                  {TEXT.tasks.addTask.unassigned}
+                </SelectItem>
                 {/* {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.username}
@@ -196,7 +208,9 @@ export function AddTaskDialog({
 
           <div className="flex items-center justify-end pt-0">
             <Button size="sm" type="submit" disabled={isCreatingTask}>
-              {isCreatingTask ? TEXT.tasks.addTask.buttons.creating : TEXT.tasks.addTask.buttons.create}
+              {isCreatingTask
+                ? TEXT.tasks.addTask.buttons.creating
+                : TEXT.tasks.addTask.buttons.create}
             </Button>
           </div>
         </form>

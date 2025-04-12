@@ -10,7 +10,7 @@ import {
   UsersRoleOptions,
 } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
-import { statusLabels, statusOrder } from "@/store/task-store";
+import { statusOrder } from "@/store/task-store";
 
 export default function Dashboard() {
   const user = useAuthStore().user;
@@ -61,7 +61,6 @@ export default function Dashboard() {
         return (
           <TaskListGroup
             key={status}
-            statusTitle={statusLabels[status]}
             taskCount={sortedTasks?.length ?? 0}
             status={status as TasksStatusOptions}
             tasks={sortedTasks ?? []}

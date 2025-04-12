@@ -9,6 +9,7 @@ import {
   taskStatusIcons,
 } from "@/store/task-store";
 import { Button } from "../ui/button";
+import { TEXT } from "@/constants/text";
 
 const AddTaskDialog = lazy(() =>
   import("./add-task-dialog").then((module) => ({
@@ -17,16 +18,11 @@ const AddTaskDialog = lazy(() =>
 );
 
 interface TaskListHeaderProps {
-  statusTitle: string;
   taskCount: number;
   status: TaskStatus;
 }
 
-export function TaskListHeader({
-  statusTitle,
-  taskCount,
-  status,
-}: TaskListHeaderProps) {
+export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
   const IconComponent = taskStatusIcons[status];
 
   return (
@@ -42,7 +38,7 @@ export function TaskListHeader({
           strokeWidth={status === "todo" ? 1.5 : 2}
         />
         <h2 className="mr-2 text-sm font-medium text-gray-800">
-          {statusTitle}
+          {TEXT.tasks.status[status]}
         </h2>
         <span className="text-sm text-gray-400">{taskCount}</span>
       </div>
