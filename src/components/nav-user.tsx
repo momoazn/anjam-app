@@ -3,6 +3,7 @@ import {
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -20,26 +21,21 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
-import { useNavigate } from "react-router-dom";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    firstName?: string;
-    lastName?: string;
-    username: string;
-    avatar?: string;
-  };
-}) {
+interface NavUserProps {
+  user: UsersRecord;
+}
+
+export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const logout = useAuthStore().logout;
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -57,7 +53,7 @@ export function NavUser({
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {user.firstName} {user.lastName}
+                  {user.first_name} {user.last_name}
                 </span>
                 <span className="text-muted-foreground truncate text-xs">
                   {user.username}
@@ -80,7 +76,7 @@ export function NavUser({
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {user.firstName} {user.lastName}
+                    {user.first_name} {user.last_name}
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
                     {user.username}

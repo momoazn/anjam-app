@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { pb } from "@/lib/pocketbase";
+import { UsersRecord } from "@/lib/pocketbase-types";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function Login() {
   const navigate = useNavigate();
+  const login = useAuthStore().login;
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,6 +25,7 @@ export default function Login() {
 
     try {
       await pb.collection("users").authWithPassword(username, password);
+      login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
       navigate("/", { replace: true });
     } catch (error) {
       console.error(error);

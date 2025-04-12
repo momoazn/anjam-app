@@ -77,14 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser
-          user={{
-            firstName: user.first_name,
-            lastName: user.last_name,
-            username: user.username,
-            avatar: user.avatar,
-          }}
-        />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
