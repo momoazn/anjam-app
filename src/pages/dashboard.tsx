@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { pb } from "@/lib/pocketbase";
 import {
+  TasksPriorityOptions,
   TasksResponse,
   TasksStatusOptions,
   UsersRoleOptions,
@@ -40,26 +41,22 @@ export default function Dashboard() {
         );
   }, [userTasks, isLoadingTasks]);
 
+  const sortByPriority = (a: TasksResponse, b: TasksResponse) => {
+    if (a.priority === TasksPriorityOptions.urgent) return -1;
+    if (b.priority === TasksPriorityOptions.urgent) return 1;
+    if (a.priority === TasksPriorityOptions.high) return -1;
+    if (b.priority === TasksPriorityOptions.high) return 1;
+    if (a.priority === TasksPriorityOptions.medium) return -1;
+    if (b.priority === TasksPriorityOptions.medium) return 1;
+    if (a.priority === TasksPriorityOptions.low) return -1;
+    if (b.priority === TasksPriorityOptions.low) return 1;
+    return 0;
+  };
+
   return (
     <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
       {statusOrder?.map((status) => {
-        const sortedTasks = groupedTasks?.[status]?.sort((a, b) => {
-          if (a.priority === b.priority) {
-            return (
-              new Date(b.created ?? "").getTime() -
-              new Date(a.created ?? "").getTime()
-            );
-          }
-          if (a.priority === "urgent") return -1;
-          if (b.priority === "urgent") return 1;
-          if (a.priority === "high") return -1;
-          if (b.priority === "high") return 1;
-          if (a.priority === "medium") return -1;
-          if (b.priority === "medium") return 1;
-          if (a.priority === "low") return -1;
-          if (b.priority === "low") return 1;
-          return 0;
-        });
+        const sortedTasks = groupedTasks?.[status]?.sort(sortByPriority);
 
         return (
           <TaskListGroup

@@ -25,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TEXT } from "@/constants/text";
 
 // Helper to get user initials
 const getUserInitials = (username?: string) => {
@@ -52,14 +53,16 @@ export const columns: ColumnDef<Task>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={TEXT.tasks.table.selectAll}
+        className="translate-y-[2px]"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={TEXT.tasks.table.selectRow}
+        className="translate-y-[2px]"
       />
     ),
     enableSorting: false,
@@ -118,23 +121,23 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: "id",
-    header: "ID",
+    header: TEXT.tasks.table.columns.id,
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: TEXT.tasks.table.columns.status,
   },
   {
     accessorKey: "title",
-    header: "Title",
+    header: TEXT.tasks.table.columns.title,
   },
   {
     accessorKey: "deadline",
-    header: "Deadline",
+    header: TEXT.tasks.table.columns.deadline,
   },
   {
     accessorKey: "assignedTo",
-    header: "Assigned User",
+    header: TEXT.tasks.table.columns.assignedUser,
     cell: ({ row }) => {
       const assignedTo = row.original.assignedUser;
       return (
@@ -146,7 +149,7 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     id: "Actions",
-    header: "Actions",
+    header: TEXT.tasks.table.columns.actions,
     cell: ({ row }) => {
       const task = row.original;
       return (

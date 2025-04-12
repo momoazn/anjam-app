@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { TEXT } from "@/constants/text";
 import { TasksResponse } from "@/lib/pocketbase-types";
 import { cn, getUserInitials } from "@/lib/utils";
 import {
@@ -59,11 +60,11 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
               // Limit tags shown
               // Simple color logic for tags
               let tagColor = "bg-gray-100 text-gray-600 border-gray-200";
-              if (tag === "Bug")
+              if (tag === TEXT.tasks.tags.bug)
                 tagColor = "bg-red-100 text-red-700 border-red-200";
-              if (tag === "Feature")
+              if (tag === TEXT.tasks.tags.feature)
                 tagColor = "bg-purple-100 text-purple-700 border-purple-200";
-              if (tag === "Improvement")
+              if (tag === TEXT.tasks.tags.improvement)
                 tagColor = "bg-blue-100 text-blue-700 border-blue-200";
               return (
                 <Badge
@@ -80,8 +81,7 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
 
         {/* Date */}
         <span className="w-[50px] flex-shrink-0 text-right text-xs text-gray-500">
-          {formatDateShort(task.deadline ?? "")}{" "}
-          {/* Using deadline date from image */}
+          {formatDateShort(task.deadline ?? "")}
         </span>
 
         {/* Assignee Avatar */}

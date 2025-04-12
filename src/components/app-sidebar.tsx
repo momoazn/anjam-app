@@ -18,22 +18,23 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { TEXT } from "@/constants/text";
 import { useAuthStore } from "@/store/auth-store";
 
 const data = {
   navMain: [
     {
-      title: "Dashboard",
+      title: TEXT.navigation.dashboard,
       url: "/",
       icon: IconDashboard,
     },
     {
-      title: "Projects",
+      title: TEXT.navigation.projects,
       url: "/projects",
       icon: IconFolder,
     },
     {
-      title: "Tasks",
+      title: TEXT.navigation.tasks,
       url: "/tasks",
       icon: IconListDetails,
     },
@@ -41,7 +42,7 @@ const data = {
 
   navSecondary: [
     {
-      title: "Settings",
+      title: TEXT.navigation.settings,
       url: "/settings",
       icon: IconSettings,
     },
@@ -66,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Task Manager</span>
+                <span className="text-base font-semibold">{TEXT.app.name}</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -4,26 +4,30 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
+import { UsersRecord } from "@/lib/pocketbase-types";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function Register() {
   const navigate = useNavigate();
+  const login = useAuthStore().login;
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !password.trim() || !passwordConfirm.trim()) {
-      console.error("Username and password are required");
-      alert("Username and password are required");
+    if (!username.trim() || !password.trim()) {
+      console.error(TEXT.auth.register.errors.credentialsRequired);
+      alert(TEXT.auth.register.errors.credentialsRequired);
       return;
     }
 
-    if (password !== passwordConfirm) {
-      console.error("Passwords do not match");
-      alert("Passwords do not match");
+    if (password !== confirmPassword) {
+      console.error(TEXT.auth.register.errors.passwordsMismatch);
+      alert(TEXT.auth.register.errors.passwordsMismatch);
       return;
     }
 
@@ -31,14 +35,15 @@ export default function Register() {
       await pb.collection("users").create({
         username,
         password,
-        passwordConfirm,
-        role: UsersRoleOptions.employee,
+        passwordConfirm: confirmPassword,
       });
+
       await pb.collection("users").authWithPassword(username, password);
+      login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
       navigate("/", { replace: true });
     } catch (error) {
       console.error(error);
-      alert("Invalid username or password");
+      alert(TEXT.auth.login.errors.invalidCredentials);
     }
   };
 
@@ -46,11 +51,13 @@ export default function Register() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow">
         <h2 className="text-center text-3xl font-bold text-gray-900">
-          Register
+          {TEXT.auth.register.title}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label className="block text-sm font-medium">Username</Label>
+            <Label className="block text-sm font-medium text-gray-700">
+              {TEXT.auth.register.username}
+            </Label>
             <Input
               type="text"
               value={username}
@@ -60,7 +67,9 @@ export default function Register() {
             />
           </div>
           <div>
-            <Label className="block text-sm font-medium">Password</Label>
+            <Label className="block text-sm font-medium text-gray-700">
+              {TEXT.auth.register.password}
+            </Label>
             <Input
               type="password"
               value={password}
@@ -69,22 +78,21 @@ export default function Register() {
               required
             />
           </div>
-
           <div>
-            <Label className="block text-sm font-medium">
-              Confirm Password
+            <Label className="block text-sm font-medium text-gray-700">
+              {TEXT.auth.register.confirmPassword}
             </Label>
             <Input
               type="password"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               required
             />
           </div>
 
           <Button type="submit" className="w-full">
-            Register
+            {TEXT.auth.register.registerButton}
           </Button>
 
           <Button
@@ -92,7 +100,7 @@ export default function Register() {
             className="w-full"
             onClick={() => navigate("/login")}
           >
-            Login
+            {TEXT.auth.register.loginButton}
           </Button>
         </form>
       </div>
