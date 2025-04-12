@@ -151,6 +151,45 @@ export const TEXT = {
       },
     },
   },
+  projects: {
+    title: "پروژه‌ها",
+    list: {
+      noProjects: "هیچ پروژه‌ای موجود نیست",
+      count: "{count} پروژه",
+    },
+    table: {
+      columns: {
+        code: "کد",
+        name: "نام",
+        created: "تاریخ ایجاد",
+        actions: "عملیات",
+      },
+    },
+    create: {
+      button: "پروژه جدید",
+      title: "ایجاد پروژه جدید",
+      description: "یک پروژه جدید به فضای کاری خود اضافه کنید.",
+      form: {
+        name: "نام",
+        code: "کد",
+      },
+      submit: "ایجاد پروژه",
+      success: "پروژه با موفقیت ایجاد شد",
+      error: "خطا در ایجاد پروژه: {error}",
+    },
+    edit: {
+      title: "ویرایش پروژه",
+      description: "جزئیات پروژه را به‌روزرسانی کنید.",
+      submit: "به‌روزرسانی پروژه",
+      success: "پروژه با موفقیت به‌روزرسانی شد",
+      error: "خطا در به‌روزرسانی پروژه: {error}",
+    },
+    delete: {
+      confirm: "آیا از حذف این پروژه اطمینان دارید؟",
+      success: "پروژه با موفقیت حذف شد",
+      error: "خطا در حذف پروژه: {error}",
+    },
+  },
   tasks: {
     table: {
       columns: {

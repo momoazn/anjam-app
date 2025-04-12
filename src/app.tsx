@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
@@ -37,6 +38,7 @@ function App() {
             </Suspense>
           </SidebarInset>
         </SidebarProvider>
+        <Toaster />
       </Router>
     </QueryClientProvider>
   );
