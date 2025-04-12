@@ -1,3 +1,8 @@
+/* RTL Support */
+:root {
+  direction: rtl;
+}
+
 @import "tailwindcss";
 @import "tw-animate-css";
 

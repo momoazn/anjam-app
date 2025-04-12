@@ -34,10 +34,10 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
     >
       <div className="flex items-center">
         <IconComponent
-          className={cn("mr-2 h-3.5 w-3.5", taskStatusColors[status])}
+          className={cn("me-2 h-3.5 w-3.5", taskStatusColors[status])}
           strokeWidth={status === "todo" ? 1.5 : 2}
         />
-        <h2 className="mr-2 text-sm font-medium text-gray-800">
+        <h2 className="me-2 text-sm font-medium text-gray-800">
           {TEXT.tasks.status[status]}
         </h2>
         <span className="text-sm text-gray-400">{taskCount}</span>
