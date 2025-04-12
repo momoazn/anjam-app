@@ -259,7 +259,8 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 func handleProjectCreation(e *core.RecordEvent) error {
 	// Check if code is already set (e.g., via API request)
 	if e.Record.GetString("code") != "" {
-		return nil // Code already provided, do nothing
+		log.Printf("Project code (%q) already set for %q, skipping code generation.", e.Record.GetString("code"), e.Record.GetString("name"))
+		return e.Next() // Code already provided, do nothing
 	}
 
 	var projectCode string

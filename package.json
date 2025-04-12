@@ -13,8 +13,8 @@
     "pb:serve": "go run main.go",
     "pb:build": "go build -o app main.go",
     "pb:typegen": "bunx --bun pocketbase-typegen --db ./pb_data/data.db --out src/lib/pocketbase-types.ts",
-    "pb:generate-data": "bun run scripts/generate-data.ts",
-    "pb:seed-data": "bun run scripts/seed-data.ts",
+    "pb:data": "bun run scripts/generate-data.ts",
+    "pb:seed": "bun run scripts/seed-data.ts",
     "dev:all": "concurrently \"bun run dev\" \"bun run pb:dev\" -n \"Dev Server,PocketBase Server\""
   },
   "dependencies": {
