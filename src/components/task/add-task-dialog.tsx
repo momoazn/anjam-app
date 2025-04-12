@@ -19,7 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import users from "@/data/users.json";
 import { pb } from "@/lib/pocketbase";
 import {
   TasksPriorityOptions,
@@ -62,16 +61,16 @@ export function AddTaskDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createTask({
-      title,
-      description,
-      assignee: assignedUser,
-      priority,
-      status,
-      deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
-    });
+    // createTask({
+    //   title,
+    //   description,
+    //   assignee: assignedUser,
+    //   priority,
+    //   status,
+    //   deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    //     .toISOString()
+    //     .split("T")[0],
+    // });
 
     setOpen(false);
     setTitle("");
@@ -176,11 +175,11 @@ export function AddTaskDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="unassigned">Unassigned</SelectItem>
-                {users.map((user) => (
+                {/* {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.username}
                   </SelectItem>
-                ))}
+                ))} */}
               </SelectContent>
             </Select>
             <Button

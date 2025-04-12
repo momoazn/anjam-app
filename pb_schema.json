@@ -125,9 +125,7 @@
     },
     "passwordAuth": {
       "enabled": true,
-      "identityFields": [
-        "email"
-      ]
+      "identityFields": ["email"]
     },
     "mfa": {
       "enabled": false,
@@ -322,11 +320,7 @@
         "required": true,
         "system": false,
         "type": "select",
-        "values": [
-          "admin",
-          "supervisor",
-          "employee"
-        ]
+        "values": ["admin", "supervisor", "employee"]
       },
       {
         "hidden": false,
@@ -375,10 +369,7 @@
     },
     "passwordAuth": {
       "enabled": true,
-      "identityFields": [
-        "email",
-        "username"
-      ]
+      "identityFields": ["email", "username"]
     },
     "mfa": {
       "enabled": false,
@@ -819,12 +810,97 @@
     "system": true
   },
   {
-    "id": "pbc_484305853",
+    "id": "pbc_533777971",
     "listRule": null,
     "viewRule": null,
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,
+    "name": "comments",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "convertURLs": false,
+        "hidden": false,
+        "id": "editor4274335913",
+        "maxSize": 0,
+        "name": "content",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "editor"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation2375276105",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "user",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "pbc_2602490748",
+        "hidden": false,
+        "id": "relation1384045349",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "task",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [],
+    "system": false
+  },
+  {
+    "id": "pbc_484305853",
+    "listRule": "@request.auth.role = \"admin\" || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id)",
+    "viewRule": "@request.auth.role = \"admin\" || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id)",
+    "createRule": "@request.auth.role = \"admin\" || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id && @request.auth.role = \"supervisor\")",
+    "updateRule": "@request.auth.role = \"admin\" || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id && @request.auth.role = \"supervisor\")",
+    "deleteRule": "@request.auth.role = \"admin\" || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id && @request.auth.role = \"supervisor\")",
     "name": "projects",
     "type": "base",
     "fields": [
@@ -972,11 +1048,11 @@
   },
   {
     "id": "pbc_2602490748",
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "listRule": "@request.auth.role = \"admin\" || (@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id)",
+    "viewRule": "@request.auth.role = \"admin\" || (@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id)",
+    "createRule": "@request.auth.role = \"admin\" || (@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id)",
+    "updateRule": "@request.auth.role = \"admin\" || (@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id && @request.auth.role = \"supervisor\")",
+    "deleteRule": "@request.auth.role = \"admin\" || (@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id && @request.auth.role = \"supervisor\")",
     "name": "tasks",
     "type": "base",
     "fields": [
@@ -1070,12 +1146,7 @@
         "required": true,
         "system": false,
         "type": "select",
-        "values": [
-          "low",
-          "medium",
-          "high",
-          "urgent"
-        ]
+        "values": ["low", "medium", "high", "urgent"]
       },
       {
         "hidden": false,
@@ -1086,12 +1157,7 @@
         "required": true,
         "system": false,
         "type": "select",
-        "values": [
-          "todo",
-          "in_progress",
-          "done",
-          "canceled"
-        ]
+        "values": ["todo", "in_progress", "done", "canceled"]
       },
       {
         "hidden": false,
@@ -1211,10 +1277,7 @@
         "required": false,
         "system": false,
         "type": "select",
-        "values": [
-          "supervisor",
-          "employee"
-        ]
+        "values": ["supervisor", "employee"]
       },
       {
         "hidden": false,

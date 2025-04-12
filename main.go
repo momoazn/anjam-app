@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"path"
 	"runtime"
@@ -15,6 +16,7 @@ import (
 	"time"
 
 	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/cmd"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/security"
@@ -36,20 +38,20 @@ func main() {
 		DefaultDataDir: "./pb_data",
 	})
 
-	// app.OnServe().BindFunc(func(e *core.ServeEvent) error {
-	// 	json, err := os.ReadFile("./pb_schema.json")
-	// 	if err != nil {
-	// 		log.Default().Println(err)
-	// 		return err
-	// 	}
+	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
+		json, err := os.ReadFile("./pb_schema.json")
+		if err != nil {
+			log.Default().Println(err)
+			return err
+		}
 
-	// 	if err := app.ImportCollectionsByMarshaledJSON(json, true); err != nil {
-	// 		log.Default().Println(err)
-	// 		return err
-	// 	}
+		if err := app.ImportCollectionsByMarshaledJSON(json, false); err != nil {
+			log.Default().Println(err)
+			return err
+		}
 
-	// 	return e.Next()
-	// })
+		return e.Next()
+	})
 
 	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
 		collection, err := app.FindCollectionByNameOrId("_superusers")
@@ -245,10 +247,9 @@ func openBrowser(serverAddr string) {
 }
 
 func staticHandler(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error {
-	// if len(r.URL.Path) >= 4 && r.URL.Path[:4] == "/api" {
-	// 	http.NotFound(w, r)
-	// 	return
-	// }
+	if len(r.URL.Path) >= 4 && r.URL.Path[:4] == "/api" {
+		return apis.NewNotFoundError("The requested resource wasn't found.", nil)
+	}
 
 	// First try to serve the file directly
 	err := func() error {
