@@ -1196,6 +1196,18 @@
       },
       {
         "hidden": false,
+        "id": "number4113142680",
+        "max": null,
+        "min": null,
+        "name": "order",
+        "onlyInt": false,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,
@@ -1267,17 +1279,6 @@
         "required": false,
         "system": false,
         "type": "relation"
-      },
-      {
-        "hidden": false,
-        "id": "select1937748032",
-        "maxSelect": 1,
-        "name": "access_level",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "select",
-        "values": ["supervisor", "employee"]
       },
       {
         "hidden": false,

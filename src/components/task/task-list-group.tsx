@@ -15,9 +15,9 @@ export function TaskListGroup({
   tasks,
 }: TaskListGroupProps) {
   return (
-    <section className="">
+    <section className="transition-colors duration-200">
       <TaskListHeader taskCount={taskCount} status={status} />
-      <div className="mt-2 space-y-1 pe-1">
+      <div className="mt-2 min-h-[100px] space-y-1 pe-1">
         {tasks?.length > 0 ? (
           tasks?.map((task) => <TaskListItem key={task.id} task={task} />)
         ) : (

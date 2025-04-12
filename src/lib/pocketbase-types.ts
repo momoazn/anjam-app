@@ -136,6 +136,7 @@ export type TasksRecord = {
   description?: HTMLString;
   display_id?: string;
   id: string;
+  order?: number;
   priority: TasksPriorityOptions;
   project: RecordIdString;
   status: TasksStatusOptions;

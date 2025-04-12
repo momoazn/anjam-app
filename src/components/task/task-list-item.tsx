@@ -33,7 +33,7 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
   return (
     <div
       className={cn(
-        "group flex cursor-pointer items-center justify-between px-2 py-1.5 transition-colors duration-200 ease-in-out hover:bg-gray-50",
+        "group flex cursor-grab items-center justify-between px-2 py-1.5 transition-colors duration-200 ease-in-out hover:bg-gray-50 active:cursor-grabbing",
         className,
       )}
     >
