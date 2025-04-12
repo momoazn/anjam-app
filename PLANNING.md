@@ -2,11 +2,12 @@
 
 ## 🎯 Project Overview
 
-A frontend-only task management web application for internal organization operations, featuring:
+A task management web application for internal organization operations, featuring:
 
 - Role-based access control
-- Task management and reporting
-- Client-side data persistence
+- Project and task management
+- Client-side data persistence with server sync
+- Real-time updates and notifications
 
 ## 🧱 Technical Stack
 
@@ -19,56 +20,56 @@ A frontend-only task management web application for internal organization operat
 - **React Router** for navigation
 - **Zustand** for state management
 - **TanStack Query** for async state
+- **PocketBase** for backend services
 
 ### Data Persistence
 
-- **localStorage** for session and user data
+- **PocketBase** for data storage and real-time sync
 - **Zustand persist middleware** for state persistence
-- **Mock data** for simulating backend responses
+- **TanStack Query** for cache management
 
 ## 🏛️ Architecture
 
 ### State Management Strategy
 
 1. **Global State (Zustand)**
-
    - User authentication
    - Application preferences
    - Global UI state
 
 2. **Server State (TanStack Query)**
-
-   - Tasks and assignments
-   - Reports and statistics
-   - User management data
+   - Projects and tasks
+   - User assignments
+   - Real-time updates
 
 3. **Local Storage**
    - User session
-   - Saved filters/preferences
-   - Cached data
+   - Cached queries
+   - Offline data
 
 ### Component Architecture
 
 ```
 src/
-├── components/          # Reusable UI components
+├── components/         # Reusable UI components
 │   ├── ui/             # ShadcnUI components
-│   ├── tasks/          # Task-related components
-│   ├── reports/        # Reporting components
+│   ├── project/        # Project-related components
+│   ├── task/           # Task-related components
 │   └── layout/         # Layout components
 ├── pages/              # Route pages
 ├── store/              # Zustand stores
 ├── hooks/              # Custom hooks
+├── lib/                # PocketBase types and config
 ├── utils/              # Helper functions
 └── types/              # TypeScript definitions
 ```
 
 ## 🔒 Security Considerations
 
-- Session timeout after 10 minutes
-- Role-based route protection
-- Secure storage of sensitive data
+- Role-based access control (Admin, Supervisor, Employee)
+- PocketBase authentication
 - Input validation and sanitization
+- Secure data transmission
 
 ## 📱 Responsive Design Strategy
 
@@ -90,47 +91,43 @@ src/
   ```
 - Consistent spacing and typography
 - Accessible components via ShadcnUI
+- Real-time feedback and notifications
 
 ## 🔄 Data Flow
 
-1. **Mock API Layer**
-
-   - Simulated endpoints
-   - Artificial delay
-   - Error simulation
+1. **PocketBase Integration**
+   - Real-time subscriptions
+   - Optimistic updates
+   - Offline support
 
 2. **State Updates**
-
    ```
-   Action -> Store Update -> UI Update -> Storage Sync
+   Action -> PocketBase -> Query Cache -> UI Update
    ```
 
 3. **Caching Strategy**
    - TanStack Query for data caching
-   - localStorage for persistence
-   - Memory cache for frequent operations
+   - Optimistic updates
+   - Background revalidation
 
 ## 🛠️ Development Guidelines
 
 1. **Code Organization**
-
    - Feature-based component organization
    - Shared components in ui/ directory
    - Clear separation of concerns
 
 2. **TypeScript Usage**
-
    - Strict type checking
+   - PocketBase type generation
    - Interface-first development
-   - Proper type exports
 
 3. **Testing Strategy**
-
    - Component unit tests
    - Integration tests for workflows
-   - Accessibility testing
+   - E2E testing with real PocketBase instance
 
 4. **Performance Considerations**
    - Lazy loading of routes
    - Optimized re-renders
-   - Efficient state management
+   - Efficient cache management
