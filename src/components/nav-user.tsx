@@ -3,6 +3,7 @@ import {
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,18 +22,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { EditUserDialog } from "@/components/user/edit-user-dialog";
 import { TEXT } from "@/constants/text";
-import { UsersRecord } from "@/lib/pocketbase-types";
+import { UsersResponse } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 
-interface NavUserProps {
-  user: UsersRecord;
-}
-
-export function NavUser({ user }: NavUserProps) {
+export function NavUser() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
-  const logout = useAuthStore().logout;
+  const { user, logout } = useAuthStore();
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -40,72 +39,86 @@ export function NavUser({ user }: NavUserProps) {
   };
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.username} />
-                <AvatarFallback className="rounded-lg">
-                  {user.first_name?.charAt(0)}
-                  {user.last_name?.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {user.first_name} {user.last_name}
-                </span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {user.username}
-                </span>
-              </div>
-              <IconDotsVertical className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.username} />
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <Avatar className="h-8 w-8 rounded-lg grayscale">
+                  <AvatarImage src={user?.avatar} alt={user?.username} />
                   <AvatarFallback className="rounded-lg">
-                    {user.first_name?.charAt(0)}
-                    {user.last_name?.charAt(0)}
+                    {user?.first_name?.charAt(0)}
+                    {user?.last_name?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {user.first_name} {user.last_name}
+                    {user?.first_name} {user?.last_name}
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.username}
+                    {user?.username}
                   </span>
                 </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                {TEXT.user.dropdown.account}
+                <IconDotsVertical className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              side={isMobile ? "bottom" : "right"}
+              align="end"
+              sideOffset={4}
+            >
+              <DropdownMenuLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage src={user?.avatar} alt={user?.username} />
+                    <AvatarFallback className="rounded-lg">
+                      {user?.first_name?.charAt(0)}
+                      {user?.last_name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">
+                      {user?.first_name} {user?.last_name}
+                    </span>
+                    <span className="text-muted-foreground truncate text-xs">
+                      {user?.username}
+                    </span>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => setIsEditOpen(true)}
+                >
+                  <IconUserCircle />
+                  {TEXT.user.dropdown.account}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleLogout}
+              >
+                <IconLogout />
+                {TEXT.user.dropdown.logout}
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <IconLogout />
-              {TEXT.user.dropdown.logout}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+
+      <EditUserDialog
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        user={user as UsersResponse}
+      />
+    </>
   );
 }

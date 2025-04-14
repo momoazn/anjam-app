@@ -35,7 +35,6 @@ import { useAuthStore } from "@/store/auth-store";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
   first_name: z.string().min(1, { message: "First name is required" }),
   last_name: z.string().min(1, { message: "Last name is required" }),
   role: z.nativeEnum(UsersRoleOptions),
@@ -58,7 +57,6 @@ export function EditUserDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
-      email: "",
       first_name: "",
       last_name: "",
       role: UsersRoleOptions.employee,
@@ -88,7 +86,6 @@ export function EditUserDialog({
     if (user) {
       form.reset({
         username: user.username,
-        email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
         role: user.role,
@@ -134,19 +131,6 @@ export function EditUserDialog({
                   <FormLabel>{TEXT.users.table.columns.username}</FormLabel>
                   <FormControl>
                     <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{TEXT.users.table.columns.email}</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

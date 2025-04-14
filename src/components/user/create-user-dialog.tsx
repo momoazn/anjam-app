@@ -35,7 +35,6 @@ import { useMemo } from "react";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
@@ -49,14 +48,16 @@ interface CreateUserDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) {
+export function CreateUserDialog({
+  open,
+  onOpenChange,
+}: CreateUserDialogProps) {
   const user = useAuthStore().user;
   const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
-      email: "",
       password: "",
       first_name: "",
       last_name: "",
@@ -114,19 +115,6 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
                   <FormLabel>{TEXT.users.table.columns.username}</FormLabel>
                   <FormControl>
                     <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{TEXT.users.table.columns.email}</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
