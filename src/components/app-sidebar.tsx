@@ -4,6 +4,7 @@ import {
   IconInnerShadowTop,
   IconListDetails,
   IconSettings,
+  IconUsers,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -38,12 +39,17 @@ const data = {
       url: "/tasks",
       icon: IconListDetails,
     },
+    {
+      title: TEXT.navigation.users,
+      url: "/users",
+      icon: IconUsers,
+    },
   ],
 
   navSecondary: [
     {
       title: TEXT.navigation.settings,
-      url: "/settings",
+      url: "#",
       icon: IconSettings,
     },
   ],

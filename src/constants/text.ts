@@ -115,6 +115,7 @@ export const TEXT = {
     dashboard: "داشبورد",
     projects: "پروژه‌ها",
     tasks: "تسک‌ها",
+    users: "کاربران",
     settings: "تنظیمات",
     quickCreate: {
       button: "ایجاد سریع",
@@ -153,6 +154,44 @@ export const TEXT = {
         credentialsRequired: "وارد کردن نام کاربری و رمز عبور الزامی است",
         passwordsMismatch: "رمزهای عبور مطابقت ندارند",
       },
+    },
+  },
+  users: {
+    title: "کاربران",
+    list: {
+      count: "{count} کاربر",
+    },
+    table: {
+      columns: {
+        user: "کاربر",
+        username: "نام کاربری",
+        email: "ایمیل",
+        role: "نقش",
+        actions: "عملیات",
+      },
+      roles: {
+        admin: "مدیر",
+        supervisor: "سرپرست",
+        employee: "کارمند",
+      },
+    },
+    form: {
+      firstName: "نام",
+      lastName: "نام خانوادگی",
+      selectRole: "انتخاب نقش",
+    },
+    create: {
+      button: "کاربر جدید",
+      title: "ایجاد کاربر جدید",
+    },
+    edit: {
+      title: "ویرایش کاربر",
+      button: "به‌روزرسانی",
+    },
+    delete: {
+      title: "حذف کاربر",
+      description: "آیا از حذف این کاربر اطمینان دارید؟",
+      button: "حذف",
     },
   },
   projects: {
