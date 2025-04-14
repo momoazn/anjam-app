@@ -291,5 +291,13 @@ export const TEXT = {
       noTasks: "هیچ تسک‌ای موجود نیست",
       openMenu: "باز کردن منو",
     },
+    details: {
+      title: "جزئیات تسک",
+      buttons: {
+        save: "ذخیره",
+        saving: "در حال ذخیره...",
+        cancel: "انصراف",
+      },
+    },
   },
 } as const;
