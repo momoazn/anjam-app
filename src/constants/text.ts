@@ -157,6 +157,8 @@ export const TEXT = {
   },
   projects: {
     title: "پروژه‌ها",
+    projectTasks: "تسک‌های پروژه",
+    project: "پروژه",
     list: {
       noProjects: "هیچ پروژه‌ای موجود نیست",
       count: "{count} پروژه",

@@ -7,28 +7,37 @@ import {
 import { pb } from "./lib/pocketbase";
 import { TasksResponse, UsersRoleOptions } from "./lib/pocketbase-types";
 
-export const getTasks = () => {
+const getTasks = (projectId?: string) => {
   const userId = pb.authStore.record?.id;
+  const filters = [];
+  if (userId === UsersRoleOptions.employee) {
+    filters.push(`assignee = "${userId}"`);
+  }
+  if (projectId) {
+    filters.push(`project = "${projectId}"`);
+  }
+
   return pb.collection("tasks").getFullList<TasksResponse>({
     batch: 100,
-    filter:
-      userId === UsersRoleOptions.employee ? `assignee = "${userId}"` : "",
+    filter: filters.join(" && "),
     sort: "order",
   });
 };
 
-export const useTasksQueryOptions: UseQueryOptions<
-  TasksResponse[],
-  Error,
-  TasksResponse[],
-  string[]
-> = {
-  queryKey: ["tasks-full-list"],
-  queryFn: () => getTasks(),
-};
+const getTasksQueryKey = (projectId?: string) => [
+  "tasks-full-list",
+  projectId ?? "",
+];
 
-export const useTasks = () => {
-  return useQuery(useTasksQueryOptions);
+export const getUseTasksQueryOptions = (
+  projectId?: string,
+): UseQueryOptions<TasksResponse[], Error, TasksResponse[], string[]> => ({
+  queryKey: getTasksQueryKey(projectId),
+  queryFn: () => getTasks(projectId),
+});
+
+export const useTasks = (projectId?: string) => {
+  return useQuery(getUseTasksQueryOptions(projectId));
 };
 
 export const useUpdateTask = () => {
@@ -45,31 +54,35 @@ export const useUpdateTask = () => {
       return pb.collection("tasks").update(taskId, updates);
     },
     onMutate: async ({ taskId, updates }) => {
+      const tasksQueryKey = getTasksQueryKey();
       await queryClient.cancelQueries({
-        queryKey: useTasksQueryOptions.queryKey,
+        queryKey: tasksQueryKey,
       });
 
-      const previousTasks = queryClient.getQueryData<TasksResponse[]>(
-        useTasksQueryOptions.queryKey,
-      );
+      const previousTasks =
+        queryClient.getQueryData<TasksResponse[]>(tasksQueryKey);
 
       if (previousTasks) {
         const newTasks = previousTasks.map((t) =>
           t.id === taskId ? { ...t, ...updates } : t,
         );
 
-        queryClient.setQueryData<TasksResponse[]>(
-          useTasksQueryOptions.queryKey,
-          newTasks,
-        );
+        queryClient.setQueryData<TasksResponse[]>(tasksQueryKey, newTasks);
       }
 
       return { previousTasks };
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: useTasksQueryOptions.queryKey,
+        queryKey: getTasksQueryKey(),
       });
     },
+  });
+};
+
+export const useProject = (projectId: string) => {
+  return useQuery({
+    queryKey: ["project", projectId],
+    queryFn: () => pb.collection("projects").getOne(projectId),
   });
 };

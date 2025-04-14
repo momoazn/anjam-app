@@ -2,13 +2,13 @@ import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { useAuthStore } from "./store/auth-store";
-
 // Lazy load pages
 const Login = React.lazy(() => import("@/pages/login"));
 const Register = React.lazy(() => import("@/pages/register"));
 const Dashboard = React.lazy(() => import("@/pages/dashboard"));
 const Projects = React.lazy(() => import("@/pages/projects"));
 const Tasks = React.lazy(() => import("@/pages/tasks"));
+const ProjectTasks = React.lazy(() => import("@/pages/project-tasks"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore().isLoggedIn;
@@ -50,6 +50,11 @@ const routes: RouteType[] = [
   {
     path: "/tasks",
     element: <Tasks />,
+    protected: true,
+  },
+  {
+    path: "/projects/:id/tasks",
+    element: <ProjectTasks />,
     protected: true,
   },
 ];

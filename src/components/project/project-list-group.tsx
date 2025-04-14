@@ -48,7 +48,7 @@ export function ProjectListGroup({
                 >
                   <div
                     className="flex-1 cursor-pointer"
-                    onClick={() => navigate(`/project/${project.id}/tasks`)}
+                    onClick={() => navigate(`/projects/${project.id}/tasks`)}
                   >
                     <h3 className="font-medium">{project.name}</h3>
                     <p className="text-sm text-gray-500">{project.code}</p>
