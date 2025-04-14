@@ -2,6 +2,7 @@ import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { useProjects, useTasks } from "@/pb-hooks";
 import { taskStatusBgColors } from "@/lib/tasks-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { format } from "date-fns-jalali";
 import {
   BarChart3,
   CheckCircle,
@@ -162,7 +163,9 @@ export default function Dashboard() {
                   <span className="font-medium">{task.title}</span>
                 </div>
                 <span className="text-muted-foreground text-sm" dir="ltr">
-                  {new Date(task.created).toLocaleDateString("fa-IR")}
+                  {task?.created
+                    ? format(new Date(task.created), "yyyy/MM/dd")
+                    : "بدون تاریخ"}
                 </span>
               </div>
             ))}

@@ -1,4 +1,5 @@
 import {
+  IconChartBar,
   IconDashboard,
   IconFolder,
   IconInnerShadowTop,
@@ -43,6 +44,11 @@ const data = {
       title: TEXT.navigation.users,
       url: "/users",
       icon: IconUsers,
+    },
+    {
+      title: TEXT.navigation.reports,
+      url: "/reports",
+      icon: IconChartBar,
     },
   ],
 

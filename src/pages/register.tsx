@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -39,8 +39,7 @@ export default function Register() {
   const { data: isInitialAdmin } = useIsInitialAdmin();
 
   if (user) {
-    navigate("/");
-    return;
+    return <Navigate to="/" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

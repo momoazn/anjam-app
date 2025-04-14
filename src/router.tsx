@@ -13,22 +13,19 @@ const Tasks = React.lazy(() => import("@/pages/tasks"));
 const ProjectTasks = React.lazy(() => import("@/pages/project-tasks"));
 const Users = React.lazy(() => import("@/pages/users"));
 const ProjectUsers = React.lazy(() => import("@/pages/project-users"));
+const Reports = React.lazy(() => import("@/pages/reports"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore().isLoggedIn;
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-}
-
-function InitialAdminRoute({ children }: { children: React.ReactNode }) {
   const { data: isInitialAdmin } = useIsInitialAdmin();
 
   if (!isInitialAdmin) {
     return <Navigate to="/register" replace />;
+  }
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
@@ -81,6 +78,11 @@ const routes: RouteType[] = [
     element: <ProjectUsers />,
     protected: true,
   },
+  {
+    path: "/reports",
+    element: <Reports />,
+    protected: true,
+  },
 ];
 
 export function AppRoutes() {
@@ -91,13 +93,11 @@ export function AppRoutes() {
           key={route.path}
           path={route.path}
           element={
-            <InitialAdminRoute>
-              {route.protected ? (
-                <ProtectedRoute>{route.element}</ProtectedRoute>
-              ) : (
-                route.element
-              )}
-            </InitialAdminRoute>
+            route.protected ? (
+              <ProtectedRoute>{route.element}</ProtectedRoute>
+            ) : (
+              route.element
+            )
           }
         />
       ))}

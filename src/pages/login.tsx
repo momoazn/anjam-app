@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ export default function Login() {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
       console.error(TEXT.auth.login.errors.credentialsRequired);
-      alert(TEXT.auth.login.errors.credentialsRequired);
+      toast.error(TEXT.auth.login.errors.credentialsRequired);
       return;
     }
 
@@ -32,7 +33,7 @@ export default function Login() {
       navigate("/", { replace: true });
     } catch (error) {
       console.error(error);
-      alert(TEXT.auth.login.errors.invalidCredentials);
+      toast.error(TEXT.auth.login.errors.invalidCredentials);
     }
   };
 

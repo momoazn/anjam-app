@@ -53,8 +53,6 @@ export function AddTaskDialog({
   const { id: projectId } = useParams<{ id: string }>();
   const isInProject = Boolean(projectId);
 
-  console.log(isInProject);
-
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

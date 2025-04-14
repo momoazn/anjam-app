@@ -9,15 +9,13 @@ import {
   taskStatusColors,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
+import { format } from "date-fns-jalali";
 import { TaskDetailsDialog } from "./task-details-dialog";
 
-// Helper to format date like "Apr 11"
+// Helper to format date like "فروردین 21"
 const formatDateShort = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+  return format(date, "MMM dd");
 };
 
 interface TaskListItemProps {
