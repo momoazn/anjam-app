@@ -193,24 +193,8 @@ export const TEXT = {
     },
   },
   tasks: {
-    table: {
-      columns: {
-        id: "شناسه",
-        status: "وضعیت",
-        title: "عنوان",
-        deadline: "موعد تحویل",
-        assignedUser: "کاربر مسئول",
-        actions: "اقدامات",
-      },
-      selectAll: "انتخاب همه",
-      selectRow: "انتخاب ردیف",
-      dropdownMenu: {
-        label: "اقدامات",
-        copyId: "کپی شناسه تسک",
-        viewCustomer: "مشاهده مشتری",
-        viewDetails: "مشاهده جزئیات پرداخت",
-      },
-    },
+    title: "تسک‌ها",
+    allTasks: "همه تسک‌ها",
     priority: {
       urgent: "فوری",
       high: "بالا",

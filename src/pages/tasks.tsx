@@ -1,4 +1,5 @@
 import { TaskListGroup } from "@/components/task/task-list-group";
+import { TEXT } from "@/constants/text";
 import { TasksResponse } from "@/lib/pocketbase-types";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { useTasks } from "@/pb-hooks";
@@ -22,6 +23,7 @@ export default function Tasks() {
 
   return (
     <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
+      <h1 className="ps-3 text-2xl font-bold">{TEXT.tasks.allTasks}</h1>
       {statusOrder?.map((status) => {
         const tasks = groupedTasks?.[status] ?? [];
 

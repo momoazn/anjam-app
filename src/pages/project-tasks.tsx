@@ -13,8 +13,6 @@ export default function ProjectTasks() {
   const { data: tasks, isLoading: isLoadingTasks } = useTasks(projectId);
   const { data: project } = useProject(projectId as string);
 
-  console.log("##### rendering project tasks #####");
-
   const groupedTasks = useMemo(() => {
     return isLoadingTasks
       ? ([] as unknown as Record<TasksStatusOptions, TasksResponse[]>)
@@ -30,7 +28,7 @@ export default function ProjectTasks() {
   return (
     <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
       <h1 className="ps-3 text-2xl font-bold">
-        {`${TEXT.projects.projectTasks} ${project?.name}`}
+        {`${TEXT.projects.project} ${project?.name}`}
       </h1>
       {statusOrder?.map((status) => {
         const tasks = groupedTasks?.[status] ?? [];
