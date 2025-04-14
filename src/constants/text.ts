@@ -150,9 +150,12 @@ export const TEXT = {
       confirmPassword: "تأیید رمز عبور",
       registerButton: "ثبت‌نام",
       loginButton: "بازگشت به ورود",
+      initialAdminMessage:
+        "برای ایجاد ادمین اولیه، لطفا نام کاربری و رمز عبور خود را وارد کنید.",
       errors: {
         credentialsRequired: "وارد کردن نام کاربری و رمز عبور الزامی است",
         passwordsMismatch: "رمزهای عبور مطابقت ندارند",
+        adminCreationFailed: "خطا در ایجاد ادمین اولیه",
       },
     },
   },

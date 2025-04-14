@@ -136,3 +136,22 @@ export const useSpecificProjectUsers = (projectId: string, enabled = true) => {
     enabled,
   });
 };
+
+export const useIsInitialAdmin = () => {
+  return useQuery({
+    queryKey: ["is-initial-admin"],
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/tm/is-initial");
+        if (!response.ok) {
+          return false;
+        }
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+
+      return true;
+    },
+  });
+};

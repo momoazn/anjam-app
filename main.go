@@ -50,7 +50,7 @@ const (
 	userSharedProjectAccessRule = `@collection.users.id = @collection.users_projects.user.id && @collection.users_projects.project.id = @collection.projects.id && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))`
 )
 
-type ProjectUsersResponse struct {
+type BasicUser struct {
 	ID       string `json:"id"`
 	Username string `json:"username"`
 }
@@ -72,17 +72,9 @@ func main() {
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.GET("/api/tm/projects/{id}/users", func(e *core.RequestEvent) error {
-			projectId := e.Request.PathValue("id")
-			log.Printf("Fetching users for project %s", projectId)
-			var users []ProjectUsersResponse
-			err := e.App.DB().NewQuery("SELECT * FROM users WHERE id IN (SELECT user FROM users_projects WHERE project = {:projectId})").Bind(dbx.Params{"projectId": projectId}).All(&users)
-			log.Printf("Users: %v", users)
-			if err != nil {
-				return e.JSON(400, err.Error())
-			}
-			return e.JSON(200, users)
-		})
+		se.Router.GET("/api/tm/is-initial", handleCheckInitialAdmin)
+		se.Router.POST("/api/tm/create-initial-admin", handleCreateInitialAdmin)
+		se.Router.GET("/api/tm/projects/{id}/users", handleGetProjectUsers)
 		return se.Next()
 	})
 
@@ -421,4 +413,76 @@ func handleTaskCreation(e *core.RecordEvent) error {
 	}
 
 	return e.Next() // Modifications are applied before saving
+}
+
+func handleCheckInitialAdmin(e *core.RequestEvent) error {
+	_, err := e.App.FindCollectionByNameOrId("users")
+	if err != nil {
+		log.Printf("Error finding admin collection: %v", err)
+		return e.JSON(400, err.Error())
+	}
+
+	var anyUserExists BasicUser
+	err = e.App.DB().NewQuery("SELECT * FROM users LIMIT 1").One(&anyUserExists)
+	if err != nil {
+		log.Printf("Error finding any user: %v", err)
+		return e.JSON(204, map[string]bool{"exists": false})
+	}
+
+	return e.JSON(200, map[string]bool{"exists": anyUserExists.ID != ""})
+}
+
+func handleCreateInitialAdmin(e *core.RequestEvent) error {
+	usersCollection, err := e.App.FindCollectionByNameOrId("users")
+	if err != nil {
+		log.Printf("Error finding admin collection: %v", err)
+		return e.JSON(400, err.Error())
+	}
+
+	var anyUserExists BasicUser
+	err = e.App.DB().NewQuery("SELECT * FROM users LIMIT 1").One(&anyUserExists)
+	if err != nil && err.Error() != "sql: no rows in result set" {
+		log.Printf("Error finding any user: %v", err)
+		return e.JSON(400, err.Error())
+	}
+
+	if anyUserExists.ID != "" {
+		log.Println("Admin already exists, skipping creation.")
+		return e.JSON(200, "Admin already exists")
+	}
+
+	body := struct {
+		Username string `json:"username" form:"username"`
+		Password string `json:"password" form:"password"`
+	}{}
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("Failed to read request data", err)
+	}
+
+	record := core.NewRecord(usersCollection)
+	record.Set("username", body.Username)
+	record.Set("password", body.Password)
+
+	record.Set("role", "admin")
+
+	fmt.Println("Creating initial admin...", body.Username, body.Password)
+
+	return e.App.Save(record)
+}
+
+func handleGetProjectUsers(e *core.RequestEvent) error {
+	projectId := e.Request.PathValue("id")
+	var users []BasicUser
+	err := e.App.DB().NewQuery(
+		`
+		SELECT * FROM users 
+		WHERE id IN (
+			SELECT user FROM users_projects 
+			WHERE project = {:projectId}
+		)
+		`).Bind(dbx.Params{"projectId": projectId}).All(&users)
+	if err != nil {
+		return e.JSON(400, err.Error())
+	}
+	return e.JSON(200, users)
 }

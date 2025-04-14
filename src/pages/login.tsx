@@ -25,7 +25,9 @@ export default function Login() {
     }
 
     try {
-      await pb.collection("users").authWithPassword(username, password);
+      await pb
+        .collection("users")
+        .authWithPassword(username.trim().toLowerCase(), password.trim());
       login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
       navigate("/", { replace: true });
     } catch (error) {

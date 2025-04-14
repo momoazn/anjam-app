@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -24,7 +25,9 @@ function App() {
             <Suspense
               fallback={
                 <div className="flex min-h-screen items-center justify-center">
-                  <div className="text-xl">Loading...</div>
+                  <div className="text-xl">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  </div>
                 </div>
               }
             >

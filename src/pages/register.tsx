@@ -1,13 +1,32 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
+import { useIsInitialAdmin } from "@/pb-hooks";
 import { useAuthStore } from "@/store/auth-store";
+
+const createInitialAdmin = async (username: string, password: string) => {
+  const response = await fetch("/api/tm/create-initial-admin", {
+    method: "POST",
+    body: JSON.stringify({ username, password }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    return false;
+  }
+
+  return true;
+};
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,33 +36,50 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const { data: isInitialAdmin } = useIsInitialAdmin();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
       console.error(TEXT.auth.register.errors.credentialsRequired);
-      alert(TEXT.auth.register.errors.credentialsRequired);
+      toast.error(TEXT.auth.register.errors.credentialsRequired);
       return;
     }
 
     if (password !== confirmPassword) {
       console.error(TEXT.auth.register.errors.passwordsMismatch);
-      alert(TEXT.auth.register.errors.passwordsMismatch);
+      toast.error(TEXT.auth.register.errors.passwordsMismatch);
+      return;
+    }
+
+    if (isInitialAdmin) {
+      const isAdminCreated = await createInitialAdmin(username, password);
+      if (!isAdminCreated) {
+        toast.error(TEXT.auth.register.errors.adminCreationFailed);
+        return;
+      }
+
+      await pb.collection("users").authWithPassword(username, password);
+      login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
+      navigate("/", { replace: true });
       return;
     }
 
     try {
       await pb.collection("users").create({
-        username,
-        password,
-        passwordConfirm: confirmPassword,
+        username: username.trim().toLowerCase(),
+        password: password.trim(),
+        passwordConfirm: confirmPassword.trim(),
       });
 
-      await pb.collection("users").authWithPassword(username, password);
+      await pb
+        .collection("users")
+        .authWithPassword(username.trim().toLowerCase(), password.trim());
       login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
       navigate("/", { replace: true });
     } catch (error) {
       console.error(error);
-      alert(TEXT.auth.login.errors.invalidCredentials);
+      toast.error(TEXT.auth.login.errors.invalidCredentials);
     }
   };
 
@@ -53,6 +89,17 @@ export default function Register() {
         <h2 className="text-center text-3xl font-bold text-gray-900">
           {TEXT.auth.register.title}
         </h2>
+
+        {isInitialAdmin && (
+          <div className="flex flex-col items-center gap-4">
+            <Separator />
+            <p className="text-center">
+              {TEXT.auth.register.initialAdminMessage}
+            </p>
+            <Separator />
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label className="block text-sm font-medium text-gray-700">
@@ -95,13 +142,15 @@ export default function Register() {
             {TEXT.auth.register.registerButton}
           </Button>
 
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => navigate("/login")}
-          >
-            {TEXT.auth.register.loginButton}
-          </Button>
+          {!isInitialAdmin && (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate("/login")}
+            >
+              {TEXT.auth.register.loginButton}
+            </Button>
+          )}
         </form>
       </div>
     </div>
