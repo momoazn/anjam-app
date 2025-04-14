@@ -198,6 +198,20 @@ export const TEXT = {
     title: "پروژه‌ها",
     projectTasks: "تسک‌های پروژه",
     project: "پروژه",
+    users: {
+      title: "کاربران پروژه",
+      count: "کاربر",
+      add: "افزودن کاربر",
+      addDialog: {
+        title: "افزودن کاربر به پروژه",
+        selectPlaceholder: "انتخاب کاربر",
+      },
+      table: {
+        user: "کاربر",
+        role: "نقش",
+        actions: "عملیات",
+      },
+    },
     list: {
       noProjects: "هیچ پروژه‌ای موجود نیست",
       count: "{count} پروژه",

@@ -108,3 +108,31 @@ export const getUseProjectsQueryOptions = (): UseQueryOptions<
 export const useProjects = () => {
   return useQuery(getUseProjectsQueryOptions());
 };
+
+export const useUsers = (enabled = true) => {
+  return useQuery({
+    queryKey: ["users"],
+    queryFn: () => pb.collection("users").getFullList(),
+    enabled,
+  });
+};
+
+export const useSpecificProjectUsers = (projectId: string, enabled = true) => {
+  return useQuery({
+    queryKey: ["project-users", projectId],
+    queryFn: () => {
+      if (!projectId) {
+        return Promise.resolve([]);
+      }
+      return fetch(`/api/tm/projects/${projectId}/users`).then((res) =>
+        res.json(),
+      ) as Promise<
+        {
+          id: string;
+          username: string;
+        }[]
+      >;
+    },
+    enabled,
+  });
+};

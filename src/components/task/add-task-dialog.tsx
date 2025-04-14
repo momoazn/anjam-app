@@ -33,6 +33,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn, getUserInitials } from "@/lib/utils";
+import { useSpecificProjectUsers } from "@/pb-hooks";
 import { useAuthStore } from "@/store/auth-store";
 import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback } from "../ui/avatar";
@@ -50,6 +51,9 @@ export function AddTaskDialog({
 }: AddTaskDialogProps) {
   const user = useAuthStore().user;
   const { id: projectId } = useParams<{ id: string }>();
+  const isInProject = Boolean(projectId);
+
+  console.log(isInProject);
 
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -67,21 +71,24 @@ export function AddTaskDialog({
   const { data: projects } = useQuery({
     queryKey: ["projects"],
     queryFn: () => pb.collection("projects").getFullList<ProjectsResponse>(),
-    enabled: !projectId, // Only fetch if projectId is not provided
+    enabled: !isInProject, // Only fetch if we're not in a project view
   });
 
-  const { data: assignees } = useQuery({
-    queryKey: ["project-users", projectId],
-    queryFn: () =>
-      fetch(`/api/tm/projects/${projectId}/users`).then((res) =>
-        res.json(),
-      ) as Promise<
-        {
-          id: string;
-          username: string;
-        }[]
-      >,
+  // Fetch project users when in project context
+  const { data: projectUsers } = useSpecificProjectUsers(
+    projectId ?? "",
+    Boolean(projectId), // Enable only when we have a project ID
+  );
+
+  // Fetch all users when not in project context
+  const { data: users } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => pb.collection("users").getFullList(),
+    enabled: !projectId, // Enable only when we don't have a project ID
   });
+
+  // Use projectUsers when in project context, otherwise use all users
+  const assignees = projectId ? projectUsers : users;
 
   const { mutate: createTask, isPending: isCreatingTask } = useMutation({
     mutationFn: (task: Omit<TasksRecord, "id" | "created" | "updated">) =>
@@ -232,11 +239,12 @@ export function AddTaskDialog({
                 <SelectItem value={TEXT.tasks.addTask.unassigned}>
                   {TEXT.tasks.addTask.unassigned}
                 </SelectItem>
-                {assignees?.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.username}
-                  </SelectItem>
-                ))}
+                {assignees &&
+                  assignees?.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.username}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <Button

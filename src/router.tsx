@@ -10,6 +10,8 @@ const Projects = React.lazy(() => import("@/pages/projects"));
 const Tasks = React.lazy(() => import("@/pages/tasks"));
 const ProjectTasks = React.lazy(() => import("@/pages/project-tasks"));
 const Users = React.lazy(() => import("@/pages/users"));
+const ProjectUsers = React.lazy(() => import("@/pages/project-users"));
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore().isLoggedIn;
 
@@ -60,6 +62,11 @@ const routes: RouteType[] = [
   {
     path: "/users",
     element: <Users />,
+    protected: true,
+  },
+  {
+    path: "/projects/:id/users",
+    element: <ProjectUsers />,
     protected: true,
   },
 ];

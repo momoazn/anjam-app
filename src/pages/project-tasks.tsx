@@ -1,15 +1,12 @@
 import { useParams } from "react-router-dom";
 
-import { useProject, useTasks } from "@/pb-hooks";
-import {
-  ProjectsResponse,
-  TasksResponse,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
-import { statusOrder } from "@/lib/tasks-utils";
 import { TaskListGroup } from "@/components/task/task-list-group";
-import { useMemo } from "react";
 import { TEXT } from "@/constants/text";
+import { TaskWithProject } from "@/lib/pocketbase";
+import { TasksStatusOptions } from "@/lib/pocketbase-types";
+import { statusOrder } from "@/lib/tasks-utils";
+import { useProject, useTasks } from "@/pb-hooks";
+import { useMemo } from "react";
 
 export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -19,16 +16,13 @@ export default function ProjectTasks() {
 
   const groupedTasks = useMemo(() => {
     return isLoadingTasks
-      ? ([] as unknown as Record<
-          TasksStatusOptions,
-          TasksResponse<ProjectsResponse>[]
-        >)
+      ? ([] as unknown as Record<TasksStatusOptions, TaskWithProject[]>)
       : tasks?.reduce(
           (acc, task) => {
             (acc[task.status] = acc[task.status] || []).push(task);
             return acc;
           },
-          {} as Record<TasksStatusOptions, TasksResponse<ProjectsResponse>[]>,
+          {} as Record<TasksStatusOptions, TaskWithProject[]>,
         );
   }, [tasks, isLoadingTasks]);
 
@@ -46,6 +40,7 @@ export default function ProjectTasks() {
             taskCount={tasks.length}
             status={status as TasksStatusOptions}
             tasks={tasks}
+            showProject={false}
           />
         );
       })}

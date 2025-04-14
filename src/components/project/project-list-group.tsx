@@ -1,3 +1,4 @@
+import { IconUsers } from "@tabler/icons-react";
 import { Edit, Trash } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +50,13 @@ export function ProjectListGroup({
               onClick={() => navigate(`/projects/${project.id}/tasks`)}
             >
               {TEXT.projects.list.viewTasks}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(`/projects/${project.id}/users`)}
+            >
+              <IconUsers />
             </Button>
             {isSupervisor && (
               <div className="flex items-center gap-2">
