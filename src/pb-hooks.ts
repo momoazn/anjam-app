@@ -5,7 +5,11 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { pb } from "./lib/pocketbase";
-import { TasksResponse, UsersRoleOptions } from "./lib/pocketbase-types";
+import {
+  ProjectsResponse,
+  TasksResponse,
+  UsersRoleOptions,
+} from "./lib/pocketbase-types";
 
 const getTasks = (projectId?: string) => {
   const userId = pb.authStore.record?.id;
@@ -85,4 +89,20 @@ export const useProject = (projectId: string) => {
     queryKey: ["project", projectId],
     queryFn: () => pb.collection("projects").getOne(projectId),
   });
+};
+
+export const getProjectsQueryKey = () => ["projects"];
+
+export const getUseProjectsQueryOptions = (): UseQueryOptions<
+  ProjectsResponse[],
+  Error,
+  ProjectsResponse[],
+  string[]
+> => ({
+  queryKey: getProjectsQueryKey(),
+  queryFn: () => pb.collection("projects").getFullList(),
+});
+
+export const useProjects = () => {
+  return useQuery(getUseProjectsQueryOptions());
 };
