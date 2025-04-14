@@ -30,13 +30,18 @@ const createInitialAdmin = async (username: string, password: string) => {
 
 export default function Register() {
   const navigate = useNavigate();
-  const login = useAuthStore().login;
+  const { login, user } = useAuthStore();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const { data: isInitialAdmin } = useIsInitialAdmin();
+
+  if (user) {
+    navigate("/");
+    return;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +91,7 @@ export default function Register() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow">
-        <h2 className="text-center text-3xl font-bold text-gray-900">
+        <h2 className="text-foreground text-center text-3xl font-bold">
           {TEXT.auth.register.title}
         </h2>
 
@@ -102,7 +107,7 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label className="block text-sm font-medium text-gray-700">
+            <Label className="text-foreground block text-sm font-medium">
               {TEXT.auth.register.username}
             </Label>
             <Input
@@ -114,7 +119,7 @@ export default function Register() {
             />
           </div>
           <div>
-            <Label className="block text-sm font-medium text-gray-700">
+            <Label className="text-foreground block text-sm font-medium">
               {TEXT.auth.register.password}
             </Label>
             <Input
@@ -126,7 +131,7 @@ export default function Register() {
             />
           </div>
           <div>
-            <Label className="block text-sm font-medium text-gray-700">
+            <Label className="text-foreground block text-sm font-medium">
               {TEXT.auth.register.confirmPassword}
             </Label>
             <Input

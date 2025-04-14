@@ -44,7 +44,7 @@ export function TaskListGroup({
             />
           ))
         ) : (
-          <div className="text-center text-sm text-gray-500">
+          <div className="text-muted-foreground text-center text-sm">
             {TEXT.tasks.list.noTasks}
           </div>
         )}

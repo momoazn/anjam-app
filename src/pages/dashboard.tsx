@@ -73,7 +73,7 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="mb-8 flex items-center gap-2 text-2xl font-bold text-gray-900">
+      <h1 className="text-foreground mb-8 flex items-center gap-2 text-2xl font-bold">
         <LayoutDashboard className="h-6 w-6" />
         داشبورد
       </h1>
@@ -83,13 +83,13 @@ export default function Dashboard() {
         <StatCard
           title="کل وظایف"
           value={stats?.total ?? 0}
-          icon={<ListTodo className="h-6 w-6 text-blue-500" />}
+          icon={<ListTodo className="text-primary h-6 w-6" />}
           color="bg-blue-50"
         />
         <StatCard
           title="تکمیل شده"
           value={stats?.completed ?? 0}
-          icon={<CheckCircle className="h-6 w-6 text-green-500" />}
+          icon={<CheckCircle className="text-accent h-6 w-6" />}
           color="bg-green-50"
         />
         <StatCard
@@ -101,7 +101,7 @@ export default function Dashboard() {
         <StatCard
           title="در انتظار"
           value={stats?.pending ?? 0}
-          icon={<BarChart3 className="h-6 w-6 text-purple-500" />}
+          icon={<BarChart3 className="text-secondary h-6 w-6" />}
           color="bg-purple-50"
         />
       </div>
@@ -120,7 +120,7 @@ export default function Dashboard() {
             >
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-semibold">{project.name}</h3>
-                <span className="text-sm text-gray-500">
+                <span className="text-muted-foreground text-sm">
                   {digitsEnToFa(project.completedTasks)} از{" "}
                   {digitsEnToFa(project.taskCount)} وظیفه
                 </span>
@@ -131,7 +131,7 @@ export default function Dashboard() {
                   style={{ width: `${project.progress}%` }}
                 />
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="text-muted-foreground flex justify-between text-sm">
                 <span>٪{digitsEnToFa(project.progress)} تکمیل شده</span>
                 <span>{digitsEnToFa(project.taskCount)} وظیفه</span>
               </div>
@@ -161,7 +161,7 @@ export default function Dashboard() {
                   />
                   <span className="font-medium">{task.title}</span>
                 </div>
-                <span className="text-sm text-gray-500" dir="ltr">
+                <span className="text-muted-foreground text-sm" dir="ltr">
                   {new Date(task.created).toLocaleDateString("fa-IR")}
                 </span>
               </div>
@@ -179,17 +179,17 @@ export default function Dashboard() {
             <QuickHelpCard
               title="ایجاد وظیفه جدید"
               description="برای افزودن سریع وظیفه جدید روی دکمه + در بالای صفحه کلیک کنید"
-              icon={<FileText className="h-5 w-5 text-blue-500" />}
+              icon={<FileText className="text-primary h-5 w-5" />}
             />
             <QuickHelpCard
               title="سازماندهی وظایف"
               description="برای تغییر وضعیت وظایف، آنها را بین ستون‌ها بکشید و رها کنید"
-              icon={<ListTodo className="h-5 w-5 text-green-500" />}
+              icon={<ListTodo className="text-accent h-5 w-5" />}
             />
             <QuickHelpCard
               title="وظایف مهم"
               description="برای دسترسی سریع، روی آیکون ستاره کلیک کنید تا وظیفه را مهم علامت‌گذاری کنید"
-              icon={<Star className="h-5 w-5 text-yellow-500" />}
+              icon={<Star className="text-secondary h-5 w-5" />}
             />
           </div>
         </section>
@@ -213,7 +213,7 @@ function StatCard({
     <div className={`rounded-lg ${color} p-6`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-muted-foreground text-sm font-medium">{title}</p>
           <p className="mt-2 text-3xl font-bold">{digitsEnToFa(value)}</p>
         </div>
         {icon}
@@ -236,7 +236,7 @@ function QuickHelpCard({
       <div className="rounded-lg bg-gray-100 p-2">{icon}</div>
       <div>
         <h3 className="font-medium">{title}</h3>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className="text-muted-foreground text-sm">{description}</p>
       </div>
     </div>
   );

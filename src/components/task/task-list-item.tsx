@@ -51,17 +51,17 @@ export function TaskListItem({
           <PriorityIcon
             className={cn(`size-6 flex-shrink-0`, priorityIconColor)}
           />
-          <span className="w-16 flex-shrink-0 font-mono text-xs text-gray-400 transition-colors duration-200 ease-in-out group-hover:text-gray-600">
+          <span className="text-muted-foreground group-hover:text-foreground w-16 flex-shrink-0 font-mono text-xs transition-colors duration-200 ease-in-out">
             {task.display_id}
           </span>
           <StatusIcon className={cn(`size-4 flex-shrink-0`, statusIconColor)} />
-          <span className="truncate text-sm text-gray-800" title={task.title}>
+          <span className="text-foreground truncate text-sm" title={task.title}>
             {task.title}
           </span>
           {showProject && task.expand?.project?.name && (
             <Badge
               variant="outline"
-              className="rounded border-gray-200 bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
+              className="border-border bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs font-medium"
             >
               {task.expand.project.name}
             </Badge>
@@ -76,13 +76,14 @@ export function TaskListItem({
               {task.tags.slice(0, 2).map((tag) => {
                 // Limit tags shown
                 // Simple color logic for tags
-                let tagColor = "bg-gray-100 text-gray-600 border-gray-200";
+                let tagColor = "bg-muted text-muted-foreground border-border";
                 if (tag === TEXT.tasks.tags.bug)
-                  tagColor = "bg-red-100 text-red-700 border-red-200";
+                  tagColor =
+                    "bg-destructive/10 text-destructive border-destructive/20";
                 if (tag === TEXT.tasks.tags.feature)
-                  tagColor = "bg-purple-100 text-purple-700 border-purple-200";
+                  tagColor = "bg-primary/10 text-primary border-primary/20";
                 if (tag === TEXT.tasks.tags.improvement)
-                  tagColor = "bg-blue-100 text-blue-700 border-blue-200";
+                  tagColor = "bg-accent/10 text-accent border-accent/20";
                 return (
                   <Badge
                     key={tag}
@@ -97,13 +98,13 @@ export function TaskListItem({
           )}
 
           {/* Date */}
-          <span className="w-[50px] flex-shrink-0 text-right text-xs text-gray-500">
+          <span className="text-muted-foreground w-[50px] flex-shrink-0 text-right text-xs">
             {formatDateShort(task.deadline ?? "")}
           </span>
 
           {/* Assignee Avatar */}
           <Avatar className="h-5 w-5">
-            <AvatarFallback className="bg-gray-200 text-[10px]">
+            <AvatarFallback className="bg-muted text-[10px]">
               {getUserInitials(task.assignee ?? "")}
             </AvatarFallback>
           </Avatar>

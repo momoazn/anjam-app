@@ -39,11 +39,11 @@ export default function Projects() {
 
   return (
     <>
-      <div className="mt-4 flex flex-col space-y-4 bg-white px-4 pb-8 text-gray-900">
+      <div className="bg-card text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold">{TEXT.projects.title}</h1>
-            <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-600">
+            <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
               {TEXT.projects.list.count.replace(
                 "{count}",
                 digitsEnToFa(userProjects?.length ?? 0).toString(),

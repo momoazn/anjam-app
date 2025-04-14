@@ -82,7 +82,7 @@ export function UserListTable({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-red-600"
+                    className="text-destructive"
                     onClick={() => onDelete(user)}
                   >
                     <Trash className="size-4" />

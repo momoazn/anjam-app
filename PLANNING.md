@@ -33,11 +33,13 @@ A task management web application for internal organization operations, featurin
 ### State Management Strategy
 
 1. **Global State (Zustand)**
+
    - User authentication
    - Application preferences
    - Global UI state
 
 2. **Server State (TanStack Query)**
+
    - Projects and tasks
    - User assignments
    - Real-time updates
@@ -96,11 +98,13 @@ src/
 ## 🔄 Data Flow
 
 1. **PocketBase Integration**
+
    - Real-time subscriptions
    - Optimistic updates
    - Offline support
 
 2. **State Updates**
+
    ```
    Action -> PocketBase -> Query Cache -> UI Update
    ```
@@ -113,16 +117,19 @@ src/
 ## 🛠️ Development Guidelines
 
 1. **Code Organization**
+
    - Feature-based component organization
    - Shared components in ui/ directory
    - Clear separation of concerns
 
 2. **TypeScript Usage**
+
    - Strict type checking
    - PocketBase type generation
    - Interface-first development
 
 3. **Testing Strategy**
+
    - Component unit tests
    - Integration tests for workflows
    - E2E testing with real PocketBase instance

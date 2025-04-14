@@ -44,10 +44,12 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
           className={cn("me-2 h-3.5 w-3.5", taskStatusColors[status])}
           strokeWidth={status === "todo" ? 1.5 : 2}
         />
-        <h2 className="me-2 text-sm font-medium text-gray-800">
+        <h2 className="text-foreground me-2 text-sm font-medium">
           {TEXT.tasks.status[status]}
         </h2>
-        <span className="text-sm text-gray-400">{digitsEnToFa(taskCount)}</span>
+        <span className="text-muted-foreground text-sm">
+          {digitsEnToFa(taskCount)}
+        </span>
       </div>
 
       <AddTaskDialog initialStatus={status} onSuccess={onSuccess}>
@@ -55,7 +57,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
           id="add-task-button"
           variant="ghost"
           size="icon"
-          className="size-6 rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
         >
           <Plus className="size-4" />
         </Button>

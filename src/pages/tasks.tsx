@@ -25,7 +25,7 @@ export default function Tasks() {
   }, [userTasks, isLoadingTasks]);
 
   return (
-    <div className="mt-4 flex flex-col space-y-4 bg-white pb-8 text-gray-900">
+    <div className="bg-card text-foreground mt-4 flex flex-col space-y-4 pb-8">
       <h1 className="ps-3 text-2xl font-bold">{TEXT.tasks.allTasks}</h1>
       {statusOrder?.map((status) => {
         const tasks = groupedTasks?.[status] ?? [];

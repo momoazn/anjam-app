@@ -48,11 +48,13 @@ Your task is to **develop and implement the full set of features** described bel
 Implement 3 user roles with PocketBase:
 
 - **Admin**
+
   - Manage user accounts
   - Reset passwords
   - Full system access
 
 - **Supervisor**
+
   - Manage projects and tasks
   - Review team performance
   - Generate reports

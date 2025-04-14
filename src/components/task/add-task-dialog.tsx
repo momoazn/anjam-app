@@ -229,7 +229,7 @@ export function AddTaskDialog({
             <Select value={assignedUser} onValueChange={setAssignedUser}>
               <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
                 <Avatar className="h-5 w-5">
-                  <AvatarFallback className="bg-gray-200 text-[10px]">
+                  <AvatarFallback className="bg-muted text-[10px]">
                     {getUserInitials(assignedUser)}
                   </AvatarFallback>
                 </Avatar>

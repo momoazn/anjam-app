@@ -56,4 +56,4 @@ export function DeleteUserDialog({
       </AlertDialogContent>
     </AlertDialog>
   );
-} 
+}

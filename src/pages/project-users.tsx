@@ -100,12 +100,12 @@ export default function ProjectUsers() {
   );
 
   return (
-    <div className="mt-4 flex flex-col space-y-4 bg-white px-4 pb-8 text-gray-900">
+    <div className="bg-card text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold">{TEXT.projects.users.title}</h1>
           {projectUsers && (
-            <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-600">
+            <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
               {projectUsers.length} {TEXT.projects.users.count}
             </span>
           )}
@@ -184,7 +184,7 @@ export default function ProjectUsers() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-red-600"
+                      className="text-destructive"
                       onClick={() => removeUserFromProject(user.id)}
                       disabled={isRemovingUser}
                     >

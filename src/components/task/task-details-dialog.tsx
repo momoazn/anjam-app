@@ -182,7 +182,7 @@ export function TaskDetailsDialog({
             <Select value={assignedUser} onValueChange={setAssignedUser}>
               <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
                 <Avatar className="h-5 w-5">
-                  <AvatarFallback className="bg-gray-200 text-[10px]">
+                  <AvatarFallback className="bg-muted text-[10px]">
                     {getUserInitials(assignedUser)}
                   </AvatarFallback>
                 </Avatar>
@@ -205,14 +205,14 @@ export function TaskDetailsDialog({
             {task.tags && task.tags.length > 0 && (
               <div className="flex items-center space-x-1">
                 {task.tags.map((tag) => {
-                  let tagColor = "bg-gray-100 text-gray-600 border-gray-200";
+                  let tagColor = "bg-muted text-muted-foreground border-border";
                   if (tag === TEXT.tasks.tags.bug)
-                    tagColor = "bg-red-100 text-red-700 border-red-200";
-                  if (tag === TEXT.tasks.tags.feature)
                     tagColor =
-                      "bg-purple-100 text-purple-700 border-purple-200";
+                      "bg-destructive/10 text-destructive border-destructive/20";
+                  if (tag === TEXT.tasks.tags.feature)
+                    tagColor = "bg-primary/10 text-primary border-primary/20";
                   if (tag === TEXT.tasks.tags.improvement)
-                    tagColor = "bg-blue-100 text-blue-700 border-blue-200";
+                    tagColor = "bg-accent/10 text-accent border-accent/20";
                   return (
                     <Badge
                       key={tag}

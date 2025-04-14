@@ -42,7 +42,7 @@ export function ProjectListGroup({
               onClick={() => navigate(`/projects/${project.id}/tasks`)}
             >
               <h3 className="font-medium">{project.name}</h3>
-              <p className="text-sm text-gray-500">{project.code}</p>
+              <p className="text-muted-foreground text-sm">{project.code}</p>
             </div>
 
             <Button
@@ -70,7 +70,7 @@ export function ProjectListGroup({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-red-600"
+                  className="text-destructive"
                   onClick={() => handleDelete(project)}
                 >
                   <Trash className="size-4" />
