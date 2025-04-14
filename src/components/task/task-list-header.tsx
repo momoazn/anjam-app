@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getTasksQueryKey } from "@/pb-hooks";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { AddTaskDialog } from "./add-task-dialog";
+import { CreateTaskDialog } from "./create-task-dialog";
 
 interface TaskListHeaderProps {
   taskCount: number;
@@ -52,7 +52,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
         </span>
       </div>
 
-      <AddTaskDialog initialStatus={status} onSuccess={onSuccess}>
+      <CreateTaskDialog initialStatus={status} onSuccess={onSuccess}>
         <Button
           id="add-task-button"
           variant="ghost"
@@ -61,7 +61,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
         >
           <Plus className="size-4" />
         </Button>
-      </AddTaskDialog>
+      </CreateTaskDialog>
     </header>
   );
 }

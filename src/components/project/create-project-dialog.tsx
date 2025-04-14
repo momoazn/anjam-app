@@ -1,7 +1,8 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +13,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
+import { Loader2 } from "lucide-react";
 
-interface ProjectFormData {
-  name: string;
-  code: string;
-}
+const projectFormSchema = z.object({
+  name: z.string().min(1, { message: TEXT.projects.create.form.nameRequired }),
+  code: z.string().length(3, {
+    message: TEXT.projects.create.form.codeLength,
+  }),
+});
 
 interface CreateProjectDialogProps {
   open: boolean;
@@ -31,19 +43,22 @@ export function CreateProjectDialog({
   onOpenChange,
 }: CreateProjectDialogProps) {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState<ProjectFormData>({
-    name: "",
-    code: "",
+  const form = useForm<z.infer<typeof projectFormSchema>>({
+    resolver: zodResolver(projectFormSchema),
+    defaultValues: {
+      name: "",
+      code: "",
+    },
   });
 
   const createProjectMutation = useMutation({
-    mutationFn: (data: ProjectFormData) => {
+    mutationFn: (data: z.infer<typeof projectFormSchema>) => {
       return pb.collection("projects").create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       onOpenChange(false);
-      setFormData({ name: "", code: "" });
+      form.reset();
       toast.success(TEXT.projects.create.success);
     },
     onError: (error) => {
@@ -51,10 +66,9 @@ export function CreateProjectDialog({
     },
   });
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createProjectMutation.mutate(formData);
-  };
+  function onSubmit(values: z.infer<typeof projectFormSchema>) {
+    createProjectMutation.mutate(values);
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -65,40 +79,44 @@ export function CreateProjectDialog({
             {TEXT.projects.create.description}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleCreateSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="name">{TEXT.projects.create.form.name}</label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="code">{TEXT.projects.create.form.code}</label>
-              <Input
-                id="code"
-                value={formData.code}
-                onChange={(e) =>
-                  setFormData({ ...formData, code: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={createProjectMutation.isPending}>
-              {createProjectMutation.isPending ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
-              ) : null}
-              {TEXT.projects.create.submit}
-            </Button>
-          </DialogFooter>
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{TEXT.projects.create.form.name}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{TEXT.projects.create.form.code}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit" disabled={createProjectMutation.isPending}>
+                {createProjectMutation.isPending ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : null}
+                {TEXT.projects.create.submit}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

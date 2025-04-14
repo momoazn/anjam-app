@@ -12,7 +12,7 @@ import {
 import { TEXT } from "@/constants/text";
 import { cn } from "@/lib/utils";
 import { getTasksQueryKey } from "@/pb-hooks";
-import { AddTaskDialog } from "./task/add-task-dialog";
+import { CreateTaskDialog } from "./task/create-task-dialog";
 
 export function NavMain({
   items,
@@ -31,7 +31,7 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <AddTaskDialog
+            <CreateTaskDialog
               onSuccess={() => {
                 queryClient.invalidateQueries({
                   queryKey: getTasksQueryKey(projectId),
@@ -45,7 +45,7 @@ export function NavMain({
                 <IconCirclePlusFilled />
                 <span>{TEXT.navigation.quickCreate.button}</span>
               </SidebarMenuButton>
-            </AddTaskDialog>
+            </CreateTaskDialog>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>

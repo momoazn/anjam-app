@@ -24,6 +24,7 @@ export default function Projects() {
     queryFn: () => {
       return pb.collection("projects").getFullList<ProjectsResponse>({
         batch: 100,
+        sort: "-created",
       });
     },
   });

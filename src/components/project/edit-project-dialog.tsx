@@ -1,7 +1,10 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,15 +15,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
 
-interface ProjectFormData {
-  name: string;
-  code: string;
-}
+const projectFormSchema = z.object({
+  name: z.string().min(1, { message: TEXT.projects.create.form.nameRequired }),
+  code: z.string().length(3, {
+    message: TEXT.projects.create.form.codeLength,
+  }),
+});
 
 interface EditProjectDialogProps {
   open: boolean;
@@ -34,29 +47,32 @@ export function EditProjectDialog({
   project,
 }: EditProjectDialogProps) {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState<ProjectFormData>({
-    name: "",
-    code: "",
+  const form = useForm<z.infer<typeof projectFormSchema>>({
+    resolver: zodResolver(projectFormSchema),
+    defaultValues: {
+      name: "",
+      code: "",
+    },
   });
 
   useEffect(() => {
     if (project) {
-      setFormData({
+      form.reset({
         name: project.name,
         code: project.code,
       });
     }
-  }, [project]);
+  }, [form, project]);
 
   const updateProjectMutation = useMutation({
-    mutationFn: (data: ProjectFormData) => {
+    mutationFn: (data: z.infer<typeof projectFormSchema>) => {
       if (!project) throw new Error("No project selected");
       return pb.collection("projects").update(project.id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       onOpenChange(false);
-      setFormData({ name: "", code: "" });
+      form.reset();
       toast.success(TEXT.projects.edit.success);
     },
     onError: (error) => {
@@ -64,10 +80,9 @@ export function EditProjectDialog({
     },
   });
 
-  const handleEditSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateProjectMutation.mutate(formData);
-  };
+  function onSubmit(values: z.infer<typeof projectFormSchema>) {
+    updateProjectMutation.mutate(values);
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -78,44 +93,44 @@ export function EditProjectDialog({
             {TEXT.projects.edit.description}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleEditSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="edit-name">
-                {TEXT.projects.create.form.name}
-              </label>
-              <Input
-                id="edit-name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="edit-code">
-                {TEXT.projects.create.form.code}
-              </label>
-              <Input
-                id="edit-code"
-                value={formData.code}
-                onChange={(e) =>
-                  setFormData({ ...formData, code: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={updateProjectMutation.isPending}>
-              {updateProjectMutation.isPending ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
-              ) : null}
-              {TEXT.projects.edit.submit}
-            </Button>
-          </DialogFooter>
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{TEXT.projects.create.form.name}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{TEXT.projects.create.form.code}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit" disabled={updateProjectMutation.isPending}>
+                {updateProjectMutation.isPending ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : null}
+                {TEXT.projects.edit.submit}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

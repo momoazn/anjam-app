@@ -1,7 +1,6 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { useIsInitialAdmin } from "./pb-hooks";
 import { useAuthStore } from "./store/auth-store";
 
 // Lazy load pages
@@ -18,11 +17,11 @@ const Reports = React.lazy(() => import("@/pages/reports"));
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore().isLoggedIn;
 
-  const { data: isInitialAdmin } = useIsInitialAdmin();
+  // const { data: isInitialAdmin } = useIsInitialAdmin();
 
-  if (!isInitialAdmin) {
-    return <Navigate to="/register" replace />;
-  }
+  // if (!isInitialAdmin) {
+  //   return <Navigate to="/register" replace />;
+  // }
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;

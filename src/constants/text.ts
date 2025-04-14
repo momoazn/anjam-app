@@ -247,7 +247,9 @@ export const TEXT = {
       description: "یک پروژه جدید به فضای کاری خود اضافه کنید.",
       form: {
         name: "نام",
+        nameRequired: "وارد کردن نام الزامی است",
         code: "کد",
+        codeLength: "کد باید 3 کاراکتر باشد",
       },
       submit: "ایجاد پروژه",
       success: "پروژه با موفقیت ایجاد شد",
@@ -298,6 +300,8 @@ export const TEXT = {
       assignee: "مسئول",
       unassigned: "اختصاص‌نیافته",
       selectProject: "انتخاب پروژه",
+      success: "تسک با موفقیت ایجاد شد",
+      error: "خطا در ایجاد تسک: {error}",
       buttons: {
         create: "ایجاد",
         creating: "در حال ایجاد...",
@@ -310,6 +314,16 @@ export const TEXT = {
     },
     details: {
       title: "جزئیات تسک",
+      buttons: {
+        save: "ذخیره",
+        saving: "در حال ذخیره...",
+        cancel: "انصراف",
+      },
+    },
+    edit: {
+      title: "ویرایش تسک",
+      success: "تسک با موفقیت به‌روزرسانی شد",
+      error: "خطا در به‌روزرسانی تسک: {error}",
       buttons: {
         save: "ذخیره",
         saving: "در حال ذخیره...",

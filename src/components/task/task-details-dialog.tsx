@@ -1,9 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal } from "lucide-react";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Loader2, MoreHorizontal } from "lucide-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { z } from "zod";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,20 +14,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TEXT } from "@/constants/text";
-import { pb, TaskWithProject } from "@/lib/pocketbase";
+import { pb } from "@/lib/pocketbase";
 import {
   TasksPriorityOptions,
-  TasksRecord,
+  TasksResponse,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import {
@@ -33,74 +36,98 @@ import {
   taskStatusColors,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
-import { cn, getUserInitials } from "@/lib/utils";
 import { useSpecificProjectUsers } from "@/pb-hooks";
-import { useAuthStore } from "@/store/auth-store";
 
-interface TaskDetailsDialogProps {
+const taskFormSchema = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
+  description: z.string(),
+  assignee: z.string(),
+  priority: z.nativeEnum(TasksPriorityOptions),
+  status: z.nativeEnum(TasksStatusOptions),
+});
+
+interface EditTaskDialogProps {
   children: React.ReactNode;
-  task: TaskWithProject;
+  task: TasksResponse;
   onSuccess?: () => void;
 }
 
-export function TaskDetailsDialog({
+export function EditTaskDialog({
   children,
   task,
   onSuccess,
-}: TaskDetailsDialogProps) {
-  const user = useAuthStore().user;
-  const queryClient = useQueryClient();
-  const projectId = task.project;
+}: EditTaskDialogProps) {
+  const { id: projectId } = useParams<{ id: string }>();
 
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState(task.title ?? "");
-  const [description, setDescription] = useState(task.description ?? "");
-  const [assignedUser, setAssignedUser] = useState<string>(
-    task.assignee ?? TEXT.tasks.addTask.unassigned,
-  );
-  const [priority, setPriority] = useState<TasksPriorityOptions>(task.priority);
-  const [status, setStatus] = useState<TasksStatusOptions>(task.status);
-
-  // Fetch project users
-  const { data: projectUsers } = useSpecificProjectUsers(
-    projectId,
-    Boolean(projectId),
-  );
-
-  const { mutate: updateTask, isPending: isUpdatingTask } = useMutation({
-    mutationFn: (updates: Partial<TasksRecord>) =>
-      pb.collection("tasks").update(task.id, updates),
-    onSuccess: () => {
-      onSuccess?.();
-      queryClient.invalidateQueries({ queryKey: ["tasks-full-list"] });
+  const form = useForm<z.infer<typeof taskFormSchema>>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues: {
+      title: task.title,
+      description: task.description,
+      assignee: task.assignee ?? TEXT.tasks.addTask.unassigned,
+      priority: task.priority,
+      status: task.status,
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    updateTask({
-      title,
-      description,
-      priority,
-      status,
-      assignee:
-        assignedUser !== TEXT.tasks.addTask.unassigned
-          ? assignedUser
-          : undefined,
+  useEffect(() => {
+    form.reset({
+      title: task.title,
+      description: task.description,
+      assignee: task.assignee ?? TEXT.tasks.addTask.unassigned,
+      priority: task.priority,
+      status: task.status,
     });
+  }, [form, task]);
 
-    setOpen(false);
-  };
+  // Fetch project users when in project context
+  const { data: projectUsers } = useSpecificProjectUsers(
+    projectId ?? task.project,
+    true,
+  );
 
+  // Fetch all users when not in project context
+  const { data: users } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => pb.collection("users").getFullList(),
+    enabled: !projectId, // Enable only when we don't have a project ID
+  });
+
+  // Use projectUsers when in project context, otherwise use all users
+  const assignees = projectId ? projectUsers : users;
+
+  const { mutate: updateTask, isPending: isUpdatingTask } = useMutation({
+    mutationFn: (data: z.infer<typeof taskFormSchema>) => {
+      return pb.collection("tasks").update(task.id, {
+        ...data,
+        assignee:
+          data.assignee === TEXT.tasks.addTask.unassigned
+            ? null
+            : data.assignee,
+      });
+    },
+    onSuccess: () => {
+      onSuccess?.();
+      toast.success(TEXT.tasks.edit.success);
+    },
+    onError: (error) => {
+      toast.error(TEXT.tasks.edit.error.replace("{error}", error.message));
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof taskFormSchema>) {
+    updateTask(values);
+  }
+
+  const status = form.watch("status");
+  const priority = form.watch("priority");
   const StatusIcon = taskStatusIcons[status];
   const statusIconColor = taskStatusColors[status];
   const PriorityIcon = priorityIcons[priority];
   const priorityIconColor = priorityColors[priority];
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="overflow-y-auto sm:max-h-[95vh] sm:max-w-[800px]">
         <DialogTitle className="flex items-center gap-2 text-base">
@@ -109,150 +136,167 @@ export function TaskDetailsDialog({
           </span>
           <span>{TEXT.tasks.details.title}</span>
         </DialogTitle>
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          <div className="space-y-0">
-            <Input
-              id="title"
-              className="h-auto border-none p-0 text-xl font-semibold shadow-none focus-visible:ring-0"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={TEXT.tasks.addTask.issueTitle}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="mt-4 space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="h-auto border-none p-0 text-xl font-semibold shadow-none focus-visible:ring-0"
+                      placeholder={TEXT.tasks.addTask.issueTitle}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="mt-4 space-y-0">
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setDescription(e.target.value)
-              }
-              className="min-h-[60px] w-full resize-none border-none bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0"
-              placeholder={TEXT.tasks.addTask.description}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      className="min-h-[60px] w-full resize-none border-none bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0"
+                      placeholder={TEXT.tasks.addTask.description}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2 py-2">
-            {/* Status Select */}
-            <Select
-              value={status}
-              onValueChange={(value) => setStatus(value as TasksStatusOptions)}
-            >
-              <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
-                <StatusIcon className={cn("size-4", statusIconColor)} />
-                <SelectValue placeholder={TEXT.tasks.addTask.status} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todo">{TEXT.tasks.status.todo}</SelectItem>
-                <SelectItem value="in_progress">
-                  {TEXT.tasks.status.in_progress}
-                </SelectItem>
-                <SelectItem value="done">{TEXT.tasks.status.done}</SelectItem>
-                <SelectItem value="canceled">
-                  {TEXT.tasks.status.canceled}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => {
+                          // Toggle through statuses
+                          const currentIndex = Object.values(
+                            TasksStatusOptions,
+                          ).indexOf(field.value);
+                          const nextIndex =
+                            (currentIndex + 1) %
+                            Object.values(TasksStatusOptions).length;
+                          field.onChange(
+                            Object.values(TasksStatusOptions)[nextIndex],
+                          );
+                        }}
+                      >
+                        <StatusIcon className={`size-3 ${statusIconColor}`} />
+                        {TEXT.tasks.status[field.value]}
+                      </Button>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            {/* Priority Select */}
-            <Select
-              value={priority}
-              onValueChange={(value) =>
-                setPriority(value as TasksPriorityOptions)
-              }
-            >
-              <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
-                <PriorityIcon className={cn("size-4", priorityIconColor)} />
-                <SelectValue placeholder={TEXT.tasks.addTask.priority} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">{TEXT.tasks.priority.low}</SelectItem>
-                <SelectItem value="medium">
-                  {TEXT.tasks.priority.medium}
-                </SelectItem>
-                <SelectItem value="high">{TEXT.tasks.priority.high}</SelectItem>
-                <SelectItem value="urgent">
-                  {TEXT.tasks.priority.urgent}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => {
+                          // Toggle through priorities
+                          const currentIndex = Object.values(
+                            TasksPriorityOptions,
+                          ).indexOf(field.value);
+                          const nextIndex =
+                            (currentIndex + 1) %
+                            Object.values(TasksPriorityOptions).length;
+                          field.onChange(
+                            Object.values(TasksPriorityOptions)[nextIndex],
+                          );
+                        }}
+                      >
+                        <PriorityIcon
+                          className={`size-3 ${priorityIconColor}`}
+                        />
+                        {TEXT.tasks.priority[field.value]}
+                      </Button>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            {/* Assignee Select */}
-            <Select value={assignedUser} onValueChange={setAssignedUser}>
-              <SelectTrigger className="h-7 w-auto gap-1 border-dashed px-2 text-xs focus:ring-0 focus:ring-offset-0">
-                <Avatar className="h-5 w-5">
-                  <AvatarFallback className="bg-muted text-[10px]">
-                    {getUserInitials(assignedUser)}
-                  </AvatarFallback>
-                </Avatar>
-                <SelectValue placeholder={TEXT.tasks.addTask.assignee} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TEXT.tasks.addTask.unassigned}>
-                  {TEXT.tasks.addTask.unassigned}
-                </SelectItem>
-                {projectUsers &&
-                  projectUsers?.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.username}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+              <FormField
+                control={form.control}
+                name="assignee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Toggle through assignees
+                          const assigneeList = [
+                            TEXT.tasks.addTask.unassigned,
+                            ...(assignees?.map((u) => u.id) ?? []),
+                          ];
+                          const currentIndex = assigneeList.indexOf(
+                            field.value,
+                          );
+                          const nextIndex =
+                            (currentIndex + 1) % assigneeList.length;
+                          field.onChange(assigneeList[nextIndex]);
+                        }}
+                      >
+                        {field.value === TEXT.tasks.addTask.unassigned
+                          ? TEXT.tasks.addTask.unassigned
+                          : (assignees?.find((u) => u.id === field.value)
+                              ?.username ?? field.value)}
+                      </Button>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            {/* Tags */}
-            {task.tags && task.tags.length > 0 && (
-              <div className="flex items-center space-x-1">
-                {task.tags.map((tag) => {
-                  let tagColor = "bg-muted text-muted-foreground border-border";
-                  if (tag === TEXT.tasks.tags.bug)
-                    tagColor =
-                      "bg-destructive/10 text-destructive border-destructive/20";
-                  if (tag === TEXT.tasks.tags.feature)
-                    tagColor = "bg-primary/10 text-primary border-primary/20";
-                  if (tag === TEXT.tasks.tags.improvement)
-                    tagColor = "bg-accent/10 text-accent border-accent/20";
-                  return (
-                    <Badge
-                      key={tag}
-                      variant="outline"
-                      className={`rounded px-1.5 py-0.5 text-xs font-medium ${tagColor}`}
-                    >
-                      {tag}
-                    </Badge>
-                  );
-                })}
-              </div>
-            )}
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-7 w-7 border-dashed"
+                aria-label={TEXT.tasks.addTask.buttons.more}
+              >
+                <MoreHorizontal className="h-3 w-3" />
+              </Button>
+            </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-7 w-7 border-dashed"
-              aria-label={TEXT.tasks.addTask.buttons.more}
-            >
-              <MoreHorizontal className="h-3 w-3" />
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-end gap-2 pt-0">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setOpen(false)}
-            >
-              {TEXT.tasks.details.buttons.cancel}
-            </Button>
-            <Button size="sm" type="submit" disabled={isUpdatingTask}>
-              {isUpdatingTask
-                ? TEXT.tasks.details.buttons.saving
-                : TEXT.tasks.details.buttons.save}
-            </Button>
-          </div>
-        </form>
+            <div className="flex items-center justify-end pt-0">
+              <Button size="sm" type="submit" disabled={isUpdatingTask}>
+                {isUpdatingTask ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : null}
+                {TEXT.tasks.edit.buttons.save}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

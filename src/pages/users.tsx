@@ -30,19 +30,19 @@ export default function Users() {
     },
   });
 
+  const isAdmin = user?.role === UsersRoleOptions.admin;
+
   const handleEdit = (user: UsersResponse) => {
+    if (!isAdmin) return;
     setSelectedUser(user);
     setIsEditOpen(true);
   };
 
   const handleDelete = (user: UsersResponse) => {
+    if (!isAdmin) return;
     setSelectedUser(user);
     setIsDeleteOpen(true);
   };
-
-  const isAdmin =
-    user?.role === UsersRoleOptions.admin ||
-    user?.role === UsersRoleOptions.supervisor;
 
   // Redirect non-admin users
   if (!isAdmin) {

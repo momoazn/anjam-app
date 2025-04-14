@@ -10,7 +10,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { format } from "date-fns-jalali";
-import { TaskDetailsDialog } from "./task-details-dialog";
+import { EditTaskDialog } from "./task-details-dialog";
 
 // Helper to format date like "فروردین 21"
 const formatDateShort = (dateString: string) => {
@@ -37,7 +37,7 @@ export function TaskListItem({
   const priorityIconColor = priorityColors[task.priority];
 
   return (
-    <TaskDetailsDialog task={task} onSuccess={onSuccess}>
+    <EditTaskDialog task={task} onSuccess={onSuccess}>
       <div
         className={cn(
           "group flex cursor-pointer items-center justify-between px-2 py-1.5 transition-colors duration-200 ease-in-out hover:bg-gray-50",
@@ -108,6 +108,6 @@ export function TaskListItem({
           </Avatar>
         </div>
       </div>
-    </TaskDetailsDialog>
+    </EditTaskDialog>
   );
 }

@@ -1,5 +1,4 @@
 import {
-  IconChartBar,
   IconDashboard,
   IconFolder,
   IconInnerShadowTop,
