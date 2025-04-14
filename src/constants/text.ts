@@ -159,6 +159,14 @@ export const TEXT = {
         adminCreationFailed: "خطا در ایجاد ادمین اولیه",
       },
     },
+    errors: {
+      usernameRequired: "وارد کردن نام کاربری الزامی است",
+      passwordRequired: "وارد کردن رمز عبور الزامی است",
+      passwordConfirmRequired: "وارد کردن تأیید رمز عبور الزامی است",
+      passwordsMismatch: "رمزهای عبور مطابقت ندارند",
+      firstNameRequired: "وارد کردن نام الزامی است",
+      lastNameRequired: "وارد کردن نام خانوادگی الزامی است",
+    },
   },
   users: {
     title: "کاربران",
@@ -187,6 +195,14 @@ export const TEXT = {
     create: {
       button: "کاربر جدید",
       title: "ایجاد کاربر جدید",
+      success: "کاربر با موفقیت ایجاد شد",
+      error: "خطا در ایجاد کاربر: {error}",
+      errors: {
+        usernameRequired: "وارد کردن نام کاربری الزامی است",
+        passwordRequired: "وارد کردن رمز عبور الزامی است",
+        passwordConfirmRequired: "وارد کردن تأیید رمز عبور الزامی است",
+        passwordsMismatch: "رمزهای عبور مطابقت ندارند",
+      },
     },
     edit: {
       title: "ویرایش کاربر",

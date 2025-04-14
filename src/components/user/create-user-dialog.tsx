@@ -32,14 +32,15 @@ import { pb } from "@/lib/pocketbase";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 import { useMemo } from "react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
-  username: z.string().min(1, { message: "Username is required" }),
-  password: z
+  username: z.string().min(1, { message: TEXT.auth.errors.usernameRequired }),
+  password: z.string().min(8, { message: TEXT.auth.errors.passwordRequired }),
+  first_name: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
-  first_name: z.string().min(1, { message: "First name is required" }),
-  last_name: z.string().min(1, { message: "Last name is required" }),
+    .min(1, { message: TEXT.auth.errors.firstNameRequired }),
+  last_name: z.string().min(1, { message: TEXT.auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
 });
 
@@ -86,12 +87,19 @@ export function CreateUserDialog({
 
   const { mutate: createUser, isPending } = useMutation({
     mutationFn: (values: z.infer<typeof formSchema>) => {
-      return pb.collection("users").create(values);
+      return pb.collection("users").create({
+        ...values,
+        passwordConfirm: values.password,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       form.reset();
       onOpenChange(false);
+      toast.success(TEXT.users.create.success);
+    },
+    onError: () => {
+      toast.error(TEXT.users.create.error);
     },
   });
 
@@ -133,6 +141,7 @@ export function CreateUserDialog({
                 </FormItem>
               )}
             />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}

@@ -45,11 +45,11 @@ const data = {
       url: "/users",
       icon: IconUsers,
     },
-    {
-      title: TEXT.navigation.reports,
-      url: "/reports",
-      icon: IconChartBar,
-    },
+    // {
+    //   title: TEXT.navigation.reports,
+    //   url: "/reports",
+    //   icon: IconChartBar,
+    // },
   ],
 
   navSecondary: [

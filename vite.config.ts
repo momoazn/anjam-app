@@ -15,4 +15,47 @@ export default defineConfig({
       "/api": "http://localhost:8090",
     },
   },
+  build: {
+    target: "esnext",
+    minify: "terser",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: [
+            "react",
+          "react-dom",
+            "react-router-dom",
+            "@tanstack/react-query",
+            "recharts",
+          ],
+          ui: [
+            "@radix-ui/react-alert-dialog",
+            "@radix-ui/react-avatar",
+            "@radix-ui/react-checkbox",
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-label",
+            "@radix-ui/react-select",
+            "@radix-ui/react-separator",
+            "@radix-ui/react-slot",
+            "@radix-ui/react-switch",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-toggle",
+            "@radix-ui/react-toggle-group",
+            "@radix-ui/react-tooltip",
+          ],
+        },
+      },
+    },
+    sourcemap: true,
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "@tanstack/react-query",
+      "recharts",
+    ],
+  },
 });
