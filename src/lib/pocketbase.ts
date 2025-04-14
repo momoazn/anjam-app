@@ -1,6 +1,10 @@
 import PocketBase from "pocketbase";
 
-import type { TypedPocketBase } from "./pocketbase-types";
+import type {
+  ProjectsResponse,
+  TasksResponse,
+  TypedPocketBase,
+} from "./pocketbase-types";
 
 // During development, the PocketBase server is running on localhost:8090
 // and the frontend is running on another port, so we need to specify the host
@@ -11,3 +15,5 @@ import type { TypedPocketBase } from "./pocketbase-types";
 const baseUrl = import.meta.env.PROD ? "/" : "http://127.0.0.1:8090/";
 
 export const pb = new PocketBase(baseUrl) as TypedPocketBase;
+
+export type TaskWithProject = TasksResponse<{ project: ProjectsResponse }>;

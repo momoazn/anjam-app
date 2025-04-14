@@ -12,6 +12,7 @@ import {
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
 import { getTasksQueryKey } from "@/pb-hooks";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { AddTaskDialog } from "./add-task-dialog";
 
 interface TaskListHeaderProps {
@@ -24,6 +25,12 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
   const { id: projectId } = useParams<{ id: string }>();
 
   const IconComponent = taskStatusIcons[status];
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({
+      queryKey: getTasksQueryKey(projectId),
+    });
+  };
 
   return (
     <header
@@ -40,16 +47,10 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
         <h2 className="me-2 text-sm font-medium text-gray-800">
           {TEXT.tasks.status[status]}
         </h2>
-        <span className="text-sm text-gray-400">{taskCount}</span>
+        <span className="text-sm text-gray-400">{digitsEnToFa(taskCount)}</span>
       </div>
-      <AddTaskDialog
-        initialStatus={status}
-        onSuccess={() => {
-          queryClient.invalidateQueries({
-            queryKey: getTasksQueryKey(projectId),
-          });
-        }}
-      >
+
+      <AddTaskDialog initialStatus={status} onSuccess={onSuccess}>
         <Button
           id="add-task-button"
           variant="ghost"

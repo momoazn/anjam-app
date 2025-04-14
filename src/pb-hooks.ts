@@ -4,14 +4,14 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { pb } from "./lib/pocketbase";
+import { pb, TaskWithProject } from "./lib/pocketbase";
 import {
   ProjectsResponse,
   TasksResponse,
   UsersRoleOptions,
 } from "./lib/pocketbase-types";
 
-const getTasks = (projectId?: string) => {
+const getTasks = (projectId?: string, withProject = false) => {
   const userId = pb.authStore.record?.id;
   const filters = [];
   if (userId === UsersRoleOptions.employee) {
@@ -21,10 +21,11 @@ const getTasks = (projectId?: string) => {
     filters.push(`project = "${projectId}"`);
   }
 
-  return pb.collection("tasks").getFullList<TasksResponse>({
+  return pb.collection("tasks").getFullList<TaskWithProject>({
     batch: 100,
     filter: filters.join(" && "),
     sort: "order",
+    expand: withProject ? "project" : undefined,
   });
 };
 
@@ -35,13 +36,14 @@ export const getTasksQueryKey = (projectId?: string) => [
 
 export const getUseTasksQueryOptions = (
   projectId?: string,
-): UseQueryOptions<TasksResponse[], Error, TasksResponse[], string[]> => ({
+  withProject = false,
+): UseQueryOptions<TaskWithProject[], Error, TaskWithProject[], string[]> => ({
   queryKey: getTasksQueryKey(projectId),
-  queryFn: () => getTasks(projectId),
+  queryFn: () => getTasks(projectId, withProject),
 });
 
-export const useTasks = (projectId?: string) => {
-  return useQuery(getUseTasksQueryOptions(projectId));
+export const useTasks = (projectId?: string, withProject = false) => {
+  return useQuery(getUseTasksQueryOptions(projectId, withProject));
 };
 
 export const useUpdateTask = () => {

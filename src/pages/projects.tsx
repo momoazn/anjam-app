@@ -10,6 +10,7 @@ import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export default function Projects() {
   const user = useAuthStore().user;
@@ -45,7 +46,7 @@ export default function Projects() {
             <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-600">
               {TEXT.projects.list.count.replace(
                 "{count}",
-                (userProjects?.length ?? 0).toString(),
+                digitsEnToFa(userProjects?.length ?? 0).toString(),
               )}
             </span>
           </div>

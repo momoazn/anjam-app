@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { TEXT } from "@/constants/text";
-import { TasksResponse } from "@/lib/pocketbase-types";
+import { TaskWithProject } from "@/lib/pocketbase";
 import { cn, getUserInitials } from "@/lib/utils";
 import {
   priorityColors,
@@ -20,11 +20,16 @@ const formatDateShort = (dateString: string) => {
 };
 
 interface TaskListItemProps {
-  task: TasksResponse;
+  task: TaskWithProject;
   className?: string;
+  showProject?: boolean;
 }
 
-export function TaskListItem({ task, className }: TaskListItemProps) {
+export function TaskListItem({
+  task,
+  className,
+  showProject = false,
+}: TaskListItemProps) {
   const StatusIcon = taskStatusIcons[task.status];
   const statusIconColor = taskStatusColors[task.status];
   const PriorityIcon = priorityIcons[task.priority];
@@ -49,6 +54,14 @@ export function TaskListItem({ task, className }: TaskListItemProps) {
         <span className="truncate text-sm text-gray-800" title={task.title}>
           {task.title}
         </span>
+        {showProject && (
+          <Badge
+            variant="outline"
+            className="rounded border-gray-200 bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
+          >
+            {task.expand?.project?.name}
+          </Badge>
+        )}
       </div>
 
       {/* Right side: Tags, Date, Assignee */}

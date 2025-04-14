@@ -1,27 +1,34 @@
 import { useParams } from "react-router-dom";
 
 import { useProject, useTasks } from "@/pb-hooks";
-import { TasksResponse } from "@/lib/pocketbase-types";
+import {
+  ProjectsResponse,
+  TasksResponse,
+  TasksStatusOptions,
+} from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
 import { TaskListGroup } from "@/components/task/task-list-group";
-import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { useMemo } from "react";
 import { TEXT } from "@/constants/text";
 
 export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
-  const { data: tasks, isLoading: isLoadingTasks } = useTasks(projectId);
+
   const { data: project } = useProject(projectId as string);
+  const { data: tasks, isLoading: isLoadingTasks } = useTasks(projectId, true);
 
   const groupedTasks = useMemo(() => {
     return isLoadingTasks
-      ? ([] as unknown as Record<TasksStatusOptions, TasksResponse[]>)
+      ? ([] as unknown as Record<
+          TasksStatusOptions,
+          TasksResponse<ProjectsResponse>[]
+        >)
       : tasks?.reduce(
           (acc, task) => {
             (acc[task.status] = acc[task.status] || []).push(task);
             return acc;
           },
-          {} as Record<TasksStatusOptions, TasksResponse[]>,
+          {} as Record<TasksStatusOptions, TasksResponse<ProjectsResponse>[]>,
         );
   }, [tasks, isLoadingTasks]);
 
