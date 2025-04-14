@@ -15,23 +15,47 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   Pie,
   PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
 
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartTooltip,
-} from "@/components/ui/chart";
 import { pb } from "@/lib/pocketbase";
 import {
   TasksResponse,
   TasksStatusOptions,
   UsersRoleOptions,
 } from "@/lib/pocketbase-types";
+
+// Types for chart data
+type StatusDistributionData = {
+  name: string;
+  value: number;
+  status: TasksStatusOptions;
+};
+
+type PriorityDistributionData = {
+  name: string;
+  value: number;
+  priority: string;
+};
+
+type CompletionTrendData = {
+  date: string;
+  completed: number;
+};
+
+type UserPerformanceData = {
+  name: string;
+  totalTasks: number;
+  completedTasks: number;
+  completionRate: number;
+};
 
 // Custom hook to fetch task statistics
 function useTaskStats() {
@@ -41,22 +65,22 @@ function useTaskStats() {
       const tasks = await pb.collection("tasks").getFullList<TasksResponse>();
 
       // Status distribution
-      const statusDistribution = Object.values(TasksStatusOptions).map(
-        (status) => ({
-          name:
-            status === "todo"
-              ? "در انتظار"
-              : status === "in_progress"
-                ? "در حال انجام"
-                : status === "done"
-                  ? "تکمیل شده"
-                  : status === "canceled"
-                    ? "لغو شده"
-                    : status,
-          value: tasks.filter((task) => task.status === status).length,
-          status,
-        }),
-      );
+      const statusDistribution: StatusDistributionData[] = Object.values(
+        TasksStatusOptions,
+      ).map((status) => ({
+        name:
+          status === "todo"
+            ? "در انتظار"
+            : status === "in_progress"
+              ? "در حال انجام"
+              : status === "done"
+                ? "تکمیل شده"
+                : status === "canceled"
+                  ? "لغو شده"
+                  : status,
+        value: tasks.filter((task) => task.status === status).length,
+        status,
+      }));
 
       // Tasks completed over time (last 30 days)
       const thirtyDaysAgo = new Date();
@@ -78,28 +102,31 @@ function useTaskStats() {
         );
 
       // Convert to array format for charts
-      const completionTrend = Object.entries(completedOverTime).map(
-        ([date, count]) => ({
-          date,
-          completed: count,
-        }),
-      );
+      const completionTrend: CompletionTrendData[] = Object.entries(
+        completedOverTime,
+      ).map(([date, count]) => ({
+        date,
+        completed: count,
+      }));
 
       // Priority distribution
-      const priorityDistribution = ["urgent", "high", "medium", "low"].map(
-        (priority) => ({
-          name:
-            priority === "urgent"
-              ? "فوری"
-              : priority === "high"
-                ? "اولویت بالا"
-                : priority === "medium"
-                  ? "اولویت متوسط"
-                  : "اولویت پایین",
-          value: tasks.filter((task) => task.priority === priority).length,
-          priority,
-        }),
-      );
+      const priorityDistribution: PriorityDistributionData[] = [
+        "urgent",
+        "high",
+        "medium",
+        "low",
+      ].map((priority) => ({
+        name:
+          priority === "urgent"
+            ? "فوری"
+            : priority === "high"
+              ? "اولویت بالا"
+              : priority === "medium"
+                ? "اولویت متوسط"
+                : "اولویت پایین",
+        value: tasks.filter((task) => task.priority === priority).length,
+        priority,
+      }));
 
       return {
         statusDistribution,
@@ -128,7 +155,7 @@ function useUserPerformance() {
       const users = await pb.collection("users").getFullList();
       const tasks = await pb.collection("tasks").getFullList<TasksResponse>();
 
-      const userStats = users
+      const userStats: UserPerformanceData[] = users
         .filter((user) => user.role === UsersRoleOptions.employee)
         .map((user) => {
           const userTasks = tasks.filter((task) => task.assignee === user.id);
@@ -180,6 +207,51 @@ function StatCard({
   );
 }
 
+const COLORS = {
+  TODO: "#9333ea",
+  IN_PROGRESS: "#f97316",
+  DONE: "#10b981",
+  CANCELED: "#ef4444",
+  URGENT: "#ef4444",
+  HIGH: "#f97316",
+  MEDIUM: "#f59e0b",
+  LOW: "#10b981",
+} as const;
+
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  payload?: Array<{
+    name: string;
+    value: number;
+    color: string;
+    dataKey: string;
+  }>;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-card rounded-md border p-3 shadow-md">
+        <p className="text-muted-foreground text-xs font-medium">{label}</p>
+        {payload.map((entry, index) => (
+          <p
+            key={`item-${index}`}
+            className="text-sm font-medium"
+            style={{ color: entry.color }}
+          >
+            {`${entry.name}: ${digitsEnToFa(entry.value)}`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+};
+
 export default function Reports() {
   const { data: taskStats, isLoading: isLoadingTaskStats } = useTaskStats();
   const { data: userStats, isLoading: isLoadingUserStats } =
@@ -187,7 +259,7 @@ export default function Reports() {
 
   if (isLoadingTaskStats || isLoadingUserStats) {
     return (
-      <div className="mx-auto mt-20">
+      <div className="flex h-[80vh] items-center justify-center">
         <Loader2 className="size-10 animate-spin" />
       </div>
     );
@@ -227,20 +299,13 @@ export default function Reports() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Task Status Distribution */}
-        <div className="rounded-lg border bg-white p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-6">
           <div className="mb-4 flex items-center gap-2">
             <PieChartIcon className="h-5 w-5" />
             <h2 className="text-lg font-semibold">توزیع وضعیت وظایف</h2>
           </div>
-          <div className="h-64">
-            <ChartContainer
-              config={{
-                todo: { color: "#9333ea" },
-                in_progress: { color: "#f97316" },
-                done: { color: "#10b981" },
-                canceled: { color: "#ef4444" },
-              }}
-            >
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={taskStats?.statusDistribution}
@@ -249,46 +314,52 @@ export default function Reports() {
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
-                  label={(entry) =>
-                    `${entry.name}: ${digitsEnToFa(entry.value)}`
+                  fill="#8884d8"
+                  paddingAngle={2}
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
                   }
                 >
-                  {taskStats?.statusDistribution.map((entry) => (
+                  {taskStats?.statusDistribution.map((entry, index) => (
                     <Cell
-                      key={`cell-${entry.status}`}
+                      key={`cell-${index}`}
                       fill={
                         entry.status === "todo"
-                          ? "#9333ea"
+                          ? COLORS.TODO
                           : entry.status === "in_progress"
-                            ? "#f97316"
+                            ? COLORS.IN_PROGRESS
                             : entry.status === "done"
-                              ? "#10b981"
-                              : "#ef4444"
+                              ? COLORS.DONE
+                              : COLORS.CANCELED
                       }
                     />
                   ))}
                 </Pie>
-                <ChartTooltip />
-                <ChartLegend />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  align="center"
+                  formatter={(value) => (
+                    <span className="text-muted-foreground text-xs">
+                      {value}
+                    </span>
+                  )}
+                />
               </PieChart>
-            </ChartContainer>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* Priority Distribution */}
-        <div className="rounded-lg border bg-white p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-6">
           <div className="mb-4 flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
             <h2 className="text-lg font-semibold">توزیع اولویت وظایف</h2>
           </div>
-          <div className="h-64">
-            <ChartContainer
-              config={{
-                high: { color: "#ef4444" },
-                medium: { color: "#f59e0b" },
-                low: { color: "#10b981" },
-              }}
-            >
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={taskStats?.priorityDistribution}
@@ -297,54 +368,86 @@ export default function Reports() {
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
-                  label={(entry) =>
-                    `${entry.name}: ${digitsEnToFa(entry.value)}`
+                  fill="#8884d8"
+                  paddingAngle={2}
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
                   }
                 >
-                  {taskStats?.priorityDistribution.map((entry) => (
+                  {taskStats?.priorityDistribution.map((entry, index) => (
                     <Cell
-                      key={`cell-${entry.priority}`}
+                      key={`cell-${index}`}
                       fill={
-                        entry.priority === "high"
-                          ? "#ef4444"
-                          : entry.priority === "medium"
-                            ? "#f59e0b"
-                            : "#10b981"
+                        entry.priority === "urgent"
+                          ? COLORS.URGENT
+                          : entry.priority === "high"
+                            ? COLORS.HIGH
+                            : entry.priority === "medium"
+                              ? COLORS.MEDIUM
+                              : COLORS.LOW
                       }
                     />
                   ))}
                 </Pie>
-                <ChartTooltip />
-                <ChartLegend />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  align="center"
+                  formatter={(value) => (
+                    <span className="text-muted-foreground text-xs">
+                      {value}
+                    </span>
+                  )}
+                />
               </PieChart>
-            </ChartContainer>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Task Completion Trend */}
-        <div className="rounded-lg border bg-white p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-6">
           <div className="mb-4 flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
             <h2 className="text-lg font-semibold">
               روند تکمیل وظایف (۳۰ روز گذشته)
             </h2>
           </div>
-          <div className="h-64">
-            <ChartContainer
-              config={{
-                completed: { color: "#3b82f6" },
-              }}
-            >
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={taskStats?.completionTrend}
-                margin={{ left: 0, right: 20 }}
+                margin={{ top: 10, right: 10, left: 0, bottom: 30 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <ChartTooltip />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  className="stroke-muted/20"
+                />
+                <XAxis
+                  dataKey="date"
+                  angle={-45}
+                  textAnchor="end"
+                  tick={{ fontSize: 10 }}
+                  height={60}
+                  className="text-muted-foreground"
+                />
+                <YAxis
+                  tick={{ fontSize: 10 }}
+                  tickFormatter={(value) => digitsEnToFa(value)}
+                  className="text-muted-foreground"
+                />
+                <Tooltip
+                  formatter={(value) => [
+                    digitsEnToFa(value as number),
+                    "وظایف تکمیل شده",
+                  ]}
+                  labelFormatter={(label) => `تاریخ: ${label}`}
+                  content={<CustomTooltip />}
+                />
                 <Bar
                   dataKey="completed"
                   name="وظایف تکمیل شده"
@@ -352,31 +455,50 @@ export default function Reports() {
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
-            </ChartContainer>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* User Performance */}
-        <div className="rounded-lg border bg-white p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-6">
           <div className="mb-4 flex items-center gap-2">
             <Users className="h-5 w-5" />
             <h2 className="text-lg font-semibold">عملکرد کاربران برتر</h2>
           </div>
-          <div className="h-64">
-            <ChartContainer
-              config={{
-                completionRate: { color: "#10b981" },
-              }}
-            >
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={userStats}
                 layout="vertical"
-                margin={{ left: 100, right: 20, top: 10, bottom: 10 }}
+                margin={{ top: 10, right: 10, left: 80, bottom: 10 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" unit="%" domain={[0, 100]} />
-                <YAxis dataKey="name" type="category" />
-                <ChartTooltip />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  horizontal={false}
+                  className="stroke-muted/20"
+                />
+                <XAxis
+                  type="number"
+                  domain={[0, 100]}
+                  tickFormatter={(value) => `${digitsEnToFa(value)}%`}
+                  tick={{ fontSize: 10 }}
+                  className="text-muted-foreground"
+                />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tick={{ fontSize: 10 }}
+                  width={80}
+                  className="text-muted-foreground"
+                />
+                <Tooltip
+                  formatter={(value) => [
+                    `${digitsEnToFa(value as number)}%`,
+                    "درصد تکمیل",
+                  ]}
+                  labelFormatter={(label) => `کاربر: ${label}`}
+                  content={<CustomTooltip />}
+                />
                 <Bar
                   dataKey="completionRate"
                   name="درصد تکمیل"
@@ -384,7 +506,7 @@ export default function Reports() {
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
-            </ChartContainer>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
