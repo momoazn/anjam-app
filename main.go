@@ -37,6 +37,11 @@ const (
 	accessOnlyParticipatedTasksRule    = `@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id`
 )
 
+type ProjectUsersResponse struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+}
+
 func main() {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
 		DefaultDataDir: "./pb_data",
@@ -51,6 +56,22 @@ func main() {
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
+
+	// --- Custom API Endpoints ---
+	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		se.Router.GET("/api/tm/projects/{id}/users", func(e *core.RequestEvent) error {
+			projectId := e.Request.PathValue("id")
+			log.Printf("Fetching users for project %s", projectId)
+			var users []ProjectUsersResponse
+			err := e.App.DB().NewQuery("SELECT * FROM users WHERE id IN (SELECT user FROM users_projects WHERE project = {:projectId})").Bind(dbx.Params{"projectId": projectId}).All(&users)
+			log.Printf("Users: %v", users)
+			if err != nil {
+				return e.JSON(400, err.Error())
+			}
+			return e.JSON(200, users)
+		})
+		return se.Next()
+	})
 
 	// --- Start Application ---
 	startApp(app)

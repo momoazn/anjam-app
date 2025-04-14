@@ -28,7 +28,7 @@ const getTasks = (projectId?: string) => {
   });
 };
 
-const getTasksQueryKey = (projectId?: string) => [
+export const getTasksQueryKey = (projectId?: string) => [
   "tasks-full-list",
   projectId ?? "",
 ];

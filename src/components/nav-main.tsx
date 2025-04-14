@@ -1,5 +1,6 @@
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
-import { NavLink } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { NavLink, useParams } from "react-router-dom";
 
 import {
   SidebarGroup,
@@ -10,13 +11,8 @@ import {
 } from "@/components/ui/sidebar";
 import { TEXT } from "@/constants/text";
 import { cn } from "@/lib/utils";
-import { lazy } from "react";
-
-const AddTaskDialog = lazy(() =>
-  import("./task/add-task-dialog").then((module) => ({
-    default: module.AddTaskDialog,
-  })),
-);
+import { getTasksQueryKey } from "@/pb-hooks";
+import { AddTaskDialog } from "./task/add-task-dialog";
 
 export function NavMain({
   items,
@@ -27,12 +23,21 @@ export function NavMain({
     icon?: Icon;
   }[];
 }) {
+  const queryClient = useQueryClient();
+  const { id: projectId } = useParams<{ id: string }>();
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <AddTaskDialog>
+            <AddTaskDialog
+              onSuccess={() => {
+                queryClient.invalidateQueries({
+                  queryKey: getTasksQueryKey(projectId),
+                });
+              }}
+            >
               <SidebarMenuButton
                 tooltip={TEXT.navigation.quickCreate.tooltip}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 cursor-pointer duration-200 ease-linear"
