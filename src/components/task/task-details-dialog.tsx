@@ -44,6 +44,7 @@ const taskFormSchema = z.object({
   assignee: z.string(),
   priority: z.nativeEnum(TasksPriorityOptions),
   status: z.nativeEnum(TasksStatusOptions),
+  deadline: z.date().optional(),
 });
 
 interface EditTaskDialogProps {
@@ -67,6 +68,7 @@ export function EditTaskDialog({
       assignee: task.assignee ?? TEXT.tasks.addTask.unassigned,
       priority: task.priority,
       status: task.status,
+      deadline: task.deadline ? new Date(task.deadline) : undefined,
     },
   });
 
@@ -77,6 +79,7 @@ export function EditTaskDialog({
       assignee: task.assignee ?? TEXT.tasks.addTask.unassigned,
       priority: task.priority,
       status: task.status,
+      deadline: task.deadline ? new Date(task.deadline) : undefined,
     });
   }, [form, task]);
 
@@ -104,6 +107,7 @@ export function EditTaskDialog({
           data.assignee === TEXT.tasks.addTask.unassigned
             ? null
             : data.assignee,
+        deadline: data.deadline?.toISOString(),
       });
     },
     onSuccess: () => {

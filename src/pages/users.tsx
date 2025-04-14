@@ -31,6 +31,8 @@ export default function Users() {
   });
 
   const isAdmin = user?.role === UsersRoleOptions.admin;
+  const isSupervisor = user?.role === UsersRoleOptions.supervisor;
+  const canViewPage = isAdmin || isSupervisor;
 
   const handleEdit = (user: UsersResponse) => {
     if (!isAdmin) return;
@@ -44,8 +46,8 @@ export default function Users() {
     setIsDeleteOpen(true);
   };
 
-  // Redirect non-admin users
-  if (!isAdmin) {
+  // Redirect non-admin and non-supervisor users
+  if (!canViewPage) {
     return <Navigate to="/" replace />;
   }
 

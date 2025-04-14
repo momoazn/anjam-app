@@ -67,7 +67,7 @@ func main() {
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 
 	// --- Bind Record Event Handlers ---
-	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
+	// app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
 
 	// --- Custom API Endpoints ---

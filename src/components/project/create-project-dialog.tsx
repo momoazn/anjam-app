@@ -24,6 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
+import { useAuthStore } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 
 const projectFormSchema = z.object({
@@ -43,6 +44,7 @@ export function CreateProjectDialog({
   onOpenChange,
 }: CreateProjectDialogProps) {
   const queryClient = useQueryClient();
+  const user = useAuthStore().user;
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
@@ -53,7 +55,11 @@ export function CreateProjectDialog({
 
   const createProjectMutation = useMutation({
     mutationFn: (data: z.infer<typeof projectFormSchema>) => {
-      return pb.collection("projects").create(data);
+      return pb.collection("projects").create({
+        ...data,
+        code: data.code.toUpperCase(),
+        supervisor: user?.id,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });

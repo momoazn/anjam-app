@@ -1,12 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2, MoreHorizontal } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  Loader2,
+  MoreHorizontal,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +26,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
@@ -36,8 +46,11 @@ import {
   taskStatusColors,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
+import { cn } from "@/lib/utils";
 import { useSpecificProjectUsers } from "@/pb-hooks";
 import { useAuthStore } from "@/store/auth-store";
+import { format } from "date-fns-jalali";
+import { faIR } from "date-fns/locale";
 
 const taskFormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -46,6 +59,7 @@ const taskFormSchema = z.object({
   priority: z.nativeEnum(TasksPriorityOptions),
   status: z.nativeEnum(TasksStatusOptions),
   project: z.string().min(1, { message: "Project is required" }),
+  deadline: z.date().optional(),
 });
 
 interface CreateTaskDialogProps {
@@ -72,6 +86,7 @@ export function CreateTaskDialog({
       priority: TasksPriorityOptions.medium,
       status: initialStatus,
       project: projectId ?? "",
+      deadline: undefined,
     },
   });
 
@@ -121,6 +136,7 @@ export function CreateTaskDialog({
         values.assignee !== TEXT.tasks.addTask.unassigned
           ? values.assignee
           : undefined,
+      deadline: values.deadline?.toISOString(),
     });
   }
 
@@ -176,6 +192,50 @@ export function CreateTaskDialog({
             />
 
             <div className="flex items-center gap-2">
+              <FormField
+                control={form.control}
+                name="deadline"
+                render={({ field }) => (
+                  <FormItem>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            size="sm"
+                            className={cn(
+                              "gap-2",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            <CalendarIcon className="size-3" />
+                            {field.value ? (
+                              format(field.value, "yyyy MMMM d", {
+                                locale: faIR,
+                              })
+                            ) : (
+                              <span>موعد مقرر</span>
+                            )}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          locale={faIR}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="status"
