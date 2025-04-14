@@ -19,21 +19,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import {
   TasksPriorityOptions,
   TasksRecord,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { cn, getUserInitials } from "@/lib/utils";
 import {
   priorityColors,
   priorityIcons,
   taskStatusColors,
   taskStatusIcons,
-} from "@/store/task-store";
+} from "@/lib/tasks-utils";
+import { cn, getUserInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { TEXT } from "@/constants/text";
 
 interface AddTaskDialogProps {
   children: React.ReactNode;

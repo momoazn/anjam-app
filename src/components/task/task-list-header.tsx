@@ -1,16 +1,15 @@
-import { lazy } from "react";
 import { Plus } from "lucide-react";
+import { lazy } from "react";
 
-import { cn } from "@/lib/utils";
+import { TEXT } from "@/constants/text";
 import {
-  TaskStatus,
   taskStatusBgColors,
   taskStatusColors,
   taskStatusIcons,
-} from "@/store/task-store";
+} from "@/lib/tasks-utils";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { TEXT } from "@/constants/text";
-
+import { TasksStatusOptions } from "@/lib/pocketbase-types";
 const AddTaskDialog = lazy(() =>
   import("./add-task-dialog").then((module) => ({
     default: module.AddTaskDialog,
@@ -19,7 +18,7 @@ const AddTaskDialog = lazy(() =>
 
 interface TaskListHeaderProps {
   taskCount: number;
-  status: TaskStatus;
+  status: TasksStatusOptions;
 }
 
 export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {

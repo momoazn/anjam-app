@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 
 import { useProject, useTasks } from "@/pb-hooks";
 import { TasksResponse } from "@/lib/pocketbase-types";
-import { statusOrder } from "@/store/task-store";
+import { statusOrder } from "@/lib/tasks-utils";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { useMemo } from "react";

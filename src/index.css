@@ -1,10 +1,16 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/Vazirmatn-VariableFont_wght.ttf") format("truetype");
+}
+
 /* RTL Support */
 :root {
   direction: rtl;
+  font-family: "Vazirmatn", sans-serif;
 }
-
-@import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 

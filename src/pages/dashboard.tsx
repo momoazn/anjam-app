@@ -1,6 +1,7 @@
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { useProjects, useTasks } from "@/pb-hooks";
-import { taskStatusBgColors } from "@/store/task-store";
+import { taskStatusBgColors } from "@/lib/tasks-utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   BarChart3,
   CheckCircle,
@@ -81,25 +82,25 @@ export default function Dashboard() {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="کل وظایف"
-          value={stats?.total || 0}
+          value={stats?.total ?? 0}
           icon={<ListTodo className="h-6 w-6 text-blue-500" />}
           color="bg-blue-50"
         />
         <StatCard
           title="تکمیل شده"
-          value={stats?.completed || 0}
+          value={stats?.completed ?? 0}
           icon={<CheckCircle className="h-6 w-6 text-green-500" />}
           color="bg-green-50"
         />
         <StatCard
           title="در حال انجام"
-          value={stats?.inProgress || 0}
+          value={stats?.inProgress ?? 0}
           icon={<Clock className="h-6 w-6 text-orange-500" />}
           color="bg-orange-50"
         />
         <StatCard
           title="در انتظار"
-          value={stats?.pending || 0}
+          value={stats?.pending ?? 0}
           icon={<BarChart3 className="h-6 w-6 text-purple-500" />}
           color="bg-purple-50"
         />
@@ -120,7 +121,8 @@ export default function Dashboard() {
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-semibold">{project.name}</h3>
                 <span className="text-sm text-gray-500">
-                  {project.completedTasks}/{project.taskCount} وظیفه
+                  {digitsEnToFa(project.completedTasks)} از{" "}
+                  {digitsEnToFa(project.taskCount)} وظیفه
                 </span>
               </div>
               <div className="mb-2 h-2 w-full rounded-full bg-gray-200">
@@ -130,8 +132,8 @@ export default function Dashboard() {
                 />
               </div>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>{project.progress}% تکمیل شده</span>
-                <span>{project.taskCount} وظیفه</span>
+                <span>٪{digitsEnToFa(project.progress)} تکمیل شده</span>
+                <span>{digitsEnToFa(project.taskCount)} وظیفه</span>
               </div>
             </div>
           ))}
@@ -212,7 +214,7 @@ function StatCard({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="mt-2 text-3xl font-bold">{value}</p>
+          <p className="mt-2 text-3xl font-bold">{digitsEnToFa(value)}</p>
         </div>
         {icon}
       </div>

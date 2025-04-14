@@ -8,7 +8,7 @@ import {
   priorityIcons,
   taskStatusColors,
   taskStatusIcons,
-} from "@/store/task-store";
+} from "@/lib/tasks-utils";
 
 // Helper to format date like "Apr 11"
 const formatDateShort = (dateString: string) => {

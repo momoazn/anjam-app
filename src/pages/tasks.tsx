@@ -3,7 +3,7 @@ import { TEXT } from "@/constants/text";
 import { TasksResponse } from "@/lib/pocketbase-types";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { useTasks } from "@/pb-hooks";
-import { statusOrder } from "@/store/task-store";
+import { statusOrder } from "@/lib/tasks-utils";
 import { useMemo } from "react";
 
 export default function Tasks() {
