@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash } from "lucide-react";
+import { Loader2, Plus, Trash } from "lucide-react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -40,6 +42,7 @@ export default function ProjectUsers() {
   const isAdmin = user?.role === UsersRoleOptions.admin;
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
   const canManageUsers = isAdmin || isSupervisor;
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
 
   // Get project users
   const { data: projectUsers } = useSpecificProjectUsers(id as string);
@@ -52,7 +55,7 @@ export default function ProjectUsers() {
   });
 
   // Add user to project
-  const { mutate: addUserToProject } = useMutation({
+  const { mutate: addUserToProject, isPending: isAddingUser } = useMutation({
     mutationFn: async (userId: string) => {
       return pb.collection("users_projects").create({
         user: userId,
@@ -61,23 +64,35 @@ export default function ProjectUsers() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["project-users", id] });
+      setIsAddUserOpen(false);
+      toast.success(TEXT.projects.users.addSuccess);
+    },
+    onError: (error) => {
+      toast.error(TEXT.projects.users.addError);
+      console.error("Error adding user to project:", error);
     },
   });
 
   // Remove user from project
-  const { mutate: removeUserFromProject } = useMutation({
-    mutationFn: async (userId: string) => {
-      const records = await pb.collection("users_projects").getFullList({
-        filter: `user = "${userId}" && project = "${id}"`,
-      });
-      if (records.length > 0) {
-        return pb.collection("users_projects").delete(records[0].id);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["project-users", id] });
-    },
-  });
+  const { mutate: removeUserFromProject, isPending: isRemovingUser } =
+    useMutation({
+      mutationFn: async (userId: string) => {
+        const records = await pb.collection("users_projects").getFullList({
+          filter: `user = "${userId}" && project = "${id}"`,
+        });
+        if (records.length > 0) {
+          return pb.collection("users_projects").delete(records[0].id);
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["project-users", id] });
+        toast.success(TEXT.projects.users.removeSuccess);
+      },
+      onError: (error) => {
+        toast.error(TEXT.projects.users.removeError);
+        console.error("Error removing user from project:", error);
+      },
+    });
 
   // Filter out users that are already in the project
   const availableUsers = allUsers?.filter(
@@ -96,7 +111,7 @@ export default function ProjectUsers() {
           )}
         </div>
         {canManageUsers && (
-          <Dialog>
+          <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 size-4" />
@@ -111,6 +126,7 @@ export default function ProjectUsers() {
                 onValueChange={(value) => {
                   addUserToProject(value);
                 }}
+                disabled={isAddingUser}
               >
                 <SelectTrigger>
                   <SelectValue
@@ -170,8 +186,13 @@ export default function ProjectUsers() {
                       size="icon"
                       className="text-red-600"
                       onClick={() => removeUserFromProject(user.id)}
+                      disabled={isRemovingUser}
                     >
-                      <Trash className="size-4" />
+                      {isRemovingUser ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <Trash className="size-4" />
+                      )}
                     </Button>
                   </TableCell>
                 )}

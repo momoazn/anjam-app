@@ -211,6 +211,10 @@ export const TEXT = {
         role: "نقش",
         actions: "عملیات",
       },
+      addSuccess: "کاربر با موفقیت به پروژه اضافه شد",
+      addError: "خطا در افزودن کاربر به پروژه",
+      removeSuccess: "کاربر با موفقیت از پروژه حذف شد",
+      removeError: "خطا در حذف کاربر از پروژه",
     },
     list: {
       noProjects: "هیچ پروژه‌ای موجود نیست",
