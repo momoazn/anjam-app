@@ -1,83 +1,12 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { TaskListGroup } from "@/components/task/task-list-group";
-import { pb } from "@/lib/pocketbase";
-import {
-  TasksResponse,
-  TasksStatusOptions,
-  UsersRoleOptions,
-} from "@/lib/pocketbase-types";
+import { TasksResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
+import { useTasks } from "@/pb-hooks";
 import { statusOrder } from "@/store/task-store";
 
-const getTasks = () => {
-  const userId = pb.authStore.record?.id;
-  return pb.collection("tasks").getFullList<TasksResponse>({
-    batch: 100,
-    filter:
-      userId === UsersRoleOptions.employee ? `assignee = "${userId}"` : "",
-    sort: "order",
-  });
-};
-
-const useTasksQueryOptions: UseQueryOptions<
-  TasksResponse[],
-  Error,
-  TasksResponse[],
-  string[]
-> = {
-  queryKey: ["tasks-full-list"],
-  queryFn: () => getTasks(),
-};
-
 export default function Dashboard() {
-  const queryClient = useQueryClient();
-  const { data: userTasks, isPending: isLoadingTasks } =
-    useQuery(useTasksQueryOptions);
-
-  const { mutate: _updateTask } = useMutation({
-    mutationFn: async ({
-      taskId,
-      updates,
-    }: {
-      taskId: string;
-      updates: Partial<TasksResponse>;
-    }) => {
-      return pb.collection("tasks").update(taskId, updates);
-    },
-    onMutate: async ({ taskId, updates }) => {
-      await queryClient.cancelQueries({
-        queryKey: useTasksQueryOptions.queryKey,
-      });
-
-      const previousTasks = queryClient.getQueryData<TasksResponse[]>(
-        useTasksQueryOptions.queryKey,
-      );
-
-      if (previousTasks) {
-        const newTasks = previousTasks.map((t) =>
-          t.id === taskId ? { ...t, ...updates } : t,
-        );
-
-        queryClient.setQueryData<TasksResponse[]>(
-          useTasksQueryOptions.queryKey,
-          newTasks,
-        );
-      }
-
-      return { previousTasks };
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: useTasksQueryOptions.queryKey,
-      });
-    },
-  });
+  const { data: userTasks, isPending: isLoadingTasks } = useTasks();
 
   const groupedTasks = useMemo(() => {
     return isLoadingTasks

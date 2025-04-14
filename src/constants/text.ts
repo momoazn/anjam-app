@@ -107,6 +107,10 @@ export const TEXT = {
   app: {
     name: "مدیر تسک‌ها",
   },
+  common: {
+    cancel: "انصراف",
+    submit: "تایید",
+  },
   navigation: {
     dashboard: "داشبورد",
     projects: "پروژه‌ها",
@@ -156,14 +160,7 @@ export const TEXT = {
     list: {
       noProjects: "هیچ پروژه‌ای موجود نیست",
       count: "{count} پروژه",
-    },
-    table: {
-      columns: {
-        code: "کد",
-        name: "نام",
-        created: "تاریخ ایجاد",
-        actions: "عملیات",
-      },
+      viewTasks: "مشاهده تسک‌ها",
     },
     create: {
       button: "پروژه جدید",
@@ -185,7 +182,10 @@ export const TEXT = {
       error: "خطا در به‌روزرسانی پروژه: {error}",
     },
     delete: {
-      confirm: "آیا از حذف این پروژه اطمینان دارید؟",
+      title: "حذف پروژه",
+      confirm:
+        "آیا از حذف این پروژه اطمینان دارید؟ با حذف پروژه، تمامی تسک های مربوط به آن نیز حذف خواهند شد.",
+      submit: "حذف پروژه",
       success: "پروژه با موفقیت حذف شد",
       error: "خطا در حذف پروژه: {error}",
     },

@@ -16,7 +16,7 @@ import { join } from "path";
 const ADMIN_COUNT = 3;
 const SUPERVISOR_COUNT = 5;
 const EMPLOYEE_COUNT = 10;
-const PROJECT_COUNT = 5;
+const PROJECT_COUNT = 10;
 const TASKS_COUNT = 30;
 const COMMENTS_COUNT = 100;
 const MOCK_DATA_DIR = join(import.meta.dirname, "..", "mock-data");
