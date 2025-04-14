@@ -15,22 +15,78 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Legend,
   Pie,
   PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
 
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { pb } from "@/lib/pocketbase";
 import {
   TasksResponse,
   TasksStatusOptions,
   UsersRoleOptions,
 } from "@/lib/pocketbase-types";
+
+// Chart configurations
+const statusChartConfig = {
+  todo: {
+    label: "در انتظار",
+    color: "#9333ea",
+  },
+  in_progress: {
+    label: "در حال انجام",
+    color: "#f97316",
+  },
+  done: {
+    label: "تکمیل شده",
+    color: "#10b981",
+  },
+  canceled: {
+    label: "لغو شده",
+    color: "#ef4444",
+  },
+};
+
+const priorityChartConfig = {
+  urgent: {
+    label: "فوری",
+    color: "#ef4444",
+  },
+  high: {
+    label: "اولویت بالا",
+    color: "#f97316",
+  },
+  medium: {
+    label: "اولویت متوسط",
+    color: "#f59e0b",
+  },
+  low: {
+    label: "اولویت پایین",
+    color: "#10b981",
+  },
+};
+
+const completionTrendConfig = {
+  completed: {
+    label: "وظایف تکمیل شده",
+    color: "#3b82f6",
+  },
+};
+
+const userPerformanceConfig = {
+  completionRate: {
+    label: "درصد تکمیل",
+    color: "#10b981",
+  },
+};
 
 // Types for chart data
 type StatusDistributionData = {
@@ -207,51 +263,6 @@ function StatCard({
   );
 }
 
-const COLORS = {
-  TODO: "#9333ea",
-  IN_PROGRESS: "#f97316",
-  DONE: "#10b981",
-  CANCELED: "#ef4444",
-  URGENT: "#ef4444",
-  HIGH: "#f97316",
-  MEDIUM: "#f59e0b",
-  LOW: "#10b981",
-} as const;
-
-interface CustomTooltipProps extends TooltipProps<number, string> {
-  payload?: Array<{
-    name: string;
-    value: number;
-    color: string;
-    dataKey: string;
-  }>;
-}
-
-const CustomTooltip: React.FC<CustomTooltipProps> = ({
-  active,
-  payload,
-  label,
-}) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-card rounded-md border p-3 shadow-md">
-        <p className="text-muted-foreground text-xs font-medium">{label}</p>
-        {payload.map((entry, index) => (
-          <p
-            key={`item-${index}`}
-            className="text-sm font-medium"
-            style={{ color: entry.color }}
-          >
-            {`${entry.name}: ${digitsEnToFa(entry.value)}`}
-          </p>
-        ))}
-      </div>
-    );
-  }
-
-  return null;
-};
-
 export default function Reports() {
   const { data: taskStats, isLoading: isLoadingTaskStats } = useTaskStats();
   const { data: userStats, isLoading: isLoadingUserStats } =
@@ -305,7 +316,7 @@ export default function Reports() {
             <h2 className="text-lg font-semibold">توزیع وضعیت وظایف</h2>
           </div>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ChartContainer config={statusChartConfig}>
               <PieChart>
                 <Pie
                   data={taskStats?.statusDistribution}
@@ -321,34 +332,30 @@ export default function Reports() {
                     `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
                   }
                 >
-                  {taskStats?.statusDistribution.map((entry, index) => (
+                  {taskStats?.statusDistribution.map((entry) => (
                     <Cell
-                      key={`cell-${index}`}
-                      fill={
-                        entry.status === "todo"
-                          ? COLORS.TODO
-                          : entry.status === "in_progress"
-                            ? COLORS.IN_PROGRESS
-                            : entry.status === "done"
-                              ? COLORS.DONE
-                              : COLORS.CANCELED
-                      }
+                      key={entry.status}
+                      fill={statusChartConfig[entry.status].color}
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend
-                  layout="horizontal"
-                  verticalAlign="bottom"
-                  align="center"
-                  formatter={(value) => (
-                    <span className="text-muted-foreground text-xs">
-                      {value}
-                    </span>
-                  )}
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value, name) => [
+                        digitsEnToFa(value as number),
+                        name,
+                      ]}
+                    />
+                  }
+                />
+                <ChartLegend
+                  content={
+                    <ChartLegendContent className="text-muted-foreground text-xs" />
+                  }
                 />
               </PieChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </div>
 
@@ -359,7 +366,7 @@ export default function Reports() {
             <h2 className="text-lg font-semibold">توزیع اولویت وظایف</h2>
           </div>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ChartContainer config={priorityChartConfig}>
               <PieChart>
                 <Pie
                   data={taskStats?.priorityDistribution}
@@ -375,34 +382,34 @@ export default function Reports() {
                     `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
                   }
                 >
-                  {taskStats?.priorityDistribution.map((entry, index) => (
+                  {taskStats?.priorityDistribution.map((entry) => (
                     <Cell
-                      key={`cell-${index}`}
+                      key={entry.priority}
                       fill={
-                        entry.priority === "urgent"
-                          ? COLORS.URGENT
-                          : entry.priority === "high"
-                            ? COLORS.HIGH
-                            : entry.priority === "medium"
-                              ? COLORS.MEDIUM
-                              : COLORS.LOW
+                        priorityChartConfig[
+                          entry.priority as keyof typeof priorityChartConfig
+                        ].color
                       }
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend
-                  layout="horizontal"
-                  verticalAlign="bottom"
-                  align="center"
-                  formatter={(value) => (
-                    <span className="text-muted-foreground text-xs">
-                      {value}
-                    </span>
-                  )}
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value, name) => [
+                        digitsEnToFa(value as number),
+                        name,
+                      ]}
+                    />
+                  }
+                />
+                <ChartLegend
+                  content={
+                    <ChartLegendContent className="text-muted-foreground text-xs" />
+                  }
                 />
               </PieChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </div>
       </div>
@@ -417,7 +424,7 @@ export default function Reports() {
             </h2>
           </div>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ChartContainer config={completionTrendConfig}>
               <BarChart
                 data={taskStats?.completionTrend}
                 margin={{ top: 10, right: 10, left: 0, bottom: 30 }}
@@ -440,22 +447,25 @@ export default function Reports() {
                   tickFormatter={(value) => digitsEnToFa(value)}
                   className="text-muted-foreground"
                 />
-                <Tooltip
-                  formatter={(value) => [
-                    digitsEnToFa(value as number),
-                    "وظایف تکمیل شده",
-                  ]}
-                  labelFormatter={(label) => `تاریخ: ${label}`}
-                  content={<CustomTooltip />}
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => [
+                        digitsEnToFa(value as number),
+                        "وظایف تکمیل شده",
+                      ]}
+                      labelFormatter={(label) => `تاریخ: ${label}`}
+                    />
+                  }
                 />
                 <Bar
                   dataKey="completed"
                   name="وظایف تکمیل شده"
-                  fill="#3b82f6"
+                  fill={completionTrendConfig.completed.color}
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </div>
 
@@ -466,7 +476,7 @@ export default function Reports() {
             <h2 className="text-lg font-semibold">عملکرد کاربران برتر</h2>
           </div>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ChartContainer config={userPerformanceConfig}>
               <BarChart
                 data={userStats}
                 layout="vertical"
@@ -491,22 +501,25 @@ export default function Reports() {
                   width={80}
                   className="text-muted-foreground"
                 />
-                <Tooltip
-                  formatter={(value) => [
-                    `${digitsEnToFa(value as number)}%`,
-                    "درصد تکمیل",
-                  ]}
-                  labelFormatter={(label) => `کاربر: ${label}`}
-                  content={<CustomTooltip />}
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => [
+                        `${digitsEnToFa(value as number)}%`,
+                        "درصد تکمیل",
+                      ]}
+                      labelFormatter={(label) => `کاربر: ${label}`}
+                    />
+                  }
                 />
                 <Bar
                   dataKey="completionRate"
                   name="درصد تکمیل"
-                  fill="#10b981"
+                  fill={userPerformanceConfig.completionRate.color}
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </div>
       </div>
