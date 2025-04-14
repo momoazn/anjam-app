@@ -1,52 +1,62 @@
 [
   {
-    "name": "لوکس-گلپایگانی",
-    "code": "MQN",
-    "created": "2025-04-14T03:09:27.863Z"
+    "name": "هوشیار و پسران",
+    "code": "OQJ",
+    "supervisor": "hwshyar62",
+    "created": "2025-04-14T04:30:50.723Z"
   },
   {
-    "name": "گل محمدی و پسران",
-    "code": "AMN",
-    "created": "2025-04-13T16:50:53.125Z"
+    "name": "عبدالکریمی-قهرمان",
+    "code": "KDO",
+    "supervisor": "hwshyar62",
+    "created": "2025-04-13T20:56:02.831Z"
   },
   {
-    "name": "علی‌زمانی کارخانه",
-    "code": "FTO",
-    "created": "2025-04-14T08:34:22.149Z"
+    "name": "نجفی, قهستانی و مجاهد",
+    "code": "DLS",
+    "supervisor": "wys_hashmyan",
+    "created": "2025-04-14T16:52:03.325Z"
   },
   {
-    "name": "عبدالملکی کارخانه",
-    "code": "AIR",
-    "created": "2025-04-14T05:57:53.113Z"
+    "name": "گلپایگانی, عنایت و منوچهری",
+    "code": "CYO",
+    "supervisor": "shhryar_ghny28",
+    "created": "2025-04-14T11:01:02.752Z"
   },
   {
-    "name": "قنبری-مظفر",
-    "code": "TTG",
-    "created": "2025-04-14T09:02:56.735Z"
+    "name": "علی عسگری-میردامادی",
+    "code": "SFA",
+    "supervisor": "glrw53",
+    "created": "2025-04-14T09:33:32.181Z"
   },
   {
-    "name": "فهمیده, فرامرزی و نقیب‌زاده",
-    "code": "FBO",
-    "created": "2025-04-14T07:50:20.886Z"
+    "name": "فانی-علی عسگری",
+    "code": "SXN",
+    "supervisor": "hwshyar62",
+    "created": "2025-04-14T12:27:57.951Z"
   },
   {
-    "name": "واثقی-نقدی",
-    "code": "YBN",
-    "created": "2025-04-14T11:47:47.879Z"
+    "name": "علی‌زمانی گروه",
+    "code": "FKC",
+    "supervisor": "wys_hashmyan",
+    "created": "2025-04-14T10:27:12.374Z"
   },
   {
-    "name": "نوبخت-عصار",
-    "code": "YME",
-    "created": "2025-04-13T14:42:53.862Z"
+    "name": "واعظی-کاکاوند",
+    "code": "NUM",
+    "supervisor": "hwshyar62",
+    "created": "2025-04-14T03:47:46.430Z"
   },
   {
-    "name": "فریاد, محدثی و واعظ",
-    "code": "LUR",
-    "created": "2025-04-14T10:08:51.354Z"
+    "name": "کیانی و پسران",
+    "code": "GTY",
+    "supervisor": "wys_hashmyan",
+    "created": "2025-04-14T02:41:43.408Z"
   },
   {
-    "name": "مجتهدی, کوشکی و نقیب‌زاده",
-    "code": "SMZ",
-    "created": "2025-04-14T04:05:26.106Z"
+    "name": "عالی گروه",
+    "code": "SET",
+    "supervisor": "frjad.waez6bwzadh",
+    "created": "2025-04-13T19:27:22.945Z"
   }
 ]

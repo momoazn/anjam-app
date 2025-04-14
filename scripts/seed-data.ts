@@ -125,9 +125,15 @@ async function seedDatabase() {
     // 5. Insert Projects
     console.log(`Inserting ${mockProjects.length} projects...`);
     batch = pb.createBatch();
-    mockProjects.forEach((project: MockProject) =>
-      batch.collection("projects").create(project),
-    );
+    mockProjects.forEach((project: MockProject) => {
+      const supervisorId = userIdMap.get(project.supervisor);
+      if (supervisorId) {
+        batch.collection("projects").create({
+          ...project,
+          supervisor: supervisorId,
+        });
+      }
+    });
     result = await batch.send();
     console.log(`Insert projects result: ${result[0].status}`);
     const createdProjects = await pb

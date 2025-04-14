@@ -15,6 +15,7 @@
     "pb:typegen": "bunx --bun pocketbase-typegen --db ./pb_data/data.db --out src/lib/pocketbase-types.ts",
     "pb:data": "bun run scripts/generate-data.ts",
     "pb:seed": "bun run scripts/seed-data.ts",
+    "pb:truncate": "bun run scripts/truncate.ts",
     "dev:all": "concurrently \"bun run dev\" \"bun run pb:dev\" -n \"Dev Server,PocketBase Server\""
   },
   "dependencies": {

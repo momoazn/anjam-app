@@ -13,7 +13,7 @@ import { mkdir } from "node:fs/promises"; // Use Node's fs for directory creatio
 import { join } from "path";
 
 // --- Constants ---
-const ADMIN_COUNT = 3;
+const ADMIN_COUNT = 2;
 const SUPERVISOR_COUNT = 5;
 const EMPLOYEE_COUNT = 10;
 const PROJECT_COUNT = 10;
@@ -39,7 +39,9 @@ type GeneratedUser = Omit<UsersRecord, "id" | "tokenKey"> & {
   passwordConfirm: string;
 };
 
-type GeneratedProject = Omit<ProjectsRecord, "id">;
+type GeneratedProject = Omit<ProjectsRecord, "id"> & {
+  supervisor: string; // Required, using username
+};
 
 type GeneratedTask = Omit<TasksRecord, "id" | "expand"> & {
   display_id: string; // Required
@@ -147,10 +149,14 @@ function generateTasks(
   });
 }
 
-function generateProjects(count: number = PROJECT_COUNT): GeneratedProject[] {
+function generateProjects(
+  supervisors: GeneratedUser[],
+  count: number = PROJECT_COUNT,
+): GeneratedProject[] {
   return Array.from({ length: count }, () => ({
     name: faker.company.name(),
     code: faker.string.alpha({ length: 3, casing: "upper" }),
+    supervisor: faker.helpers.arrayElement(supervisors).username,
     created: faker.date.recent().toISOString(),
   }));
 }
@@ -194,7 +200,7 @@ async function generate() {
   const employees = users.filter(
     (user) => user.role === UsersRoleOptions.employee,
   );
-  const projects = generateProjects();
+  const projects = generateProjects(supervisors);
   const userProjects = generateUserProjects(users, projects);
   const tasks = generateTasks(supervisors, employees, projects);
   const comments = generateComments(tasks, supervisors);
