@@ -104,6 +104,7 @@ export type ProjectsRecord = {
   created?: IsoDateString;
   id: string;
   name?: string;
+  supervisor?: RecordIdString;
   updated?: IsoDateString;
 };
 

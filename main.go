@@ -31,10 +31,23 @@ var staticFiles embed.FS
 var schemaJSON []byte
 
 const (
-	adminAccessRule                    = `@request.auth.role = "admin"`
-	accessOnlyParticipatedProjectsRule = `@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id`
-	supervisorAccessRule               = `@request.auth.role = "supervisor"`
-	accessOnlyParticipatedTasksRule    = `@collection.tasks.project = @collection.projects.id && @collection.projects.id = @collection.users_projects.project.id && @collection.tasks.id = @collection.projects.id`
+	// Base role rules
+	adminAccessRule    = `@request.auth.role = "admin"`
+	supervisorRoleRule = `@request.auth.role = "supervisor"`
+
+	// Project access rules
+	projectSupervisorRule         = `supervisor.id = @request.auth.id`
+	projectParticipantRule        = `@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id`
+	projectCreateAsSupervisorRule = `@request.body.supervisor = @request.auth.id`
+
+	// Task access rules
+	taskProjectSupervisorRule  = `@collection.tasks.project.supervisor.id = @request.auth.id`
+	taskProjectParticipantRule = `@collection.tasks.project.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id`
+	taskCreateInProjectRule    = `@collection.projects.id = @request.body.project && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))`
+
+	// User access rules
+	userSelfAccessRule          = `@request.auth.id = id`
+	userSharedProjectAccessRule = `@collection.users.id = @collection.users_projects.user.id && @collection.users_projects.project.id = @collection.projects.id && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))`
 )
 
 type ProjectUsersResponse struct {
@@ -219,14 +232,15 @@ func configureCollectionRules(e *core.ServeEvent) error {
 	projectsCollection, err := e.App.FindCollectionByNameOrId("projects")
 	if err != nil {
 		log.Printf("Error finding 'projects' collection: %v", err)
-		return err // Collection must exist
+		return err
 	}
 
-	projectsCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedProjectsRule))
-	projectsCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedProjectsRule))
-	projectsCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedProjectsRule, supervisorAccessRule))
-	projectsCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedProjectsRule, supervisorAccessRule))
-	projectsCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedProjectsRule, supervisorAccessRule))
+	// Project rules
+	projectsCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s) || %s`, adminAccessRule, supervisorRoleRule, projectSupervisorRule, projectParticipantRule))
+	projectsCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s) || %s`, adminAccessRule, supervisorRoleRule, projectSupervisorRule, projectParticipantRule))
+	projectsCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, supervisorRoleRule, projectCreateAsSupervisorRule))
+	projectsCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, supervisorRoleRule, projectSupervisorRule))
+	projectsCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, supervisorRoleRule, projectSupervisorRule))
 
 	if err := e.App.Save(projectsCollection); err != nil {
 		log.Printf("Error saving 'projects' collection rules: %v", err)
@@ -237,17 +251,57 @@ func configureCollectionRules(e *core.ServeEvent) error {
 	tasksCollection, err := e.App.FindCollectionByNameOrId("tasks")
 	if err != nil {
 		log.Printf("Error finding 'tasks' collection: %v", err)
-		return err // Collection must exist
+		return err
 	}
 
-	tasksCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedTasksRule))
-	tasksCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedTasksRule))
-	tasksCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (%s)`, adminAccessRule, accessOnlyParticipatedTasksRule)) // Assuming anyone participating can create tasks
-	tasksCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedTasksRule, supervisorAccessRule))
-	tasksCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, accessOnlyParticipatedTasksRule, supervisorAccessRule))
+	// Task rules
+	tasksCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
+	tasksCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
+	tasksCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, taskCreateInProjectRule))
+	tasksCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
+	tasksCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, taskProjectSupervisorRule))
 
 	if err := e.App.Save(tasksCollection); err != nil {
 		log.Printf("Error saving 'tasks' collection rules: %v", err)
+		return err
+	}
+
+	// Configure Users_Projects Collection
+	usersProjectsCollection, err := e.App.FindCollectionByNameOrId("users_projects")
+	if err != nil {
+		log.Printf("Error finding 'users_projects' collection: %v", err)
+		return err
+	}
+
+	// Users_Projects rules
+	usersProjectsCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id = project.id && @request.auth.id = @collection.users_projects.user.id)`, adminAccessRule))
+	usersProjectsCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id = project.id && @request.auth.id = @collection.users_projects.user.id)`, adminAccessRule))
+	usersProjectsCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (@collection.projects.id = @request.body.project && @collection.projects.supervisor.id = @request.auth.id)`, adminAccessRule))
+	usersProjectsCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id`, adminAccessRule))
+	usersProjectsCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id`, adminAccessRule))
+
+	if err := e.App.Save(usersProjectsCollection); err != nil {
+		log.Printf("Error saving 'users_projects' collection rules: %v", err)
+		return err
+	}
+
+	// Configure Users Collection
+	usersCollection, err := e.App.FindCollectionByNameOrId("users")
+	if err != nil {
+		log.Printf("Error finding 'users' collection: %v", err)
+		return err
+	}
+
+	// Users rules - Allow viewing users in shared projects
+	usersCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, userSelfAccessRule, userSharedProjectAccessRule))
+	usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, userSelfAccessRule, userSharedProjectAccessRule))
+	// Keep existing rules for user management
+	usersCollection.CreateRule = types.Pointer("")
+	usersCollection.UpdateRule = types.Pointer(userSelfAccessRule)
+	usersCollection.DeleteRule = types.Pointer(userSelfAccessRule)
+
+	if err := e.App.Save(usersCollection); err != nil {
+		log.Printf("Error saving 'users' collection rules: %v", err)
 		return err
 	}
 
