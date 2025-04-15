@@ -89,7 +89,11 @@ export function CreateUserDialog({
     mutationFn: (values: z.infer<typeof formSchema>) => {
       return pb.collection("users").create({
         ...values,
-        passwordConfirm: values.password,
+        username: values.username.trim().toLowerCase(),
+        first_name: values.first_name.trim(),
+        last_name: values.last_name.trim(),
+        password: values.password.trim(),
+        passwordConfirm: values.password.trim(),
       });
     },
     onSuccess: () => {

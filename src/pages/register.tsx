@@ -15,7 +15,10 @@ import { useAuthStore } from "@/store/auth-store";
 const createInitialAdmin = async (username: string, password: string) => {
   const response = await fetch("/api/tm/create-initial-admin", {
     method: "POST",
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({
+      username: username.trim().toLowerCase(),
+      password: password.trim(),
+    }),
     headers: {
       "Content-Type": "application/json",
     },

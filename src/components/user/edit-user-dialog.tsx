@@ -87,9 +87,9 @@ export function EditUserDialog({
   useEffect(() => {
     if (user) {
       form.reset({
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
+        username: user.username.trim().toLowerCase(),
+        first_name: user.first_name.trim(),
+        last_name: user.last_name.trim(),
         role: user.role,
       });
     }
