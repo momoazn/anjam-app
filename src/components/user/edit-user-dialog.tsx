@@ -35,6 +35,7 @@ import { useAuthStore } from "@/store/auth-store";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
+  // password: z.string().min(1, { message: "Password is required" }),
   first_name: z.string().min(1, { message: "First name is required" }),
   last_name: z.string().min(1, { message: "Last name is required" }),
   role: z.nativeEnum(UsersRoleOptions),
@@ -57,6 +58,7 @@ export function EditUserDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      // password: "",
       first_name: "",
       last_name: "",
       role: UsersRoleOptions.employee,
@@ -136,6 +138,19 @@ export function EditUserDialog({
                 </FormItem>
               )}
             />
+            {/* <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{TEXT.users.form.password}</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}

@@ -191,6 +191,7 @@ export const TEXT = {
       firstName: "نام",
       lastName: "نام خانوادگی",
       selectRole: "انتخاب نقش",
+      password: "رمز عبور",
     },
     create: {
       button: "کاربر جدید",

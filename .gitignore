@@ -26,6 +26,7 @@ dist-ssr
 *.out
 
 pb_data/
+data/
 
 tmp/
 

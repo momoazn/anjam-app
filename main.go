@@ -58,7 +58,7 @@ type BasicUser struct {
 
 func main() {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
-		DefaultDataDir: "./pb_data",
+		DefaultDataDir: "./data",
 	})
 
 	// --- Bind Serve Event Handlers ---
@@ -276,7 +276,7 @@ func configureCollectionRules(e *core.ServeEvent) error {
 	if err := e.App.Save(usersProjectsCollection); err != nil {
 		log.Printf("Error saving 'users_projects' collection rules: %v", err)
 		return err
-	} 
+	}
 
 	// Configure Users Collection
 	usersCollection, err := e.App.FindCollectionByNameOrId("users")

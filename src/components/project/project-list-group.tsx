@@ -11,13 +11,13 @@ import { ProjectsResponse } from "@/lib/pocketbase-types";
 interface ProjectListGroupProps {
   projects: ProjectsResponse[];
   onEdit: (project: ProjectsResponse) => void;
-  isSupervisor: boolean;
+  canEditDelete: boolean;
 }
 
 export function ProjectListGroup({
   projects,
   onEdit,
-  isSupervisor,
+  canEditDelete,
 }: ProjectListGroupProps) {
   const navigate = useNavigate();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -58,7 +58,7 @@ export function ProjectListGroup({
             >
               <IconUsers />
             </Button>
-            {isSupervisor && (
+            {canEditDelete && (
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"

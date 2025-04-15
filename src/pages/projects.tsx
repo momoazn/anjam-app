@@ -34,9 +34,8 @@ export default function Projects() {
     setIsEditOpen(true);
   };
 
-  const isSupervisor =
-    user?.role === UsersRoleOptions.supervisor ||
-    user?.role === UsersRoleOptions.admin;
+  const isAdmin = user?.role === UsersRoleOptions.admin;
+  const isSupervisor = user?.role === UsersRoleOptions.supervisor;
 
   return (
     <>
@@ -66,7 +65,7 @@ export default function Projects() {
           <ProjectListGroup
             projects={userProjects ?? []}
             onEdit={handleEdit}
-            isSupervisor={isSupervisor}
+            canEditDelete={isAdmin || isSupervisor}
           />
         )}
       </div>

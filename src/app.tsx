@@ -54,7 +54,7 @@ function App() {
             </Suspense>
           </SidebarInset>
         </SidebarProvider>
-        <Toaster />
+        <Toaster position="bottom-left" className="font-vazirmatn" />
       </Router>
     </QueryClientProvider>
   );
