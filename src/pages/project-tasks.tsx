@@ -12,7 +12,10 @@ export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
 
   const { data: project } = useProject(projectId as string);
-  const { data: tasks, isLoading: isLoadingTasks } = useTasks(projectId, true);
+  const { data: tasks, isLoading: isLoadingTasks } = useTasks(
+    projectId,
+    "assignee",
+  ); // Expand assignee
 
   const groupedTasks = useMemo(() => {
     return isLoadingTasks

@@ -11,7 +11,7 @@ import {
   UsersRoleOptions,
 } from "./lib/pocketbase-types";
 
-const getTasks = (projectId?: string, withProject = false) => {
+const getTasks = (projectId?: string, expandFields?: string) => {
   const userId = pb.authStore.record?.id;
   const filters = [];
   if (userId === UsersRoleOptions.employee) {
@@ -25,25 +25,26 @@ const getTasks = (projectId?: string, withProject = false) => {
     batch: 100,
     filter: filters.join(" && "),
     sort: "order",
-    expand: withProject ? "project" : undefined,
+    expand: expandFields,
   });
 };
 
-export const getTasksQueryKey = (projectId?: string) => [
+export const getTasksQueryKey = (projectId?: string, expandFields?: string) => [
   "tasks-full-list",
-  projectId ?? "",
+  projectId ?? "all", // Use 'all' for clarity when no project ID
+  expandFields ?? "none", // Include expand fields in the key
 ];
 
 export const getUseTasksQueryOptions = (
   projectId?: string,
-  withProject = false,
+  expandFields?: string,
 ): UseQueryOptions<TaskWithProject[], Error, TaskWithProject[], string[]> => ({
-  queryKey: getTasksQueryKey(projectId),
-  queryFn: () => getTasks(projectId, withProject),
+  queryKey: getTasksQueryKey(projectId, expandFields),
+  queryFn: () => getTasks(projectId, expandFields),
 });
 
-export const useTasks = (projectId?: string, withProject = false) => {
-  return useQuery(getUseTasksQueryOptions(projectId, withProject));
+export const useTasks = (projectId?: string, expandFields?: string) => {
+  return useQuery(getUseTasksQueryOptions(projectId, expandFields));
 };
 
 export const useUpdateTask = () => {
