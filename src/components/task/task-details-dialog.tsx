@@ -37,7 +37,15 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { useSpecificProjectUsers } from "@/pb-hooks";
-
+import DatePicker from "../ui/date-picker";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { UserAvatar } from "../user-avatar";
 const taskFormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string(),
@@ -252,29 +260,50 @@ export function EditTaskDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          // Toggle through assignees
-                          const assigneeList = [
-                            TEXT.tasks.addTask.unassigned,
-                            ...(assignees?.map((u) => u.id) ?? []),
-                          ];
-                          const currentIndex = assigneeList.indexOf(
-                            field.value,
-                          );
-                          const nextIndex =
-                            (currentIndex + 1) % assigneeList.length;
-                          field.onChange(assigneeList[nextIndex]);
-                        }}
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={isUpdatingTask}
                       >
-                        {field.value === TEXT.tasks.addTask.unassigned
-                          ? TEXT.tasks.addTask.unassigned
-                          : (assignees?.find((u) => u.id === field.value)
-                              ?.username ?? field.value)}
-                      </Button>
+                        <SelectTrigger size="default">
+                          <SelectValue
+                            placeholder={TEXT.tasks.addTask.unassigned}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={TEXT.tasks.addTask.unassigned}>
+                            <UserAvatar
+                              username={TEXT.tasks.addTask.unassigned}
+                            />
+                            {TEXT.tasks.addTask.unassigned}
+                          </SelectItem>
+                          {assignees?.map((u) => (
+                            <SelectItem key={u.id} value={u.id}>
+                              <UserAvatar username={u.username} />
+                              <span>{u.username}</span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="deadline"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <DatePicker
+                        date={field.value}
+                        setDate={field.onChange}
+                        buttonProps={{
+                          className: "w-38",
+                          size: "sm",
+                        }}
+                      />
                     </FormControl>
                   </FormItem>
                 )}

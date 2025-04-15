@@ -1,6 +1,5 @@
 import { Edit, Trash } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { TEXT } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
+import { UserAvatar } from "../user-avatar";
 
 interface UserListTableProps {
   users: UsersResponse[];
@@ -51,13 +51,7 @@ export function UserListTable({
           <TableRow key={user.id}>
             <TableCell className="flex text-right">
               <div className="flex items-center justify-end gap-2 self-start">
-                <Avatar className="size-8">
-                  <AvatarImage src={user.avatar} alt={user.username} />
-                  <AvatarFallback>
-                    {user.first_name?.[0]}
-                    {user.last_name?.[0]}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar user={user} />
                 <div>
                   <div className="font-medium">
                     {user.first_name} {user.last_name}

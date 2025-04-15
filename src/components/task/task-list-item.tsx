@@ -1,21 +1,22 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { format } from "date-fns-jalali";
+
 import { Badge } from "@/components/ui/badge";
 import { TEXT } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
-import { cn, getUserInitials } from "@/lib/utils";
 import {
   priorityColors,
   priorityIcons,
   taskStatusColors,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
-import { format } from "date-fns-jalali";
+import { cn } from "@/lib/utils";
+import { UserAvatar } from "../user-avatar";
 import { EditTaskDialog } from "./task-details-dialog";
 
-// Helper to format date like "فروردین 21"
 const formatDateShort = (dateString: string) => {
   const date = new Date(dateString);
-  return format(date, "MMM dd");
+  return digitsEnToFa(format(date, "dd MMMM"));
 };
 
 interface TaskListItemProps {
@@ -96,16 +97,12 @@ export function TaskListItem({
           )}
 
           {/* Date */}
-          <span className="text-muted-foreground w-[50px] flex-shrink-0 text-right text-xs">
+          <span className="text-muted-foreground w-[70px] flex-shrink-0 text-right text-xs">
             {formatDateShort(task.deadline ?? "")}
           </span>
 
           {/* Assignee Avatar */}
-          <Avatar className="h-5 w-5">
-            <AvatarFallback className="bg-muted text-[10px]">
-              {getUserInitials(task.assignee ?? "")}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar username={task.assignee} />
         </div>
       </div>
     </EditTaskDialog>

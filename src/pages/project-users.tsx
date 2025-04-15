@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,10 +27,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UserAvatar } from "@/components/user-avatar";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { getUserInitials } from "@/lib/utils";
 import { useSpecificProjectUsers } from "@/pb-hooks";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -170,11 +169,7 @@ export default function ProjectUsers() {
               <TableRow key={user.id}>
                 <TableCell className="flex">
                   <div className="flex items-center justify-end gap-2 self-start">
-                    <Avatar>
-                      <AvatarFallback>
-                        {getUserInitials(user.username)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar user={user} />
                     <span>{user.username}</span>
                   </div>
                 </TableCell>
