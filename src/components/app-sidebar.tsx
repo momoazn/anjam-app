@@ -43,6 +43,8 @@ const data = {
       title: TEXT.navigation.users,
       url: "/users",
       icon: IconUsers,
+      adminOnly: true,
+      supervisorOnly: true,
     },
     // {
     //   title: TEXT.navigation.reports,
@@ -85,7 +87,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain
+          items={data.navMain.filter((item) => {
+            if (item.adminOnly && user.role !== "admin") return false;
+            if (item.supervisorOnly && user.role !== "supervisor") return false;
+            return true;
+          })}
+        />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

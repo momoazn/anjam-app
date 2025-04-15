@@ -190,6 +190,42 @@ export function EditTaskDialog({
             <div className="flex items-center gap-2">
               <FormField
                 control={form.control}
+                name="assignee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={isUpdatingTask}
+                      >
+                        <SelectTrigger size="default">
+                          <SelectValue
+                            placeholder={TEXT.tasks.addTask.unassigned}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={TEXT.tasks.addTask.unassigned}>
+                            <UserAvatar
+                              username={TEXT.tasks.addTask.unassigned}
+                            />
+                            {TEXT.tasks.addTask.unassigned}
+                          </SelectItem>
+                          {assignees?.map((u) => (
+                            <SelectItem key={u.id} value={u.id}>
+                              <UserAvatar username={u.username} />
+                              <span>{u.username}</span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="status"
                 render={({ field }) => (
                   <FormItem>
@@ -249,42 +285,6 @@ export function EditTaskDialog({
                         />
                         {TEXT.tasks.priority[field.value]}
                       </Button>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="assignee"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={isUpdatingTask}
-                      >
-                        <SelectTrigger size="default">
-                          <SelectValue
-                            placeholder={TEXT.tasks.addTask.unassigned}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={TEXT.tasks.addTask.unassigned}>
-                            <UserAvatar
-                              username={TEXT.tasks.addTask.unassigned}
-                            />
-                            {TEXT.tasks.addTask.unassigned}
-                          </SelectItem>
-                          {assignees?.map((u) => (
-                            <SelectItem key={u.id} value={u.id}>
-                              <UserAvatar username={u.username} />
-                              <span>{u.username}</span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
                     </FormControl>
                   </FormItem>
                 )}

@@ -286,8 +286,10 @@ func configureCollectionRules(e *core.ServeEvent) error {
 	}
 
 	// Users rules - Allow viewing users in shared projects
-	usersCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, userSelfAccessRule, userSharedProjectAccessRule))
-	usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, userSelfAccessRule, userSharedProjectAccessRule))
+	// usersCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
+	// usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
+	usersCollection.ListRule = types.Pointer("")
+	usersCollection.ViewRule = types.Pointer("")
 	// Keep existing rules for user management
 	usersCollection.CreateRule = types.Pointer("")
 	usersCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, userSelfAccessRule))

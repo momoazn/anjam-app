@@ -4,6 +4,7 @@ import type {
   ProjectsResponse,
   TasksResponse,
   TypedPocketBase,
+  UsersResponse,
 } from "./pocketbase-types";
 
 // During development, the PocketBase server is running on localhost:8090
@@ -17,3 +18,6 @@ const baseUrl = import.meta.env.PROD ? "/" : "http://127.0.0.1:8090/";
 export const pb = new PocketBase(baseUrl) as TypedPocketBase;
 
 export type TaskWithProject = TasksResponse<{ project: ProjectsResponse }>;
+export type ProjectWithSupervisor = ProjectsResponse<{
+  supervisor: UsersResponse;
+}>;

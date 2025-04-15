@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/table";
 import { UserAvatar } from "@/components/user-avatar";
 import { TEXT } from "@/constants/text";
-import { pb } from "@/lib/pocketbase";
+import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useSpecificProjectUsers } from "@/pb-hooks";
 import { useAuthStore } from "@/store/auth-store";
@@ -42,6 +42,14 @@ export default function ProjectUsers() {
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
   const canManageUsers = isAdmin || isSupervisor;
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+
+  const { data: project } = useQuery({
+    queryKey: ["projects", id],
+    queryFn: () =>
+      pb.collection("projects").getOne<ProjectWithSupervisor>(id as string, {
+        expand: "supervisor",
+      }),
+  });
 
   // Get project users
   const { data: projectUsers } = useSpecificProjectUsers(id as string);
@@ -165,6 +173,15 @@ export default function ProjectUsers() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            <TableRow>
+              <TableCell className="flex">
+                <div className="flex items-center justify-end gap-2 self-start">
+                  <UserAvatar user={project?.expand?.supervisor} />
+                  <span>{project?.expand?.supervisor.username}</span>
+                </div>
+              </TableCell>
+              <TableCell className="text-center">سرپرست</TableCell>
+            </TableRow>
             {projectUsers?.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="flex">
