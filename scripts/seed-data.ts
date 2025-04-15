@@ -22,7 +22,7 @@ const PB_URL = process.env.POCKETBASE_URL || "http://127.0.0.1:8090/";
 const PB_ADMIN_EMAIL =
   process.env.POCKETBASE_ADMIN_EMAIL || "admin@example.com";
 const PB_ADMIN_PASSWORD = process.env.POCKETBASE_ADMIN_PASSWORD || "admin12345";
-const DB_PATH = join(import.meta.dirname, "..", "pb_data", "data.db");
+const DB_PATH = join(import.meta.dirname, "..", "data", "data.db");
 
 // --- Type Definitions ---
 interface PocketBaseErrorData {

@@ -117,6 +117,7 @@ export const TEXT = {
     tasks: "تسک‌ها",
     users: "کاربران",
     reports: "گزارش‌ها",
+    helps: "راهنما",
     settings: "تنظیمات",
     quickCreate: {
       button: "ایجاد سریع",

@@ -1,7 +1,7 @@
 import { Database } from "bun:sqlite";
 import { join } from "path";
 
-const DB_PATH = join(import.meta.dirname, "..", "pb_data", "data.db");
+const DB_PATH = join(import.meta.dirname, "..", "data", "data.db");
 
 function truncateTables(dbPath: string) {
   console.log("Attempting to truncate tables...");

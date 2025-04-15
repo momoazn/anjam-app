@@ -1,6 +1,7 @@
 import {
   IconDashboard,
   IconFolder,
+  IconHelp,
   IconInnerShadowTop,
   IconListDetails,
   IconSettings,
@@ -45,6 +46,11 @@ const data = {
       icon: IconUsers,
       adminOnly: true,
       supervisorOnly: true,
+    },
+    {
+      title: TEXT.navigation.helps,
+      url: "/helps",
+      icon: IconHelp,
     },
     // {
     //   title: TEXT.navigation.reports,
