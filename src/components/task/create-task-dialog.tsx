@@ -213,7 +213,9 @@ export function CreateTaskDialog({
                           {assignees?.map((u) => (
                             <SelectItem key={u.id} value={u.id}>
                               <UserAvatar username={u.username} />
-                              <span>{u.username}</span>
+                              <span>
+                                {u.first_name} {u.last_name}
+                              </span>
                             </SelectItem>
                           ))}
                         </SelectContent>

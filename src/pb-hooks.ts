@@ -131,6 +131,8 @@ export const useSpecificProjectUsers = (projectId: string, enabled = true) => {
         {
           id: string;
           username: string;
+          first_name: string;
+          last_name: string;
         }[]
       >;
     },
