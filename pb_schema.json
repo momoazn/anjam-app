@@ -174,8 +174,8 @@
     "listRule": "@request.auth.role = \"admin\" || @request.auth.id = id || @collection.users.id = @collection.users_projects.user.id && @collection.users_projects.project.id = @collection.projects.id && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))",
     "viewRule": "@request.auth.role = \"admin\" || @request.auth.id = id || @collection.users.id = @collection.users_projects.user.id && @collection.users_projects.project.id = @collection.projects.id && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))",
     "createRule": "",
-    "updateRule": "@request.auth.id = id",
-    "deleteRule": "@request.auth.id = id",
+    "updateRule": "@request.auth.role = \"admin\" || @request.auth.id = id",
+    "deleteRule": "@request.auth.role = \"admin\" || @request.auth.id = id",
     "name": "users",
     "type": "auth",
     "fields": [

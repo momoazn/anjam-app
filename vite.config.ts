@@ -26,8 +26,12 @@ export default defineConfig({
             "react-dom",
             "react-router-dom",
             "@tanstack/react-query",
-            "recharts",
+            "date-fns",
+            "date-fns-jalali",
+            "react-day-picker",
+            "@persian-tools/persian-tools",
           ],
+          charts: ["recharts"],
           ui: [
             "@radix-ui/react-alert-dialog",
             "@radix-ui/react-avatar",

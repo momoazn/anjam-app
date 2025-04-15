@@ -47,6 +47,7 @@ const (
 
 	// User access rules
 	userSelfAccessRule          = `@request.auth.id = id`
+	userAdminAccessRule         = `@request.auth.role = "admin"`
 	userSharedProjectAccessRule = `@collection.users.id = @collection.users_projects.user.id && @collection.users_projects.project.id = @collection.projects.id && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))`
 )
 
@@ -275,7 +276,7 @@ func configureCollectionRules(e *core.ServeEvent) error {
 	if err := e.App.Save(usersProjectsCollection); err != nil {
 		log.Printf("Error saving 'users_projects' collection rules: %v", err)
 		return err
-	}
+	} 
 
 	// Configure Users Collection
 	usersCollection, err := e.App.FindCollectionByNameOrId("users")
@@ -289,8 +290,8 @@ func configureCollectionRules(e *core.ServeEvent) error {
 	usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, userSelfAccessRule, userSharedProjectAccessRule))
 	// Keep existing rules for user management
 	usersCollection.CreateRule = types.Pointer("")
-	usersCollection.UpdateRule = types.Pointer(userSelfAccessRule)
-	usersCollection.DeleteRule = types.Pointer(userSelfAccessRule)
+	usersCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, userSelfAccessRule))
+	usersCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, userSelfAccessRule))
 
 	if err := e.App.Save(usersCollection); err != nil {
 		log.Printf("Error saving 'users' collection rules: %v", err)
