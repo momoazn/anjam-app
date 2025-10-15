@@ -56,6 +56,9 @@ export function NavUser() {
                   <span className="text-muted-foreground truncate text-xs">
                     {user?.username}
                   </span>
+                  <span className="text-muted-foreground truncate text-xs">
+                    {TEXT.users.table.roles[user!.role]}
+                  </span>
                 </div>
                 <IconDotsVertical className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -75,6 +78,9 @@ export function NavUser() {
                     </span>
                     <span className="text-muted-foreground truncate text-xs">
                       {user?.username}
+                    </span>
+                    <span className="text-muted-foreground truncate text-xs">
+                      {TEXT.users.table.roles[user!.role]}
                     </span>
                   </div>
                 </div>
