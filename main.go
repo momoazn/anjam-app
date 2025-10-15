@@ -1,3 +1,6 @@
+// Package main implements a task manager application using PocketBase.
+// It provides a web-based interface for managing projects, tasks, and users
+// with role-based access control and embedded static assets.
 package main
 
 import (
@@ -70,7 +73,7 @@ func main() {
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 
 	// --- Bind Record Event Handlers ---
-	// app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
+	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
 
 	// --- Custom API Endpoints ---
@@ -88,64 +91,65 @@ func main() {
 // --- Helper Functions ---
 
 func openBrowser(serverAddr string) {
-	var err error
+	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case "linux":
-		err = exec.Command("xdg-open", serverAddr).Start()
+		cmd = exec.Command("xdg-open", serverAddr)
 	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", serverAddr).Start()
+		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", serverAddr)
 	case "darwin":
-		err = exec.Command("open", serverAddr).Start()
+		cmd = exec.Command("open", serverAddr)
 	default:
-		fmt.Printf("Unsupported OS %q for automatic browser opening. Please open %s manually.", runtime.GOOS, serverAddr)
+		log.Printf("Unsupported OS %q for automatic browser opening. Please open %s manually.", runtime.GOOS, serverAddr)
 		return
 	}
-	if err != nil {
-		fmt.Printf("Error opening browser: %v", err)
+
+	if err := cmd.Start(); err != nil {
+		log.Printf("Error opening browser: %v", err)
 	}
 }
 
 func staticHandler(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error {
 	// Prevent API access through the static handler
 	if strings.HasPrefix(r.URL.Path, "/api/") {
-		return apis.NewNotFoundError("", nil) // Let PocketBase handle API routing
+		return apis.NewNotFoundError("", nil)
 	}
 
-	// Check if the requested file exists in the embedded FS
 	filePath := strings.TrimPrefix(r.URL.Path, "/")
 	f, err := staticFS.Open(filePath)
 	if err != nil {
-		// If the file doesn't exist and it's a route (no extension), serve index.html
+		// If file doesn't exist and it's a route (no extension), serve index.html
 		if os.IsNotExist(err) && path.Ext(filePath) == "" {
-			indexFile, indexErr := staticFS.Open("index.html")
-			if indexErr != nil {
-				log.Printf("Error opening index.html: %v", indexErr)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return indexErr // Return the error from opening index.html
-			}
-			defer indexFile.Close()
-
-			// Explicitly cast to io.ReadSeeker for ServeContent
-			seeker, ok := indexFile.(io.ReadSeeker)
-			if !ok {
-				log.Printf("index.html does not implement io.ReadSeeker")
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return fmt.Errorf("index.html is not seekable")
-			}
-
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			http.ServeContent(w, r, "index.html", time.Time{}, seeker)
-			return nil // Successfully served index.html
+			return serveIndexHTML(staticFS, w, r)
 		}
-		// For other errors or files with extensions that don't exist, let the FileServer handle it (will likely 404)
+		// For other errors or files with extensions that don't exist, let FileServer handle it
 	} else {
-		// File exists, close it and let the FileServer handle serving
 		f.Close()
 	}
 
-	// Use http.FileServer to serve the static file
 	http.FileServer(http.FS(staticFS)).ServeHTTP(w, r)
-	return nil // Let the FileServer handle the response
+	return nil
+}
+
+func serveIndexHTML(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error {
+	indexFile, err := staticFS.Open("index.html")
+	if err != nil {
+		log.Printf("Error opening index.html: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return err
+	}
+	defer indexFile.Close()
+
+	seeker, ok := indexFile.(io.ReadSeeker)
+	if !ok {
+		log.Printf("index.html does not implement io.ReadSeeker")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return fmt.Errorf("index.html is not seekable")
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	http.ServeContent(w, r, "index.html", time.Time{}, seeker)
+	return nil
 }
 
 func generateRandomCode() string {
@@ -154,16 +158,16 @@ func generateRandomCode() string {
 
 func startApp(app *pocketbase.PocketBase) {
 	if app.IsDev() {
-		log.Println("Starting App in development mode...")
+		log.Println("Starting app in development mode...")
 		if err := app.Start(); err != nil {
-			log.Fatalf("Failed to start App in dev mode: %v", err)
+			log.Fatalf("Failed to start app in dev mode: %v", err)
 		}
 	} else {
-		log.Println("Starting App in production mode...")
+		log.Println("Starting app in production mode...")
 		if err := app.Bootstrap(); err != nil {
-			log.Fatalf("Failed to bootstrap App: %v", err)
+			log.Fatalf("Failed to bootstrap app: %v", err)
 		}
-		serveCmd := cmd.NewServeCommand(app, false) // Assuming true means daemonize=false
+		serveCmd := cmd.NewServeCommand(app, false)
 		if err := serveCmd.Execute(); err != nil {
 			log.Fatalf("Failed to execute serve command: %v", err)
 		}
@@ -173,10 +177,9 @@ func startApp(app *pocketbase.PocketBase) {
 // --- Serve Event Handlers ---
 
 func importSchema(e *core.ServeEvent) error {
-	// Use the embedded schemaJSON instead of reading from file
 	if len(schemaJSON) == 0 {
 		log.Println("Warning: schema is empty. Skipping schema import.")
-		return e.Next() // Continue without importing if schema is empty
+		return e.Next()
 	}
 
 	if err := e.App.ImportCollectionsByMarshaledJSON(schemaJSON, false); err != nil {
@@ -188,42 +191,99 @@ func importSchema(e *core.ServeEvent) error {
 }
 
 func ensureSuperuserExists(e *core.ServeEvent) error {
+	if err := ensurePocketBaseSuperuser(e); err != nil {
+		return err
+	}
+	if err := ensureAppAdminUser(e); err != nil {
+		return err
+	}
+	return e.Next()
+}
+
+func ensurePocketBaseSuperuser(e *core.ServeEvent) error {
 	adminCollection, err := e.App.FindCollectionByNameOrId("_superusers")
 	if err != nil {
-		log.Printf("Error finding admin collection: %v", err)
+		log.Printf("Error finding _superusers collection: %v", err)
 		return err
 	}
 
-	// Use TotalAdmins for a more direct check
-	totalAdmins, err := e.App.CountRecords(adminCollection.Id)
+	totalSuperusers, err := e.App.CountRecords(adminCollection.Id)
 	if err != nil {
-		log.Printf("Error counting admins: %v", err)
+		log.Printf("Error counting superusers: %v", err)
 		return err
 	}
 
-	if totalAdmins > 0 {
+	if totalSuperusers == 0 {
+		record := core.NewRecord(adminCollection)
+		record.Set("email", "admin@example.com")
+		record.Set("password", "admin12345")
+
+		if err := e.App.Save(record); err != nil {
+			log.Printf("Error saving default superuser: %v", err)
+			return err
+		}
+
+		log.Println("Default superuser created successfully (admin@example.com / admin12345).")
+	} else {
 		log.Println("Superuser(s) already exist (admin@example.com / admin12345).")
-		return e.Next() // Superuser exists, nothing more to do
 	}
 
-	record := core.NewRecord(adminCollection)
-	record.Set("email", "admin@example.com")
-	record.Set("password", "admin12345")
+	return nil
+}
 
-	if err := e.App.Save(record); err != nil {
-		log.Printf("Error saving default admin: %v", err)
+func ensureAppAdminUser(e *core.ServeEvent) error {
+	usersCollection, err := e.App.FindCollectionByNameOrId("users")
+	if err != nil {
+		log.Printf("Error finding users collection: %v", err)
 		return err
 	}
 
-	log.Println("Default superuser created successfully (admin@example.com / admin12345).")
-	return e.Next()
+	totalAdmins, err := e.App.CountRecords(usersCollection.Id, dbx.HashExp{"role": "admin"})
+	if err != nil {
+		log.Printf("Error counting admin users: %v", err)
+		return err
+	}
 
+	if totalAdmins == 0 {
+		record := core.NewRecord(usersCollection)
+		record.Set("username", "admin")
+		record.Set("password", "admin12345")
+		record.Set("role", "admin")
+
+		if err := e.App.Save(record); err != nil {
+			log.Printf("Error saving default admin: %v", err)
+			return err
+		}
+
+		log.Println("Default admin user created successfully (admin / admin12345).")
+	} else {
+		log.Println("Admin user(s) already exist (admin / admin12345).")
+	}
+
+	return nil
 }
 
 func configureCollectionRules(e *core.ServeEvent) error {
 	log.Println("Configuring collection API rules...")
 
-	// Configure Projects Collection
+	if err := configureProjectsRules(e); err != nil {
+		return err
+	}
+	if err := configureTasksRules(e); err != nil {
+		return err
+	}
+	if err := configureUsersProjectsRules(e); err != nil {
+		return err
+	}
+	if err := configureUsersRules(e); err != nil {
+		return err
+	}
+
+	log.Println("Collection API rules configured successfully.")
+	return e.Next()
+}
+
+func configureProjectsRules(e *core.ServeEvent) error {
 	projectsCollection, err := e.App.FindCollectionByNameOrId("projects")
 	if err != nil {
 		log.Printf("Error finding 'projects' collection: %v", err)
@@ -242,7 +302,10 @@ func configureCollectionRules(e *core.ServeEvent) error {
 		return err
 	}
 
-	// Configure Tasks Collection
+	return nil
+}
+
+func configureTasksRules(e *core.ServeEvent) error {
 	tasksCollection, err := e.App.FindCollectionByNameOrId("tasks")
 	if err != nil {
 		log.Printf("Error finding 'tasks' collection: %v", err)
@@ -261,7 +324,10 @@ func configureCollectionRules(e *core.ServeEvent) error {
 		return err
 	}
 
-	// Configure Users_Projects Collection
+	return nil
+}
+
+func configureUsersProjectsRules(e *core.ServeEvent) error {
 	usersProjectsCollection, err := e.App.FindCollectionByNameOrId("users_projects")
 	if err != nil {
 		log.Printf("Error finding 'users_projects' collection: %v", err)
@@ -280,7 +346,10 @@ func configureCollectionRules(e *core.ServeEvent) error {
 		return err
 	}
 
-	// Configure Users Collection
+	return nil
+}
+
+func configureUsersRules(e *core.ServeEvent) error {
 	usersCollection, err := e.App.FindCollectionByNameOrId("users")
 	if err != nil {
 		log.Printf("Error finding 'users' collection: %v", err)
@@ -302,8 +371,7 @@ func configureCollectionRules(e *core.ServeEvent) error {
 		return err
 	}
 
-	log.Println("Collection API rules configured successfully.")
-	return e.Next()
+	return nil
 }
 
 func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
@@ -313,12 +381,10 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 		return err
 	}
 
-	// Register the fallback route handler for static files
 	e.Router.GET("/{path...}", func(e *core.RequestEvent) error {
 		return staticHandler(staticFS, e.Response, e.Request)
 	})
 
-	// Open browser only in production mode after server starts
 	if !e.App.IsDev() {
 		openBrowser(e.App.Settings().Meta.AppURL)
 	}
@@ -329,101 +395,116 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 // --- Record Event Handlers ---
 
 func handleProjectCreation(e *core.RecordEvent) error {
-	// Check if code is already set (e.g., via API request)
 	if e.Record.GetString("code") != "" {
 		log.Printf("Project code (%q) already set for %q, skipping code generation.", e.Record.GetString("code"), e.Record.GetString("name"))
-		return e.Next() // Code already provided, do nothing
+		return e.Next()
 	}
 
-	var projectCode string
-	for {
-		projectCode = generateRandomCode()
-		// Use Exists to check efficiently
-		exists, err := e.App.FindFirstRecordByData("projects", "code", projectCode)
-		if err != nil && err.Error() != "sql: no rows in result set" {
-			log.Printf("Error checking for existing project code %q: %v", projectCode, err)
-			return err // Propagate DB errors
-		}
-
-		if exists == nil {
-			break // Found a unique code
-		}
-		// Log if a collision happens, though it's unlikely with 3 letters
-		log.Printf("Project code collision for %q, generating a new one.", projectCode)
+	projectCode, err := generateUniqueProjectCode(e.App)
+	if err != nil {
+		log.Printf("Error generating unique project code: %v", err)
+		return err
 	}
 
 	e.Record.Set("code", projectCode)
 	log.Printf("Generated unique project code %q for new project.", projectCode)
-	return e.Next() // No need to save, hook modifies the record before creation
+	return e.Next()
+}
+
+func generateUniqueProjectCode(app core.App) (string, error) {
+	for {
+		projectCode := generateRandomCode()
+		exists, err := app.FindFirstRecordByData("projects", "code", projectCode)
+		if err != nil && err.Error() != "sql: no rows in result set" {
+			return "", err
+		}
+		if exists == nil {
+			return projectCode, nil
+		}
+		log.Printf("Project code collision for %q, generating a new one.", projectCode)
+	}
 }
 
 func handleTaskCreation(e *core.RecordEvent) error {
-	// Set display_id if not provided
-	if e.Record.GetString("display_id") == "" {
-		projectId := e.Record.GetString("project") // Relation field stores the ID
+	if err := setTaskDisplayID(e); err != nil {
+		return err
+	}
+	setTaskDefaults(e)
+	return e.Next()
+}
 
-		// Fetch the related project record to get its code
-		project, err := e.App.FindRecordById("projects", projectId)
-		if err != nil {
-			log.Printf("Error fetching project %q for task creation: %v", projectId, err)
-			return err
-		}
-		projectCode := project.GetString("code")
-
-		// Find the task with the highest display_id for this project
-		// This requires a custom query as FindFirstRecordByData sorts by created DESC by default
-		var lastTask struct {
-			DisplayID string `db:"display_id"`
-		}
-		err = e.App.RecordQuery("tasks").
-			Select("display_id").
-			Where(dbx.HashExp{"project": projectId}).
-			OrderBy("display_id DESC"). // Sort by the ID itself
-			Limit(1).
-			One(&lastTask)
-
-		newTaskNumber := 1                                           // Default if no tasks exist yet
-		if err != nil && !strings.Contains(err.Error(), "no rows") { // Check for actual DB errors
-			log.Printf("Error finding last task for project %q: %v", projectId, err)
-			return err
-		} else if err == nil { // A task was found
-			parts := strings.Split(lastTask.DisplayID, "-")
-			if len(parts) == 2 {
-				lastNum, parseErr := strconv.Atoi(parts[1])
-				if parseErr == nil {
-					newTaskNumber = lastNum + 1
-				} else {
-					log.Printf("Warning: Could not parse task number from display_id %q: %v. Defaulting to 1.", lastTask.DisplayID, parseErr)
-					// Decide on fallback: error out or default to 1? Defaulting seems safer.
-					newTaskNumber = 1 // Or maybe query count(*) + 1? Let's stick to parsing for now.
-				}
-			} else {
-				log.Printf("Warning: Unexpected display_id format %q. Defaulting task number to 1.", lastTask.DisplayID)
-				newTaskNumber = 1
-			}
-		}
-		// If err contains "no rows", newTaskNumber remains 1, which is correct.
-
-		displayID := fmt.Sprintf("%s-%03d", projectCode, newTaskNumber)
-		e.Record.Set("display_id", displayID)
-		log.Printf("Generated task display_id %q for project %q.", displayID, projectCode)
+func setTaskDisplayID(e *core.RecordEvent) error {
+	if e.Record.GetString("display_id") != "" {
+		return nil
 	}
 
-	// Set default values if not provided in the request
+	projectId := e.Record.GetString("project")
+	project, err := e.App.FindRecordById("projects", projectId)
+	if err != nil {
+		log.Printf("Error fetching project %q for task creation: %v", projectId, err)
+		return err
+	}
+	projectCode := project.GetString("code")
+
+	newTaskNumber, err := getNextTaskNumber(e.App, projectId)
+	if err != nil {
+		log.Printf("Error getting next task number for project %q: %v", projectId, err)
+		return err
+	}
+
+	displayID := fmt.Sprintf("%s-%03d", projectCode, newTaskNumber)
+	e.Record.Set("display_id", displayID)
+	log.Printf("Generated task display_id %q for project %q.", displayID, projectCode)
+	return nil
+}
+
+func getNextTaskNumber(app core.App, projectId string) (int, error) {
+	var lastTask struct {
+		DisplayID string `db:"display_id"`
+	}
+	err := app.RecordQuery("tasks").
+		Select("display_id").
+		Where(dbx.HashExp{"project": projectId}).
+		OrderBy("display_id DESC").
+		Limit(1).
+		One(&lastTask)
+
+	if err != nil && !strings.Contains(err.Error(), "no rows") {
+		return 0, err
+	}
+
+	if err != nil {
+		return 1, nil // No tasks exist yet
+	}
+
+	parts := strings.Split(lastTask.DisplayID, "-")
+	if len(parts) != 2 {
+		log.Printf("Warning: Unexpected display_id format %q. Defaulting to 1.", lastTask.DisplayID)
+		return 1, nil
+	}
+
+	lastNum, parseErr := strconv.Atoi(parts[1])
+	if parseErr != nil {
+		log.Printf("Warning: Could not parse task number from display_id %q: %v. Defaulting to 1.", lastTask.DisplayID, parseErr)
+		return 1, nil
+	}
+
+	return lastNum + 1, nil
+}
+
+func setTaskDefaults(e *core.RecordEvent) {
 	if e.Record.GetString("status") == "" {
 		e.Record.Set("status", "todo")
 	}
 	if e.Record.GetString("priority") == "" {
 		e.Record.Set("priority", "medium")
 	}
-
-	return e.Next() // Modifications are applied before saving
 }
 
 func handleCheckInitialAdmin(e *core.RequestEvent) error {
 	_, err := e.App.FindCollectionByNameOrId("users")
 	if err != nil {
-		log.Printf("Error finding admin collection: %v", err)
+		log.Printf("Error finding users collection: %v", err)
 		return e.JSON(400, err.Error())
 	}
 
@@ -440,7 +521,7 @@ func handleCheckInitialAdmin(e *core.RequestEvent) error {
 func handleCreateInitialAdmin(e *core.RequestEvent) error {
 	usersCollection, err := e.App.FindCollectionByNameOrId("users")
 	if err != nil {
-		log.Printf("Error finding admin collection: %v", err)
+		log.Printf("Error finding users collection: %v", err)
 		return e.JSON(400, err.Error())
 	}
 
@@ -467,10 +548,9 @@ func handleCreateInitialAdmin(e *core.RequestEvent) error {
 	record := core.NewRecord(usersCollection)
 	record.Set("username", body.Username)
 	record.Set("password", body.Password)
-
 	record.Set("role", "admin")
 
-	fmt.Println("Creating initial admin...", body.Username, body.Password)
+	log.Printf("Creating initial admin user: %s", body.Username)
 
 	return e.App.Save(record)
 }
@@ -478,15 +558,16 @@ func handleCreateInitialAdmin(e *core.RequestEvent) error {
 func handleGetProjectUsers(e *core.RequestEvent) error {
 	projectId := e.Request.PathValue("id")
 	var users []BasicUser
-	err := e.App.DB().NewQuery(
-		`
-		SELECT * FROM users 
+	query := `
+		SELECT * FROM users
 		WHERE id IN (
-			SELECT user FROM users_projects 
+			SELECT user FROM users_projects
 			WHERE project = {:projectId}
 		)
-		`).Bind(dbx.Params{"projectId": projectId}).All(&users)
+	`
+	err := e.App.DB().NewQuery(query).Bind(dbx.Params{"projectId": projectId}).All(&users)
 	if err != nil {
+		log.Printf("Error fetching project users for project %q: %v", projectId, err)
 		return e.JSON(400, err.Error())
 	}
 	return e.JSON(200, users)
