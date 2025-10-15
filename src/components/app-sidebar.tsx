@@ -21,7 +21,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { TEXT } from "@/constants/text";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 
 const data = {
   navMain: [
@@ -69,7 +69,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = useAuthStore().user;
+  const user = useAuthUser();
 
   if (!user) {
     return null;

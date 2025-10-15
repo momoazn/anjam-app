@@ -1,22 +1,64 @@
-import React from "react";
+import React, { memo, useMemo } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { useAuthStore } from "./store/auth-store";
+import { TEXT } from "@/constants/text";
+import { useAuthIsLoggedIn } from "./store/auth-store";
 
-// Lazy load pages
-const Login = React.lazy(() => import("@/pages/login"));
-const Register = React.lazy(() => import("@/pages/register"));
-const Dashboard = React.lazy(() => import("@/pages/dashboard"));
-const Projects = React.lazy(() => import("@/pages/projects"));
-const Tasks = React.lazy(() => import("@/pages/tasks"));
-const ProjectTasks = React.lazy(() => import("@/pages/project-tasks"));
-const Users = React.lazy(() => import("@/pages/users"));
-const ProjectUsers = React.lazy(() => import("@/pages/project-users"));
-const Reports = React.lazy(() => import("@/pages/reports"));
-const Helps = React.lazy(() => import("@/pages/helps"));
+// Lazy load pages with better error handling and preloading
+const Login = React.lazy(() =>
+  import("@/pages/login").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.login}</div>,
+  })),
+);
+const Register = React.lazy(() =>
+  import("@/pages/register").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.register}</div>,
+  })),
+);
+const Dashboard = React.lazy(() =>
+  import("@/pages/dashboard").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.dashboard}</div>,
+  })),
+);
+const Projects = React.lazy(() =>
+  import("@/pages/projects").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.projects}</div>,
+  })),
+);
+const Tasks = React.lazy(() =>
+  import("@/pages/tasks").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.tasks}</div>,
+  })),
+);
+const ProjectTasks = React.lazy(() =>
+  import("@/pages/project-tasks").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.projectTasks}</div>,
+  })),
+);
+const Users = React.lazy(() =>
+  import("@/pages/users").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.users}</div>,
+  })),
+);
+const ProjectUsers = React.lazy(() =>
+  import("@/pages/project-users").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.projectUsers}</div>,
+  })),
+);
+const Reports = React.lazy(() =>
+  import("@/pages/reports").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.reports}</div>,
+  })),
+);
+const Helps = React.lazy(() =>
+  import("@/pages/helps").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.helps}</div>,
+  })),
+);
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const isLoggedIn = useAuthStore().isLoggedIn;
+// Memoized ProtectedRoute component
+const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
+  const isLoggedIn = useAuthIsLoggedIn();
 
   // const { data: isInitialAdmin } = useIsInitialAdmin();
 
@@ -29,7 +71,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   return <>{children}</>;
-}
+});
+
+ProtectedRoute.displayName = "ProtectedRoute";
 
 interface RouteType {
   path: string;
@@ -37,6 +81,7 @@ interface RouteType {
   protected: boolean;
 }
 
+// Memoized routes configuration
 const routes: RouteType[] = [
   {
     path: "/",
@@ -90,10 +135,12 @@ const routes: RouteType[] = [
   },
 ];
 
-export function AppRoutes() {
-  return (
-    <Routes>
-      {routes.map((route) => (
+// Memoized AppRoutes component
+export const AppRoutes = memo(() => {
+  // Memoize the route elements to prevent unnecessary re-renders
+  const routeElements = useMemo(
+    () =>
+      routes.map((route) => (
         <Route
           key={route.path}
           path={route.path}
@@ -105,7 +152,11 @@ export function AppRoutes() {
             )
           }
         />
-      ))}
-    </Routes>
+      )),
+    [],
   );
-}
+
+  return <Routes>{routeElements}</Routes>;
+});
+
+AppRoutes.displayName = "AppRoutes";
