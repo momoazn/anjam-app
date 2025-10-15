@@ -1,6 +1,6 @@
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import {
   SidebarGroup,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TEXT } from "@/constants/text";
 import { cn } from "@/lib/utils";
-import { getTasksQueryKey } from "@/pb-hooks";
+import { TASKS_QUERY_KEY_ROOT } from "@/pb-hooks";
 import { CreateTaskDialog } from "./task/create-task-dialog";
 
 export function NavMain({
@@ -24,7 +24,6 @@ export function NavMain({
   }[];
 }) {
   const queryClient = useQueryClient();
-  const { id: projectId } = useParams<{ id: string }>();
 
   return (
     <SidebarGroup>
@@ -34,7 +33,7 @@ export function NavMain({
             <CreateTaskDialog
               onSuccess={() => {
                 queryClient.invalidateQueries({
-                  queryKey: getTasksQueryKey(projectId),
+                  queryKey: TASKS_QUERY_KEY_ROOT,
                 });
               }}
             >

@@ -77,6 +77,7 @@ export default function Register() {
         username: username.trim().toLowerCase(),
         password: password.trim(),
         passwordConfirm: confirmPassword.trim(),
+        role: "employee", // Default role for new registrations
       });
 
       await pb

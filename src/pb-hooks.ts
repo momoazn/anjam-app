@@ -8,14 +8,15 @@ import { pb, TaskWithProject } from "./lib/pocketbase";
 import {
   ProjectsResponse,
   TasksResponse,
+  UsersResponse,
   UsersRoleOptions,
 } from "./lib/pocketbase-types";
 
 const getTasks = (projectId?: string, expandFields?: string) => {
-  const userId = pb.authStore.record?.id;
+  const currentUser = pb.authStore.record as UsersResponse | null;
   const filters = [];
-  if (userId === UsersRoleOptions.employee) {
-    filters.push(`assignee = "${userId}"`);
+  if (currentUser?.role === UsersRoleOptions.employee) {
+    filters.push(`assignee = "${currentUser.id}"`);
   }
   if (projectId) {
     filters.push(`project = "${projectId}"`);
@@ -34,6 +35,8 @@ export const getTasksQueryKey = (projectId?: string, expandFields?: string) => [
   projectId ?? "all", // Use 'all' for clarity when no project ID
   expandFields ?? "none", // Include expand fields in the key
 ];
+
+export const TASKS_QUERY_KEY_ROOT = ["tasks-full-list"] as const;
 
 export const getUseTasksQueryOptions = (
   projectId?: string,
@@ -61,27 +64,38 @@ export const useUpdateTask = () => {
       return pb.collection("tasks").update(taskId, updates);
     },
     onMutate: async ({ taskId, updates }) => {
-      const tasksQueryKey = getTasksQueryKey();
       await queryClient.cancelQueries({
-        queryKey: tasksQueryKey,
+        queryKey: TASKS_QUERY_KEY_ROOT,
       });
 
-      const previousTasks =
-        queryClient.getQueryData<TasksResponse[]>(tasksQueryKey);
+      const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
+        queryKey: TASKS_QUERY_KEY_ROOT,
+      });
 
-      if (previousTasks) {
-        const newTasks = previousTasks.map((t) =>
-          t.id === taskId ? { ...t, ...updates } : t,
-        );
+      queryClient.setQueriesData<TaskWithProject[]>(
+        {
+          queryKey: TASKS_QUERY_KEY_ROOT,
+        },
+        (old: TaskWithProject[] | undefined) => {
+          if (!old) return old;
+          return old.map((task: TaskWithProject) =>
+            task.id === taskId
+              ? ({ ...task, ...updates } as TaskWithProject)
+              : task,
+          );
+        },
+      );
 
-        queryClient.setQueryData<TasksResponse[]>(tasksQueryKey, newTasks);
-      }
-
-      return { previousTasks };
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      context?.previousQueries.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: getTasksQueryKey(),
+        queryKey: TASKS_QUERY_KEY_ROOT,
       });
     },
   });
@@ -146,15 +160,20 @@ export const useIsInitialAdmin = () => {
     queryFn: async () => {
       try {
         const response = await fetch("/api/tm/is-initial");
+        if (response.status === 204) {
+          return true;
+        }
         if (!response.ok) {
           return false;
         }
+        const payload = (await response.json()) as { exists?: boolean };
+        return !(payload?.exists ?? false);
       } catch (error) {
         console.error(error);
         return false;
       }
 
-      return true;
+      return false;
     },
   });
 };

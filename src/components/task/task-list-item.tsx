@@ -11,11 +11,18 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
+import { UsersResponse } from "@/lib/pocketbase-types";
 import { UserAvatar } from "../user-avatar";
 import { EditTaskDialog } from "./task-details-dialog";
 
-const formatDateShort = (dateString: string) => {
+const formatDateShort = (dateString?: string | null) => {
+  if (!dateString) {
+    return "-";
+  }
   const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
   return digitsEnToFa(format(date, "dd MMMM"));
 };
 
@@ -36,6 +43,7 @@ export function TaskListItem({
   const statusIconColor = taskStatusColors[task.status];
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
+  const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
 
   return (
     <EditTaskDialog task={task} onSuccess={onSuccess}>
@@ -98,11 +106,14 @@ export function TaskListItem({
 
           {/* Date */}
           <span className="text-muted-foreground w-[70px] flex-shrink-0 text-right text-xs">
-            {formatDateShort(task.deadline ?? "")}
+            {formatDateShort(task.deadline)}
           </span>
 
           {/* Assignee Avatar */}
-          <UserAvatar username={task.assignee} />
+          <UserAvatar
+            user={assigneeRecord}
+            username={assigneeRecord ? undefined : (task.assignee ?? undefined)}
+          />
         </div>
       </div>
     </EditTaskDialog>

@@ -6,8 +6,6 @@ import {
   UsersProjectsRecord,
   UsersRecord,
 } from "@/lib/pocketbase-types";
-import { Database } from "bun:sqlite";
-import { join } from "path";
 import PocketBase from "pocketbase";
 
 // --- Mock Data Imports ---
@@ -22,7 +20,6 @@ const PB_URL = process.env.POCKETBASE_URL || "http://127.0.0.1:8090/";
 const PB_ADMIN_EMAIL =
   process.env.POCKETBASE_ADMIN_EMAIL || "admin@example.com";
 const PB_ADMIN_PASSWORD = process.env.POCKETBASE_ADMIN_PASSWORD || "admin12345";
-const DB_PATH = join(import.meta.dirname, "..", "data", "data.db");
 
 // --- Type Definitions ---
 interface PocketBaseErrorData {
@@ -66,45 +63,47 @@ type MockComment = (typeof mockComments)[number];
 
 // --- Helper Functions ---
 
-/** Truncates PocketBase collection tables using direct SQLite access. */
-function truncateTables(dbPath: string) {
-  console.log("Attempting to truncate tables...");
-  let db: Database | null = null;
-  try {
-    db = new Database(dbPath);
-    // Order matters due to foreign key constraints
-    db.run(`
-      DELETE FROM comments;
-      DELETE FROM tasks;
-      DELETE FROM users_projects;
-      DELETE FROM projects;
-      DELETE FROM users;
-    `);
-    console.log("Successfully truncated tables.");
-  } catch (error) {
-    console.error("Error truncating tables:", error);
-    // Decide if seeding should continue or halt
-    throw error; // Re-throw if truncation is critical
-  } finally {
-    db?.close();
+async function truncateCollections(pb: TypedPocketBase) {
+  console.log("Clearing existing collections via PocketBase API...");
+  const orderedCollections = [
+    "comments",
+    "tasks",
+    "users_projects",
+    "projects",
+    "users",
+  ] as const;
+
+  for (const collection of orderedCollections) {
+    const records = await pb.collection(collection).getFullList({
+      batch: 200,
+    });
+    if (records.length === 0) {
+      continue;
+    }
+
+    console.log(`Deleting ${records.length} records from '${collection}'...`);
+    for (const record of records) {
+      await pb.collection(collection).delete(record.id);
+    }
   }
 }
 
 // --- Main Seeding Logic ---
 async function seedDatabase() {
-  // 1. Truncate existing data
-  truncateTables(DB_PATH);
-
-  // 2. Initialize PocketBase client
+  // 1. Initialize PocketBase client
   const pb = new PocketBase(PB_URL) as TypedPocketBase;
 
   try {
-    // 3. Authenticate as admin
+    // 2. Authenticate as admin
     console.log(`Authenticating with PocketBase at ${PB_URL} as admin...`);
     await pb
       .collection("_superusers") // Use _superusers for admin login
       .authWithPassword(PB_ADMIN_EMAIL, PB_ADMIN_PASSWORD);
     console.log("Authentication successful.");
+
+    // 3. Truncate existing data through PocketBase to ensure hooks/validation run
+    await truncateCollections(pb);
+    console.log("Existing data cleared.");
 
     // 4. Insert Users
     console.log(`Inserting ${mockUsers.length} users...`);

@@ -61,10 +61,21 @@ type BasicUser struct {
 	LastName  string `json:"last_name"`
 }
 
+func allowDefaultCredentials(app core.App) bool {
+	if app.IsDev() {
+		return true
+	}
+	return strings.EqualFold(os.Getenv("TM_ALLOW_DEFAULT_ACCOUNTS"), "true")
+}
+
 func main() {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
 		DefaultDataDir: "./data",
 	})
+
+	if !allowDefaultCredentials(app) {
+		log.Println("Default credential bootstrap disabled; provision admin accounts manually or via initial setup.")
+	}
 
 	// --- Bind Serve Event Handlers ---
 	app.OnServe().BindFunc(importSchema)
@@ -214,6 +225,11 @@ func ensurePocketBaseSuperuser(e *core.ServeEvent) error {
 	}
 
 	if totalSuperusers == 0 {
+		if !allowDefaultCredentials(e.App) {
+			log.Println("PocketBase superuser missing; default credential creation skipped (disabled by configuration).")
+			return nil
+		}
+
 		record := core.NewRecord(adminCollection)
 		record.Set("email", "admin@example.com")
 		record.Set("password", "admin12345")
@@ -223,9 +239,9 @@ func ensurePocketBaseSuperuser(e *core.ServeEvent) error {
 			return err
 		}
 
-		log.Println("Default superuser created successfully (admin@example.com / admin12345).")
+		log.Println("Default PocketBase superuser created for development use.")
 	} else {
-		log.Println("Superuser(s) already exist (admin@example.com / admin12345).")
+		log.Println("PocketBase superuser(s) already exist; no defaults created.")
 	}
 
 	return nil
@@ -245,6 +261,11 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 	}
 
 	if totalAdmins == 0 {
+		if !allowDefaultCredentials(e.App) {
+			log.Println("Application admin missing; default credential creation skipped (disabled by configuration).")
+			return nil
+		}
+
 		record := core.NewRecord(usersCollection)
 		record.Set("username", "admin")
 		record.Set("password", "admin12345")
@@ -255,9 +276,9 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 			return err
 		}
 
-		log.Println("Default admin user created successfully (admin / admin12345).")
+		log.Println("Default application admin user created for development use.")
 	} else {
-		log.Println("Admin user(s) already exist (admin / admin12345).")
+		log.Println("Admin user(s) already exist; no defaults created.")
 	}
 
 	return nil
@@ -356,15 +377,11 @@ func configureUsersRules(e *core.ServeEvent) error {
 		return err
 	}
 
-	// Users rules - Allow viewing users in shared projects
-	// usersCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
-	// usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
-	usersCollection.ListRule = types.Pointer("")
-	usersCollection.ViewRule = types.Pointer("")
-	// Keep existing rules for user management
-	usersCollection.CreateRule = types.Pointer("")
+	usersCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
+	usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
+	usersCollection.CreateRule = nil // Allow public registration
 	usersCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, userSelfAccessRule))
-	usersCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, userSelfAccessRule))
+	usersCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, supervisorRoleRule))
 
 	if err := e.App.Save(usersCollection); err != nil {
 		log.Printf("Error saving 'users' collection rules: %v", err)

@@ -1,10 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
 
 import { TEXT } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import { getTasksQueryKey } from "@/pb-hooks";
+import { TASKS_QUERY_KEY_ROOT } from "@/pb-hooks";
 import { TaskListHeader } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
@@ -22,11 +21,10 @@ export function TaskListGroup({
   showProject = false,
 }: TaskListGroupProps) {
   const queryClient = useQueryClient();
-  const { id: projectId } = useParams<{ id: string }>();
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: getTasksQueryKey(projectId),
+      queryKey: TASKS_QUERY_KEY_ROOT,
     });
   };
 

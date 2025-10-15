@@ -1,6 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import { useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { TEXT } from "@/constants/text";
@@ -11,7 +10,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
-import { getTasksQueryKey } from "@/pb-hooks";
+import { TASKS_QUERY_KEY_ROOT } from "@/pb-hooks";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CreateTaskDialog } from "./create-task-dialog";
 
@@ -22,13 +21,12 @@ interface TaskListHeaderProps {
 
 export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
   const queryClient = useQueryClient();
-  const { id: projectId } = useParams<{ id: string }>();
 
   const IconComponent = taskStatusIcons[status];
 
   const onSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: getTasksQueryKey(projectId),
+      queryKey: TASKS_QUERY_KEY_ROOT,
     });
   };
 
