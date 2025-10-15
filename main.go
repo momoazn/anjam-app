@@ -40,13 +40,13 @@ const (
 
 	// Project access rules
 	projectSupervisorRule         = `supervisor.id = @request.auth.id`
-	projectParticipantRule        = `@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id`
+	projectParticipantRule        = `@collection.users_projects.project.id ?= id && @collection.users_projects.user.id ?= @request.auth.id`
 	projectCreateAsSupervisorRule = `@request.body.supervisor = @request.auth.id`
 
 	// Task access rules
 	taskProjectSupervisorRule  = `@collection.tasks.project.supervisor.id = @request.auth.id`
-	taskProjectParticipantRule = `@collection.tasks.project.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id`
-	taskCreateInProjectRule    = `@collection.projects.id = @request.body.project && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))`
+	taskProjectParticipantRule = `@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id`
+	taskCreateInProjectRule    = `@request.body.project != "" && @collection.users_projects.project.id ?= @request.body.project && @collection.users_projects.user.id ?= @request.auth.id`
 
 	// User access rules
 	userSelfAccessRule          = `@request.auth.id = id`
@@ -356,9 +356,9 @@ func configureUsersProjectsRules(e *core.ServeEvent) error {
 	}
 
 	// Users_Projects rules
-	usersProjectsCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id = project.id && @request.auth.id = @collection.users_projects.user.id)`, adminAccessRule))
-	usersProjectsCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id = project.id && @request.auth.id = @collection.users_projects.user.id)`, adminAccessRule))
-	usersProjectsCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (@collection.projects.id = @request.body.project && @collection.projects.supervisor.id = @request.auth.id)`, adminAccessRule))
+	usersProjectsCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)`, adminAccessRule))
+	usersProjectsCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)`, adminAccessRule))
+	usersProjectsCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (@collection.projects.id ?= @request.body.project && @collection.projects.supervisor.id ?= @request.auth.id)`, adminAccessRule))
 	usersProjectsCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id`, adminAccessRule))
 	usersProjectsCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id`, adminAccessRule))
 
