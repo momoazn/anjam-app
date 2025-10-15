@@ -379,7 +379,7 @@ func configureUsersRules(e *core.ServeEvent) error {
 
 	usersCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
 	usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
-	usersCollection.CreateRule = nil // Allow public registration
+	usersCollection.CreateRule = types.Pointer("") // Allow public registration
 	usersCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, userSelfAccessRule))
 	usersCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, supervisorRoleRule))
 

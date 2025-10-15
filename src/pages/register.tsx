@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { TEXT } from "@/constants/text";
+import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
 import { useIsInitialAdmin } from "@/pb-hooks";
@@ -85,9 +86,8 @@ export default function Register() {
         .authWithPassword(username.trim().toLowerCase(), password.trim());
       login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
       navigate("/", { replace: true });
-    } catch (error) {
-      console.error(error);
-      toast.error(TEXT.auth.login.errors.invalidCredentials);
+    } catch (error: unknown) {
+      handlePocketBaseError(error);
     }
   };
 
