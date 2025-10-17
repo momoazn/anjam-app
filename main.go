@@ -402,9 +402,9 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 		return staticHandler(staticFS, e.Response, e.Request)
 	})
 
-	if !e.App.IsDev() {
-		openBrowser(e.App.Settings().Meta.AppURL)
-	}
+	// if !e.App.IsDev() {
+	// 	openBrowser(e.App.Settings().Meta.AppURL)
+	// }
 
 	return e.Next()
 }
