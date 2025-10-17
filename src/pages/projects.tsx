@@ -36,6 +36,7 @@ export default function Projects() {
 
   const isAdmin = user?.role === UsersRoleOptions.admin;
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
+  const canCreateProject = isAdmin || isSupervisor;
 
   return (
     <>
@@ -50,7 +51,7 @@ export default function Projects() {
               )}
             </span>
           </div>
-          {isSupervisor && (
+          {canCreateProject && (
             <Button onClick={() => setIsCreateOpen(true)}>
               <Plus className="mr-2 size-4" />
               {TEXT.projects.create.button}
