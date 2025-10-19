@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TEXT } from "@/constants/text";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
+import { useTheme } from "@/hooks/use-theme";
 import { AppRoutes } from "./router";
 
 // Optimized QueryClient configuration
@@ -92,6 +93,9 @@ const AppLayout = memo(() => {
 AppLayout.displayName = "AppLayout";
 
 function App() {
+  // Initialize theme management
+  useTheme();
+
   // Memoize the QueryClient to prevent recreation on every render
   const memoizedQueryClient = useMemo(() => queryClient, []);
 

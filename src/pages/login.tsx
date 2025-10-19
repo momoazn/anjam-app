@@ -38,8 +38,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow">
+    <div className="bg-background flex min-h-screen items-center justify-center">
+      <div className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow">
         <h2 className="text-foreground text-center text-3xl font-bold">
           {TEXT.auth.login.title}
         </h2>
@@ -52,7 +52,7 @@ export default function Login() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+              className="mt-1 block w-full border px-3 py-2"
               required
             />
           </div>
@@ -64,7 +64,7 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+              className="mt-1 block w-full border px-3 py-2"
               required
             />
           </div>
