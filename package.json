@@ -11,6 +11,7 @@
     "web:lint:fix": "eslint . --fix",
     "web:format": "prettier --write .",
     "web:format:check": "prettier --check .",
+    "web:fix": "bun run web:lint:fix && bun run web:format",
     "api:dev": "air",
     "api:serve": "go run main.go",
     "api:build": "go build -o task-manager main.go",

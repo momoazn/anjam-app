@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useEffect, useMemo } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { TEXT } from "@/constants/text";
@@ -55,6 +55,11 @@ const Helps = React.lazy(() =>
     default: () => <div>{TEXT.errors.pageLoad.helps}</div>,
   })),
 );
+const NotFound = React.lazy(() =>
+  import("@/pages/not-found").catch(() => ({
+    default: () => <div>صفحه یافت نشد</div>,
+  })),
+);
 
 // Memoized ProtectedRoute component
 const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
@@ -79,7 +84,23 @@ interface RouteType {
   path: string;
   element: React.ReactNode;
   protected: boolean;
+  title?: string;
 }
+
+// Sets document.title when mounted
+const Title = ({
+  title,
+  children,
+}: {
+  title?: string;
+  children: React.ReactNode;
+}) => {
+  useEffect(() => {
+    if (title) document.title = `${title} • ${TEXT.app.name}`;
+    else document.title = TEXT.app.name;
+  }, [title]);
+  return <>{children}</>;
+};
 
 // Memoized routes configuration
 const routes: RouteType[] = [
@@ -87,51 +108,67 @@ const routes: RouteType[] = [
     path: "/",
     element: <Dashboard />,
     protected: true,
+    title: TEXT.navigation.dashboard,
   },
   {
     path: "/projects",
     element: <Projects />,
     protected: true,
+    title: TEXT.navigation.projects,
   },
   {
     path: "/login",
     element: <Login />,
     protected: false,
+    title: TEXT.auth.login.title,
   },
   {
     path: "/register",
     element: <Register />,
     protected: false,
+    title: TEXT.auth.register.title,
   },
   {
     path: "/tasks",
     element: <Tasks />,
     protected: true,
+    title: TEXT.tasks.title,
   },
   {
     path: "/projects/:id/tasks",
     element: <ProjectTasks />,
     protected: true,
+    title: TEXT.projects.projectTasks,
   },
   {
     path: "/users",
     element: <Users />,
     protected: true,
+    title: TEXT.users.title,
   },
   {
     path: "/projects/:id/users",
     element: <ProjectUsers />,
     protected: true,
+    title: TEXT.projects.users.title,
   },
   {
     path: "/reports",
     element: <Reports />,
     protected: true,
+    title: TEXT.navigation.reports,
   },
   {
     path: "/helps",
     element: <Helps />,
     protected: true,
+    title: TEXT.navigation.helps,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+    protected: false,
+    title: "404",
   },
 ];
 
@@ -146,9 +183,11 @@ export const AppRoutes = memo(() => {
           path={route.path}
           element={
             route.protected ? (
-              <ProtectedRoute>{route.element}</ProtectedRoute>
+              <ProtectedRoute>
+                <Title title={route.title}>{route.element}</Title>
+              </ProtectedRoute>
             ) : (
-              route.element
+              <Title title={route.title}>{route.element}</Title>
             )
           }
         />
