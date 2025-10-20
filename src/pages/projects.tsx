@@ -18,7 +18,10 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] =
     useState<ProjectsResponse | null>(null);
 
-  const { data: userProjects, isPending: isLoadingProjects } = useProjects({});
+  const { data: userProjects, isPending: isLoadingProjects } = useProjects({
+    batch: 100,
+    sort: "-created",
+  });
 
   const handleEdit = (project: ProjectsResponse) => {
     setSelectedProject(project);

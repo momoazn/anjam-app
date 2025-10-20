@@ -49,7 +49,6 @@ export default function ProjectUsers() {
 
   const { data: project } = useProjectWithSupervisor({
     id: id as string,
-    enabled: true,
   });
   const { data: projectUsers } = useProjectUsers({ projectId: id as string });
 

@@ -121,22 +121,32 @@ const StatCard = memo(function StatCard({
 
 // Simplified task stats hook
 function useTaskStats() {
-  const { data: tasks } = useTasks({});
+  const { data: tasks, isPending, error } = useTasks({});
 
   return {
     data: tasks ? calculateTaskStats(tasks) : undefined,
-    isLoading: !tasks,
+    isPending,
+    error,
   };
 }
 
 // Simplified user performance hook
 function useUserPerformance() {
-  const { data: users } = useUsers({});
-  const { data: tasks } = useTasks({});
+  const {
+    data: users,
+    isPending: usersPending,
+    error: usersError,
+  } = useUsers({});
+  const {
+    data: tasks,
+    isPending: tasksPending,
+    error: tasksError,
+  } = useTasks({});
 
   return {
     data: users && tasks ? calculateUserPerformance(users, tasks) : undefined,
-    isLoading: !users || !tasks,
+    isPending: usersPending || tasksPending,
+    error: usersError || tasksError,
   };
 }
 
@@ -342,8 +352,8 @@ const UserPerformanceChart = memo(function UserPerformanceChart({
 });
 
 export default function Reports() {
-  const { data: taskStats, isLoading: isLoadingTaskStats } = useTaskStats();
-  const { data: userStats, isLoading: isLoadingUserStats } =
+  const { data: taskStats, isPending: isLoadingTaskStats } = useTaskStats();
+  const { data: userStats, isPending: isLoadingUserStats } =
     useUserPerformance();
 
   if (isLoadingTaskStats || isLoadingUserStats) {

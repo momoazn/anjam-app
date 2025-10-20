@@ -93,7 +93,7 @@ export function CreateTaskDialog({
 
   // Fetch project users when in project context
   const { data: projectUsers } = useProjectUsers({
-    projectId: projectId ?? "",
+    projectId: projectId || "",
     enabled: Boolean(projectId), // Enable only when we have a project ID
   });
 

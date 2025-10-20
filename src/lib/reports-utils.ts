@@ -46,12 +46,12 @@ const STATUS_LABELS: Record<TasksStatusOptions, string> = {
 };
 
 // Priority labels mapping
-const PRIORITY_LABELS: Record<string, string> = {
+const PRIORITY_LABELS = {
   urgent: "فوری",
   high: "اولویت بالا",
   medium: "اولویت متوسط",
   low: "اولویت پایین",
-};
+} as const;
 
 // Priority options in order
 const PRIORITY_OPTIONS = ["urgent", "high", "medium", "low"] as const;
@@ -101,7 +101,11 @@ export function calculateCompletionTrend(
     .reduce(
       (acc, task) => {
         if (task.updated) {
-          const date = format(new Date(task.updated), "jMMM jdd");
+          // Use UTC date to avoid timezone issues
+          const taskDate = new Date(task.updated);
+          const date = format(taskDate, "jMMM jdd", {
+            locale: undefined, // Use default locale to avoid timezone conversion
+          });
           acc[date] = (acc[date] || 0) + 1;
         }
         return acc;
@@ -111,7 +115,7 @@ export function calculateCompletionTrend(
 
   return Object.entries(completedOverTime).map(([date, count]) => ({
     date,
-    completed: count as number,
+    completed: count,
   }));
 }
 
@@ -123,7 +127,7 @@ export function calculateUserPerformance(
   tasks: TasksRecord[],
 ): UserPerformanceData[] {
   return users
-    .filter((user) => user.role === UsersRoleOptions.employee)
+    .filter((user) => user.role && user.role === UsersRoleOptions.employee)
     .map((user) => {
       const userTasks = tasks.filter((task) => task.assignee === user.id);
       const completedTasks = userTasks.filter(

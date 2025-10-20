@@ -20,7 +20,10 @@ export default function Users() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UsersResponse | null>(null);
 
-  const { data: users, isPending: isLoadingUsers } = useUsers({});
+  const { data: users, isPending: isLoadingUsers } = useUsers({
+    batch: 100,
+    sort: "-created",
+  });
 
   const isAdmin = user?.role === UsersRoleOptions.admin;
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;

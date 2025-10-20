@@ -42,8 +42,25 @@ import {
 /**
  * Centralized query key factory functions
  */
+/**
+ * Centralized query key factory for React Query cache management.
+ * Provides type-safe query keys for all PocketBase collections and operations.
+ *
+ * Structure:
+ * - Each collection has 'all', 'lists', and 'detail' keys
+ * - 'all' is the base key for the collection
+ * - 'lists' is for list queries (with optional filters)
+ * - 'detail' is for single record queries
+ * - Additional collection-specific keys as needed
+ */
 export const queryKeys = {
-  // Tasks
+  /**
+   * Task-related query keys
+   * - all: Base key for all task queries
+   * - lists: For task list queries
+   * - list: For filtered task lists (by project, with expand fields)
+   * - detail: For individual task queries
+   */
   tasks: {
     all: ["tasks"] as const,
     lists: () => [...queryKeys.tasks.all, "list"] as const,
@@ -55,14 +72,25 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.tasks.all, "detail", id] as const,
   },
 
-  // Projects
+  /**
+   * Project-related query keys
+   * - all: Base key for all project queries
+   * - lists: For project list queries
+   * - detail: For individual project queries
+   */
   projects: {
     all: ["projects"] as const,
     lists: () => [...queryKeys.projects.all, "list"] as const,
     detail: (id: string) => [...queryKeys.projects.all, "detail", id] as const,
   },
 
-  // Users
+  /**
+   * User-related query keys
+   * - all: Base key for all user queries
+   * - lists: For user list queries
+   * - detail: For individual user queries
+   * - projectUsers: For users associated with a specific project
+   */
   users: {
     all: ["users"] as const,
     lists: () => [...queryKeys.users.all, "list"] as const,
@@ -71,7 +99,10 @@ export const queryKeys = {
       [...queryKeys.users.all, "project", projectId] as const,
   },
 
-  // Auth
+  /**
+   * Authentication-related query keys
+   * - isInitialAdmin: For checking if initial admin setup is needed
+   */
   auth: {
     isInitialAdmin: ["auth", "is-initial-admin"] as const,
   },
@@ -154,7 +185,8 @@ export function useCreateTask(
   options?: UseMutationOptions<
     TasksResponse,
     Error,
-    Omit<TasksRecord, "id" | "created" | "updated">
+    Omit<TasksRecord, "id" | "created" | "updated">,
+    { previousQueries: [readonly unknown[], TaskWithProject[] | undefined][] }
   >,
 ) {
   const queryClient = useQueryClient();
@@ -162,8 +194,44 @@ export function useCreateTask(
   return useMutation({
     mutationFn: (taskData: Omit<TasksRecord, "id" | "created" | "updated">) =>
       pb.collection("tasks").create(taskData),
-    onSuccess: () => {
-      // Invalidate all task queries to refetch data
+    onMutate: async (newTask) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
+
+      // Snapshot previous values
+      const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
+        queryKey: queryKeys.tasks.all,
+      });
+
+      // Optimistically update cache with new task
+      const optimisticTask = {
+        ...newTask,
+        id: `temp-${Date.now()}`, // Temporary ID for optimistic update
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+        expand: {},
+      } as TaskWithProject;
+
+      queryClient.setQueriesData<TaskWithProject[]>(
+        { queryKey: queryKeys.tasks.all },
+        (old: TaskWithProject[] | undefined) => {
+          if (!old) return [optimisticTask];
+          return [optimisticTask, ...old];
+        },
+      );
+
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
     },
     ...options,
@@ -214,11 +282,15 @@ export function useUpdateTask(
         { queryKey: queryKeys.tasks.all },
         (old: TaskWithProject[] | undefined) => {
           if (!old) return old;
-          return old.map((task: TaskWithProject) =>
-            task.id === id
-              ? ({ ...task, ...updates } as TaskWithProject)
-              : task,
-          );
+          return old.map((task: TaskWithProject) => {
+            if (task.id === id) {
+              // Create a new object with proper type validation
+              const updatedTask = { ...task, ...updates };
+              // Ensure the result maintains the TaskWithProject structure
+              return updatedTask as TaskWithProject;
+            }
+            return task;
+          });
         },
       );
 
@@ -229,13 +301,10 @@ export function useUpdateTask(
       if (
         context &&
         typeof context === "object" &&
-        "previousQueries" in context
+        "previousQueries" in context &&
+        Array.isArray(context.previousQueries)
       ) {
-        const previousQueries = context.previousQueries as [
-          readonly unknown[],
-          TaskWithProject[] | undefined,
-        ][];
-        previousQueries.forEach(([queryKey, data]) => {
+        context.previousQueries.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
         });
       }
@@ -281,13 +350,19 @@ export function useDeleteTask(
 export function useProjects(
   options: {
     enabled?: boolean;
+    batch?: number;
+    sort?: string;
   } = {},
 ) {
-  const { enabled = true } = options;
+  const { enabled = true, batch = 100, sort = "-created" } = options;
 
   return useQuery({
     queryKey: queryKeys.projects.lists(),
-    queryFn: () => pb.collection("projects").getFullList<ProjectsResponse>(),
+    queryFn: () =>
+      pb.collection("projects").getFullList<ProjectsResponse>({
+        batch,
+        sort,
+      }),
     enabled,
   });
 }
@@ -415,13 +490,19 @@ export function useDeleteProject(
 export function useUsers(
   options: {
     enabled?: boolean;
+    batch?: number;
+    sort?: string;
   } = {},
 ) {
-  const { enabled = true } = options;
+  const { enabled = true, batch = 100, sort = "-created" } = options;
 
   return useQuery({
     queryKey: queryKeys.users.lists(),
-    queryFn: () => pb.collection("users").getFullList<UsersResponse>(),
+    queryFn: () =>
+      pb.collection("users").getFullList<UsersResponse>({
+        batch,
+        sort,
+      }),
     enabled,
   });
 }
@@ -477,12 +558,12 @@ export function useProjectUsers({
       // Extract user data from the expanded relationships
       return userProjects
         .map((up) => up.expand?.user)
-        .filter(Boolean)
+        .filter((user): user is UsersResponse => Boolean(user))
         .map((user) => ({
-          id: user!.id,
-          username: user!.username,
-          first_name: user!.first_name,
-          last_name: user!.last_name,
+          id: user.id,
+          username: user.username,
+          first_name: user.first_name,
+          last_name: user.last_name,
         }));
     },
     enabled: enabled && Boolean(projectId),
@@ -603,4 +684,12 @@ export function useIsInitialAdmin() {
 /**
  * @deprecated Use useProjectUsers instead
  */
-export const useSpecificProjectUsers = useProjectUsers;
+export const useSpecificProjectUsers = (
+  ...args: Parameters<typeof useProjectUsers>
+) => {
+  console.warn(
+    "useSpecificProjectUsers is deprecated. Please use useProjectUsers instead. " +
+      "This alias will be removed in a future version.",
+  );
+  return useProjectUsers(...args);
+};

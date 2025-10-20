@@ -94,8 +94,8 @@ export function EditTaskDialog({
 
   // Fetch project users when in project context
   const { data: projectUsers } = useProjectUsers({
-    projectId: projectId ?? task.project,
-    enabled: true,
+    projectId: projectId || task.project,
+    enabled: Boolean(projectId || task.project),
   });
 
   // Fetch all users when not in project context
