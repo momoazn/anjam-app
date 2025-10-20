@@ -1,62 +1,62 @@
 [
   {
-    "name": "فنی‌زاده گروه",
-    "code": "IBP",
-    "supervisor": "kamk_lajwrdy2",
-    "created": "2025-04-14T16:38:03.421Z"
+    "name": "سیستم مدیریت فروش",
+    "code": "SMS",
+    "supervisor": "supervisor.hassan",
+    "created": "2025-01-15T09:00:00.000Z"
   },
   {
-    "name": "علیا-همایون",
-    "code": "XTJ",
-    "supervisor": "kamk_lajwrdy2",
-    "created": "2025-04-14T02:40:38.769Z"
+    "name": "پلتفرم تجارت الکترونیک",
+    "code": "ECO",
+    "supervisor": "supervisor.zahra",
+    "created": "2025-01-20T10:30:00.000Z"
   },
   {
-    "name": "کمالی گروه",
-    "code": "QDU",
-    "supervisor": "kamk_lajwrdy2",
-    "created": "2025-04-14T19:41:01.007Z"
+    "name": "سیستم مدیریت انبار",
+    "code": "WMS",
+    "supervisor": "supervisor.mahmoud",
+    "created": "2025-02-01T08:15:00.000Z"
   },
   {
-    "name": "علی‌زمانی کارخانه",
-    "code": "ELG",
-    "supervisor": "nykdad_ely6bwa18zbady7",
-    "created": "2025-04-14T02:16:14.493Z"
+    "name": "اپلیکیشن موبایل بانکداری",
+    "code": "MBA",
+    "supervisor": "supervisor.maryam",
+    "created": "2025-02-10T14:20:00.000Z"
   },
   {
-    "name": "هاشمی رفسنجانی-همت",
-    "code": "UCG",
-    "supervisor": "hmraz61",
-    "created": "2025-04-14T01:51:55.589Z"
+    "name": "سیستم مدیریت منابع انسانی",
+    "code": "HRS",
+    "supervisor": "supervisor.reza",
+    "created": "2025-02-15T11:45:00.000Z"
   },
   {
-    "name": "مهدی‌پور, کدیور و عنایت",
-    "code": "NAY",
-    "supervisor": "nykdad_ely6bwa18zbady7",
-    "created": "2025-04-14T19:39:30.345Z"
+    "name": "پلتفرم آموزش آنلاین",
+    "code": "LMS",
+    "supervisor": "supervisor.hassan",
+    "created": "2025-02-20T16:00:00.000Z"
   },
   {
-    "name": "ندوشن, میزبانی و قهرمان",
-    "code": "DSU",
-    "supervisor": "kamk_lajwrdy2",
-    "created": "2025-04-14T02:45:32.508Z"
+    "name": "سیستم مدیریت پروژه",
+    "code": "PMS",
+    "supervisor": "supervisor.zahra",
+    "created": "2025-03-01T09:30:00.000Z"
   },
   {
-    "name": "کرمانی شرکت با مسئولیت محدود",
-    "code": "NWY",
-    "supervisor": "hwrdad.mrtdwy2",
-    "created": "2025-04-14T16:16:22.307Z"
+    "name": "اپلیکیشن تحویل غذا",
+    "code": "FDS",
+    "supervisor": "supervisor.mahmoud",
+    "created": "2025-03-05T13:15:00.000Z"
   },
   {
-    "name": "مجاهد, هراتی و عنایت",
-    "code": "JNA",
-    "supervisor": "shyrzad.khnmwyy",
-    "created": "2025-04-14T19:14:55.718Z"
+    "name": "سیستم مدیریت بیمارستان",
+    "code": "HMS",
+    "supervisor": "supervisor.maryam",
+    "created": "2025-03-10T07:45:00.000Z"
   },
   {
-    "name": "معین, عبدالملکی و محجوب",
-    "code": "RLS",
-    "supervisor": "hmraz61",
-    "created": "2025-04-14T20:12:34.094Z"
+    "name": "پلتفرم رزرو هتل",
+    "code": "HRS",
+    "supervisor": "supervisor.reza",
+    "created": "2025-03-15T12:00:00.000Z"
   }
 ]
