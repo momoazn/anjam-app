@@ -34,10 +34,14 @@ export function TaskFilters({
   selectedStatus,
   selectedPriority,
   selectedAssignee,
+  selectedDateRange,
+  selectedTag,
   setSearchTerm,
   setSelectedStatus,
   setSelectedPriority,
   setSelectedAssignee,
+  setSelectedDateRange,
+  setSelectedTag,
   users,
   isLoadingUsers,
 }: TaskFiltersProps) {
@@ -127,7 +131,10 @@ export function TaskFilters({
           <span className="text-muted-foreground text-xs sm:text-sm">
             تاریخ:
           </span>
-          <Select defaultValue="all">
+          <Select
+            value={selectedDateRange}
+            onValueChange={setSelectedDateRange}
+          >
             <SelectTrigger className="w-full min-w-[120px] sm:w-auto">
               <SelectValue />
             </SelectTrigger>
@@ -137,7 +144,6 @@ export function TaskFilters({
               <SelectItem value="week">این هفته</SelectItem>
               <SelectItem value="month">این ماه</SelectItem>
               <SelectItem value="overdue">گذشته‌موعد</SelectItem>
-              <SelectItem value="custom">سفارشی</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -147,15 +153,15 @@ export function TaskFilters({
           <span className="text-muted-foreground text-xs sm:text-sm">
             برچسب‌ها:
           </span>
-          <Select defaultValue="all">
+          <Select value={selectedTag} onValueChange={setSelectedTag}>
             <SelectTrigger className="w-full min-w-[120px] sm:w-auto">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">همه برچسب‌ها</SelectItem>
-              <SelectItem value="bug">اشکال</SelectItem>
-              <SelectItem value="feature">ویژگی</SelectItem>
-              <SelectItem value="improvement">بهبود</SelectItem>
+              <SelectItem value="اشکال">اشکال</SelectItem>
+              <SelectItem value="ویژگی">ویژگی</SelectItem>
+              <SelectItem value="بهبود">بهبود</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -164,7 +170,9 @@ export function TaskFilters({
         {(searchTerm ||
           selectedStatus !== ALL_FILTER_VALUE ||
           selectedPriority !== ALL_FILTER_VALUE ||
-          selectedAssignee !== ALL_FILTER_VALUE) && (
+          selectedAssignee !== ALL_FILTER_VALUE ||
+          selectedDateRange !== "all" ||
+          selectedTag !== "all") && (
           <Button
             variant="outline"
             size="sm"
@@ -173,6 +181,8 @@ export function TaskFilters({
               setSelectedStatus(ALL_FILTER_VALUE);
               setSelectedPriority(ALL_FILTER_VALUE);
               setSelectedAssignee(ALL_FILTER_VALUE);
+              setSelectedDateRange("all");
+              setSelectedTag("all");
             }}
             className="w-full gap-2 sm:w-auto"
           >

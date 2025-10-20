@@ -6,6 +6,7 @@ import {
 } from "@/lib/pocketbase-types"; // Removed unused TasksResponse
 import { useUsers } from "@/pb-hooks";
 import { useMemo, useState } from "react";
+import { isPast, isToday, isThisWeek, isThisMonth } from "date-fns-jalali";
 
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
@@ -15,6 +16,8 @@ export interface TaskFiltersState {
   selectedStatus: TasksStatusOptions | typeof ALL_FILTER_VALUE;
   selectedPriority: TasksPriorityOptions | typeof ALL_FILTER_VALUE;
   selectedAssignee: string | typeof ALL_FILTER_VALUE;
+  selectedDateRange: string;
+  selectedTag: string;
 }
 
 // Define the return type of the hook
@@ -29,6 +32,8 @@ export interface UseTaskFiltersReturn extends TaskFiltersState {
   setSelectedAssignee: React.Dispatch<
     React.SetStateAction<string | typeof ALL_FILTER_VALUE>
   >;
+  setSelectedDateRange: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedTag: React.Dispatch<React.SetStateAction<string>>;
   filteredTasks: TaskWithProject[]; // Or TasksResponse based on input? Let's stick with TaskWithProject for now
   users: UsersResponse[] | undefined;
   isLoadingUsers: boolean;
@@ -48,6 +53,8 @@ export function useTaskFilters(
   const [selectedAssignee, setSelectedAssignee] = useState<
     string | typeof ALL_FILTER_VALUE
   >(ALL_FILTER_VALUE);
+  const [selectedDateRange, setSelectedDateRange] = useState("all");
+  const [selectedTag, setSelectedTag] = useState("all");
 
   const { data: users, isPending: isLoadingUsers } = useUsers(); // Fetch users within the hook
 
@@ -75,21 +82,66 @@ export function useTaskFilters(
           ? true
           : task.assignee === selectedAssignee;
 
+      // Date range filter logic
+      const matchesDateRange = (() => {
+        if (selectedDateRange === "all") return true;
+        if (!task.deadline) return selectedDateRange === "overdue"; // No deadline tasks are not overdue
+
+        const deadline = new Date(task.deadline);
+
+        switch (selectedDateRange) {
+          case "today":
+            return isToday(deadline);
+          case "week":
+            return isThisWeek(deadline);
+          case "month":
+            return isThisMonth(deadline);
+          case "overdue":
+            return isPast(deadline) && task.status !== TasksStatusOptions.done;
+          default:
+            return true;
+        }
+      })();
+
+      // Tag filter logic
+      const matchesTag = (() => {
+        if (selectedTag === "all") return true;
+        if (!task.tags || task.tags.length === 0) return false;
+        return task.tags.includes(selectedTag);
+      })();
+
       return (
-        matchesSearch && matchesStatus && matchesPriority && matchesAssignee
+        matchesSearch &&
+        matchesStatus &&
+        matchesPriority &&
+        matchesAssignee &&
+        matchesDateRange &&
+        matchesTag
       );
     });
-  }, [tasks, searchTerm, selectedStatus, selectedPriority, selectedAssignee]);
+  }, [
+    tasks,
+    searchTerm,
+    selectedStatus,
+    selectedPriority,
+    selectedAssignee,
+    selectedDateRange,
+    selectedTag,
+  ]);
 
   return {
     searchTerm,
     selectedStatus,
     selectedPriority,
     selectedAssignee,
+    selectedDateRange,
+    selectedTag,
     setSearchTerm,
     setSelectedStatus,
     setSelectedPriority,
     setSelectedAssignee,
+    setSelectedDateRange,
+    setSelectedTag,
     filteredTasks,
     users,
     isLoadingUsers,
