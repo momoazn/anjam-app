@@ -39,6 +39,12 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
 
   const { data: isInitialAdmin } = useIsInitialAdmin();
 
@@ -48,15 +54,20 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !password.trim()) {
-      console.error(TEXT.auth.register.errors.credentialsRequired);
+    const newErrors: {
+      username?: string;
+      password?: string;
+      confirmPassword?: string;
+    } = {};
+    if (!username.trim()) newErrors.username = TEXT.auth.errors.usernameRequired;
+    if (!password.trim()) newErrors.password = TEXT.auth.errors.passwordRequired;
+    if (!confirmPassword.trim())
+      newErrors.confirmPassword = TEXT.auth.errors.passwordConfirmRequired;
+    if (!newErrors.password && !newErrors.confirmPassword && password !== confirmPassword)
+      newErrors.confirmPassword = TEXT.auth.errors.passwordsMismatch;
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
       toast.error(TEXT.auth.register.errors.credentialsRequired);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      console.error(TEXT.auth.register.errors.passwordsMismatch);
-      toast.error(TEXT.auth.register.errors.passwordsMismatch);
       return;
     }
 
@@ -74,6 +85,7 @@ export default function Register() {
     }
 
     try {
+      setSubmitting(true);
       await pb.collection("users").create({
         username: username.trim().toLowerCase(),
         password: password.trim(),
@@ -88,6 +100,8 @@ export default function Register() {
       navigate("/", { replace: true });
     } catch (error: unknown) {
       handlePocketBaseError(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -108,7 +122,7 @@ export default function Register() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <Label className="text-foreground block text-sm font-medium">
               {TEXT.auth.register.username}
@@ -119,7 +133,16 @@ export default function Register() {
               onChange={(e) => setUsername(e.target.value)}
               className="mt-1 block w-full border px-3 py-2"
               required
+              autoFocus
+              aria-invalid={Boolean(errors.username)}
+              aria-describedby={errors.username ? "register-username-error" : undefined}
+              disabled={submitting}
             />
+            {errors.username && (
+              <p id="register-username-error" className="text-destructive mt-1 text-xs">
+                {errors.username}
+              </p>
+            )}
           </div>
           <div>
             <Label className="text-foreground block text-sm font-medium">
@@ -131,7 +154,15 @@ export default function Register() {
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full border px-3 py-2"
               required
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby={errors.password ? "register-password-error" : undefined}
+              disabled={submitting}
             />
+            {errors.password && (
+              <p id="register-password-error" className="text-destructive mt-1 text-xs">
+                {errors.password}
+              </p>
+            )}
           </div>
           <div>
             <Label className="text-foreground block text-sm font-medium">
@@ -143,11 +174,21 @@ export default function Register() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               required
+              aria-invalid={Boolean(errors.confirmPassword)}
+              aria-describedby={
+                errors.confirmPassword ? "register-confirm-password-error" : undefined
+              }
+              disabled={submitting}
             />
+            {errors.confirmPassword && (
+              <p id="register-confirm-password-error" className="text-destructive mt-1 text-xs">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
-          <Button type="submit" className="w-full">
-            {TEXT.auth.register.registerButton}
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? TEXT.tasks.details.buttons.saving : TEXT.auth.register.registerButton}
           </Button>
 
           {!isInitialAdmin && (
@@ -155,6 +196,8 @@ export default function Register() {
               variant="outline"
               className="w-full"
               onClick={() => navigate("/login")}
+              type="button"
+              disabled={submitting}
             >
               {TEXT.auth.register.loginButton}
             </Button>
