@@ -9,10 +9,9 @@ import { useTasks } from "@/pb-hooks";
 import { useMemo } from "react";
 
 export default function Tasks() {
-  const { data: userTasks, isPending: isLoadingTasks } = useTasks(
-    undefined,
-    "project,assignee", // Expand project and assignee
-  );
+  const { data: userTasks, isPending: isLoadingTasks } = useTasks({
+    expandFields: "project,assignee", // Expand project and assignee
+  });
 
   const {
     searchTerm,

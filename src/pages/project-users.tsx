@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -29,9 +29,13 @@ import {
 } from "@/components/ui/table";
 import { UserAvatar } from "@/components/user-avatar";
 import { TEXT } from "@/constants/text";
-import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
-import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useSpecificProjectUsers } from "@/pb-hooks";
+import { pb } from "@/lib/pocketbase";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
+import {
+  useProjectWithSupervisor,
+  useProjectUsers,
+  useUsers,
+} from "@/pb-hooks";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function ProjectUsers() {
@@ -43,23 +47,14 @@ export default function ProjectUsers() {
   const canManageUsers = isAdmin || isSupervisor;
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
 
-  const { data: project } = useQuery({
-    queryKey: ["projects", id],
-    queryFn: () =>
-      pb.collection("projects").getOne<ProjectWithSupervisor>(id as string, {
-        expand: "supervisor",
-      }),
+  const { data: project } = useProjectWithSupervisor({
+    id: id as string,
+    enabled: true,
   });
-
-  // Get project users
-  const { data: projectUsers } = useSpecificProjectUsers(id as string);
+  const { data: projectUsers } = useProjectUsers({ projectId: id as string });
 
   // Get all users for adding new users to project
-  const { data: allUsers } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => pb.collection("users").getFullList<UsersResponse>(),
-    enabled: canManageUsers,
-  });
+  const { data: allUsers } = useUsers({ enabled: canManageUsers });
 
   // Add user to project
   const { mutate: addUserToProject, isPending: isAddingUser } = useMutation({

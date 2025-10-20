@@ -13,11 +13,11 @@ import { useProject, useTasks } from "@/pb-hooks";
 export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
 
-  const { data: project } = useProject(projectId as string);
-  const { data: tasks, isLoading: isLoadingTasks } = useTasks(
+  const { data: project } = useProject({ id: projectId as string });
+  const { data: tasks, isLoading: isLoadingTasks } = useTasks({
     projectId,
-    "assignee",
-  ); // Expand assignee
+    expandFields: "assignee",
+  }); // Expand assignee
 
   const {
     searchTerm,

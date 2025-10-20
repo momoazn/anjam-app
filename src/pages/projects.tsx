@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -7,8 +6,8 @@ import { EditProjectDialog } from "@/components/project/edit-project-dialog";
 import { ProjectListGroup } from "@/components/project/project-list-group";
 import { Button } from "@/components/ui/button";
 import { TEXT } from "@/constants/text";
-import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
+import { useProjects } from "@/pb-hooks";
 import { useAuthUser } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
@@ -19,15 +18,7 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] =
     useState<ProjectsResponse | null>(null);
 
-  const { data: userProjects, isPending: isLoadingProjects } = useQuery({
-    queryKey: ["projects", user?.id],
-    queryFn: () => {
-      return pb.collection("projects").getFullList<ProjectsResponse>({
-        batch: 100,
-        sort: "-created",
-      });
-    },
-  });
+  const { data: userProjects, isPending: isLoadingProjects } = useProjects({});
 
   const handleEdit = (project: ProjectsResponse) => {
     setSelectedProject(project);

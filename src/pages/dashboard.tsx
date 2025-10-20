@@ -27,8 +27,8 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: userTasks, isPending: isLoadingTasks } = useTasks();
-  const { data: projects, isPending: isLoadingProjects } = useProjects();
+  const { data: userTasks, isPending: isLoadingTasks } = useTasks({});
+  const { data: projects, isPending: isLoadingProjects } = useProjects({});
 
   const stats = useMemo(() => {
     if (isLoadingTasks || !userTasks) return null;

@@ -1,5 +1,4 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { useQuery } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
@@ -10,8 +9,8 @@ import { DeleteUserDialog } from "@/components/user/delete-user-dialog";
 import { EditUserDialog } from "@/components/user/edit-user-dialog";
 import { UserListTable } from "@/components/user/user-list-table";
 import { TEXT } from "@/constants/text";
-import { pb } from "@/lib/pocketbase";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
+import { useUsers } from "@/pb-hooks";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function Users() {
@@ -21,14 +20,7 @@ export default function Users() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UsersResponse | null>(null);
 
-  const { data: users, isPending: isLoadingUsers } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => {
-      return pb.collection("users").getFullList<UsersResponse>({
-        batch: 100,
-      });
-    },
-  });
+  const { data: users, isPending: isLoadingUsers } = useUsers({});
 
   const isAdmin = user?.role === UsersRoleOptions.admin;
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
