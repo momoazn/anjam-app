@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -27,7 +27,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import {
-  ProjectsResponse,
   TasksPriorityOptions,
   TasksRecord,
   TasksStatusOptions,
@@ -38,7 +37,7 @@ import {
   taskStatusColors,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
-import { useSpecificProjectUsers } from "@/pb-hooks";
+import { useProjects, useProjectUsers, useUsers } from "@/pb-hooks";
 import { useAuthUser } from "@/store/auth-store";
 import DatePicker from "../ui/date-picker";
 import {
@@ -90,24 +89,16 @@ export function CreateTaskDialog({
   });
 
   // Fetch available projects
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: () => pb.collection("projects").getFullList<ProjectsResponse>(),
-    enabled: !isInProject, // Only fetch if we're not in a project view
-  });
+  const { data: projects } = useProjects({ enabled: !isInProject });
 
   // Fetch project users when in project context
-  const { data: projectUsers } = useSpecificProjectUsers(
-    projectId ?? "",
-    Boolean(projectId), // Enable only when we have a project ID
-  );
+  const { data: projectUsers } = useProjectUsers({
+    projectId: projectId ?? "",
+    enabled: Boolean(projectId), // Enable only when we have a project ID
+  });
 
   // Fetch all users when not in project context
-  const { data: users } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => pb.collection("users").getFullList(),
-    enabled: !projectId, // Enable only when we don't have a project ID
-  });
+  const { data: users } = useUsers({ enabled: !projectId });
 
   // Use projectUsers when in project context, otherwise use all users
   const assignees = projectId ? projectUsers : users;

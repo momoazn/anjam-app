@@ -56,7 +56,7 @@ export function useTaskFilters(
   const [selectedDateRange, setSelectedDateRange] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
 
-  const { data: users, isPending: isLoadingUsers } = useUsers(); // Fetch users within the hook
+  const { data: users, isPending: isLoadingUsers } = useUsers({}); // Fetch users within the hook
 
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];

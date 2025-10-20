@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2, MoreHorizontal } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -36,7 +36,7 @@ import {
   taskStatusColors,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
-import { useSpecificProjectUsers } from "@/pb-hooks";
+import { useProjectUsers, useUsers } from "@/pb-hooks";
 import DatePicker from "../ui/date-picker";
 import {
   Select,
@@ -93,17 +93,13 @@ export function EditTaskDialog({
   }, [form, task]);
 
   // Fetch project users when in project context
-  const { data: projectUsers } = useSpecificProjectUsers(
-    projectId ?? task.project,
-    true,
-  );
+  const { data: projectUsers } = useProjectUsers({
+    projectId: projectId ?? task.project,
+    enabled: true,
+  });
 
   // Fetch all users when not in project context
-  const { data: users } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => pb.collection("users").getFullList(),
-    enabled: !projectId, // Enable only when we don't have a project ID
-  });
+  const { data: users } = useUsers({ enabled: !projectId });
 
   // Use projectUsers when in project context, otherwise use all users
   const assignees = projectId ? projectUsers : users;
