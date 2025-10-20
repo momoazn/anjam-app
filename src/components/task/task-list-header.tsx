@@ -1,7 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Plus, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { TEXT } from "@/constants/text";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import {
@@ -50,16 +56,37 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
         </span>
       </div>
 
-      <CreateTaskDialog initialStatus={status} onSuccess={onSuccess}>
-        <Button
-          id="add-task-button"
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-        >
-          <Plus className="size-4" />
-        </Button>
-      </CreateTaskDialog>
+      <div className="flex items-center gap-1">
+        <CreateTaskDialog initialStatus={status} onSuccess={onSuccess}>
+          <Button
+            id="add-task-button"
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
+            title="افزودن تسک جدید"
+          >
+            <Plus className="size-4" />
+          </Button>
+        </CreateTaskDialog>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
+              title="گزینه‌های بیشتر"
+            >
+              <MoreHorizontal className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>مرتب‌سازی بر اساس اولویت</DropdownMenuItem>
+            <DropdownMenuItem>مرتب‌سازی بر اساس تاریخ</DropdownMenuItem>
+            <DropdownMenuItem>نمایش تسک‌های تکمیل‌شده</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

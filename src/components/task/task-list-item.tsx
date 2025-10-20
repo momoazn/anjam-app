@@ -2,6 +2,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
 
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { TEXT } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
 import {
@@ -31,6 +32,9 @@ interface TaskListItemProps {
   className?: string;
   showProject?: boolean;
   onSuccess?: () => void;
+  isSelectable?: boolean;
+  isSelected?: boolean;
+  onSelectionChange?: (selected: boolean) => void;
 }
 
 export function TaskListItem({
@@ -38,6 +42,9 @@ export function TaskListItem({
   className,
   showProject = false,
   onSuccess,
+  isSelectable = false,
+  isSelected = false,
+  onSelectionChange,
 }: TaskListItemProps) {
   const StatusIcon = taskStatusIcons[task.status];
   const statusIconColor = taskStatusColors[task.status];
@@ -49,12 +56,34 @@ export function TaskListItem({
     <EditTaskDialog task={task} onSuccess={onSuccess}>
       <div
         className={cn(
-          "group flex cursor-pointer items-center justify-between px-2 py-1.5 transition-colors duration-200 ease-in-out hover:bg-gray-50",
+          "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-center justify-between rounded-md px-2 py-1.5 transition-colors duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2",
+          isSelected && "bg-blue-50 dark:bg-blue-400/10",
           className,
         )}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            // Trigger the dialog
+            const button = e.currentTarget.querySelector("button");
+            button?.click();
+          }
+        }}
+        aria-label={`ویرایش تسک ${task.title}`}
       >
-        {/* Left side: Icon, ID, Title */}
+        {/* Left side: Checkbox, Icon, ID, Title */}
         <div className="ms-1 flex min-w-0 flex-grow items-center gap-2">
+          {isSelectable && (
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked) =>
+                onSelectionChange?.(checked as boolean)
+              }
+              className="flex-shrink-0"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           <PriorityIcon
             className={cn(`size-6 flex-shrink-0`, priorityIconColor)}
           />
