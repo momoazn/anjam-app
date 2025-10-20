@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 
 const projectFormSchema = z.object({
@@ -44,7 +44,7 @@ export function CreateProjectDialog({
   onOpenChange,
 }: CreateProjectDialogProps) {
   const queryClient = useQueryClient();
-  const user = useAuthStore().user;
+  const user = useAuthUser();
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {

@@ -12,6 +12,7 @@ import { TEXT } from "@/constants/text";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { useTheme } from "@/hooks/use-theme";
 import { AppRoutes } from "./router";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 // Optimized QueryClient configuration
 const queryClient = new QueryClient({
@@ -120,6 +121,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={memoizedQueryClient}>
         <Router>
+          <ScrollToTop />
           <AppLayout />
           <Toaster {...toasterConfig} />
         </Router>

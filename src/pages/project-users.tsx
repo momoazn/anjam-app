@@ -32,11 +32,11 @@ import { TEXT } from "@/constants/text";
 import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useSpecificProjectUsers } from "@/pb-hooks";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 
 export default function ProjectUsers() {
   const { id } = useParams<{ id: string }>();
-  const user = useAuthStore().user;
+  const user = useAuthUser();
   const queryClient = useQueryClient();
   const isAdmin = user?.role === UsersRoleOptions.admin;
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;

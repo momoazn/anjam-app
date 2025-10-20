@@ -31,7 +31,7 @@ import {
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
@@ -52,7 +52,7 @@ export function EditUserDialog({
   onOpenChange,
   user,
 }: EditUserDialogProps) {
-  const currentUser = useAuthStore().user;
+  const currentUser = useAuthUser();
   const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

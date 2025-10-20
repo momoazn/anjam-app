@@ -1,6 +1,6 @@
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 import {
   SidebarGroup,
@@ -24,6 +24,7 @@ export function NavMain({
   }[];
 }) {
   const queryClient = useQueryClient();
+  const location = useLocation();
 
   return (
     <SidebarGroup>
@@ -48,26 +49,32 @@ export function NavMain({
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
-          {items.map((item) => (
-            <NavLink to={item.url} key={item.title}>
-              {({ isActive }) => (
+          {items.map((item) => {
+            const path = location.pathname;
+            const active =
+              item.url === "/"
+                ? path === "/"
+                : path === item.url || path.startsWith(item.url + "/");
+            return (
+              <NavLink to={item.url} key={item.title} end={item.url === "/"}>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={cn(
                       "cursor-pointer transition-colors duration-200 ease-linear",
-                      isActive &&
+                      active &&
                         "bg-primary/15 text-foreground hover:bg-primary/15",
-                      !isActive && "text-foreground hover:bg-primary/5",
+                      !active && "text-foreground hover:bg-primary/5",
                     )}
+                    aria-current={active ? "page" : undefined}
                   >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              )}
-            </NavLink>
-          ))}
+              </NavLink>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

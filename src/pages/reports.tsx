@@ -127,13 +127,17 @@ const StatCard = memo(function StatCard({
   color: string;
 }) {
   return (
-    <div className={`rounded-lg ${color} p-6`}>
+    <div className={`rounded-lg ${color} p-4 transition-colors md:p-6`}>
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-muted-foreground text-sm font-medium">{title}</p>
-          <p className="mt-2 text-3xl font-bold">{digitsEnToFa(value)}</p>
+        <div className="flex-1">
+          <p className="text-muted-foreground text-xs font-medium md:text-sm">
+            {title}
+          </p>
+          <p className="mt-1 text-xl font-bold md:mt-2 md:text-3xl">
+            {digitsEnToFa(value)}
+          </p>
         </div>
-        {icon}
+        <div className="ml-2 flex-shrink-0 md:ml-0">{icon}</div>
       </div>
     </div>
   );
@@ -483,11 +487,21 @@ export default function Reports() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <h1 className="mb-8 text-3xl font-bold">داشبورد گزارشات</h1>
+    <div className="container mx-auto space-y-6 p-4 md:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-bold md:text-3xl">داشبورد گزارشات</h1>
+        <div className="flex gap-2">
+          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
+            فیلتر تاریخ
+          </button>
+          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
+            دانلود گزارش
+          </button>
+        </div>
+      </div>
 
       {/* Overview Cards */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-2 md:mb-8 md:grid-cols-4 md:gap-4">
         <StatCard
           title="کل وظایف"
           value={taskStats?.totalTasks ?? 0}
@@ -514,14 +528,16 @@ export default function Reports() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         {/* Task Status Distribution */}
-        <div className="bg-card overflow-hidden rounded-lg border p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
           <div className="mb-4 flex items-center gap-2">
-            <PieChartIcon className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">توزیع وضعیت وظایف</h2>
+            <PieChartIcon className="h-4 w-4 md:h-5 md:w-5" />
+            <h2 className="text-base font-semibold md:text-lg">
+              توزیع وضعیت وظایف
+            </h2>
           </div>
-          <div className="h-64 w-full">
+          <div className="h-48 w-full md:h-64">
             {taskStats?.statusDistribution && (
               <StatusDistributionChart data={taskStats.statusDistribution} />
             )}
@@ -529,12 +545,14 @@ export default function Reports() {
         </div>
 
         {/* Priority Distribution */}
-        <div className="bg-card overflow-hidden rounded-lg border p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
           <div className="mb-4 flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">توزیع اولویت وظایف</h2>
+            <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
+            <h2 className="text-base font-semibold md:text-lg">
+              توزیع اولویت وظایف
+            </h2>
           </div>
-          <div className="h-64 w-full">
+          <div className="h-48 w-full md:h-64">
             {taskStats?.priorityDistribution && (
               <PriorityDistributionChart
                 data={taskStats.priorityDistribution}
@@ -544,16 +562,16 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         {/* Task Completion Trend */}
-        <div className="bg-card overflow-hidden rounded-lg border p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
           <div className="mb-4 flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">
+            <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
+            <h2 className="text-base font-semibold md:text-lg">
               روند تکمیل وظایف (۳۰ روز گذشته)
             </h2>
           </div>
-          <div className="h-64 w-full">
+          <div className="h-48 w-full md:h-64">
             {taskStats?.completionTrend && (
               <CompletionTrendChart data={taskStats.completionTrend} />
             )}
@@ -561,12 +579,14 @@ export default function Reports() {
         </div>
 
         {/* User Performance */}
-        <div className="bg-card overflow-hidden rounded-lg border p-6">
+        <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">عملکرد کاربران برتر</h2>
+            <Users className="h-4 w-4 md:h-5 md:w-5" />
+            <h2 className="text-base font-semibold md:text-lg">
+              عملکرد کاربران برتر
+            </h2>
           </div>
-          <div className="h-64 w-full">
+          <div className="h-48 w-full md:h-64">
             {userStats && <UserPerformanceChart data={userStats} />}
           </div>
         </div>

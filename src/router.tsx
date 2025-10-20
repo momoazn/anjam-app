@@ -1,8 +1,9 @@
-import React, { memo, useMemo } from "react";
+import React, { Suspense, memo, useEffect, useMemo } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { TEXT } from "@/constants/text";
 import { useAuthIsLoggedIn } from "./store/auth-store";
+import { RouteSkeleton } from "@/components/route-skeleton";
 
 // Lazy load pages with better error handling and preloading
 const Login = React.lazy(() =>
@@ -55,6 +56,11 @@ const Helps = React.lazy(() =>
     default: () => <div>{TEXT.errors.pageLoad.helps}</div>,
   })),
 );
+const NotFound = React.lazy(() =>
+  import("@/pages/not-found").catch(() => ({
+    default: () => <div>صفحه یافت نشد</div>,
+  })),
+);
 
 // Memoized ProtectedRoute component
 const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
@@ -75,11 +81,38 @@ const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
 
 ProtectedRoute.displayName = "ProtectedRoute";
 
+// Memoized PublicRoute component (redirects authenticated users to home)
+const PublicRoute = memo(({ children }: { children: React.ReactNode }) => {
+  const isLoggedIn = useAuthIsLoggedIn();
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+});
+
+PublicRoute.displayName = "PublicRoute";
+
 interface RouteType {
   path: string;
   element: React.ReactNode;
   protected: boolean;
+  title?: string;
 }
+
+// Sets document.title when mounted
+const Title = ({
+  title,
+  children,
+}: {
+  title?: string;
+  children: React.ReactNode;
+}) => {
+  useEffect(() => {
+    if (title) document.title = `${title} • ${TEXT.app.name}`;
+    else document.title = TEXT.app.name;
+  }, [title]);
+  return <>{children}</>;
+};
 
 // Memoized routes configuration
 const routes: RouteType[] = [
@@ -87,51 +120,67 @@ const routes: RouteType[] = [
     path: "/",
     element: <Dashboard />,
     protected: true,
+    title: TEXT.navigation.dashboard,
   },
   {
     path: "/projects",
     element: <Projects />,
     protected: true,
+    title: TEXT.navigation.projects,
   },
   {
     path: "/login",
     element: <Login />,
     protected: false,
+    title: TEXT.auth.login.title,
   },
   {
     path: "/register",
     element: <Register />,
     protected: false,
+    title: TEXT.auth.register.title,
   },
   {
     path: "/tasks",
     element: <Tasks />,
     protected: true,
+    title: TEXT.tasks.title,
   },
   {
     path: "/projects/:id/tasks",
     element: <ProjectTasks />,
     protected: true,
+    title: TEXT.projects.projectTasks,
   },
   {
     path: "/users",
     element: <Users />,
     protected: true,
+    title: TEXT.users.title,
   },
   {
     path: "/projects/:id/users",
     element: <ProjectUsers />,
     protected: true,
+    title: TEXT.projects.users.title,
   },
   {
     path: "/reports",
     element: <Reports />,
     protected: true,
+    title: TEXT.navigation.reports,
   },
   {
     path: "/helps",
     element: <Helps />,
     protected: true,
+    title: TEXT.navigation.helps,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+    protected: false,
+    title: "404",
   },
 ];
 
@@ -146,9 +195,46 @@ export const AppRoutes = memo(() => {
           path={route.path}
           element={
             route.protected ? (
-              <ProtectedRoute>{route.element}</ProtectedRoute>
+              <ProtectedRoute>
+                <Suspense
+                  fallback={
+                    route.path === "/" ? (
+                      <RouteSkeleton routeKey="dashboard" />
+                    ) : route.path.startsWith("/projects/") ? (
+                      <RouteSkeleton
+                        routeKey={
+                          route.path.endsWith("/users")
+                            ? "projectUsers"
+                            : "projectTasks"
+                        }
+                      />
+                    ) : route.path === "/projects" ? (
+                      <RouteSkeleton routeKey="projects" />
+                    ) : route.path === "/tasks" ? (
+                      <RouteSkeleton routeKey="tasks" />
+                    ) : route.path === "/users" ? (
+                      <RouteSkeleton routeKey="users" />
+                    ) : route.path === "/reports" ? (
+                      <RouteSkeleton routeKey="reports" />
+                    ) : (
+                      <RouteSkeleton />
+                    )
+                  }
+                >
+                  <Title title={route.title}>{route.element}</Title>
+                </Suspense>
+              </ProtectedRoute>
+            ) : // Only /login and /register need the PublicRoute wrapper; others are public fallbacks like 404
+            route.path === "/login" || route.path === "/register" ? (
+              <PublicRoute>
+                <Suspense fallback={<RouteSkeleton />}>
+                  <Title title={route.title}>{route.element}</Title>
+                </Suspense>
+              </PublicRoute>
             ) : (
-              route.element
+              <Suspense fallback={<RouteSkeleton />}>
+                <Title title={route.title}>{route.element}</Title>
+              </Suspense>
             )
           }
         />

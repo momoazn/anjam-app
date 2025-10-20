@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, MoreHorizontal } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -9,6 +10,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogTitle,
   DialogTrigger,
@@ -37,7 +39,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { useSpecificProjectUsers } from "@/pb-hooks";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 import DatePicker from "../ui/date-picker";
 import {
   Select,
@@ -69,7 +71,8 @@ export function CreateTaskDialog({
   initialStatus = TasksStatusOptions.todo,
   onSuccess,
 }: CreateTaskDialogProps) {
-  const user = useAuthStore().user;
+  const [open, setOpen] = useState(false);
+  const user = useAuthUser();
   const { id: projectId } = useParams<{ id: string }>();
   const isInProject = Boolean(projectId);
 
@@ -116,6 +119,7 @@ export function CreateTaskDialog({
       onSuccess?.();
       form.reset();
       toast.success(TEXT.tasks.addTask.success);
+      setOpen(false);
     },
     onError: (error) => {
       toast.error(TEXT.tasks.addTask.error.replace("{error}", error.message));
@@ -144,8 +148,10 @@ export function CreateTaskDialog({
   const priorityIconColor = priorityColors[priority];
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
+        {children}
+      </DialogTrigger>
       <DialogTitle className="sr-only">{TEXT.tasks.addTask.title}</DialogTitle>
       <DialogContent className="sm:max-w-[800px]">
         <Form {...form}>
@@ -163,6 +169,7 @@ export function CreateTaskDialog({
                       {...field}
                       className="h-auto border-none p-0 text-xl font-semibold shadow-none focus-visible:ring-0"
                       placeholder={TEXT.tasks.addTask.issueTitle}
+                      autoFocus
                     />
                   </FormControl>
                   <FormMessage />
@@ -352,7 +359,17 @@ export function CreateTaskDialog({
               </Button>
             </div>
 
-            <div className="flex items-center justify-end pt-0">
+            <div className="flex items-center justify-end gap-2 pt-0">
+              <DialogClose asChild>
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  disabled={isCreatingTask}
+                >
+                  {TEXT.tasks.details.buttons.cancel}
+                </Button>
+              </DialogClose>
               <Button size="sm" type="submit" disabled={isCreatingTask}>
                 {isCreatingTask ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />

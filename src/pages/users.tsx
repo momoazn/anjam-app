@@ -12,10 +12,10 @@ import { UserListTable } from "@/components/user/user-list-table";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 
 export default function Users() {
-  const user = useAuthStore().user;
+  const user = useAuthUser();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);

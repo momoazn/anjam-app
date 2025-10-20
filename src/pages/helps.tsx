@@ -8,13 +8,92 @@ import { Separator } from "@/components/ui/separator";
 
 export default function Helps() {
   return (
-    <div className="container mx-auto px-8 py-8">
-      <h1 className="mb-8 text-3xl font-bold">راهنمای استفاده از سیستم</h1>
-      <Separator />
+    <div className="container mx-auto px-4 py-6 md:px-8 md:py-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold md:text-3xl">
+            راهنمای استفاده از سیستم
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            راهنمای کامل برای استفاده از امکانات سیستم مدیریت تسک‌ها
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
+            سوالات متداول
+          </button>
+          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
+            تماس با پشتیبانی
+          </button>
+        </div>
+      </div>
+      <Separator className="mb-6" />
       <Accordion type="single" collapsible className="w-full space-y-4">
+        {/* Getting Started Section */}
+        <AccordionItem value="getting-started">
+          <AccordionTrigger className="text-lg md:text-xl">
+            شروع کار با سیستم
+          </AccordionTrigger>
+          <AccordionContent className="space-y-4 p-4">
+            <div>
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                مراحل اولیه
+              </h3>
+              <ol className="list-inside list-decimal space-y-2">
+                <li>
+                  <span className="font-medium">ورود به سیستم:</span> با نام
+                  کاربری و رمز عبور خود وارد شوید
+                </li>
+                <li>
+                  <span className="font-medium">آشنایی با داشبورد:</span>{" "}
+                  داشبورد اصلی آمار و اطلاعات کلی را نمایش می‌دهد
+                </li>
+                <li>
+                  <span className="font-medium">ایجاد اولین پروژه:</span> از بخش
+                  پروژه‌ها، پروژه جدیدی ایجاد کنید
+                </li>
+                <li>
+                  <span className="font-medium">افزودن اعضا:</span> کاربران را
+                  به پروژه اضافه کنید
+                </li>
+                <li>
+                  <span className="font-medium">ایجاد تسک‌ها:</span> تسک‌های
+                  کاری را تعریف و تخصیص دهید
+                </li>
+              </ol>
+            </div>
+
+            <div>
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                کلیدهای میانبر
+              </h3>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div className="rounded border p-2">
+                  <code className="text-sm">Ctrl/Cmd + K</code>
+                  <span className="text-muted-foreground mr-2">
+                    : فوکوس روی جستجو
+                  </span>
+                </div>
+                <div className="rounded border p-2">
+                  <code className="text-sm">Ctrl/Cmd + N</code>
+                  <span className="text-muted-foreground mr-2">: تسک جدید</span>
+                </div>
+                <div className="rounded border p-2">
+                  <code className="text-sm">Ctrl/Cmd + P</code>
+                  <span className="text-muted-foreground mr-2">: پروژه‌ها</span>
+                </div>
+                <div className="rounded border p-2">
+                  <code className="text-sm">Ctrl/Cmd + D</code>
+                  <span className="text-muted-foreground mr-2">: داشبورد</span>
+                </div>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
         {/* Features Section */}
         <AccordionItem value="features">
-          <AccordionTrigger className="text-xl">
+          <AccordionTrigger className="text-lg md:text-xl">
             امکانات و ویژگی‌ها
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
@@ -71,7 +150,7 @@ export default function Helps() {
 
         {/* User Roles Section */}
         <AccordionItem value="roles">
-          <AccordionTrigger className="text-xl">
+          <AccordionTrigger className="text-lg md:text-xl">
             نقش‌های کاربری و دسترسی‌ها
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
@@ -119,7 +198,9 @@ export default function Helps() {
 
         {/* Projects Section */}
         <AccordionItem value="projects">
-          <AccordionTrigger className="text-xl">پروژه‌ها</AccordionTrigger>
+          <AccordionTrigger className="text-lg md:text-xl">
+            پروژه‌ها
+          </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-lg font-semibold">درباره پروژه‌ها</h3>
@@ -181,7 +262,9 @@ export default function Helps() {
 
         {/* Tasks Section */}
         <AccordionItem value="tasks">
-          <AccordionTrigger className="text-xl">تسک‌ها</AccordionTrigger>
+          <AccordionTrigger className="text-lg md:text-xl">
+            تسک‌ها
+          </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-lg font-semibold">درباره تسک‌ها</h3>
@@ -245,17 +328,53 @@ export default function Helps() {
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">ایجاد و ویرایش تسک</h3>
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                ایجاد و ویرایش تسک
+              </h3>
               <p>برای ایجاد تسک جدید:</p>
               <ol className="list-inside list-decimal space-y-1 pt-2">
-                <li>وارد پروژه مورد نظر شوید</li>
-                <li>روی دکمه "افزودن تسک" کلیک کنید</li>
+                <li>
+                  وارد پروژه مورد نظر شوید یا از بخش "تسک‌ها" استفاده کنید
+                </li>
+                <li>روی دکمه "افزودن تسک" یا دکمه "+" کلیک کنید</li>
                 <li>عنوان و توضیحات تسک را وارد کنید</li>
                 <li>اولویت و وضعیت را تعیین کنید</li>
                 <li>مسئول انجام را مشخص کنید</li>
                 <li>در صورت نیاز، مهلت انجام را تعیین کنید</li>
                 <li>دکمه "ایجاد" را بزنید</li>
               </ol>
+            </div>
+
+            <div>
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                نکات کاربردی
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">فیلتر و جستجو</h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    از فیلترهای پیشرفته برای یافتن تسک‌های مورد نظر استفاده کنید
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">اولویت‌بندی</h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    تسک‌های فوری را با اولویت بالا مشخص کنید
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">مهلت زمانی</h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    همیشه مهلت انجام را مشخص کنید تا تسک‌ها فراموش نشوند
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">به‌روزرسانی وضعیت</h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    وضعیت تسک‌ها را به طور منظم به‌روزرسانی کنید
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* <div>
@@ -271,59 +390,112 @@ export default function Helps() {
           </AccordionContent>
         </AccordionItem>
 
-        {/* System Features Section */}
-        {/* <AccordionItem value="system">
-          <AccordionTrigger className="text-xl">
-            ویژگی‌های سیستم
+        {/* Troubleshooting Section */}
+        <AccordionItem value="troubleshooting">
+          <AccordionTrigger className="text-lg md:text-xl">
+            راهنمای عیب‌یابی
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
-              <h3 className="mb-2 text-lg font-semibold">امنیت</h3>
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                مشکلات رایج
+              </h3>
+              <div className="space-y-3">
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">
+                    نمی‌توانم وارد سیستم شوم
+                  </h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    نام کاربری و رمز عبور خود را بررسی کنید. در صورت فراموشی، با
+                    مدیر سیستم تماس بگیرید.
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">
+                    تسک‌ها نمایش داده نمی‌شوند
+                  </h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    فیلترهای اعمال شده را بررسی کنید و در صورت نیاز آنها را پاک
+                    کنید.
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">
+                    نمی‌توانم تسک جدیدی ایجاد کنم
+                  </h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    مطمئن شوید که به پروژه مورد نظر دسترسی دارید و نقش شما اجازه
+                    ایجاد تسک را می‌دهد.
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <h4 className="text-sm font-medium">
+                    گزارش‌ها بارگذاری نمی‌شوند
+                  </h4>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    اتصال اینترنت خود را بررسی کنید و صفحه را مجدداً بارگذاری
+                    کنید.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                تماس با پشتیبانی
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                در صورت بروز مشکل یا نیاز به راهنمایی بیشتر، از طریق بخش "تماس
+                با پشتیبانی" یا ایمیل با تیم فنی ارتباط برقرار کنید.
+              </p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* System Features Section */}
+        <AccordionItem value="system">
+          <AccordionTrigger className="text-lg md:text-xl">
+            ویژگی‌های پیشرفته سیستم
+          </AccordionTrigger>
+          <AccordionContent className="space-y-4 p-4">
+            <div>
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                امنیت و دسترسی
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>احراز هویت کاربران</li>
-                <li>کنترل دسترسی بر اساس نقش</li>
-                <li>محافظت از داده‌های حساس</li>
-                <li>ثبت فعالیت‌های کاربران</li>
+                <li>احراز هویت امن کاربران</li>
+                <li>کنترل دسترسی بر اساس نقش‌های کاربری</li>
+                <li>رمزگذاری داده‌های حساس</li>
+                <li>ثبت فعالیت‌های کاربران برای پیگیری</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">
-                رابط کاربری پیشرفته
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                رابط کاربری هوشمند
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>طراحی واکنش‌گرا برای تمام دستگاه‌ها</li>
+                <li>طراحی کاملاً واکنش‌گرا برای موبایل و دسکتاپ</li>
                 <li>پشتیبانی از تم روشن و تاریک</li>
-                <li>رابط کاربری روان و سریع</li>
                 <li>پشتیبانی کامل از زبان فارسی</li>
-                <li>قابلیت شخصی‌سازی نمایش</li>
+                <li>کلیدهای میانبر برای دسترسی سریع</li>
+                <li>دسترسی‌پذیری کامل برای کاربران کم‌توان</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">
-                پشتیبانی و راهنمایی
+              <h3 className="mb-2 text-base font-semibold md:text-lg">
+                کارایی و سرعت
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>راهنمای جامع استفاده از سیستم</li>
-                <li>پاسخ به سوالات متداول</li>
-                <li>اعلان‌های راهنما در بخش‌های مختلف</li>
-                <li>نمایش پیام‌های خطا و موفقیت</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="mb-2 text-lg font-semibold">قابلیت‌های عمومی</h3>
-              <ul className="list-inside list-disc space-y-1">
-                <li>ذخیره خودکار تغییرات</li>
-                <li>امکان بازگشت به نسخه‌های قبلی</li>
-                <li>گزارش‌گیری از فعالیت‌ها</li>
-                <li>پشتیبان‌گیری خودکار از داده‌ها</li>
-                <li>همگام‌سازی اطلاعات در زمان واقعی</li>
+                <li>بارگذاری سریع صفحات و داده‌ها</li>
+                <li>به‌روزرسانی خودکار اطلاعات</li>
+                <li>ذخیره‌سازی محلی برای عملکرد بهتر</li>
+                <li>همگام‌سازی داده‌ها در زمان واقعی</li>
               </ul>
             </div>
           </AccordionContent>
-        </AccordionItem> */}
+        </AccordionItem>
       </Accordion>
     </div>
   );
