@@ -85,25 +85,25 @@ export default function Dashboard() {
           title="کل وظایف"
           value={stats?.total ?? 0}
           icon={<ListTodo className="text-primary h-6 w-6" />}
-          color="bg-blue-50"
+          color="bg-blue-50 dark:bg-blue-400/15"
         />
         <StatCard
           title="تکمیل شده"
           value={stats?.completed ?? 0}
           icon={<CheckCircle className="text-accent h-6 w-6" />}
-          color="bg-green-50"
+          color="bg-green-50 dark:bg-emerald-400/15"
         />
         <StatCard
           title="در حال انجام"
           value={stats?.inProgress ?? 0}
           icon={<Clock className="h-6 w-6 text-orange-500" />}
-          color="bg-orange-50"
+          color="bg-orange-50 dark:bg-amber-400/15"
         />
         <StatCard
           title="در انتظار"
           value={stats?.pending ?? 0}
           icon={<BarChart3 className="text-secondary h-6 w-6" />}
-          color="bg-purple-50"
+          color="bg-purple-50 dark:bg-purple-400/15"
         />
       </div>
 
@@ -117,7 +117,7 @@ export default function Dashboard() {
           {projectStats.map((project) => (
             <div
               key={project.id}
-              className="rounded-lg border bg-white p-4 shadow-sm"
+              className="bg-card rounded-lg border p-4 shadow-sm transition-colors"
             >
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-semibold">{project.name}</h3>
@@ -126,9 +126,9 @@ export default function Dashboard() {
                   {digitsEnToFa(project.taskCount)} وظیفه
                 </span>
               </div>
-              <div className="mb-2 h-2 w-full rounded-full bg-gray-200">
+              <div className="bg-muted/60 mb-2 h-2 w-full rounded-full">
                 <div
-                  className="h-2 rounded-full bg-blue-500"
+                  className="bg-primary h-2 rounded-full"
                   style={{ width: `${project.progress}%` }}
                 />
               </div>
@@ -143,7 +143,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Recent Tasks Section */}
-        <section className="rounded-lg border bg-white p-6 shadow-sm">
+        <section className="bg-card rounded-lg border p-6 shadow-sm transition-colors">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
             <Clock className="h-5 w-5" />
             وظایف اخیر
@@ -152,7 +152,7 @@ export default function Dashboard() {
             {recentTasks.map((task) => (
               <div
                 key={task.id}
-                className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50"
+                className="hover:bg-muted/60 dark:hover:bg-muted/40 flex items-center justify-between rounded-lg border p-3 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -173,7 +173,7 @@ export default function Dashboard() {
         </section>
 
         {/* Quick Help Section */}
-        <section className="rounded-lg border bg-white p-6 shadow-sm">
+        <section className="bg-card rounded-lg border p-6 shadow-sm">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
             <HelpCircle className="h-5 w-5" />
             راهنمای سریع
@@ -213,7 +213,9 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className={`rounded-lg ${color} p-6`}>
+    <div
+      className={`border-border rounded-lg border ${color} p-6 transition-colors`}
+    >
       <div className="flex items-center justify-between">
         <div>
           <p className="text-muted-foreground text-sm font-medium">{title}</p>
@@ -235,8 +237,8 @@ function QuickHelpCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border p-4 hover:bg-gray-50">
-      <div className="rounded-lg bg-gray-100 p-2">{icon}</div>
+    <div className="border-border bg-card hover:bg-muted/60 dark:hover:bg-muted/40 flex items-start gap-3 rounded-lg border p-4 transition-colors">
+      <div className="bg-muted/60 rounded-lg p-2">{icon}</div>
       <div>
         <h3 className="font-medium">{title}</h3>
         <p className="text-muted-foreground text-sm">{description}</p>

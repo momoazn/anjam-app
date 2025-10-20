@@ -48,7 +48,7 @@ export default function ProjectTasks() {
   }, [filteredTasks, isLoadingTasks]);
 
   return (
-    <div className="bg-card text-foreground mt-4 flex flex-col space-y-4 pb-8">
+    <div className="text-foreground mt-4 flex flex-col space-y-4 pb-8">
       <h1 className="ps-3 text-2xl font-bold">
         {`${TEXT.projects.project} ${project?.name}`}
       </h1>

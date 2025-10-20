@@ -107,7 +107,7 @@ export default function ProjectUsers() {
   );
 
   return (
-    <div className="bg-card text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
+    <div className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold">{TEXT.projects.users.title}</h1>
