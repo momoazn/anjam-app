@@ -1,4 +1,4 @@
-// src/components/task/task-filters.tsx
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -42,76 +42,144 @@ export function TaskFilters({
   isLoadingUsers,
 }: TaskFiltersProps) {
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-4 px-3">
-      <Input
-        placeholder={"جستجو بر اساس عنوان یا مسئول تسک..."} // Fallback
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="max-w-xs flex-grow sm:flex-grow-0"
-      />
-      <Select
-        value={selectedStatus}
-        onValueChange={(value) =>
-          setSelectedStatus(
-            value as TasksStatusOptions | typeof ALL_FILTER_VALUE,
-          )
-        }
-      >
-        <SelectTrigger className="w-auto min-w-[150px]">
-          <SelectValue placeholder={"فیلتر بر اساس وضعیت"} /> {/* Fallback */}
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_FILTER_VALUE}>{"همه وضعیت‌ها"}</SelectItem>{" "}
-          {/* Fallback */}
-          {statusOrder.map((status) => (
-            <SelectItem key={status} value={status}>
-              {TEXT.tasks.status[status]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select
-        value={selectedPriority}
-        onValueChange={(value) =>
-          setSelectedPriority(
-            value as TasksPriorityOptions | typeof ALL_FILTER_VALUE,
-          )
-        }
-      >
-        <SelectTrigger className="w-auto min-w-[150px]">
-          <SelectValue placeholder={"فیلتر بر اساس اولویت"} /> {/* Fallback */}
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_FILTER_VALUE}>{"همه اولویت‌ها"}</SelectItem>{" "}
-          {/* Fallback */}
-          {priorityOrder.map((priority) => (
-            <SelectItem key={priority} value={priority}>
-              {TEXT.tasks.priority[priority]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select
-        value={selectedAssignee}
-        onValueChange={(value) =>
-          setSelectedAssignee(value as string | typeof ALL_FILTER_VALUE)
-        }
-        disabled={isLoadingUsers}
-      >
-        <SelectTrigger className="w-auto min-w-[150px]">
-          <SelectValue placeholder={"فیلتر بر اساس مسئول"} /> {/* Fallback */}
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_FILTER_VALUE}>{"همه مسئولین"}</SelectItem>{" "}
-          {/* Fallback */}
-          {users?.map((user) => (
-            <SelectItem key={user.id} value={user.id}>
-              {`${user.first_name || ""} ${user.last_name || ""} (${user.username})`.trim()}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {/* TODO: Consider adding a "Clear Filters" button here */}
+    <div className="mb-4 space-y-3 px-3 md:space-y-4">
+      {/* Main filters row */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+        <Input
+          placeholder={"جستجو بر اساس عنوان یا مسئول تسک..."}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-full flex-grow sm:max-w-xs sm:flex-grow-0"
+        />
+        <div className="flex flex-wrap gap-2 sm:gap-4">
+          <Select
+            value={selectedStatus}
+            onValueChange={(value) =>
+              setSelectedStatus(
+                value as TasksStatusOptions | typeof ALL_FILTER_VALUE,
+              )
+            }
+          >
+            <SelectTrigger className="w-full min-w-[140px] sm:w-auto sm:min-w-[150px]">
+              <SelectValue placeholder={"فیلتر بر اساس وضعیت"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_FILTER_VALUE}>{"همه وضعیت‌ها"}</SelectItem>
+              {statusOrder.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {TEXT.tasks.status[status]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={selectedPriority}
+            onValueChange={(value) =>
+              setSelectedPriority(
+                value as TasksPriorityOptions | typeof ALL_FILTER_VALUE,
+              )
+            }
+          >
+            <SelectTrigger className="w-full min-w-[140px] sm:w-auto sm:min-w-[150px]">
+              <SelectValue placeholder={"فیلتر بر اساس اولویت"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_FILTER_VALUE}>
+                {"همه اولویت‌ها"}
+              </SelectItem>
+              {priorityOrder.map((priority) => (
+                <SelectItem key={priority} value={priority}>
+                  {TEXT.tasks.priority[priority]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={selectedAssignee}
+            onValueChange={(value) =>
+              setSelectedAssignee(value as string | typeof ALL_FILTER_VALUE)
+            }
+            disabled={isLoadingUsers}
+          >
+            <SelectTrigger className="w-full min-w-[140px] sm:w-auto sm:min-w-[150px]">
+              <SelectValue placeholder={"فیلتر بر اساس مسئول"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_FILTER_VALUE}>{"همه مسئولین"}</SelectItem>
+              {users?.map((user) => (
+                <SelectItem key={user.id} value={user.id}>
+                  {`${user.first_name || ""} ${user.last_name || ""} (${user.username})`.trim()}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Advanced filters row */}
+      <div className="flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+        <span className="text-muted-foreground text-xs sm:text-sm">
+          فیلترهای پیشرفته:
+        </span>
+
+        {/* Date range filter */}
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground text-xs sm:text-sm">
+            تاریخ:
+          </span>
+          <Select defaultValue="all">
+            <SelectTrigger className="w-full min-w-[120px] sm:w-auto">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">همه تاریخ‌ها</SelectItem>
+              <SelectItem value="today">امروز</SelectItem>
+              <SelectItem value="week">این هفته</SelectItem>
+              <SelectItem value="month">این ماه</SelectItem>
+              <SelectItem value="overdue">گذشته‌موعد</SelectItem>
+              <SelectItem value="custom">سفارشی</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Tags filter */}
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground text-xs sm:text-sm">
+            برچسب‌ها:
+          </span>
+          <Select defaultValue="all">
+            <SelectTrigger className="w-full min-w-[120px] sm:w-auto">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">همه برچسب‌ها</SelectItem>
+              <SelectItem value="bug">اشکال</SelectItem>
+              <SelectItem value="feature">ویژگی</SelectItem>
+              <SelectItem value="improvement">بهبود</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Clear filters button */}
+        {(searchTerm ||
+          selectedStatus !== ALL_FILTER_VALUE ||
+          selectedPriority !== ALL_FILTER_VALUE ||
+          selectedAssignee !== ALL_FILTER_VALUE) && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedStatus(ALL_FILTER_VALUE);
+              setSelectedPriority(ALL_FILTER_VALUE);
+              setSelectedAssignee(ALL_FILTER_VALUE);
+            }}
+            className="w-full gap-2 sm:w-auto"
+          >
+            پاک کردن فیلترها
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
