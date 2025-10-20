@@ -1,6 +1,4 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns-jalali";
 import {
   BarChart3,
   CheckCircle,
@@ -29,12 +27,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { pb } from "@/lib/pocketbase";
 import {
-  TasksResponse,
-  TasksStatusOptions,
-  UsersRoleOptions,
-} from "@/lib/pocketbase-types";
+  calculateTaskStats,
+  calculateUserPerformance,
+  type CompletionTrendData,
+  type PriorityDistributionData,
+  type StatusDistributionData,
+  type UserPerformanceData,
+} from "@/lib/reports-utils";
+import { useTasks, useUsers } from "@/pb-hooks";
 
 // Chart configurations
 const statusChartConfig = {
@@ -89,31 +90,6 @@ const userPerformanceConfig = {
   },
 };
 
-// Types for chart data
-type StatusDistributionData = {
-  name: string;
-  value: number;
-  status: TasksStatusOptions;
-};
-
-type PriorityDistributionData = {
-  name: string;
-  value: number;
-  priority: string;
-};
-
-type CompletionTrendData = {
-  date: string;
-  completed: number;
-};
-
-type UserPerformanceData = {
-  name: string;
-  totalTasks: number;
-  completedTasks: number;
-  completionRate: number;
-};
-
 // Memoize the StatCard component
 const StatCard = memo(function StatCard({
   title,
@@ -143,133 +119,25 @@ const StatCard = memo(function StatCard({
   );
 });
 
-// Optimize task stats hook with staleTime and cacheTime
+// Simplified task stats hook
 function useTaskStats() {
-  return useQuery({
-    queryKey: ["task-stats"],
-    queryFn: async () => {
-      const tasks = await pb.collection("tasks").getFullList<TasksResponse>();
+  const { data: tasks } = useTasks({});
 
-      // Status distribution
-      const statusDistribution = Object.values(TasksStatusOptions).map(
-        (status) => ({
-          name:
-            status === "todo"
-              ? "در انتظار"
-              : status === "in_progress"
-                ? "در حال انجام"
-                : status === "done"
-                  ? "تکمیل شده"
-                  : status === "canceled"
-                    ? "لغو شده"
-                    : status,
-          value: tasks.filter((task) => task.status === status).length,
-          status,
-        }),
-      );
-
-      // Tasks completed over time (last 30 days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      const completedOverTime = tasks
-        .filter(
-          (task) =>
-            task.status === TasksStatusOptions.done &&
-            new Date(task.updated) >= thirtyDaysAgo,
-        )
-        .reduce(
-          (acc, task) => {
-            const date = format(new Date(task.updated), "jMMM jdd");
-            acc[date] = (acc[date] || 0) + 1;
-            return acc;
-          },
-          {} as Record<string, number>,
-        );
-
-      // Convert to array format for charts
-      const completionTrend = Object.entries(completedOverTime).map(
-        ([date, count]) => ({
-          date,
-          completed: count,
-        }),
-      );
-
-      // Priority distribution
-      const priorityDistribution = ["urgent", "high", "medium", "low"].map(
-        (priority) => ({
-          name:
-            priority === "urgent"
-              ? "فوری"
-              : priority === "high"
-                ? "اولویت بالا"
-                : priority === "medium"
-                  ? "اولویت متوسط"
-                  : "اولویت پایین",
-          value: tasks.filter((task) => task.priority === priority).length,
-          priority,
-        }),
-      );
-
-      return {
-        statusDistribution,
-        completionTrend,
-        priorityDistribution,
-        totalTasks: tasks.length,
-        completedTasks: tasks.filter(
-          (task) => task.status === TasksStatusOptions.done,
-        ).length,
-        inProgressTasks: tasks.filter(
-          (task) => task.status === TasksStatusOptions.in_progress,
-        ).length,
-        pendingTasks: tasks.filter(
-          (task) => task.status === TasksStatusOptions.todo,
-        ).length,
-      };
-    },
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-    // cacheTime: 30 * 60 * 1000, // Cache persists for 30 minutes
-  });
+  return {
+    data: tasks ? calculateTaskStats(tasks) : undefined,
+    isLoading: !tasks,
+  };
 }
 
-// Optimize user performance hook with staleTime and cacheTime
+// Simplified user performance hook
 function useUserPerformance() {
-  return useQuery({
-    queryKey: ["user-performance"],
-    queryFn: async () => {
-      const [users, tasks] = await Promise.all([
-        pb.collection("users").getFullList(),
-        pb.collection("tasks").getFullList<TasksResponse>(),
-      ]);
+  const { data: users } = useUsers({});
+  const { data: tasks } = useTasks({});
 
-      const userStats = users
-        .filter((user) => user.role === UsersRoleOptions.employee)
-        .map((user) => {
-          const userTasks = tasks.filter((task) => task.assignee === user.id);
-          const completedTasks = userTasks.filter(
-            (task) => task.status === TasksStatusOptions.done,
-          );
-
-          return {
-            name:
-              user.first_name && user.last_name
-                ? user.first_name + " " + user.last_name
-                : user.username,
-            totalTasks: userTasks.length,
-            completedTasks: completedTasks.length,
-            completionRate: userTasks.length
-              ? (completedTasks.length / userTasks.length) * 100
-              : 0,
-          };
-        })
-        .sort((a, b) => b.completionRate - a.completionRate)
-        .slice(0, 5);
-
-      return userStats;
-    },
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-    // cacheTime: 30 * 60 * 1000, // Cache persists for 30 minutes
-  });
+  return {
+    data: users && tasks ? calculateUserPerformance(users, tasks) : undefined,
+    isLoading: !users || !tasks,
+  };
 }
 
 // Memoize chart components
