@@ -80,6 +80,17 @@ const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
 
 ProtectedRoute.displayName = "ProtectedRoute";
 
+// Memoized PublicRoute component (redirects authenticated users to home)
+const PublicRoute = memo(({ children }: { children: React.ReactNode }) => {
+  const isLoggedIn = useAuthIsLoggedIn();
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+});
+
+PublicRoute.displayName = "PublicRoute";
+
 interface RouteType {
   path: string;
   element: React.ReactNode;
@@ -186,6 +197,11 @@ export const AppRoutes = memo(() => {
               <ProtectedRoute>
                 <Title title={route.title}>{route.element}</Title>
               </ProtectedRoute>
+            ) : // Only /login and /register need the PublicRoute wrapper; others are public fallbacks like 404
+            route.path === "/login" || route.path === "/register" ? (
+              <PublicRoute>
+                <Title title={route.title}>{route.element}</Title>
+              </PublicRoute>
             ) : (
               <Title title={route.title}>{route.element}</Title>
             )
