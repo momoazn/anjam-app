@@ -31,11 +31,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
-import {
-  useProjectWithSupervisor,
-  useProjectUsers,
-  useUsers,
-} from "@/pb-hooks";
+import { useProjectWithSupervisor, useProjectUsers, useUsers } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function ProjectUsers() {

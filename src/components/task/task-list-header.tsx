@@ -16,7 +16,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
-import { TASKS_QUERY_KEY_ROOT } from "@/pb-hooks";
+import { TASKS_QUERY_KEY_ROOT } from "@/hooks";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CreateTaskDialog } from "./create-task-dialog";
 

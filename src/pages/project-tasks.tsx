@@ -8,7 +8,7 @@ import { useTaskFilters } from "@/hooks/use-task-filters"; // Import the custom 
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
-import { useProject, useTasks } from "@/pb-hooks";
+import { useProject, useTasks } from "@/hooks";
 
 export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();

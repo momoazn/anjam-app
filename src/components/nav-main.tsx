@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TEXT } from "@/constants/text";
 import { cn } from "@/lib/utils";
-import { TASKS_QUERY_KEY_ROOT } from "@/pb-hooks";
+import { queryKeys } from "@/hooks";
 import { CreateTaskDialog } from "./task/create-task-dialog";
 
 export function NavMain({
@@ -34,7 +34,7 @@ export function NavMain({
             <CreateTaskDialog
               onSuccess={() => {
                 queryClient.invalidateQueries({
-                  queryKey: TASKS_QUERY_KEY_ROOT,
+                  queryKey: queryKeys.tasks.all,
                 });
               }}
             >

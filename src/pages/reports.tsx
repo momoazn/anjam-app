@@ -35,7 +35,7 @@ import {
   type StatusDistributionData,
   type UserPerformanceData,
 } from "@/lib/reports-utils";
-import { useTasks, useUsers } from "@/pb-hooks";
+import { useTasks, useUsers } from "@/hooks";
 
 // Chart configurations
 const statusChartConfig = {

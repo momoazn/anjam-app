@@ -7,7 +7,7 @@ import { ProjectListGroup } from "@/components/project/project-list-group";
 import { Button } from "@/components/ui/button";
 import { TEXT } from "@/constants/text";
 import { ProjectsResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useProjects } from "@/pb-hooks";
+import { useProjects } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 

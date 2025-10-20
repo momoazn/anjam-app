@@ -6,7 +6,7 @@ import { DeleteProjectDialog } from "@/components/project/delete-project-dialog"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectsResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
-import { useTasks } from "@/pb-hooks";
+import { useTasks } from "@/hooks";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface ProjectListGroupProps {

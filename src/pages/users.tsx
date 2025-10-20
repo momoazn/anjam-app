@@ -10,7 +10,7 @@ import { EditUserDialog } from "@/components/user/edit-user-dialog";
 import { UserListTable } from "@/components/user/user-list-table";
 import { TEXT } from "@/constants/text";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useUsers } from "@/pb-hooks";
+import { useUsers } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function Users() {
