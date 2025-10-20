@@ -1,19 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, MoreHorizontal } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -39,7 +39,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { useSpecificProjectUsers } from "@/pb-hooks";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 import DatePicker from "../ui/date-picker";
 import {
   Select,
@@ -72,7 +72,7 @@ export function CreateTaskDialog({
   onSuccess,
 }: CreateTaskDialogProps) {
   const [open, setOpen] = useState(false);
-  const user = useAuthStore().user;
+  const user = useAuthUser();
   const { id: projectId } = useParams<{ id: string }>();
   const isInProject = Boolean(projectId);
 

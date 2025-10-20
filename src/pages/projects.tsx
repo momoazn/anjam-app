@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export default function Projects() {
-  const user = useAuthStore().user;
+  const user = useAuthUser();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedProject, setSelectedProject] =

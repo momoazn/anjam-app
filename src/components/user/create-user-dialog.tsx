@@ -30,7 +30,7 @@ import {
 import { TEXT } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
@@ -53,7 +53,7 @@ export function CreateUserDialog({
   open,
   onOpenChange,
 }: CreateUserDialogProps) {
-  const user = useAuthStore().user;
+  const user = useAuthUser();
   const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
