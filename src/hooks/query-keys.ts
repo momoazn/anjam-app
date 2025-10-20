@@ -1,0 +1,69 @@
+/**
+ * Centralized query key factory for React Query cache management.
+ * Provides type-safe query keys for all PocketBase collections and operations.
+ *
+ * Structure:
+ * - Each collection has 'all', 'lists', and 'detail' keys
+ * - 'all' is the base key for the collection
+ * - 'lists' is for list queries (with optional filters)
+ * - 'detail' is for single record queries
+ * - Additional collection-specific keys as needed
+ */
+
+/**
+ * Centralized query key factory functions
+ */
+export const queryKeys = {
+  /**
+   * Task-related query keys
+   * - all: Base key for all task queries
+   * - lists: For task list queries
+   * - list: For filtered task lists (by project, with expand fields)
+   * - detail: For individual task queries
+   */
+  tasks: {
+    all: ["tasks"] as const,
+    lists: () => [...queryKeys.tasks.all, "list"] as const,
+    list: (projectId?: string, expandFields?: string) =>
+      [
+        ...queryKeys.tasks.lists(),
+        { projectId: projectId ?? "all", expandFields: expandFields ?? "none" },
+      ] as const,
+    detail: (id: string) => [...queryKeys.tasks.all, "detail", id] as const,
+  },
+
+  /**
+   * Project-related query keys
+   * - all: Base key for all project queries
+   * - lists: For project list queries
+   * - detail: For individual project queries
+   */
+  projects: {
+    all: ["projects"] as const,
+    lists: () => [...queryKeys.projects.all, "list"] as const,
+    detail: (id: string) => [...queryKeys.projects.all, "detail", id] as const,
+  },
+
+  /**
+   * User-related query keys
+   * - all: Base key for all user queries
+   * - lists: For user list queries
+   * - detail: For individual user queries
+   * - projectUsers: For users associated with a specific project
+   */
+  users: {
+    all: ["users"] as const,
+    lists: () => [...queryKeys.users.all, "list"] as const,
+    detail: (id: string) => [...queryKeys.users.all, "detail", id] as const,
+    projectUsers: (projectId: string) =>
+      [...queryKeys.users.all, "project", projectId] as const,
+  },
+
+  /**
+   * Authentication-related query keys
+   * - isInitialAdmin: For checking if initial admin setup is needed
+   */
+  auth: {
+    isInitialAdmin: ["auth", "is-initial-admin"] as const,
+  },
+} as const;

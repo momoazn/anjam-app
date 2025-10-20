@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TEXT } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import { TASKS_QUERY_KEY_ROOT } from "@/pb-hooks";
+import { TASKS_QUERY_KEY_ROOT } from "@/hooks";
 import { TaskListHeader } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 

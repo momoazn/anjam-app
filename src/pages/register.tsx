@@ -10,7 +10,7 @@ import { TEXT } from "@/constants/text";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
-import { useIsInitialAdmin } from "@/pb-hooks";
+import { useIsInitialAdmin } from "@/hooks";
 import { useAuthStore } from "@/store/auth-store";
 
 const createInitialAdmin = async (username: string, password: string) => {

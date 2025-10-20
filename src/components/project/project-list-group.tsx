@@ -1,17 +1,12 @@
 import { Edit, Trash, Users, Target } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ProjectsResponse,
-  TasksResponse,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
-import { pb } from "@/lib/pocketbase";
+import { ProjectsResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
+import { useTasks } from "@/hooks";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface ProjectListGroupProps {
@@ -31,10 +26,7 @@ export function ProjectListGroup({
     useState<ProjectsResponse | null>(null);
 
   // Fetch all tasks to calculate progress
-  const { data: allTasks } = useQuery({
-    queryKey: ["tasks"],
-    queryFn: () => pb.collection("tasks").getFullList<TasksResponse>(),
-  });
+  const { data: allTasks } = useTasks({});
 
   const handleDelete = (project: ProjectsResponse) => {
     setSelectedProject(project);

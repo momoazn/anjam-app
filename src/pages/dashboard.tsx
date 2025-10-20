@@ -1,5 +1,5 @@
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import { useProjects, useTasks } from "@/pb-hooks";
+import { useProjects, useTasks } from "@/hooks";
 import { taskStatusBgColors } from "@/lib/tasks-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format, isPast } from "date-fns-jalali";
@@ -27,8 +27,8 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: userTasks, isPending: isLoadingTasks } = useTasks();
-  const { data: projects, isPending: isLoadingProjects } = useProjects();
+  const { data: userTasks, isPending: isLoadingTasks } = useTasks({});
+  const { data: projects, isPending: isLoadingProjects } = useProjects({});
 
   const stats = useMemo(() => {
     if (isLoadingTasks || !userTasks) return null;

@@ -5,14 +5,13 @@ import { useTaskFilters } from "@/hooks/use-task-filters"; // Import the custom 
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types"; // Added Priority & UsersResponse
 import { statusOrder } from "@/lib/tasks-utils";
-import { useTasks } from "@/pb-hooks";
+import { useTasks } from "@/hooks";
 import { useMemo } from "react";
 
 export default function Tasks() {
-  const { data: userTasks, isPending: isLoadingTasks } = useTasks(
-    undefined,
-    "project,assignee", // Expand project and assignee
-  );
+  const { data: userTasks, isPending: isLoadingTasks } = useTasks({
+    expandFields: "project,assignee", // Expand project and assignee
+  });
 
   const {
     searchTerm,
