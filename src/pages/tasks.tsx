@@ -19,10 +19,14 @@ export default function Tasks() {
     selectedStatus,
     selectedPriority,
     selectedAssignee,
+    selectedDateRange,
+    selectedTag,
     setSearchTerm,
     setSelectedStatus,
     setSelectedPriority,
     setSelectedAssignee,
+    setSelectedDateRange,
+    setSelectedTag,
     filteredTasks,
     users,
     isLoadingUsers,
@@ -52,10 +56,14 @@ export default function Tasks() {
         selectedStatus={selectedStatus}
         selectedPriority={selectedPriority}
         selectedAssignee={selectedAssignee}
+        selectedDateRange={selectedDateRange}
+        selectedTag={selectedTag}
         setSearchTerm={setSearchTerm}
         setSelectedStatus={setSelectedStatus}
         setSelectedPriority={setSelectedPriority}
         setSelectedAssignee={setSelectedAssignee}
+        setSelectedDateRange={setSelectedDateRange}
+        setSelectedTag={setSelectedTag}
         users={users}
         isLoadingUsers={isLoadingUsers}
       />
