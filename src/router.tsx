@@ -1,8 +1,9 @@
-import React, { memo, useEffect, useMemo } from "react";
+import React, { Suspense, memo, useEffect, useMemo } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { TEXT } from "@/constants/text";
 import { useAuthIsLoggedIn } from "./store/auth-store";
+import { RouteSkeleton } from "@/components/route-skeleton";
 
 // Lazy load pages with better error handling and preloading
 const Login = React.lazy(() =>
@@ -195,15 +196,39 @@ export const AppRoutes = memo(() => {
           element={
             route.protected ? (
               <ProtectedRoute>
-                <Title title={route.title}>{route.element}</Title>
+                <Suspense
+                  fallback={
+                    route.path === "/"
+                      ? <RouteSkeleton routeKey="dashboard" />
+                      : route.path.startsWith("/projects/")
+                        ? <RouteSkeleton routeKey={route.path.endsWith("/users") ? "projectUsers" : "projectTasks"} />
+                        : route.path === "/projects"
+                          ? <RouteSkeleton routeKey="projects" />
+                          : route.path === "/tasks"
+                            ? <RouteSkeleton routeKey="tasks" />
+                            : route.path === "/users"
+                              ? <RouteSkeleton routeKey="users" />
+                              : route.path === "/reports"
+                                ? <RouteSkeleton routeKey="reports" />
+                                : <RouteSkeleton />
+                  }
+                >
+                  <Title title={route.title}>{route.element}</Title>
+                </Suspense>
               </ProtectedRoute>
-            ) : // Only /login and /register need the PublicRoute wrapper; others are public fallbacks like 404
-            route.path === "/login" || route.path === "/register" ? (
-              <PublicRoute>
-                <Title title={route.title}>{route.element}</Title>
-              </PublicRoute>
             ) : (
-              <Title title={route.title}>{route.element}</Title>
+              // Only /login and /register need the PublicRoute wrapper; others are public fallbacks like 404
+              route.path === "/login" || route.path === "/register" ? (
+                <PublicRoute>
+                  <Suspense fallback={<RouteSkeleton />}>
+                    <Title title={route.title}>{route.element}</Title>
+                  </Suspense>
+                </PublicRoute>
+              ) : (
+                <Suspense fallback={<RouteSkeleton />}>
+                  <Title title={route.title}>{route.element}</Title>
+                </Suspense>
+              )
             )
           }
         />
