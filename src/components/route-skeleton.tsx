@@ -4,7 +4,7 @@ export function RouteSkeleton({ routeKey }: { routeKey?: string }) {
   switch (routeKey) {
     case "dashboard":
       return (
-        <div className="p-4 md:p-6 space-y-4">
+        <div className="space-y-4 p-4 md:p-6">
           <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-5">
             {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="h-20 w-full" />
@@ -20,7 +20,7 @@ export function RouteSkeleton({ routeKey }: { routeKey?: string }) {
       );
     case "projects":
       return (
-        <div className="p-4 md:p-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 md:p-6 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-40 w-full" />
           ))}
@@ -29,7 +29,7 @@ export function RouteSkeleton({ routeKey }: { routeKey?: string }) {
     case "tasks":
     case "projectTasks":
       return (
-        <div className="p-4 md:p-6 space-y-3">
+        <div className="space-y-3 p-4 md:p-6">
           <Skeleton className="h-8 w-64" />
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-10 w-full" />
@@ -39,7 +39,7 @@ export function RouteSkeleton({ routeKey }: { routeKey?: string }) {
     case "users":
     case "projectUsers":
       return (
-        <div className="p-4 md:p-6 space-y-3">
+        <div className="space-y-3 p-4 md:p-6">
           <Skeleton className="h-8 w-64" />
           <div className="grid grid-cols-1 gap-2">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -50,7 +50,7 @@ export function RouteSkeleton({ routeKey }: { routeKey?: string }) {
       );
     default:
       return (
-        <div className="p-4 md:p-6 space-y-3">
+        <div className="space-y-3 p-4 md:p-6">
           <Skeleton className="h-8 w-40" />
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-10 w-full" />

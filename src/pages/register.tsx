@@ -59,11 +59,17 @@ export default function Register() {
       password?: string;
       confirmPassword?: string;
     } = {};
-    if (!username.trim()) newErrors.username = TEXT.auth.errors.usernameRequired;
-    if (!password.trim()) newErrors.password = TEXT.auth.errors.passwordRequired;
+    if (!username.trim())
+      newErrors.username = TEXT.auth.errors.usernameRequired;
+    if (!password.trim())
+      newErrors.password = TEXT.auth.errors.passwordRequired;
     if (!confirmPassword.trim())
       newErrors.confirmPassword = TEXT.auth.errors.passwordConfirmRequired;
-    if (!newErrors.password && !newErrors.confirmPassword && password !== confirmPassword)
+    if (
+      !newErrors.password &&
+      !newErrors.confirmPassword &&
+      password !== confirmPassword
+    )
       newErrors.confirmPassword = TEXT.auth.errors.passwordsMismatch;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
@@ -135,11 +141,16 @@ export default function Register() {
               required
               autoFocus
               aria-invalid={Boolean(errors.username)}
-              aria-describedby={errors.username ? "register-username-error" : undefined}
+              aria-describedby={
+                errors.username ? "register-username-error" : undefined
+              }
               disabled={submitting}
             />
             {errors.username && (
-              <p id="register-username-error" className="text-destructive mt-1 text-xs">
+              <p
+                id="register-username-error"
+                className="text-destructive mt-1 text-xs"
+              >
                 {errors.username}
               </p>
             )}
@@ -155,11 +166,16 @@ export default function Register() {
               className="mt-1 block w-full border px-3 py-2"
               required
               aria-invalid={Boolean(errors.password)}
-              aria-describedby={errors.password ? "register-password-error" : undefined}
+              aria-describedby={
+                errors.password ? "register-password-error" : undefined
+              }
               disabled={submitting}
             />
             {errors.password && (
-              <p id="register-password-error" className="text-destructive mt-1 text-xs">
+              <p
+                id="register-password-error"
+                className="text-destructive mt-1 text-xs"
+              >
                 {errors.password}
               </p>
             )}
@@ -176,19 +192,26 @@ export default function Register() {
               required
               aria-invalid={Boolean(errors.confirmPassword)}
               aria-describedby={
-                errors.confirmPassword ? "register-confirm-password-error" : undefined
+                errors.confirmPassword
+                  ? "register-confirm-password-error"
+                  : undefined
               }
               disabled={submitting}
             />
             {errors.confirmPassword && (
-              <p id="register-confirm-password-error" className="text-destructive mt-1 text-xs">
+              <p
+                id="register-confirm-password-error"
+                className="text-destructive mt-1 text-xs"
+              >
                 {errors.confirmPassword}
               </p>
             )}
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? TEXT.tasks.details.buttons.saving : TEXT.auth.register.registerButton}
+            {submitting
+              ? TEXT.tasks.details.buttons.saving
+              : TEXT.auth.register.registerButton}
           </Button>
 
           {!isInitialAdmin && (

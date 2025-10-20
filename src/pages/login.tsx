@@ -18,15 +18,18 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>(
-    {},
-  );
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { username?: string; password?: string } = {};
-    if (!username.trim()) newErrors.username = TEXT.auth.errors.usernameRequired;
-    if (!password.trim()) newErrors.password = TEXT.auth.errors.passwordRequired;
+    if (!username.trim())
+      newErrors.username = TEXT.auth.errors.usernameRequired;
+    if (!password.trim())
+      newErrors.password = TEXT.auth.errors.passwordRequired;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       toast.error(TEXT.auth.login.errors.credentialsRequired);
@@ -66,11 +69,16 @@ export default function Login() {
               required
               autoFocus
               aria-invalid={Boolean(errors.username)}
-              aria-describedby={errors.username ? "login-username-error" : undefined}
+              aria-describedby={
+                errors.username ? "login-username-error" : undefined
+              }
               disabled={submitting}
             />
             {errors.username && (
-              <p id="login-username-error" className="text-destructive mt-1 text-xs">
+              <p
+                id="login-username-error"
+                className="text-destructive mt-1 text-xs"
+              >
                 {errors.username}
               </p>
             )}
@@ -86,18 +94,25 @@ export default function Login() {
               className="mt-1 block w-full border px-3 py-2"
               required
               aria-invalid={Boolean(errors.password)}
-              aria-describedby={errors.password ? "login-password-error" : undefined}
+              aria-describedby={
+                errors.password ? "login-password-error" : undefined
+              }
               disabled={submitting}
             />
             {errors.password && (
-              <p id="login-password-error" className="text-destructive mt-1 text-xs">
+              <p
+                id="login-password-error"
+                className="text-destructive mt-1 text-xs"
+              >
                 {errors.password}
               </p>
             )}
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? TEXT.tasks.details.buttons.saving : TEXT.auth.login.loginButton}
+            {submitting
+              ? TEXT.tasks.details.buttons.saving
+              : TEXT.auth.login.loginButton}
           </Button>
 
           <Button

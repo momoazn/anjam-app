@@ -149,7 +149,9 @@ export function CreateTaskDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild onClick={() => setOpen(true)}>{children}</DialogTrigger>
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
+        {children}
+      </DialogTrigger>
       <DialogTitle className="sr-only">{TEXT.tasks.addTask.title}</DialogTitle>
       <DialogContent className="sm:max-w-[800px]">
         <Form {...form}>
@@ -359,7 +361,12 @@ export function CreateTaskDialog({
 
             <div className="flex items-center justify-end gap-2 pt-0">
               <DialogClose asChild>
-                <Button size="sm" type="button" variant="outline" disabled={isCreatingTask}>
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  disabled={isCreatingTask}
+                >
                   {TEXT.tasks.details.buttons.cancel}
                 </Button>
               </DialogClose>
