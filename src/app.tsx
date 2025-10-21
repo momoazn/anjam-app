@@ -1,18 +1,18 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { Suspense, memo, useMemo } from "react";
+import { memo, Suspense, useMemo } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Toaster } from "sonner";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { TEXT } from "@/constants/text";
-import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { useTheme } from "@/hooks/use-theme";
+import { useAuthIsLoggedIn } from "@/store/auth-store";
+import { Loader2 } from "lucide-react";
+import { TEXT } from "./constants/text";
 import { AppRoutes } from "./router";
-import { ScrollToTop } from "@/components/scroll-to-top";
 
 // Optimized QueryClient configuration
 const queryClient = new QueryClient({
@@ -94,7 +94,6 @@ const AppLayout = memo(() => {
 AppLayout.displayName = "AppLayout";
 
 function App() {
-  // Initialize theme management
   useTheme();
 
   // Memoize the QueryClient to prevent recreation on every render
@@ -107,11 +106,6 @@ function App() {
       className: "font-vazirmatn",
       toastOptions: {
         duration: 4000,
-        style: {
-          background: "hsl(var(--background))",
-          color: "hsl(var(--foreground))",
-          border: "1px solid hsl(var(--border))",
-        },
       },
     }),
     [],
