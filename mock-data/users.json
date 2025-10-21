@@ -67,80 +67,80 @@
     "username": "dev.mohammad",
     "first_name": "محمد",
     "last_name": "علیزاده",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.sara",
     "first_name": "سارا",
     "last_name": "احمدی",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.amir",
     "first_name": "امیر",
     "last_name": "حسینی",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.narges",
     "first_name": "نرگس",
     "last_name": "کریمی",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.hooman",
     "first_name": "هومن",
     "last_name": "رضایی",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.leila",
     "first_name": "لیلا",
     "last_name": "محمدی",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.arshia",
     "first_name": "آرشیا",
     "last_name": "نوری",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.parisa",
     "first_name": "پریسا",
     "last_name": "صادقی",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.kamran",
     "first_name": "کامران",
     "last_name": "موسوی",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   },
   {
     "username": "dev.azadeh",
     "first_name": "آزاده",
     "last_name": "علیزاده",
-    "password": "user123",
-    "passwordConfirm": "user123",
+    "password": "user1234",
+    "passwordConfirm": "user1234",
     "role": "employee"
   }
 ]
