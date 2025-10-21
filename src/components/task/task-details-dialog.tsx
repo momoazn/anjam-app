@@ -36,7 +36,7 @@ import {
   taskStatusColors,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
-import { useProjectUsers, useUsers } from "@/hooks";
+import { useProjectUsersFromAppData, useUsers } from "@/hooks";
 import DatePicker from "../ui/date-picker";
 import {
   Select,
@@ -93,10 +93,9 @@ export function EditTaskDialog({
   }, [form, task]);
 
   // Fetch project users when in project context
-  const { data: projectUsers } = useProjectUsers({
-    projectId: projectId || task.project,
-    enabled: Boolean(projectId || task.project),
-  });
+  const { data: projectUsers } = useProjectUsersFromAppData(
+    projectId || task.project,
+  );
 
   // Fetch all users when not in project context
   const { data: users } = useUsers({ enabled: !projectId });

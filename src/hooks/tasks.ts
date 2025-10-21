@@ -40,12 +40,15 @@ function getTasks(
     filters.push(`project = "${projectId}"`);
   }
 
-  return pb.collection("tasks").getFullList<TaskWithProject>({
-    batch: 100,
-    filter: filters.length > 0 ? filters.join(" && ") : undefined,
-    sort: "order",
-    expand: expandFields,
-  });
+  // Use paginated list to avoid multiple sequential HTTP requests from getFullList
+  return pb
+    .collection("tasks")
+    .getList<TaskWithProject>(1, 200, {
+      filter: filters.length > 0 ? filters.join(" && ") : undefined,
+      sort: "order",
+      expand: expandFields,
+    })
+    .then((res) => res.items);
 }
 
 /**
@@ -60,7 +63,11 @@ export function useTasks(
     enabled?: boolean;
   } = {},
 ) {
-  const { projectId, expandFields, enabled = true } = options;
+  const {
+    projectId,
+    expandFields = "project,assignee",
+    enabled = true,
+  } = options;
 
   return useQuery({
     queryKey: queryKeys.tasks.list(projectId, expandFields),

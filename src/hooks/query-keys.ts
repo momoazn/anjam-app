@@ -50,6 +50,7 @@ export const queryKeys = {
    * - lists: For user list queries
    * - detail: For individual user queries
    * - projectUsers: For users associated with a specific project
+   * - allProjectUsers: For all project-user relationships (bulk fetch)
    */
   users: {
     all: ["users"] as const,
@@ -57,6 +58,7 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.users.all, "detail", id] as const,
     projectUsers: (projectId: string) =>
       [...queryKeys.users.all, "project", projectId] as const,
+    allProjectUsers: () => [...queryKeys.users.all, "project-users"] as const,
   },
 
   /**

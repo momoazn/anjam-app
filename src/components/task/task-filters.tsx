@@ -11,7 +11,8 @@ import { TEXT } from "@/constants/text";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
-} from "@/lib/pocketbase-types"; // Removed unused UsersResponse
+  UsersResponse,
+} from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
 import {
   ALL_FILTER_VALUE,
@@ -26,8 +27,11 @@ const priorityOrder: TasksPriorityOptions[] = [
   TasksPriorityOptions.urgent,
 ];
 
-// Define props based on the hook's return type, excluding filteredTasks
-type TaskFiltersProps = Omit<UseTaskFiltersReturn, "filteredTasks">;
+// Define props based on the hook's return type, excluding filteredTasks, users, and isLoadingUsers
+type TaskFiltersProps = Omit<UseTaskFiltersReturn, "filteredTasks"> & {
+  users: UsersResponse[] | undefined;
+  isLoadingUsers: boolean;
+};
 
 export function TaskFilters({
   searchTerm,

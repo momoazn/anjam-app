@@ -1,36 +1,35 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-import { TaskFilters } from "@/components/task/task-filters"; // Import the new component
+import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { TEXT } from "@/constants/text";
-import { useTaskFilters } from "@/hooks/use-task-filters"; // Import the custom hook
+import { useTaskFilters } from "@/hooks/use-task-filters";
+import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
-import { useProject, useTasks } from "@/hooks";
 
 export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
 
-  const { data: project } = useProject({ id: projectId as string });
-  const { data: tasks, isLoading: isLoadingTasks } = useTasks({
-    projectId,
-    expandFields: "assignee",
-  }); // Expand assignee
+  const { project, tasks, users, isLoadingTasks, isLoadingUsers } =
+    useProjectTasksPageData(projectId as string);
 
   const {
     searchTerm,
     selectedStatus,
     selectedPriority,
     selectedAssignee,
+    selectedDateRange,
+    selectedTag,
     setSearchTerm,
     setSelectedStatus,
     setSelectedPriority,
     setSelectedAssignee,
+    setSelectedDateRange,
+    setSelectedTag,
     filteredTasks,
-    users,
-    isLoadingUsers,
   } = useTaskFilters(tasks);
 
   const groupedTasks = useMemo(() => {
@@ -59,10 +58,14 @@ export default function ProjectTasks() {
         selectedStatus={selectedStatus}
         selectedPriority={selectedPriority}
         selectedAssignee={selectedAssignee}
+        selectedDateRange={selectedDateRange}
+        selectedTag={selectedTag}
         setSearchTerm={setSearchTerm}
         setSelectedStatus={setSelectedStatus}
         setSelectedPriority={setSelectedPriority}
         setSelectedAssignee={setSelectedAssignee}
+        setSelectedDateRange={setSelectedDateRange}
+        setSelectedTag={setSelectedTag}
         users={users}
         isLoadingUsers={isLoadingUsers}
       />

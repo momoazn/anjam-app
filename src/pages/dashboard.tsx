@@ -27,7 +27,9 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: userTasks, isPending: isLoadingTasks } = useTasks({});
+  const { data: userTasks, isPending: isLoadingTasks } = useTasks({
+    expandFields: "project,assignee",
+  });
   const { data: projects, isPending: isLoadingProjects } = useProjects({});
 
   const stats = useMemo(() => {
@@ -150,7 +152,7 @@ export default function Dashboard() {
       {/* Stats Section */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mb-8 md:gap-4 lg:grid-cols-5">
         <StatCard
-          title="کل وظایف"
+          title="کل تسک‌ها"
           value={stats?.total ?? 0}
           icon={<ListTodo className="text-primary h-6 w-6" />}
           color="bg-blue-50 dark:bg-blue-400/15"
@@ -197,7 +199,7 @@ export default function Dashboard() {
                 <h3 className="font-semibold">{project.name}</h3>
                 <span className="text-muted-foreground text-sm">
                   {digitsEnToFa(project.completedTasks)} از{" "}
-                  {digitsEnToFa(project.taskCount)} وظیفه
+                  {digitsEnToFa(project.taskCount)} تسک
                 </span>
               </div>
               <div className="bg-muted/60 mb-2 h-2 w-full rounded-full">
@@ -208,7 +210,7 @@ export default function Dashboard() {
               </div>
               <div className="text-muted-foreground flex justify-between text-sm">
                 <span>٪{digitsEnToFa(project.progress)} تکمیل شده</span>
-                <span>{digitsEnToFa(project.taskCount)} وظیفه</span>
+                <span>{digitsEnToFa(project.taskCount)} تسک</span>
               </div>
             </div>
           ))}
@@ -250,7 +252,7 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base md:text-lg">
               <Clock className="h-4 w-4 md:h-5 md:w-5" />
-              وظایف اخیر
+              تسک‌های اخیر
             </CardTitle>
           </CardHeader>
           <CardContent>
