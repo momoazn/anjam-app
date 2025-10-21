@@ -11,6 +11,8 @@
     "web:lint:fix": "eslint . --fix",
     "web:format": "prettier --write .",
     "web:format:check": "prettier --check .",
+    "web:check": "bun run web:type-check && bun run web:lint && bun run web:format:check",
+    "web:type-check": "tsc --noEmit",
     "web:fix": "bun run web:lint:fix && bun run web:format",
     "api:dev": "air",
     "api:serve": "go run main.go",
@@ -22,14 +24,12 @@
     "seed:truncate": "bun run scripts/truncate.ts",
     "seed:reset": "bun run seed:truncate && bun run seed:run",
     "dev": "concurrently \"bun run web:dev\" \"bun run api:dev\" -n \"WEB,API\"",
-    "start": "bun run dev",
-    "build:all": "bun run web:build && bun run api:build",
-    "build:all:win": "bun run web:build && bun run api:build:win",
+    "start": "bun run api:serve",
+    "build": "bun run web:build && bun run api:build",
+    "build:win": "bun run web:build && bun run api:build:win",
     "build:ui": "bun run web:build",
     "build:api": "bun run api:build",
-    "clean": "rm -rf dist && rm -rf node_modules/.vite",
-    "web:type-check": "tsc --noEmit",
-    "web:check": "bun run web:type-check && bun run web:lint && bun run web:format:check"
+    "clean": "rm -rf dist && rm -rf node_modules && rm -rf tmp && rm -rf task-manager"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
