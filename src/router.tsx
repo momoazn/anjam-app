@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { TEXT } from "@/constants/text";
@@ -61,27 +61,23 @@ const NotFound = React.lazy(() =>
   })),
 );
 
-// Memoized ProtectedRoute component
-const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
+// ProtectedRoute component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
-});
+};
 
-ProtectedRoute.displayName = "ProtectedRoute";
-
-// Memoized PublicRoute component (redirects authenticated users to home)
-const PublicRoute = memo(({ children }: { children: React.ReactNode }) => {
+// PublicRoute component (redirects authenticated users to home)
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
   if (isLoggedIn) {
     return <Navigate to="/" replace />;
   }
   return <>{children}</>;
-});
-
-PublicRoute.displayName = "PublicRoute";
+};
 
 interface RouteType {
   path: string;
@@ -175,31 +171,22 @@ const routes: RouteType[] = [
   },
 ];
 
-// Helper to wrap route element with guards and title
-const renderRouteElement = (route: RouteType) => {
-  const content = <Title title={route.title}>{route.element}</Title>;
-  if (route.protected) return <ProtectedRoute>{content}</ProtectedRoute>;
-  if (route.path === "/login" || route.path === "/register")
-    return <PublicRoute>{content}</PublicRoute>;
-  return content;
-};
+// AppRoutes component
+export const AppRoutes = () => {
+  return (
+    <Routes>
+      {routes.map((route) => {
+        const content = <Title title={route.title}>{route.element}</Title>;
+        let element = content;
 
-// Memoized AppRoutes component
-export const AppRoutes = memo(() => {
-  // Memoize the route elements to prevent unnecessary re-renders
-  const routeElements = useMemo(
-    () =>
-      routes.map((route) => (
-        <Route
-          key={route.path}
-          path={route.path}
-          element={renderRouteElement(route)}
-        />
-      )),
-    [],
+        if (route.protected) {
+          element = <ProtectedRoute>{content}</ProtectedRoute>;
+        } else if (route.path === "/login" || route.path === "/register") {
+          element = <PublicRoute>{content}</PublicRoute>;
+        }
+
+        return <Route key={route.path} path={route.path} element={element} />;
+      })}
+    </Routes>
   );
-
-  return <Routes>{routeElements}</Routes>;
-});
-
-AppRoutes.displayName = "AppRoutes";
+};

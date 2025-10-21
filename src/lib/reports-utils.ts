@@ -103,7 +103,7 @@ export function calculateCompletionTrend(
         if (task.updated) {
           // Use UTC date to avoid timezone issues
           const taskDate = new Date(task.updated);
-          const date = format(taskDate, "jMMM jdd", {
+          const date = format(taskDate, "MMM dd", {
             locale: undefined, // Use default locale to avoid timezone conversion
           });
           acc[date] = (acc[date] || 0) + 1;

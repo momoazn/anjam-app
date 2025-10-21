@@ -162,7 +162,7 @@ export const TEXT = {
     },
     errors: {
       usernameRequired: "وارد کردن نام کاربری الزامی است",
-      passwordRequired: "وارد کردن رمز عبور الزامی است",
+      passwordRequired: "رمز عبور باید حداقل ۸ کاراکتر باشد",
       passwordConfirmRequired: "وارد کردن تأیید رمز عبور الزامی است",
       passwordsMismatch: "رمزهای عبور مطابقت ندارند",
       firstNameRequired: "وارد کردن نام الزامی است",
@@ -210,7 +210,7 @@ export const TEXT = {
       error: "خطا در ایجاد کاربر: {error}",
       errors: {
         usernameRequired: "وارد کردن نام کاربری الزامی است",
-        passwordRequired: "وارد کردن رمز عبور الزامی است",
+        passwordRequired: "رمز عبور باید حداقل ۸ کاراکتر باشد",
         passwordConfirmRequired: "وارد کردن تأیید رمز عبور الزامی است",
         passwordsMismatch: "رمزهای عبور مطابقت ندارند",
       },

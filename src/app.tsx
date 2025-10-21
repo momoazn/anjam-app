@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { memo, Suspense, useMemo } from "react";
+import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Toaster } from "sonner";
 
@@ -14,53 +14,32 @@ import { Loader2 } from "lucide-react";
 import { TEXT } from "./constants/text";
 import { AppRoutes } from "./router";
 
-// Optimized QueryClient configuration
+// Simplified QueryClient configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 10 * 60 * 1000, // Data stays fresh for 10 minutes (increased from 5)
-      gcTime: 30 * 60 * 1000, // Cache persists for 30 minutes (renamed from cacheTime)
-      refetchOnWindowFocus: false, // Don't refetch on window focus
-      refetchOnMount: false, // Don't refetch on mount if data is fresh
-      refetchOnReconnect: "always", // Refetch when reconnecting to network
-      retry: (failureCount, error) => {
-        // Smart retry logic based on error type
-        if (failureCount >= 2) return false;
-        if (error?.message?.includes("401") || error?.message?.includes("403"))
-          return false;
-        return true;
-      },
-      networkMode: "offlineFirst", // Prefer cached data when offline
-      structuralSharing: true, // Enable structural sharing for better performance
-    },
-    mutations: {
-      retry: (failureCount, error) => {
-        // Don't retry auth-related mutations
-        if (error?.message?.includes("401") || error?.message?.includes("403"))
-          return false;
-        return failureCount < 1;
-      },
-      networkMode: "online", // Mutations should only run when online
+      staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+      retry: 1, // Simple retry logic
     },
   },
 });
 
-// Memoized loading fallback component
-const LoadingFallback = memo(() => (
-  <div className="flex min-h-screen items-center justify-center">
-    <div className="flex flex-col items-center gap-4">
-      <Loader2 className="text-primary size-8 animate-spin" />
-      <p className="text-muted-foreground text-sm">
-        {TEXT.loading.application}
-      </p>
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="text-primary size-8 animate-spin" />
+        <p className="text-muted-foreground text-sm">
+          {TEXT.loading.application}
+        </p>
+      </div>
     </div>
-  </div>
-));
+  );
+}
 
-LoadingFallback.displayName = "LoadingFallback";
-
-// Memoized main content component
-const MainContent = memo(() => {
+// Main content component
+function MainContent() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -70,12 +49,10 @@ const MainContent = memo(() => {
       </div>
     </div>
   );
-});
+}
 
-MainContent.displayName = "MainContent";
-
-// Memoized layout component
-const AppLayout = memo(() => {
+// Layout component
+function AppLayout() {
   const isLoggedIn = useAuthIsLoggedIn();
 
   return (
@@ -89,35 +66,24 @@ const AppLayout = memo(() => {
       </SidebarInset>
     </SidebarProvider>
   );
-});
-
-AppLayout.displayName = "AppLayout";
+}
 
 function App() {
   useTheme();
 
-  // Memoize the QueryClient to prevent recreation on every render
-  const memoizedQueryClient = useMemo(() => queryClient, []);
-
-  // Memoize the Toaster configuration
-  const toasterConfig = useMemo(
-    () => ({
-      position: "bottom-left" as const,
-      className: "font-vazirmatn",
-      toastOptions: {
-        duration: 4000,
-      },
-    }),
-    [],
-  );
-
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={memoizedQueryClient}>
+      <QueryClientProvider client={queryClient}>
         <Router>
           <ScrollToTop />
           <AppLayout />
-          <Toaster {...toasterConfig} />
+          <Toaster
+            position="bottom-left"
+            className="font-vazirmatn"
+            toastOptions={{
+              duration: 4000,
+            }}
+          />
         </Router>
       </QueryClientProvider>
     </ErrorBoundary>

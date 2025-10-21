@@ -32,12 +32,9 @@ export {
   useUsers,
   useUser,
   useProjectUsers,
-  useAllProjectUsers,
-  useProjectUsersOptimized,
   useCreateUser,
   useUpdateUser,
   useDeleteUser,
-  useSpecificProjectUsers, // Deprecated
 } from "./users";
 
 // Auth hooks
