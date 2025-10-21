@@ -1,8 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,30 +11,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
 import { TEXT } from "@/constants/text";
-import { pb } from "@/lib/pocketbase";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
+import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
+import { UserFields } from "@/components/forms/user-fields";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
-  // password: z.string().min(1, { message: "Password is required" }),
   first_name: z.string().min(1, { message: "First name is required" }),
   last_name: z.string().min(1, { message: "Last name is required" }),
   role: z.nativeEnum(UsersRoleOptions),
@@ -52,37 +36,15 @@ export function EditUserDialog({
   onOpenChange,
   user,
 }: EditUserDialogProps) {
-  const currentUser = useAuthUser();
-  const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
-      // password: "",
       first_name: "",
       last_name: "",
       role: UsersRoleOptions.employee,
     },
   });
-
-  // Get available roles based on current user's role
-  const availableRoles = useMemo(() => {
-    if (!currentUser) return [];
-
-    if (currentUser.role === UsersRoleOptions.admin) {
-      return [
-        UsersRoleOptions.admin,
-        UsersRoleOptions.supervisor,
-        UsersRoleOptions.employee,
-      ];
-    }
-
-    if (currentUser.role === UsersRoleOptions.supervisor) {
-      return [UsersRoleOptions.supervisor, UsersRoleOptions.employee];
-    }
-
-    return [UsersRoleOptions.employee];
-  }, [currentUser]);
 
   useEffect(() => {
     if (user) {
@@ -95,26 +57,20 @@ export function EditUserDialog({
     }
   }, [form, user]);
 
-  const { mutate: updateUser, isPending } = useMutation({
-    mutationFn: (values: z.infer<typeof formSchema>) => {
-      if (!user) return Promise.reject("No user selected");
-
-      // Check if the current user has permission to set the selected role
-      if (!availableRoles.includes(values.role)) {
-        return Promise.reject("You don't have permission to set this role");
-      }
-
-      return pb.collection("users").update(user.id, values);
-    },
+  const { mutate: updateUser, isPending } = useEntityUpdateMutation({
+    collection: "users",
+    successMessage: TEXT.users.edit.success,
+    errorMessage: TEXT.users.edit.error,
+    invalidateQueries: ["users"],
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
       form.reset();
       onOpenChange(false);
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    updateUser(values);
+    if (!user) return;
+    updateUser({ id: user.id, updates: values });
   }
 
   return (
@@ -125,89 +81,12 @@ export function EditUserDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{TEXT.users.table.columns.username}</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{TEXT.users.form.password}</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="first_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TEXT.users.form.firstName}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TEXT.users.form.lastName}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{TEXT.users.table.columns.role}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={TEXT.users.form.selectRole} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {availableRoles.map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {TEXT.users.table.roles[role]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <UserFields control={form.control} isEdit={true} />
             <DialogFooter>
               <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : null}
                 {TEXT.users.edit.button}
               </Button>
             </DialogFooter>

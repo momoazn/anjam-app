@@ -180,16 +180,3 @@ export function useDeleteUser(
     ...options,
   });
 }
-
-/**
- * @deprecated Use useProjectUsers instead
- */
-export const useSpecificProjectUsers = (
-  ...args: Parameters<typeof useProjectUsers>
-) => {
-  console.warn(
-    "useSpecificProjectUsers is deprecated. Please use useProjectUsers instead. " +
-      "This alias will be removed in a future version.",
-  );
-  return useProjectUsers(...args);
-};

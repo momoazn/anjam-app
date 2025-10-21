@@ -35,8 +35,14 @@ export {
   useCreateUser,
   useUpdateUser,
   useDeleteUser,
-  useSpecificProjectUsers, // Deprecated
 } from "./users";
 
 // Auth hooks
 export { useIsInitialAdmin } from "./auth";
+
+// App-level data hooks
+export { useAppData, useProjectUsersFromAppData } from "./use-app-data";
+
+// Page-specific optimized hooks
+export { useTasksPageData } from "./use-tasks-page-data";
+export { useProjectTasksPageData } from "./use-project-tasks-page-data";

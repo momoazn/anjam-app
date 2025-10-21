@@ -3,10 +3,9 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
   UsersResponse,
-} from "@/lib/pocketbase-types"; // Removed unused TasksResponse
-import { useUsers } from "@/hooks";
+} from "@/lib/pocketbase-types";
+import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
 import { useMemo, useState } from "react";
-import { isPast, isToday, isThisWeek, isThisMonth } from "date-fns-jalali";
 
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
@@ -34,9 +33,7 @@ export interface UseTaskFiltersReturn extends TaskFiltersState {
   >;
   setSelectedDateRange: React.Dispatch<React.SetStateAction<string>>;
   setSelectedTag: React.Dispatch<React.SetStateAction<string>>;
-  filteredTasks: TaskWithProject[]; // Or TasksResponse based on input? Let's stick with TaskWithProject for now
-  users: UsersResponse[] | undefined;
-  isLoadingUsers: boolean;
+  filteredTasks: TaskWithProject[];
 }
 
 // The custom hook
@@ -55,8 +52,6 @@ export function useTaskFilters(
   >(ALL_FILTER_VALUE);
   const [selectedDateRange, setSelectedDateRange] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
-
-  const { data: users, isPending: isLoadingUsers } = useUsers(); // Fetch users within the hook
 
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];
@@ -143,7 +138,5 @@ export function useTaskFilters(
     setSelectedDateRange,
     setSelectedTag,
     filteredTasks,
-    users,
-    isLoadingUsers,
   };
 }

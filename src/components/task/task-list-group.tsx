@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TEXT } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import { TASKS_QUERY_KEY_ROOT } from "@/hooks";
+import { queryKeys } from "@/hooks/query-keys";
 import { TaskListHeader } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
@@ -33,7 +33,7 @@ export function TaskListGroup({
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: TASKS_QUERY_KEY_ROOT,
+      queryKey: queryKeys.tasks.all,
     });
   };
 

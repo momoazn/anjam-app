@@ -16,7 +16,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
-import { TASKS_QUERY_KEY_ROOT } from "@/hooks";
+import { queryKeys } from "@/hooks/query-keys";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CreateTaskDialog } from "./create-task-dialog";
 
@@ -32,7 +32,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
 
   const onSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: TASKS_QUERY_KEY_ROOT,
+      queryKey: queryKeys.tasks.all,
     });
   };
 

@@ -78,7 +78,7 @@ const priorityChartConfig = {
 
 const completionTrendConfig = {
   completed: {
-    label: "وظایف تکمیل شده",
+    label: "تسک‌های تکمیل شده",
     color: "#3b82f6",
   },
 };
@@ -121,7 +121,13 @@ const StatCard = memo(function StatCard({
 
 // Simplified task stats hook
 function useTaskStats() {
-  const { data: tasks, isPending, error } = useTasks({});
+  const {
+    data: tasks,
+    isPending,
+    error,
+  } = useTasks({
+    expandFields: "project,assignee",
+  });
 
   return {
     data: tasks ? calculateTaskStats(tasks) : undefined,
@@ -141,7 +147,9 @@ function useUserPerformance() {
     data: tasks,
     isPending: tasksPending,
     error: tasksError,
-  } = useTasks({});
+  } = useTasks({
+    expandFields: "project,assignee",
+  });
 
   return {
     data: users && tasks ? calculateUserPerformance(users, tasks) : undefined,
@@ -183,7 +191,7 @@ const StatusDistributionChart = memo(function StatusDistributionChart({
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(value) => [digitsEnToFa(value as number), "وظایف"]}
+              formatter={(value) => [digitsEnToFa(value as number), "تسک‌های"]}
             />
           }
         />
@@ -233,7 +241,7 @@ const PriorityDistributionChart = memo(function PriorityDistributionChart({
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(value) => [digitsEnToFa(value as number), "وظایف"]}
+              formatter={(value) => [digitsEnToFa(value as number), "تسک‌های"]}
             />
           }
         />
@@ -281,7 +289,7 @@ const CompletionTrendChart = memo(function CompletionTrendChart({
             <ChartTooltipContent
               formatter={(value) => [
                 digitsEnToFa(value as number),
-                "وظایف تکمیل شده",
+                "تسک‌های تکمیل شده",
               ]}
               labelFormatter={(label) => `تاریخ: ${label}`}
             />
@@ -289,7 +297,7 @@ const CompletionTrendChart = memo(function CompletionTrendChart({
         />
         <Bar
           dataKey="completed"
-          name="وظایف تکمیل شده"
+          name="تسک‌های تکمیل شده"
           fill={completionTrendConfig.completed.color}
           radius={[4, 4, 0, 0]}
         />
@@ -381,7 +389,7 @@ export default function Reports() {
       {/* Overview Cards */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-2 md:mb-8 md:grid-cols-4 md:gap-4">
         <StatCard
-          title="کل وظایف"
+          title="کل تسک‌های"
           value={taskStats?.totalTasks ?? 0}
           icon={<ListTodo className="text-primary h-6 w-6" />}
           color="bg-blue-50"
@@ -412,7 +420,7 @@ export default function Reports() {
           <div className="mb-4 flex items-center gap-2">
             <PieChartIcon className="h-4 w-4 md:h-5 md:w-5" />
             <h2 className="text-base font-semibold md:text-lg">
-              توزیع وضعیت وظایف
+              توزیع وضعیت تسک‌های
             </h2>
           </div>
           <div className="h-48 w-full md:h-64">
@@ -427,7 +435,7 @@ export default function Reports() {
           <div className="mb-4 flex items-center gap-2">
             <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
             <h2 className="text-base font-semibold md:text-lg">
-              توزیع اولویت وظایف
+              توزیع اولویت تسک‌های
             </h2>
           </div>
           <div className="h-48 w-full md:h-64">
@@ -446,7 +454,7 @@ export default function Reports() {
           <div className="mb-4 flex items-center gap-2">
             <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
             <h2 className="text-base font-semibold md:text-lg">
-              روند تکمیل وظایف (۳۰ روز گذشته)
+              روند تکمیل تسک‌های (۳۰ روز گذشته)
             </h2>
           </div>
           <div className="h-48 w-full md:h-64">

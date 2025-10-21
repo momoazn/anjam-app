@@ -1,17 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { DeleteDialog } from "@/components/ui/delete-dialog";
 import { TEXT } from "@/constants/text";
-import { pb } from "@/lib/pocketbase";
 import { UsersResponse } from "@/lib/pocketbase-types";
 
 interface DeleteUserDialogProps {
@@ -25,35 +13,18 @@ export function DeleteUserDialog({
   onOpenChange,
   user,
 }: DeleteUserDialogProps) {
-  const queryClient = useQueryClient();
-
-  const { mutate: deleteUser, isPending } = useMutation({
-    mutationFn: () => {
-      if (!user) return Promise.reject("No user selected");
-      return pb.collection("users").delete(user.id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      onOpenChange(false);
-    },
-  });
-
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{TEXT.users.delete.title}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {TEXT.users.delete.description}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{TEXT.common.cancel}</AlertDialogCancel>
-          <AlertDialogAction onClick={() => deleteUser()} disabled={isPending}>
-            {TEXT.users.delete.button}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <DeleteDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      entityId={user?.id || null}
+      entityName="user"
+      title={TEXT.users.delete.title}
+      description={TEXT.users.delete.description}
+      collection="users"
+      successMessage={TEXT.users.delete.success}
+      errorMessage={TEXT.users.delete.error}
+      invalidateQueries={["users"]}
+    />
   );
 }

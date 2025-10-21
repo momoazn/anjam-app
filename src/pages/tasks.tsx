@@ -1,17 +1,20 @@
-import { TaskFilters } from "@/components/task/task-filters"; // Import the new component
+import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { TEXT } from "@/constants/text";
-import { useTaskFilters } from "@/hooks/use-task-filters"; // Import the custom hook
+import { useTaskFilters } from "@/hooks/use-task-filters";
+import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { TaskWithProject } from "@/lib/pocketbase";
-import { TasksStatusOptions } from "@/lib/pocketbase-types"; // Added Priority & UsersResponse
+import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
-import { useTasks } from "@/hooks";
 import { useMemo } from "react";
 
 export default function Tasks() {
-  const { data: userTasks, isPending: isLoadingTasks } = useTasks({
-    expandFields: "project,assignee", // Expand project and assignee
-  });
+  const {
+    tasks: userTasks,
+    users,
+    isLoadingTasks,
+    isLoadingUsers,
+  } = useTasksPageData();
 
   const {
     searchTerm,
@@ -27,8 +30,6 @@ export default function Tasks() {
     setSelectedDateRange,
     setSelectedTag,
     filteredTasks,
-    users,
-    isLoadingUsers,
   } = useTaskFilters(userTasks);
 
   const groupedTasks = useMemo(() => {
@@ -92,7 +93,7 @@ export default function Tasks() {
             <TaskListGroup
               key={status}
               taskCount={tasksInGroup.length}
-              status={status as TasksStatusOptions}
+              status={status}
               tasks={tasksInGroup}
               showProject={true} // Keep showing project for the main tasks page
             />
