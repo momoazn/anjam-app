@@ -133,6 +133,15 @@ export const TEXT = {
       logout: "خروج",
     },
   },
+  notifications: {
+    title: "اعلان‌ها",
+    markAllAsRead: "علامت‌گذاری همه به عنوان خوانده‌شده",
+    clearAll: "حذف همه",
+    noNotifications: "اعلان جدیدی وجود ندارد",
+    buttons: {
+      markAsRead: "علامت‌گذاری به عنوان خوانده‌شده",
+    },
+  },
   auth: {
     login: {
       title: "ورود",
