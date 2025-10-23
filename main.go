@@ -90,6 +90,7 @@ func main() {
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
+	app.OnRecordAfterCreateSuccess("users_projects").BindFunc(handleUsersProjectsCreatedNotify)
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
@@ -190,7 +191,29 @@ func startApp(app *pocketbase.PocketBase) {
 	}
 }
 
-// --- Serve Event Handlers ---
+func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
+	userId := e.Record.GetString("user")
+	projectId := e.Record.GetString("project")
+	if userId == "" || projectId == "" {
+		return e.Next()
+	}
+
+	projectName := "project"
+	if project, err := e.App.FindRecordById("projects", projectId); err == nil {
+		if n := project.GetString("name"); n != "" {
+			projectName = n
+		}
+	}
+
+	return createNotification(e.App, userId, "system", "medium",
+		fmt.Sprintf("You were added to project: %s", projectName),
+		fmt.Sprintf("You have been added to the project '%s'", projectName),
+		map[string]interface{}{
+			"projectId": projectId,
+		})
+}
+
+	// --- Serve Event Handlers ---
 
 func importSchema(e *core.ServeEvent) error {
 	if len(schemaJSON) == 0 {
