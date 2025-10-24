@@ -746,6 +746,19 @@ func handleCommentNotification(e *core.RecordEvent) error {
 }
 
 func createNotification(app core.App, userId, notificationType, priority, title, message string, data map[string]interface{}) error {
+	// Validate that the user exists before creating notification
+	if userId == "" {
+		log.Printf("Warning: Attempted to create notification with empty user ID")
+		return nil
+	}
+
+	// Check if user exists
+	_, err := app.FindRecordById("users", userId)
+	if err != nil {
+		log.Printf("Warning: User %s not found, skipping notification creation: %v", userId, err)
+		return nil // Don't fail the parent operation
+	}
+
 	notificationsCollection, err := app.FindCollectionByNameOrId("notifications")
 	if err != nil {
 		log.Printf("Error finding notifications collection: %v", err)

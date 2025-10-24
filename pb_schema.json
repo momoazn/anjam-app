@@ -920,7 +920,7 @@
       },
       {
         "cascadeDelete": false,
-        "collectionId": "pbc_4275539003",
+        "collectionId": "_pb_users_auth_",
         "hidden": false,
         "id": "relation123456789",
         "maxSelect": 1,
