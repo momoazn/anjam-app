@@ -67,6 +67,7 @@ async function truncateCollections(pb: TypedPocketBase) {
   console.log("Clearing existing collections via PocketBase API...");
   const orderedCollections = [
     "comments",
+    "notifications",
     "tasks",
     "users_projects",
     "projects",
