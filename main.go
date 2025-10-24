@@ -213,7 +213,7 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 		})
 }
 
-	// --- Serve Event Handlers ---
+// --- Serve Event Handlers ---
 
 func importSchema(e *core.ServeEvent) error {
 	if len(schemaJSON) == 0 {
@@ -748,7 +748,8 @@ func handleCommentNotification(e *core.RecordEvent) error {
 func createNotification(app core.App, userId, notificationType, priority, title, message string, data map[string]interface{}) error {
 	notificationsCollection, err := app.FindCollectionByNameOrId("notifications")
 	if err != nil {
-		return fmt.Errorf("error finding notifications collection: %w", err)
+		log.Printf("Error finding notifications collection: %v", err)
+		return nil // Don't fail the parent operation
 	}
 
 	record := core.NewRecord(notificationsCollection)
@@ -761,7 +762,12 @@ func createNotification(app core.App, userId, notificationType, priority, title,
 		record.Set("data", data)
 	}
 
-	return app.Save(record)
+	if err := app.Save(record); err != nil {
+		log.Printf("Error creating notification for user %s: %v", userId, err)
+		return nil // Don't fail the parent operation
+	}
+
+	return nil
 }
 
 func truncateString(s string, maxLen int) string {
