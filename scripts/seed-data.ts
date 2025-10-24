@@ -1,5 +1,6 @@
 import {
   CommentsRecord,
+  NotificationsRecord,
   ProjectsRecord,
   TasksRecord,
   TypedPocketBase,
@@ -10,6 +11,7 @@ import PocketBase from "pocketbase";
 
 // --- Mock Data Imports ---
 import mockComments from "../mock-data/comments.json";
+import mockNotifications from "../mock-data/notifications.json";
 import mockProjects from "../mock-data/projects.json";
 import mockTasks from "../mock-data/tasks.json";
 import mockUserProjects from "../mock-data/userProjects.json";
@@ -60,6 +62,7 @@ type MockProject = (typeof mockProjects)[number];
 type MockUserProject = (typeof mockUserProjects)[number];
 type MockTask = (typeof mockTasks)[number];
 type MockComment = (typeof mockComments)[number];
+type MockNotification = (typeof mockNotifications)[number];
 
 // --- Helper Functions ---
 
@@ -231,7 +234,30 @@ async function seedDatabase() {
       .getFullList<CommentsRecord>();
     console.log(`${createdComments.length} comments inserted.`);
 
-    // 9. Final Summary
+    // 9. Insert Notifications
+    console.log(`Inserting ${mockNotifications.length} notifications...`);
+    batch = pb.createBatch();
+    mockNotifications.forEach((notification: MockNotification) => {
+      const userId = userIdMap.get(notification.user);
+      if (userId) {
+        batch.collection("notifications").create({
+          ...notification,
+          user: userId,
+        });
+      } else {
+        console.warn(
+          `Skipping notification: User '${notification.user}' not found.`,
+        );
+      }
+    });
+    result = await batch.send();
+    console.log(`Insert notifications result: ${result[0].status}`);
+    const createdNotifications = await pb
+      .collection("notifications")
+      .getFullList<NotificationsRecord>();
+    console.log(`${createdNotifications.length} notifications inserted.`);
+
+    // 10. Final Summary
     console.log(
       "\n✅ Successfully Seeded Database with mock data",
       `\n- ${createdUsers.length} users created`,
@@ -239,6 +265,7 @@ async function seedDatabase() {
       `\n- ${createdUserProjects.length} user-project links created`,
       `\n- ${createdTasks.length} tasks created`,
       `\n- ${createdComments.length} comments created`,
+      `\n- ${createdNotifications.length} notifications created`,
     );
   } catch (error: unknown) {
     console.error("\n❌ Error during seeding process:");

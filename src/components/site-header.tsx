@@ -70,6 +70,11 @@ export function SiteHeader() {
             { label: TEXT.navigation.dashboard, to: "/" as const },
             { label: TEXT.navigation.helps },
           ];
+        case "notifications":
+          return [
+            { label: TEXT.navigation.dashboard, to: "/" as const },
+            { label: TEXT.navigation.notifications },
+          ];
         default:
           return [
             { label: TEXT.navigation.dashboard, to: "/" as const },

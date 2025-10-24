@@ -14,6 +14,7 @@ export const TEXT = {
     reports: "گزارش‌ها",
     helps: "راهنما",
     settings: "تنظیمات",
+    notifications: "اعلان‌ها",
     quickCreate: {
       button: "ایجاد سریع",
       tooltip: "ایجاد فوری",
@@ -30,9 +31,56 @@ export const TEXT = {
   },
   notifications: {
     title: "اعلان‌ها",
+    pageTitle: "صفحه اعلان‌ها",
+    pageDescription: "مشاهده و مدیریت تمام اعلان‌های شما",
     markAllAsRead: "علامت‌گذاری همه به عنوان خوانده‌شده",
     clearAll: "حذف همه",
     noNotifications: "اعلان جدیدی وجود ندارد",
+    emptyState: {
+      title: "هیچ اعلانی وجود ندارد",
+      description: "وقتی اعلان جدیدی دریافت کنید، اینجا نمایش داده خواهد شد",
+    },
+    filters: {
+      all: "همه",
+      unread: "خوانده نشده",
+      read: "خوانده شده",
+    },
+    sort: {
+      newest: "جدیدترین",
+      oldest: "قدیمی‌ترین",
+      priority: "بر اساس اولویت",
+    },
+    types: {
+      task_assigned: "تخصیص تسک",
+      project_updated: "به‌روزرسانی پروژه",
+      system: "سیستم",
+      comment: "نظر",
+    },
+    priority: {
+      low: "پایین",
+      medium: "متوسط",
+      high: "بالا",
+    },
+    actions: {
+      markAsRead: "علامت‌گذاری به عنوان خوانده‌شده",
+      markAsUnread: "علامت‌گذاری به عنوان خوانده نشده",
+      delete: "حذف",
+      viewAll: "مشاهده همه",
+      markAllAsUnread: "همه را خوانده نشده علامت‌گذاری کن",
+      clearRead: "حذف خوانده‌شده‌ها",
+    },
+    groups: {
+      today: "امروز",
+      yesterday: "دیروز",
+      thisWeek: "این هفته",
+      older: "قدیمی‌تر",
+    },
+    stats: {
+      total: "کل اعلان‌ها",
+      unread: "خوانده نشده",
+      read: "خوانده شده",
+      deletable: "قابل حذف",
+    },
     buttons: {
       markAsRead: "علامت‌گذاری به عنوان خوانده‌شده",
     },
@@ -261,6 +309,7 @@ export const TEXT = {
       projectUsers: "خطا در بارگذاری کاربران پروژه",
       reports: "خطا در بارگذاری گزارشات",
       helps: "خطا در بارگذاری راهنما",
+      notifications: "خطا در بارگذاری اعلان‌ها",
     },
     boundary: {
       title: "مشکلی پیش آمده",

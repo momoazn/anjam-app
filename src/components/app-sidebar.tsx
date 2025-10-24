@@ -6,6 +6,7 @@ import {
   IconListDetails,
   IconSettings,
   IconUsers,
+  IconBell,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -29,6 +30,11 @@ const data = {
       title: TEXT.navigation.dashboard,
       url: "/",
       icon: IconDashboard,
+    },
+    {
+      title: TEXT.navigation.notifications,
+      url: "/notifications",
+      icon: IconBell,
     },
     {
       title: TEXT.navigation.projects,

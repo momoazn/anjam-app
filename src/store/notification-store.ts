@@ -15,8 +15,12 @@ interface NotificationState {
     notification: Omit<NotificationsRecord, "id" | "timestamp" | "read">,
   ) => void;
   markAsRead: (id: string) => void;
+  markAsUnread: (id: string) => void;
   markAllAsRead: () => void;
+  markAllAsUnread: () => void;
+  deleteNotification: (id: string) => void;
   clearAll: () => void;
+  clearRead: () => void;
   setTabVisibility: (visible: boolean) => void;
   processQueuedNotifications: () => void;
   removeOldNotifications: () => void;
@@ -81,6 +85,16 @@ export const useNotificationStore = create<NotificationState>()(
         });
       },
 
+      markAsUnread: (id) => {
+        set((state) => {
+          const notifications = state.notifications.map((n) =>
+            n.id === id ? { ...n, read: false } : n,
+          );
+          const unreadCount = notifications.filter((n) => !n.read).length;
+          return { notifications, unreadCount };
+        });
+      },
+
       markAllAsRead: () => {
         set((state) => {
           const notifications = state.notifications.map((n) => ({
@@ -91,8 +105,35 @@ export const useNotificationStore = create<NotificationState>()(
         });
       },
 
+      markAllAsUnread: () => {
+        set((state) => {
+          const notifications = state.notifications.map((n) => ({
+            ...n,
+            read: false,
+          }));
+          const unreadCount = notifications.length;
+          return { notifications, unreadCount };
+        });
+      },
+
+      deleteNotification: (id) => {
+        set((state) => {
+          const notifications = state.notifications.filter((n) => n.id !== id);
+          const unreadCount = notifications.filter((n) => !n.read).length;
+          return { notifications, unreadCount };
+        });
+      },
+
       clearAll: () => {
         set({ notifications: [], unreadCount: 0, queuedNotifications: [] });
+      },
+
+      clearRead: () => {
+        set((state) => {
+          const notifications = state.notifications.filter((n) => !n.read);
+          const unreadCount = notifications.length;
+          return { notifications, unreadCount };
+        });
       },
 
       setTabVisibility: (visible) => {
@@ -189,11 +230,23 @@ export const useAddNotification = () =>
 export const useMarkAsRead = () =>
   useNotificationStore((state) => state.markAsRead);
 
+export const useMarkAsUnread = () =>
+  useNotificationStore((state) => state.markAsUnread);
+
 export const useMarkAllAsRead = () =>
   useNotificationStore((state) => state.markAllAsRead);
 
+export const useMarkAllAsUnread = () =>
+  useNotificationStore((state) => state.markAllAsUnread);
+
+export const useDeleteNotification = () =>
+  useNotificationStore((state) => state.deleteNotification);
+
 export const useClearAll = () =>
   useNotificationStore((state) => state.clearAll);
+
+export const useClearRead = () =>
+  useNotificationStore((state) => state.clearRead);
 
 export const useSetTabVisibility = () =>
   useNotificationStore((state) => state.setTabVisibility);

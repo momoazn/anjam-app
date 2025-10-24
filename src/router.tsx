@@ -60,6 +60,11 @@ const Settings = React.lazy(() =>
     default: () => <div>{TEXT.errors.pageLoad.settings}</div>,
   })),
 );
+const Notifications = React.lazy(() =>
+  import("@/pages/notifications").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.notifications}</div>,
+  })),
+);
 const NotFound = React.lazy(() =>
   import("@/pages/not-found").catch(() => ({
     default: () => <div>صفحه یافت نشد</div>,
@@ -173,6 +178,12 @@ const routes: RouteType[] = [
     element: <Settings />,
     protected: true,
     title: TEXT.navigation.settings,
+  },
+  {
+    path: "/notifications",
+    element: <Notifications />,
+    protected: true,
+    title: TEXT.navigation.notifications,
   },
   {
     path: "*",

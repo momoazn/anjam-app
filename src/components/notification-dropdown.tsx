@@ -1,6 +1,7 @@
-import { IconCheck, IconTrash } from "@tabler/icons-react";
+import { IconCheck, IconTrash, IconEye } from "@tabler/icons-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
+import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,6 +124,7 @@ function NotificationItem({
 export function NotificationDropdown({
   align = "end",
 }: NotificationDropdownProps) {
+  const navigate = useNavigate();
   const notifications = useNotifications();
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
@@ -210,13 +212,24 @@ export function NotificationDropdown({
           </div>
         )}
 
-        {/* Footer with count */}
+        {/* Footer with count and view all */}
         {notifications.length > 0 && (
           <div className="bg-muted/20 border-t px-4 py-2">
-            <p className="text-muted-foreground text-center text-xs">
-              نمایش {digitsEnToFa(Math.min(10, notifications.length))} از{" "}
-              {digitsEnToFa(notifications.length)} اعلان
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-muted-foreground text-xs">
+                نمایش {digitsEnToFa(Math.min(10, notifications.length))} از{" "}
+                {digitsEnToFa(notifications.length)} اعلان
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/notifications")}
+                className="h-6 px-2 text-xs"
+              >
+                <IconEye className="ml-1 h-3 w-3" />
+                {TEXT.notifications.actions.viewAll}
+              </Button>
+            </div>
           </div>
         )}
       </DropdownMenuContent>
