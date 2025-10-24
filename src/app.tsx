@@ -11,6 +11,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useTheme } from "@/hooks/use-theme";
 import { useTabVisibility } from "@/hooks/use-tab-visibility";
 import { useRealtimeNotifications } from "@/hooks/use-realtime-notifications";
+import { useLoadNotifications } from "@/hooks/use-load-notifications";
 import { notificationSoundManager } from "@/lib/notification-sounds";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
@@ -57,6 +58,7 @@ function MainContent() {
 // Layout component
 function AppLayout() {
   const isLoggedIn = useAuthIsLoggedIn();
+  useLoadNotifications();
 
   return (
     <SidebarProvider>

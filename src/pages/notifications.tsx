@@ -36,6 +36,7 @@ import {
 import { TEXT } from "@/constants/text";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
+import { useAuthUser } from "@/store/auth-store";
 import {
   useClearAll,
   useClearRead,
@@ -45,6 +46,8 @@ import {
   useMarkAsRead,
   useMarkAsUnread,
   useNotifications,
+  useIsLoading,
+  useNotificationError,
 } from "@/store/notification-store";
 
 type FilterType = "all" | "unread" | "read";
@@ -247,6 +250,7 @@ function EmptyState() {
 }
 
 export default function Notifications() {
+  const user = useAuthUser();
   const notifications = useNotifications();
   const markAsRead = useMarkAsRead();
   const markAsUnread = useMarkAsUnread();
@@ -255,6 +259,17 @@ export default function Notifications() {
   const deleteNotification = useDeleteNotification();
   const clearAll = useClearAll();
   const clearRead = useClearRead();
+  const isLoading = useIsLoading();
+  const error = useNotificationError();
+
+  // Debug logging
+  console.log(
+    "Notifications page - notifications count:",
+    notifications.length,
+  );
+  console.log("Notifications page - notifications:", notifications);
+  console.log("Notifications page - isLoading:", isLoading);
+  console.log("Notifications page - error:", error);
 
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
@@ -274,25 +289,25 @@ export default function Notifications() {
         case "r":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            markAllAsRead();
+            if (user?.id) markAllAsRead(user.id);
           }
           break;
         case "u":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            markAllAsUnread();
+            if (user?.id) markAllAsUnread(user.id);
           }
           break;
         case "d":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            clearRead();
+            if (user?.id) clearRead(user.id);
           }
           break;
         case "a":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            clearAll();
+            if (user?.id) clearAll(user.id);
           }
           break;
         case "1":
@@ -409,7 +424,7 @@ export default function Notifications() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={markAllAsRead}
+                    onClick={() => user?.id && markAllAsRead(user.id)}
                     disabled={unreadCount === 0}
                     className="h-8 w-8 p-0"
                   >
@@ -428,7 +443,7 @@ export default function Notifications() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={markAllAsUnread}
+                    onClick={() => user?.id && markAllAsUnread(user.id)}
                     disabled={unreadCount === notifications.length}
                     className="h-8 w-8 p-0"
                   >
@@ -447,7 +462,7 @@ export default function Notifications() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={clearRead}
+                    onClick={() => user?.id && clearRead(user.id)}
                     disabled={notifications.filter((n) => n.read).length === 0}
                     className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
                   >
@@ -466,7 +481,7 @@ export default function Notifications() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={clearAll}
+                    onClick={() => user?.id && clearAll(user.id)}
                     disabled={notifications.length === 0}
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
                   >
@@ -586,10 +601,38 @@ export default function Notifications() {
         </DropdownMenu>
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <IconBell className="text-muted-foreground/50 h-8 w-8 animate-pulse" />
+          </div>
+          <h3 className="text-foreground mb-2 text-lg font-semibold">
+            Loading notifications...
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            Please wait while we fetch your notifications
+          </p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="bg-destructive/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <IconBell className="text-destructive h-8 w-8" />
+          </div>
+          <h3 className="text-foreground mb-2 text-lg font-semibold">
+            Failed to load notifications
+          </h3>
+          <p className="text-muted-foreground text-sm">{error}</p>
+        </div>
+      )}
+
       {/* Notifications List */}
-      {filteredNotifications.length === 0 ? (
+      {!isLoading && !error && filteredNotifications.length === 0 ? (
         <EmptyState />
-      ) : (
+      ) : !isLoading && !error ? (
         <ScrollArea className="h-[600px]">
           <div className="space-y-6">
             {Object.entries(groupedNotifications).map(
@@ -618,7 +661,7 @@ export default function Notifications() {
             )}
           </div>
         </ScrollArea>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
   useMarkAllAsRead,
   useClearAll,
 } from "@/store/notification-store";
+import { useAuthUser } from "@/store/auth-store";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 
@@ -125,6 +126,7 @@ export function NotificationDropdown({
   align = "end",
 }: NotificationDropdownProps) {
   const navigate = useNavigate();
+  const user = useAuthUser();
   const notifications = useNotifications();
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
@@ -156,7 +158,7 @@ export function NotificationDropdown({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={markAllAsRead}
+                onClick={() => user?.id && markAllAsRead(user.id)}
                 className="hover:bg-muted/80 h-7 px-2 text-xs"
                 title={TEXT.notifications.markAllAsRead}
                 aria-label={TEXT.notifications.markAllAsRead}
@@ -167,7 +169,7 @@ export function NotificationDropdown({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={clearAll}
+                onClick={() => user?.id && clearAll(user.id)}
                 className="hover:bg-destructive/10 hover:text-destructive h-7 px-2 text-xs"
                 title={TEXT.notifications.clearAll}
                 aria-label={TEXT.notifications.clearAll}
