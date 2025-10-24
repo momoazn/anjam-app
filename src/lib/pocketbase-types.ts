@@ -12,6 +12,7 @@ export enum Collections {
   Otps = "_otps",
   Superusers = "_superusers",
   Comments = "comments",
+  Notifications = "notifications",
   Projects = "projects",
   Tags = "tags",
   Tasks = "tasks",
@@ -24,15 +25,20 @@ export type IsoDateString = string;
 export type RecordIdString = string;
 export type HTMLString = string;
 
+type ExpandType<T> = unknown extends T
+  ? T extends unknown
+    ? { expand?: unknown }
+    : { expand: T }
+  : { expand: T };
+
 // System fields
-export type BaseSystemFields<T = never> = {
+export type BaseSystemFields<T = unknown> = {
   id: RecordIdString;
   collectionId: string;
   collectionName: Collections;
-  expand?: T;
-};
+} & ExpandType<T>;
 
-export type AuthSystemFields<T = never> = {
+export type AuthSystemFields<T = unknown> = {
   email: string;
   emailVisibility: boolean;
   username: string;
@@ -97,6 +103,31 @@ export type CommentsRecord = {
   task?: RecordIdString;
   updated?: IsoDateString;
   user?: RecordIdString;
+};
+
+export enum NotificationsTypeOptions {
+  "task_assigned" = "task_assigned",
+  "project_updated" = "project_updated",
+  "system" = "system",
+  "comment" = "comment",
+}
+
+export enum NotificationsPriorityOptions {
+  "low" = "low",
+  "medium" = "medium",
+  "high" = "high",
+}
+export type NotificationsRecord<Tdata = unknown> = {
+  created?: IsoDateString;
+  data?: null | Tdata;
+  id: string;
+  message: string;
+  priority: NotificationsPriorityOptions;
+  read?: boolean;
+  title: string;
+  type: NotificationsTypeOptions;
+  updated?: IsoDateString;
+  user: RecordIdString;
 };
 
 export type ProjectsRecord = {
@@ -188,6 +219,10 @@ export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> &
   AuthSystemFields<Texpand>;
 export type CommentsResponse<Texpand = unknown> = Required<CommentsRecord> &
   BaseSystemFields<Texpand>;
+export type NotificationsResponse<
+  Tdata = unknown,
+  Texpand = unknown,
+> = Required<NotificationsRecord<Tdata>> & BaseSystemFields<Texpand>;
 export type ProjectsResponse<Texpand = unknown> = Required<ProjectsRecord> &
   BaseSystemFields<Texpand>;
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> &
@@ -208,6 +243,7 @@ export type CollectionRecords = {
   _otps: OtpsRecord;
   _superusers: SuperusersRecord;
   comments: CommentsRecord;
+  notifications: NotificationsRecord;
   projects: ProjectsRecord;
   tags: TagsRecord;
   tasks: TasksRecord;
@@ -222,6 +258,7 @@ export type CollectionResponses = {
   _otps: OtpsResponse;
   _superusers: SuperusersResponse;
   comments: CommentsResponse;
+  notifications: NotificationsResponse;
   projects: ProjectsResponse;
   tags: TagsResponse;
   tasks: TasksResponse;
@@ -239,6 +276,7 @@ export type TypedPocketBase = PocketBase & {
   collection(idOrName: "_otps"): RecordService<OtpsResponse>;
   collection(idOrName: "_superusers"): RecordService<SuperusersResponse>;
   collection(idOrName: "comments"): RecordService<CommentsResponse>;
+  collection(idOrName: "notifications"): RecordService<NotificationsResponse>;
   collection(idOrName: "projects"): RecordService<ProjectsResponse>;
   collection(idOrName: "tags"): RecordService<TagsResponse>;
   collection(idOrName: "tasks"): RecordService<TasksResponse>;
