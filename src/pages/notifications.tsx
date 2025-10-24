@@ -5,11 +5,7 @@ import {
   IconCheck,
   IconEye,
   IconEyeOff,
-  IconFolder,
-  IconMessage,
-  IconSettings,
   IconSortAscending,
-  IconSubtask,
   IconTrash,
   IconTrashX,
 } from "@tabler/icons-react";
@@ -52,21 +48,6 @@ import {
 
 type FilterType = "all" | "unread" | "read";
 type SortType = "newest" | "oldest" | "priority";
-
-const getNotificationIcon = (type: NotificationsRecord["type"]) => {
-  switch (type) {
-    case "task_assigned":
-      return <IconSubtask className="h-4 w-4" />;
-    case "project_updated":
-      return <IconFolder className="h-4 w-4" />;
-    case "system":
-      return <IconSettings className="h-4 w-4" />;
-    case "comment":
-      return <IconMessage className="h-4 w-4" />;
-    default:
-      return <IconBell className="h-4 w-4" />;
-  }
-};
 
 const getPriorityColor = (priority: NotificationsRecord["priority"]) => {
   switch (priority) {
@@ -140,92 +121,73 @@ function NotificationItem({
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
       )}
     >
-      {/* Notification Icon */}
-      <div className="flex-shrink-0">
-        <div
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-full",
-            !notification.read
-              ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-              : "bg-muted text-muted-foreground",
-          )}
+      {/* Actions - Left side */}
+      <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleToggleRead}
+          className="h-7 w-7 p-0"
+          title={
+            notification.read
+              ? TEXT.notifications.actions.markAsUnread
+              : TEXT.notifications.actions.markAsRead
+          }
         >
-          {getNotificationIcon(notification.type)}
-        </div>
+          {notification.read ? (
+            <IconEyeOff className="h-3 w-3" />
+          ) : (
+            <IconEye className="h-3 w-3" />
+          )}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onDelete(notification.id)}
+          className="text-destructive hover:text-destructive h-7 w-7 p-0"
+          title={TEXT.notifications.actions.delete}
+        >
+          <IconTrash className="h-3 w-3" />
+        </Button>
       </div>
 
       {/* Notification Content */}
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <div className="mb-1 flex items-center gap-2">
-              <h4
-                className={cn(
-                  "truncate text-sm font-medium",
-                  !notification.read
-                    ? "text-foreground"
-                    : "text-muted-foreground",
-                )}
-              >
-                {notification.title}
-              </h4>
-              {!notification.read && (
-                <div className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
+        <div className="text-right">
+          <div className="mb-1 flex items-center justify-end gap-2">
+            {!notification.read && (
+              <div className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
+            )}
+            <h4
+              className={cn(
+                "truncate text-sm font-medium",
+                !notification.read
+                  ? "text-foreground"
+                  : "text-muted-foreground",
               )}
-            </div>
-            <p className="text-muted-foreground mb-2 line-clamp-2 text-xs">
-              {notification.message}
-            </p>
-            <div className="flex items-center gap-2">
-              <time
-                dateTime={notification.created || ""}
-                className="text-muted-foreground text-xs"
-              >
-                {formatNotificationTime(notification.created)}
-              </time>
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "text-xs",
-                  getPriorityColor(notification.priority),
-                )}
-              >
-                {TEXT.notifications.priority[notification.priority]}
-              </Badge>
-              <Badge variant="outline" className="text-xs">
-                {TEXT.notifications.types[notification.type]}
-              </Badge>
-            </div>
+            >
+              {notification.title}
+            </h4>
           </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleToggleRead}
-              className="h-7 w-7 p-0"
-              title={
-                notification.read
-                  ? TEXT.notifications.actions.markAsUnread
-                  : TEXT.notifications.actions.markAsRead
-              }
+          <p className="text-muted-foreground mb-2 line-clamp-2 text-right text-xs">
+            {notification.message}
+          </p>
+          <div className="flex items-center justify-end gap-2">
+            <Badge variant="outline" className="text-xs">
+              {TEXT.notifications.types[notification.type]}
+            </Badge>
+            <Badge
+              variant="secondary"
+              className={cn("text-xs", getPriorityColor(notification.priority))}
             >
-              {notification.read ? (
-                <IconEyeOff className="h-3 w-3" />
-              ) : (
-                <IconEye className="h-3 w-3" />
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete(notification.id)}
-              className="text-destructive hover:text-destructive h-7 w-7 p-0"
-              title={TEXT.notifications.actions.delete}
+              {TEXT.notifications.priority[notification.priority]}
+            </Badge>
+            <time
+              dateTime={notification.created || ""}
+              className="text-muted-foreground text-xs"
             >
-              <IconTrash className="h-3 w-3" />
-            </Button>
+              {formatNotificationTime(notification.created)}
+            </time>
           </div>
         </div>
       </div>
@@ -333,7 +295,7 @@ export default function Notifications() {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [markAllAsRead, markAllAsUnread, clearRead, clearAll]);
+  }, [markAllAsRead, markAllAsUnread, clearRead, clearAll, user?.id]);
 
   // Filter notifications
   const filteredNotifications = useMemo(() => {
@@ -407,8 +369,8 @@ export default function Notifications() {
     <div className="container mx-auto p-4 md:p-6">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
+        <div className="text-right">
+          <h1 className="text-foreground flex items-center justify-end gap-2 text-xl font-bold md:text-2xl">
             <IconBell className="h-5 w-5 md:h-6 md:w-6" />
             {TEXT.notifications.pageTitle}
           </h1>
@@ -503,7 +465,7 @@ export default function Notifications() {
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <IconBell className="text-primary h-5 w-5" />
-              <div>
+              <div className="text-right">
                 <p className="text-muted-foreground text-sm">
                   {TEXT.notifications.stats.total}
                 </p>
@@ -518,7 +480,7 @@ export default function Notifications() {
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <IconBellOff className="h-5 w-5 text-blue-500" />
-              <div>
+              <div className="text-right">
                 <p className="text-muted-foreground text-sm">
                   {TEXT.notifications.stats.unread}
                 </p>
@@ -533,7 +495,7 @@ export default function Notifications() {
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <IconCheck className="h-5 w-5 text-green-500" />
-              <div>
+              <div className="text-right">
                 <p className="text-muted-foreground text-sm">
                   {TEXT.notifications.stats.read}
                 </p>
@@ -548,7 +510,7 @@ export default function Notifications() {
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <IconTrash className="h-5 w-5 text-orange-500" />
-              <div>
+              <div className="text-right">
                 <p className="text-muted-foreground text-sm">
                   {TEXT.notifications.stats.deletable}
                 </p>
@@ -641,7 +603,7 @@ export default function Notifications() {
 
                 return (
                   <div key={group}>
-                    <h3 className="text-foreground mb-3 text-sm font-semibold">
+                    <h3 className="text-foreground mb-3 text-right text-sm font-semibold">
                       {getGroupTitle(group)}
                     </h3>
                     <div className="space-y-2">
