@@ -16,47 +16,5 @@
     "code": "WMS",
     "supervisor": "supervisor.mahmoud",
     "created": "2025-02-01T08:15:00.000Z"
-  },
-  {
-    "name": "اپلیکیشن موبایل بانکداری",
-    "code": "MBA",
-    "supervisor": "supervisor.maryam",
-    "created": "2025-02-10T14:20:00.000Z"
-  },
-  {
-    "name": "سیستم مدیریت منابع انسانی",
-    "code": "HRS",
-    "supervisor": "supervisor.reza",
-    "created": "2025-02-15T11:45:00.000Z"
-  },
-  {
-    "name": "پلتفرم آموزش آنلاین",
-    "code": "LMS",
-    "supervisor": "supervisor.hassan",
-    "created": "2025-02-20T16:00:00.000Z"
-  },
-  {
-    "name": "سیستم مدیریت پروژه",
-    "code": "PMS",
-    "supervisor": "supervisor.zahra",
-    "created": "2025-03-01T09:30:00.000Z"
-  },
-  {
-    "name": "اپلیکیشن تحویل غذا",
-    "code": "FDS",
-    "supervisor": "supervisor.mahmoud",
-    "created": "2025-03-05T13:15:00.000Z"
-  },
-  {
-    "name": "سیستم مدیریت بیمارستان",
-    "code": "HMS",
-    "supervisor": "supervisor.maryam",
-    "created": "2025-03-10T07:45:00.000Z"
-  },
-  {
-    "name": "پلتفرم رزرو هتل",
-    "code": "HRS",
-    "supervisor": "supervisor.reza",
-    "created": "2025-03-15T12:00:00.000Z"
   }
 ]

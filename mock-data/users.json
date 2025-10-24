@@ -1,24 +1,8 @@
 [
   {
-    "username": "admin.ahmad",
+    "username": "admin",
     "first_name": "احمد",
     "last_name": "محمدی",
-    "password": "admin123",
-    "passwordConfirm": "admin123",
-    "role": "admin"
-  },
-  {
-    "username": "admin.fatemeh",
-    "first_name": "فاطمه",
-    "last_name": "احمدی",
-    "password": "admin123",
-    "passwordConfirm": "admin123",
-    "role": "admin"
-  },
-  {
-    "username": "admin.ali",
-    "first_name": "علی",
-    "last_name": "رضایی",
     "password": "admin123",
     "passwordConfirm": "admin123",
     "role": "admin"
@@ -43,22 +27,6 @@
     "username": "supervisor.mahmoud",
     "first_name": "محمود",
     "last_name": "نوری",
-    "password": "super123",
-    "passwordConfirm": "super123",
-    "role": "supervisor"
-  },
-  {
-    "username": "supervisor.maryam",
-    "first_name": "مریم",
-    "last_name": "صادقی",
-    "password": "super123",
-    "passwordConfirm": "super123",
-    "role": "supervisor"
-  },
-  {
-    "username": "supervisor.reza",
-    "first_name": "رضا",
-    "last_name": "موسوی",
     "password": "super123",
     "passwordConfirm": "super123",
     "role": "supervisor"
@@ -99,46 +67,6 @@
     "username": "dev.hooman",
     "first_name": "هومن",
     "last_name": "رضایی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
-  },
-  {
-    "username": "dev.leila",
-    "first_name": "لیلا",
-    "last_name": "محمدی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
-  },
-  {
-    "username": "dev.arshia",
-    "first_name": "آرشیا",
-    "last_name": "نوری",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
-  },
-  {
-    "username": "dev.parisa",
-    "first_name": "پریسا",
-    "last_name": "صادقی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
-  },
-  {
-    "username": "dev.kamran",
-    "first_name": "کامران",
-    "last_name": "موسوی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
-  },
-  {
-    "username": "dev.azadeh",
-    "first_name": "آزاده",
-    "last_name": "علیزاده",
     "password": "user1234",
     "passwordConfirm": "user1234",
     "role": "employee"
