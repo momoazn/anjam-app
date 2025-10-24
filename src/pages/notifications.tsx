@@ -224,15 +224,6 @@ export default function Notifications() {
   const isLoading = useIsLoading();
   const error = useNotificationError();
 
-  // Debug logging
-  console.log(
-    "Notifications page - notifications count:",
-    notifications.length,
-  );
-  console.log("Notifications page - notifications:", notifications);
-  console.log("Notifications page - isLoading:", isLoading);
-  console.log("Notifications page - error:", error);
-
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
 

@@ -274,8 +274,6 @@ export const useNotificationStore = create<NotificationState>()(
         try {
           const subscriptionId =
             await notificationService.subscribeToNotifications(userId, (e) => {
-              console.log("Real-time notification event:", e);
-
               if (e.action === "create") {
                 // Add new notification to store
                 get().addNotification(e.record);
@@ -305,7 +303,6 @@ export const useNotificationStore = create<NotificationState>()(
             });
 
           set({ subscriptionId });
-          console.log("Subscribed to real-time notifications");
         } catch (error) {
           console.error(
             "Failed to subscribe to real-time notifications:",
@@ -319,7 +316,6 @@ export const useNotificationStore = create<NotificationState>()(
         if (subscriptionId) {
           notificationService.unsubscribeFromNotifications(subscriptionId);
           set({ subscriptionId: null });
-          console.log("Unsubscribed from real-time notifications");
         }
       },
     }),

@@ -35,7 +35,7 @@ export class NotificationService {
     filters: NotificationFilters = {},
   ): Promise<NotificationsRecord[]> {
     try {
-      const queryParams: Record<string, any> = {
+      const queryParams: Record<string, string | number> = {
         page: 1,
         perPage: filters.limit || 100,
         sort: filters.sort || "-created",
@@ -63,8 +63,8 @@ export class NotificationService {
       const result = await pb
         .collection("notifications")
         .getList<NotificationsRecord>(
-          queryParams.page,
-          queryParams.perPage,
+          queryParams.page as number,
+          queryParams.perPage as number,
           queryParams,
         );
 
@@ -233,7 +233,7 @@ export class NotificationService {
     const subscriptionId = `notifications-${userId}-${Date.now()}`;
 
     try {
-      const subscriptionOptions: any = {
+      const subscriptionOptions: Record<string, string> = {
         filter: `user = "${userId}"`,
         ...options,
       };
@@ -243,7 +243,6 @@ export class NotificationService {
         .subscribe("*", onNotification, subscriptionOptions);
 
       this.subscriptions.set(subscriptionId, unsubscribe);
-      console.log(`Subscribed to notifications for user ${userId}`);
 
       return subscriptionId;
     } catch (error) {
@@ -260,7 +259,6 @@ export class NotificationService {
     if (unsubscribe) {
       unsubscribe();
       this.subscriptions.delete(subscriptionId);
-      console.log(`Unsubscribed from notifications: ${subscriptionId}`);
     }
   }
 
@@ -268,9 +266,8 @@ export class NotificationService {
    * Unsubscribe from all notifications
    */
   unsubscribeFromAll(): void {
-    this.subscriptions.forEach((unsubscribe, subscriptionId) => {
+    this.subscriptions.forEach((unsubscribe) => {
       unsubscribe();
-      console.log(`Unsubscribed from notifications: ${subscriptionId}`);
     });
     this.subscriptions.clear();
   }
