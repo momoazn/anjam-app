@@ -86,12 +86,18 @@ func main() {
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
+	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
+	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
+	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
+	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
+	app.OnRecordAfterCreateSuccess("users_projects").BindFunc(handleUsersProjectsCreatedNotify)
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Router.GET("/api/tm/is-initial", handleCheckInitialAdmin)
 		se.Router.POST("/api/tm/create-initial-admin", handleCreateInitialAdmin)
 		se.Router.GET("/api/tm/projects/{id}/users", handleGetProjectUsers)
+
 		return se.Next()
 	})
 
@@ -183,6 +189,28 @@ func startApp(app *pocketbase.PocketBase) {
 			log.Fatalf("Failed to execute serve command: %v", err)
 		}
 	}
+}
+
+func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
+	userId := e.Record.GetString("user")
+	projectId := e.Record.GetString("project")
+	if userId == "" || projectId == "" {
+		return e.Next()
+	}
+
+	projectName := "project"
+	if project, err := e.App.FindRecordById("projects", projectId); err == nil {
+		if n := project.GetString("name"); n != "" {
+			projectName = n
+		}
+	}
+
+	return createNotification(e.App, userId, "system", "medium",
+		fmt.Sprintf("You were added to project: %s", projectName),
+		fmt.Sprintf("You have been added to the project '%s'", projectName),
+		map[string]interface{}{
+			"projectId": projectId,
+		})
 }
 
 // --- Serve Event Handlers ---
@@ -588,4 +616,176 @@ func handleGetProjectUsers(e *core.RequestEvent) error {
 		return e.JSON(400, err.Error())
 	}
 	return e.JSON(200, users)
+}
+
+// --- Notification Handlers ---
+
+func handleTaskAssignmentNotification(e *core.RecordEvent) error {
+	assigneeId := e.Record.GetString("assignee")
+	if assigneeId == "" {
+		return e.Next() // No assignee, skip notification
+	}
+
+	// Don't notify if the assignee is the same as the creator/updater
+	if e.Record.GetString("created_by") == assigneeId {
+		return e.Next()
+	}
+
+	taskTitle := e.Record.GetString("title")
+	projectId := e.Record.GetString("project")
+
+	project, err := e.App.FindRecordById("projects", projectId)
+	if err != nil {
+		log.Printf("Error fetching project for notification: %v", err)
+		return e.Next()
+	}
+
+	projectName := project.GetString("name")
+
+	return createNotification(e.App, assigneeId, "task_assigned", "high",
+		fmt.Sprintf("Task Assigned: %s", taskTitle),
+		fmt.Sprintf("You have been assigned to task '%s' in project '%s'", taskTitle, projectName),
+		map[string]interface{}{
+			"taskId":    e.Record.Id,
+			"projectId": projectId,
+		})
+}
+
+func handleTaskUpdateNotification(e *core.RecordEvent) error {
+	// Only notify on status changes or important updates
+	oldStatus := e.Record.Original().GetString("status")
+	newStatus := e.Record.GetString("status")
+
+	if oldStatus == newStatus {
+		return e.Next() // No status change
+	}
+
+	assigneeId := e.Record.GetString("assignee")
+	if assigneeId == "" {
+		return e.Next()
+	}
+
+	taskTitle := e.Record.GetString("title")
+
+	return createNotification(e.App, assigneeId, "task_assigned", "medium",
+		fmt.Sprintf("Task Updated: %s", taskTitle),
+		fmt.Sprintf("Task '%s' status changed from %s to %s", taskTitle, oldStatus, newStatus),
+		map[string]interface{}{
+			"taskId": e.Record.Id,
+		})
+}
+
+func handleProjectUpdateNotification(e *core.RecordEvent) error {
+	projectName := e.Record.GetString("name")
+
+	// Get all users in this project
+	var projectUsers []struct {
+		UserId string `db:"user"`
+	}
+	err := e.App.DB().NewQuery(`
+		SELECT user FROM users_projects WHERE project = {:projectId}
+	`).Bind(dbx.Params{"projectId": e.Record.Id}).All(&projectUsers)
+
+	if err != nil {
+		log.Printf("Error fetching project users for notification: %v", err)
+		return e.Next()
+	}
+
+	// Create notifications for all project members
+	for _, pu := range projectUsers {
+		if pu.UserId == e.Record.GetString("updated_by") {
+			continue // Don't notify the updater
+		}
+
+		err := createNotification(e.App, pu.UserId, "project_updated", "medium",
+			fmt.Sprintf("Project Updated: %s", projectName),
+			fmt.Sprintf("Project '%s' has been updated", projectName),
+			map[string]interface{}{
+				"projectId": e.Record.Id,
+			})
+		if err != nil {
+			log.Printf("Error creating project update notification: %v", err)
+		}
+	}
+
+	return e.Next()
+}
+
+func handleCommentNotification(e *core.RecordEvent) error {
+	commentText := e.Record.GetString("content")
+	if commentText == "" {
+		return e.Next()
+	}
+
+	taskId := e.Record.GetString("task")
+	if taskId == "" {
+		return e.Next()
+	}
+
+	// Get task details
+	task, err := e.App.FindRecordById("tasks", taskId)
+	if err != nil {
+		log.Printf("Error fetching task for comment notification: %v", err)
+		return e.Next()
+	}
+
+	taskTitle := task.GetString("title")
+	assigneeId := task.GetString("assignee")
+
+	if assigneeId == "" || assigneeId == e.Record.GetString("created_by") {
+		return e.Next() // No assignee or self-comment
+	}
+
+	return createNotification(e.App, assigneeId, "comment", "low",
+		fmt.Sprintf("New Comment on: %s", taskTitle),
+		fmt.Sprintf("New comment on task '%s': %s", taskTitle, truncateString(commentText, 100)),
+		map[string]interface{}{
+			"taskId":    taskId,
+			"commentId": e.Record.Id,
+		})
+}
+
+func createNotification(app core.App, userId, notificationType, priority, title, message string, data map[string]interface{}) error {
+	// Validate that the user exists before creating notification
+	if userId == "" {
+		log.Printf("Warning: Attempted to create notification with empty user ID")
+		return nil
+	}
+
+	// Check if user exists
+	_, err := app.FindRecordById("users", userId)
+	if err != nil {
+		log.Printf("Warning: User %s not found, skipping notification creation: %v", userId, err)
+		return nil // Don't fail the parent operation
+	}
+
+	notificationsCollection, err := app.FindCollectionByNameOrId("notifications")
+	if err != nil {
+		log.Printf("Error finding notifications collection: %v", err)
+		return nil // Don't fail the parent operation
+	}
+
+	record := core.NewRecord(notificationsCollection)
+	record.Set("user", userId)
+	record.Set("type", notificationType)
+	record.Set("priority", priority)
+	record.Set("title", title)
+	record.Set("message", message)
+	if data != nil {
+		record.Set("data", data)
+	}
+
+	if err := app.Save(record); err != nil {
+		log.Printf("Error creating notification for user %s: %v", userId, err)
+		return nil // Don't fail the parent operation
+	}
+
+	return nil
+}
+
+func truncateString(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen-3] + "..."
 }

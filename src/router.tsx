@@ -55,6 +55,11 @@ const Helps = React.lazy(() =>
     default: () => <div>{TEXT.errors.pageLoad.helps}</div>,
   })),
 );
+const Settings = React.lazy(() =>
+  import("@/pages/settings").catch(() => ({
+    default: () => <div>{TEXT.errors.pageLoad.settings}</div>,
+  })),
+);
 const NotFound = React.lazy(() =>
   import("@/pages/not-found").catch(() => ({
     default: () => <div>صفحه یافت نشد</div>,
@@ -162,6 +167,12 @@ const routes: RouteType[] = [
     element: <Helps />,
     protected: true,
     title: TEXT.navigation.helps,
+  },
+  {
+    path: "/settings",
+    element: <Settings />,
+    protected: true,
+    title: TEXT.navigation.settings,
   },
   {
     path: "*",

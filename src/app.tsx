@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Toaster } from "sonner";
 
@@ -9,6 +9,9 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useTheme } from "@/hooks/use-theme";
+import { useTabVisibility } from "@/hooks/use-tab-visibility";
+import { useRealtimeNotifications } from "@/hooks/use-realtime-notifications";
+import { notificationSoundManager } from "@/lib/notification-sounds";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 import { TEXT } from "./constants/text";
@@ -70,6 +73,13 @@ function AppLayout() {
 
 function App() {
   useTheme();
+  useTabVisibility();
+  useRealtimeNotifications();
+
+  // Initialize notification sound manager
+  useEffect(() => {
+    notificationSoundManager.initialize();
+  }, []);
 
   return (
     <ErrorBoundary>
