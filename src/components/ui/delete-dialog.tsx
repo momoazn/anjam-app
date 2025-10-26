@@ -1,5 +1,3 @@
-import { useEntityDeleteMutation } from "@/hooks/use-entity-mutation";
-import { Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,6 +8,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { TEXT } from "@/constants/text";
+import { useEntityDeleteMutation } from "@/hooks/use-entity-mutation";
+import { Loader2 } from "lucide-react";
 
 interface DeleteDialogProps {
   open: boolean;
@@ -54,22 +55,30 @@ export function DeleteDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="text-right">
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogTitle className="text-right text-lg font-bold">
+            {title}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-muted-foreground text-right">
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
+          <AlertDialogCancel className="order-2">
+            {TEXT.common.cancel}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isPending}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
           >
             {isPending ? (
-              <Loader2 className="mr-2 size-4 animate-spin" />
+              <Loader2 className="ml-2 size-4 animate-spin" />
             ) : null}
-            Delete {entityName}
+            {entityName === "project"
+              ? TEXT.projects.delete.submit
+              : `Delete ${entityName}`}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
