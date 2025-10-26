@@ -13,10 +13,10 @@ import {
 import { TasksPriorityOptions, TasksStatusOptions } from "./pocketbase-types";
 
 export const priorityColors: Record<TasksPriorityOptions, string> = {
-  low: "text-green-500",
-  medium: "text-yellow-500",
-  high: "text-orange-500",
-  urgent: "text-red-500",
+  low: "text-green-500 dark:text-green-400",
+  medium: "text-yellow-500 dark:text-yellow-400",
+  high: "text-orange-500 dark:text-orange-400",
+  urgent: "text-red-500 dark:text-red-400",
 };
 
 export const priorityIcons: Record<TasksPriorityOptions, Icon> = {
@@ -34,17 +34,17 @@ export const statusLabels: Record<TasksStatusOptions, string> = {
 };
 
 export const taskStatusBgColors: Record<TasksStatusOptions, string> = {
-  todo: "bg-slate-50",
-  in_progress: "bg-yellow-50",
-  done: "bg-purple-50",
-  canceled: "bg-gray-100",
+  todo: "bg-slate-50 dark:bg-slate-800/50",
+  in_progress: "bg-yellow-50 dark:bg-yellow-900/30",
+  done: "bg-purple-50 dark:bg-purple-900/30",
+  canceled: "bg-gray-100 dark:bg-gray-800/50",
 };
 
 export const taskStatusColors: Record<TasksStatusOptions, string> = {
-  todo: "text-gray-400",
-  in_progress: "text-yellow-500",
-  done: "text-purple-600",
-  canceled: "text-gray-500",
+  todo: "text-gray-400 dark:text-gray-500",
+  in_progress: "text-yellow-500 dark:text-yellow-400",
+  done: "text-purple-600 dark:text-purple-400",
+  canceled: "text-gray-500 dark:text-gray-400",
 };
 
 export const taskStatusIcons: Record<TasksStatusOptions, Icon> = {

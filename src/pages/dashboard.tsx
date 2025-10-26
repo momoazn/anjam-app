@@ -154,31 +154,41 @@ export default function Dashboard() {
         <StatCard
           title="کل تسک‌ها"
           value={stats?.total ?? 0}
-          icon={<ListTodo className="text-primary h-6 w-6" />}
+          icon={
+            <ListTodo className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          }
           color="bg-blue-50 dark:bg-blue-400/15"
         />
         <StatCard
           title="تکمیل شده"
           value={stats?.completed ?? 0}
-          icon={<CheckCircle className="text-accent h-6 w-6" />}
+          icon={
+            <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+          }
           color="bg-green-50 dark:bg-emerald-400/15"
         />
         <StatCard
           title="در حال انجام"
           value={stats?.inProgress ?? 0}
-          icon={<Clock className="h-6 w-6 text-orange-500" />}
+          icon={
+            <Clock className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+          }
           color="bg-orange-50 dark:bg-amber-400/15"
         />
         <StatCard
           title="در انتظار"
           value={stats?.pending ?? 0}
-          icon={<BarChart3 className="text-secondary h-6 w-6" />}
+          icon={
+            <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+          }
           color="bg-purple-50 dark:bg-purple-400/15"
         />
         <StatCard
           title="گذشته‌موعد"
           value={stats?.overdue ?? 0}
-          icon={<AlertTriangle className="text-destructive h-6 w-6" />}
+          icon={
+            <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
+          }
           color="bg-red-50 dark:bg-red-400/15"
         />
       </div>
