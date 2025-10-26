@@ -1,17 +1,16 @@
 import { toast } from "sonner";
 import { create } from "zustand";
 
-import { notificationSoundManager } from "@/lib/notification-sounds";
 import { notificationService } from "@/lib/notification-service";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 
 interface NotificationState {
   notifications: NotificationsRecord[];
   unreadCount: number;
-  soundEnabled: boolean;
   isLoading: boolean;
   error: string | null;
   subscriptionId: string | null;
+  isSubscribed: boolean;
   // Actions
   loadNotifications: (userId: string) => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
@@ -19,7 +18,6 @@ interface NotificationState {
   deleteNotification: (id: string) => Promise<void>;
   clearAll: (userId: string) => Promise<void>;
   clearRead: (userId: string) => Promise<void>;
-  setSoundEnabled: (enabled: boolean) => void;
   setNotifications: (notifications: NotificationsRecord[]) => void;
   subscribeToRealtime: (userId: string) => Promise<void>;
   unsubscribeFromRealtime: () => void;
@@ -28,10 +26,10 @@ interface NotificationState {
 export const useNotificationStore = create<NotificationState>()((set, get) => ({
   notifications: [],
   unreadCount: 0,
-  soundEnabled: false,
   isLoading: false,
   error: null,
   subscriptionId: null,
+  isSubscribed: false,
 
   loadNotifications: async (userId) => {
     set({ isLoading: true, error: null });
@@ -117,11 +115,6 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
     }
   },
 
-  setSoundEnabled: (enabled) => {
-    set({ soundEnabled: enabled });
-    notificationSoundManager.setEnabled(enabled);
-  },
-
   setNotifications: (notifications) => {
     const unreadCount = notifications.filter((n) => !n.read).length;
     set({ notifications, unreadCount });
@@ -129,6 +122,18 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
 
   subscribeToRealtime: async (userId) => {
     try {
+      // Prevent multiple subscriptions
+      const { isSubscribed } = get();
+      if (isSubscribed) {
+        return;
+      }
+
+      // Unsubscribe from any existing subscription first
+      const { subscriptionId: existingId } = get();
+      if (existingId) {
+        notificationService.unsubscribeFromNotifications(existingId);
+      }
+
       const subscriptionId = await notificationService.subscribeToNotifications(
         userId,
         (e) => {
@@ -138,12 +143,6 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
               description: e.record.message,
               duration: 5000,
             });
-
-            // Play sound if enabled
-            const { soundEnabled } = get();
-            if (soundEnabled) {
-              notificationSoundManager.playSound();
-            }
 
             // Add to notifications
             set((state) => {
@@ -178,7 +177,7 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
         },
       );
 
-      set({ subscriptionId });
+      set({ subscriptionId, isSubscribed: true });
     } catch (error) {
       console.error("Failed to subscribe to real-time notifications:", error);
     }
@@ -188,7 +187,7 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
     const { subscriptionId } = get();
     if (subscriptionId) {
       notificationService.unsubscribeFromNotifications(subscriptionId);
-      set({ subscriptionId: null });
+      set({ subscriptionId: null, isSubscribed: false });
     }
   },
 }));
@@ -199,9 +198,6 @@ export const useNotifications = () =>
 
 export const useUnreadCount = () =>
   useNotificationStore((state) => state.unreadCount);
-
-export const useSoundEnabled = () =>
-  useNotificationStore((state) => state.soundEnabled);
 
 // Individual action selectors to prevent object recreation
 export const useMarkAsRead = () =>
@@ -218,9 +214,6 @@ export const useClearAll = () =>
 
 export const useClearRead = () =>
   useNotificationStore((state) => state.clearRead);
-
-export const useSetSoundEnabled = () =>
-  useNotificationStore((state) => state.setSoundEnabled);
 
 export const useSetNotifications = () =>
   useNotificationStore((state) => state.setNotifications);
@@ -247,6 +240,5 @@ export const useNotificationActions = () => {
     markAsRead: store.markAsRead,
     markAllAsRead: store.markAllAsRead,
     clearAll: store.clearAll,
-    setSoundEnabled: store.setSoundEnabled,
   };
 };

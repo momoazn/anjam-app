@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NotificationSettings } from "@/components/notification-settings";
 import { TEXT } from "@/constants/text";
 
 export function Settings() {
@@ -23,26 +22,11 @@ export function Settings() {
         </div>
       </div>
 
-      <Tabs defaultValue="notifications" className="flex-1">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+      <Tabs defaultValue="account" className="flex-1">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="notifications" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Settings</CardTitle>
-              <CardDescription>
-                Configure how you receive notifications about tasks and projects
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <NotificationSettings />
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="account" className="space-y-4">
           <Card>

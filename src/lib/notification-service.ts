@@ -188,7 +188,7 @@ export class NotificationService {
 
     try {
       const subscriptionOptions: Record<string, string> = {
-        filter: `user = "${userId}"`,
+        filter: `user.id = "${userId}"`,
         ...options,
       };
 
