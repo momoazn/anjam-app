@@ -52,56 +52,55 @@ function NotificationItem({
   return (
     <div
       className={cn(
-        "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-start justify-between rounded-md px-3 py-2.5 transition-colors duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2",
+        "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-start gap-3 rounded-md px-3 py-2.5 transition-colors duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2",
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
       )}
       role="listitem"
       aria-label={`اعلان: ${notification.title}`}
+      dir="rtl"
     >
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start gap-2">
-          {/* Notification indicator */}
-          <div
-            className={cn(
-              "mt-1 size-2 flex-shrink-0 rounded-full",
-              !notification.read ? "bg-blue-500" : "bg-muted",
-            )}
-          />
+      {/* Notification indicator */}
+      <div
+        className={cn(
+          "mt-1.5 size-2 flex-shrink-0 rounded-full",
+          !notification.read ? "bg-blue-500" : "bg-muted",
+        )}
+      />
 
-          <div className="min-w-0 flex-1">
-            <h4
-              className={cn(
-                "truncate text-sm font-medium",
-                !notification.read
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
-              id={`notification-title-${notification.id}`}
+      <div className="min-w-0 flex-1">
+        <h4
+          className={cn(
+            "text-right text-sm leading-relaxed font-medium",
+            !notification.read ? "text-foreground" : "text-muted-foreground",
+          )}
+          id={`notification-title-${notification.id}`}
+          dir="auto"
+        >
+          {notification.title}
+        </h4>
+        <p
+          className="text-muted-foreground mt-1 line-clamp-2 text-right text-xs leading-relaxed"
+          aria-describedby={`notification-title-${notification.id}`}
+          dir="auto"
+        >
+          {notification.message}
+        </p>
+        <div className="mt-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <time
+              dateTime={notification.created || ""}
+              className="text-muted-foreground text-xs"
             >
-              {notification.title}
-            </h4>
-            <p
-              className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed"
-              aria-describedby={`notification-title-${notification.id}`}
-            >
-              {notification.message}
-            </p>
-            <div className="mt-2 flex items-center gap-2">
-              <time
-                dateTime={notification.created || ""}
-                className="text-muted-foreground text-xs"
+              {formatNotificationTime(notification.created)}
+            </time>
+            {!notification.read && (
+              <Badge
+                variant="secondary"
+                className="rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
               >
-                {formatNotificationTime(notification.created)}
-              </time>
-              {!notification.read && (
-                <Badge
-                  variant="secondary"
-                  className="rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                >
-                  جدید
-                </Badge>
-              )}
-            </div>
+                جدید
+              </Badge>
+            )}
           </div>
         </div>
       </div>
@@ -142,19 +141,22 @@ export function NotificationDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={align}
-        className="w-96 p-0"
+        className="mt-1 ml-4 w-[28rem] max-w-[90vw] p-0"
         aria-label="پنل اعلان‌ها"
       >
         {/* Header */}
-        <div className="bg-muted/30 flex items-center justify-between border-b px-4 py-3">
+        <div
+          className="bg-muted/30 flex items-center justify-between border-b px-4 py-3"
+          dir="rtl"
+        >
           <h3
-            className="text-foreground font-semibold"
+            className="text-foreground flex-1 truncate text-right font-semibold"
             id="notifications-heading"
           >
             {TEXT.notifications.title}
           </h3>
           {notifications.length > 0 && (
-            <div className="flex gap-1">
+            <div className="mr-3 flex flex-shrink-0 gap-1">
               <Button
                 variant="ghost"
                 size="sm"
@@ -187,6 +189,7 @@ export function NotificationDropdown({
             className="text-muted-foreground flex flex-col items-center justify-center p-8 text-center"
             role="status"
             aria-live="polite"
+            dir="rtl"
           >
             <div className="bg-muted/50 mb-3 flex size-12 items-center justify-center rounded-full">
               <IconCheck className="text-muted-foreground/50 size-5" />
@@ -204,6 +207,7 @@ export function NotificationDropdown({
             role="list"
             aria-labelledby="notifications-heading"
             aria-live="polite"
+            dir="rtl"
           >
             {recentNotifications.map((notification) => (
               <NotificationItem
@@ -216,9 +220,9 @@ export function NotificationDropdown({
 
         {/* Footer with count and view all */}
         {notifications.length > 0 && (
-          <div className="bg-muted/20 border-t px-4 py-2">
+          <div className="bg-muted/20 border-t px-4 py-2" dir="rtl">
             <div className="flex items-center justify-between">
-              <p className="text-muted-foreground text-xs">
+              <p className="text-muted-foreground text-right text-xs">
                 نمایش {digitsEnToFa(Math.min(10, notifications.length))} از{" "}
                 {digitsEnToFa(notifications.length)} اعلان
               </p>

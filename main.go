@@ -206,8 +206,8 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 	}
 
 	return createNotification(e.App, userId, "system",
-		fmt.Sprintf("You were added to project: %s", projectName),
-		fmt.Sprintf("You have been added to project '%s'", projectName),
+		fmt.Sprintf("افزوده شدن به پروژه: %s", projectName),
+		fmt.Sprintf("شما به پروژه '%s' اضافه شدید", projectName),
 		map[string]interface{}{
 			"projectId": projectId,
 		})
@@ -643,8 +643,8 @@ func handleTaskAssignmentNotification(e *core.RecordEvent) error {
 	projectName := project.GetString("name")
 
 	return createNotification(e.App, assigneeId, "task_assigned",
-		fmt.Sprintf("Task Assigned: %s", taskTitle),
-		fmt.Sprintf("You have been assigned to task '%s' in project '%s'", taskTitle, projectName),
+		fmt.Sprintf("تخصیص تسک: %s", taskTitle),
+		fmt.Sprintf("تسک '%s' در پروژه '%s' به شما اختصاص داده شد", taskTitle, projectName),
 		map[string]interface{}{
 			"taskId":    e.Record.Id,
 			"projectId": projectId,
@@ -668,8 +668,8 @@ func handleTaskUpdateNotification(e *core.RecordEvent) error {
 	taskTitle := e.Record.GetString("title")
 
 	return createNotification(e.App, assigneeId, "task_assigned",
-		fmt.Sprintf("Task Updated: %s", taskTitle),
-		fmt.Sprintf("Task '%s' status changed from %s to %s", taskTitle, oldStatus, newStatus),
+		fmt.Sprintf("به‌روزرسانی تسک: %s", taskTitle),
+		fmt.Sprintf("وضعیت تسک '%s' از %s به %s تغییر یافت", taskTitle, translateStatus(oldStatus), translateStatus(newStatus)),
 		map[string]interface{}{
 			"taskId": e.Record.Id,
 		})
@@ -698,8 +698,8 @@ func handleProjectUpdateNotification(e *core.RecordEvent) error {
 		}
 
 		err := createNotification(e.App, pu.UserId, "project_updated",
-			fmt.Sprintf("Project Updated: %s", projectName),
-			fmt.Sprintf("Project '%s' has been updated", projectName),
+			fmt.Sprintf("به‌روزرسانی پروژه: %s", projectName),
+			fmt.Sprintf("پروژه '%s' به‌روزرسانی شد", projectName),
 			map[string]interface{}{
 				"projectId": e.Record.Id,
 			})
@@ -737,8 +737,8 @@ func handleCommentNotification(e *core.RecordEvent) error {
 	}
 
 	return createNotification(e.App, assigneeId, "comment",
-		fmt.Sprintf("New Comment on: %s", taskTitle),
-		fmt.Sprintf("New comment on task '%s': %s", taskTitle, truncateString(commentText, 100)),
+		fmt.Sprintf("نظر جدید روی: %s", taskTitle),
+		fmt.Sprintf("نظر جدید روی تسک '%s': %s", taskTitle, truncateString(commentText, 100)),
 		map[string]interface{}{
 			"taskId":    taskId,
 			"commentId": e.Record.Id,
@@ -787,4 +787,20 @@ func truncateString(s string, maxLen int) string {
 		return s
 	}
 	return s[:maxLen-3] + "..."
+}
+
+// translateStatus translates English status to Persian
+func translateStatus(status string) string {
+	switch status {
+	case "todo":
+		return "برای انجام"
+	case "in_progress":
+		return "در حال انجام"
+	case "done":
+		return "انجام‌شده"
+	case "canceled":
+		return "لغوشده"
+	default:
+		return status
+	}
 }
