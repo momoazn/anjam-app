@@ -26,6 +26,7 @@ import { queryKeys } from "./query-keys";
 function getTasks(
   projectId?: string,
   expandFields?: string,
+  mode: "paged" | "full" = "paged",
 ): Promise<TaskWithProject[]> {
   const currentUser = pb.authStore.record as UsersResponse | null;
   const filters: string[] = [];
@@ -38,6 +39,15 @@ function getTasks(
   // Apply project filtering
   if (projectId) {
     filters.push(`project = "${projectId}"`);
+  }
+
+  if (mode === "full") {
+    return pb.collection("tasks").getFullList<TaskWithProject>({
+      filter: filters.length > 0 ? filters.join(" && ") : undefined,
+      sort: "order",
+      expand: expandFields,
+      batch: 500,
+    });
   }
 
   // Use paginated list to avoid multiple sequential HTTP requests from getFullList
@@ -60,18 +70,20 @@ export function useTasks(
   options: {
     projectId?: string;
     expandFields?: string;
+    mode?: "paged" | "full";
     enabled?: boolean;
   } = {},
 ) {
   const {
     projectId,
     expandFields = "project,assignee",
+    mode = "paged",
     enabled = true,
   } = options;
 
   return useQuery({
-    queryKey: queryKeys.tasks.list(projectId, expandFields),
-    queryFn: () => getTasks(projectId, expandFields),
+    queryKey: queryKeys.tasks.list(projectId, expandFields, mode),
+    queryFn: () => getTasks(projectId, expandFields, mode),
     enabled,
   });
 }
