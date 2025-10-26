@@ -4,6 +4,7 @@ import {
   startOfQuarter,
   startOfYear,
 } from "date-fns-jalali";
+import { fa } from "date-fns/locale";
 import type { TaskWithProject } from "./pocketbase";
 import type { UsersRecord } from "./pocketbase-types";
 import {
@@ -446,7 +447,7 @@ export function groupThroughput(
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, count]) => ({
       key,
-      label: format(new Date(key), "MMM dd", { locale: undefined }),
+      label: format(new Date(key), "MMM dd", { locale: fa }),
       count,
     }));
 }
