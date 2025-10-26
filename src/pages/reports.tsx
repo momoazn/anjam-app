@@ -1,370 +1,159 @@
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import {
-  BarChart3,
-  CheckCircle,
-  Clock,
-  ListTodo,
-  Loader2,
-  PieChart as PieChartIcon,
-  Users,
-} from "lucide-react";
-import { memo } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Loader2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useDebounce } from "use-debounce";
+import { format, isWithinInterval } from "date-fns-jalali";
 
+import { DrilldownDrawer } from "@/components/reports/drilldown-drawer";
 import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+  FiltersBar,
+  type Filters,
+  type TimeRange,
+} from "@/components/reports/filters-bar";
+import { Leaderboard } from "@/components/reports/leaderboard";
+import { MetricCards } from "@/components/reports/metric-cards";
+import { PriorityDistribution } from "@/components/reports/priority-distribution";
+import { ThroughputChart } from "@/components/reports/throughput-chart";
+import { TimelinessDonut } from "@/components/reports/timeliness-donut";
 import {
-  calculateTaskStats,
-  calculateUserPerformance,
-  type CompletionTrendData,
-  type PriorityDistributionData,
-  type StatusDistributionData,
-  type UserPerformanceData,
+  buildLeaderboard,
+  classifyTimeliness,
+  computeOverviewMetrics,
+  countByPriority,
+  filterTasksByControls,
+  getTimeRange,
+  groupThroughput,
 } from "@/lib/reports-utils";
-import { useTasks, useUsers } from "@/hooks";
+import { useProjects, useTasks, useUsers } from "@/hooks";
 
-// Chart configurations
-const statusChartConfig = {
-  todo: {
-    label: "در انتظار",
-    color: "#9333ea",
-  },
-  in_progress: {
-    label: "در حال انجام",
-    color: "#f97316",
-  },
-  done: {
-    label: "تکمیل شده",
-    color: "#10b981",
-  },
-  canceled: {
-    label: "لغو شده",
-    color: "#ef4444",
-  },
-};
-
-const priorityChartConfig = {
-  urgent: {
-    label: "فوری",
-    color: "#ef4444",
-  },
-  high: {
-    label: "اولویت بالا",
-    color: "#f97316",
-  },
-  medium: {
-    label: "اولویت متوسط",
-    color: "#f59e0b",
-  },
-  low: {
-    label: "اولویت پایین",
-    color: "#10b981",
-  },
-};
-
-const completionTrendConfig = {
-  completed: {
-    label: "تسک‌های تکمیل شده",
-    color: "#3b82f6",
-  },
-};
-
-const userPerformanceConfig = {
-  completionRate: {
-    label: "درصد تکمیل",
-    color: "#10b981",
-  },
-};
-
-// Memoize the StatCard component
-const StatCard = memo(function StatCard({
-  title,
-  value,
-  icon,
-  color,
-}: {
+type DrilldownState = {
   title: string;
-  value: number;
-  icon: React.ReactNode;
-  color: string;
-}) {
-  return (
-    <div className={`rounded-lg ${color} p-4 transition-colors md:p-6`}>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-muted-foreground text-xs font-medium md:text-sm">
-            {title}
-          </p>
-          <p className="mt-1 text-xl font-bold md:mt-2 md:text-3xl">
-            {digitsEnToFa(value)}
-          </p>
-        </div>
-        <div className="ml-2 flex-shrink-0 md:ml-0">{icon}</div>
-      </div>
-    </div>
-  );
-});
-
-// Simplified task stats hook
-function useTaskStats() {
-  const {
-    data: tasks,
-    isPending,
-    error,
-  } = useTasks({
-    expandFields: "project,assignee",
-  });
-
-  return {
-    data: tasks ? calculateTaskStats(tasks) : undefined,
-    isPending,
-    error,
-  };
-}
-
-// Simplified user performance hook
-function useUserPerformance() {
-  const {
-    data: users,
-    isPending: usersPending,
-    error: usersError,
-  } = useUsers({});
-  const {
-    data: tasks,
-    isPending: tasksPending,
-    error: tasksError,
-  } = useTasks({
-    expandFields: "project,assignee",
-  });
-
-  return {
-    data: users && tasks ? calculateUserPerformance(users, tasks) : undefined,
-    isPending: usersPending || tasksPending,
-    error: usersError || tasksError,
-  };
-}
-
-// Memoize chart components
-const StatusDistributionChart = memo(function StatusDistributionChart({
-  data,
-}: {
-  data: StatusDistributionData[];
-}) {
-  return (
-    <ChartContainer config={statusChartConfig}>
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="value"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
-          outerRadius={80}
-          fill="#8884d8"
-          paddingAngle={2}
-          labelLine={false}
-          label={({ name, percent }) =>
-            `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
-          }
-        >
-          {data.map((entry) => (
-            <Cell
-              key={entry.status}
-              fill={statusChartConfig[entry.status].color}
-            />
-          ))}
-        </Pie>
-        <ChartTooltip
-          content={
-            <ChartTooltipContent
-              formatter={(value) => [digitsEnToFa(value as number), "تسک‌های"]}
-            />
-          }
-        />
-        <ChartLegend
-          content={
-            <ChartLegendContent className="text-muted-foreground text-xs" />
-          }
-        />
-      </PieChart>
-    </ChartContainer>
-  );
-});
-
-const PriorityDistributionChart = memo(function PriorityDistributionChart({
-  data,
-}: {
-  data: PriorityDistributionData[];
-}) {
-  return (
-    <ChartContainer config={priorityChartConfig}>
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="value"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
-          outerRadius={80}
-          fill="#8884d8"
-          paddingAngle={2}
-          labelLine={false}
-          label={({ name, percent }) =>
-            `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
-          }
-        >
-          {data.map((entry) => (
-            <Cell
-              key={entry.priority}
-              fill={
-                priorityChartConfig[
-                  entry.priority as keyof typeof priorityChartConfig
-                ].color
-              }
-            />
-          ))}
-        </Pie>
-        <ChartTooltip
-          content={
-            <ChartTooltipContent
-              formatter={(value) => [digitsEnToFa(value as number), "تسک‌های"]}
-            />
-          }
-        />
-        <ChartLegend
-          content={
-            <ChartLegendContent className="text-muted-foreground text-xs" />
-          }
-        />
-      </PieChart>
-    </ChartContainer>
-  );
-});
-
-const CompletionTrendChart = memo(function CompletionTrendChart({
-  data,
-}: {
-  data: CompletionTrendData[];
-}) {
-  return (
-    <ChartContainer config={completionTrendConfig}>
-      <BarChart
-        data={data}
-        margin={{ top: 10, right: 10, left: 0, bottom: 30 }}
-      >
-        <CartesianGrid
-          strokeDasharray="3 3"
-          vertical={false}
-          className="stroke-muted/20"
-        />
-        <XAxis
-          dataKey="date"
-          angle={-45}
-          textAnchor="end"
-          tick={{ fontSize: 10 }}
-          height={60}
-          className="text-muted-foreground"
-        />
-        <YAxis
-          tick={{ fontSize: 10 }}
-          tickFormatter={(value) => digitsEnToFa(value)}
-          className="text-muted-foreground"
-        />
-        <ChartTooltip
-          content={
-            <ChartTooltipContent
-              formatter={(value) => [
-                digitsEnToFa(value as number),
-                "تسک‌های تکمیل شده",
-              ]}
-              labelFormatter={(label) => `تاریخ: ${label}`}
-            />
-          }
-        />
-        <Bar
-          dataKey="completed"
-          name="تسک‌های تکمیل شده"
-          fill={completionTrendConfig.completed.color}
-          radius={[4, 4, 0, 0]}
-        />
-      </BarChart>
-    </ChartContainer>
-  );
-});
-
-const UserPerformanceChart = memo(function UserPerformanceChart({
-  data,
-}: {
-  data: UserPerformanceData[];
-}) {
-  return (
-    <ChartContainer config={userPerformanceConfig}>
-      <BarChart
-        data={data}
-        layout="vertical"
-        margin={{ top: 10, right: 10, left: 80, bottom: 10 }}
-      >
-        <CartesianGrid
-          strokeDasharray="3 3"
-          horizontal={false}
-          className="stroke-muted/20"
-        />
-        <XAxis
-          type="number"
-          domain={[0, 100]}
-          tickFormatter={(value) => `${digitsEnToFa(value)}%`}
-          tick={{ fontSize: 10 }}
-          className="text-muted-foreground"
-        />
-        <YAxis
-          dataKey="name"
-          type="category"
-          tick={{ fontSize: 10 }}
-          width={80}
-          className="text-muted-foreground"
-        />
-        <ChartTooltip
-          content={
-            <ChartTooltipContent
-              formatter={(value) => [
-                `${digitsEnToFa(value as number)}%`,
-                "درصد تکمیل",
-              ]}
-              labelFormatter={(label) => `کاربر: ${label}`}
-            />
-          }
-        />
-        <Bar
-          dataKey="completionRate"
-          name="درصد تکمیل"
-          fill={userPerformanceConfig.completionRate.color}
-          radius={[0, 4, 4, 0]}
-        />
-      </BarChart>
-    </ChartContainer>
-  );
-});
+  rows: Array<{
+    id: string;
+    title: string;
+    status: string;
+    priority: string;
+    deadline: string | null;
+    ageDays: number;
+    assigneeName: string;
+    projectName: string;
+    tags: string[];
+  }>;
+} | null;
 
 export default function Reports() {
-  const { data: taskStats, isPending: isLoadingTaskStats } = useTaskStats();
-  const { data: userStats, isPending: isLoadingUserStats } =
-    useUserPerformance();
+  const [filtersState, setFiltersState] = useState<{
+    timeRange: TimeRange;
+    filters: Filters;
+  }>({
+    timeRange: { preset: "30D" },
+    filters: {
+      projectIds: [],
+      assigneeIds: [],
+      statuses: [],
+      priorities: [],
+    },
+  });
 
-  if (isLoadingTaskStats || isLoadingUserStats) {
+  const [drilldown, setDrilldown] = useState<DrilldownState>(null);
+  const [bucket, setBucket] = useState<"daily" | "weekly">("daily");
+
+  const debouncedFilters = useDebounce(filtersState, 200);
+
+  const { data: tasks, isPending: tasksPending } = useTasks({
+    expandFields: "project,assignee",
+    mode: "full",
+  });
+  const { data: users, isPending: usersPending } = useUsers();
+  const { data: projects, isPending: projectsPending } = useProjects();
+
+  const isLoading = tasksPending || usersPending || projectsPending;
+
+  const timeRange = useMemo(
+    () => getTimeRange(debouncedFilters.timeRange.preset),
+    [debouncedFilters.timeRange.preset],
+  );
+
+  const filteredTasks = useMemo(() => {
+    if (!tasks) return [];
+    return filterTasksByControls(tasks, {
+      start: timeRange.start,
+      end: timeRange.end,
+      projectIds: debouncedFilters.filters.projectIds,
+      assigneeIds: debouncedFilters.filters.assigneeIds,
+      statuses: debouncedFilters.filters.statuses,
+      priorities: debouncedFilters.filters.priorities,
+    });
+  }, [tasks, timeRange, debouncedFilters.filters]);
+
+  const overviewMetrics = useMemo(() => {
+    if (!filteredTasks) return null;
+    return computeOverviewMetrics({
+      tasks: filteredTasks,
+      now: new Date(),
+      range: timeRange,
+    });
+  }, [filteredTasks, timeRange]);
+
+  const throughputData = useMemo(() => {
+    if (!filteredTasks) return [];
+    return groupThroughput(filteredTasks, bucket, timeRange);
+  }, [filteredTasks, bucket, timeRange]);
+
+  const timelinessData = useMemo(() => {
+    if (!filteredTasks) return [];
+    const counts = classifyTimeliness(filteredTasks, timeRange);
+    return [
+      { name: "به‌موقع", value: counts.on_time, key: "on_time" as const },
+      { name: "گذشته مهلت", value: counts.overdue, key: "overdue" as const },
+      {
+        name: "بدون مهلت",
+        value: counts.no_deadline,
+        key: "no_deadline" as const,
+      },
+    ];
+  }, [filteredTasks, timeRange]);
+
+  const priorityData = useMemo(() => {
+    if (!filteredTasks) return [];
+    return countByPriority(filteredTasks);
+  }, [filteredTasks]);
+
+  const leaderboardData = useMemo(() => {
+    if (!users || !filteredTasks) return [];
+    return buildLeaderboard(users, filteredTasks, timeRange);
+  }, [users, filteredTasks, timeRange]);
+
+  const handleDrilldown = (
+    title: string,
+    predicate: (task: (typeof filteredTasks)[0]) => boolean,
+  ) => {
+    if (!filteredTasks) return;
+
+    const matchingTasks = filteredTasks.filter(predicate);
+    const rows = matchingTasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      status: task.status,
+      priority: task.priority,
+      deadline: task.deadline || null,
+      ageDays: task.created
+        ? Math.ceil(
+            (new Date().getTime() - new Date(task.created).getTime()) /
+              (1000 * 60 * 60 * 24),
+          )
+        : 0,
+      assigneeName: task.expand?.assignee
+        ? `${task.expand.assignee.first_name || ""} ${task.expand.assignee.last_name || ""}`.trim() ||
+          task.expand.assignee.username
+        : "نامشخص",
+      projectName: task.expand?.project?.name || "نامشخص",
+      tags: task.tags || [],
+    }));
+
+    setDrilldown({ title, rows });
+  };
+
+  if (isLoading) {
     return (
       <div className="flex h-[80vh] items-center justify-center">
         <Loader2 className="size-10 animate-spin" />
@@ -376,115 +165,144 @@ export default function Reports() {
     <div className="container mx-auto space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold md:text-3xl">داشبورد گزارشات</h1>
-        <div className="flex gap-2">
-          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            فیلتر تاریخ
-          </button>
-          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            دانلود گزارش
-          </button>
-        </div>
       </div>
 
-      {/* Overview Cards */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-2 md:mb-8 md:grid-cols-4 md:gap-4">
-        <StatCard
-          title="کل تسک‌های"
-          value={taskStats?.totalTasks ?? 0}
-          icon={
-            <ListTodo className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-          }
-          color="bg-blue-50 dark:bg-blue-400/15"
-        />
-        <StatCard
-          title="تکمیل شده"
-          value={taskStats?.completedTasks ?? 0}
-          icon={
-            <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
-          }
-          color="bg-green-50 dark:bg-emerald-400/15"
-        />
-        <StatCard
-          title="در حال انجام"
-          value={taskStats?.inProgressTasks ?? 0}
-          icon={
-            <Clock className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-          }
-          color="bg-orange-50 dark:bg-amber-400/15"
-        />
-        <StatCard
-          title="در انتظار"
-          value={taskStats?.pendingTasks ?? 0}
-          icon={
-            <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-          }
-          color="bg-purple-50 dark:bg-purple-400/15"
-        />
-      </div>
+      {/* Filters */}
+      <FiltersBar
+        value={filtersState}
+        onChange={setFiltersState}
+        projects={projects || []}
+        users={users || []}
+      />
+
+      {/* Overview Metrics */}
+      {overviewMetrics && <MetricCards totals={overviewMetrics} />}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-        {/* Task Status Distribution */}
+        {/* Throughput Trend */}
         <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <PieChartIcon className="h-4 w-4 md:h-5 md:w-5" />
+          <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold md:text-lg">
-              توزیع وضعیت تسک‌های
+              روند تکمیل تسک‌ها
+            </h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setBucket("daily")}
+                className={`rounded px-2 py-1 text-xs ${
+                  bucket === "daily"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                روزانه
+              </button>
+              <button
+                onClick={() => setBucket("weekly")}
+                className={`rounded px-2 py-1 text-xs ${
+                  bucket === "weekly"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                هفتگی
+              </button>
+            </div>
+          </div>
+          <div className="h-48 w-full md:h-64">
+            <ThroughputChart
+              data={throughputData}
+              bucket={bucket}
+              onBarClick={(date) =>
+                handleDrilldown(
+                  `تسک‌های تکمیل شده در ${date}`,
+                  (task) =>
+                    task.status === "done" &&
+                    task.updated &&
+                    (bucket === "daily"
+                      ? format(new Date(task.updated), "yyyy/MM/dd") ===
+                        date.split(" ")[0]
+                      : true), // weekly not implemented
+                )
+              }
+            />
+          </div>
+        </div>
+
+        {/* Timeliness Donut */}
+        <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
+          <div className="mb-4">
+            <h2 className="text-base font-semibold md:text-lg">
+              توزیع به‌موقعی تکمیل
             </h2>
           </div>
           <div className="h-48 w-full md:h-64">
-            {taskStats?.statusDistribution && (
-              <StatusDistributionChart data={taskStats.statusDistribution} />
-            )}
+            <TimelinessDonut
+              data={timelinessData}
+              onSliceClick={(key) =>
+                handleDrilldown(
+                  timelinessData.find((d) => d.key === key)?.name || "",
+                  (task) => {
+                    if (
+                      task.status !== "done" ||
+                      !task.updated ||
+                      !isWithinInterval(new Date(task.updated), timeRange)
+                    )
+                      return false;
+                    if (key === "no_deadline") return !task.deadline;
+                    if (!task.deadline) return false;
+                    const isOnTime =
+                      new Date(task.updated) <= new Date(task.deadline);
+                    return key === "on_time" ? isOnTime : !isOnTime;
+                  },
+                )
+              }
+            />
           </div>
         </div>
+      </div>
 
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
         {/* Priority Distribution */}
         <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
+          <div className="mb-4">
             <h2 className="text-base font-semibold md:text-lg">
-              توزیع اولویت تسک‌های
+              توزیع اولویت‌ها
             </h2>
           </div>
           <div className="h-48 w-full md:h-64">
-            {taskStats?.priorityDistribution && (
-              <PriorityDistributionChart
-                data={taskStats.priorityDistribution}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-        {/* Task Completion Trend */}
-        <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
-            <h2 className="text-base font-semibold md:text-lg">
-              روند تکمیل تسک‌های (۳۰ روز گذشته)
-            </h2>
-          </div>
-          <div className="h-48 w-full md:h-64">
-            {taskStats?.completionTrend && (
-              <CompletionTrendChart data={taskStats.completionTrend} />
-            )}
+            <PriorityDistribution
+              data={priorityData}
+              onSliceClick={(key) =>
+                handleDrilldown(
+                  `اولویت ${priorityData.find((d) => d.key === key)?.name || ""}`,
+                  (task) => task.priority === key,
+                )
+              }
+            />
           </div>
         </div>
 
-        {/* User Performance */}
+        {/* Leaderboard */}
         <div className="bg-card overflow-hidden rounded-lg border p-4 md:p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <Users className="h-4 w-4 md:h-5 md:w-5" />
-            <h2 className="text-base font-semibold md:text-lg">
-              عملکرد کاربران برتر
-            </h2>
-          </div>
-          <div className="h-48 w-full md:h-64">
-            {userStats && <UserPerformanceChart data={userStats} />}
-          </div>
+          <Leaderboard
+            rows={leaderboardData}
+            onRowClick={(userId) =>
+              handleDrilldown(
+                `تسک‌های ${users?.find((u) => u.id === userId)?.first_name || ""} ${users?.find((u) => u.id === userId)?.last_name || ""}`,
+                (task) => task.assignee === userId,
+              )
+            }
+          />
         </div>
       </div>
+
+      {/* Drilldown Drawer */}
+      <DrilldownDrawer
+        open={!!drilldown}
+        onOpenChange={(open) => !open && setDrilldown(null)}
+        rows={drilldown?.rows || []}
+        title={drilldown?.title || ""}
+      />
     </div>
   );
 }
