@@ -18,7 +18,6 @@ interface NotificationState {
   deleteNotification: (id: string) => Promise<void>;
   clearAll: (userId: string) => Promise<void>;
   clearRead: (userId: string) => Promise<void>;
-  setNotifications: (notifications: NotificationsRecord[]) => void;
   subscribeToRealtime: (userId: string) => Promise<void>;
   unsubscribeFromRealtime: () => void;
 }
@@ -115,11 +114,6 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
     }
   },
 
-  setNotifications: (notifications) => {
-    const unreadCount = notifications.filter((n) => !n.read).length;
-    set({ notifications, unreadCount });
-  },
-
   subscribeToRealtime: async (userId) => {
     try {
       // Prevent multiple subscriptions
@@ -144,8 +138,24 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
               duration: 5000,
             });
 
-            // Add to notifications
+            // Add to notifications (with deduplication)
             set((state) => {
+              // Check if notification already exists to prevent duplicates
+              const existingNotification = state.notifications.find(
+                (n) => n.id === e.record.id,
+              );
+
+              if (existingNotification) {
+                // Notification already exists, don't add duplicate
+                console.log("Duplicate notification prevented:", e.record.id);
+                return state;
+              }
+
+              console.log(
+                "Adding new notification:",
+                e.record.id,
+                e.record.title,
+              );
               const newNotifications = [e.record, ...state.notifications];
               const unreadCount = newNotifications.filter(
                 (n) => !n.read,
@@ -215,9 +225,6 @@ export const useClearAll = () =>
 export const useClearRead = () =>
   useNotificationStore((state) => state.clearRead);
 
-export const useSetNotifications = () =>
-  useNotificationStore((state) => state.setNotifications);
-
 export const useLoadNotifications = () =>
   useNotificationStore((state) => state.loadNotifications);
 
@@ -232,13 +239,3 @@ export const useIsLoading = () =>
 
 export const useNotificationError = () =>
   useNotificationStore((state) => state.error);
-
-// Legacy selector for backward compatibility (use sparingly)
-export const useNotificationActions = () => {
-  const store = useNotificationStore();
-  return {
-    markAsRead: store.markAsRead,
-    markAllAsRead: store.markAllAsRead,
-    clearAll: store.clearAll,
-  };
-};

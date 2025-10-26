@@ -6,7 +6,7 @@ import {
   useSubscribeToRealtime,
   useUnsubscribeFromRealtime,
 } from "@/store/notification-store";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export function useLoadNotifications() {
   const user = useAuthUser();
@@ -15,6 +15,7 @@ export function useLoadNotifications() {
   const unsubscribeFromRealtime = useUnsubscribeFromRealtime();
   const isLoading = useIsLoading();
   const error = useNotificationError();
+  const hasSubscribed = useRef(false);
 
   // Load notifications when user changes
   useEffect(() => {
@@ -25,11 +26,18 @@ export function useLoadNotifications() {
 
   // Subscribe to real-time notifications when user is available
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && !hasSubscribed.current) {
+      console.log("Subscribing to real-time notifications for user:", user.id);
+      hasSubscribed.current = true;
       subscribeToRealtime(user.id);
 
       // Cleanup subscription on unmount or user change
       return () => {
+        console.log(
+          "Unsubscribing from real-time notifications for user:",
+          user.id,
+        );
+        hasSubscribed.current = false;
         unsubscribeFromRealtime();
       };
     }
