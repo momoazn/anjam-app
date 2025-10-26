@@ -7,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+
 import { TEXT } from "@/constants/text";
 import {
   TasksPriorityOptions,
@@ -17,7 +19,8 @@ import { statusOrder } from "@/lib/tasks-utils";
 import {
   ALL_FILTER_VALUE,
   UseTaskFiltersReturn,
-} from "@/hooks/use-task-filters"; // Import hook return type and constant
+} from "@/hooks/use-task-filters";
+import { Search, X } from "lucide-react";
 
 // Define priority order here or import from a central place if needed elsewhere
 const priorityOrder: TasksPriorityOptions[] = [
@@ -32,6 +35,24 @@ type TaskFiltersProps = Omit<UseTaskFiltersReturn, "filteredTasks"> & {
   users: UsersResponse[] | undefined;
   isLoadingUsers: boolean;
 };
+
+// Active filter badge component
+const ActiveFilterBadge = ({
+  label,
+  onClear,
+}: {
+  label: string;
+  onClear: () => void;
+}) => (
+  <Badge
+    variant="secondary"
+    className="hover:bg-muted/80 cursor-pointer gap-1 pr-1 transition-colors"
+    onClick={onClear}
+  >
+    {label}
+    <X className="h-3 w-3" />
+  </Badge>
+);
 
 export function TaskFilters({
   searchTerm,
@@ -49,151 +70,225 @@ export function TaskFilters({
   users,
   isLoadingUsers,
 }: TaskFiltersProps) {
+  const hasActiveFilters = !!(
+    searchTerm ||
+    selectedStatus !== ALL_FILTER_VALUE ||
+    selectedPriority !== ALL_FILTER_VALUE ||
+    selectedAssignee !== ALL_FILTER_VALUE ||
+    selectedDateRange !== "all" ||
+    selectedTag !== "all"
+  );
+
+  const getActiveFilterLabels = () => {
+    const labels: { label: string; onClear: () => void }[] = [];
+
+    if (searchTerm) {
+      labels.push({
+        label: `جستجو: ${searchTerm}`,
+        onClear: () => setSearchTerm(""),
+      });
+    }
+
+    if (selectedStatus !== ALL_FILTER_VALUE) {
+      labels.push({
+        label: `وضعیت: ${TEXT.tasks.status[selectedStatus as TasksStatusOptions]}`,
+        onClear: () => setSelectedStatus(ALL_FILTER_VALUE),
+      });
+    }
+
+    if (selectedPriority !== ALL_FILTER_VALUE) {
+      labels.push({
+        label: `اولویت: ${TEXT.tasks.priority[selectedPriority as TasksPriorityOptions]}`,
+        onClear: () => setSelectedPriority(ALL_FILTER_VALUE),
+      });
+    }
+
+    if (selectedAssignee !== ALL_FILTER_VALUE) {
+      const user = users?.find((u) => u.id === selectedAssignee);
+      labels.push({
+        label: `مسئول: ${user ? `${user.first_name} ${user.last_name}`.trim() : selectedAssignee}`,
+        onClear: () => setSelectedAssignee(ALL_FILTER_VALUE),
+      });
+    }
+
+    if (selectedDateRange !== "all") {
+      const dateLabels: Record<string, string> = {
+        today: "امروز",
+        week: "این هفته",
+        month: "این ماه",
+        overdue: "گذشته‌موعد",
+      };
+      labels.push({
+        label: `تاریخ: ${dateLabels[selectedDateRange] || selectedDateRange}`,
+        onClear: () => setSelectedDateRange("all"),
+      });
+    }
+
+    if (selectedTag !== "all") {
+      labels.push({
+        label: `برچسب: ${selectedTag}`,
+        onClear: () => setSelectedTag("all"),
+      });
+    }
+
+    return labels;
+  };
+
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setSelectedStatus(ALL_FILTER_VALUE);
+    setSelectedPriority(ALL_FILTER_VALUE);
+    setSelectedAssignee(ALL_FILTER_VALUE);
+    setSelectedDateRange("all");
+    setSelectedTag("all");
+  };
+
   return (
-    <div className="mb-4 space-y-3 px-3 md:space-y-4">
-      {/* Main filters row */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+    <div className="space-y-3">
+      {/* Search bar */}
+      <div className="relative">
+        <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
         <Input
-          placeholder={"جستجو بر اساس عنوان یا مسئول تسک..."}
+          placeholder={TEXT.tasks.filters.search}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-full flex-grow sm:max-w-xs sm:flex-grow-0"
+          className="h-9 pr-10"
         />
-        <div className="flex flex-wrap gap-2 sm:gap-4">
-          <Select
-            value={selectedStatus}
-            onValueChange={(value) =>
-              setSelectedStatus(
-                value as TasksStatusOptions | typeof ALL_FILTER_VALUE,
-              )
-            }
-          >
-            <SelectTrigger className="w-full min-w-[140px] sm:w-auto sm:min-w-[150px]">
-              <SelectValue placeholder={"فیلتر بر اساس وضعیت"} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_FILTER_VALUE}>{"همه وضعیت‌ها"}</SelectItem>
-              {statusOrder.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {TEXT.tasks.status[status]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={selectedPriority}
-            onValueChange={(value) =>
-              setSelectedPriority(
-                value as TasksPriorityOptions | typeof ALL_FILTER_VALUE,
-              )
-            }
-          >
-            <SelectTrigger className="w-full min-w-[140px] sm:w-auto sm:min-w-[150px]">
-              <SelectValue placeholder={"فیلتر بر اساس اولویت"} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_FILTER_VALUE}>
-                {"همه اولویت‌ها"}
+      </div>
+
+      {/* Main filters */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <Select
+          value={selectedStatus}
+          onValueChange={(value) =>
+            setSelectedStatus(
+              value as TasksStatusOptions | typeof ALL_FILTER_VALUE,
+            )
+          }
+        >
+          <SelectTrigger className="h-9 w-full">
+            <SelectValue placeholder={TEXT.tasks.filters.status} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_FILTER_VALUE}>
+              {TEXT.tasks.filters.allStatuses}
+            </SelectItem>
+            {statusOrder.map((status) => (
+              <SelectItem key={status} value={status}>
+                {TEXT.tasks.status[status]}
               </SelectItem>
-              {priorityOrder.map((priority) => (
-                <SelectItem key={priority} value={priority}>
-                  {TEXT.tasks.priority[priority]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={selectedAssignee}
-            onValueChange={(value) =>
-              setSelectedAssignee(value as string | typeof ALL_FILTER_VALUE)
-            }
-            disabled={isLoadingUsers}
-          >
-            <SelectTrigger className="w-full min-w-[140px] sm:w-auto sm:min-w-[150px]">
-              <SelectValue placeholder={"فیلتر بر اساس مسئول"} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_FILTER_VALUE}>{"همه مسئولین"}</SelectItem>
-              {users?.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {`${user.first_name || ""} ${user.last_name || ""} (${user.username})`.trim()}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={selectedPriority}
+          onValueChange={(value) =>
+            setSelectedPriority(
+              value as TasksPriorityOptions | typeof ALL_FILTER_VALUE,
+            )
+          }
+        >
+          <SelectTrigger className="h-9 w-full">
+            <SelectValue placeholder={TEXT.tasks.filters.priority} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_FILTER_VALUE}>
+              {TEXT.tasks.filters.allPriorities}
+            </SelectItem>
+            {priorityOrder.map((priority) => (
+              <SelectItem key={priority} value={priority}>
+                {TEXT.tasks.priority[priority]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={selectedAssignee}
+          onValueChange={(value) =>
+            setSelectedAssignee(value as string | typeof ALL_FILTER_VALUE)
+          }
+          disabled={isLoadingUsers}
+        >
+          <SelectTrigger className="h-9 w-full">
+            <SelectValue placeholder={TEXT.tasks.filters.assignee} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_FILTER_VALUE}>
+              {TEXT.tasks.filters.allAssignees}
+            </SelectItem>
+            {users?.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                {`${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+                  user.username}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+          <SelectTrigger className="h-9 w-full">
+            <SelectValue placeholder={TEXT.tasks.filters.date} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{TEXT.tasks.filters.allDates}</SelectItem>
+            <SelectItem value="today">{TEXT.tasks.filters.today}</SelectItem>
+            <SelectItem value="week">{TEXT.tasks.filters.thisWeek}</SelectItem>
+            <SelectItem value="month">
+              {TEXT.tasks.filters.thisMonth}
+            </SelectItem>
+            <SelectItem value="overdue">
+              {TEXT.tasks.filters.overdue}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedTag} onValueChange={setSelectedTag}>
+          <SelectTrigger className="h-9 w-full">
+            <SelectValue placeholder={TEXT.tasks.filters.tag} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{TEXT.tasks.filters.allTags}</SelectItem>
+            <SelectItem value="اشکال">{TEXT.tasks.tags.bug}</SelectItem>
+            <SelectItem value="ویژگی">{TEXT.tasks.tags.feature}</SelectItem>
+            <SelectItem value="بهبود">{TEXT.tasks.tags.improvement}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Advanced filters row */}
-      <div className="flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-        <span className="text-muted-foreground text-xs sm:text-sm">
-          فیلترهای پیشرفته:
-        </span>
-
-        {/* Date range filter */}
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-xs sm:text-sm">
-            تاریخ:
+      {/* Active filters display */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-muted-foreground text-sm">
+            {TEXT.tasks.filters.activeFilters}
           </span>
-          <Select
-            value={selectedDateRange}
-            onValueChange={setSelectedDateRange}
-          >
-            <SelectTrigger className="w-full min-w-[120px] sm:w-auto">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">همه تاریخ‌ها</SelectItem>
-              <SelectItem value="today">امروز</SelectItem>
-              <SelectItem value="week">این هفته</SelectItem>
-              <SelectItem value="month">این ماه</SelectItem>
-              <SelectItem value="overdue">گذشته‌موعد</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Tags filter */}
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-xs sm:text-sm">
-            برچسب‌ها:
-          </span>
-          <Select value={selectedTag} onValueChange={setSelectedTag}>
-            <SelectTrigger className="w-full min-w-[120px] sm:w-auto">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">همه برچسب‌ها</SelectItem>
-              <SelectItem value="اشکال">اشکال</SelectItem>
-              <SelectItem value="ویژگی">ویژگی</SelectItem>
-              <SelectItem value="بهبود">بهبود</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Clear filters button */}
-        {(searchTerm ||
-          selectedStatus !== ALL_FILTER_VALUE ||
-          selectedPriority !== ALL_FILTER_VALUE ||
-          selectedAssignee !== ALL_FILTER_VALUE ||
-          selectedDateRange !== "all" ||
-          selectedTag !== "all") && (
+          <div className="flex flex-wrap gap-1">
+            {getActiveFilterLabels()
+              .slice(0, 4)
+              .map((filter, index) => (
+                <ActiveFilterBadge
+                  key={index}
+                  label={filter.label}
+                  onClear={filter.onClear}
+                />
+              ))}
+            {getActiveFilterLabels().length > 4 && (
+              <Badge variant="outline" className="text-xs">
+                +{getActiveFilterLabels().length - 4} دیگر
+              </Badge>
+            )}
+          </div>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            onClick={() => {
-              setSearchTerm("");
-              setSelectedStatus(ALL_FILTER_VALUE);
-              setSelectedPriority(ALL_FILTER_VALUE);
-              setSelectedAssignee(ALL_FILTER_VALUE);
-              setSelectedDateRange("all");
-              setSelectedTag("all");
-            }}
-            className="w-full gap-2 sm:w-auto"
+            onClick={clearAllFilters}
+            className="hover:bg-muted h-7 px-2 text-xs"
           >
-            پاک کردن فیلترها
+            {TEXT.tasks.filters.clearAll}
           </Button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -56,8 +56,9 @@ export function TaskListItem({
     <EditTaskDialog task={task} onSuccess={onSuccess}>
       <div
         className={cn(
-          "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-center justify-between rounded-md px-2 py-1.5 transition-colors duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2",
-          isSelected && "bg-blue-50 dark:bg-blue-400/10",
+          "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-center justify-between rounded-md px-3 py-2 transition-all duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2 hover:scale-[1.01] hover:shadow-sm active:scale-[0.99]",
+          isSelected &&
+            "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-400/10",
           className,
         )}
         role="button"
@@ -73,31 +74,42 @@ export function TaskListItem({
         aria-label={`ویرایش تسک ${task.title}`}
       >
         {/* Left side: Checkbox, Icon, ID, Title */}
-        <div className="ms-1 flex min-w-0 flex-grow items-center gap-2">
+        <div className="flex min-w-0 flex-grow items-center gap-2">
           {isSelectable && (
             <Checkbox
               checked={isSelected}
               onCheckedChange={(checked) =>
                 onSelectionChange?.(checked as boolean)
               }
-              className="flex-shrink-0"
+              className="flex-shrink-0 transition-transform hover:scale-110"
               onClick={(e) => e.stopPropagation()}
             />
           )}
           <PriorityIcon
-            className={cn(`size-6 flex-shrink-0`, priorityIconColor)}
+            className={cn(
+              `size-5 flex-shrink-0 transition-transform group-hover:scale-110`,
+              priorityIconColor,
+            )}
           />
-          <span className="text-muted-foreground group-hover:text-foreground w-16 flex-shrink-0 font-mono text-xs transition-colors duration-200 ease-in-out">
+          <span className="text-muted-foreground group-hover:text-foreground w-16 flex-shrink-0 font-mono text-xs transition-all duration-200 ease-in-out">
             {task.display_id}
           </span>
-          <StatusIcon className={cn(`size-4 flex-shrink-0`, statusIconColor)} />
-          <span className="text-foreground truncate text-sm" title={task.title}>
+          <StatusIcon
+            className={cn(
+              `size-4 flex-shrink-0 transition-transform group-hover:scale-110`,
+              statusIconColor,
+            )}
+          />
+          <span
+            className="text-foreground truncate text-sm font-medium transition-colors duration-200"
+            title={task.title}
+          >
             {task.title}
           </span>
           {showProject && task.expand?.project?.name && (
             <Badge
               variant="outline"
-              className="border-border bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs font-medium"
+              className="border-border bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded px-1.5 py-0.5 text-xs font-medium transition-all duration-200"
             >
               {task.expand.project.name}
             </Badge>
@@ -105,10 +117,10 @@ export function TaskListItem({
         </div>
 
         {/* Right side: Tags, Date, Assignee */}
-        <div className="flex flex-shrink-0 items-center space-x-3">
+        <div className="flex flex-shrink-0 items-center gap-2">
           {/* Tags */}
           {task.tags && task.tags.length > 0 && (
-            <div className="hidden items-center space-x-1 md:flex">
+            <div className="hidden items-center gap-1 md:flex">
               {task.tags.slice(0, 2).map((tag) => {
                 // Limit tags shown
                 // Simple color logic for tags
@@ -124,7 +136,7 @@ export function TaskListItem({
                   <Badge
                     key={tag}
                     variant="outline"
-                    className={`rounded px-1.5 py-0.5 text-xs font-medium ${tagColor}`}
+                    className={`rounded px-1.5 py-0.5 text-xs font-medium transition-all duration-200 hover:scale-105 ${tagColor}`}
                   >
                     {tag}
                   </Badge>
@@ -134,15 +146,19 @@ export function TaskListItem({
           )}
 
           {/* Date */}
-          <span className="text-muted-foreground w-[70px] flex-shrink-0 text-right text-xs">
+          <span className="text-muted-foreground group-hover:text-foreground w-[70px] flex-shrink-0 text-right text-xs transition-colors duration-200">
             {formatDateShort(task.deadline)}
           </span>
 
           {/* Assignee Avatar */}
-          <UserAvatar
-            user={assigneeRecord}
-            username={assigneeRecord ? undefined : (task.assignee ?? undefined)}
-          />
+          <div className="transition-transform duration-200 hover:scale-110">
+            <UserAvatar
+              user={assigneeRecord}
+              username={
+                assigneeRecord ? undefined : (task.assignee ?? undefined)
+              }
+            />
+          </div>
         </div>
       </div>
     </EditTaskDialog>
