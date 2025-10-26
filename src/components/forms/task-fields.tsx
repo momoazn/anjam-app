@@ -71,7 +71,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             <FormControl>
               <Input
                 {...field}
-                className="h-auto border-none p-0 text-xl font-semibold shadow-none focus-visible:ring-0"
+                className="h-auto border-none !bg-transparent p-0 text-xl font-semibold shadow-none focus-visible:ring-0 dark:!bg-transparent"
                 placeholder={TEXT.tasks.addTask.issueTitle}
                 autoFocus
               />
@@ -89,7 +89,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             <FormControl>
               <Textarea
                 {...field}
-                className="min-h-[60px] w-full resize-none border-none bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0"
+                className="min-h-[60px] w-full resize-none border-none !bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0 dark:!bg-transparent"
                 placeholder={TEXT.tasks.addTask.description}
               />
             </FormControl>
@@ -106,7 +106,10 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             <FormItem>
               <FormControl>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger size="default">
+                  <SelectTrigger
+                    size="default"
+                    className="!bg-transparent dark:!bg-transparent"
+                  >
                     <SelectValue placeholder={TEXT.tasks.addTask.unassigned} />
                   </SelectTrigger>
                   <SelectContent>
@@ -230,7 +233,10 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
               <FormItem>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger size="default">
+                    <SelectTrigger
+                      size="default"
+                      className="!bg-transparent dark:!bg-transparent"
+                    >
                       <SelectValue
                         placeholder={TEXT.tasks.addTask.selectProject}
                       />
