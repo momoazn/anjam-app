@@ -151,7 +151,7 @@ export default function Tasks() {
   const totalTasks = filteredTasks?.length || 0;
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-6">
+    <div className="container mx-auto px-4 py-6">
       {/* Header Section */}
       <div className="mb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
