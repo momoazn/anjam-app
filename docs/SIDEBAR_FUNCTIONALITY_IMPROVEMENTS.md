@@ -5,6 +5,7 @@ A proposal to expand the functionality and options of the application sidebar be
 ## TL;DR
 
 Incrementally evolve the sidebar into a context-aware command center:
+
 - Project-aware submenu with recent/starred projects and quick actions
 - Saved task views with URL-based filters and deep links
 - Live badges (counts) for tasks, notifications, and per-project items
@@ -47,7 +48,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 
 ## Proposed Capabilities
 
-1) Project-Aware Submenu (Recent/Starred/Quick Actions)
+1. Project-Aware Submenu (Recent/Starred/Quick Actions)
+
 - Description:
   - Replace the single “Projects” link with a group that contains:
     - “Create Project” quick action
@@ -70,7 +72,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
   - Click opens destination without layout jank
   - Create action works and invalidates relevant queries
 
-2) Saved Views under Tasks
+2. Saved Views under Tasks
+
 - Description:
   - Add task view shortcuts like My Tasks, Due Today, Overdue, In Progress, and custom user-saved views
   - Use URL params so page filter state can be deep-linked
@@ -86,7 +89,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
   - Navigating to a saved view applies the filters
   - Creating a saved view saves the filter params
 
-3) Live Badges with Counts
+3. Live Badges with Counts
+
 - Description:
   - Show badges next to menu items and subitems, e.g.:
     - Tasks: my open task count, overdue count
@@ -103,7 +107,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Badges reflect current counts and update upon mutations
 
-4) Centralized Role/Permission Gating
+4. Centralized Role/Permission Gating
+
 - Description:
   - Replace ad-hoc flags with a permission helper that maps roles → permissions (e.g., tasks.view, tasks.create, projects.manage, users.admin)
 - UX Behavior:
@@ -116,7 +121,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Changing roles updates sidebar availability after refresh or re-auth
 
-5) Quick Actions on Hover
+5. Quick Actions on Hover
+
 - Description:
   - Add contextual action buttons on menu rows (e.g., Create Task on Tasks row, Create Project on Projects row)
 - UX Behavior:
@@ -128,7 +134,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Action opens dialog and success updates related data
 
-6) Pinned Links (Bookmarks)
+6. Pinned Links (Bookmarks)
+
 - Description:
   - Let users pin any route to a “Pinned” section and reorder pins
 - UX Behavior:
@@ -140,7 +147,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Pins persist across reloads; reordering updates UI predictably
 
-7) Recent Items (Auto-Populated)
+7. Recent Items (Auto-Populated)
+
 - Description:
   - Automatically maintain last N visited routes for quick recall
 - UX Behavior:
@@ -153,7 +161,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Recent list updates on navigation; cap at N items; duplicates handled
 
-8) Sidebar Search/Filter
+8. Sidebar Search/Filter
+
 - Description:
   - Inline input filters visible sidebar items in real-time; acts like a local command filter
 - UX Behavior:
@@ -166,7 +175,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Filter reduces items reliably; keyboard Enter navigates top result
 
-9) Keyboard Shortcuts
+9. Keyboard Shortcuts
+
 - Description:
   - Shortcuts like Alt+1 for Dashboard, Alt+2 for Projects, etc.; arrow keys expand/collapse submenus
 - UX Behavior:
@@ -178,7 +188,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Shortcuts navigate correctly and are documented in tooltips
 
-10) Collapsible Groups with Persisted State
+10. Collapsible Groups with Persisted State
+
 - Description:
   - Allow groups (“Projects”, “Saved Views”, “Pinned”, “Recent”) to be collapsed/expanded and remember state
 - UX Behavior:
@@ -190,7 +201,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - State persists; opening one group doesn’t jank layout
 
-11) Context Menus
+11. Context Menus
+
 - Description:
   - Right-click/context menu on items with actions: Pin, Copy link, Open in new tab, Create under this context
 - UX Behavior:
@@ -202,7 +214,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Menu appears with correct actions; accessible fallback available
 
-12) Feature Toggles
+12. Feature Toggles
+
 - Description:
   - Feature flag certain items (e.g., Reports) or new sidebar sections for safe rollout
 - UX Behavior:
@@ -214,7 +227,8 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 - Acceptance Criteria:
   - Toggling flags hides/shows items without errors
 
-13) External Resources Group
+13. External Resources Group
+
 - Description:
   - Add “Resources” section with links to docs, support, Slack, etc.; allow custom links
 - UX Behavior:
@@ -231,37 +245,45 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 ## Technical Design Notes
 
 - Menu Configuration Model:
+
   - Define a typed menu config supporting:
     - id, title, icon, href, children, quickActions, requiredPermissions, featureFlag, badgeResolver, getChildren (async or derived), contextMenu actions
   - Filter by permissions and flags at render
 
 - Permission Helper:
+
   - `can(user, permission: string): boolean`
   - Map roles → permissions in a central module
   - Example permissions: tasks.view, tasks.create, projects.view, projects.manage, users.admin, reports.view
 
 - State Stores (persisted):
+
   - Pinned links: `{ id, label, href, icon?, type? }[]`
   - Sidebar preferences: `{ collapsedGroups: Record<string, boolean> }`
   - Recent links: `{ href, label, ts, type }[]` (de-dup by href)
 
 - URL Param Contract for Tasks Saved Views:
+
   - `assigned=me|id`, `status=open|in_progress|done|...`, `due=today|overdue|range`, `priority=high|...`, `tag=...`
   - Ensure `tasks` page reads params on mount and syncs with internal filters
 
 - Counts (Badges):
+
   - Start with client aggregation from existing lists
   - Optional: add simple server endpoints for counts later if perf requires
 
 - React Query Integration:
+
   - Invalidate related queries after create/update/delete
   - Consider lightweight selectors for counts to avoid recompute storms
 
 - Performance:
+
   - Lazy render large submenus (e.g., projects > 100)
   - Debounce live badges if costly; memoize derived items
 
 - Accessibility:
+
   - All actions keyboard focusable
   - Tooltips hidden when sidebar expanded; present when collapsed (consistent with current behavior)
   - Context menu with ARIA roles; provide accessible alternatives
@@ -275,6 +297,7 @@ Roll out in phases with feature flags, telemetry, and acceptance criteria per fe
 ## Phased Task List
 
 Phase 1: Foundations and Core Value
+
 - [ ] 1.1 Implement permission helper and permission map
 - [ ] 1.2 Refactor menu config to support requiredPermissions and featureFlag
 - [ ] 1.3 Projects group:
@@ -294,6 +317,7 @@ Phase 1: Foundations and Core Value
 - [ ] 1.8 Docs update (README + this doc status)
 
 Phase 2: Personalization and State
+
 - [ ] 2.1 Pinned links:
   - [ ] 2.1.1 Create persisted store and API for additions/removals
   - [ ] 2.1.2 Add “Pinned” group; support reorder
@@ -313,6 +337,7 @@ Phase 2: Personalization and State
 - [ ] 2.7 Docs update and usage guide
 
 Phase 3: Power Features and Flags
+
 - [ ] 3.1 Keyboard shortcuts:
   - [ ] 3.1.1 Alt+1..9 mapping for top-level items
   - [ ] 3.1.2 Arrow keys expand/collapse focused group
@@ -333,18 +358,21 @@ Phase 3: Power Features and Flags
 ## Acceptance Criteria (Per Phase)
 
 Phase 1
+
 - Projects expands with recent and an All Projects link; quick create works
 - Tasks has saved views that apply expected filters via URL
 - Tasks item shows accurate badge(s), updating after mutations
 - Permission helper hides items consistently based on role
 
 Phase 2
+
 - Users can pin current route and see it under Pinned; pins persist and can be reordered
 - Recent links populate automatically and cap at N items
 - Group collapse state is persisted across reloads
 - Sidebar search filters entries quickly; Enter navigates to top match
 
 Phase 3
+
 - Keyboard shortcuts navigate and control collapse functions; tooltips reflect shortcuts
 - Context menu offers relevant actions and works on desktop and mobile
 - Feature-flagged items can be toggled without code changes
@@ -398,22 +426,26 @@ Phase 3
 ## Appendix
 
 Suggested permission matrix (example):
+
 - admin: [projects.manage, projects.view, tasks.create, tasks.view, users.admin, reports.view]
 - supervisor: [projects.manage, projects.view, tasks.create, tasks.view, users.view]
 - user: [projects.view, tasks.view, tasks.create]
 
 State store shapes (examples):
+
 - Pinned: { links: Array<{ id: string; href: string; label: string; icon?: string; type?: "project"|"tasks"|"custom"; }> }
 - Recent: { items: Array<{ href: string; label: string; ts: number; type?: string; }> }
 - Sidebar: { collapsedGroups: Record<string, boolean> }
 
 URL params for tasks saved views (examples):
+
 - /tasks?assigned=me&status=open
 - /tasks?due=today
 - /tasks?status=in_progress
 - /tasks?due=overdue&priority=high
 
 Feature flags (examples):
+
 - sidebar.projects.submenu.enabled
 - sidebar.tasks.savedViews.enabled
 - sidebar.badges.enabled
@@ -425,5 +457,6 @@ Feature flags (examples):
 - sidebar.resources.enabled
 
 Change management:
+
 - Use a change proposal and delta specs for approval before implementation
 - Gate rollouts behind flags and progressive enabling
