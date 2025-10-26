@@ -84,6 +84,11 @@ export const TEXT = {
     buttons: {
       markAsRead: "علامت‌گذاری به عنوان خوانده‌شده",
     },
+    selected: "انتخاب شده",
+    selectAll: "انتخاب همه",
+    deselectAll: "لغو انتخاب همه",
+    deleteSelected: "حذف انتخاب شده‌ها",
+    cancel: "انصراف",
   },
   auth: {
     login: {

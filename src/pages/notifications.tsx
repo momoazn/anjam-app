@@ -11,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { format, isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 import { useMemo, useState, useEffect } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -100,11 +101,15 @@ function NotificationItem({
   onMarkAsRead,
   onMarkAsUnread,
   onDelete,
+  isSelected,
+  onToggleSelect,
 }: {
   notification: NotificationsRecord;
   onMarkAsRead: (id: string) => void;
   onMarkAsUnread: (id: string) => void;
   onDelete: (id: string) => void;
+  isSelected: boolean;
+  onToggleSelect: (id: string) => void;
 }) {
   const handleToggleRead = () => {
     if (notification.read) {
@@ -119,8 +124,18 @@ function NotificationItem({
       className={cn(
         "group hover:bg-muted/50 flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors",
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
+        isSelected && "bg-muted/30 border-primary",
       )}
     >
+      {/* Selection Checkbox */}
+      <div className="flex items-center">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onToggleSelect(notification.id)}
+          className="h-4 w-4"
+        />
+      </div>
+
       {/* Actions - Left side */}
       <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         <Button
@@ -226,6 +241,9 @@ export default function Notifications() {
 
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
+  const [selectedNotifications, setSelectedNotifications] = useState<
+    Set<string>
+  >(new Set());
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -354,6 +372,41 @@ export default function Notifications() {
 
   const handleDelete = (id: string) => {
     deleteNotification(id);
+  };
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedNotifications((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedNotifications.size === filteredNotifications.length) {
+      setSelectedNotifications(new Set());
+    } else {
+      setSelectedNotifications(new Set(filteredNotifications.map((n) => n.id)));
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedNotifications.size === 0) return;
+
+    try {
+      // Delete each selected notification individually
+      const deletePromises = Array.from(selectedNotifications).map((id) =>
+        deleteNotification(id),
+      );
+      await Promise.all(deletePromises);
+      setSelectedNotifications(new Set());
+    } catch (error) {
+      console.error("Failed to delete selected notifications:", error);
+    }
   };
 
   return (
@@ -514,6 +567,36 @@ export default function Notifications() {
         </Card>
       </div>
 
+      {/* Selection Controls */}
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={
+              selectedNotifications.size === filteredNotifications.length &&
+              filteredNotifications.length > 0
+            }
+            onCheckedChange={handleSelectAll}
+            className="h-4 w-4"
+          />
+          <span className="text-muted-foreground text-sm">
+            {selectedNotifications.size > 0
+              ? `${digitsEnToFa(selectedNotifications.size.toString())} ${TEXT.notifications.selected}`
+              : TEXT.notifications.selectAll}
+          </span>
+        </div>
+        {selectedNotifications.size > 0 && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleDeleteSelected}
+            className="h-7 px-2 text-xs"
+          >
+            <IconTrash className="mr-1 h-3 w-3" />
+            {TEXT.notifications.deleteSelected}
+          </Button>
+        )}
+      </div>
+
       {/* Filters and Sort */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Tabs
@@ -605,6 +688,10 @@ export default function Notifications() {
                           onMarkAsRead={handleMarkAsRead}
                           onMarkAsUnread={handleMarkAsUnread}
                           onDelete={handleDelete}
+                          isSelected={selectedNotifications.has(
+                            notification.id,
+                          )}
+                          onToggleSelect={handleToggleSelect}
                         />
                       ))}
                     </div>
