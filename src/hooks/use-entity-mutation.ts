@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "./query-keys";
 
 interface UseEntityMutationOptions {
   collection: string;
@@ -29,7 +30,12 @@ export function useEntityMutation<TVariables = Record<string, unknown>>({
     onSuccess: () => {
       // Invalidate specified queries
       invalidateQueries.forEach((queryKey) => {
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
+        if (queryKey === "tasks") {
+          // For tasks, invalidate all task-related queries to ensure all task lists refresh
+          queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        } else {
+          queryClient.invalidateQueries({ queryKey: [queryKey] });
+        }
       });
 
       // Show success message
@@ -76,7 +82,12 @@ export function useEntityUpdateMutation<TVariables = Record<string, unknown>>({
     onSuccess: () => {
       // Invalidate specified queries
       invalidateQueries.forEach((queryKey) => {
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
+        if (queryKey === "tasks") {
+          // For tasks, invalidate all task-related queries to ensure all task lists refresh
+          queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        } else {
+          queryClient.invalidateQueries({ queryKey: [queryKey] });
+        }
       });
 
       // Show success message
@@ -121,7 +132,12 @@ export function useEntityDeleteMutation({
     onSuccess: () => {
       // Invalidate specified queries
       invalidateQueries.forEach((queryKey) => {
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
+        if (queryKey === "tasks") {
+          // For tasks, invalidate all task-related queries to ensure all task lists refresh
+          queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        } else {
+          queryClient.invalidateQueries({ queryKey: [queryKey] });
+        }
       });
 
       // Show success message

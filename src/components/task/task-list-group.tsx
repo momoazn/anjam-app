@@ -1,10 +1,8 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { TEXT } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import { queryKeys } from "@/hooks/query-keys";
 import { TaskListHeader } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
@@ -27,15 +25,8 @@ export function TaskListGroup({
   selectedTasks = [],
   onSelectionChange,
 }: TaskListGroupProps) {
-  const queryClient = useQueryClient();
   const [localSelectedTasks, setLocalSelectedTasks] =
     useState<string[]>(selectedTasks);
-
-  const handleSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.tasks.all,
-    });
-  };
 
   const handleTaskSelection = (taskId: string, selected: boolean) => {
     const newSelected = selected
@@ -56,7 +47,6 @@ export function TaskListGroup({
               key={task.id}
               task={task}
               showProject={showProject}
-              onSuccess={handleSuccess}
               isSelectable={enableSelection}
               isSelected={localSelectedTasks.includes(task.id)}
               onSelectionChange={(selected) =>

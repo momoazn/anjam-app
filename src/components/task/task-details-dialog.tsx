@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
@@ -44,6 +44,7 @@ export function EditTaskDialog({
 }: EditTaskDialogProps) {
   const { id: projectId } = useParams<{ id: string }>();
   const isInProject = Boolean(projectId);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof taskFormSchema>>({
     resolver: zodResolver(taskFormSchema),
@@ -74,6 +75,7 @@ export function EditTaskDialog({
     errorMessage: TEXT.tasks.edit.error,
     invalidateQueries: ["tasks"],
     onSuccess: () => {
+      setOpen(false);
       onSuccess?.();
     },
   });
@@ -93,7 +95,7 @@ export function EditTaskDialog({
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogTitle className="sr-only">{TEXT.tasks.edit.title}</DialogTitle>
       <DialogContent className="sm:max-w-[800px]">
@@ -110,6 +112,7 @@ export function EditTaskDialog({
                 type="button"
                 variant="outline"
                 disabled={isPending}
+                onClick={() => setOpen(false)}
               >
                 {TEXT.tasks.details.buttons.cancel}
               </Button>
