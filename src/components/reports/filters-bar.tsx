@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import DatePicker from "@/components/ui/date-picker";
 import { Separator } from "@/components/ui/separator";
 import type {
   TasksPriorityOptions,
@@ -50,6 +51,7 @@ const TIME_PRESETS = {
   "30D": { label: "۳۰ روز گذشته", value: "30D" as const },
   QTD: { label: "ربع جاری", value: "QTD" as const },
   YTD: { label: "سال جاری", value: "YTD" as const },
+  CUSTOM: { label: "سفارشی", value: "CUSTOM" as const },
 } as const;
 
 const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] = [
@@ -193,6 +195,29 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             ))}
           </SelectContent>
         </Select>
+        {value.timeRange.preset === "CUSTOM" && (
+          <div className="ml-2 flex items-center gap-2">
+            <DatePicker
+              date={value.timeRange.start}
+              setDate={(date) =>
+                onChange({
+                  ...value,
+                  timeRange: { ...value.timeRange, start: date },
+                })
+              }
+            />
+            <span className="text-muted-foreground">تا</span>
+            <DatePicker
+              date={value.timeRange.end}
+              setDate={(date) =>
+                onChange({
+                  ...value,
+                  timeRange: { ...value.timeRange, end: date },
+                })
+              }
+            />
+          </div>
+        )}
       </div>
 
       <Separator orientation="vertical" className="h-6" />

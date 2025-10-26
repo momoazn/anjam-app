@@ -71,8 +71,17 @@ export default function Reports() {
   const isLoading = tasksPending || usersPending || projectsPending;
 
   const timeRange = useMemo(
-    () => getTimeRange(debouncedFilters.timeRange.preset),
-    [debouncedFilters.timeRange.preset],
+    () =>
+      getTimeRange(
+        debouncedFilters.timeRange.preset,
+        debouncedFilters.timeRange.preset === "CUSTOM"
+          ? {
+              start: debouncedFilters.timeRange.start!,
+              end: debouncedFilters.timeRange.end!,
+            }
+          : undefined,
+      ),
+    [debouncedFilters.timeRange],
   );
 
   const filteredTasks = useMemo(() => {
