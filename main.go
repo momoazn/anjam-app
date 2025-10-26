@@ -205,9 +205,9 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 		}
 	}
 
-	return createNotification(e.App, userId, "system", "medium",
+	return createNotification(e.App, userId, "system",
 		fmt.Sprintf("You were added to project: %s", projectName),
-		fmt.Sprintf("You have been added to the project '%s'", projectName),
+		fmt.Sprintf("You have been added to project '%s'", projectName),
 		map[string]interface{}{
 			"projectId": projectId,
 		})
@@ -642,7 +642,7 @@ func handleTaskAssignmentNotification(e *core.RecordEvent) error {
 
 	projectName := project.GetString("name")
 
-	return createNotification(e.App, assigneeId, "task_assigned", "high",
+	return createNotification(e.App, assigneeId, "task_assigned",
 		fmt.Sprintf("Task Assigned: %s", taskTitle),
 		fmt.Sprintf("You have been assigned to task '%s' in project '%s'", taskTitle, projectName),
 		map[string]interface{}{
@@ -667,7 +667,7 @@ func handleTaskUpdateNotification(e *core.RecordEvent) error {
 
 	taskTitle := e.Record.GetString("title")
 
-	return createNotification(e.App, assigneeId, "task_assigned", "medium",
+	return createNotification(e.App, assigneeId, "task_assigned",
 		fmt.Sprintf("Task Updated: %s", taskTitle),
 		fmt.Sprintf("Task '%s' status changed from %s to %s", taskTitle, oldStatus, newStatus),
 		map[string]interface{}{
@@ -697,7 +697,7 @@ func handleProjectUpdateNotification(e *core.RecordEvent) error {
 			continue // Don't notify the updater
 		}
 
-		err := createNotification(e.App, pu.UserId, "project_updated", "medium",
+		err := createNotification(e.App, pu.UserId, "project_updated",
 			fmt.Sprintf("Project Updated: %s", projectName),
 			fmt.Sprintf("Project '%s' has been updated", projectName),
 			map[string]interface{}{
@@ -736,7 +736,7 @@ func handleCommentNotification(e *core.RecordEvent) error {
 		return e.Next() // No assignee or self-comment
 	}
 
-	return createNotification(e.App, assigneeId, "comment", "low",
+	return createNotification(e.App, assigneeId, "comment",
 		fmt.Sprintf("New Comment on: %s", taskTitle),
 		fmt.Sprintf("New comment on task '%s': %s", taskTitle, truncateString(commentText, 100)),
 		map[string]interface{}{
@@ -745,7 +745,7 @@ func handleCommentNotification(e *core.RecordEvent) error {
 		})
 }
 
-func createNotification(app core.App, userId, notificationType, priority, title, message string, data map[string]interface{}) error {
+func createNotification(app core.App, userId, notificationType, title, message string, data map[string]interface{}) error {
 	// Validate that the user exists before creating notification
 	if userId == "" {
 		log.Printf("Warning: Attempted to create notification with empty user ID")
@@ -768,7 +768,6 @@ func createNotification(app core.App, userId, notificationType, priority, title,
 	record := core.NewRecord(notificationsCollection)
 	record.Set("user", userId)
 	record.Set("type", notificationType)
-	record.Set("priority", priority)
 	record.Set("title", title)
 	record.Set("message", message)
 	if data != nil {

@@ -6,7 +6,6 @@ export interface NotificationFilters {
   user?: string;
   read?: boolean;
   type?: string;
-  priority?: string;
   limit?: number;
   sort?: string;
 }
@@ -52,9 +51,6 @@ export class NotificationService {
       if (filters.type) {
         filterParts.push(`type = "${filters.type}"`);
       }
-      if (filters.priority) {
-        filterParts.push(`priority = "${filters.priority}"`);
-      }
 
       if (filterParts.length > 0) {
         queryParams.filter = filterParts.join(" && ");
@@ -85,22 +81,6 @@ export class NotificationService {
         .getOne<NotificationsRecord>(id);
     } catch (error) {
       console.error(`Failed to fetch notification ${id}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create a new notification
-   */
-  async createNotification(
-    notification: Omit<NotificationsRecord, "id" | "created" | "updated">,
-  ): Promise<NotificationsRecord> {
-    try {
-      return await pb
-        .collection("notifications")
-        .create<NotificationsRecord>(notification);
-    } catch (error) {
-      console.error("Failed to create notification:", error);
       throw error;
     }
   }
@@ -143,13 +123,6 @@ export class NotificationService {
   }
 
   /**
-   * Mark notification as unread
-   */
-  async markAsUnread(id: string): Promise<NotificationsRecord> {
-    return this.updateNotification(id, { read: false });
-  }
-
-  /**
    * Mark all notifications as read for a user
    */
   async markAllAsRead(userId: string): Promise<void> {
@@ -164,25 +137,6 @@ export class NotificationService {
       await Promise.all(updatePromises);
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Mark all notifications as unread for a user
-   */
-  async markAllAsUnread(userId: string): Promise<void> {
-    try {
-      const notifications = await this.fetchNotifications({
-        user: userId,
-        read: true,
-      });
-      const updatePromises = notifications.map((notification) =>
-        this.updateNotification(notification.id, { read: false }),
-      );
-      await Promise.all(updatePromises);
-    } catch (error) {
-      console.error("Failed to mark all notifications as unread:", error);
       throw error;
     }
   }

@@ -1,24 +1,11 @@
-import { useEffect, useRef } from "react";
-import { useNotificationStore } from "@/store/notification-store";
+import { useEffect, useState } from "react";
 
 export function useTabVisibility() {
-  const setTabVisibility = useNotificationStore(
-    (state) => state.setTabVisibility,
-  );
-  const unreadCount = useNotificationStore((state) => state.unreadCount);
-  const originalTitle = useRef(document.title);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      const isVisible = !document.hidden;
-      setTabVisibility(isVisible);
-
-      // Update page title based on visibility and unread count
-      if (!isVisible && unreadCount > 0) {
-        document.title = `(${unreadCount}) ${originalTitle.current}`;
-      } else {
-        document.title = originalTitle.current;
-      }
+      setIsVisible(!document.hidden);
     };
 
     // Set initial state
@@ -29,8 +16,8 @@ export function useTabVisibility() {
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      // Restore original title on cleanup
-      document.title = originalTitle.current;
     };
-  }, [setTabVisibility, unreadCount]);
+  }, []);
+
+  return isVisible;
 }

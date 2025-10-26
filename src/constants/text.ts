@@ -48,7 +48,6 @@ export const TEXT = {
     sort: {
       newest: "جدیدترین",
       oldest: "قدیمی‌ترین",
-      priority: "بر اساس اولویت",
     },
     types: {
       task_assigned: "تخصیص تسک",
@@ -56,17 +55,10 @@ export const TEXT = {
       system: "سیستم",
       comment: "نظر",
     },
-    priority: {
-      low: "پایین",
-      medium: "متوسط",
-      high: "بالا",
-    },
     actions: {
       markAsRead: "علامت‌گذاری به عنوان خوانده‌شده",
-      markAsUnread: "علامت‌گذاری به عنوان خوانده نشده",
       delete: "حذف",
       viewAll: "مشاهده همه",
-      markAllAsUnread: "همه را خوانده نشده علامت‌گذاری کن",
       clearRead: "حذف خوانده‌شده‌ها",
     },
     groups: {

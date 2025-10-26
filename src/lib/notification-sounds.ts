@@ -1,10 +1,10 @@
 // Simple sound manager for notifications
-// Uses Web Audio API to create basic notification sounds
+// Uses Web Audio API to create a basic notification sound
 
 class NotificationSoundManager {
   private audioContext: AudioContext | null = null;
   private enabled: boolean = false;
-  private volume: number = 0.5;
+  private readonly volume = 0.3; // Fixed volume
 
   async initialize() {
     try {
@@ -21,10 +21,6 @@ class NotificationSoundManager {
     if (enabled && this.audioContext?.state === "suspended") {
       this.audioContext?.resume();
     }
-  }
-
-  setVolume(volume: number) {
-    this.volume = Math.max(0, Math.min(1, volume));
   }
 
   private createTone(frequency: number, duration: number): AudioBuffer {
@@ -52,35 +48,20 @@ class NotificationSoundManager {
         envelope = 1 - (t - decayTime) / (duration - decayTime); // Decay
       }
 
-      channelData[i] = sample * envelope * this.volume * 0.3;
+      channelData[i] = sample * envelope * this.volume;
     }
 
     return buffer;
   }
 
-  async playSound(type: "success" | "warning" | "info" = "info") {
+  async playSound() {
     if (!this.enabled || !this.audioContext) {
       return;
     }
 
     try {
-      let buffer: AudioBuffer;
-
-      switch (type) {
-        case "success":
-          // Pleasant ascending tone
-          buffer = this.createTone(523.25, 0.3); // C5
-          break;
-        case "warning":
-          // Alerting tone
-          buffer = this.createTone(659.25, 0.4); // E5
-          break;
-        case "info":
-        default:
-          // Neutral notification tone
-          buffer = this.createTone(440, 0.2); // A4
-          break;
-      }
+      // Single neutral notification tone
+      const buffer = this.createTone(440, 0.2); // A4
 
       const source = this.audioContext.createBufferSource();
       source.buffer = buffer;

@@ -9,7 +9,7 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useTheme } from "@/hooks/use-theme";
-import { useTabVisibility } from "@/hooks/use-tab-visibility";
+
 import { useRealtimeNotifications } from "@/hooks/use-realtime-notifications";
 import { useLoadNotifications } from "@/hooks/use-load-notifications";
 import { notificationSoundManager } from "@/lib/notification-sounds";
@@ -75,7 +75,6 @@ function AppLayout() {
 
 function App() {
   useTheme();
-  useTabVisibility();
   useRealtimeNotifications();
 
   // Initialize notification sound manager

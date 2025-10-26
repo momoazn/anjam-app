@@ -942,17 +942,7 @@
         "type": "select",
         "values": ["task_assigned", "project_updated", "system", "comment"]
       },
-      {
-        "hidden": false,
-        "id": "select_priority",
-        "maxSelect": 1,
-        "name": "priority",
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "select",
-        "values": ["low", "medium", "high"]
-      },
+
       {
         "autogeneratePattern": "",
         "hidden": false,

@@ -4,14 +4,12 @@ import {
   IconBellOff,
   IconCheck,
   IconEye,
-  IconEyeOff,
   IconSortAscending,
   IconTrash,
   IconTrashX,
 } from "@tabler/icons-react";
 import { format, isThisWeek, isToday, isYesterday } from "date-fns-jalali";
-import { useMemo, useState, useEffect } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,29 +37,14 @@ import {
   useClearRead,
   useDeleteNotification,
   useMarkAllAsRead,
-  useMarkAllAsUnread,
   useMarkAsRead,
-  useMarkAsUnread,
   useNotifications,
   useIsLoading,
   useNotificationError,
 } from "@/store/notification-store";
 
 type FilterType = "all" | "unread" | "read";
-type SortType = "newest" | "oldest" | "priority";
-
-const getPriorityColor = (priority: NotificationsRecord["priority"]) => {
-  switch (priority) {
-    case "high":
-      return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-    case "medium":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
-    case "low":
-      return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-    default:
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
-  }
-};
+type SortType = "newest" | "oldest";
 
 const formatNotificationTime = (dateString?: string | null) => {
   if (!dateString) return "-";
@@ -99,62 +82,32 @@ const getGroupTitle = (group: string) => {
 function NotificationItem({
   notification,
   onMarkAsRead,
-  onMarkAsUnread,
   onDelete,
-  isSelected,
-  onToggleSelect,
 }: {
   notification: NotificationsRecord;
   onMarkAsRead: (id: string) => void;
-  onMarkAsUnread: (id: string) => void;
   onDelete: (id: string) => void;
-  isSelected: boolean;
-  onToggleSelect: (id: string) => void;
 }) {
-  const handleToggleRead = () => {
-    if (notification.read) {
-      onMarkAsUnread(notification.id);
-    } else {
-      onMarkAsRead(notification.id);
-    }
-  };
-
   return (
     <div
       className={cn(
         "group hover:bg-muted/50 flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors",
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
-        isSelected && "bg-muted/30 border-primary",
       )}
     >
-      {/* Selection Checkbox */}
-      <div className="flex items-center">
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={() => onToggleSelect(notification.id)}
-          className="h-4 w-4"
-        />
-      </div>
-
       {/* Actions - Left side */}
       <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleToggleRead}
-          className="h-7 w-7 p-0"
-          title={
-            notification.read
-              ? TEXT.notifications.actions.markAsUnread
-              : TEXT.notifications.actions.markAsRead
-          }
-        >
-          {notification.read ? (
-            <IconEyeOff className="h-3 w-3" />
-          ) : (
+        {!notification.read && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onMarkAsRead(notification.id)}
+            className="h-7 w-7 p-0"
+            title={TEXT.notifications.actions.markAsRead}
+          >
             <IconEye className="h-3 w-3" />
-          )}
-        </Button>
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"
@@ -191,12 +144,6 @@ function NotificationItem({
             <Badge variant="outline" className="text-xs">
               {TEXT.notifications.types[notification.type]}
             </Badge>
-            <Badge
-              variant="secondary"
-              className={cn("text-xs", getPriorityColor(notification.priority))}
-            >
-              {TEXT.notifications.priority[notification.priority]}
-            </Badge>
             <time
               dateTime={notification.created || ""}
               className="text-muted-foreground text-xs"
@@ -230,9 +177,8 @@ export default function Notifications() {
   const user = useAuthUser();
   const notifications = useNotifications();
   const markAsRead = useMarkAsRead();
-  const markAsUnread = useMarkAsUnread();
+
   const markAllAsRead = useMarkAllAsRead();
-  const markAllAsUnread = useMarkAllAsUnread();
   const deleteNotification = useDeleteNotification();
   const clearAll = useClearAll();
   const clearRead = useClearRead();
@@ -241,70 +187,6 @@ export default function Notifications() {
 
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
-  const [selectedNotifications, setSelectedNotifications] = useState<
-    Set<string>
-  >(new Set());
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Only handle shortcuts when not in input fields
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
-      ) {
-        return;
-      }
-
-      switch (event.key) {
-        case "r":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            if (user?.id) markAllAsRead(user.id);
-          }
-          break;
-        case "u":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            if (user?.id) markAllAsUnread(user.id);
-          }
-          break;
-        case "d":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            if (user?.id) clearRead(user.id);
-          }
-          break;
-        case "a":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            if (user?.id) clearAll(user.id);
-          }
-          break;
-        case "1":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            setFilter("all");
-          }
-          break;
-        case "2":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            setFilter("unread");
-          }
-          break;
-        case "3":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            setFilter("read");
-          }
-          break;
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [markAllAsRead, markAllAsUnread, clearRead, clearAll, user?.id]);
 
   // Filter notifications
   const filteredNotifications = useMemo(() => {
@@ -329,10 +211,6 @@ export default function Notifications() {
             new Date(a.created || "").getTime() -
             new Date(b.created || "").getTime()
           );
-        case "priority": {
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          return priorityOrder[b.priority] - priorityOrder[a.priority];
-        }
         case "newest":
         default:
           return (
@@ -366,47 +244,8 @@ export default function Notifications() {
     markAsRead(id);
   };
 
-  const handleMarkAsUnread = (id: string) => {
-    markAsUnread(id);
-  };
-
   const handleDelete = (id: string) => {
     deleteNotification(id);
-  };
-
-  const handleToggleSelect = (id: string) => {
-    setSelectedNotifications((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (selectedNotifications.size === filteredNotifications.length) {
-      setSelectedNotifications(new Set());
-    } else {
-      setSelectedNotifications(new Set(filteredNotifications.map((n) => n.id)));
-    }
-  };
-
-  const handleDeleteSelected = async () => {
-    if (selectedNotifications.size === 0) return;
-
-    try {
-      // Delete each selected notification individually
-      const deletePromises = Array.from(selectedNotifications).map((id) =>
-        deleteNotification(id),
-      );
-      await Promise.all(deletePromises);
-      setSelectedNotifications(new Set());
-    } catch (error) {
-      console.error("Failed to delete selected notifications:", error);
-    }
   };
 
   return (
@@ -440,25 +279,6 @@ export default function Notifications() {
               </TooltipTrigger>
               <TooltipContent>
                 <p>{TEXT.notifications.markAllAsRead}</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => user?.id && markAllAsUnread(user.id)}
-                    disabled={unreadCount === notifications.length}
-                    className="h-8 w-8 p-0"
-                  >
-                    <IconEyeOff className="h-4 w-4" />
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{TEXT.notifications.actions.markAllAsUnread}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -567,36 +387,6 @@ export default function Notifications() {
         </Card>
       </div>
 
-      {/* Selection Controls */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Checkbox
-            checked={
-              selectedNotifications.size === filteredNotifications.length &&
-              filteredNotifications.length > 0
-            }
-            onCheckedChange={handleSelectAll}
-            className="h-4 w-4"
-          />
-          <span className="text-muted-foreground text-sm">
-            {selectedNotifications.size > 0
-              ? `${digitsEnToFa(selectedNotifications.size.toString())} ${TEXT.notifications.selected}`
-              : TEXT.notifications.selectAll}
-          </span>
-        </div>
-        {selectedNotifications.size > 0 && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleDeleteSelected}
-            className="h-7 px-2 text-xs"
-          >
-            <IconTrash className="mr-1 h-3 w-3" />
-            {TEXT.notifications.deleteSelected}
-          </Button>
-        )}
-      </div>
-
       {/* Filters and Sort */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Tabs
@@ -629,9 +419,6 @@ export default function Notifications() {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSort("oldest")}>
               {TEXT.notifications.sort.oldest}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSort("priority")}>
-              {TEXT.notifications.sort.priority}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -686,12 +473,7 @@ export default function Notifications() {
                           key={notification.id}
                           notification={notification}
                           onMarkAsRead={handleMarkAsRead}
-                          onMarkAsUnread={handleMarkAsUnread}
                           onDelete={handleDelete}
-                          isSelected={selectedNotifications.has(
-                            notification.id,
-                          )}
-                          onToggleSelect={handleToggleSelect}
                         />
                       ))}
                     </div>

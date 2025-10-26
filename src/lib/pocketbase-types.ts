@@ -112,17 +112,11 @@ export enum NotificationsTypeOptions {
   "comment" = "comment",
 }
 
-export enum NotificationsPriorityOptions {
-  "low" = "low",
-  "medium" = "medium",
-  "high" = "high",
-}
 export type NotificationsRecord<Tdata = unknown> = {
   created?: IsoDateString;
   data?: null | Tdata;
   id: string;
   message: string;
-  priority: NotificationsPriorityOptions;
   read?: boolean;
   title: string;
   type: NotificationsTypeOptions;
