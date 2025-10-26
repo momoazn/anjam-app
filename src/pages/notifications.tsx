@@ -29,9 +29,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { TEXT } from "@/constants/text";
-import type { NotificationsRecord } from "@/lib/pocketbase-types";
-import { cn } from "@/lib/utils";
-import { useAuthUser } from "@/store/auth-store";
 import {
   useClearAll,
   useClearRead,
@@ -39,9 +36,10 @@ import {
   useMarkAllAsRead,
   useMarkAsRead,
   useNotifications,
-  useIsLoading,
-  useNotificationError,
-} from "@/store/notification-store";
+} from "@/hooks/notifications";
+import type { NotificationsRecord } from "@/lib/pocketbase-types";
+import { cn } from "@/lib/utils";
+import { useAuthUser } from "@/store/auth-store";
 
 type FilterType = "all" | "unread" | "read";
 type SortType = "newest" | "oldest";
@@ -175,15 +173,13 @@ function EmptyState() {
 
 export default function Notifications() {
   const user = useAuthUser();
-  const notifications = useNotifications();
+  const { data: notifications = [], isLoading, error } = useNotifications();
   const markAsRead = useMarkAsRead();
 
   const markAllAsRead = useMarkAllAsRead();
   const deleteNotification = useDeleteNotification();
   const clearAll = useClearAll();
   const clearRead = useClearRead();
-  const isLoading = useIsLoading();
-  const error = useNotificationError();
 
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
@@ -241,11 +237,11 @@ export default function Notifications() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleMarkAsRead = (id: string) => {
-    markAsRead(id);
+    markAsRead.mutate(id);
   };
 
   const handleDelete = (id: string) => {
-    deleteNotification(id);
+    deleteNotification.mutate(id);
   };
 
   return (
@@ -269,7 +265,7 @@ export default function Notifications() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => user?.id && markAllAsRead(user.id)}
+                    onClick={() => user?.id && markAllAsRead.mutate(user.id)}
                     disabled={unreadCount === 0}
                     className="h-8 w-8 p-0"
                   >
@@ -288,7 +284,7 @@ export default function Notifications() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => user?.id && clearRead(user.id)}
+                    onClick={() => user?.id && clearRead.mutate(user.id)}
                     disabled={notifications.filter((n) => n.read).length === 0}
                     className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
                   >
@@ -307,7 +303,7 @@ export default function Notifications() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => user?.id && clearAll(user.id)}
+                    onClick={() => user?.id && clearAll.mutate(user.id)}
                     disabled={notifications.length === 0}
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
                   >
@@ -448,7 +444,9 @@ export default function Notifications() {
           <h3 className="text-foreground mb-2 text-lg font-semibold">
             Failed to load notifications
           </h3>
-          <p className="text-muted-foreground text-sm">{error}</p>
+          <p className="text-muted-foreground text-sm">
+            {error instanceof Error ? error.message : "An error occurred"}
+          </p>
         </div>
       )}
 

@@ -17,7 +17,7 @@ import {
   useMarkAsRead,
   useMarkAllAsRead,
   useClearAll,
-} from "@/store/notification-store";
+} from "@/hooks/notifications";
 import { useAuthUser } from "@/store/auth-store";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
@@ -42,11 +42,11 @@ function NotificationItem({
 }: {
   notification: NotificationsRecord;
 }) {
-  const markAsRead = useMarkAsRead();
+  const markAsReadMutation = useMarkAsRead();
 
   const handleMarkAsRead = (e: React.MouseEvent) => {
     e.stopPropagation();
-    markAsRead(notification.id);
+    markAsReadMutation.mutate(notification.id);
   };
 
   return (
@@ -126,7 +126,7 @@ export function NotificationDropdown({
 }: NotificationDropdownProps) {
   const navigate = useNavigate();
   const user = useAuthUser();
-  const notifications = useNotifications();
+  const { data: notifications = [] } = useNotifications(user?.id);
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
 
@@ -160,7 +160,7 @@ export function NotificationDropdown({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => user?.id && markAllAsRead(user.id)}
+                onClick={() => user?.id && markAllAsRead.mutate(user.id)}
                 className="hover:bg-muted/80 h-7 px-2 text-xs"
                 title={TEXT.notifications.markAllAsRead}
                 aria-label={TEXT.notifications.markAllAsRead}
@@ -171,7 +171,7 @@ export function NotificationDropdown({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => user?.id && clearAll(user.id)}
+                onClick={() => user?.id && clearAll.mutate(user.id)}
                 className="hover:bg-destructive/10 hover:text-destructive h-7 px-2 text-xs"
                 title={TEXT.notifications.clearAll}
                 aria-label={TEXT.notifications.clearAll}
@@ -209,7 +209,7 @@ export function NotificationDropdown({
             aria-live="polite"
             dir="rtl"
           >
-            {recentNotifications.map((notification) => (
+            {recentNotifications.map((notification: NotificationsRecord) => (
               <NotificationItem
                 key={notification.id}
                 notification={notification}

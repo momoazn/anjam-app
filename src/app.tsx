@@ -10,7 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useTheme } from "@/hooks/use-theme";
 
-import { useLoadNotifications } from "@/hooks/use-load-notifications";
+import { useNotifications } from "@/hooks/notifications";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 import { TEXT } from "./constants/text";
@@ -56,7 +56,7 @@ function MainContent() {
 // Layout component
 function AppLayout() {
   const isLoggedIn = useAuthIsLoggedIn();
-  useLoadNotifications();
+  useNotifications(); // Auto-subscribes
 
   return (
     <SidebarProvider>

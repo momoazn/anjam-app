@@ -4,7 +4,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TEXT } from "@/constants/text";
-import { useUnreadCount } from "@/store/notification-store";
+import { useUnreadCount } from "@/hooks/notifications";
 import { cn } from "@/lib/utils";
 
 interface NotificationBadgeProps {
