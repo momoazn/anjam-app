@@ -1,7 +1,7 @@
+import { format, isWithinInterval } from "date-fns-jalali";
 import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { format, isWithinInterval } from "date-fns-jalali";
 
 import { DrilldownDrawer } from "@/components/reports/drilldown-drawer";
 import {
@@ -14,16 +14,18 @@ import { MetricCards } from "@/components/reports/metric-cards";
 import { PriorityDistribution } from "@/components/reports/priority-distribution";
 import { ThroughputChart } from "@/components/reports/throughput-chart";
 import { TimelinessDonut } from "@/components/reports/timeliness-donut";
+import { useProjects, useTasks, useUsers } from "@/hooks";
+import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   buildLeaderboard,
   classifyTimeliness,
   computeOverviewMetrics,
   countByPriority,
   filterTasksByControls,
+  filterTasksNonTime,
   getTimeRange,
   groupThroughput,
 } from "@/lib/reports-utils";
-import { useProjects, useTasks, useUsers } from "@/hooks";
 
 type DrilldownState = {
   title: string;
@@ -57,7 +59,7 @@ export default function Reports() {
   const [drilldown, setDrilldown] = useState<DrilldownState>(null);
   const [bucket, setBucket] = useState<"daily" | "weekly">("daily");
 
-  const debouncedFilters = useDebounce(filtersState, 200);
+  const [debouncedFilters] = useDebounce(filtersState, 200);
 
   const { data: tasks, isPending: tasksPending } = useTasks({
     expandFields: "project,assignee",
@@ -85,14 +87,32 @@ export default function Reports() {
     });
   }, [tasks, timeRange, debouncedFilters.filters]);
 
+  const filteredNonTime = useMemo(() => {
+    if (!tasks) return [];
+    return filterTasksNonTime(tasks, {
+      projectIds: debouncedFilters.filters.projectIds,
+      assigneeIds: debouncedFilters.filters.assigneeIds,
+      statuses: debouncedFilters.filters.statuses,
+      priorities: debouncedFilters.filters.priorities,
+    });
+  }, [tasks, debouncedFilters.filters]);
+
   const overviewMetrics = useMemo(() => {
     if (!filteredTasks) return null;
-    return computeOverviewMetrics({
+    const base = computeOverviewMetrics({
       tasks: filteredTasks,
       now: new Date(),
       range: timeRange,
     });
-  }, [filteredTasks, timeRange]);
+    const wip = filteredNonTime.filter(
+      (t) => t.status === "in_progress",
+    ).length;
+    const overdue = filteredNonTime.filter(
+      (t) =>
+        t.status !== "done" && t.deadline && new Date(t.deadline) < new Date(),
+    ).length;
+    return { ...base, wip, overdue };
+  }, [filteredTasks, filteredNonTime, timeRange]);
 
   const throughputData = useMemo(() => {
     if (!filteredTasks) return [];
@@ -125,14 +145,14 @@ export default function Reports() {
 
   const handleDrilldown = (
     title: string,
-    predicate: (task: (typeof filteredTasks)[0]) => boolean,
+    predicate: (task: TaskWithProject) => boolean,
   ) => {
     if (!filteredTasks) return;
 
     const matchingTasks = filteredTasks.filter(predicate);
     const rows = matchingTasks.map((task) => ({
       id: task.id,
-      title: task.title,
+      title: task.title || "بدون عنوان",
       status: task.status,
       priority: task.priority,
       deadline: task.deadline || null,
@@ -212,17 +232,21 @@ export default function Reports() {
             <ThroughputChart
               data={throughputData}
               bucket={bucket}
-              onBarClick={(date) =>
-                handleDrilldown(
-                  `تسک‌های تکمیل شده در ${date}`,
-                  (task) =>
-                    task.status === "done" &&
-                    task.updated &&
-                    (bucket === "daily"
-                      ? format(new Date(task.updated), "yyyy/MM/dd") ===
-                        date.split(" ")[0]
-                      : true), // weekly not implemented
-                )
+              onBarClick={(key, label) =>
+                handleDrilldown(`تسک‌های تکمیل شده در ${label}`, (task) => {
+                  if (task.status !== "done" || !task.updated) return false;
+                  const updated = new Date(task.updated);
+                  if (bucket === "daily") {
+                    return format(updated, "yyyy-MM-dd") === key;
+                  } else {
+                    // Weekly: match if updated within [weekStart, weekStart+6d 23:59:59]
+                    const weekStart = new Date(key);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekStart.getDate() + 6);
+                    weekEnd.setHours(23, 59, 59, 999);
+                    return updated >= weekStart && updated <= weekEnd;
+                  }
+                })
               }
             />
           </div>

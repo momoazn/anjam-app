@@ -15,9 +15,9 @@ const chartConfig = {
 };
 
 type Props = {
-  data: Array<{ date: string; count: number }>;
+  data: Array<{ key: string; label: string; count: number }>;
   bucket?: "daily" | "weekly";
-  onBarClick?: (date: string) => void;
+  onBarClick?: (key: string, label: string) => void;
 };
 
 export function ThroughputChart({ data, onBarClick }: Props) {
@@ -33,12 +33,13 @@ export function ThroughputChart({ data, onBarClick }: Props) {
           className="stroke-muted/20"
         />
         <XAxis
-          dataKey="date"
+          dataKey="label"
           angle={-45}
           textAnchor="end"
           tick={{ fontSize: 10 }}
           height={60}
           className="text-muted-foreground"
+          tickFormatter={(label) => digitsEnToFa(label as string)}
         />
         <YAxis
           tick={{ fontSize: 10 }}
@@ -61,7 +62,7 @@ export function ThroughputChart({ data, onBarClick }: Props) {
           name="تسک‌های تکمیل شده"
           fill={chartConfig.completed.color}
           radius={[4, 4, 0, 0]}
-          onClick={(data) => onBarClick?.(data.date)}
+          onClick={(entry) => onBarClick?.(entry.key, entry.label)}
           style={{ cursor: onBarClick ? "pointer" : "default" }}
         />
       </BarChart>

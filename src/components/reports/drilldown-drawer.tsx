@@ -83,6 +83,7 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
                   <TableHead>سن (روز)</TableHead>
                   <TableHead>مجری</TableHead>
                   <TableHead>پروژه</TableHead>
+                  <TableHead>برچسب‌ها</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -103,6 +104,9 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
                     <TableCell>{row.ageDays}</TableCell>
                     <TableCell>{row.assigneeName}</TableCell>
                     <TableCell>{row.projectName}</TableCell>
+                    <TableCell>
+                      {row.tags?.length ? row.tags.join(", ") : "—"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

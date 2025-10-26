@@ -1,15 +1,16 @@
 import {
   format,
+  isWithinInterval,
   startOfQuarter,
   startOfYear,
-  isWithinInterval,
 } from "date-fns-jalali";
+import type { TaskWithProject } from "./pocketbase";
+import type { UsersRecord } from "./pocketbase-types";
 import {
-  TasksStatusOptions,
   TasksPriorityOptions,
+  TasksStatusOptions,
   UsersRoleOptions,
 } from "./pocketbase-types";
-import type { TasksRecord, UsersRecord } from "./pocketbase-types";
 
 // Types for chart data
 export type StatusDistributionData = {
@@ -69,7 +70,7 @@ const PRIORITY_OPTIONS = ["urgent", "high", "medium", "low"] as const;
  * Calculate status distribution for tasks
  */
 export function calculateStatusDistribution(
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
 ): StatusDistributionData[] {
   return Object.values(TasksStatusOptions).map((status) => ({
     name: STATUS_LABELS[status],
@@ -82,7 +83,7 @@ export function calculateStatusDistribution(
  * Calculate priority distribution for tasks
  */
 export function calculatePriorityDistribution(
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
 ): PriorityDistributionData[] {
   return PRIORITY_OPTIONS.map((priority) => ({
     name: PRIORITY_LABELS[priority],
@@ -95,7 +96,7 @@ export function calculatePriorityDistribution(
  * Calculate completion trend over the last 30 days
  */
 export function calculateCompletionTrend(
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
 ): CompletionTrendData[] {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -133,7 +134,7 @@ export function calculateCompletionTrend(
  */
 export function calculateUserPerformance(
   users: UsersRecord[],
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
 ): UserPerformanceData[] {
   return users
     .filter((user) => user.role && user.role === UsersRoleOptions.employee)
@@ -162,7 +163,7 @@ export function calculateUserPerformance(
 /**
  * Calculate all task statistics
  */
-export function calculateTaskStats(tasks: TasksRecord[]): TaskStatsData {
+export function calculateTaskStats(tasks: TaskWithProject[]): TaskStatsData {
   return {
     statusDistribution: calculateStatusDistribution(tasks),
     completionTrend: calculateCompletionTrend(tasks),
@@ -270,8 +271,39 @@ export function getTimeRange(
 }
 
 // Filtering helpers
+export function filterTasksNonTime(
+  tasks: TaskWithProject[],
+  controls: {
+    projectIds?: string[];
+    assigneeIds?: string[];
+    statuses?: TasksStatusOptions[];
+    priorities?: TasksPriorityOptions[];
+  },
+): TaskWithProject[] {
+  return tasks.filter((task) => {
+    if (
+      controls.projectIds?.length &&
+      !controls.projectIds.includes(task.project ?? "")
+    )
+      return false;
+    if (
+      controls.assigneeIds?.length &&
+      !controls.assigneeIds.includes(task.assignee ?? "")
+    )
+      return false;
+    if (controls.statuses?.length && !controls.statuses.includes(task.status))
+      return false;
+    if (
+      controls.priorities?.length &&
+      !controls.priorities.includes(task.priority)
+    )
+      return false;
+    return true;
+  });
+}
+
 export function filterTasksByControls(
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
   controls: {
     start: Date;
     end: Date;
@@ -280,7 +312,7 @@ export function filterTasksByControls(
     statuses?: TasksStatusOptions[];
     priorities?: TasksPriorityOptions[];
   },
-): TasksRecord[] {
+): TaskWithProject[] {
   return tasks.filter((task) => {
     // Project filter
     if (controls.projectIds && controls.projectIds.length > 0) {
@@ -330,7 +362,7 @@ export function filterTasksByControls(
 
 // Overview metrics
 export function computeOverviewMetrics(params: {
-  tasks: TasksRecord[];
+  tasks: TaskWithProject[];
   now: Date;
   range: { start: Date; end: Date };
 }): {
@@ -383,10 +415,10 @@ export function computeOverviewMetrics(params: {
 
 // Throughput
 export function groupThroughput(
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
   bucket: "daily" | "weekly",
   range: { start: Date; end: Date },
-): Array<{ date: string; count: number }> {
+): Array<{ key: string; label: string; count: number }> {
   const map = new Map<string, number>();
 
   tasks.forEach((task) => {
@@ -412,15 +444,16 @@ export function groupThroughput(
   // Convert to sorted array with Jalali display labels
   return Array.from(map.entries())
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, count]) => ({
-      date: format(new Date(date), "MMM dd", { locale: undefined }),
+    .map(([key, count]) => ({
+      key,
+      label: format(new Date(key), "MMM dd", { locale: undefined }),
       count,
     }));
 }
 
 // Timeliness classification
 export function classifyTimeliness(
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
   range: { start: Date; end: Date },
 ): { on_time: number; overdue: number; no_deadline: number } {
   const counts = { on_time: 0, overdue: 0, no_deadline: 0 };
@@ -446,7 +479,7 @@ export function classifyTimeliness(
 
 // Priority distribution
 export function countByPriority(
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
   options?: { onlyOpen?: boolean },
 ): Array<{ key: TasksPriorityOptions; name: string; value: number }> {
   const counts = new Map<TasksPriorityOptions, number>();
@@ -468,7 +501,7 @@ export function countByPriority(
 // Leaderboard
 export function buildLeaderboard(
   users: UsersRecord[],
-  tasks: TasksRecord[],
+  tasks: TaskWithProject[],
   range: { start: Date; end: Date },
 ): Array<{
   userId: string;
