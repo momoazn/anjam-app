@@ -174,7 +174,9 @@ export default function ProjectUsers() {
                   <span>{project?.expand?.supervisor.username}</span>
                 </div>
               </TableCell>
-              <TableCell className="text-center">سرپرست</TableCell>
+              <TableCell className="text-center">
+                {TEXT.users.table.roles.supervisor}
+              </TableCell>
             </TableRow>
             {projectUsers?.map((user) => (
               <TableRow key={user.id}>
@@ -184,7 +186,9 @@ export default function ProjectUsers() {
                     <span>{user.username}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-center">کارمند</TableCell>
+                <TableCell className="text-center">
+                  {TEXT.users.table.roles.employee}
+                </TableCell>
                 {canManageUsers && (
                   <TableCell className="text-center">
                     <Button

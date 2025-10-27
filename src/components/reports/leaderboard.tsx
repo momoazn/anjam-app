@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TEXT } from "@/constants/text";
 
 type Props = {
   rows: Array<{
@@ -25,7 +26,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
   if (rows.length === 0) {
     return (
       <div className="text-muted-foreground flex h-48 items-center justify-center">
-        هیچ داده‌ای برای نمایش وجود ندارد
+        {TEXT.reports.noData}
       </div>
     );
   }
@@ -34,17 +35,23 @@ export function Leaderboard({ rows, onRowClick }: Props) {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Trophy className="h-4 w-4 text-yellow-500" />
-        <h3 className="text-sm font-medium">برترین مجریان</h3>
+        <h3 className="text-sm font-medium">{TEXT.reports.topPerformers}</h3>
       </div>
 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">#</TableHead>
-            <TableHead>نام</TableHead>
-            <TableHead className="text-center">تکمیل شده</TableHead>
-            <TableHead className="text-center">نرخ تکمیل</TableHead>
-            <TableHead className="text-center">نرخ به‌موقع</TableHead>
+            <TableHead className="w-12">{TEXT.reports.rank}</TableHead>
+            <TableHead>{TEXT.reports.name}</TableHead>
+            <TableHead className="text-center">
+              {TEXT.reports.taskCompleted}
+            </TableHead>
+            <TableHead className="text-center">
+              {TEXT.reports.completionRate}
+            </TableHead>
+            <TableHead className="text-center">
+              {TEXT.reports.onTimeRate}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

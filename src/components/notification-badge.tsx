@@ -29,12 +29,12 @@ export function NotificationBadge({
       )}
       title={
         unreadCount > 0
-          ? `${unreadCount} اعلان خوانده نشده`
+          ? `${unreadCount} ${TEXT.notification.unreadCount}`
           : TEXT.notifications.title
       }
       aria-label={
         unreadCount > 0
-          ? `${digitsEnToFa(unreadCount)} اعلان خوانده نشده`
+          ? `${digitsEnToFa(unreadCount)} ${TEXT.notification.unreadCount}`
           : TEXT.notifications.title
       }
     >
@@ -51,7 +51,7 @@ export function NotificationBadge({
         <Badge
           variant="destructive"
           className="absolute -top-1 -right-1 flex size-5 items-center justify-center p-0 text-xs font-medium shadow-sm"
-          aria-label={`${unreadCount} اعلان خوانده نشده`}
+          aria-label={`${unreadCount} ${TEXT.notification.unreadCount}`}
         >
           {unreadCount > 99 ? "۹۹+" : digitsEnToFa(unreadCount)}
         </Badge>

@@ -8,15 +8,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TEXT } from "@/constants/text";
 
-import { useTaskFilters } from "@/hooks/use-task-filters";
+import { CreateTaskDialog } from "@/components/task/create-task-dialog";
+import { queryKeys } from "@/hooks/query-keys";
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
+import { useTaskFilters } from "@/hooks/use-task-filters";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
-import { Plus, FilterX, FolderOpen } from "lucide-react";
-import { CreateTaskDialog } from "@/components/task/create-task-dialog";
 import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/hooks/query-keys";
+import { FilterX, FolderOpen, Plus } from "lucide-react";
 
 // Loading skeleton component for project tasks
 const ProjectTaskListSkeleton = () => (
@@ -172,7 +172,7 @@ export default function ProjectTasks() {
             <div className="mb-2 flex items-center gap-2">
               <FolderOpen className="text-muted-foreground h-6 w-6" />
               <h1 className="text-3xl font-bold tracking-tight">
-                {project?.name || "پروژه"}
+                {project?.name || TEXT.projects.fallbacks.name}
               </h1>
             </div>
             <p className="text-muted-foreground">
@@ -220,16 +220,11 @@ export default function ProjectTasks() {
         ) : !filteredTasks || filteredTasks.length === 0 ? (
           <ProjectEmptyState
             hasFilters={hasActiveFilters}
-            projectName={project?.name || "این پروژه"}
+            projectName={project?.name || TEXT.projects.fallbacks.thisProject}
           />
         ) : (
           statusOrder?.map((status) => {
             const tasks = groupedTasks?.[status] ?? [];
-
-            // Only render the group if it contains tasks after filtering
-            if (tasks.length === 0) {
-              return null;
-            }
 
             return (
               <TaskListGroup

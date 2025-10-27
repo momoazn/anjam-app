@@ -1,16 +1,19 @@
+import { TEXT } from "@/constants/text";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
 const chartConfig = {
   completed: {
-    label: "تسک‌های تکمیل شده",
-    color: "#3b82f6",
+    label: TEXT.reports.completedTasks,
+    color: "var(--chart-1)",
   },
 };
 
@@ -22,44 +25,52 @@ type Props = {
 
 export function ThroughputChart({ data, onBarClick }: Props) {
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} className="h-full w-full">
       <BarChart
         data={data}
-        margin={{ top: 10, right: 10, left: 0, bottom: 30 }}
+        margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
       >
         <CartesianGrid
           strokeDasharray="3 3"
           vertical={false}
-          className="stroke-muted/20"
+          stroke="var(--muted)"
         />
         <XAxis
           dataKey="label"
           angle={-45}
           textAnchor="end"
-          tick={{ fontSize: 10 }}
-          height={60}
-          className="text-muted-foreground"
+          tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+          height={80}
           tickFormatter={(label) => digitsEnToFa(label as string)}
         />
         <YAxis
-          tick={{ fontSize: 10 }}
+          tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
           tickFormatter={(value) => digitsEnToFa(value)}
-          className="text-muted-foreground"
+        />
+        <ChartLegend
+          payload={[
+            {
+              value: chartConfig.completed.label,
+              color: chartConfig.completed.color,
+              type: "square",
+              id: "completed",
+            },
+          ]}
+          content={<ChartLegendContent />}
         />
         <ChartTooltip
           content={
             <ChartTooltipContent
               formatter={(value) => [
                 digitsEnToFa(value as number),
-                "تسک‌های تکمیل شده",
+                chartConfig.completed.label,
               ]}
-              labelFormatter={(label) => `تاریخ: ${label}`}
+              labelFormatter={(label) => `${TEXT.charts.dateLabel} ${label}`}
             />
           }
         />
         <Bar
           dataKey="count"
-          name="تسک‌های تکمیل شده"
           fill={chartConfig.completed.color}
           radius={[4, 4, 0, 0]}
           onClick={(entry) => onBarClick?.(entry.key, entry.label)}

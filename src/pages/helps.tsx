@@ -5,25 +5,22 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
+import { TEXT } from "@/constants/text";
 
 export default function Helps() {
   return (
     <div className="container mx-auto px-4 py-6 md:px-8 md:py-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold md:text-3xl">
-            راهنمای استفاده از سیستم
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            راهنمای کامل برای استفاده از امکانات سیستم مدیریت تسک‌ها
-          </p>
+          <h1 className="text-2xl font-bold md:text-3xl">{TEXT.helps.title}</h1>
+          <p className="text-muted-foreground mt-2">{TEXT.helps.description}</p>
         </div>
         <div className="flex gap-2">
           <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            سوالات متداول
+            {TEXT.helps.buttons.faq}
           </button>
           <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            تماس با پشتیبانی
+            {TEXT.helps.buttons.support}
           </button>
         </div>
       </div>
@@ -32,59 +29,107 @@ export default function Helps() {
         {/* Getting Started Section */}
         <AccordionItem value="getting-started">
           <AccordionTrigger className="text-lg md:text-xl">
-            شروع کار با سیستم
+            {TEXT.helps.content.gettingStarted.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                مراحل اولیه
+                {TEXT.helps.content.gettingStarted.steps.title}
               </h3>
               <ol className="list-inside list-decimal space-y-2">
                 <li>
-                  <span className="font-medium">ورود به سیستم:</span> با نام
-                  کاربری و رمز عبور خود وارد شوید
+                  <span className="font-medium">
+                    {TEXT.helps.content.gettingStarted.steps.login.label}:
+                  </span>{" "}
+                  {TEXT.helps.content.gettingStarted.steps.login.description}
                 </li>
                 <li>
-                  <span className="font-medium">آشنایی با داشبورد:</span>{" "}
-                  داشبورد اصلی آمار و اطلاعات کلی را نمایش می‌دهد
+                  <span className="font-medium">
+                    {TEXT.helps.content.gettingStarted.steps.dashboard.label}:
+                  </span>{" "}
+                  {
+                    TEXT.helps.content.gettingStarted.steps.dashboard
+                      .description
+                  }
                 </li>
                 <li>
-                  <span className="font-medium">ایجاد اولین پروژه:</span> از بخش
-                  پروژه‌ها، پروژه جدیدی ایجاد کنید
+                  <span className="font-medium">
+                    {
+                      TEXT.helps.content.gettingStarted.steps.createProject
+                        .label
+                    }
+                    :
+                  </span>{" "}
+                  {
+                    TEXT.helps.content.gettingStarted.steps.createProject
+                      .description
+                  }
                 </li>
                 <li>
-                  <span className="font-medium">افزودن اعضا:</span> کاربران را
-                  به پروژه اضافه کنید
+                  <span className="font-medium">
+                    {TEXT.helps.content.gettingStarted.steps.addMembers.label}:
+                  </span>{" "}
+                  {
+                    TEXT.helps.content.gettingStarted.steps.addMembers
+                      .description
+                  }
                 </li>
                 <li>
-                  <span className="font-medium">ایجاد تسک‌ها:</span> تسک‌های
-                  کاری را تعریف و تخصیص دهید
+                  <span className="font-medium">
+                    {TEXT.helps.content.gettingStarted.steps.createTasks.label}:
+                  </span>{" "}
+                  {
+                    TEXT.helps.content.gettingStarted.steps.createTasks
+                      .description
+                  }
                 </li>
               </ol>
             </div>
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                کلیدهای میانبر
+                {TEXT.helps.content.gettingStarted.keyboardShortcuts.title}
               </h3>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <div className="rounded border p-2">
                   <code className="text-sm">Ctrl/Cmd + K</code>
                   <span className="text-muted-foreground mr-2">
-                    : فوکوس روی جستجو
+                    :{" "}
+                    {
+                      TEXT.helps.content.gettingStarted.keyboardShortcuts
+                        .focusSearch
+                    }
                   </span>
                 </div>
                 <div className="rounded border p-2">
                   <code className="text-sm">Ctrl/Cmd + N</code>
-                  <span className="text-muted-foreground mr-2">: تسک جدید</span>
+                  <span className="text-muted-foreground mr-2">
+                    :{" "}
+                    {
+                      TEXT.helps.content.gettingStarted.keyboardShortcuts
+                        .newTask
+                    }
+                  </span>
                 </div>
                 <div className="rounded border p-2">
                   <code className="text-sm">Ctrl/Cmd + P</code>
-                  <span className="text-muted-foreground mr-2">: پروژه‌ها</span>
+                  <span className="text-muted-foreground mr-2">
+                    :{" "}
+                    {
+                      TEXT.helps.content.gettingStarted.keyboardShortcuts
+                        .projects
+                    }
+                  </span>
                 </div>
                 <div className="rounded border p-2">
                   <code className="text-sm">Ctrl/Cmd + D</code>
-                  <span className="text-muted-foreground mr-2">: داشبورد</span>
+                  <span className="text-muted-foreground mr-2">
+                    :{" "}
+                    {
+                      TEXT.helps.content.gettingStarted.keyboardShortcuts
+                        .dashboard
+                    }
+                  </span>
                 </div>
               </div>
             </div>
@@ -94,55 +139,56 @@ export default function Helps() {
         {/* Features Section */}
         <AccordionItem value="features">
           <AccordionTrigger className="text-lg md:text-xl">
-            امکانات و ویژگی‌ها
+            {TEXT.helps.content.features.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
-              <h3 className="mb-2 text-lg font-semibold">مدیریت کاربران</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.features.userManagement.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>ایجاد و مدیریت کاربران با نقش‌های مختلف</li>
-                <li>تعیین دسترسی‌های کاربران</li>
-                <li>مدیریت عضویت کاربران در پروژه‌ها</li>
-                <li>تغییر نقش کاربران توسط مدیران سیستم</li>
-                <li>امکان تغییر اطلاعات شخصی توسط خود کاربر</li>
+                {TEXT.helps.content.features.userManagement.items.map(
+                  (item, index) => (
+                    <li key={index}>{item}</li>
+                  ),
+                )}
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">مدیریت پروژه‌ها</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.features.projectManagement.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>ایجاد و مدیریت پروژه‌های مختلف</li>
-                <li>تعیین سرپرست و اعضای پروژه</li>
-                <li>مشاهده وضعیت کلی پروژه</li>
-                <li>دسته‌بندی و مدیریت تسک‌ها</li>
-                <li>نمایش آمار و وضعیت پیشرفت پروژه</li>
-                <li>مدیریت دسترسی اعضای پروژه</li>
+                {TEXT.helps.content.features.projectManagement.items.map(
+                  (item, index) => (
+                    <li key={index}>{item}</li>
+                  ),
+                )}
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">مدیریت تسک‌ها</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.features.taskManagement.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>ایجاد و مدیریت تسک‌ها با جزئیات کامل</li>
-                <li>تعیین اولویت و وضعیت تسک‌ها</li>
-                <li>اختصاص تسک به کاربران</li>
-                <li>تعیین مهلت انجام</li>
-                <li>دسته‌بندی تسک‌ها بر اساس وضعیت</li>
-                <li>شماره‌گذاری خودکار تسک‌ها (مثال: PRJ-001)</li>
-                <li>امکان فیلتر تسک‌ها بر اساس وضعیت و اولویت</li>
-                {/* <li>نمایش تاریخچه تغییرات تسک‌ها</li> */}
+                {TEXT.helps.content.features.taskManagement.items.map(
+                  (item, index) => (
+                    <li key={index}>{item}</li>
+                  ),
+                )}
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">رابط کاربری</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.features.ui.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>طراحی ساده و کاربرپسند</li>
-                <li>دسترسی سریع به بخش‌های مختلف</li>
-                <li>نمایش اطلاعات به صورت سازمان‌یافته</li>
-                {/* <li>پشتیبانی از زبان فارسی</li>
-                <li>رابط کاربری واکنش‌گرا (Responsive)</li> */}
-                <li>نمایش اعلان‌های سیستمی</li>
+                {TEXT.helps.content.features.ui.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
           </AccordionContent>
@@ -151,46 +197,41 @@ export default function Helps() {
         {/* User Roles Section */}
         <AccordionItem value="roles">
           <AccordionTrigger className="text-lg md:text-xl">
-            نقش‌های کاربری و دسترسی‌ها
+            {TEXT.helps.content.roles.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
-              <h3 className="mb-2 text-lg font-semibold">مدیر سیستم (Admin)</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.roles.admin.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>دسترسی کامل به تمام بخش‌های سیستم</li>
-                <li>ایجاد، ویرایش و حذف کاربران با هر نقشی</li>
-                <li>نمایش همه پروژه‌ها</li>
-                <li>ایجاد، ویرایش و حذف تمام تسک‌ها</li>
-                <li>مدیریت دسترسی‌های کاربران به پروژه‌ها</li>
-                <li>تغییر نقش کاربران</li>
-                {/* <li>مشاهده گزارش‌های سیستمی</li> */}
+                {TEXT.helps.content.roles.admin.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                سرپرست (Supervisor)
+                {TEXT.helps.content.roles.supervisor.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>ایجاد و مدیریت پروژه‌های خود</li>
-                <li>اضافه کردن کاربران به پروژه‌های تحت نظارت</li>
-                <li>ایجاد و مدیریت تسک‌ها در پروژه‌های تحت نظارت</li>
-                <li>مشاهده و ویرایش اطلاعات کاربران پروژه‌های تحت نظارت</li>
-                <li>تعیین وضعیت و اولویت تسک‌ها</li>
-                <li>مشاهده گزارش عملکرد اعضای پروژه</li>
-                <li>تعیین مهلت زمانی برای تسک‌ها</li>
+                {TEXT.helps.content.roles.supervisor.items.map(
+                  (item, index) => (
+                    <li key={index}>{item}</li>
+                  ),
+                )}
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">کارمند (Employee)</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.roles.employee.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>مشاهده پروژه‌هایی که در آن‌ها عضو است</li>
-                <li>مشاهده و ویرایش تسک‌های اختصاص داده شده</li>
-                <li>به‌روزرسانی وضعیت تسک‌های خود</li>
-                <li>مشاهده سایر اعضای پروژه</li>
-                <li>دریافت اعلان‌های مربوط به تسک‌های خود</li>
-                <li>مشاهده تاریخچه فعالیت‌های خود</li>
+                {TEXT.helps.content.roles.employee.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
           </AccordionContent>
@@ -199,62 +240,66 @@ export default function Helps() {
         {/* Projects Section */}
         <AccordionItem value="projects">
           <AccordionTrigger className="text-lg md:text-xl">
-            پروژه‌ها
+            {TEXT.helps.content.projects.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
-              <h3 className="mb-2 text-lg font-semibold">درباره پروژه‌ها</h3>
-              <p>
-                پروژه‌ها واحدهای اصلی سازماندهی کار در سیستم هستند. هر پروژه
-                شامل:
-              </p>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.projects.about.title}
+              </h3>
+              <p>{TEXT.helps.content.projects.about.description}</p>
               <ul className="list-inside list-disc space-y-1 pt-2">
-                <li>نام پروژه</li>
-                <li>کد پروژه</li>
-                <li>سرپرست پروژه</li>
-                <li>اعضای پروژه</li>
-                <li>مجموعه‌ای از تسک‌ها</li>
-                <li>تاریخ ایجاد و آخرین به‌روزرسانی</li>
+                {TEXT.helps.content.projects.about.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                ایجاد و ویرایش پروژه
+                {TEXT.helps.content.projects.createEdit.title}
               </h3>
-              <p>برای ایجاد پروژه جدید:</p>
+              <p>{TEXT.helps.content.projects.createEdit.description}</p>
               <ol className="list-inside list-decimal space-y-1 pt-2">
-                <li>به بخش "پروژه‌ها" بروید</li>
-                <li>روی دکمه "پروژه جدید" کلیک کنید</li>
-                <li>نام پروژه را وارد کنید</li>
-                <li>کد پروژه را وارد کنید (باید ۳ حرفی و با حروف بزرگ باشد)</li>
-                <li>دکمه "ایجاد" را بزنید</li>
+                {TEXT.helps.content.projects.createEdit.steps.map(
+                  (step, index) => (
+                    <li key={index}>{step}</li>
+                  ),
+                )}
               </ol>
-              <p className="mt-4">پس از ایجاد پروژه می‌توانید:</p>
+              <p className="mt-4">
+                {TEXT.helps.content.projects.createEdit.afterCreate}
+              </p>
               <ul className="list-inside list-disc space-y-1 pt-2">
-                <li>اعضای پروژه را اضافه کنید</li>
-                <li>تسک‌های جدید ایجاد کنید</li>
-                <li>وضعیت کلی پروژه را مشاهده کنید</li>
-                <li>گزارش‌های پیشرفت را بررسی کنید</li>
+                {TEXT.helps.content.projects.createEdit.afterSteps.map(
+                  (step, index) => (
+                    <li key={index}>{step}</li>
+                  ),
+                )}
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">مدیریت اعضای پروژه</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.projects.members.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>افزودن کاربران جدید به پروژه</li>
-                <li>حذف کاربران از پروژه</li>
-                <li>مشاهده لیست اعضای فعلی</li>
-                <li>تعیین دسترسی‌های اعضا</li>
+                {TEXT.helps.content.projects.members.items.map(
+                  (item, index) => (
+                    <li key={index}>{item}</li>
+                  ),
+                )}
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">دسترسی به پروژه‌ها</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.projects.access.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>مدیران سیستم: دسترسی به تمام پروژه‌ها</li>
-                <li>سرپرستان: دسترسی به پروژه‌های تحت نظارت خود</li>
-                <li>کارمندان: دسترسی به پروژه‌هایی که در آن‌ها عضو هستند</li>
+                {TEXT.helps.content.projects.access.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
           </AccordionContent>
@@ -263,115 +308,96 @@ export default function Helps() {
         {/* Tasks Section */}
         <AccordionItem value="tasks">
           <AccordionTrigger className="text-lg md:text-xl">
-            تسک‌ها
+            {TEXT.helps.content.tasks.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
-              <h3 className="mb-2 text-lg font-semibold">درباره تسک‌ها</h3>
-              <p>تسک‌ها واحدهای کاری در هر پروژه هستند. هر تسک شامل:</p>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.tasks.about.title}
+              </h3>
+              <p>{TEXT.helps.content.tasks.about.description}</p>
               <ul className="list-inside list-disc space-y-1 pt-2">
-                <li>عنوان و توضیحات</li>
-                <li>شماره منحصر به فرد (مثال: PRJ-001)</li>
-                <li>وضعیت (برای انجام، در حال انجام، انجام‌شده، لغوشده)</li>
-                <li>اولویت (فوری، بالا، متوسط، پایین)</li>
-                <li>مسئول انجام</li>
-                <li>مهلت انجام</li>
+                {TEXT.helps.content.tasks.about.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
                 {/* <li>تاریخ ایجاد و آخرین به‌روزرسانی</li> */}
                 {/* <li>ایجادکننده تسک</li> */}
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">وضعیت‌های تسک</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.tasks.statuses.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>
-                  <span className="font-medium">برای انجام (Todo):</span>{" "}
-                  تسک‌های جدید که هنوز شروع نشده‌اند
-                </li>
-                <li>
-                  <span className="font-medium">
-                    در حال انجام (In Progress):
-                  </span>{" "}
-                  تسک‌هایی که در حال حاضر روی آن‌ها کار می‌شود
-                </li>
-                <li>
-                  <span className="font-medium">انجام‌شده (Done):</span> تسک‌های
-                  تکمیل شده
-                </li>
-                <li>
-                  <span className="font-medium">لغوشده (Canceled):</span>{" "}
-                  تسک‌هایی که به هر دلیلی لغو شده‌اند
-                </li>
+                <li>{TEXT.helps.content.tasks.statuses.todo}</li>
+                <li>{TEXT.helps.content.tasks.statuses.inProgress}</li>
+                <li>{TEXT.helps.content.tasks.statuses.done}</li>
+                <li>{TEXT.helps.content.tasks.statuses.canceled}</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">اولویت‌های تسک</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {TEXT.helps.content.tasks.priorities.title}
+              </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>
-                  <span className="font-medium">فوری (Urgent):</span> نیاز به
-                  رسیدگی فوری دارد
-                </li>
-                <li>
-                  <span className="font-medium">بالا (High):</span> اولویت بالا
-                  برای انجام
-                </li>
-                <li>
-                  <span className="font-medium">متوسط (Medium):</span> اولویت
-                  معمولی
-                </li>
-                <li>
-                  <span className="font-medium">پایین (Low):</span> می‌تواند با
-                  تأخیر انجام شود
-                </li>
+                <li>{TEXT.helps.content.tasks.priorities.urgent}</li>
+                <li>{TEXT.helps.content.tasks.priorities.high}</li>
+                <li>{TEXT.helps.content.tasks.priorities.medium}</li>
+                <li>{TEXT.helps.content.tasks.priorities.low}</li>
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                ایجاد و ویرایش تسک
+                {TEXT.helps.content.tasks.createEdit.title}
               </h3>
-              <p>برای ایجاد تسک جدید:</p>
+              <p>{TEXT.helps.content.tasks.createEdit.description}</p>
               <ol className="list-inside list-decimal space-y-1 pt-2">
-                <li>
-                  وارد پروژه مورد نظر شوید یا از بخش "تسک‌ها" استفاده کنید
-                </li>
-                <li>روی دکمه "افزودن تسک" یا دکمه "+" کلیک کنید</li>
-                <li>عنوان و توضیحات تسک را وارد کنید</li>
-                <li>اولویت و وضعیت را تعیین کنید</li>
-                <li>مسئول انجام را مشخص کنید</li>
-                <li>در صورت نیاز، مهلت انجام را تعیین کنید</li>
-                <li>دکمه "ایجاد" را بزنید</li>
+                {TEXT.helps.content.tasks.createEdit.steps.map(
+                  (step, index) => (
+                    <li key={index}>{step}</li>
+                  ),
+                )}
               </ol>
             </div>
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                نکات کاربردی
+                {TEXT.helps.content.tasks.tips.title}
               </h3>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="rounded-lg border p-3">
-                  <h4 className="text-sm font-medium">فیلتر و جستجو</h4>
+                  <h4 className="text-sm font-medium">
+                    {TEXT.helps.content.tasks.tips.filterSearch.title}
+                  </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    از فیلترهای پیشرفته برای یافتن تسک‌های مورد نظر استفاده کنید
+                    {TEXT.helps.content.tasks.tips.filterSearch.description}
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
-                  <h4 className="text-sm font-medium">اولویت‌بندی</h4>
+                  <h4 className="text-sm font-medium">
+                    {TEXT.helps.content.tasks.tips.prioritization.title}
+                  </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    تسک‌های فوری را با اولویت بالا مشخص کنید
+                    {TEXT.helps.content.tasks.tips.prioritization.description}
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
-                  <h4 className="text-sm font-medium">مهلت زمانی</h4>
+                  <h4 className="text-sm font-medium">
+                    {TEXT.helps.content.tasks.tips.deadlines.title}
+                  </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    همیشه مهلت انجام را مشخص کنید تا تسک‌ها فراموش نشوند
+                    {TEXT.helps.content.tasks.tips.deadlines.description}
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
-                  <h4 className="text-sm font-medium">به‌روزرسانی وضعیت</h4>
+                  <h4 className="text-sm font-medium">
+                    {TEXT.helps.content.tasks.tips.statusUpdates.title}
+                  </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    وضعیت تسک‌ها را به طور منظم به‌روزرسانی کنید
+                    {TEXT.helps.content.tasks.tips.statusUpdates.description}
                   </p>
                 </div>
               </div>
@@ -393,48 +419,62 @@ export default function Helps() {
         {/* Troubleshooting Section */}
         <AccordionItem value="troubleshooting">
           <AccordionTrigger className="text-lg md:text-xl">
-            راهنمای عیب‌یابی
+            {TEXT.helps.content.troubleshooting.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                مشکلات رایج
+                {TEXT.helps.content.troubleshooting.problems.title}
               </h3>
               <div className="space-y-3">
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    نمی‌توانم وارد سیستم شوم
+                    {TEXT.helps.content.troubleshooting.problems.login.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    نام کاربری و رمز عبور خود را بررسی کنید. در صورت فراموشی، با
-                    مدیر سیستم تماس بگیرید.
+                    {
+                      TEXT.helps.content.troubleshooting.problems.login
+                        .description
+                    }
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    تسک‌ها نمایش داده نمی‌شوند
+                    {TEXT.helps.content.troubleshooting.problems.noTasks.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    فیلترهای اعمال شده را بررسی کنید و در صورت نیاز آنها را پاک
-                    کنید.
+                    {
+                      TEXT.helps.content.troubleshooting.problems.noTasks
+                        .description
+                    }
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    نمی‌توانم تسک جدیدی ایجاد کنم
+                    {
+                      TEXT.helps.content.troubleshooting.problems
+                        .cannotCreateTask.title
+                    }
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    مطمئن شوید که به پروژه مورد نظر دسترسی دارید و نقش شما اجازه
-                    ایجاد تسک را می‌دهد.
+                    {
+                      TEXT.helps.content.troubleshooting.problems
+                        .cannotCreateTask.description
+                    }
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    گزارش‌ها بارگذاری نمی‌شوند
+                    {
+                      TEXT.helps.content.troubleshooting.problems
+                        .reportsNotLoading.title
+                    }
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    اتصال اینترنت خود را بررسی کنید و صفحه را مجدداً بارگذاری
-                    کنید.
+                    {
+                      TEXT.helps.content.troubleshooting.problems
+                        .reportsNotLoading.description
+                    }
                   </p>
                 </div>
               </div>
@@ -442,11 +482,10 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                تماس با پشتیبانی
+                {TEXT.helps.content.troubleshooting.support.title}
               </h3>
               <p className="text-muted-foreground text-sm">
-                در صورت بروز مشکل یا نیاز به راهنمایی بیشتر، از طریق بخش "تماس
-                با پشتیبانی" یا ایمیل با تیم فنی ارتباط برقرار کنید.
+                {TEXT.helps.content.troubleshooting.support.description}
               </p>
             </div>
           </AccordionContent>
@@ -455,43 +494,41 @@ export default function Helps() {
         {/* System Features Section */}
         <AccordionItem value="system">
           <AccordionTrigger className="text-lg md:text-xl">
-            ویژگی‌های پیشرفته سیستم
+            {TEXT.helps.content.system.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                امنیت و دسترسی
+                {TEXT.helps.content.system.security.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>احراز هویت امن کاربران</li>
-                <li>کنترل دسترسی بر اساس نقش‌های کاربری</li>
-                <li>رمزگذاری داده‌های حساس</li>
-                <li>ثبت فعالیت‌های کاربران برای پیگیری</li>
+                {TEXT.helps.content.system.security.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                رابط کاربری هوشمند
+                {TEXT.helps.content.system.ui.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>طراحی کاملاً واکنش‌گرا برای موبایل و دسکتاپ</li>
-                <li>پشتیبانی از تم روشن و تاریک</li>
-                <li>پشتیبانی کامل از زبان فارسی</li>
-                <li>کلیدهای میانبر برای دسترسی سریع</li>
-                <li>دسترسی‌پذیری کامل برای کاربران کم‌توان</li>
+                {TEXT.helps.content.system.ui.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                کارایی و سرعت
+                {TEXT.helps.content.system.performance.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>بارگذاری سریع صفحات و داده‌ها</li>
-                <li>به‌روزرسانی خودکار اطلاعات</li>
-                <li>ذخیره‌سازی محلی برای عملکرد بهتر</li>
-                <li>همگام‌سازی داده‌ها در زمان واقعی</li>
+                {TEXT.helps.content.system.performance.items.map(
+                  (item, index) => (
+                    <li key={index}>{item}</li>
+                  ),
+                )}
               </ul>
             </div>
           </AccordionContent>

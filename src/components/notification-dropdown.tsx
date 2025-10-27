@@ -56,7 +56,7 @@ function NotificationItem({
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
       )}
       role="listitem"
-      aria-label={`اعلان: ${notification.title}`}
+      aria-label={`${TEXT.notification.notificationsLabel}: ${notification.title}`}
       dir="rtl"
     >
       {/* Notification indicator */}
@@ -98,7 +98,7 @@ function NotificationItem({
                 variant="secondary"
                 className="rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
               >
-                جدید
+                {TEXT.notification.new}
               </Badge>
             )}
           </div>
@@ -112,7 +112,10 @@ function NotificationItem({
           onClick={handleMarkAsRead}
           className="h-7 w-7 shrink-0 p-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
           title={TEXT.notifications.buttons.markAsRead}
-          aria-label={`علامت‌گذاری اعلان "${notification.title}" به عنوان خوانده شده`}
+          aria-label={TEXT.notification.markAsReadLabel.replace(
+            "{title}",
+            notification.title,
+          )}
         >
           <IconCheck className="size-3" aria-hidden="true" />
         </Button>
@@ -126,7 +129,7 @@ export function NotificationDropdown({
 }: NotificationDropdownProps) {
   const navigate = useNavigate();
   const user = useAuthUser();
-  const { data: notifications = [] } = useNotifications(user?.id);
+  const { data: notifications = [] } = useNotifications();
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
 
@@ -142,7 +145,7 @@ export function NotificationDropdown({
       <DropdownMenuContent
         align={align}
         className="mt-1 ml-4 w-[28rem] max-w-[90vw] p-0"
-        aria-label="پنل اعلان‌ها"
+        aria-label={TEXT.notification.notificationsPanel}
       >
         {/* Header */}
         <div
@@ -198,7 +201,7 @@ export function NotificationDropdown({
               {TEXT.notifications.noNotifications}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
-              اعلان‌های جدید اینجا نمایش داده خواهند شد
+              {TEXT.notification.newNotifications}
             </p>
           </div>
         ) : (
@@ -223,8 +226,12 @@ export function NotificationDropdown({
           <div className="bg-muted/20 border-t px-4 py-2" dir="rtl">
             <div className="flex items-center justify-between">
               <p className="text-muted-foreground text-right text-xs">
-                نمایش {digitsEnToFa(Math.min(10, notifications.length))} از{" "}
-                {digitsEnToFa(notifications.length)} اعلان
+                {TEXT.notification.showCount.replace(
+                  "{count}",
+                  digitsEnToFa(Math.min(10, notifications.length)),
+                )}{" "}
+                {digitsEnToFa(notifications.length)}{" "}
+                {TEXT.notification.notificationWord}
               </p>
               <Button
                 variant="ghost"

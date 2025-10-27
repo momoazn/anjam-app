@@ -1,5 +1,6 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Cell, Pie, PieChart } from "recharts";
+import { TEXT } from "@/constants/text";
 
 import {
   ChartContainer,
@@ -11,16 +12,16 @@ import {
 
 const chartConfig = {
   on_time: {
-    label: "به‌موقع",
-    color: "#10b981",
+    label: TEXT.reports.onTime,
+    color: "var(--chart-2)",
   },
   overdue: {
-    label: "گذشته مهلت",
-    color: "#ef4444",
+    label: TEXT.reports.overdue,
+    color: "var(--chart-1)",
   },
   no_deadline: {
-    label: "بدون مهلت",
-    color: "#6b7280",
+    label: TEXT.reports.noDeadline,
+    color: "var(--chart-5)",
   },
 };
 
@@ -34,23 +35,33 @@ type Props = {
 };
 
 export function TimelinessDonut({ data, onSliceClick }: Props) {
+  const legendPayload = data.map((d) => ({
+    value: chartConfig[d.key].label,
+    color: chartConfig[d.key].color,
+    type: "square" as const,
+    id: d.key,
+    dataKey: d.key,
+  }));
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} className="h-full w-full">
       <PieChart>
         <Pie
           data={data}
           dataKey="value"
           nameKey="name"
           cx="50%"
-          cy="50%"
+          cy="45%"
           outerRadius={80}
-          fill="#8884d8"
+          innerRadius={40}
           paddingAngle={2}
           labelLine={false}
-          label={({ name, percent }) =>
-            `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
-          }
-          onClick={(data) => onSliceClick?.(data.key)}
+          label={({ percent }) => {
+            const percentage = digitsEnToFa((percent * 100).toFixed(0));
+            return `${percentage}%`;
+          }}
+          fontSize={12}
+          fill="var(--foreground)"
+          onClick={(entry) => onSliceClick?.(entry.key)}
           style={{ cursor: onSliceClick ? "pointer" : "default" }}
         >
           {data.map((entry) => (
@@ -60,14 +71,20 @@ export function TimelinessDonut({ data, onSliceClick }: Props) {
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(value) => [digitsEnToFa(value as number), "تسک‌ها"]}
+              formatter={(_value, name, item) => {
+                const total = data.reduce((a, b) => a + b.value, 0) || 1;
+                const pct = Math.round(((item?.value as number) / total) * 100);
+                return [
+                  `${digitsEnToFa(item?.value as number)} (${digitsEnToFa(pct)}%)`,
+                  name,
+                ];
+              }}
             />
           }
         />
         <ChartLegend
-          content={
-            <ChartLegendContent className="text-muted-foreground text-xs" />
-          }
+          payload={legendPayload}
+          content={<ChartLegendContent className="text-xs" />}
         />
       </PieChart>
     </ChartContainer>

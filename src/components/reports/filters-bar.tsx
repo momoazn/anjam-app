@@ -1,9 +1,12 @@
+import { TEXT } from "@/constants/text";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CalendarIcon, Filter, X } from "lucide-react";
 import { useMemo } from "react";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import DatePicker from "@/components/ui/date-picker";
 import {
   Popover,
   PopoverContent,
@@ -16,14 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import DatePicker from "@/components/ui/date-picker";
 import { Separator } from "@/components/ui/separator";
 import type {
+  ProjectsRecord,
   TasksPriorityOptions,
   TasksStatusOptions,
+  UsersRecord,
 } from "@/lib/pocketbase-types";
-import type { ProjectsRecord, UsersRecord } from "@/lib/pocketbase-types";
 
 export type TimeRange = {
   preset: "TODAY" | "7D" | "30D" | "QTD" | "YTD" | "CUSTOM";
@@ -46,26 +48,35 @@ type Props = {
 };
 
 const TIME_PRESETS = {
-  TODAY: { label: "امروز", value: "TODAY" as const },
-  "7D": { label: "۷ روز گذشته", value: "7D" as const },
-  "30D": { label: "۳۰ روز گذشته", value: "30D" as const },
-  QTD: { label: "ربع جاری", value: "QTD" as const },
-  YTD: { label: "سال جاری", value: "YTD" as const },
-  CUSTOM: { label: "سفارشی", value: "CUSTOM" as const },
+  TODAY: { label: TEXT.reports.timePresets.today, value: "TODAY" as const },
+  "7D": { label: TEXT.reports.timePresets.last7Days, value: "7D" as const },
+  "30D": { label: TEXT.reports.timePresets.last30Days, value: "30D" as const },
+  QTD: {
+    label: TEXT.reports.timePresets.currentQuarter,
+    value: "QTD" as const,
+  },
+  YTD: { label: TEXT.reports.timePresets.currentYear, value: "YTD" as const },
+  CUSTOM: { label: TEXT.reports.timePresets.custom, value: "CUSTOM" as const },
 } as const;
 
 const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] = [
-  { label: "در انتظار", value: "todo" },
-  { label: "در حال انجام", value: "in_progress" },
-  { label: "تکمیل شده", value: "done" },
-  { label: "لغو شده", value: "canceled" },
+  { label: TEXT.reports.todo, value: "todo" as TasksStatusOptions },
+  {
+    label: TEXT.reports.inProgress,
+    value: "in_progress" as TasksStatusOptions,
+  },
+  { label: TEXT.reports.completed, value: "done" as TasksStatusOptions },
+  { label: TEXT.reports.canceled, value: "canceled" as TasksStatusOptions },
 ];
 
 const PRIORITY_OPTIONS: { label: string; value: TasksPriorityOptions }[] = [
-  { label: "فوری", value: "urgent" },
-  { label: "اولویت بالا", value: "high" },
-  { label: "اولویت متوسط", value: "medium" },
-  { label: "اولویت پایین", value: "low" },
+  {
+    label: TEXT.tasks.priority.urgent,
+    value: "urgent" as TasksPriorityOptions,
+  },
+  { label: TEXT.reports.high, value: "high" as TasksPriorityOptions },
+  { label: TEXT.reports.medium, value: "medium" as TasksPriorityOptions },
+  { label: TEXT.reports.low, value: "low" as TasksPriorityOptions },
 ];
 
 export function FiltersBar({ value, onChange, projects, users }: Props) {
@@ -206,7 +217,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                 })
               }
             />
-            <span className="text-muted-foreground">تا</span>
+            <span className="text-muted-foreground">{TEXT.reports.to}</span>
             <DatePicker
               date={value.timeRange.end}
               setDate={(date) =>
@@ -227,7 +238,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="justify-start">
             <Filter className="mr-2 h-4 w-4" />
-            پروژه‌ها
+            {TEXT.reports.projects}
             {selectedProjects.length > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {digitsEnToFa(selectedProjects.length)}
@@ -237,7 +248,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         </PopoverTrigger>
         <PopoverContent className="w-64 p-0" align="start">
           <div className="p-4">
-            <h4 className="font-medium">انتخاب پروژه‌ها</h4>
+            <h4 className="font-medium">{TEXT.reports.selectProjects}</h4>
             <div className="mt-3 max-h-48 space-y-2 overflow-y-auto">
               {projects.map((project) => (
                 <div key={project.id} className="flex items-center space-x-2">
@@ -266,7 +277,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="justify-start">
             <Filter className="mr-2 h-4 w-4" />
-            مجریان
+            {TEXT.reports.assignee_plural}
             {selectedUsers.length > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {digitsEnToFa(selectedUsers.length)}
@@ -276,7 +287,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         </PopoverTrigger>
         <PopoverContent className="w-64 p-0" align="start">
           <div className="p-4">
-            <h4 className="font-medium">انتخاب مجریان</h4>
+            <h4 className="font-medium">{TEXT.reports.selectAssignees}</h4>
             <div className="mt-3 max-h-48 space-y-2 overflow-y-auto">
               {users.map((user) => (
                 <div key={user.id} className="flex items-center space-x-2">
@@ -305,7 +316,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="justify-start">
             <Filter className="mr-2 h-4 w-4" />
-            وضعیت
+            {TEXT.reports.status}
             {selectedStatuses.length > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {digitsEnToFa(selectedStatuses.length)}
@@ -315,7 +326,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         </PopoverTrigger>
         <PopoverContent className="w-64 p-0" align="start">
           <div className="p-4">
-            <h4 className="font-medium">انتخاب وضعیت‌ها</h4>
+            <h4 className="font-medium">{TEXT.reports.selectStatuses}</h4>
             <div className="mt-3 space-y-2">
               {STATUS_OPTIONS.map((status) => (
                 <div key={status.value} className="flex items-center space-x-2">
@@ -344,7 +355,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="justify-start">
             <Filter className="mr-2 h-4 w-4" />
-            اولویت
+            {TEXT.reports.priority}
             {selectedPriorities.length > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {digitsEnToFa(selectedPriorities.length)}
@@ -354,7 +365,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         </PopoverTrigger>
         <PopoverContent className="w-64 p-0" align="start">
           <div className="p-4">
-            <h4 className="font-medium">انتخاب اولویت‌ها</h4>
+            <h4 className="font-medium">{TEXT.reports.selectPriorities}</h4>
             <div className="mt-3 space-y-2">
               {PRIORITY_OPTIONS.map((priority) => (
                 <div
@@ -387,7 +398,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           <Separator orientation="vertical" className="h-6" />
           <Button variant="ghost" size="sm" onClick={clearAllFilters}>
             <X className="mr-2 h-4 w-4" />
-            پاک کردن فیلترها
+            {TEXT.reports.clearFilters}
           </Button>
         </>
       )}

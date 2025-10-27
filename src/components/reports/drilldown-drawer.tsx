@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { TEXT } from "@/constants/text";
 
 import {
   Drawer,
@@ -35,22 +36,22 @@ type Props = {
 };
 
 const STATUS_LABELS = {
-  todo: "در انتظار",
-  in_progress: "در حال انجام",
-  done: "تکمیل شده",
-  canceled: "لغو شده",
+  todo: TEXT.reports.todo,
+  in_progress: TEXT.reports.inProgress,
+  done: TEXT.reports.completed,
+  canceled: TEXT.reports.canceled,
 };
 
 const PRIORITY_LABELS = {
-  urgent: "فوری",
-  high: "اولویت بالا",
-  medium: "اولویت متوسط",
-  low: "اولویت پایین",
+  urgent: TEXT.tasks.priority.urgent,
+  high: TEXT.reports.high,
+  medium: TEXT.reports.medium,
+  low: TEXT.reports.low,
 };
 
 export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
   const formatDeadline = (deadline: string | null) => {
-    if (!deadline) return "ندارد";
+    if (!deadline) return TEXT.dashboard.fallbacks.noDeadline;
     return new Date(deadline).toLocaleDateString("fa-IR");
   };
 
@@ -70,20 +71,22 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
         <div className="flex-1 overflow-auto p-4">
           {rows.length === 0 ? (
             <div className="text-muted-foreground flex h-32 items-center justify-center">
-              هیچ تسکی یافت نشد
+              {TEXT.reports.noTasksFound}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>عنوان</TableHead>
-                  <TableHead>وضعیت</TableHead>
-                  <TableHead>اولویت</TableHead>
-                  <TableHead>مهلت</TableHead>
-                  <TableHead>سن (روز)</TableHead>
-                  <TableHead>مجری</TableHead>
-                  <TableHead>پروژه</TableHead>
-                  <TableHead>برچسب‌ها</TableHead>
+                  <TableHead>{TEXT.reports.title}</TableHead>
+                  <TableHead>{TEXT.reports.taskStatus}</TableHead>
+                  <TableHead>{TEXT.reports.taskPriority}</TableHead>
+                  <TableHead>{TEXT.reports.deadline}</TableHead>
+                  <TableHead>
+                    {TEXT.reports.age} {TEXT.reports.ageUnit}
+                  </TableHead>
+                  <TableHead>{TEXT.reports.assignee}</TableHead>
+                  <TableHead>{TEXT.reports.project}</TableHead>
+                  <TableHead>{TEXT.reports.tags}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

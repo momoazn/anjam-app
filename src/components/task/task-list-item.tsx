@@ -1,10 +1,12 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
+import { useRef } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TEXT } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
+import { UsersResponse } from "@/lib/pocketbase-types";
 import {
   priorityColors,
   priorityIcons,
@@ -12,7 +14,6 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
-import { UsersResponse } from "@/lib/pocketbase-types";
 import { UserAvatar } from "../user-avatar";
 import { EditTaskDialog } from "./task-details-dialog";
 
@@ -51,6 +52,7 @@ export function TaskListItem({
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
+  const draggingRef = useRef(false);
 
   return (
     <EditTaskDialog task={task} onSuccess={onSuccess}>
@@ -61,6 +63,21 @@ export function TaskListItem({
             "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-400/10",
           className,
         )}
+        draggable
+        onDragStart={(e) => {
+          draggingRef.current = true;
+          e.dataTransfer.setData(
+            "application/json",
+            JSON.stringify({ taskId: task.id, fromStatus: task.status }),
+          );
+          e.dataTransfer.effectAllowed = "move";
+          // Make element look dragged
+          e.currentTarget.classList.add("opacity-60");
+        }}
+        onDragEnd={(e) => {
+          draggingRef.current = false;
+          e.currentTarget.classList.remove("opacity-60");
+        }}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -71,7 +88,13 @@ export function TaskListItem({
             button?.click();
           }
         }}
-        aria-label={`ویرایش تسک ${task.title}`}
+        onClick={(e) => {
+          if (draggingRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+        aria-label={TEXT.task.editTask.replace("{title}", task.title)}
       >
         {/* Left side: Checkbox, Icon, ID, Title */}
         <div className="flex min-w-0 flex-grow items-center gap-2">

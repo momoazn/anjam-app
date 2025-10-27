@@ -2,6 +2,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CheckCircle, Clock, ListTodo, TrendingUp } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TEXT } from "@/constants/text";
 
 type Props = {
   totals: {
@@ -20,7 +21,9 @@ export function MetricCards({ totals }: Props) {
     <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">کل تسک‌ها</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            {TEXT.reports.totalTasksCard}
+          </CardTitle>
           <ListTodo className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
@@ -30,7 +33,9 @@ export function MetricCards({ totals }: Props) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">تکمیل شده</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            {TEXT.reports.taskCompleted}
+          </CardTitle>
           <CheckCircle className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
@@ -42,7 +47,9 @@ export function MetricCards({ totals }: Props) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">در حال انجام</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            {TEXT.reports.inProgressTasks}
+          </CardTitle>
           <Clock className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
@@ -52,7 +59,9 @@ export function MetricCards({ totals }: Props) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">گذشته مهلت</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            {TEXT.reports.overdue}
+          </CardTitle>
           <Clock className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
@@ -64,7 +73,9 @@ export function MetricCards({ totals }: Props) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">نرخ به‌موقع</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            {TEXT.reports.onTimeRate}
+          </CardTitle>
           <TrendingUp className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>

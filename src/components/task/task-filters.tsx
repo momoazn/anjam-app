@@ -84,21 +84,21 @@ export function TaskFilters({
 
     if (searchTerm) {
       labels.push({
-        label: `جستجو: ${searchTerm}`,
+        label: `${TEXT.tasks.filters.labels.search} ${searchTerm}`,
         onClear: () => setSearchTerm(""),
       });
     }
 
     if (selectedStatus !== ALL_FILTER_VALUE) {
       labels.push({
-        label: `وضعیت: ${TEXT.tasks.status[selectedStatus as TasksStatusOptions]}`,
+        label: `${TEXT.tasks.filters.labels.status} ${TEXT.tasks.status[selectedStatus as TasksStatusOptions]}`,
         onClear: () => setSelectedStatus(ALL_FILTER_VALUE),
       });
     }
 
     if (selectedPriority !== ALL_FILTER_VALUE) {
       labels.push({
-        label: `اولویت: ${TEXT.tasks.priority[selectedPriority as TasksPriorityOptions]}`,
+        label: `${TEXT.tasks.filters.labels.priority} ${TEXT.tasks.priority[selectedPriority as TasksPriorityOptions]}`,
         onClear: () => setSelectedPriority(ALL_FILTER_VALUE),
       });
     }
@@ -106,27 +106,22 @@ export function TaskFilters({
     if (selectedAssignee !== ALL_FILTER_VALUE) {
       const user = users?.find((u) => u.id === selectedAssignee);
       labels.push({
-        label: `مسئول: ${user ? `${user.first_name} ${user.last_name}`.trim() : selectedAssignee}`,
+        label: `${TEXT.tasks.filters.labels.assignee} ${user ? `${user.first_name} ${user.last_name}`.trim() : selectedAssignee}`,
         onClear: () => setSelectedAssignee(ALL_FILTER_VALUE),
       });
     }
 
     if (selectedDateRange !== "all") {
-      const dateLabels: Record<string, string> = {
-        today: "امروز",
-        week: "این هفته",
-        month: "این ماه",
-        overdue: "گذشته‌موعد",
-      };
+      const dateLabels: Record<string, string> = TEXT.tasks.filters.dateLabels;
       labels.push({
-        label: `تاریخ: ${dateLabels[selectedDateRange] || selectedDateRange}`,
+        label: `${TEXT.tasks.filters.labels.date} ${dateLabels[selectedDateRange] || selectedDateRange}`,
         onClear: () => setSelectedDateRange("all"),
       });
     }
 
     if (selectedTag !== "all") {
       labels.push({
-        label: `برچسب: ${selectedTag}`,
+        label: `${TEXT.tasks.filters.labels.tag} ${selectedTag}`,
         onClear: () => setSelectedTag("all"),
       });
     }
@@ -275,7 +270,10 @@ export function TaskFilters({
               ))}
             {getActiveFilterLabels().length > 4 && (
               <Badge variant="outline" className="text-xs">
-                +{getActiveFilterLabels().length - 4} دیگر
+                {TEXT.tasks.filters.moreFilters.replace(
+                  "{count}",
+                  (getActiveFilterLabels().length - 4).toString(),
+                )}
               </Badge>
             )}
           </div>

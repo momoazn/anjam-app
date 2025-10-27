@@ -7,9 +7,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { TEXT } from "@/constants/text";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { CalendarIcon } from "lucide-react";
 
 interface DatePickerProps {
   date: Date | undefined;
@@ -37,7 +38,7 @@ export default function DatePicker({
           {date ? (
             <span>{digitsEnToFa(format(date, "P"))}</span>
           ) : (
-            <span>تاریخ را انتخاب کنید</span>
+            <span>{TEXT.datePicker.placeholder}</span>
           )}
         </Button>
       </PopoverTrigger>

@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TEXT } from "@/constants/text";
+import { queryKeys } from "@/hooks/query-keys";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import {
   taskStatusBgColors,
@@ -16,7 +17,6 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
-import { queryKeys } from "@/hooks/query-keys";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CreateTaskDialog } from "./create-task-dialog";
 
@@ -63,7 +63,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
             variant="ghost"
             size="icon"
             className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-            title="افزودن تسک جدید"
+            title={TEXT.task.addNewTask}
           >
             <Plus className="size-4" />
           </Button>
@@ -75,15 +75,15 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
               variant="ghost"
               size="icon"
               className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-              title="گزینه‌های بیشتر"
+              title={TEXT.task.moreOptions}
             >
               <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>مرتب‌سازی بر اساس اولویت</DropdownMenuItem>
-            <DropdownMenuItem>مرتب‌سازی بر اساس تاریخ</DropdownMenuItem>
-            <DropdownMenuItem>نمایش تسک‌های تکمیل‌شده</DropdownMenuItem>
+            <DropdownMenuItem>{TEXT.task.sortByPriority}</DropdownMenuItem>
+            <DropdownMenuItem>{TEXT.task.sortByDate}</DropdownMenuItem>
+            <DropdownMenuItem>{TEXT.task.showCompletedTasks}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -67,7 +67,7 @@ const Notifications = React.lazy(() =>
 );
 const NotFound = React.lazy(() =>
   import("@/pages/not-found").catch(() => ({
-    default: () => <div>صفحه یافت نشد</div>,
+    default: () => <div>{TEXT.errors.pageLoad.notFound}</div>,
   })),
 );
 
@@ -189,7 +189,7 @@ const routes: RouteType[] = [
     path: "*",
     element: <NotFound />,
     protected: false,
-    title: "404",
+    title: TEXT.notFound.title,
   },
 ];
 

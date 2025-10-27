@@ -207,18 +207,13 @@ export default function Tasks() {
           statusOrder?.map((status) => {
             const tasksInGroup = groupedTasks?.[status] ?? [];
 
-            // Only render the group if it contains tasks after filtering
-            if (tasksInGroup.length === 0) {
-              return null;
-            }
-
             return (
               <TaskListGroup
                 key={status}
                 taskCount={tasksInGroup.length}
                 status={status}
                 tasks={tasksInGroup}
-                showProject={true} // Keep showing project for the main tasks page
+                showProject={true}
               />
             );
           })

@@ -1,3 +1,4 @@
+import { TEXT } from "@/constants/text";
 import {
   format,
   isWithinInterval,
@@ -50,18 +51,18 @@ export type TaskStatsData = {
 
 // Status labels mapping
 const STATUS_LABELS: Record<TasksStatusOptions, string> = {
-  [TasksStatusOptions.todo]: "در انتظار",
-  [TasksStatusOptions.in_progress]: "در حال انجام",
-  [TasksStatusOptions.done]: "تکمیل شده",
-  [TasksStatusOptions.canceled]: "لغو شده",
+  [TasksStatusOptions.todo]: TEXT.reports.todo,
+  [TasksStatusOptions.in_progress]: TEXT.reports.inProgress,
+  [TasksStatusOptions.done]: TEXT.reports.completed,
+  [TasksStatusOptions.canceled]: TEXT.reports.canceled,
 };
 
 // Priority labels mapping
 const PRIORITY_LABELS = {
-  urgent: "فوری",
-  high: "اولویت بالا",
-  medium: "اولویت متوسط",
-  low: "اولویت پایین",
+  urgent: TEXT.tasks.priority.urgent,
+  high: TEXT.reports.high,
+  medium: TEXT.reports.medium,
+  low: TEXT.reports.low,
 } as const;
 
 // Priority options in order
