@@ -24,10 +24,18 @@ export const queryKeys = {
   tasks: {
     all: ["tasks"] as const,
     lists: () => [...queryKeys.tasks.all, "list"] as const,
-    list: (projectId?: string, expandFields?: string) =>
+    list: (
+      projectId?: string,
+      expandFields?: string,
+      mode?: "paged" | "full",
+    ) =>
       [
         ...queryKeys.tasks.lists(),
-        { projectId: projectId ?? "all", expandFields: expandFields ?? "none" },
+        {
+          projectId: projectId ?? "all",
+          expandFields: expandFields ?? "none",
+          mode: mode ?? "paged",
+        },
       ] as const,
     detail: (id: string) => [...queryKeys.tasks.all, "detail", id] as const,
   },
