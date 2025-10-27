@@ -21,22 +21,49 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+
 import { EditUserDialog } from "@/components/user/edit-user-dialog";
 import { fa } from "@/constants/text";
-import { UsersResponse } from "@/lib/pocketbase-types";
-import { useAuthStore } from "@/store/auth-store";
+import { UsersRecord, UsersResponse } from "@/lib/pocketbase-types";
+import { useAuthActions, useAuthUser } from "@/store/auth-store";
 import { UserAvatar } from "./user-avatar";
+
+interface UserInfoProps {
+  user: UsersRecord;
+}
+
+function UserInfo({ user }: UserInfoProps) {
+  return (
+    <>
+      <UserAvatar user={user} />
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        <span className="truncate font-medium">
+          {user.first_name} {user.last_name}
+        </span>
+        <span className="text-muted-foreground truncate text-xs">
+          {user.username}
+        </span>
+        <span className="text-muted-foreground truncate text-xs">
+          {fa.users.table.roles[user.role as keyof typeof fa.users.table.roles]}
+        </span>
+      </div>
+    </>
+  );
+}
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const user = useAuthUser();
+  const logout = useAuthActions().logout;
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
   };
+
+  if (!user) return null;
 
   return (
     <>
@@ -48,41 +75,19 @@ export function NavUser() {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <UserAvatar user={user as UsersResponse} />
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {user?.first_name} {user?.last_name}
-                  </span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user?.username}
-                  </span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {fa.users.table.roles[user!.role]}
-                  </span>
-                </div>
+                <UserInfo user={user} />
                 <IconDotsVertical className="ml-auto size-4" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
               side={isMobile ? "bottom" : "right"}
               align="end"
               sideOffset={4}
             >
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <UserAvatar user={user as UsersResponse} />
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">
-                      {user?.first_name} {user?.last_name}
-                    </span>
-                    <span className="text-muted-foreground truncate text-xs">
-                      {user?.username}
-                    </span>
-                    <span className="text-muted-foreground truncate text-xs">
-                      {fa.users.table.roles[user!.role]}
-                    </span>
-                  </div>
+                  <UserInfo user={user} />
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
