@@ -20,10 +20,10 @@ import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CreateTaskDialog } from "./create-task-dialog";
 
-interface TaskListHeaderProps {
+type TaskListHeaderProps = {
   taskCount: number;
   status: TasksStatusOptions;
-}
+};
 
 export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
   const queryClient = useQueryClient();

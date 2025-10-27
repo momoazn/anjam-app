@@ -4,14 +4,14 @@ import { toast } from "sonner";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "./query-keys";
 
-interface UseEntityMutationOptions {
+type UseEntityMutationOptions = {
   collection: string;
   successMessage: string;
   errorMessage: string;
   invalidateQueries?: string[];
   onSuccess?: () => void;
   onError?: (error: Error) => void;
-}
+};
 
 export function useEntityMutation<TVariables = Record<string, unknown>>({
   collection,
@@ -54,14 +54,14 @@ export function useEntityMutation<TVariables = Record<string, unknown>>({
   });
 }
 
-interface UseEntityUpdateMutationOptions {
+type UseEntityUpdateMutationOptions = {
   collection: string;
   successMessage: string;
   errorMessage: string;
   invalidateQueries?: string[];
   onSuccess?: () => void;
   onError?: (error: Error) => void;
-}
+};
 
 export function useEntityUpdateMutation<TVariables = Record<string, unknown>>({
   collection,
@@ -106,14 +106,14 @@ export function useEntityUpdateMutation<TVariables = Record<string, unknown>>({
   });
 }
 
-interface UseEntityDeleteMutationOptions {
+type UseEntityDeleteMutationOptions = {
   collection: string;
   successMessage: string;
   errorMessage: string;
   invalidateQueries?: string[];
   onSuccess?: () => void;
   onError?: (error: Error) => void;
-}
+};
 
 export function useEntityDeleteMutation({
   collection,

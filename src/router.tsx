@@ -89,12 +89,12 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-interface RouteType {
+type RouteType = {
   path: string;
   element: React.ReactNode;
   protected: boolean;
   title?: string;
-}
+};
 
 // Sets document.title when mounted
 const Title = ({

@@ -10,17 +10,17 @@ import { useMemo, useState } from "react";
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
 // Define the shape of the filters state
-export interface TaskFiltersState {
+export type TaskFiltersState = {
   searchTerm: string;
   selectedStatus: TasksStatusOptions | typeof ALL_FILTER_VALUE;
   selectedPriority: TasksPriorityOptions | typeof ALL_FILTER_VALUE;
   selectedAssignee: string | typeof ALL_FILTER_VALUE;
   selectedDateRange: string;
   selectedTag: string;
-}
+};
 
 // Define the return type of the hook
-export interface UseTaskFiltersReturn extends TaskFiltersState {
+export type UseTaskFiltersReturn = TaskFiltersState & {
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   setSelectedStatus: React.Dispatch<
     React.SetStateAction<TasksStatusOptions | typeof ALL_FILTER_VALUE>
@@ -34,7 +34,7 @@ export interface UseTaskFiltersReturn extends TaskFiltersState {
   setSelectedDateRange: React.Dispatch<React.SetStateAction<string>>;
   setSelectedTag: React.Dispatch<React.SetStateAction<string>>;
   filteredTasks: TaskWithProject[];
-}
+};
 
 // The custom hook
 export function useTaskFilters(

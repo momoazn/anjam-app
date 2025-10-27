@@ -28,9 +28,9 @@ import { UsersRecord, UsersResponse } from "@/lib/pocketbase-types";
 import { useAuthActions, useAuthUser } from "@/store/auth-store";
 import { UserAvatar } from "./user-avatar";
 
-interface UserInfoProps {
+type UserInfoProps = {
   user: UsersRecord;
-}
+};
 
 function UserInfo({ user }: UserInfoProps) {
   return (

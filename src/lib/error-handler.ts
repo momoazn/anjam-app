@@ -1,18 +1,18 @@
 import { toast } from "sonner";
 import { fa } from "@/constants/text";
 
-interface ValidationError {
+type ValidationError = {
   code: string;
   message: string;
-}
+};
 
-interface PocketBaseError {
+type PocketBaseError = {
   data?: {
     data?: Record<string, ValidationError>;
   };
   message?: string;
   status?: number;
-}
+};
 
 export function handlePocketBaseError(error: unknown): void {
   console.error(error);

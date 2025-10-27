@@ -25,10 +25,10 @@ const projectFormSchema = z.object({
   }),
 });
 
-interface CreateProjectDialogProps {
+type CreateProjectDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export function CreateProjectDialog({
   open,

@@ -12,11 +12,11 @@ import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CalendarIcon } from "lucide-react";
 
-interface DatePickerProps {
+type DatePickerProps = {
   date: Date | undefined;
   setDate: (date: Date | undefined) => void;
   buttonProps?: React.ComponentProps<typeof Button>;
-}
+};
 
 export default function DatePicker({
   date,

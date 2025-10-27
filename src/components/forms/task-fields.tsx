@@ -32,7 +32,7 @@ import {
 } from "../ui/select";
 import { UserAvatar } from "../user-avatar";
 
-interface TaskFieldsProps {
+type TaskFieldsProps = {
   control: Control<{
     title: string;
     description: string;
@@ -43,7 +43,7 @@ interface TaskFieldsProps {
     deadline?: Date;
   }>;
   isInProject?: boolean;
-}
+};
 
 export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   const { id: projectId } = useParams<{ id: string }>();

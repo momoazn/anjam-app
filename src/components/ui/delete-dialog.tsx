@@ -12,7 +12,7 @@ import { fa } from "@/constants/text";
 import { useEntityDeleteMutation } from "@/hooks/use-entity-mutation";
 import { Loader2 } from "lucide-react";
 
-interface DeleteDialogProps {
+type DeleteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   entityId: string | null;
@@ -23,7 +23,7 @@ interface DeleteDialogProps {
   successMessage: string;
   errorMessage: string;
   invalidateQueries: string[];
-}
+};
 
 export function DeleteDialog({
   open,

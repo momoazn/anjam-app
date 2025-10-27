@@ -10,12 +10,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { fa } from "@/constants/text";
 
-interface ProjectFieldsProps {
+type ProjectFieldsProps = {
   control: Control<{
     name: string;
     code: string;
   }>;
-}
+};
 
 export function ProjectFields({ control }: ProjectFieldsProps) {
   return (

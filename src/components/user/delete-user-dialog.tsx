@@ -2,11 +2,11 @@ import { DeleteDialog } from "@/components/ui/delete-dialog";
 import { fa } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
 
-interface DeleteUserDialogProps {
+type DeleteUserDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: UsersResponse | null;
-}
+};
 
 export function DeleteUserDialog({
   open,

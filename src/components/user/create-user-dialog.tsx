@@ -25,10 +25,10 @@ const formSchema = z.object({
   role: z.nativeEnum(UsersRoleOptions),
 });
 
-interface CreateUserDialogProps {
+type CreateUserDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export function CreateUserDialog({
   open,

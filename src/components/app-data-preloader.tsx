@@ -8,9 +8,9 @@
 import { useEffect } from "react";
 import { useAppData } from "@/hooks";
 
-interface AppDataPreloaderProps {
+type AppDataPreloaderProps = {
   children: React.ReactNode;
-}
+};
 
 export function AppDataPreloader({ children }: AppDataPreloaderProps) {
   // Preload essential app data

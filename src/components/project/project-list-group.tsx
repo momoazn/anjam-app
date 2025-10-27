@@ -10,11 +10,11 @@ import { useTasks } from "@/hooks";
 import { ProjectsResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
-interface ProjectListGroupProps {
+type ProjectListGroupProps = {
   projects: ProjectsResponse[];
   onEdit: (project: ProjectsResponse) => void;
   canEditDelete: boolean;
-}
+};
 
 export function ProjectListGroup({
   projects,

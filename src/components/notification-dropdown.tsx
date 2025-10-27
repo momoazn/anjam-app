@@ -22,9 +22,9 @@ import { useAuthUser } from "@/store/auth-store";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 
-interface NotificationDropdownProps {
+type NotificationDropdownProps = {
   align?: "start" | "center" | "end";
-}
+};
 
 const formatNotificationTime = (dateString?: string | null) => {
   if (!dateString) {

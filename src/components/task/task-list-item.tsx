@@ -28,7 +28,7 @@ const formatDateShort = (dateString?: string | null) => {
   return digitsEnToFa(format(date, "dd MMMM"));
 };
 
-interface TaskListItemProps {
+type TaskListItemProps = {
   task: TaskWithProject;
   className?: string;
   showProject?: boolean;
@@ -36,7 +36,7 @@ interface TaskListItemProps {
   isSelectable?: boolean;
   isSelected?: boolean;
   onSelectionChange?: (selected: boolean) => void;
-}
+};
 
 export function TaskListItem({
   task,

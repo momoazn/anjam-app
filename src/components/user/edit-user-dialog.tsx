@@ -25,11 +25,11 @@ const formSchema = z.object({
   role: z.nativeEnum(UsersRoleOptions),
 });
 
-interface EditUserDialogProps {
+type EditUserDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: UsersResponse | null;
-}
+};
 
 export function EditUserDialog({
   open,

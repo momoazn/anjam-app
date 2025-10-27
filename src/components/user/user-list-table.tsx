@@ -13,12 +13,12 @@ import { fa } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
 import { UserAvatar } from "../user-avatar";
 
-interface UserListTableProps {
+type UserListTableProps = {
   users: UsersResponse[];
   onEdit: (user: UsersResponse) => void;
   onDelete: (user: UsersResponse) => void;
   isAdmin: boolean;
-}
+};
 
 export function UserListTable({
   users,

@@ -33,11 +33,11 @@ const taskFormSchema = z.object({
   deadline: z.date().optional(),
 });
 
-interface CreateTaskDialogProps {
+type CreateTaskDialogProps = {
   children: React.ReactNode;
   initialStatus?: TasksStatusOptions;
   onSuccess?: () => void;
-}
+};
 
 export function CreateTaskDialog({
   children,

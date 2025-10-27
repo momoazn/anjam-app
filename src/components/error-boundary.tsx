@@ -11,16 +11,16 @@ import {
 } from "@/components/ui/card";
 import { fa } from "@/constants/text";
 
-interface ErrorBoundaryState {
+type ErrorBoundaryState = {
   hasError: boolean;
   error?: Error;
-}
+};
 
-interface ErrorBoundaryProps {
+type ErrorBoundaryProps = {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
-}
+};
 
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,

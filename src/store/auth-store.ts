@@ -4,14 +4,14 @@ import { persist } from "zustand/middleware";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord, UsersRoleOptions } from "@/lib/pocketbase-types";
 
-interface AuthState {
+type AuthState = {
   user: UsersRecord | null;
   token: string | null;
   isLoggedIn: boolean;
   role: UsersRoleOptions | null;
   login: (user: UsersRecord, token: string) => void;
   logout: () => void;
-}
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(

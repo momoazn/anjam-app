@@ -7,10 +7,10 @@ import { fa } from "@/constants/text";
 import { useUnreadCount } from "@/hooks/notifications";
 import { cn } from "@/lib/utils";
 
-interface NotificationBadgeProps {
+type NotificationBadgeProps = {
   onClick?: () => void;
   className?: string;
-}
+};
 
 export function NotificationBadge({
   onClick,

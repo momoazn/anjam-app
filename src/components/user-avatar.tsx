@@ -18,7 +18,7 @@ function getUserInitials({
   return "?";
 }
 
-interface UserAvatarProps {
+type UserAvatarProps = {
   username?: string;
   user?: {
     first_name?: string;
@@ -26,7 +26,7 @@ interface UserAvatarProps {
     username?: string;
     avatar?: string;
   };
-}
+};
 
 export function UserAvatar({ user, username }: UserAvatarProps) {
   if (username) {

@@ -25,11 +25,11 @@ const projectFormSchema = z.object({
   }),
 });
 
-interface EditProjectDialogProps {
+type EditProjectDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project: ProjectsResponse | null;
-}
+};
 
 export function EditProjectDialog({
   open,

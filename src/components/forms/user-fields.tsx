@@ -20,7 +20,7 @@ import { fa } from "@/constants/text";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
-interface UserFieldsProps {
+type UserFieldsProps = {
   control: Control<{
     username: string;
     password: string;
@@ -29,7 +29,7 @@ interface UserFieldsProps {
     role: UsersRoleOptions;
   }>;
   isEdit?: boolean;
-}
+};
 
 export function UserFields({ control, isEdit = false }: UserFieldsProps) {
   const user = useAuthUser();

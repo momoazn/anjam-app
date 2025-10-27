@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { TaskListHeader } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
-interface TaskListGroupProps {
+type TaskListGroupProps = {
   taskCount: number;
   status: TasksStatusOptions;
   tasks: TaskWithProject[];
@@ -16,7 +16,7 @@ interface TaskListGroupProps {
   enableSelection?: boolean;
   selectedTasks?: string[];
   onSelectionChange?: (taskIds: string[]) => void;
-}
+};
 
 export function TaskListGroup({
   taskCount,

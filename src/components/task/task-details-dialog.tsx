@@ -31,11 +31,11 @@ const taskFormSchema = z.object({
   deadline: z.date().optional(),
 });
 
-interface EditTaskDialogProps {
+type EditTaskDialogProps = {
   children: React.ReactNode;
   task: TasksResponse;
   onSuccess?: () => void;
-}
+};
 
 export function EditTaskDialog({
   children,
