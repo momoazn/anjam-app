@@ -13,6 +13,8 @@ import { fa } from "@/constants/text";
 import { cn } from "@/lib/utils";
 import { queryKeys } from "@/hooks";
 import { CreateTaskDialog } from "./task/create-task-dialog";
+import { ProjectsSubmenu } from "./sidebar/projects-submenu";
+import { TaskViews } from "./sidebar/task-views";
 
 export function NavMain({
   items,
@@ -21,6 +23,12 @@ export function NavMain({
     title: string;
     url: string;
     icon?: Icon;
+    badge?: React.ReactNode;
+    children?: {
+      title: string;
+      url: string;
+      badge?: React.ReactNode;
+    }[];
   }[];
 }) {
   const queryClient = useQueryClient();
@@ -50,6 +58,14 @@ export function NavMain({
         </SidebarMenu>
         <SidebarMenu>
           {items.map((item) => {
+            // Special handling for projects and tasks - they now use submenus
+            if (item.title === fa.navigation.projects) {
+              return <ProjectsSubmenu key={item.title} />;
+            }
+            if (item.title === fa.navigation.tasks) {
+              return <TaskViews key={item.title} />;
+            }
+
             const path = location.pathname;
             const active =
               item.url === "/"
@@ -70,6 +86,7 @@ export function NavMain({
                   >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
+                    {item.badge}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </NavLink>

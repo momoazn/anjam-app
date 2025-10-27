@@ -31,24 +31,28 @@ type UserAvatarProps = {
 export function UserAvatar({ user, username }: UserAvatarProps) {
   if (username) {
     return (
-      <Avatar>
-        <AvatarFallback>{getUserInitials({ username })}</AvatarFallback>
+      <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+        <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
+          {getUserInitials({ username })}
+        </AvatarFallback>
       </Avatar>
     );
   }
 
   if (!user) {
     return (
-      <Avatar>
-        <AvatarFallback>?</AvatarFallback>
+      <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+        <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
+          ?
+        </AvatarFallback>
       </Avatar>
     );
   }
 
   return (
-    <Avatar>
-      <AvatarImage src={user.avatar} />
-      <AvatarFallback className="text-[8px]">
+    <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+      <AvatarImage src={user.avatar} className="object-cover" />
+      <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground text-sm font-semibold">
         {getUserInitials({
           first_name: user.first_name,
           last_name: user.last_name,

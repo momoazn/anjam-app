@@ -1,19 +1,19 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { FilterX, Plus } from "lucide-react";
+import { useMemo } from "react";
+import { CreateTaskDialog } from "@/components/task/create-task-dialog";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
+import { queryKeys } from "@/hooks/query-keys";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
-import { TaskWithProject } from "@/lib/pocketbase";
-import { TasksStatusOptions } from "@/lib/pocketbase-types";
+import type { TaskWithProject } from "@/lib/pocketbase";
+import type { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
-import { Plus, FilterX } from "lucide-react";
-import { useMemo } from "react";
-import { CreateTaskDialog } from "@/components/task/create-task-dialog";
-import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/hooks/query-keys";
 
 // Loading skeleton component
 const TaskListSkeleton = () => (
@@ -125,6 +125,8 @@ export default function Tasks() {
     filteredTasks,
   } = useTaskFilters(userTasks);
 
+  // URL params are now handled automatically by useQueryState in the hook
+
   const groupedTasks = useMemo(() => {
     // Prevent grouping during load state to avoid brief flash of unfiltered/empty groups
     if (isLoadingTasks || !filteredTasks) {
@@ -132,7 +134,10 @@ export default function Tasks() {
     }
     return filteredTasks.reduce(
       (acc, task) => {
-        (acc[task.status] = acc[task.status] || []).push(task);
+        if (!acc[task.status]) {
+          acc[task.status] = [];
+        }
+        acc[task.status].push(task);
         return acc;
       },
       {} as Record<TasksStatusOptions, TaskWithProject[]>,

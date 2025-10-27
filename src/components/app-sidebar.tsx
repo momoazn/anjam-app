@@ -23,6 +23,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
+import { can } from "@/lib/permissions";
 import { useAuthUser } from "@/store/auth-store";
 
 const data = {
@@ -69,7 +70,7 @@ const data = {
   navSecondary: [
     {
       title: fa.navigation.settings,
-      url: "#",
+      url: "/settings",
       icon: IconSettings,
     },
   ],
@@ -102,8 +103,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain
           items={data.navMain.filter((item) => {
-            if (item.adminOnly && user.role !== "admin") return false;
-            if (item.supervisorOnly && user.role !== "supervisor") return false;
+            // Use new permission system
+            if (
+              item.title === fa.navigation.users &&
+              !can(user.role, "users.view")
+            )
+              return false;
+            if (
+              item.title === fa.navigation.reports &&
+              !can(user.role, "reports.view")
+            )
+              return false;
             return true;
           })}
         />

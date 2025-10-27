@@ -1,11 +1,12 @@
-import { TaskWithProject } from "@/lib/pocketbase";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
 import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
-import { useMemo, useState } from "react";
+import { useQueryState } from "nuqs";
+import { useMemo } from "react";
+import type { TaskWithProject } from "@/lib/pocketbase";
+import {
+  type TasksPriorityOptions,
+  TasksStatusOptions,
+  type UsersResponse,
+} from "@/lib/pocketbase-types";
 
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
@@ -20,19 +21,31 @@ export type TaskFiltersState = {
 };
 
 // Define the return type of the hook
-export type UseTaskFiltersReturn = TaskFiltersState & {
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedStatus: React.Dispatch<
-    React.SetStateAction<TasksStatusOptions | typeof ALL_FILTER_VALUE>
-  >;
-  setSelectedPriority: React.Dispatch<
-    React.SetStateAction<TasksPriorityOptions | typeof ALL_FILTER_VALUE>
-  >;
-  setSelectedAssignee: React.Dispatch<
-    React.SetStateAction<string | typeof ALL_FILTER_VALUE>
-  >;
-  setSelectedDateRange: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedTag: React.Dispatch<React.SetStateAction<string>>;
+export type UseTaskFiltersReturn = {
+  searchTerm: string;
+  selectedStatus: string;
+  selectedPriority: string;
+  selectedAssignee: string;
+  selectedDateRange: string;
+  selectedTag: string;
+  setSearchTerm: (
+    value: string | ((old: string) => string | null) | null,
+  ) => Promise<URLSearchParams>;
+  setSelectedStatus: (
+    value: string | ((old: string) => string | null) | null,
+  ) => Promise<URLSearchParams>;
+  setSelectedPriority: (
+    value: string | ((old: string) => string | null) | null,
+  ) => Promise<URLSearchParams>;
+  setSelectedAssignee: (
+    value: string | ((old: string) => string | null) | null,
+  ) => Promise<URLSearchParams>;
+  setSelectedDateRange: (
+    value: string | ((old: string) => string | null) | null,
+  ) => Promise<URLSearchParams>;
+  setSelectedTag: (
+    value: string | ((old: string) => string | null) | null,
+  ) => Promise<URLSearchParams>;
   filteredTasks: TaskWithProject[];
 };
 
@@ -40,18 +53,24 @@ export type UseTaskFiltersReturn = TaskFiltersState & {
 export function useTaskFilters(
   tasks: TaskWithProject[] | undefined, // Accept the raw task list
 ): UseTaskFiltersReturn {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<
-    TasksStatusOptions | typeof ALL_FILTER_VALUE
-  >(ALL_FILTER_VALUE);
-  const [selectedPriority, setSelectedPriority] = useState<
-    TasksPriorityOptions | typeof ALL_FILTER_VALUE
-  >(ALL_FILTER_VALUE);
-  const [selectedAssignee, setSelectedAssignee] = useState<
-    string | typeof ALL_FILTER_VALUE
-  >(ALL_FILTER_VALUE);
-  const [selectedDateRange, setSelectedDateRange] = useState("all");
-  const [selectedTag, setSelectedTag] = useState("all");
+  const [searchTerm, setSearchTerm] = useQueryState("search", {
+    defaultValue: "",
+  });
+  const [selectedStatus, setSelectedStatus] = useQueryState("status", {
+    defaultValue: ALL_FILTER_VALUE,
+  });
+  const [selectedPriority, setSelectedPriority] = useQueryState("priority", {
+    defaultValue: ALL_FILTER_VALUE,
+  });
+  const [selectedAssignee, setSelectedAssignee] = useQueryState("assignee", {
+    defaultValue: ALL_FILTER_VALUE,
+  });
+  const [selectedDateRange, setSelectedDateRange] = useQueryState("due", {
+    defaultValue: "all",
+  });
+  const [selectedTag, setSelectedTag] = useQueryState("tag", {
+    defaultValue: "all",
+  });
 
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];
@@ -64,10 +83,15 @@ export function useTaskFilters(
           .includes(searchTerm.toLowerCase());
 
       // Filter logic
-      const matchesStatus =
+      let matchesStatus =
         selectedStatus === ALL_FILTER_VALUE
           ? true
           : task.status === selectedStatus;
+
+      // Special handling for "My Tasks" which should show both todo and in_progress
+      if (selectedAssignee === "me" && selectedStatus === ALL_FILTER_VALUE) {
+        matchesStatus = task.status === "todo" || task.status === "in_progress";
+      }
       const matchesPriority =
         selectedPriority === ALL_FILTER_VALUE
           ? true
@@ -75,7 +99,9 @@ export function useTaskFilters(
       const matchesAssignee =
         selectedAssignee === ALL_FILTER_VALUE
           ? true
-          : task.assignee === selectedAssignee;
+          : selectedAssignee === "me"
+            ? true // "me" filter is already handled by backend role filtering
+            : task.assignee === selectedAssignee;
 
       // Date range filter logic
       const matchesDateRange = (() => {

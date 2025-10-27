@@ -1,4 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -8,11 +10,10 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useTheme } from "@/hooks/use-theme";
 
 import { useNotifications } from "@/hooks/notifications";
+import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
-import { Loader2 } from "lucide-react";
 import { fa } from "./constants/text";
 import { AppRoutes } from "./router";
 
@@ -78,15 +79,17 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
-          <ScrollToTop />
-          <AppLayout />
-          <Toaster
-            position="bottom-left"
-            className="font-vazirmatn"
-            toastOptions={{
-              duration: 4000,
-            }}
-          />
+          <NuqsAdapter>
+            <ScrollToTop />
+            <AppLayout />
+            <Toaster
+              position="bottom-left"
+              className="font-vazirmatn"
+              toastOptions={{
+                duration: 4000,
+              }}
+            />
+          </NuqsAdapter>
         </Router>
       </QueryClientProvider>
     </ErrorBoundary>
