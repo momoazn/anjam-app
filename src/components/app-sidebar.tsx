@@ -1,4 +1,6 @@
 import {
+  IconBell,
+  IconChartBar,
   IconDashboard,
   IconFolder,
   IconHelp,
@@ -6,7 +8,6 @@ import {
   IconListDetails,
   IconSettings,
   IconUsers,
-  IconBell,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -58,11 +59,11 @@ const data = {
       url: "/helps",
       icon: IconHelp,
     },
-    // {
-    //   title: TEXT.navigation.reports,
-    //   url: "/reports",
-    //   icon: IconChartBar,
-    // },
+    {
+      title: TEXT.navigation.reports,
+      url: "/reports",
+      icon: IconChartBar,
+    },
   ],
 
   navSecondary: [
