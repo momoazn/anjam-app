@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
 import { UserFields } from "@/components/forms/user-fields";
@@ -59,8 +59,8 @@ export function EditUserDialog({
 
   const { mutate: updateUser, isPending } = useEntityUpdateMutation({
     collection: "users",
-    successMessage: TEXT.users.edit.success,
-    errorMessage: TEXT.users.edit.error,
+    successMessage: fa.users.edit.success,
+    errorMessage: fa.users.edit.error,
     invalidateQueries: ["users"],
     onSuccess: () => {
       form.reset();
@@ -77,7 +77,7 @@ export function EditUserDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{TEXT.users.edit.title}</DialogTitle>
+          <DialogTitle>{fa.users.edit.title}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -87,7 +87,7 @@ export function EditUserDialog({
                 {isPending ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : null}
-                {TEXT.users.edit.button}
+                {fa.users.edit.button}
               </Button>
             </DialogFooter>
           </form>

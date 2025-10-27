@@ -5,7 +5,7 @@ import { CreateProjectDialog } from "@/components/project/create-project-dialog"
 import { EditProjectDialog } from "@/components/project/edit-project-dialog";
 import { ProjectListGroup } from "@/components/project/project-list-group";
 import { Button } from "@/components/ui/button";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { ProjectsResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useProjects } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
@@ -37,9 +37,9 @@ export default function Projects() {
       <div className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{TEXT.projects.title}</h1>
+            <h1 className="text-2xl font-bold">{fa.projects.title}</h1>
             <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
-              {TEXT.projects.list.count.replace(
+              {fa.projects.list.count.replace(
                 "{count}",
                 digitsEnToFa(userProjects?.length ?? 0).toString(),
               )}
@@ -48,7 +48,7 @@ export default function Projects() {
           {canCreateProject && (
             <Button onClick={() => setIsCreateOpen(true)}>
               <Plus className="mr-2 size-4" />
-              {TEXT.projects.create.button}
+              {fa.projects.create.button}
             </Button>
           )}
         </div>

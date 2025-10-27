@@ -28,7 +28,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import {
   useClearAll,
   useClearRead,
@@ -65,13 +65,13 @@ const getDateGroup = (dateString?: string | null) => {
 const getGroupTitle = (group: string) => {
   switch (group) {
     case "today":
-      return TEXT.notifications.groups.today;
+      return fa.notifications.groups.today;
     case "yesterday":
-      return TEXT.notifications.groups.yesterday;
+      return fa.notifications.groups.yesterday;
     case "thisWeek":
-      return TEXT.notifications.groups.thisWeek;
+      return fa.notifications.groups.thisWeek;
     case "older":
-      return TEXT.notifications.groups.older;
+      return fa.notifications.groups.older;
     default:
       return group;
   }
@@ -101,7 +101,7 @@ function NotificationItem({
             size="sm"
             onClick={() => onMarkAsRead(notification.id)}
             className="h-7 w-7 p-0"
-            title={TEXT.notifications.actions.markAsRead}
+            title={fa.notifications.actions.markAsRead}
           >
             <IconEye className="h-3 w-3" />
           </Button>
@@ -111,7 +111,7 @@ function NotificationItem({
           size="sm"
           onClick={() => onDelete(notification.id)}
           className="text-destructive hover:text-destructive h-7 w-7 p-0"
-          title={TEXT.notifications.actions.delete}
+          title={fa.notifications.actions.delete}
         >
           <IconTrash className="h-3 w-3" />
         </Button>
@@ -140,7 +140,7 @@ function NotificationItem({
           </p>
           <div className="flex items-center justify-end gap-2">
             <Badge variant="outline" className="text-xs">
-              {TEXT.notifications.types[notification.type]}
+              {fa.notifications.types[notification.type]}
             </Badge>
             <time
               dateTime={notification.created || ""}
@@ -162,10 +162,10 @@ function EmptyState() {
         <IconBellOff className="text-muted-foreground/50 h-8 w-8" />
       </div>
       <h3 className="text-foreground mb-2 text-lg font-semibold">
-        {TEXT.notifications.emptyState.title}
+        {fa.notifications.emptyState.title}
       </h3>
       <p className="text-muted-foreground text-sm">
-        {TEXT.notifications.emptyState.description}
+        {fa.notifications.emptyState.description}
       </p>
     </div>
   );
@@ -251,10 +251,10 @@ export default function Notifications() {
         <div className="text-right">
           <h1 className="text-foreground flex items-center justify-end gap-2 text-xl font-bold md:text-2xl">
             <IconBell className="h-5 w-5 md:h-6 md:w-6" />
-            {TEXT.notifications.pageTitle}
+            {fa.notifications.pageTitle}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {TEXT.notifications.pageDescription}
+            {fa.notifications.pageDescription}
           </p>
         </div>
         <TooltipProvider>
@@ -274,7 +274,7 @@ export default function Notifications() {
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{TEXT.notifications.markAllAsRead}</p>
+                <p>{fa.notifications.markAllAsRead}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -293,7 +293,7 @@ export default function Notifications() {
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{TEXT.notifications.actions.clearRead}</p>
+                <p>{fa.notifications.actions.clearRead}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -312,7 +312,7 @@ export default function Notifications() {
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{TEXT.notifications.clearAll}</p>
+                <p>{fa.notifications.clearAll}</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -327,7 +327,7 @@ export default function Notifications() {
               <IconBell className="text-primary h-5 w-5" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {TEXT.notifications.stats.total}
+                  {fa.notifications.stats.total}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(notifications.length)}
@@ -342,7 +342,7 @@ export default function Notifications() {
               <IconBellOff className="h-5 w-5 text-blue-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {TEXT.notifications.stats.unread}
+                  {fa.notifications.stats.unread}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(unreadCount)}
@@ -357,7 +357,7 @@ export default function Notifications() {
               <IconCheck className="h-5 w-5 text-green-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {TEXT.notifications.stats.read}
+                  {fa.notifications.stats.read}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(notifications.filter((n) => n.read).length)}
@@ -372,7 +372,7 @@ export default function Notifications() {
               <IconTrash className="h-5 w-5 text-orange-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {TEXT.notifications.stats.deletable}
+                  {fa.notifications.stats.deletable}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(notifications.filter((n) => n.read).length)}
@@ -391,13 +391,13 @@ export default function Notifications() {
         >
           <TabsList>
             <TabsTrigger value="all">
-              {TEXT.notifications.filters.all}
+              {fa.notifications.filters.all}
             </TabsTrigger>
             <TabsTrigger value="unread">
-              {TEXT.notifications.filters.unread}
+              {fa.notifications.filters.unread}
             </TabsTrigger>
             <TabsTrigger value="read">
-              {TEXT.notifications.filters.read}
+              {fa.notifications.filters.read}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -406,15 +406,15 @@ export default function Notifications() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               <IconSortAscending className="ml-1 h-4 w-4" />
-              {TEXT.notifications.sort[sort]}
+              {fa.notifications.sort[sort]}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setSort("newest")}>
-              {TEXT.notifications.sort.newest}
+              {fa.notifications.sort.newest}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSort("oldest")}>
-              {TEXT.notifications.sort.oldest}
+              {fa.notifications.sort.oldest}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

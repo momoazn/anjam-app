@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
@@ -59,28 +59,26 @@ export default function Register() {
       password?: string;
       confirmPassword?: string;
     } = {};
-    if (!username.trim())
-      newErrors.username = TEXT.auth.errors.usernameRequired;
-    if (!password.trim())
-      newErrors.password = TEXT.auth.errors.passwordRequired;
+    if (!username.trim()) newErrors.username = fa.auth.errors.usernameRequired;
+    if (!password.trim()) newErrors.password = fa.auth.errors.passwordRequired;
     if (!confirmPassword.trim())
-      newErrors.confirmPassword = TEXT.auth.errors.passwordConfirmRequired;
+      newErrors.confirmPassword = fa.auth.errors.passwordConfirmRequired;
     if (
       !newErrors.password &&
       !newErrors.confirmPassword &&
       password !== confirmPassword
     )
-      newErrors.confirmPassword = TEXT.auth.errors.passwordsMismatch;
+      newErrors.confirmPassword = fa.auth.errors.passwordsMismatch;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      toast.error(TEXT.auth.register.errors.credentialsRequired);
+      toast.error(fa.auth.register.errors.credentialsRequired);
       return;
     }
 
     if (isInitialAdmin) {
       const isAdminCreated = await createInitialAdmin(username, password);
       if (!isAdminCreated) {
-        toast.error(TEXT.auth.register.errors.adminCreationFailed);
+        toast.error(fa.auth.register.errors.adminCreationFailed);
         return;
       }
 
@@ -115,14 +113,14 @@ export default function Register() {
     <div className="bg-background flex min-h-screen items-center justify-center">
       <div className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow">
         <h2 className="text-foreground text-center text-3xl font-bold">
-          {TEXT.auth.register.title}
+          {fa.auth.register.title}
         </h2>
 
         {isInitialAdmin && (
           <div className="flex flex-col items-center gap-4">
             <Separator />
             <p className="text-center">
-              {TEXT.auth.register.initialAdminMessage}
+              {fa.auth.register.initialAdminMessage}
             </p>
             <Separator />
           </div>
@@ -131,7 +129,7 @@ export default function Register() {
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <Label className="text-foreground block text-sm font-medium">
-              {TEXT.auth.register.username}
+              {fa.auth.register.username}
             </Label>
             <Input
               type="text"
@@ -157,7 +155,7 @@ export default function Register() {
           </div>
           <div>
             <Label className="text-foreground block text-sm font-medium">
-              {TEXT.auth.register.password}
+              {fa.auth.register.password}
             </Label>
             <Input
               type="password"
@@ -182,7 +180,7 @@ export default function Register() {
           </div>
           <div>
             <Label className="text-foreground block text-sm font-medium">
-              {TEXT.auth.register.confirmPassword}
+              {fa.auth.register.confirmPassword}
             </Label>
             <Input
               type="password"
@@ -210,8 +208,8 @@ export default function Register() {
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting
-              ? TEXT.tasks.details.buttons.saving
-              : TEXT.auth.register.registerButton}
+              ? fa.tasks.details.buttons.saving
+              : fa.auth.register.registerButton}
           </Button>
 
           {!isInitialAdmin && (
@@ -222,7 +220,7 @@ export default function Register() {
               type="button"
               disabled={submitting}
             >
-              {TEXT.auth.register.loginButton}
+              {fa.auth.register.loginButton}
             </Button>
           )}
         </form>

@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CalendarIcon } from "lucide-react";
@@ -38,7 +38,7 @@ export default function DatePicker({
           {date ? (
             <span>{digitsEnToFa(format(date, "P"))}</span>
           ) : (
-            <span>{TEXT.datePicker.placeholder}</span>
+            <span>{fa.datePicker.placeholder}</span>
           )}
         </Button>
       </PopoverTrigger>

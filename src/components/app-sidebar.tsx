@@ -22,45 +22,45 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useAuthUser } from "@/store/auth-store";
 
 const data = {
   navMain: [
     {
-      title: TEXT.navigation.dashboard,
+      title: fa.navigation.dashboard,
       url: "/",
       icon: IconDashboard,
     },
     {
-      title: TEXT.navigation.notifications,
+      title: fa.navigation.notifications,
       url: "/notifications",
       icon: IconBell,
     },
     {
-      title: TEXT.navigation.projects,
+      title: fa.navigation.projects,
       url: "/projects",
       icon: IconFolder,
     },
     {
-      title: TEXT.navigation.tasks,
+      title: fa.navigation.tasks,
       url: "/tasks",
       icon: IconListDetails,
     },
     {
-      title: TEXT.navigation.users,
+      title: fa.navigation.users,
       url: "/users",
       icon: IconUsers,
       adminOnly: true,
       supervisorOnly: true,
     },
     {
-      title: TEXT.navigation.helps,
+      title: fa.navigation.helps,
       url: "/helps",
       icon: IconHelp,
     },
     {
-      title: TEXT.navigation.reports,
+      title: fa.navigation.reports,
       url: "/reports",
       icon: IconChartBar,
     },
@@ -68,7 +68,7 @@ const data = {
 
   navSecondary: [
     {
-      title: TEXT.navigation.settings,
+      title: fa.navigation.settings,
       url: "#",
       icon: IconSettings,
     },
@@ -93,7 +93,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="/">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">{TEXT.app.name}</span>
+                <span className="text-base font-semibold">{fa.app.name}</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

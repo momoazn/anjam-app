@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
 import { UserAvatar } from "../user-avatar";
 
@@ -31,17 +31,17 @@ export function UserListTable({
       <TableHeader>
         <TableRow>
           <TableHead className="text-right">
-            {TEXT.users.table.columns.user}
+            {fa.users.table.columns.user}
           </TableHead>
           <TableHead className="text-right">
-            {TEXT.users.table.columns.username}
+            {fa.users.table.columns.username}
           </TableHead>
           <TableHead className="text-right">
-            {TEXT.users.table.columns.role}
+            {fa.users.table.columns.role}
           </TableHead>
           {isAdmin && (
             <TableHead className="w-[100px] text-center">
-              {TEXT.users.table.columns.actions}
+              {fa.users.table.columns.actions}
             </TableHead>
           )}
         </TableRow>
@@ -61,7 +61,7 @@ export function UserListTable({
             </TableCell>
             <TableCell className="text-right">{user.username}</TableCell>
             <TableCell className="text-right capitalize">
-              {TEXT.users.table.roles[user.role]}
+              {fa.users.table.roles[user.role]}
             </TableCell>
             {isAdmin && (
               <TableCell>

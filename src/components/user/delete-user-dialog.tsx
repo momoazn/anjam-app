@@ -1,5 +1,5 @@
 import { DeleteDialog } from "@/components/ui/delete-dialog";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
 
 interface DeleteUserDialogProps {
@@ -19,11 +19,11 @@ export function DeleteUserDialog({
       onOpenChange={onOpenChange}
       entityId={user?.id || null}
       entityName="user"
-      title={TEXT.users.delete.title}
-      description={TEXT.users.delete.description}
+      title={fa.users.delete.title}
+      description={fa.users.delete.description}
       collection="users"
-      successMessage={TEXT.users.delete.success}
-      errorMessage={TEXT.users.delete.error}
+      successMessage={fa.users.delete.success}
+      errorMessage={fa.users.delete.error}
       invalidateQueries={["users"]}
     />
   );

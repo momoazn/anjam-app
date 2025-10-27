@@ -22,7 +22,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { EditUserDialog } from "@/components/user/edit-user-dialog";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 import { UserAvatar } from "./user-avatar";
@@ -57,7 +57,7 @@ export function NavUser() {
                     {user?.username}
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {TEXT.users.table.roles[user!.role]}
+                    {fa.users.table.roles[user!.role]}
                   </span>
                 </div>
                 <IconDotsVertical className="ml-auto size-4" />
@@ -80,7 +80,7 @@ export function NavUser() {
                       {user?.username}
                     </span>
                     <span className="text-muted-foreground truncate text-xs">
-                      {TEXT.users.table.roles[user!.role]}
+                      {fa.users.table.roles[user!.role]}
                     </span>
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export function NavUser() {
                   onClick={() => setIsEditOpen(true)}
                 >
                   <IconUserCircle />
-                  {TEXT.user.dropdown.account}
+                  {fa.user.dropdown.account}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
@@ -101,7 +101,7 @@ export function NavUser() {
                 onClick={handleLogout}
               >
                 <IconLogout />
-                {TEXT.user.dropdown.logout}
+                {fa.user.dropdown.logout}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

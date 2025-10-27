@@ -1,4 +1,4 @@
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import {
   format,
   isWithinInterval,
@@ -51,18 +51,18 @@ export type TaskStatsData = {
 
 // Status labels mapping
 const STATUS_LABELS: Record<TasksStatusOptions, string> = {
-  [TasksStatusOptions.todo]: TEXT.reports.todo,
-  [TasksStatusOptions.in_progress]: TEXT.reports.inProgress,
-  [TasksStatusOptions.done]: TEXT.reports.completed,
-  [TasksStatusOptions.canceled]: TEXT.reports.canceled,
+  [TasksStatusOptions.todo]: fa.reports.todo,
+  [TasksStatusOptions.in_progress]: fa.reports.inProgress,
+  [TasksStatusOptions.done]: fa.reports.completed,
+  [TasksStatusOptions.canceled]: fa.reports.canceled,
 };
 
 // Priority labels mapping
 const PRIORITY_LABELS = {
-  urgent: TEXT.tasks.priority.urgent,
-  high: TEXT.reports.high,
-  medium: TEXT.reports.medium,
-  low: TEXT.reports.low,
+  urgent: fa.tasks.priority.urgent,
+  high: fa.reports.high,
+  medium: fa.reports.medium,
+  low: fa.reports.low,
 } as const;
 
 // Priority options in order

@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useTheme } from "@/hooks/use-theme";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Fragment, useEffect, useMemo, useState } from "react";
@@ -38,7 +38,7 @@ export function SiteHeader() {
 
     // Root
     if (parts.length === 0) {
-      return [{ label: TEXT.navigation.dashboard, to: "/" as const }];
+      return [{ label: fa.navigation.dashboard, to: "/" as const }];
     }
 
     // Static first-level routes
@@ -47,37 +47,37 @@ export function SiteHeader() {
       switch (first) {
         case "projects":
           return [
-            { label: TEXT.navigation.dashboard, to: "/" as const },
-            { label: TEXT.navigation.projects },
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.projects },
           ];
         case "tasks":
           return [
-            { label: TEXT.navigation.dashboard, to: "/" as const },
-            { label: TEXT.navigation.tasks },
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.tasks },
           ];
         case "users":
           return [
-            { label: TEXT.navigation.dashboard, to: "/" as const },
-            { label: TEXT.navigation.users },
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.users },
           ];
         case "reports":
           return [
-            { label: TEXT.navigation.dashboard, to: "/" as const },
-            { label: TEXT.navigation.reports },
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.reports },
           ];
         case "helps":
           return [
-            { label: TEXT.navigation.dashboard, to: "/" as const },
-            { label: TEXT.navigation.helps },
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.helps },
           ];
         case "notifications":
           return [
-            { label: TEXT.navigation.dashboard, to: "/" as const },
-            { label: TEXT.navigation.notifications },
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.notifications },
           ];
         default:
           return [
-            { label: TEXT.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.dashboard, to: "/" as const },
             { label: path.replace("/", "") || "" },
           ];
       }
@@ -89,9 +89,9 @@ export function SiteHeader() {
       const sub = parts[2];
       const subLabel =
         sub === "tasks"
-          ? TEXT.projects.projectTasks
+          ? fa.projects.projectTasks
           : sub === "users"
-            ? TEXT.projects.users.title
+            ? fa.projects.users.title
             : sub;
 
       // Try to read the project's name from cache only
@@ -109,8 +109,8 @@ export function SiteHeader() {
       }
 
       return [
-        { label: TEXT.navigation.dashboard, to: "/" as const },
-        { label: TEXT.navigation.projects, to: "/projects" as const },
+        { label: fa.navigation.dashboard, to: "/" as const },
+        { label: fa.navigation.projects, to: "/projects" as const },
         { label: projectName ?? projectId },
         { label: subLabel },
       ];
@@ -118,7 +118,7 @@ export function SiteHeader() {
 
     // Fallback
     return [
-      { label: TEXT.navigation.dashboard, to: "/" as const },
+      { label: fa.navigation.dashboard, to: "/" as const },
       { label: path },
     ];
   }, [location.pathname, queryClient]);
@@ -201,7 +201,7 @@ export function SiteHeader() {
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              title={TEXT.navigation.quickCreate.tooltip}
+              title={fa.navigation.quickCreate.tooltip}
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -209,11 +209,11 @@ export function SiteHeader() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigate("/tasks")}>
               <Plus className="mr-2 h-4 w-4" />
-              {TEXT.create.newTask}
+              {fa.create.newTask}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/projects")}>
               <Plus className="mr-2 h-4 w-4" />
-              {TEXT.create.newProject}
+              {fa.create.newProject}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -224,7 +224,7 @@ export function SiteHeader() {
             <Search className="text-muted-foreground absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2" />
             <Input
               type="search"
-              placeholder={TEXT.search.placeholder}
+              placeholder={fa.search.placeholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-8 w-48 pr-4 pl-8 text-sm"

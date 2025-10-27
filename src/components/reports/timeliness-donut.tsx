@@ -1,6 +1,6 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Cell, Pie, PieChart } from "recharts";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 
 import {
   ChartContainer,
@@ -12,15 +12,15 @@ import {
 
 const chartConfig = {
   on_time: {
-    label: TEXT.reports.onTime,
+    label: fa.reports.onTime,
     color: "var(--chart-2)",
   },
   overdue: {
-    label: TEXT.reports.overdue,
+    label: fa.reports.overdue,
     color: "var(--chart-1)",
   },
   no_deadline: {
-    label: TEXT.reports.noDeadline,
+    label: fa.reports.noDeadline,
     color: "var(--chart-5)",
   },
 };

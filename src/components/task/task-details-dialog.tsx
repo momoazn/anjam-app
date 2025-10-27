@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import {
   TasksPriorityOptions,
   TasksResponse,
@@ -51,7 +51,7 @@ export function EditTaskDialog({
     defaultValues: {
       title: task.title,
       description: task.description,
-      assignee: task.assignee ?? TEXT.tasks.addTask.unassigned,
+      assignee: task.assignee ?? fa.tasks.addTask.unassigned,
       priority: task.priority,
       status: task.status,
       deadline: task.deadline ? new Date(task.deadline) : undefined,
@@ -62,7 +62,7 @@ export function EditTaskDialog({
     form.reset({
       title: task.title,
       description: task.description,
-      assignee: task.assignee ?? TEXT.tasks.addTask.unassigned,
+      assignee: task.assignee ?? fa.tasks.addTask.unassigned,
       priority: task.priority,
       status: task.status,
       deadline: task.deadline ? new Date(task.deadline) : undefined,
@@ -71,8 +71,8 @@ export function EditTaskDialog({
 
   const { mutate: updateTask, isPending } = useEntityUpdateMutation({
     collection: "tasks",
-    successMessage: TEXT.tasks.edit.success,
-    errorMessage: TEXT.tasks.edit.error,
+    successMessage: fa.tasks.edit.success,
+    errorMessage: fa.tasks.edit.error,
     invalidateQueries: ["tasks"],
     onSuccess: () => {
       setOpen(false);
@@ -86,7 +86,7 @@ export function EditTaskDialog({
       updates: {
         ...values,
         assignee:
-          values.assignee !== TEXT.tasks.addTask.unassigned
+          values.assignee !== fa.tasks.addTask.unassigned
             ? values.assignee
             : undefined,
         deadline: values.deadline?.toISOString(),
@@ -97,7 +97,7 @@ export function EditTaskDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogTitle className="sr-only">{TEXT.tasks.edit.title}</DialogTitle>
+      <DialogTitle className="sr-only">{fa.tasks.edit.title}</DialogTitle>
       <DialogContent className="sm:max-w-[800px]">
         <Form {...form}>
           <form
@@ -114,15 +114,15 @@ export function EditTaskDialog({
                 disabled={isPending}
                 onClick={() => setOpen(false)}
               >
-                {TEXT.tasks.details.buttons.cancel}
+                {fa.tasks.details.buttons.cancel}
               </Button>
               <Button size="sm" type="submit" disabled={isPending}>
                 {isPending ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : null}
                 {isPending
-                  ? TEXT.tasks.edit.buttons.saving
-                  : TEXT.tasks.edit.buttons.save}
+                  ? fa.tasks.edit.buttons.saving
+                  : fa.tasks.edit.buttons.save}
               </Button>
             </div>
           </form>

@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useProjects, useTasks, useUsers } from "@/hooks";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
@@ -142,17 +142,17 @@ export default function Reports() {
     const counts = classifyTimeliness(filteredTasks, timeRange);
     return [
       {
-        name: TEXT.reports.chart.timeliness.onTime,
+        name: fa.reports.chart.timeliness.onTime,
         value: counts.on_time,
         key: "on_time" as const,
       },
       {
-        name: TEXT.reports.chart.timeliness.overdue,
+        name: fa.reports.chart.timeliness.overdue,
         value: counts.overdue,
         key: "overdue" as const,
       },
       {
-        name: TEXT.reports.chart.timeliness.noDeadline,
+        name: fa.reports.chart.timeliness.noDeadline,
         value: counts.no_deadline,
         key: "no_deadline" as const,
       },
@@ -178,7 +178,7 @@ export default function Reports() {
     const matchingTasks = filteredTasks.filter(predicate);
     const rows = matchingTasks.map((task) => ({
       id: task.id,
-      title: task.title || TEXT.reports.fallbacks.taskTitle,
+      title: task.title || fa.reports.fallbacks.taskTitle,
       status: task.status,
       priority: task.priority,
       deadline: task.deadline || null,
@@ -191,9 +191,9 @@ export default function Reports() {
       assigneeName: task.expand?.assignee
         ? `${task.expand.assignee.first_name || ""} ${task.expand.assignee.last_name || ""}`.trim() ||
           task.expand.assignee.username
-        : TEXT.reports.fallbacks.assigneeName,
+        : fa.reports.fallbacks.assigneeName,
       projectName:
-        task.expand?.project?.name || TEXT.reports.fallbacks.projectName,
+        task.expand?.project?.name || fa.reports.fallbacks.projectName,
       tags: task.tags || [],
     }));
 
@@ -242,7 +242,7 @@ export default function Reports() {
     </div>
   );
 
-  const rangeLabel = `${format(timeRange.start, "yyyy/MM/dd")} ${TEXT.reports.range.connector} ${format(timeRange.end, "yyyy/MM/dd")}`;
+  const rangeLabel = `${format(timeRange.start, "yyyy/MM/dd")} ${fa.reports.range.connector} ${format(timeRange.end, "yyyy/MM/dd")}`;
 
   const hasThroughput = throughputData?.length > 0;
   const totalTimeliness = timelinessData?.reduce(
@@ -258,10 +258,10 @@ export default function Reports() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold md:text-3xl">
-            {TEXT.reports.dashboardTitle}
+            {fa.reports.dashboardTitle}
           </h1>
           <p className="text-muted-foreground text-xs">
-            {TEXT.reports.range.label} {rangeLabel}
+            {fa.reports.range.label} {rangeLabel}
           </p>
         </div>
       </div>
@@ -282,7 +282,7 @@ export default function Reports() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="text-base font-semibold md:text-lg">
-              {TEXT.reports.charts.throughput.title}
+              {fa.reports.charts.throughput.title}
             </CardTitle>
             <Select
               value={bucket}
@@ -293,10 +293,10 @@ export default function Reports() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="daily">
-                  {TEXT.reports.charts.throughput.periods.daily}
+                  {fa.reports.charts.throughput.periods.daily}
                 </SelectItem>
                 <SelectItem value="weekly">
-                  {TEXT.reports.charts.throughput.periods.weekly}
+                  {fa.reports.charts.throughput.periods.weekly}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -308,7 +308,7 @@ export default function Reports() {
                 bucket={bucket}
                 onBarClick={(key, label) =>
                   handleDrilldown(
-                    TEXT.reports.charts.throughput.drilldownTitle.replace(
+                    fa.reports.charts.throughput.drilldownTitle.replace(
                       "{label}",
                       label,
                     ),
@@ -330,7 +330,7 @@ export default function Reports() {
                 }
               />
             ) : (
-              <EmptyState message={TEXT.reports.charts.throughput.noData} />
+              <EmptyState message={fa.reports.charts.throughput.noData} />
             )}
           </CardContent>
         </Card>
@@ -339,7 +339,7 @@ export default function Reports() {
         <Card>
           <CardHeader className="pb-4">
             <CardTitle className="text-base font-semibold md:text-lg">
-              {TEXT.reports.charts.timeliness.title}
+              {fa.reports.charts.timeliness.title}
             </CardTitle>
           </CardHeader>
           <CardContent className="h-80 w-full p-4 pt-0">
@@ -366,7 +366,7 @@ export default function Reports() {
                 }
               />
             ) : (
-              <EmptyState message={TEXT.reports.charts.timeliness.noData} />
+              <EmptyState message={fa.reports.charts.timeliness.noData} />
             )}
           </CardContent>
         </Card>
@@ -377,7 +377,7 @@ export default function Reports() {
         <Card>
           <CardHeader className="pb-4">
             <CardTitle className="text-base font-semibold md:text-lg">
-              {TEXT.reports.charts.priorities.title}
+              {fa.reports.charts.priorities.title}
             </CardTitle>
           </CardHeader>
           <CardContent className="h-80 w-full p-4 pt-0">
@@ -386,7 +386,7 @@ export default function Reports() {
                 data={priorityData}
                 onSliceClick={(key) =>
                   handleDrilldown(
-                    TEXT.reports.charts.priorities.drilldownTitle.replace(
+                    fa.reports.charts.priorities.drilldownTitle.replace(
                       "{name}",
                       priorityData.find((d) => d.key === key)?.name || "",
                     ),
@@ -395,7 +395,7 @@ export default function Reports() {
                 }
               />
             ) : (
-              <EmptyState message={TEXT.reports.charts.priorities.noData} />
+              <EmptyState message={fa.reports.charts.priorities.noData} />
             )}
           </CardContent>
         </Card>
@@ -407,7 +407,7 @@ export default function Reports() {
               rows={leaderboardData}
               onRowClick={(userId) =>
                 handleDrilldown(
-                  TEXT.reports.charts.users.drilldownTitle
+                  fa.reports.charts.users.drilldownTitle
                     .replace(
                       "{firstName}",
                       users?.find((u) => u.id === userId)?.first_name || "",

@@ -4,7 +4,7 @@ import { useRef } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { UsersResponse } from "@/lib/pocketbase-types";
 import {
@@ -94,7 +94,7 @@ export function TaskListItem({
             e.stopPropagation();
           }
         }}
-        aria-label={TEXT.task.editTask.replace("{title}", task.title)}
+        aria-label={fa.task.editTask.replace("{title}", task.title)}
       >
         {/* Left side: Checkbox, Icon, ID, Title */}
         <div className="flex min-w-0 flex-grow items-center gap-2">
@@ -148,12 +148,12 @@ export function TaskListItem({
                 // Limit tags shown
                 // Simple color logic for tags
                 let tagColor = "bg-muted text-muted-foreground border-border";
-                if (tag === TEXT.tasks.tags.bug)
+                if (tag === fa.tasks.tags.bug)
                   tagColor =
                     "bg-destructive/10 text-destructive border-destructive/20";
-                if (tag === TEXT.tasks.tags.feature)
+                if (tag === fa.tasks.tags.feature)
                   tagColor = "bg-primary/10 text-primary border-primary/20";
-                if (tag === TEXT.tasks.tags.improvement)
+                if (tag === fa.tasks.tags.improvement)
                   tagColor = "bg-accent/10 text-accent border-accent/20";
                 return (
                   <Badge

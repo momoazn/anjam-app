@@ -8,7 +8,7 @@ import { CreateUserDialog } from "@/components/user/create-user-dialog";
 import { DeleteUserDialog } from "@/components/user/delete-user-dialog";
 import { EditUserDialog } from "@/components/user/edit-user-dialog";
 import { UserListTable } from "@/components/user/user-list-table";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useUsers } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
@@ -51,9 +51,9 @@ export default function Users() {
       <div className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{TEXT.users.title}</h1>
+            <h1 className="text-2xl font-bold">{fa.users.title}</h1>
             <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
-              {TEXT.users.list.count.replace(
+              {fa.users.list.count.replace(
                 "{count}",
                 digitsEnToFa(users?.length ?? 0).toString(),
               )}
@@ -62,7 +62,7 @@ export default function Users() {
           {isAdmin && (
             <Button onClick={() => setIsCreateOpen(true)}>
               <Plus className="mr-2 size-4" />
-              {TEXT.users.create.button}
+              {fa.users.create.button}
             </Button>
           )}
         </div>

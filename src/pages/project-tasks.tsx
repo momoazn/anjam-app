@@ -6,7 +6,7 @@ import { TaskListGroup } from "@/components/task/task-list-group";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 
 import { CreateTaskDialog } from "@/components/task/create-task-dialog";
 import { queryKeys } from "@/hooks/query-keys";
@@ -77,10 +77,10 @@ const ProjectEmptyState = ({
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
           <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="mb-2 text-lg font-semibold">
-            {TEXT.tasks.emptyState.noTasksInProject}
+            {fa.tasks.emptyState.noTasksInProject}
           </h3>
           <p className="text-muted-foreground mb-4 max-w-md">
-            {TEXT.tasks.emptyState.noTasksInProjectDescription.replace(
+            {fa.tasks.emptyState.noTasksInProjectDescription.replace(
               "{projectName}",
               projectName,
             )}
@@ -97,10 +97,10 @@ const ProjectEmptyState = ({
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">
-          {TEXT.tasks.emptyState.projectNoTasksYet}
+          {fa.tasks.emptyState.projectNoTasksYet}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-md">
-          {TEXT.tasks.emptyState.projectNoTasksYetDescription.replace(
+          {fa.tasks.emptyState.projectNoTasksYetDescription.replace(
             "{projectName}",
             projectName,
           )}
@@ -108,7 +108,7 @@ const ProjectEmptyState = ({
         <CreateTaskDialog onSuccess={onSuccess}>
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            {TEXT.tasks.emptyState.createFirstTask}
+            {fa.tasks.emptyState.createFirstTask}
           </Button>
         </CreateTaskDialog>
       </CardContent>
@@ -172,22 +172,22 @@ export default function ProjectTasks() {
             <div className="mb-2 flex items-center gap-2">
               <FolderOpen className="text-muted-foreground h-6 w-6" />
               <h1 className="text-3xl font-bold tracking-tight">
-                {project?.name || TEXT.projects.fallbacks.name}
+                {project?.name || fa.projects.fallbacks.name}
               </h1>
             </div>
             <p className="text-muted-foreground">
               {totalTasks > 0
-                ? TEXT.tasks.header.tasksInProject.replace(
+                ? fa.tasks.header.tasksInProject.replace(
                     "{count}",
                     totalTasks.toString(),
                   )
-                : TEXT.tasks.header.manageProjectTasks}
+                : fa.tasks.header.manageProjectTasks}
             </p>
           </div>
           <CreateTaskDialog onSuccess={() => {}}>
             <Button className="gap-2" size="lg">
               <Plus className="h-4 w-4" />
-              {TEXT.tasks.addTask.buttons.newTaskForProject}
+              {fa.tasks.addTask.buttons.newTaskForProject}
             </Button>
           </CreateTaskDialog>
         </div>
@@ -220,7 +220,7 @@ export default function ProjectTasks() {
         ) : !filteredTasks || filteredTasks.length === 0 ? (
           <ProjectEmptyState
             hasFilters={hasActiveFilters}
-            projectName={project?.name || TEXT.projects.fallbacks.thisProject}
+            projectName={project?.name || fa.projects.fallbacks.thisProject}
           />
         ) : (
           statusOrder?.map((status) => {

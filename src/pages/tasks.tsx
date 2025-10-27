@@ -3,7 +3,7 @@ import { TaskListGroup } from "@/components/task/task-list-group";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { TaskWithProject } from "@/lib/pocketbase";
@@ -68,10 +68,10 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
           <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="mb-2 text-lg font-semibold">
-            {TEXT.tasks.emptyState.noTasksFound}
+            {fa.tasks.emptyState.noTasksFound}
           </h3>
           <p className="text-muted-foreground mb-4 max-w-md">
-            {TEXT.tasks.emptyState.noTasksFoundDescription}
+            {fa.tasks.emptyState.noTasksFoundDescription}
           </p>
         </CardContent>
       </Card>
@@ -85,15 +85,15 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">
-          {TEXT.tasks.emptyState.noTasksYet}
+          {fa.tasks.emptyState.noTasksYet}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-md">
-          {TEXT.tasks.emptyState.noTasksYetDescription}
+          {fa.tasks.emptyState.noTasksYetDescription}
         </p>
         <CreateTaskDialog onSuccess={onSuccess}>
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            {TEXT.tasks.emptyState.createFirstTask}
+            {fa.tasks.emptyState.createFirstTask}
           </Button>
         </CreateTaskDialog>
       </CardContent>
@@ -157,21 +157,21 @@ export default function Tasks() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              {TEXT.tasks.allTasks}
+              {fa.tasks.allTasks}
             </h1>
             <p className="text-muted-foreground mt-1">
               {totalTasks > 0
-                ? TEXT.tasks.header.tasksFound.replace(
+                ? fa.tasks.header.tasksFound.replace(
                     "{count}",
                     totalTasks.toString(),
                   )
-                : TEXT.tasks.header.manageTasks}
+                : fa.tasks.header.manageTasks}
             </p>
           </div>
           <CreateTaskDialog onSuccess={() => {}}>
             <Button className="gap-2" size="lg">
               <Plus className="h-4 w-4" />
-              {TEXT.tasks.addTask.buttons.newTask}
+              {fa.tasks.addTask.buttons.newTask}
             </Button>
           </CreateTaskDialog>
         </div>

@@ -28,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { UserAvatar } from "@/components/user-avatar";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import {
   useProjectUsersFromAppData,
   useProjectWithSupervisor,
@@ -66,10 +66,10 @@ export default function ProjectUsers() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["project-users", id] });
       setIsAddUserOpen(false);
-      toast.success(TEXT.projects.users.addSuccess);
+      toast.success(fa.projects.users.addSuccess);
     },
     onError: (error) => {
-      toast.error(TEXT.projects.users.addError);
+      toast.error(fa.projects.users.addError);
       console.error("Error adding user to project:", error);
     },
   });
@@ -87,10 +87,10 @@ export default function ProjectUsers() {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["project-users", id] });
-        toast.success(TEXT.projects.users.removeSuccess);
+        toast.success(fa.projects.users.removeSuccess);
       },
       onError: (error) => {
-        toast.error(TEXT.projects.users.removeError);
+        toast.error(fa.projects.users.removeError);
         console.error("Error removing user from project:", error);
       },
     });
@@ -104,10 +104,10 @@ export default function ProjectUsers() {
     <div className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">{TEXT.projects.users.title}</h1>
+          <h1 className="text-2xl font-bold">{fa.projects.users.title}</h1>
           {projectUsers && (
             <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
-              {projectUsers.length} {TEXT.projects.users.count}
+              {projectUsers.length} {fa.projects.users.count}
             </span>
           )}
         </div>
@@ -116,12 +116,12 @@ export default function ProjectUsers() {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 size-4" />
-                {TEXT.projects.users.add}
+                {fa.projects.users.add}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{TEXT.projects.users.addDialog.title}</DialogTitle>
+                <DialogTitle>{fa.projects.users.addDialog.title}</DialogTitle>
               </DialogHeader>
               <Select
                 onValueChange={(value) => {
@@ -131,9 +131,7 @@ export default function ProjectUsers() {
               >
                 <SelectTrigger>
                   <SelectValue
-                    placeholder={
-                      TEXT.projects.users.addDialog.selectPlaceholder
-                    }
+                    placeholder={fa.projects.users.addDialog.selectPlaceholder}
                   />
                 </SelectTrigger>
                 <SelectContent>
@@ -154,14 +152,14 @@ export default function ProjectUsers() {
           <TableHeader>
             <TableRow>
               <TableHead className="text-right">
-                {TEXT.projects.users.table.user}
+                {fa.projects.users.table.user}
               </TableHead>
               <TableHead className="text-center">
-                {TEXT.projects.users.table.role}
+                {fa.projects.users.table.role}
               </TableHead>
               {canManageUsers && (
                 <TableHead className="w-[100px] text-center">
-                  {TEXT.projects.users.table.actions}
+                  {fa.projects.users.table.actions}
                 </TableHead>
               )}
             </TableRow>
@@ -175,7 +173,7 @@ export default function ProjectUsers() {
                 </div>
               </TableCell>
               <TableCell className="text-center">
-                {TEXT.users.table.roles.supervisor}
+                {fa.users.table.roles.supervisor}
               </TableCell>
             </TableRow>
             {projectUsers?.map((user) => (
@@ -187,7 +185,7 @@ export default function ProjectUsers() {
                   </div>
                 </TableCell>
                 <TableCell className="text-center">
-                  {TEXT.users.table.roles.employee}
+                  {fa.users.table.roles.employee}
                 </TableCell>
                 {canManageUsers && (
                   <TableCell className="text-center">

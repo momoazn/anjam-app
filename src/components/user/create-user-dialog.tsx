@@ -11,19 +11,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useEntityMutation } from "@/hooks/use-entity-mutation";
 import { UserFields } from "@/components/forms/user-fields";
 import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  username: z.string().min(1, { message: TEXT.auth.errors.usernameRequired }),
-  password: z.string().min(8, { message: TEXT.auth.errors.passwordRequired }),
-  first_name: z
-    .string()
-    .min(1, { message: TEXT.auth.errors.firstNameRequired }),
-  last_name: z.string().min(1, { message: TEXT.auth.errors.lastNameRequired }),
+  username: z.string().min(1, { message: fa.auth.errors.usernameRequired }),
+  password: z.string().min(8, { message: fa.auth.errors.passwordRequired }),
+  first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
+  last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
 });
 
@@ -50,8 +48,8 @@ export function CreateUserDialog({
 
   const { mutate: createUser, isPending } = useEntityMutation({
     collection: "users",
-    successMessage: TEXT.users.create.success,
-    errorMessage: TEXT.users.create.error,
+    successMessage: fa.users.create.success,
+    errorMessage: fa.users.create.error,
     invalidateQueries: ["users"],
     onSuccess: () => {
       form.reset();
@@ -74,7 +72,7 @@ export function CreateUserDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{TEXT.users.create.title}</DialogTitle>
+          <DialogTitle>{fa.users.create.title}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -84,7 +82,7 @@ export function CreateUserDialog({
                 {isPending ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : null}
-                {TEXT.users.create.button}
+                {fa.users.create.button}
               </Button>
             </DialogFooter>
           </form>

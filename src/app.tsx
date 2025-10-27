@@ -13,7 +13,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useNotifications } from "@/hooks/notifications";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
-import { TEXT } from "./constants/text";
+import { fa } from "./constants/text";
 import { AppRoutes } from "./router";
 
 // Simplified QueryClient configuration
@@ -33,7 +33,7 @@ function LoadingFallback() {
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="text-primary size-8 animate-spin" />
         <p className="text-muted-foreground text-sm">
-          {TEXT.loading.application}
+          {fa.loading.application}
         </p>
       </div>
     </div>

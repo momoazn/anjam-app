@@ -1,73 +1,73 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useAuthIsLoggedIn } from "./store/auth-store";
 
 // Lazy load pages with better error handling and preloading
 const Login = React.lazy(() =>
   import("@/pages/login").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.login}</div>,
+    default: () => <div>{fa.errors.pageLoad.login}</div>,
   })),
 );
 const Register = React.lazy(() =>
   import("@/pages/register").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.register}</div>,
+    default: () => <div>{fa.errors.pageLoad.register}</div>,
   })),
 );
 const Dashboard = React.lazy(() =>
   import("@/pages/dashboard").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.dashboard}</div>,
+    default: () => <div>{fa.errors.pageLoad.dashboard}</div>,
   })),
 );
 const Projects = React.lazy(() =>
   import("@/pages/projects").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.projects}</div>,
+    default: () => <div>{fa.errors.pageLoad.projects}</div>,
   })),
 );
 const Tasks = React.lazy(() =>
   import("@/pages/tasks").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.tasks}</div>,
+    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
   })),
 );
 const ProjectTasks = React.lazy(() =>
   import("@/pages/project-tasks").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.projectTasks}</div>,
+    default: () => <div>{fa.errors.pageLoad.projectTasks}</div>,
   })),
 );
 const Users = React.lazy(() =>
   import("@/pages/users").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.users}</div>,
+    default: () => <div>{fa.errors.pageLoad.users}</div>,
   })),
 );
 const ProjectUsers = React.lazy(() =>
   import("@/pages/project-users").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.projectUsers}</div>,
+    default: () => <div>{fa.errors.pageLoad.projectUsers}</div>,
   })),
 );
 const Reports = React.lazy(() =>
   import("@/pages/reports").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.reports}</div>,
+    default: () => <div>{fa.errors.pageLoad.reports}</div>,
   })),
 );
 const Helps = React.lazy(() =>
   import("@/pages/helps").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.helps}</div>,
+    default: () => <div>{fa.errors.pageLoad.helps}</div>,
   })),
 );
 const Settings = React.lazy(() =>
   import("@/pages/settings").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.settings}</div>,
+    default: () => <div>{fa.errors.pageLoad.settings}</div>,
   })),
 );
 const Notifications = React.lazy(() =>
   import("@/pages/notifications").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.notifications}</div>,
+    default: () => <div>{fa.errors.pageLoad.notifications}</div>,
   })),
 );
 const NotFound = React.lazy(() =>
   import("@/pages/not-found").catch(() => ({
-    default: () => <div>{TEXT.errors.pageLoad.notFound}</div>,
+    default: () => <div>{fa.errors.pageLoad.notFound}</div>,
   })),
 );
 
@@ -105,8 +105,8 @@ const Title = ({
   children: React.ReactNode;
 }) => {
   useEffect(() => {
-    if (title) document.title = `${title} • ${TEXT.app.name}`;
-    else document.title = TEXT.app.name;
+    if (title) document.title = `${title} • ${fa.app.name}`;
+    else document.title = fa.app.name;
   }, [title]);
   return <>{children}</>;
 };
@@ -117,79 +117,79 @@ const routes: RouteType[] = [
     path: "/",
     element: <Dashboard />,
     protected: true,
-    title: TEXT.navigation.dashboard,
+    title: fa.navigation.dashboard,
   },
   {
     path: "/projects",
     element: <Projects />,
     protected: true,
-    title: TEXT.navigation.projects,
+    title: fa.navigation.projects,
   },
   {
     path: "/login",
     element: <Login />,
     protected: false,
-    title: TEXT.auth.login.title,
+    title: fa.auth.login.title,
   },
   {
     path: "/register",
     element: <Register />,
     protected: false,
-    title: TEXT.auth.register.title,
+    title: fa.auth.register.title,
   },
   {
     path: "/tasks",
     element: <Tasks />,
     protected: true,
-    title: TEXT.tasks.title,
+    title: fa.tasks.title,
   },
   {
     path: "/projects/:id/tasks",
     element: <ProjectTasks />,
     protected: true,
-    title: TEXT.projects.projectTasks,
+    title: fa.projects.projectTasks,
   },
   {
     path: "/users",
     element: <Users />,
     protected: true,
-    title: TEXT.users.title,
+    title: fa.users.title,
   },
   {
     path: "/projects/:id/users",
     element: <ProjectUsers />,
     protected: true,
-    title: TEXT.projects.users.title,
+    title: fa.projects.users.title,
   },
   {
     path: "/reports",
     element: <Reports />,
     protected: true,
-    title: TEXT.navigation.reports,
+    title: fa.navigation.reports,
   },
   {
     path: "/helps",
     element: <Helps />,
     protected: true,
-    title: TEXT.navigation.helps,
+    title: fa.navigation.helps,
   },
   {
     path: "/settings",
     element: <Settings />,
     protected: true,
-    title: TEXT.navigation.settings,
+    title: fa.navigation.settings,
   },
   {
     path: "/notifications",
     element: <Notifications />,
     protected: true,
-    title: TEXT.navigation.notifications,
+    title: fa.navigation.notifications,
   },
   {
     path: "*",
     element: <NotFound />,
     protected: false,
-    title: TEXT.notFound.title,
+    title: fa.notFound.title,
   },
 ];
 

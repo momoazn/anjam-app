@@ -5,7 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useProjects, useTasks } from "@/hooks";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { taskStatusBgColors } from "@/lib/tasks-utils";
@@ -94,12 +94,12 @@ export default function Dashboard() {
     return Object.entries(statusCounts).map(([status, count]) => ({
       status:
         status === "todo"
-          ? TEXT.tasks.status.todo
+          ? fa.tasks.status.todo
           : status === "in_progress"
-            ? TEXT.tasks.status.in_progress
+            ? fa.tasks.status.in_progress
             : status === "done"
-              ? TEXT.tasks.status.done
-              : TEXT.tasks.status.canceled,
+              ? fa.tasks.status.done
+              : fa.tasks.status.canceled,
       count,
       fill: taskStatusBgColors[status as TasksStatusOptions],
     }));
@@ -138,22 +138,22 @@ export default function Dashboard() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
           <LayoutDashboard className="h-5 w-5 md:h-6 md:w-6" />
-          {TEXT.dashboard.title}
+          {fa.dashboard.title}
         </h1>
         <Button
           onClick={() => navigate("/tasks")}
           className="w-full gap-2 sm:w-auto"
         >
           <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">{TEXT.dashboard.newTask}</span>
-          <span className="sm:hidden">{TEXT.dashboard.taskShort}</span>
+          <span className="hidden sm:inline">{fa.dashboard.newTask}</span>
+          <span className="sm:hidden">{fa.dashboard.taskShort}</span>
         </Button>
       </div>
 
       {/* Stats Section */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mb-8 md:gap-4 lg:grid-cols-5">
         <StatCard
-          title={TEXT.dashboard.stats.totalTasks}
+          title={fa.dashboard.stats.totalTasks}
           value={stats?.total ?? 0}
           icon={
             <ListTodo className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -161,7 +161,7 @@ export default function Dashboard() {
           color="bg-blue-50 dark:bg-blue-400/15"
         />
         <StatCard
-          title={TEXT.dashboard.stats.completed}
+          title={fa.dashboard.stats.completed}
           value={stats?.completed ?? 0}
           icon={
             <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -169,7 +169,7 @@ export default function Dashboard() {
           color="bg-green-50 dark:bg-emerald-400/15"
         />
         <StatCard
-          title={TEXT.dashboard.stats.inProgress}
+          title={fa.dashboard.stats.inProgress}
           value={stats?.inProgress ?? 0}
           icon={
             <Clock className="h-6 w-6 text-orange-600 dark:text-orange-400" />
@@ -177,7 +177,7 @@ export default function Dashboard() {
           color="bg-orange-50 dark:bg-amber-400/15"
         />
         <StatCard
-          title={TEXT.dashboard.stats.pending}
+          title={fa.dashboard.stats.pending}
           value={stats?.pending ?? 0}
           icon={
             <BarChart3 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -185,7 +185,7 @@ export default function Dashboard() {
           color="bg-purple-50 dark:bg-purple-400/15"
         />
         <StatCard
-          title={TEXT.dashboard.stats.overdue}
+          title={fa.dashboard.stats.overdue}
           value={stats?.overdue ?? 0}
           icon={
             <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -198,7 +198,7 @@ export default function Dashboard() {
       <div className="mb-6 md:mb-8">
         <h2 className="mb-4 flex items-center gap-2 text-base font-semibold md:text-lg">
           <Target className="h-4 w-4 md:h-5 md:w-5" />
-          {TEXT.dashboard.projectSummary}
+          {fa.dashboard.projectSummary}
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
           {projectStats.map((project) => (
@@ -209,8 +209,8 @@ export default function Dashboard() {
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-semibold">{project.name}</h3>
                 <span className="text-muted-foreground text-sm">
-                  {digitsEnToFa(project.completedTasks)} {TEXT.dashboard.of}{" "}
-                  {digitsEnToFa(project.taskCount)} {TEXT.dashboard.taskShort}
+                  {digitsEnToFa(project.completedTasks)} {fa.dashboard.of}{" "}
+                  {digitsEnToFa(project.taskCount)} {fa.dashboard.taskShort}
                 </span>
               </div>
               <div className="bg-muted/60 mb-2 h-2 w-full rounded-full">
@@ -221,13 +221,13 @@ export default function Dashboard() {
               </div>
               <div className="text-muted-foreground flex justify-between text-sm">
                 <span>
-                  {TEXT.dashboard.tasksCompleted.replace(
+                  {fa.dashboard.tasksCompleted.replace(
                     "{percentage}",
                     digitsEnToFa(project.progress),
                   )}
                 </span>
                 <span>
-                  {digitsEnToFa(project.taskCount)} {TEXT.dashboard.taskShort}
+                  {digitsEnToFa(project.taskCount)} {fa.dashboard.taskShort}
                 </span>
               </div>
             </div>
@@ -241,14 +241,14 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base md:text-lg">
               <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
-              {TEXT.dashboard.taskStatus}
+              {fa.dashboard.taskStatus}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer
               config={{
                 count: {
-                  label: TEXT.dashboard.chart.count,
+                  label: fa.dashboard.chart.count,
                 },
               }}
               className="h-[180px] md:h-[200px]"
@@ -270,7 +270,7 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base md:text-lg">
               <Clock className="h-4 w-4 md:h-5 md:w-5" />
-              {TEXT.dashboard.recentTasks}
+              {fa.dashboard.recentTasks}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -297,7 +297,7 @@ export default function Dashboard() {
                   >
                     {task?.created
                       ? format(new Date(task.created), "yyyy/MM/dd")
-                      : TEXT.dashboard.fallbacks.noDate}
+                      : fa.dashboard.fallbacks.noDate}
                   </span>
                 </div>
               ))}
@@ -313,7 +313,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle className="text-destructive flex items-center gap-2 text-sm md:text-base">
                   <AlertTriangle className="h-4 w-4 md:h-5 md:w-5" />
-                  {TEXT.dashboard.overdueTasks}
+                  {fa.dashboard.overdueTasks}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -341,7 +341,7 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm md:text-base">
                 <TrendingUp className="h-4 w-4 md:h-5 md:w-5" />
-                {TEXT.dashboard.quickActions}
+                {fa.dashboard.quickActions}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -353,7 +353,7 @@ export default function Dashboard() {
                   onClick={() => navigate("/tasks")}
                 >
                   <ListTodo className="h-3 w-3 md:h-4 md:w-4" />
-                  {TEXT.dashboard.viewAllTasks}
+                  {fa.dashboard.viewAllTasks}
                 </Button>
                 <Button
                   variant="outline"
@@ -362,7 +362,7 @@ export default function Dashboard() {
                   onClick={() => navigate("/projects")}
                 >
                   <Target className="h-3 w-3 md:h-4 md:w-4" />
-                  {TEXT.dashboard.manageProjects}
+                  {fa.dashboard.manageProjects}
                 </Button>
                 <Button
                   variant="outline"
@@ -371,7 +371,7 @@ export default function Dashboard() {
                   onClick={() => navigate("/reports")}
                 >
                   <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
-                  {TEXT.dashboard.viewReports}
+                  {fa.dashboard.viewReports}
                 </Button>
               </div>
             </CardContent>

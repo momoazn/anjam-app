@@ -3,7 +3,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useUnreadCount } from "@/hooks/notifications";
 import { cn } from "@/lib/utils";
 
@@ -29,13 +29,13 @@ export function NotificationBadge({
       )}
       title={
         unreadCount > 0
-          ? `${unreadCount} ${TEXT.notification.unreadCount}`
-          : TEXT.notifications.title
+          ? `${unreadCount} ${fa.notification.unreadCount}`
+          : fa.notifications.title
       }
       aria-label={
         unreadCount > 0
-          ? `${digitsEnToFa(unreadCount)} ${TEXT.notification.unreadCount}`
-          : TEXT.notifications.title
+          ? `${digitsEnToFa(unreadCount)} ${fa.notification.unreadCount}`
+          : fa.notifications.title
       }
     >
       <IconBell
@@ -51,7 +51,7 @@ export function NotificationBadge({
         <Badge
           variant="destructive"
           className="absolute -top-1 -right-1 flex size-5 items-center justify-center p-0 text-xs font-medium shadow-sm"
-          aria-label={`${unreadCount} ${TEXT.notification.unreadCount}`}
+          aria-label={`${unreadCount} ${fa.notification.unreadCount}`}
         >
           {unreadCount > 99 ? "۹۹+" : digitsEnToFa(unreadCount)}
         </Badge>

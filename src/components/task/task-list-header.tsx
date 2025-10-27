@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks/query-keys";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import {
@@ -49,7 +49,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
           strokeWidth={status === "todo" ? 1.5 : 2}
         />
         <h2 className="text-foreground me-2 text-sm font-medium">
-          {TEXT.tasks.status[status]}
+          {fa.tasks.status[status]}
         </h2>
         <span className="text-muted-foreground text-sm">
           {digitsEnToFa(taskCount)}
@@ -63,7 +63,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
             variant="ghost"
             size="icon"
             className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-            title={TEXT.task.addNewTask}
+            title={fa.task.addNewTask}
           >
             <Plus className="size-4" />
           </Button>
@@ -75,15 +75,15 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
               variant="ghost"
               size="icon"
               className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-              title={TEXT.task.moreOptions}
+              title={fa.task.moreOptions}
             >
               <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>{TEXT.task.sortByPriority}</DropdownMenuItem>
-            <DropdownMenuItem>{TEXT.task.sortByDate}</DropdownMenuItem>
-            <DropdownMenuItem>{TEXT.task.showCompletedTasks}</DropdownMenuItem>
+            <DropdownMenuItem>{fa.task.sortByPriority}</DropdownMenuItem>
+            <DropdownMenuItem>{fa.task.sortByDate}</DropdownMenuItem>
+            <DropdownMenuItem>{fa.task.showCompletedTasks}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -64,9 +64,9 @@ export class ErrorBoundary extends Component<
               <div className="bg-destructive/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
                 <AlertTriangle className="text-destructive size-6" />
               </div>
-              <CardTitle>{TEXT.errors.boundary.title}</CardTitle>
+              <CardTitle>{fa.errors.boundary.title}</CardTitle>
               <CardDescription>
-                {TEXT.errors.boundary.description}
+                {fa.errors.boundary.description}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -80,14 +80,14 @@ export class ErrorBoundary extends Component<
               <div className="flex gap-2">
                 <Button onClick={this.handleRetry} className="flex-1">
                   <RefreshCw className="mr-2 size-4" />
-                  {TEXT.errors.boundary.tryAgain}
+                  {fa.errors.boundary.tryAgain}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => window.location.reload()}
                   className="flex-1"
                 >
-                  {TEXT.errors.boundary.reloadPage}
+                  {fa.errors.boundary.reloadPage}
                 </Button>
               </div>
             </CardContent>

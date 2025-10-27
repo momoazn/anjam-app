@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 
 interface ProjectFieldsProps {
   control: Control<{
@@ -25,7 +25,7 @@ export function ProjectFields({ control }: ProjectFieldsProps) {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{TEXT.projects.create.form.name}</FormLabel>
+            <FormLabel>{fa.projects.create.form.name}</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
@@ -39,7 +39,7 @@ export function ProjectFields({ control }: ProjectFieldsProps) {
         name="code"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{TEXT.projects.create.form.code}</FormLabel>
+            <FormLabel>{fa.projects.create.form.code}</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>

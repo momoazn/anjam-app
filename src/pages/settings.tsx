@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 
 export function Settings() {
   return (
@@ -14,7 +14,7 @@ export function Settings() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            {TEXT.navigation.settings}
+            {fa.navigation.settings}
           </h1>
           <p className="text-muted-foreground">
             Manage your account settings and preferences

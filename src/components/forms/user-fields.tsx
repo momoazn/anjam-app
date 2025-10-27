@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
@@ -60,7 +60,7 @@ export function UserFields({ control, isEdit = false }: UserFieldsProps) {
         name="username"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{TEXT.auth.login.username}</FormLabel>
+            <FormLabel>{fa.auth.login.username}</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
@@ -75,7 +75,7 @@ export function UserFields({ control, isEdit = false }: UserFieldsProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{TEXT.auth.login.password}</FormLabel>
+              <FormLabel>{fa.auth.login.password}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -90,7 +90,7 @@ export function UserFields({ control, isEdit = false }: UserFieldsProps) {
         name="first_name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{TEXT.users.form.firstName}</FormLabel>
+            <FormLabel>{fa.users.form.firstName}</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
@@ -104,7 +104,7 @@ export function UserFields({ control, isEdit = false }: UserFieldsProps) {
         name="last_name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{TEXT.users.form.lastName}</FormLabel>
+            <FormLabel>{fa.users.form.lastName}</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
@@ -118,17 +118,17 @@ export function UserFields({ control, isEdit = false }: UserFieldsProps) {
         name="role"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{TEXT.users.table.columns.role}</FormLabel>
+            <FormLabel>{fa.users.table.columns.role}</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={TEXT.users.form.selectRole} />
+                  <SelectValue placeholder={fa.users.form.selectRole} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 {availableRoles.map((role) => (
                   <SelectItem key={role} value={role}>
-                    {TEXT.users.table.roles[role]}
+                    {fa.users.table.roles[role]}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
@@ -26,13 +26,11 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { username?: string; password?: string } = {};
-    if (!username.trim())
-      newErrors.username = TEXT.auth.errors.usernameRequired;
-    if (!password.trim())
-      newErrors.password = TEXT.auth.errors.passwordRequired;
+    if (!username.trim()) newErrors.username = fa.auth.errors.usernameRequired;
+    if (!password.trim()) newErrors.password = fa.auth.errors.passwordRequired;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      toast.error(TEXT.auth.login.errors.credentialsRequired);
+      toast.error(fa.auth.login.errors.credentialsRequired);
       return;
     }
 
@@ -54,12 +52,12 @@ export default function Login() {
     <div className="bg-background flex min-h-screen items-center justify-center">
       <div className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow">
         <h2 className="text-foreground text-center text-3xl font-bold">
-          {TEXT.auth.login.title}
+          {fa.auth.login.title}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <Label className="text-foreground block text-sm font-medium">
-              {TEXT.auth.login.username}
+              {fa.auth.login.username}
             </Label>
             <Input
               type="text"
@@ -85,7 +83,7 @@ export default function Login() {
           </div>
           <div>
             <Label className="text-foreground block text-sm font-medium">
-              {TEXT.auth.login.password}
+              {fa.auth.login.password}
             </Label>
             <Input
               type="password"
@@ -111,8 +109,8 @@ export default function Login() {
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting
-              ? TEXT.tasks.details.buttons.saving
-              : TEXT.auth.login.loginButton}
+              ? fa.tasks.details.buttons.saving
+              : fa.auth.login.loginButton}
           </Button>
 
           <Button
@@ -122,7 +120,7 @@ export default function Login() {
             type="button"
             disabled={submitting}
           >
-            {TEXT.auth.login.registerButton}
+            {fa.auth.login.registerButton}
           </Button>
         </form>
       </div>

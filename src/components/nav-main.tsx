@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { cn } from "@/lib/utils";
 import { queryKeys } from "@/hooks";
 import { CreateTaskDialog } from "./task/create-task-dialog";
@@ -39,11 +39,11 @@ export function NavMain({
               }}
             >
               <SidebarMenuButton
-                tooltip={TEXT.navigation.quickCreate.tooltip}
+                tooltip={fa.navigation.quickCreate.tooltip}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 cursor-pointer duration-200 ease-linear"
               >
                 <IconCirclePlusFilled />
-                <span>{TEXT.navigation.quickCreate.button}</span>
+                <span>{fa.navigation.quickCreate.button}</span>
               </SidebarMenuButton>
             </CreateTaskDialog>
           </SidebarMenuItem>

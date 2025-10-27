@@ -2,7 +2,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CheckCircle, Clock, ListTodo, TrendingUp } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 
 type Props = {
   totals: {
@@ -22,7 +22,7 @@ export function MetricCards({ totals }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            {TEXT.reports.totalTasksCard}
+            {fa.reports.totalTasksCard}
           </CardTitle>
           <ListTodo className="text-muted-foreground h-4 w-4" />
         </CardHeader>
@@ -34,7 +34,7 @@ export function MetricCards({ totals }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            {TEXT.reports.taskCompleted}
+            {fa.reports.taskCompleted}
           </CardTitle>
           <CheckCircle className="text-muted-foreground h-4 w-4" />
         </CardHeader>
@@ -48,7 +48,7 @@ export function MetricCards({ totals }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            {TEXT.reports.inProgressTasks}
+            {fa.reports.inProgressTasks}
           </CardTitle>
           <Clock className="text-muted-foreground h-4 w-4" />
         </CardHeader>
@@ -60,7 +60,7 @@ export function MetricCards({ totals }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            {TEXT.reports.overdue}
+            {fa.reports.overdue}
           </CardTitle>
           <Clock className="text-muted-foreground h-4 w-4" />
         </CardHeader>
@@ -74,7 +74,7 @@ export function MetricCards({ totals }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            {TEXT.reports.onTimeRate}
+            {fa.reports.onTimeRate}
           </CardTitle>
           <TrendingUp className="text-muted-foreground h-4 w-4" />
         </CardHeader>

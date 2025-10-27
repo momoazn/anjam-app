@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useTasks } from "@/hooks";
 import { ProjectsResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
@@ -95,7 +95,7 @@ export function ProjectListGroup({
                 {/* Progress indicator with real data */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>{TEXT.project.progress}</span>
+                    <span>{fa.project.progress}</span>
                     <span>{digitsEnToFa(progress.progress)}%</span>
                   </div>
                   <div className="bg-muted/60 h-2 w-full rounded-full">
@@ -106,9 +106,8 @@ export function ProjectListGroup({
                   </div>
                   <div className="text-muted-foreground flex justify-between text-xs">
                     <span>
-                      {digitsEnToFa(progress.completed)} {TEXT.project.of}{" "}
-                      {digitsEnToFa(progress.total)}{" "}
-                      {TEXT.project.completedTasks}
+                      {digitsEnToFa(progress.completed)} {fa.project.of}{" "}
+                      {digitsEnToFa(progress.total)} {fa.project.completedTasks}
                     </span>
                   </div>
                 </div>
@@ -122,7 +121,7 @@ export function ProjectListGroup({
                     onClick={() => navigate(`/projects/${project.id}/tasks`)}
                   >
                     <Target className="mr-2 h-3 w-3" />
-                    {TEXT.project.tasks}
+                    {fa.project.tasks}
                   </Button>
                   <Button
                     variant="outline"
@@ -131,7 +130,7 @@ export function ProjectListGroup({
                     onClick={() => navigate(`/projects/${project.id}/users`)}
                   >
                     <Users className="mr-2 h-3 w-3" />
-                    {TEXT.project.users}
+                    {fa.project.users}
                   </Button>
                 </div>
               </CardContent>

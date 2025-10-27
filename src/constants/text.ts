@@ -1,4 +1,4 @@
-export const TEXT = {
+export const fa = {
   app: {
     name: "مدیر تسک‌ها",
   },

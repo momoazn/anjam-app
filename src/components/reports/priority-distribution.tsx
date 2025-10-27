@@ -1,4 +1,4 @@
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Cell, Pie, PieChart } from "recharts";
 
@@ -13,19 +13,19 @@ import type { TasksPriorityOptions } from "@/lib/pocketbase-types";
 
 const chartConfig = {
   urgent: {
-    label: TEXT.tasks.priority.urgent,
+    label: fa.tasks.priority.urgent,
     color: "var(--chart-1)",
   },
   high: {
-    label: TEXT.reports.high,
+    label: fa.reports.high,
     color: "var(--chart-3)",
   },
   medium: {
-    label: TEXT.reports.medium,
+    label: fa.reports.medium,
     color: "var(--chart-4)",
   },
   low: {
-    label: TEXT.reports.low,
+    label: fa.reports.low,
     color: "var(--chart-2)",
   },
 };

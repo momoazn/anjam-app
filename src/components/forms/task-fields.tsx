@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
@@ -72,7 +72,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
               <Input
                 {...field}
                 className="h-auto border-none !bg-transparent p-0 text-xl font-semibold shadow-none focus-visible:ring-0 dark:!bg-transparent"
-                placeholder={TEXT.tasks.addTask.issueTitle}
+                placeholder={fa.tasks.addTask.issueTitle}
                 autoFocus
               />
             </FormControl>
@@ -90,7 +90,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
               <Textarea
                 {...field}
                 className="min-h-[60px] w-full resize-none border-none !bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0 dark:!bg-transparent"
-                placeholder={TEXT.tasks.addTask.description}
+                placeholder={fa.tasks.addTask.description}
               />
             </FormControl>
             <FormMessage />
@@ -110,12 +110,12 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     size="default"
                     className="!bg-transparent dark:!bg-transparent"
                   >
-                    <SelectValue placeholder={TEXT.tasks.addTask.unassigned} />
+                    <SelectValue placeholder={fa.tasks.addTask.unassigned} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={TEXT.tasks.addTask.unassigned}>
-                      <UserAvatar username={TEXT.tasks.addTask.unassigned} />
-                      {TEXT.tasks.addTask.unassigned}
+                    <SelectItem value={fa.tasks.addTask.unassigned}>
+                      <UserAvatar username={fa.tasks.addTask.unassigned} />
+                      {fa.tasks.addTask.unassigned}
                     </SelectItem>
                     {assignees?.map((u) => (
                       <SelectItem key={u.id} value={u.id}>
@@ -180,7 +180,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     }}
                   >
                     <StatusIcon className={`size-3 ${statusIconColor}`} />
-                    {TEXT.tasks.status[field.value]}
+                    {fa.tasks.status[field.value]}
                   </Button>
                 </FormControl>
               </FormItem>
@@ -217,7 +217,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     }}
                   >
                     <PriorityIcon className={`size-3 ${priorityIconColor}`} />
-                    {TEXT.tasks.priority[field.value]}
+                    {fa.tasks.priority[field.value]}
                   </Button>
                 </FormControl>
               </FormItem>
@@ -238,7 +238,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       className="!bg-transparent dark:!bg-transparent"
                     >
                       <SelectValue
-                        placeholder={TEXT.tasks.addTask.selectProject}
+                        placeholder={fa.tasks.addTask.selectProject}
                       />
                     </SelectTrigger>
                     <SelectContent>

@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useEntityDeleteMutation } from "@/hooks/use-entity-mutation";
 import { Loader2 } from "lucide-react";
 
@@ -66,7 +66,7 @@ export function DeleteDialog({
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
           <AlertDialogCancel className="order-2">
-            {TEXT.common.cancel}
+            {fa.common.cancel}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
@@ -77,7 +77,7 @@ export function DeleteDialog({
               <Loader2 className="ml-2 size-4 animate-spin" />
             ) : null}
             {entityName === "project"
-              ? TEXT.projects.delete.submit
+              ? fa.projects.delete.submit
               : `Delete ${entityName}`}
           </AlertDialogAction>
         </AlertDialogFooter>

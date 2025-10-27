@@ -5,22 +5,22 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 
 export default function Helps() {
   return (
     <div className="container mx-auto px-4 py-6 md:px-8 md:py-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold md:text-3xl">{TEXT.helps.title}</h1>
-          <p className="text-muted-foreground mt-2">{TEXT.helps.description}</p>
+          <h1 className="text-2xl font-bold md:text-3xl">{fa.helps.title}</h1>
+          <p className="text-muted-foreground mt-2">{fa.helps.description}</p>
         </div>
         <div className="flex gap-2">
           <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            {TEXT.helps.buttons.faq}
+            {fa.helps.buttons.faq}
           </button>
           <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            {TEXT.helps.buttons.support}
+            {fa.helps.buttons.support}
           </button>
         </div>
       </div>
@@ -29,57 +29,47 @@ export default function Helps() {
         {/* Getting Started Section */}
         <AccordionItem value="getting-started">
           <AccordionTrigger className="text-lg md:text-xl">
-            {TEXT.helps.content.gettingStarted.title}
+            {fa.helps.content.gettingStarted.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.gettingStarted.steps.title}
+                {fa.helps.content.gettingStarted.steps.title}
               </h3>
               <ol className="list-inside list-decimal space-y-2">
                 <li>
                   <span className="font-medium">
-                    {TEXT.helps.content.gettingStarted.steps.login.label}:
+                    {fa.helps.content.gettingStarted.steps.login.label}:
                   </span>{" "}
-                  {TEXT.helps.content.gettingStarted.steps.login.description}
+                  {fa.helps.content.gettingStarted.steps.login.description}
                 </li>
                 <li>
                   <span className="font-medium">
-                    {TEXT.helps.content.gettingStarted.steps.dashboard.label}:
+                    {fa.helps.content.gettingStarted.steps.dashboard.label}:
+                  </span>{" "}
+                  {fa.helps.content.gettingStarted.steps.dashboard.description}
+                </li>
+                <li>
+                  <span className="font-medium">
+                    {fa.helps.content.gettingStarted.steps.createProject.label}:
                   </span>{" "}
                   {
-                    TEXT.helps.content.gettingStarted.steps.dashboard
+                    fa.helps.content.gettingStarted.steps.createProject
                       .description
                   }
                 </li>
                 <li>
                   <span className="font-medium">
-                    {
-                      TEXT.helps.content.gettingStarted.steps.createProject
-                        .label
-                    }
-                    :
+                    {fa.helps.content.gettingStarted.steps.addMembers.label}:
                   </span>{" "}
-                  {
-                    TEXT.helps.content.gettingStarted.steps.createProject
-                      .description
-                  }
+                  {fa.helps.content.gettingStarted.steps.addMembers.description}
                 </li>
                 <li>
                   <span className="font-medium">
-                    {TEXT.helps.content.gettingStarted.steps.addMembers.label}:
+                    {fa.helps.content.gettingStarted.steps.createTasks.label}:
                   </span>{" "}
                   {
-                    TEXT.helps.content.gettingStarted.steps.addMembers
-                      .description
-                  }
-                </li>
-                <li>
-                  <span className="font-medium">
-                    {TEXT.helps.content.gettingStarted.steps.createTasks.label}:
-                  </span>{" "}
-                  {
-                    TEXT.helps.content.gettingStarted.steps.createTasks
+                    fa.helps.content.gettingStarted.steps.createTasks
                       .description
                   }
                 </li>
@@ -88,7 +78,7 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.gettingStarted.keyboardShortcuts.title}
+                {fa.helps.content.gettingStarted.keyboardShortcuts.title}
               </h3>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <div className="rounded border p-2">
@@ -96,7 +86,7 @@ export default function Helps() {
                   <span className="text-muted-foreground mr-2">
                     :{" "}
                     {
-                      TEXT.helps.content.gettingStarted.keyboardShortcuts
+                      fa.helps.content.gettingStarted.keyboardShortcuts
                         .focusSearch
                     }
                   </span>
@@ -105,20 +95,14 @@ export default function Helps() {
                   <code className="text-sm">Ctrl/Cmd + N</code>
                   <span className="text-muted-foreground mr-2">
                     :{" "}
-                    {
-                      TEXT.helps.content.gettingStarted.keyboardShortcuts
-                        .newTask
-                    }
+                    {fa.helps.content.gettingStarted.keyboardShortcuts.newTask}
                   </span>
                 </div>
                 <div className="rounded border p-2">
                   <code className="text-sm">Ctrl/Cmd + P</code>
                   <span className="text-muted-foreground mr-2">
                     :{" "}
-                    {
-                      TEXT.helps.content.gettingStarted.keyboardShortcuts
-                        .projects
-                    }
+                    {fa.helps.content.gettingStarted.keyboardShortcuts.projects}
                   </span>
                 </div>
                 <div className="rounded border p-2">
@@ -126,7 +110,7 @@ export default function Helps() {
                   <span className="text-muted-foreground mr-2">
                     :{" "}
                     {
-                      TEXT.helps.content.gettingStarted.keyboardShortcuts
+                      fa.helps.content.gettingStarted.keyboardShortcuts
                         .dashboard
                     }
                   </span>
@@ -139,15 +123,15 @@ export default function Helps() {
         {/* Features Section */}
         <AccordionItem value="features">
           <AccordionTrigger className="text-lg md:text-xl">
-            {TEXT.helps.content.features.title}
+            {fa.helps.content.features.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.features.userManagement.title}
+                {fa.helps.content.features.userManagement.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.features.userManagement.items.map(
+                {fa.helps.content.features.userManagement.items.map(
                   (item, index) => (
                     <li key={index}>{item}</li>
                   ),
@@ -157,10 +141,10 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.features.projectManagement.title}
+                {fa.helps.content.features.projectManagement.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.features.projectManagement.items.map(
+                {fa.helps.content.features.projectManagement.items.map(
                   (item, index) => (
                     <li key={index}>{item}</li>
                   ),
@@ -170,10 +154,10 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.features.taskManagement.title}
+                {fa.helps.content.features.taskManagement.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.features.taskManagement.items.map(
+                {fa.helps.content.features.taskManagement.items.map(
                   (item, index) => (
                     <li key={index}>{item}</li>
                   ),
@@ -183,10 +167,10 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.features.ui.title}
+                {fa.helps.content.features.ui.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.features.ui.items.map((item, index) => (
+                {fa.helps.content.features.ui.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -197,15 +181,15 @@ export default function Helps() {
         {/* User Roles Section */}
         <AccordionItem value="roles">
           <AccordionTrigger className="text-lg md:text-xl">
-            {TEXT.helps.content.roles.title}
+            {fa.helps.content.roles.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.roles.admin.title}
+                {fa.helps.content.roles.admin.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.roles.admin.items.map((item, index) => (
+                {fa.helps.content.roles.admin.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -213,23 +197,21 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.roles.supervisor.title}
+                {fa.helps.content.roles.supervisor.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.roles.supervisor.items.map(
-                  (item, index) => (
-                    <li key={index}>{item}</li>
-                  ),
-                )}
+                {fa.helps.content.roles.supervisor.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.roles.employee.title}
+                {fa.helps.content.roles.employee.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.roles.employee.items.map((item, index) => (
+                {fa.helps.content.roles.employee.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -240,16 +222,16 @@ export default function Helps() {
         {/* Projects Section */}
         <AccordionItem value="projects">
           <AccordionTrigger className="text-lg md:text-xl">
-            {TEXT.helps.content.projects.title}
+            {fa.helps.content.projects.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.projects.about.title}
+                {fa.helps.content.projects.about.title}
               </h3>
-              <p>{TEXT.helps.content.projects.about.description}</p>
+              <p>{fa.helps.content.projects.about.description}</p>
               <ul className="list-inside list-disc space-y-1 pt-2">
-                {TEXT.helps.content.projects.about.items.map((item, index) => (
+                {fa.helps.content.projects.about.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -257,21 +239,21 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.projects.createEdit.title}
+                {fa.helps.content.projects.createEdit.title}
               </h3>
-              <p>{TEXT.helps.content.projects.createEdit.description}</p>
+              <p>{fa.helps.content.projects.createEdit.description}</p>
               <ol className="list-inside list-decimal space-y-1 pt-2">
-                {TEXT.helps.content.projects.createEdit.steps.map(
+                {fa.helps.content.projects.createEdit.steps.map(
                   (step, index) => (
                     <li key={index}>{step}</li>
                   ),
                 )}
               </ol>
               <p className="mt-4">
-                {TEXT.helps.content.projects.createEdit.afterCreate}
+                {fa.helps.content.projects.createEdit.afterCreate}
               </p>
               <ul className="list-inside list-disc space-y-1 pt-2">
-                {TEXT.helps.content.projects.createEdit.afterSteps.map(
+                {fa.helps.content.projects.createEdit.afterSteps.map(
                   (step, index) => (
                     <li key={index}>{step}</li>
                   ),
@@ -281,23 +263,21 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.projects.members.title}
+                {fa.helps.content.projects.members.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.projects.members.items.map(
-                  (item, index) => (
-                    <li key={index}>{item}</li>
-                  ),
-                )}
+                {fa.helps.content.projects.members.items.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.projects.access.title}
+                {fa.helps.content.projects.access.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.projects.access.items.map((item, index) => (
+                {fa.helps.content.projects.access.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -308,16 +288,16 @@ export default function Helps() {
         {/* Tasks Section */}
         <AccordionItem value="tasks">
           <AccordionTrigger className="text-lg md:text-xl">
-            {TEXT.helps.content.tasks.title}
+            {fa.helps.content.tasks.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.tasks.about.title}
+                {fa.helps.content.tasks.about.title}
               </h3>
-              <p>{TEXT.helps.content.tasks.about.description}</p>
+              <p>{fa.helps.content.tasks.about.description}</p>
               <ul className="list-inside list-disc space-y-1 pt-2">
-                {TEXT.helps.content.tasks.about.items.map((item, index) => (
+                {fa.helps.content.tasks.about.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
                 {/* <li>تاریخ ایجاد و آخرین به‌روزرسانی</li> */}
@@ -327,77 +307,75 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.tasks.statuses.title}
+                {fa.helps.content.tasks.statuses.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>{TEXT.helps.content.tasks.statuses.todo}</li>
-                <li>{TEXT.helps.content.tasks.statuses.inProgress}</li>
-                <li>{TEXT.helps.content.tasks.statuses.done}</li>
-                <li>{TEXT.helps.content.tasks.statuses.canceled}</li>
+                <li>{fa.helps.content.tasks.statuses.todo}</li>
+                <li>{fa.helps.content.tasks.statuses.inProgress}</li>
+                <li>{fa.helps.content.tasks.statuses.done}</li>
+                <li>{fa.helps.content.tasks.statuses.canceled}</li>
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                {TEXT.helps.content.tasks.priorities.title}
+                {fa.helps.content.tasks.priorities.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                <li>{TEXT.helps.content.tasks.priorities.urgent}</li>
-                <li>{TEXT.helps.content.tasks.priorities.high}</li>
-                <li>{TEXT.helps.content.tasks.priorities.medium}</li>
-                <li>{TEXT.helps.content.tasks.priorities.low}</li>
+                <li>{fa.helps.content.tasks.priorities.urgent}</li>
+                <li>{fa.helps.content.tasks.priorities.high}</li>
+                <li>{fa.helps.content.tasks.priorities.medium}</li>
+                <li>{fa.helps.content.tasks.priorities.low}</li>
               </ul>
             </div>
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.tasks.createEdit.title}
+                {fa.helps.content.tasks.createEdit.title}
               </h3>
-              <p>{TEXT.helps.content.tasks.createEdit.description}</p>
+              <p>{fa.helps.content.tasks.createEdit.description}</p>
               <ol className="list-inside list-decimal space-y-1 pt-2">
-                {TEXT.helps.content.tasks.createEdit.steps.map(
-                  (step, index) => (
-                    <li key={index}>{step}</li>
-                  ),
-                )}
+                {fa.helps.content.tasks.createEdit.steps.map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
               </ol>
             </div>
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.tasks.tips.title}
+                {fa.helps.content.tasks.tips.title}
               </h3>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    {TEXT.helps.content.tasks.tips.filterSearch.title}
+                    {fa.helps.content.tasks.tips.filterSearch.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    {TEXT.helps.content.tasks.tips.filterSearch.description}
+                    {fa.helps.content.tasks.tips.filterSearch.description}
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    {TEXT.helps.content.tasks.tips.prioritization.title}
+                    {fa.helps.content.tasks.tips.prioritization.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    {TEXT.helps.content.tasks.tips.prioritization.description}
+                    {fa.helps.content.tasks.tips.prioritization.description}
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    {TEXT.helps.content.tasks.tips.deadlines.title}
+                    {fa.helps.content.tasks.tips.deadlines.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    {TEXT.helps.content.tasks.tips.deadlines.description}
+                    {fa.helps.content.tasks.tips.deadlines.description}
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    {TEXT.helps.content.tasks.tips.statusUpdates.title}
+                    {fa.helps.content.tasks.tips.statusUpdates.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    {TEXT.helps.content.tasks.tips.statusUpdates.description}
+                    {fa.helps.content.tasks.tips.statusUpdates.description}
                   </p>
                 </div>
               </div>
@@ -419,32 +397,32 @@ export default function Helps() {
         {/* Troubleshooting Section */}
         <AccordionItem value="troubleshooting">
           <AccordionTrigger className="text-lg md:text-xl">
-            {TEXT.helps.content.troubleshooting.title}
+            {fa.helps.content.troubleshooting.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.troubleshooting.problems.title}
+                {fa.helps.content.troubleshooting.problems.title}
               </h3>
               <div className="space-y-3">
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    {TEXT.helps.content.troubleshooting.problems.login.title}
+                    {fa.helps.content.troubleshooting.problems.login.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
                     {
-                      TEXT.helps.content.troubleshooting.problems.login
+                      fa.helps.content.troubleshooting.problems.login
                         .description
                     }
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
-                    {TEXT.helps.content.troubleshooting.problems.noTasks.title}
+                    {fa.helps.content.troubleshooting.problems.noTasks.title}
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
                     {
-                      TEXT.helps.content.troubleshooting.problems.noTasks
+                      fa.helps.content.troubleshooting.problems.noTasks
                         .description
                     }
                   </p>
@@ -452,27 +430,27 @@ export default function Helps() {
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
                     {
-                      TEXT.helps.content.troubleshooting.problems
-                        .cannotCreateTask.title
+                      fa.helps.content.troubleshooting.problems.cannotCreateTask
+                        .title
                     }
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
                     {
-                      TEXT.helps.content.troubleshooting.problems
-                        .cannotCreateTask.description
+                      fa.helps.content.troubleshooting.problems.cannotCreateTask
+                        .description
                     }
                   </p>
                 </div>
                 <div className="rounded-lg border p-3">
                   <h4 className="text-sm font-medium">
                     {
-                      TEXT.helps.content.troubleshooting.problems
+                      fa.helps.content.troubleshooting.problems
                         .reportsNotLoading.title
                     }
                   </h4>
                   <p className="text-muted-foreground mt-1 text-sm">
                     {
-                      TEXT.helps.content.troubleshooting.problems
+                      fa.helps.content.troubleshooting.problems
                         .reportsNotLoading.description
                     }
                   </p>
@@ -482,10 +460,10 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.troubleshooting.support.title}
+                {fa.helps.content.troubleshooting.support.title}
               </h3>
               <p className="text-muted-foreground text-sm">
-                {TEXT.helps.content.troubleshooting.support.description}
+                {fa.helps.content.troubleshooting.support.description}
               </p>
             </div>
           </AccordionContent>
@@ -494,15 +472,15 @@ export default function Helps() {
         {/* System Features Section */}
         <AccordionItem value="system">
           <AccordionTrigger className="text-lg md:text-xl">
-            {TEXT.helps.content.system.title}
+            {fa.helps.content.system.title}
           </AccordionTrigger>
           <AccordionContent className="space-y-4 p-4">
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.system.security.title}
+                {fa.helps.content.system.security.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.system.security.items.map((item, index) => (
+                {fa.helps.content.system.security.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -510,10 +488,10 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.system.ui.title}
+                {fa.helps.content.system.ui.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.system.ui.items.map((item, index) => (
+                {fa.helps.content.system.ui.items.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -521,10 +499,10 @@ export default function Helps() {
 
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                {TEXT.helps.content.system.performance.title}
+                {fa.helps.content.system.performance.title}
               </h3>
               <ul className="list-inside list-disc space-y-1">
-                {TEXT.helps.content.system.performance.items.map(
+                {fa.helps.content.system.performance.items.map(
                   (item, index) => (
                     <li key={index}>{item}</li>
                   ),

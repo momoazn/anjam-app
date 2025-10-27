@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
@@ -54,7 +54,7 @@ export function CreateTaskDialog({
     defaultValues: {
       title: "",
       description: "",
-      assignee: TEXT.tasks.addTask.unassigned,
+      assignee: fa.tasks.addTask.unassigned,
       priority: TasksPriorityOptions.medium,
       status: initialStatus,
       project: projectId ?? "",
@@ -64,8 +64,8 @@ export function CreateTaskDialog({
 
   const { mutate: createTask, isPending } = useEntityMutation({
     collection: "tasks",
-    successMessage: TEXT.tasks.addTask.success,
-    errorMessage: TEXT.tasks.addTask.error,
+    successMessage: fa.tasks.addTask.success,
+    errorMessage: fa.tasks.addTask.error,
     invalidateQueries: ["tasks"],
     onSuccess: () => {
       onSuccess?.();
@@ -81,7 +81,7 @@ export function CreateTaskDialog({
       ...values,
       creator: user.id,
       assignee:
-        values.assignee !== TEXT.tasks.addTask.unassigned
+        values.assignee !== fa.tasks.addTask.unassigned
           ? values.assignee
           : undefined,
       deadline: values.deadline?.toISOString(),
@@ -91,7 +91,7 @@ export function CreateTaskDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogTitle className="sr-only">{TEXT.tasks.addTask.title}</DialogTitle>
+      <DialogTitle className="sr-only">{fa.tasks.addTask.title}</DialogTitle>
       <DialogContent className="sm:max-w-[800px]">
         <Form {...form}>
           <form
@@ -108,7 +108,7 @@ export function CreateTaskDialog({
                   variant="outline"
                   disabled={isPending}
                 >
-                  {TEXT.tasks.details.buttons.cancel}
+                  {fa.tasks.details.buttons.cancel}
                 </Button>
               </DialogClose>
               <Button size="sm" type="submit" disabled={isPending}>
@@ -116,8 +116,8 @@ export function CreateTaskDialog({
                   <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : null}
                 {isPending
-                  ? TEXT.tasks.addTask.buttons.creating
-                  : TEXT.tasks.addTask.buttons.create}
+                  ? fa.tasks.addTask.buttons.creating
+                  : fa.tasks.addTask.buttons.create}
               </Button>
             </div>
           </form>

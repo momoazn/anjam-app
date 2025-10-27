@@ -12,16 +12,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
 import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
 import { ProjectFields } from "@/components/forms/project-fields";
 import { Loader2 } from "lucide-react";
 
 const projectFormSchema = z.object({
-  name: z.string().min(1, { message: TEXT.projects.create.form.nameRequired }),
+  name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
   code: z.string().length(3, {
-    message: TEXT.projects.create.form.codeLength,
+    message: fa.projects.create.form.codeLength,
   }),
 });
 
@@ -55,8 +55,8 @@ export function EditProjectDialog({
 
   const { mutate: updateProject, isPending } = useEntityUpdateMutation({
     collection: "projects",
-    successMessage: TEXT.projects.edit.success,
-    errorMessage: TEXT.projects.edit.error,
+    successMessage: fa.projects.edit.success,
+    errorMessage: fa.projects.edit.error,
     invalidateQueries: ["projects"],
     onSuccess: () => {
       form.reset();
@@ -73,7 +73,7 @@ export function EditProjectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{TEXT.projects.edit.title}</DialogTitle>
+          <DialogTitle>{fa.projects.edit.title}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -83,7 +83,7 @@ export function EditProjectDialog({
                 {isPending ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : null}
-                {TEXT.projects.edit.submit}
+                {fa.projects.edit.submit}
               </Button>
             </DialogFooter>
           </form>

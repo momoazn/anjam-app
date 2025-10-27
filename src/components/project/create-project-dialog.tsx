@@ -12,16 +12,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useEntityMutation } from "@/hooks/use-entity-mutation";
 import { ProjectFields } from "@/components/forms/project-fields";
 import { useAuthUser } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 
 const projectFormSchema = z.object({
-  name: z.string().min(1, { message: TEXT.projects.create.form.nameRequired }),
+  name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
   code: z.string().length(3, {
-    message: TEXT.projects.create.form.codeLength,
+    message: fa.projects.create.form.codeLength,
   }),
 });
 
@@ -45,8 +45,8 @@ export function CreateProjectDialog({
 
   const { mutate: createProject, isPending } = useEntityMutation({
     collection: "projects",
-    successMessage: TEXT.projects.create.success,
-    errorMessage: TEXT.projects.create.error,
+    successMessage: fa.projects.create.success,
+    errorMessage: fa.projects.create.error,
     invalidateQueries: ["projects"],
     onSuccess: () => {
       form.reset();
@@ -66,9 +66,9 @@ export function CreateProjectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{TEXT.projects.create.title}</DialogTitle>
+          <DialogTitle>{fa.projects.create.title}</DialogTitle>
           <DialogDescription>
-            {TEXT.projects.create.description}
+            {fa.projects.create.description}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -79,7 +79,7 @@ export function CreateProjectDialog({
                 {isPending ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : null}
-                {TEXT.projects.create.submit}
+                {fa.projects.create.submit}
               </Button>
             </DialogFooter>
           </form>

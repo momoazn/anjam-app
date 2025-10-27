@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { TEXT } from "@/constants/text";
+import { fa } from "@/constants/text";
 import { useUpdateTask } from "@/hooks/tasks";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
@@ -91,7 +91,7 @@ export function TaskListGroup({
           ))
         ) : (
           <div className="text-muted-foreground text-center text-sm">
-            {TEXT.tasks.list.noTasks}
+            {fa.tasks.list.noTasks}
           </div>
         )}
       </div>
