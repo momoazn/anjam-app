@@ -18,7 +18,6 @@ export function DeleteProjectDialog({
       open={open}
       onOpenChange={onOpenChange}
       entityId={project?.id || null}
-      entityName="project"
       title={fa.projects.delete.title}
       description={fa.projects.delete.confirm}
       collection="projects"

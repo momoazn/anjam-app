@@ -5,6 +5,7 @@ export const fa = {
   common: {
     cancel: "انصراف",
     submit: "تایید",
+    delete: "حذف",
   },
   navigation: {
     dashboard: "داشبورد",

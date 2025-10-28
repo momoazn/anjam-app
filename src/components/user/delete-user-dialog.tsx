@@ -18,7 +18,6 @@ export function DeleteUserDialog({
       open={open}
       onOpenChange={onOpenChange}
       entityId={user?.id || null}
-      entityName="user"
       title={fa.users.delete.title}
       description={fa.users.delete.description}
       collection="users"

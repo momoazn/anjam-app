@@ -16,7 +16,6 @@ type DeleteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   entityId: string | null;
-  entityName: string;
   title: string;
   description: string;
   collection: string;
@@ -29,7 +28,6 @@ export function DeleteDialog({
   open,
   onOpenChange,
   entityId,
-  entityName,
   title,
   description,
   collection,
@@ -76,9 +74,7 @@ export function DeleteDialog({
             {isPending ? (
               <Loader2 className="ml-2 size-4 animate-spin" />
             ) : null}
-            {entityName === "project"
-              ? fa.projects.delete.submit
-              : `Delete ${entityName}`}
+            {fa.common.delete}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
