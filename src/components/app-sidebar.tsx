@@ -34,9 +34,9 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: fa.navigation.notifications,
-      url: "/notifications",
-      icon: IconBell,
+      title: fa.navigation.tasks,
+      url: "/tasks",
+      icon: IconListDetails,
     },
     {
       title: fa.navigation.projects,
@@ -44,9 +44,14 @@ const data = {
       icon: IconFolder,
     },
     {
-      title: fa.navigation.tasks,
-      url: "/tasks",
-      icon: IconListDetails,
+      title: fa.navigation.notifications,
+      url: "/notifications",
+      icon: IconBell,
+    },
+    {
+      title: fa.navigation.reports,
+      url: "/reports",
+      icon: IconChartBar,
     },
     {
       title: fa.navigation.users,
@@ -59,11 +64,6 @@ const data = {
       title: fa.navigation.helps,
       url: "/helps",
       icon: IconHelp,
-    },
-    {
-      title: fa.navigation.reports,
-      url: "/reports",
-      icon: IconChartBar,
     },
   ],
 

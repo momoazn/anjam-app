@@ -10,11 +10,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
-import { cn } from "@/lib/utils";
 import { queryKeys } from "@/hooks";
-import { CreateTaskDialog } from "./task/create-task-dialog";
+import { cn } from "@/lib/utils";
 import { ProjectsSubmenu } from "./sidebar/projects-submenu";
 import { TaskViews } from "./sidebar/task-views";
+import { CreateTaskDialog } from "./task/create-task-dialog";
 
 export function NavMain({
   items,
@@ -77,10 +77,11 @@ export function NavMain({
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={cn(
-                      "cursor-pointer transition-colors duration-200 ease-linear",
+                      "cursor-pointer transition-all duration-200 ease-linear hover:scale-105",
                       active &&
                         "bg-primary/15 text-foreground hover:bg-primary/15",
-                      !active && "text-foreground hover:bg-primary/5",
+                      !active &&
+                        "text-foreground hover:bg-primary/10 hover:text-primary",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
