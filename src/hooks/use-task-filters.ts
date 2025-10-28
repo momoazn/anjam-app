@@ -1,12 +1,12 @@
-import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
-import { useQueryState } from "nuqs";
-import { useMemo } from "react";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   type TasksPriorityOptions,
   TasksStatusOptions,
   type UsersResponse,
 } from "@/lib/pocketbase-types";
+import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
+import { parseAsString, useQueryState } from "nuqs";
+import { useMemo } from "react";
 
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
@@ -53,24 +53,30 @@ export type UseTaskFiltersReturn = {
 export function useTaskFilters(
   tasks: TaskWithProject[] | undefined, // Accept the raw task list
 ): UseTaskFiltersReturn {
-  const [searchTerm, setSearchTerm] = useQueryState("search", {
-    defaultValue: "",
-  });
-  const [selectedStatus, setSelectedStatus] = useQueryState("status", {
-    defaultValue: ALL_FILTER_VALUE,
-  });
-  const [selectedPriority, setSelectedPriority] = useQueryState("priority", {
-    defaultValue: ALL_FILTER_VALUE,
-  });
-  const [selectedAssignee, setSelectedAssignee] = useQueryState("assignee", {
-    defaultValue: ALL_FILTER_VALUE,
-  });
-  const [selectedDateRange, setSelectedDateRange] = useQueryState("due", {
-    defaultValue: "all",
-  });
-  const [selectedTag, setSelectedTag] = useQueryState("tag", {
-    defaultValue: "all",
-  });
+  const [searchTerm, setSearchTerm] = useQueryState(
+    "search",
+    parseAsString.withDefault(""),
+  );
+  const [selectedStatus, setSelectedStatus] = useQueryState(
+    "status",
+    parseAsString.withDefault(ALL_FILTER_VALUE),
+  );
+  const [selectedPriority, setSelectedPriority] = useQueryState(
+    "priority",
+    parseAsString.withDefault(ALL_FILTER_VALUE),
+  );
+  const [selectedAssignee, setSelectedAssignee] = useQueryState(
+    "assignee",
+    parseAsString.withDefault(ALL_FILTER_VALUE),
+  );
+  const [selectedDateRange, setSelectedDateRange] = useQueryState(
+    "due",
+    parseAsString.withDefault("all"),
+  );
+  const [selectedTag, setSelectedTag] = useQueryState(
+    "tag",
+    parseAsString.withDefault("all"),
+  );
 
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];

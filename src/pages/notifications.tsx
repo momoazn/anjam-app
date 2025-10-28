@@ -9,7 +9,8 @@ import {
   IconTrashX,
 } from "@tabler/icons-react";
 import { format, isThisWeek, isToday, isYesterday } from "date-fns-jalali";
-import { useMemo, useState } from "react";
+import { parseAsStringEnum, useQueryState } from "nuqs";
+import { useMemo } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -181,8 +182,14 @@ export default function Notifications() {
   const clearAll = useClearAll();
   const clearRead = useClearRead();
 
-  const [filter, setFilter] = useState<FilterType>("all");
-  const [sort, setSort] = useState<SortType>("newest");
+  const [filter, setFilter] = useQueryState(
+    "filter",
+    parseAsStringEnum<FilterType>(["all", "unread", "read"]).withDefault("all"),
+  );
+  const [sort, setSort] = useQueryState(
+    "sort",
+    parseAsStringEnum<SortType>(["newest", "oldest"]).withDefault("newest"),
+  );
 
   // Filter notifications
   const filteredNotifications = useMemo(() => {
@@ -406,7 +413,7 @@ export default function Notifications() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               <IconSortAscending className="ml-1 h-4 w-4" />
-              {fa.notifications.sort[sort]}
+              {fa.notifications.sort[sort as SortType]}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
