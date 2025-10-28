@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { IconStarFilled } from "@tabler/icons-react";
+import { IconStarFilled, IconFolder } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
 import { useProjects } from "@/hooks/projects";
 import { useTaskCounts } from "@/hooks/use-task-counts";
@@ -16,12 +16,14 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function ProjectsSubmenu() {
   const { data: projects = [] } = useProjects();
   const { byProject } = useTaskCounts();
   const { toggleStar, isStarred } = useSidebarActions();
+  const { state } = useSidebar();
 
   const starredProjects = useMemo(() => {
     return projects.filter((project) => isStarred(project.id));
@@ -40,15 +42,16 @@ export function ProjectsSubmenu() {
         <SidebarMenu>
           {/* All Projects */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild tooltip={fa.navigation.allProjects}>
               <NavLink to="/projects">
+                <IconFolder />
                 <span>{fa.navigation.allProjects}</span>
               </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
-          {/* Recent Projects */}
-          {recentProjects.length > 0 && (
+          {/* Recent Projects - Only show when expanded */}
+          {state === "expanded" && recentProjects.length > 0 && (
             <>
               <SidebarMenuItem>
                 <SidebarGroupLabel className="text-muted-foreground px-2 py-1 text-xs">
@@ -76,8 +79,8 @@ export function ProjectsSubmenu() {
             </>
           )}
 
-          {/* Starred Projects */}
-          {starredProjects.length > 0 && (
+          {/* Starred Projects - Only show when expanded */}
+          {state === "expanded" && starredProjects.length > 0 && (
             <>
               <SidebarMenuItem>
                 <SidebarGroupLabel className="text-muted-foreground px-2 py-1 text-xs">
