@@ -1,4 +1,5 @@
 import { format, isWithinInterval } from "date-fns-jalali";
+import { BarChart3 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
@@ -220,7 +221,7 @@ export default function Reports() {
             </Card>
           ))}
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {[...Array(4)].map((_, i) => (
             <Card key={i}>
               <CardHeader className="pb-4">
@@ -254,30 +255,37 @@ export default function Reports() {
   const hasPriority = (totalPriority || 0) > 0;
 
   return (
-    <div className="container mx-auto space-y-6 p-4 md:p-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold md:text-3xl">
+    <div className="container mx-auto p-4 md:p-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
+            <BarChart3 className="h-5 w-5 md:h-6 md:w-6" />
             {fa.reports.dashboardTitle}
           </h1>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground mt-2 text-sm">
             {fa.reports.range.label} {rangeLabel}
           </p>
         </div>
       </div>
 
       {/* Filters */}
-      <FiltersBar
-        value={filtersState}
-        onChange={setFiltersState}
-        projects={projects || []}
-        users={users || []}
-      />
+      <div className="mb-8">
+        <FiltersBar
+          value={filtersState}
+          onChange={setFiltersState}
+          projects={projects || []}
+          users={users || []}
+        />
+      </div>
 
       {/* Overview Metrics */}
-      {overviewMetrics && <MetricCards totals={overviewMetrics} />}
+      {overviewMetrics && (
+        <div className="mb-8">
+          <MetricCards totals={overviewMetrics} />
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Throughput Trend */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">

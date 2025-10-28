@@ -1,5 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2, Plus, Users as UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
@@ -48,11 +48,14 @@ export default function Users() {
 
   return (
     <>
-      <div className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto p-4 md:p-6">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{fa.users.title}</h1>
-            <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
+            <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
+              <UsersIcon className="h-5 w-5 md:h-6 md:w-6" />
+              {fa.users.title}
+            </h1>
+            <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-sm">
               {fa.users.list.count.replace(
                 "{count}",
                 digitsEnToFa(users?.length ?? 0).toString(),
@@ -60,15 +63,18 @@ export default function Users() {
             </span>
           </div>
           {isAdmin && (
-            <Button onClick={() => setIsCreateOpen(true)}>
-              <Plus className="mr-2 size-4" />
+            <Button
+              onClick={() => setIsCreateOpen(true)}
+              className="w-full gap-2 sm:w-auto"
+            >
+              <Plus className="h-4 w-4" />
               {fa.users.create.button}
             </Button>
           )}
         </div>
         {isLoadingUsers ? (
-          <div className="flex h-full items-center justify-center">
-            <Loader2 className="size-4 animate-spin" />
+          <div className="flex h-full items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin" />
           </div>
         ) : (
           <UserListTable

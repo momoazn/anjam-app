@@ -136,7 +136,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-4 md:p-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
+        <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
           <LayoutDashboard className="h-5 w-5 md:h-6 md:w-6" />
           {fa.dashboard.title}
         </h1>
@@ -151,7 +151,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Section */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mb-8 md:gap-4 lg:grid-cols-5">
+      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 lg:grid-cols-5">
         <StatCard
           title={fa.dashboard.stats.totalTasks}
           value={stats?.total ?? 0}
@@ -195,12 +195,12 @@ export default function Dashboard() {
       </div>
 
       {/* Project Summary Section */}
-      <div className="mb-6 md:mb-8">
-        <h2 className="mb-4 flex items-center gap-2 text-base font-semibold md:text-lg">
+      <div className="mb-8">
+        <h2 className="mb-6 flex items-center gap-2 text-lg font-semibold md:text-xl">
           <Target className="h-4 w-4 md:h-5 md:w-5" />
           {fa.dashboard.projectSummary}
         </h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3">
           {projectStats.map((project) => (
             <div
               key={project.id}
@@ -235,7 +235,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Task Status Chart */}
         <Card className="md:col-span-2 lg:col-span-1">
           <CardHeader>

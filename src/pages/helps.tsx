@@ -6,22 +6,18 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { fa } from "@/constants/text";
+import { HelpCircle } from "lucide-react";
 
 export default function Helps() {
   return (
-    <div className="container mx-auto px-4 py-6 md:px-8 md:py-8">
+    <div className="container mx-auto p-4 md:p-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold md:text-3xl">{fa.helps.title}</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
+            <HelpCircle className="h-5 w-5 md:h-6 md:w-6" />
+            {fa.helps.title}
+          </h1>
           <p className="text-muted-foreground mt-2">{fa.helps.description}</p>
-        </div>
-        <div className="flex gap-2">
-          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            {fa.helps.buttons.faq}
-          </button>
-          <button className="hover:bg-muted rounded-md border px-3 py-2 text-sm">
-            {fa.helps.buttons.support}
-          </button>
         </div>
       </div>
       <Separator className="mb-6" />

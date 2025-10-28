@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { FilterX, Plus } from "lucide-react";
+import { FilterX, ListTodo, Plus } from "lucide-react";
 import { useMemo } from "react";
 import { CreateTaskDialog } from "@/components/task/create-task-dialog";
 import { TaskFilters } from "@/components/task/task-filters";
@@ -156,34 +156,33 @@ export default function Tasks() {
   const totalTasks = filteredTasks?.length || 0;
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto p-4 md:p-6">
       {/* Header Section */}
-      <div className="mb-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {fa.tasks.allTasks}
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              {totalTasks > 0
-                ? fa.tasks.header.tasksFound.replace(
-                    "{count}",
-                    totalTasks.toString(),
-                  )
-                : fa.tasks.header.manageTasks}
-            </p>
-          </div>
-          <CreateTaskDialog onSuccess={() => {}}>
-            <Button className="gap-2" size="lg">
-              <Plus className="h-4 w-4" />
-              {fa.tasks.addTask.buttons.newTask}
-            </Button>
-          </CreateTaskDialog>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
+            <ListTodo className="h-5 w-5 md:h-6 md:w-6" />
+            {fa.tasks.allTasks}
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            {totalTasks > 0
+              ? fa.tasks.header.tasksFound.replace(
+                  "{count}",
+                  totalTasks.toString(),
+                )
+              : fa.tasks.header.manageTasks}
+          </p>
         </div>
+        <CreateTaskDialog onSuccess={() => {}}>
+          <Button className="w-full gap-2 sm:w-auto" size="lg">
+            <Plus className="h-4 w-4" />
+            {fa.tasks.addTask.buttons.newTask}
+          </Button>
+        </CreateTaskDialog>
       </div>
 
       {/* Search and Filter Controls */}
-      <div className="mb-6">
+      <div className="mb-8">
         <TaskFilters
           searchTerm={searchTerm}
           selectedStatus={selectedStatus}
@@ -203,7 +202,7 @@ export default function Tasks() {
       </div>
 
       {/* Task List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {isLoadingTasks ? (
           <TaskListSkeleton />
         ) : !filteredTasks || filteredTasks.length === 0 ? (
@@ -211,7 +210,6 @@ export default function Tasks() {
         ) : (
           statusOrder?.map((status) => {
             const tasksInGroup = groupedTasks?.[status] ?? [];
-
             return (
               <TaskListGroup
                 key={status}
