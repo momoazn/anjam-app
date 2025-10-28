@@ -1,8 +1,3 @@
-import { Moon, Plus, Search, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationDropdown } from "@/components/notification-dropdown";
 import {
   Breadcrumb,
@@ -12,18 +7,24 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
+import { queryKeys } from "@/hooks/query-keys";
 import { useTheme } from "@/hooks/use-theme";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Fragment, useEffect, useMemo, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
+import { useQueryClient } from "@tanstack/react-query";
+import { Moon, Plus, Search, Sun } from "lucide-react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export function SiteHeader() {
   const { resolvedTheme, toggleTheme } = useTheme();
@@ -96,13 +97,14 @@ export function SiteHeader() {
 
       // Try to read the project's name from cache only
       let projectName: string | undefined;
-      const single = queryClient.getQueryData<ProjectsResponse>([
-        "project",
-        projectId,
-      ]);
+      const single = queryClient.getQueryData<ProjectsResponse>(
+        queryKeys.projects.detail(projectId),
+      );
       if (single?.name) projectName = single.name as string;
       if (!projectName) {
-        const list = queryClient.getQueryData<ProjectsResponse[]>(["projects"]);
+        const list = queryClient.getQueryData<ProjectsResponse[]>(
+          queryKeys.projects.lists(),
+        );
         projectName = list?.find((p) => p?.id === projectId)?.name as
           | string
           | undefined;
