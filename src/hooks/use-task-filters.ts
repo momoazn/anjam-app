@@ -94,6 +94,12 @@ export function useTaskFilters(
           ? true
           : task.status === selectedStatus;
 
+      // Handle comma-separated status values (e.g., "todo,in_progress")
+      if (selectedStatus !== ALL_FILTER_VALUE && selectedStatus.includes(",")) {
+        const statusArray = selectedStatus.split(",");
+        matchesStatus = statusArray.includes(task.status);
+      }
+
       // Special handling for "My Tasks" which should show both todo and in_progress
       if (selectedAssignee === "me" && selectedStatus === ALL_FILTER_VALUE) {
         matchesStatus = task.status === "todo" || task.status === "in_progress";

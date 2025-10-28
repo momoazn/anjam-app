@@ -69,10 +69,18 @@ export function Leaderboard({ rows, onRowClick }: Props) {
                 {digitsEnToFa(row.completed)}
               </TableCell>
               <TableCell className="text-center">
-                {digitsEnToFa(Math.round(row.completionRate * 100))}%
+                {Number.isNaN(row.completionRate) ||
+                !Number.isFinite(row.completionRate)
+                  ? digitsEnToFa(0)
+                  : digitsEnToFa(Math.round(row.completionRate * 100))}
+                %
               </TableCell>
               <TableCell className="text-center">
-                {digitsEnToFa(Math.round(row.onTimeRate * 100))}%
+                {Number.isNaN(row.onTimeRate) ||
+                !Number.isFinite(row.onTimeRate)
+                  ? digitsEnToFa(0)
+                  : digitsEnToFa(Math.round(row.onTimeRate * 100))}
+                %
               </TableCell>
             </TableRow>
           ))}

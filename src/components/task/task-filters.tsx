@@ -90,8 +90,23 @@ export function TaskFilters({
     }
 
     if (selectedStatus !== ALL_FILTER_VALUE) {
+      // Handle comma-separated status values
+      let statusLabel = selectedStatus;
+      if (selectedStatus.includes(",")) {
+        const statusArray = selectedStatus.split(",");
+        const statusLabels = statusArray
+          .map((status) => fa.tasks.status[status as TasksStatusOptions])
+          .filter(Boolean)
+          .join(", ");
+        statusLabel = statusLabels || selectedStatus;
+      } else {
+        statusLabel =
+          fa.tasks.status[selectedStatus as TasksStatusOptions] ||
+          selectedStatus;
+      }
+
       labels.push({
-        label: `${fa.tasks.filters.labels.status} ${fa.tasks.status[selectedStatus as TasksStatusOptions]}`,
+        label: `${fa.tasks.filters.labels.status} ${statusLabel}`,
         onClear: () => setSelectedStatus(ALL_FILTER_VALUE),
       });
     }

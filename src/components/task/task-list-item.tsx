@@ -180,6 +180,7 @@ export function TaskListItem({
               username={
                 assigneeRecord ? undefined : (task.assignee ?? undefined)
               }
+              showUnassigned={!assigneeRecord && !task.assignee}
             />
           </div>
         </div>

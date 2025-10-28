@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { fa } from "@/constants/text";
 
 function getUserInitials({
   first_name,
@@ -26,9 +27,31 @@ type UserAvatarProps = {
     username?: string;
     avatar?: string;
   };
+  showUnassigned?: boolean;
 };
 
-export function UserAvatar({ user, username }: UserAvatarProps) {
+export function UserAvatar({
+  user,
+  username,
+  showUnassigned = false,
+}: UserAvatarProps) {
+  // If we have a user object, use it
+  if (user) {
+    return (
+      <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+        <AvatarImage src={user.avatar} className="object-cover" />
+        <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground text-sm font-semibold">
+          {getUserInitials({
+            first_name: user.first_name,
+            last_name: user.last_name,
+            username: user.username,
+          })}
+        </AvatarFallback>
+      </Avatar>
+    );
+  }
+
+  // If we have a username (even if it's an ID), show initials
   if (username) {
     return (
       <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
@@ -39,25 +62,22 @@ export function UserAvatar({ user, username }: UserAvatarProps) {
     );
   }
 
-  if (!user) {
+  // Show unassigned indicator if explicitly requested
+  if (showUnassigned) {
     return (
       <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
-        <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
-          ?
+        <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
+          {fa.tasks.addTask.unassigned}
         </AvatarFallback>
       </Avatar>
     );
   }
 
+  // Fallback for no data
   return (
     <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
-      <AvatarImage src={user.avatar} className="object-cover" />
-      <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground text-sm font-semibold">
-        {getUserInitials({
-          first_name: user.first_name,
-          last_name: user.last_name,
-          username: user.username,
-        })}
+      <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
+        ?
       </AvatarFallback>
     </Avatar>
   );
