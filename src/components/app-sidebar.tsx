@@ -9,6 +9,7 @@ import {
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
+import { NavLink } from "react-router-dom";
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -90,12 +91,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:!p-1.5 hover:bg-transparent hover:text-foreground active:bg-transparent active:text-foreground"
             >
-              <a href="/">
+              <NavLink to="/">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">{fa.app.name}</span>
-              </a>
+              </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

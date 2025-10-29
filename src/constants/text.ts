@@ -8,6 +8,7 @@ export const fa = {
     delete: "حذف",
   },
   navigation: {
+    allTasks: "همه تسک‌ها",
     dashboard: "داشبورد",
     projects: "پروژه‌ها",
     tasks: "تسک‌ها",

@@ -20,6 +20,13 @@ import {
 } from "@tabler/icons-react";
 
 const taskViews = [
+  // All Tasks first for quick access
+  {
+    title: fa.navigation.allTasks,
+    url: "/tasks",
+    icon: IconList,
+    getCount: () => 0, // No badge for "All Tasks"
+  },
   {
     title: fa.navigation.myTasks,
     url: "/tasks?assigned=me&status=todo,in_progress",
@@ -47,12 +54,6 @@ const taskViews = [
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.inProgress,
     badgeVariant: "info" as const,
   },
-  {
-    title: fa.navigation.tasks,
-    url: "/tasks",
-    icon: IconList,
-    getCount: () => 0, // No badge for "All Tasks"
-  },
 ];
 
 export function TaskViews() {
@@ -61,7 +62,9 @@ export function TaskViews() {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{fa.navigation.taskViews}</SidebarGroupLabel>
+      {state === "expanded" && (
+        <SidebarGroupLabel>{fa.navigation.taskViews}</SidebarGroupLabel>
+      )}
       <SidebarGroupContent>
         <SidebarMenu>
           {taskViews.map((view) => (

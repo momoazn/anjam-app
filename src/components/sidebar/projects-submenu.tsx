@@ -37,7 +37,9 @@ export function ProjectsSubmenu() {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{fa.navigation.projectsSection}</SidebarGroupLabel>
+      {state === "expanded" && (
+        <SidebarGroupLabel>{fa.navigation.projectsSection}</SidebarGroupLabel>
+      )}
       <SidebarGroupContent>
         <SidebarMenu>
           {/* All Projects */}

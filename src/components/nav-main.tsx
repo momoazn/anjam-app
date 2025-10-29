@@ -34,9 +34,26 @@ export function NavMain({
   const queryClient = useQueryClient();
   const location = useLocation();
 
+  // Pull out items we want to place right after quick create
+  const dashboardItem = items.find((i) => i.title === fa.navigation.dashboard);
+  const notificationsItem = items.find(
+    (i) => i.title === fa.navigation.notifications,
+  );
+  // Extract non-core items for the secondary section
+  const restItems = items.filter(
+    (i) =>
+      ![
+        fa.navigation.tasks,
+        fa.navigation.projects,
+        fa.navigation.dashboard as typeof i.title,
+        fa.navigation.notifications as typeof i.title,
+      ].includes(i.title),
+  );
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
+        {/* Quick create always first */}
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <CreateTaskDialog
@@ -48,7 +65,7 @@ export function NavMain({
             >
               <SidebarMenuButton
                 tooltip={fa.navigation.quickCreate.tooltip}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 cursor-pointer duration-200 ease-linear"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/90 min-w-8"
               >
                 <IconCirclePlusFilled />
                 <span>{fa.navigation.quickCreate.button}</span>
@@ -56,32 +73,57 @@ export function NavMain({
             </CreateTaskDialog>
           </SidebarMenuItem>
         </SidebarMenu>
+        {/* Dashboard + Notifications right after Quick Create */}
+        {(dashboardItem || notificationsItem) && (
+          <SidebarMenu>
+            {[dashboardItem, notificationsItem].filter(Boolean).map((item) => {
+              const it = item!;
+              const path = location.pathname;
+              const active =
+                it.url === "/"
+                  ? path === "/"
+                  : path === it.url || path.startsWith(it.url + "/");
+              return (
+                <NavLink to={it.url} key={it.title} end={it.url === "/"}>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      tooltip={it.title}
+                      className={cn(
+                        active
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "",
+                      )}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      {it.icon && <it.icon />}
+                      <span>{it.title}</span>
+                      {it.badge}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </NavLink>
+              );
+            })}
+          </SidebarMenu>
+        )}
+        {/* Primary sections */}
         <SidebarMenu>
-          {items.map((item) => {
-            // Special handling for projects and tasks - they now use submenus
-            if (item.title === fa.navigation.projects) {
-              return <ProjectsSubmenu key={item.title} />;
-            }
-            if (item.title === fa.navigation.tasks) {
-              return <TaskViews key={item.title} />;
-            }
-
+          <ProjectsSubmenu />
+          <TaskViews />
+        </SidebarMenu>
+        {/* Secondary simple links */}
+        <SidebarMenu>
+          {restItems.map((item) => {
             const path = location.pathname;
-            const active =
-              item.url === "/"
-                ? path === "/"
-                : path === item.url || path.startsWith(item.url + "/");
+            const active = path === item.url || path.startsWith(item.url + "/");
             return (
-              <NavLink to={item.url} key={item.title} end={item.url === "/"}>
+              <NavLink to={item.url} key={item.title}>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={cn(
-                      "cursor-pointer transition-all duration-200 ease-linear hover:scale-105",
-                      active &&
-                        "bg-primary/15 text-foreground hover:bg-primary/15",
-                      !active &&
-                        "text-foreground hover:bg-primary/10 hover:text-primary",
+                      active
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        : "",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
