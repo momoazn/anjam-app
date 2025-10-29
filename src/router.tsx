@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { fa } from "@/constants/text";
-import { useAuthIsLoggedIn } from "./store/auth-store";
+import { can, Permission } from "./lib/permissions";
+import { UsersRoleOptions } from "./lib/pocketbase-types";
+import { useAuthIsLoggedIn, useAuthUser } from "./store/auth-store";
 
 // Lazy load pages with better error handling and preloading
 const Login = React.lazy(() =>
@@ -80,6 +82,28 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// PermissionProtectedRoute component for role-based access
+const PermissionProtectedRoute = ({
+  children,
+  permission,
+}: {
+  children: React.ReactNode;
+  permission: Permission;
+}) => {
+  const user = useAuthUser();
+  const isLoggedIn = useAuthIsLoggedIn();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!can(user?.role as UsersRoleOptions | null, permission)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 // PublicRoute component (redirects authenticated users to home)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
@@ -93,6 +117,7 @@ type RouteType = {
   path: string;
   element: React.ReactNode;
   protected: boolean;
+  permission?: string;
   title?: string;
 };
 
@@ -153,6 +178,7 @@ const routes: RouteType[] = [
     path: "/users",
     element: <Users />,
     protected: true,
+    permission: "users.view",
     title: fa.users.title,
   },
   {
@@ -202,7 +228,17 @@ export const AppRoutes = () => {
         let element = content;
 
         if (route.protected) {
-          element = <ProtectedRoute>{content}</ProtectedRoute>;
+          if (route.permission) {
+            element = (
+              <PermissionProtectedRoute
+                permission={route.permission as Permission}
+              >
+                {content}
+              </PermissionProtectedRoute>
+            );
+          } else {
+            element = <ProtectedRoute>{content}</ProtectedRoute>;
+          }
         } else if (route.path === "/login" || route.path === "/register") {
           element = <PublicRoute>{content}</PublicRoute>;
         }

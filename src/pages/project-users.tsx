@@ -1,3 +1,4 @@
+import { queryKeys } from "@/hooks/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Trash } from "lucide-react";
 import { useState } from "react";
@@ -65,6 +66,10 @@ export default function ProjectUsers() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["project-users", id] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.allProjectUsers(),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       setIsAddUserOpen(false);
       toast.success(fa.projects.users.addSuccess);
     },
@@ -87,6 +92,10 @@ export default function ProjectUsers() {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["project-users", id] });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.users.allProjectUsers(),
+        });
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
         toast.success(fa.projects.users.removeSuccess);
       },
       onError: (error) => {

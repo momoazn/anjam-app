@@ -44,9 +44,10 @@ const (
 	projectCreateAsSupervisorRule = `@request.body.supervisor = @request.auth.id`
 
 	// Task access rules
-	taskProjectSupervisorRule  = `@collection.tasks.project.supervisor.id = @request.auth.id`
+	taskProjectSupervisorRule  = `project.supervisor.id = @request.auth.id`
 	taskProjectParticipantRule = `@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id`
 	taskCreateInProjectRule    = `@request.body.project != "" && @collection.users_projects.project.id ?= @request.body.project && @collection.users_projects.user.id ?= @request.auth.id`
+	taskCreateAsSupervisorRule = `@request.auth.role = "supervisor" && @request.body.project != ""`
 
 	// User access rules
 	userSelfAccessRule          = `@request.auth.id = id`
@@ -364,7 +365,7 @@ func configureTasksRules(e *core.ServeEvent) error {
 	// Task rules
 	tasksCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
 	tasksCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
-	tasksCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, taskCreateInProjectRule))
+	tasksCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskCreateAsSupervisorRule, taskCreateInProjectRule))
 	tasksCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
 	tasksCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, taskProjectSupervisorRule))
 
@@ -471,11 +472,14 @@ func generateUniqueProjectCode(app core.App) (string, error) {
 }
 
 func handleTaskCreation(e *core.RecordEvent) error {
-	if err := setTaskDisplayID(e); err != nil {
-		return err
-	}
-	setTaskDefaults(e)
-	return e.Next()
+    log.Printf("Task creation attempt by user %s for project %s", e.Record.GetString("creator"), e.Record.GetString("project"))
+    if err := setTaskDisplayID(e); err != nil {
+        log.Printf("Error setting task display ID: %v", err)
+        return err
+    }
+    setTaskDefaults(e)
+    log.Printf("Task creation successful, display_id: %s", e.Record.GetString("display_id"))
+    return e.Next()
 }
 
 func setTaskDisplayID(e *core.RecordEvent) error {
@@ -627,7 +631,7 @@ func handleTaskAssignmentNotification(e *core.RecordEvent) error {
 	}
 
 	// Don't notify if the assignee is the same as the creator/updater
-	if e.Record.GetString("created_by") == assigneeId {
+    if e.Record.GetString("creator") == assigneeId {
 		return e.Next()
 	}
 

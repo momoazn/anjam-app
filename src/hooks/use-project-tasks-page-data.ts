@@ -33,6 +33,7 @@ export function useProjectTasksPageData(projectId: string) {
   const tasksQuery = useTasks({
     projectId,
     expandFields: "project,assignee",
+    mode: "full", // ensure we fetch all tasks in the project so new items always appear
   });
 
   // Get all users for the filter dropdown
