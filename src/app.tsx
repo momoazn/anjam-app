@@ -32,7 +32,7 @@ function LoadingFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <Loader2 className="text-primary size-8 animate-spin" />
+        <Loader2 className="text-muted-foreground size-8 animate-spin" />
         <p className="text-muted-foreground text-sm">
           {fa.loading.application}
         </p>

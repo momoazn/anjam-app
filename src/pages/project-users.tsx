@@ -206,7 +206,7 @@ export default function ProjectUsers() {
                       disabled={isRemovingUser}
                     >
                       {isRemovingUser ? (
-                        <Loader2 className="size-4 animate-spin" />
+                        <Loader2 className="text-muted-foreground size-4 animate-spin" />
                       ) : (
                         <Trash className="size-4" />
                       )}
