@@ -1,6 +1,6 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { } from "react";
+import {} from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,7 +52,6 @@ export function TaskListItem({
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
-  
 
   return (
     <EditTaskDialog task={task} onSuccess={onSuccess}>

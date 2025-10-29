@@ -6,6 +6,7 @@ import {
   startOfYear,
 } from "date-fns-jalali";
 import { faIR } from "date-fns/locale";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { TaskWithProject } from "./pocketbase";
 import type { UsersRecord } from "./pocketbase-types";
 import {
@@ -446,11 +447,16 @@ export function groupThroughput(
   // Convert to sorted array with Jalali display labels
   return Array.from(map.entries())
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, count]) => ({
-      key,
-      label: format(new Date(key), "MMM dd", { locale: faIR }),
-      count,
-    }));
+    .map(([key, count]) => {
+      const formattedLabel = format(new Date(key), "MMM dd", { locale: faIR });
+      // Convert English digits to Persian in the label
+      const labelWithPersianDigits = digitsEnToFa(formattedLabel);
+      return {
+        key,
+        label: labelWithPersianDigits,
+        count,
+      };
+    });
 }
 
 // Timeliness classification
@@ -557,4 +563,581 @@ export function buildLeaderboard(
     })
     .sort((a, b) => b.completionRate - a.completionRate)
     .slice(0, 5);
+}
+
+// -----------------------------
+// Employee reporting helpers
+// -----------------------------
+//
+// These helpers are pure, operate on in-memory task/user arrays, and are
+// intended for frontend-only aggregation (MVP). They re-use existing helpers
+// (isWithinInterval, format) and follow the same range semantics used elsewhere.
+//
+// Added functions:
+// - computeEmployeeBuckets(tasks, users, range, bucket)
+// - computeProductivityTrend(userId, tasks, range, bucket)
+// - computeEmployeeSummary(userId, tasks, range)
+// - computeTeamAverages(users, tasks, range)
+//
+// Note: CSV export was deferred per request; these helpers focus on data shaping
+// for charts and tables.
+//
+// (Appended by implementation for employee reports)
+export type EmployeeBucket = {
+  key: string; // machine key (e.g. "2025-10-29" or "2025-W40" or "2025-10")
+  label: string; // human display label (localized)
+  count: number; // completed count in this bucket
+};
+
+export type EmployeeBucketsResult = {
+  userId: string;
+  name: string;
+  buckets: EmployeeBucket[];
+  totalCompleted: number;
+};
+
+function getBucketKeyAndLabel(
+  date: Date,
+  bucket: "daily" | "weekly" | "monthly" | "quarterly" | "annual",
+) {
+  switch (bucket) {
+    case "daily": {
+      const key = format(date, "yyyy-MM-dd");
+      const formattedLabel = format(date, "MMM dd", { locale: faIR });
+      return { key, label: digitsEnToFa(formattedLabel) };
+    }
+    case "weekly": {
+      // Build week-start (Monday) key
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday as week start
+      const weekStart = new Date(d);
+      weekStart.setDate(diff);
+      const key = format(weekStart, "yyyy-MM-dd");
+      const formattedLabel = format(weekStart, "MMM dd", { locale: faIR });
+      return { key, label: digitsEnToFa(formattedLabel) };
+    }
+    case "monthly": {
+      const key = format(date, "yyyy-MM");
+      const formattedLabel = format(date, "MMM yyyy", { locale: faIR });
+      return { key, label: digitsEnToFa(formattedLabel) };
+    }
+    case "quarterly": {
+      // Use startOfQuarter for label consistency
+      const s = startOfQuarter(date);
+      const key = `${s.getFullYear()}-Q${Math.floor(s.getMonth() / 3) + 1}`;
+      const formattedLabel = format(s, "MMM yyyy", { locale: faIR });
+      return { key, label: digitsEnToFa(formattedLabel) };
+    }
+    case "annual": {
+      const key = String(date.getFullYear());
+      return { key, label: digitsEnToFa(key) };
+    }
+    default: {
+      const defaultKey = format(date, "yyyy-MM-dd");
+      const defaultFormattedLabel = format(date, "MMM dd", { locale: faIR });
+      return {
+        key: defaultKey,
+        label: digitsEnToFa(defaultFormattedLabel),
+      };
+    }
+  }
+}
+
+/**
+ * computeEmployeeBuckets
+ * For each employee (user), returns counts of completed tasks per bucket
+ * (supports daily/weekly/monthly/quarterly/annual). Only counts tasks that are
+ * done and updated within the provided range.
+ */
+export function computeEmployeeBuckets(
+  tasks: TaskWithProject[],
+  users: UsersRecord[],
+  range: { start: Date; end: Date },
+  bucket: "daily" | "weekly" | "monthly" | "quarterly" | "annual",
+): EmployeeBucketsResult[] {
+  // Build a map userId -> { key -> count }
+  const countsByUser = new Map<string, Map<string, number>>();
+
+  tasks.forEach((task) => {
+    if (
+      task.status !== TasksStatusOptions.done ||
+      !task.updated ||
+      !task.assignee
+    )
+      return;
+    const updated = new Date(task.updated);
+    if (!isWithinInterval(updated, range)) return;
+
+    const { key } = getBucketKeyAndLabel(updated, bucket);
+    const userMap =
+      countsByUser.get(task.assignee) || new Map<string, number>();
+    userMap.set(key, (userMap.get(key) || 0) + 1);
+    countsByUser.set(task.assignee, userMap);
+  });
+
+  // For deterministic ordering and labels, collect all keys across all users then sort
+  const allKeysSet = new Set<string>();
+  countsByUser.forEach((m) => {
+    m.forEach((_, k) => allKeysSet.add(k));
+  });
+  const allKeys = Array.from(allKeysSet).sort((a, b) => a.localeCompare(b));
+
+  // Build results for active users (employees). Keep same user ordering as provided.
+  const results: EmployeeBucketsResult[] = users
+    .filter((u) => u.role === UsersRoleOptions.employee)
+    .map((user) => {
+      const userMap = countsByUser.get(user.id) || new Map<string, number>();
+      const buckets = allKeys.map((k) => {
+        // derive a label by parsing key; pick a representative date if possible
+        let label = k;
+        try {
+          if (bucket === "daily" || bucket === "weekly") {
+            const formattedLabel = format(new Date(k), "MMM dd", {
+              locale: faIR,
+            });
+            label = digitsEnToFa(formattedLabel);
+          } else if (bucket === "monthly") {
+            const parts = k.split("-");
+            const dt = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
+            const formattedLabel = format(dt, "MMM yyyy", { locale: faIR });
+            label = digitsEnToFa(formattedLabel);
+          } else if (bucket === "quarterly") {
+            // k like "2025-Q1"
+            label = k;
+          } else if (bucket === "annual") {
+            label = digitsEnToFa(k);
+          }
+        } catch {
+          /* fallback label = k */
+        }
+        return { key: k, label, count: userMap.get(k) || 0 };
+      });
+      const totalCompleted = buckets.reduce((s, b) => s + b.count, 0);
+      return {
+        userId: user.id,
+        name:
+          user.first_name && user.last_name
+            ? `${user.first_name} ${user.last_name}`
+            : user.username,
+        buckets,
+        totalCompleted,
+      };
+    });
+
+  return results;
+}
+
+/**
+ * computeProductivityTrend
+ * Convenience wrapper that returns the bucketed series for a single user.
+ */
+export function computeProductivityTrend(
+  userId: string,
+  tasks: TaskWithProject[],
+  range: { start: Date; end: Date },
+  bucket: "daily" | "weekly" | "monthly" | "quarterly" | "annual",
+): EmployeeBucket[] {
+  const userTasks = tasks.filter((t) => t.assignee === userId);
+  const bucketsResult = computeEmployeeBuckets(
+    userTasks,
+    [
+      {
+        id: userId,
+        username: "",
+        role: UsersRoleOptions.employee,
+      } as unknown as UsersRecord,
+    ],
+    range,
+    bucket,
+  );
+  // Since we passed a synthetic user list, bucketsResult[0] will be what we need if exists
+  return bucketsResult.length > 0 ? bucketsResult[0].buckets : [];
+}
+
+/**
+ * computeEmployeeSummary
+ * Produces a compact summary for a single employee across the provided range:
+ * - totalAssigned (created|updated in range)
+ * - completed (done & updated in range)
+ * - inProgress (status === in_progress)
+ * - overdue (not done and deadline < now)
+ * - avgTimeToCompleteDays (avg of completed: updated - created)
+ * - efficiencyScore: completed / max(assigned, 1)
+ * - onTimeRate: among completed, fraction completed on-time
+ */
+export type EmployeeSummary = {
+  userId: string;
+  name: string;
+  totalAssigned: number;
+  completed: number;
+  inProgress: number;
+  overdue: number;
+  avgTimeToCompleteDays: number;
+  efficiencyScore: number;
+  onTimeRate: number;
+};
+
+export function computeEmployeeSummary(
+  userId: string,
+  tasks: TaskWithProject[],
+  range: { start: Date; end: Date },
+  users?: UsersRecord[],
+): EmployeeSummary {
+  const now = new Date();
+
+  const assigned = tasks.filter((task) => {
+    if (task.assignee !== userId) return false;
+    const createdInRange =
+      task.created && isWithinInterval(new Date(task.created), range);
+    const updatedInRange =
+      task.updated && isWithinInterval(new Date(task.updated), range);
+    return !!(createdInRange || updatedInRange);
+  });
+
+  const completedTasks = assigned.filter(
+    (task) => task.status === TasksStatusOptions.done && task.updated,
+  );
+
+  const completed = completedTasks.length;
+  const inProgress = tasks.filter(
+    (task) =>
+      task.assignee === userId &&
+      task.status === TasksStatusOptions.in_progress,
+  ).length;
+  const overdue = tasks.filter(
+    (task) =>
+      task.assignee === userId &&
+      task.status !== TasksStatusOptions.done &&
+      task.deadline &&
+      new Date(task.deadline) < now,
+  ).length;
+
+  // avg time-to-complete in days
+  const timeDiffs: number[] = [];
+  completedTasks.forEach((task) => {
+    if (task.created && task.updated) {
+      const created = new Date(task.created).getTime();
+      const updated = new Date(task.updated).getTime();
+      if (updated >= created) {
+        const days = (updated - created) / (1000 * 60 * 60 * 24);
+        timeDiffs.push(days);
+      }
+    }
+  });
+  const avgTimeToCompleteDays = timeDiffs.length
+    ? timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length
+    : 0;
+
+  const efficiencyScore = assigned.length ? completed / assigned.length : 0;
+
+  // on-time rate among completed
+  const onTimeCompleted = completedTasks.filter(
+    (task) =>
+      task.deadline &&
+      task.updated &&
+      new Date(task.updated) <= new Date(task.deadline),
+  ).length;
+  const onTimeRate = completed > 0 ? onTimeCompleted / completed : 0;
+
+  const user = users?.find((u) => u.id === userId);
+  const name = user
+    ? user.first_name && user.last_name
+      ? `${user.first_name} ${user.last_name}`
+      : user.username
+    : userId;
+
+  return {
+    userId,
+    name,
+    totalAssigned: assigned.length,
+    completed,
+    inProgress,
+    overdue,
+    avgTimeToCompleteDays,
+    efficiencyScore,
+    onTimeRate,
+  };
+}
+
+/**
+ * computeTeamAverages
+ * Aggregates simple averages across all employees (only users with role employee).
+ * Returns averageCompleted, averageCompletionRate, averageOnTimeRate.
+ */
+export function computeTeamAverages(
+  users: UsersRecord[],
+  tasks: TaskWithProject[],
+  range: { start: Date; end: Date },
+): {
+  averageCompleted: number;
+  averageCompletionRate: number; // [0..1]
+  averageOnTimeRate: number; // [0..1]
+} {
+  const employeeUsers = users.filter(
+    (u) => u.role === UsersRoleOptions.employee,
+  );
+  if (employeeUsers.length === 0) {
+    return {
+      averageCompleted: 0,
+      averageCompletionRate: 0,
+      averageOnTimeRate: 0,
+    };
+  }
+
+  let totalCompleted = 0;
+  let totalCompletionRate = 0;
+  let totalOnTimeRate = 0;
+
+  employeeUsers.forEach((user) => {
+    const summary = computeEmployeeSummary(user.id, tasks, range);
+    totalCompleted += summary.completed;
+    totalCompletionRate += summary.efficiencyScore; // completed / assigned
+    totalOnTimeRate += summary.onTimeRate;
+  });
+
+  return {
+    averageCompleted: totalCompleted / employeeUsers.length,
+    averageCompletionRate: totalCompletionRate / employeeUsers.length,
+    averageOnTimeRate: totalOnTimeRate / employeeUsers.length,
+  };
+}
+
+// -----------------------------
+// Overtime and Workload Analysis
+// -----------------------------
+
+export type OvertimeAnalysis = {
+  userId: string;
+  name: string;
+  totalTasks: number;
+  completedTasks: number;
+  overdueTasks: number;
+  avgCompletionTime: number; // days
+  workloadScore: number; // 0-100, higher = more overloaded
+  overtimeIndicator: number; // hours of estimated overtime
+};
+
+export type WorkloadDistribution = {
+  userId: string;
+  name: string;
+  activeTasks: number;
+  upcomingTasks: number;
+  overdueTasks: number;
+  capacityUtilization: number; // 0-100%
+  workloadLevel: "low" | "medium" | "high" | "critical";
+};
+
+/**
+ * computeOvertimeAnalysis
+ * Analyzes overtime patterns and workload stress indicators for employees.
+ * Estimates overtime based on task completion patterns and deadlines.
+ */
+export function computeOvertimeAnalysis(
+  users: UsersRecord[],
+  tasks: TaskWithProject[],
+  range: { start: Date; end: Date },
+): OvertimeAnalysis[] {
+  const now = new Date();
+
+  return users
+    .filter((u) => u.role === UsersRoleOptions.employee)
+    .map((user) => {
+      const userTasks = tasks.filter((t) => t.assignee === user.id);
+
+      // Tasks in range (created or updated)
+      const tasksInRange = userTasks.filter((task) => {
+        const createdInRange =
+          task.created && isWithinInterval(new Date(task.created), range);
+        const updatedInRange =
+          task.updated && isWithinInterval(new Date(task.updated), range);
+        return createdInRange || updatedInRange;
+      });
+
+      // Completed tasks in range
+      const completedTasks = tasksInRange.filter(
+        (task) =>
+          task.status === TasksStatusOptions.done &&
+          task.updated &&
+          isWithinInterval(new Date(task.updated), range),
+      );
+
+      // Overdue tasks (past deadline and not done)
+      const overdueTasks = userTasks.filter(
+        (task) =>
+          task.status !== TasksStatusOptions.done &&
+          task.deadline &&
+          new Date(task.deadline) < now,
+      );
+
+      // Calculate average completion time
+      const completionTimes: number[] = [];
+      completedTasks.forEach((task) => {
+        if (task.created && task.updated) {
+          const created = new Date(task.created).getTime();
+          const updated = new Date(task.updated).getTime();
+          if (updated >= created) {
+            const days = (updated - created) / (1000 * 60 * 60 * 24);
+            completionTimes.push(days);
+          }
+        }
+      });
+      const avgCompletionTime =
+        completionTimes.length > 0
+          ? completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length
+          : 0;
+
+      // Workload score: based on active tasks, overdue tasks, and completion rate
+      const activeTasks = userTasks.filter(
+        (t) => t.status === TasksStatusOptions.in_progress,
+      ).length;
+      const completionRate =
+        tasksInRange.length > 0
+          ? completedTasks.length / tasksInRange.length
+          : 0;
+      const workloadScore = Math.min(
+        100,
+        activeTasks * 10 + overdueTasks.length * 15 + (1 - completionRate) * 20,
+      );
+
+      // Overtime indicator: estimate based on overdue tasks and completion patterns
+      // Assuming 8 hours/day standard work, estimate overtime needed
+      const overtimeIndicator =
+        overdueTasks.length * 4 + Math.max(0, (activeTasks - 3) * 2);
+
+      return {
+        userId: user.id,
+        name:
+          user.first_name && user.last_name
+            ? `${user.first_name} ${user.last_name}`
+            : user.username,
+        totalTasks: tasksInRange.length,
+        completedTasks: completedTasks.length,
+        overdueTasks: overdueTasks.length,
+        avgCompletionTime,
+        workloadScore,
+        overtimeIndicator,
+      };
+    })
+    .sort((a, b) => b.workloadScore - a.workloadScore);
+}
+
+/**
+ * computeWorkloadDistribution
+ * Analyzes current workload distribution across employees.
+ */
+export function computeWorkloadDistribution(
+  users: UsersRecord[],
+  tasks: TaskWithProject[],
+): WorkloadDistribution[] {
+  const now = new Date();
+  const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  return users
+    .filter((u) => u.role === UsersRoleOptions.employee)
+    .map((user) => {
+      const userTasks = tasks.filter((t) => t.assignee === user.id);
+
+      // Active tasks (in progress)
+      const activeTasks = userTasks.filter(
+        (t) => t.status === TasksStatusOptions.in_progress,
+      ).length;
+
+      // Upcoming tasks (todo with deadline in next week)
+      const upcomingTasks = userTasks.filter(
+        (t) =>
+          t.status === TasksStatusOptions.todo &&
+          t.deadline &&
+          new Date(t.deadline) >= now &&
+          new Date(t.deadline) <= nextWeek,
+      ).length;
+
+      // Overdue tasks
+      const overdueTasks = userTasks.filter(
+        (t) =>
+          t.status !== TasksStatusOptions.done &&
+          t.deadline &&
+          new Date(t.deadline) < now,
+      ).length;
+
+      // Capacity utilization (rough estimate: active + upcoming tasks relative to capacity)
+      const estimatedCapacity = 5; // Assume 5 concurrent tasks is full capacity
+      const capacityUtilization = Math.min(
+        100,
+        ((activeTasks + upcomingTasks) / estimatedCapacity) * 100,
+      );
+
+      // Workload level classification
+      let workloadLevel: "low" | "medium" | "high" | "critical";
+      if (capacityUtilization < 40) workloadLevel = "low";
+      else if (capacityUtilization < 70) workloadLevel = "medium";
+      else if (capacityUtilization < 90) workloadLevel = "high";
+      else workloadLevel = "critical";
+
+      return {
+        userId: user.id,
+        name:
+          user.first_name && user.last_name
+            ? `${user.first_name} ${user.last_name}`
+            : user.username,
+        activeTasks,
+        upcomingTasks,
+        overdueTasks,
+        capacityUtilization,
+        workloadLevel,
+      };
+    })
+    .sort((a, b) => b.capacityUtilization - a.capacityUtilization);
+}
+
+/**
+ * computeProductivityTrends
+ * Analyzes productivity trends over time with forecasting capabilities.
+ */
+export function computeProductivityTrends(
+  userId: string,
+  tasks: TaskWithProject[],
+  range: { start: Date; end: Date },
+  bucket: "daily" | "weekly" | "monthly",
+): {
+  historical: EmployeeBucket[];
+  trend: "increasing" | "decreasing" | "stable";
+  projectedNextPeriod: number;
+} {
+  const buckets = computeProductivityTrend(userId, tasks, range, bucket);
+
+  if (buckets.length < 2) {
+    return {
+      historical: buckets,
+      trend: "stable",
+      projectedNextPeriod: 0,
+    };
+  }
+
+  // Calculate trend using simple linear regression
+  const n = buckets.length;
+  const sumX = (n * (n - 1)) / 2; // sum of indices 0 to n-1
+  const sumY = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
+  const sumXY = buckets.reduce(
+    (sum, bucket, index) => sum + index * bucket.count,
+    0,
+  );
+  const sumXX = (n * (n - 1) * (2 * n - 1)) / 6; // sum of squares of indices
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+
+  let trend: "increasing" | "decreasing" | "stable";
+  if (slope > 0.5) trend = "increasing";
+  else if (slope < -0.5) trend = "decreasing";
+  else trend = "stable";
+
+  // Simple projection for next period
+  const lastValue = buckets[buckets.length - 1]?.count || 0;
+  const projectedNextPeriod = Math.max(0, lastValue + slope);
+
+  return {
+    historical: buckets,
+    trend,
+    projectedNextPeriod: Math.round(projectedNextPeriod),
+  };
 }

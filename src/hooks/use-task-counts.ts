@@ -27,12 +27,12 @@ export function useTaskCounts() {
     ).length;
 
     const dueToday = tasks.filter((task) => {
-      const dl = (task as any).deadline as string | undefined;
+      const dl = task.deadline as string | undefined;
       return dl && isToday(new Date(dl)) && task.status !== "done";
     }).length;
 
     const overdue = tasks.filter((task) => {
-      const dl = (task as any).deadline as string | undefined;
+      const dl = task.deadline as string | undefined;
       return dl && isPast(new Date(dl)) && task.status !== "done";
     }).length;
 

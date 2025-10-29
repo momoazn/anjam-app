@@ -89,7 +89,10 @@ export function useMarkAsRead() {
     },
     onError: (_err, _id, ctx) => {
       if (user?.id && ctx?.previous) {
-        queryClient.setQueryData(getNotificationsQueryKey(user.id), ctx.previous);
+        queryClient.setQueryData(
+          getNotificationsQueryKey(user.id),
+          ctx.previous,
+        );
       }
     },
   });
@@ -125,7 +128,10 @@ export function useMarkAllAsRead() {
     },
     onError: (_err, userId, ctx) => {
       if (ctx?.previous) {
-        queryClient.setQueryData(getNotificationsQueryKey(userId), ctx.previous);
+        queryClient.setQueryData(
+          getNotificationsQueryKey(userId),
+          ctx.previous,
+        );
       }
     },
     onSuccess: () => {

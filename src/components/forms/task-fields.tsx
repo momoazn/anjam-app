@@ -164,7 +164,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger
                       size="sm"
-                      className="!bg-transparent dark:!bg-transparent gap-2"
+                      className="gap-2 !bg-transparent dark:!bg-transparent"
                       aria-label={fa.tasks.addTask.status}
                     >
                       <StatusIcon className={`size-3 ${statusIconColor}`} />

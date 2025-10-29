@@ -25,10 +25,10 @@ type Props = {
 
 export function ThroughputChart({ data, onBarClick }: Props) {
   return (
-    <ChartContainer config={chartConfig} className="h-full w-full">
+    <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
       <BarChart
         data={data}
-        margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+        margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
       >
         <CartesianGrid
           strokeDasharray="3 3"
@@ -40,8 +40,8 @@ export function ThroughputChart({ data, onBarClick }: Props) {
           angle={-45}
           textAnchor="end"
           tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
-          height={80}
-          tickFormatter={(label) => digitsEnToFa(label as string)}
+          height={100}
+          interval={0}
         />
         <YAxis
           tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}

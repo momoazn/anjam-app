@@ -43,7 +43,7 @@ export function TimelinessDonut({ data, onSliceClick }: Props) {
     dataKey: d.key,
   }));
   return (
-    <ChartContainer config={chartConfig} className="h-full w-full">
+    <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
       <PieChart>
         <Pie
           data={data}
