@@ -103,6 +103,7 @@ function NotificationItem({
             onClick={() => onMarkAsRead(notification.id)}
             className="h-7 w-7 p-0"
             title={fa.notifications.actions.markAsRead}
+            aria-label={fa.notifications.actions.markAsRead}
           >
             <IconEye className="h-3 w-3" />
           </Button>
@@ -113,6 +114,7 @@ function NotificationItem({
           onClick={() => onDelete(notification.id)}
           className="text-destructive hover:text-destructive h-7 w-7 p-0"
           title={fa.notifications.actions.delete}
+          aria-label={fa.notifications.actions.delete}
         >
           <IconTrash className="h-3 w-3" />
         </Button>
@@ -275,6 +277,7 @@ export default function Notifications() {
                     onClick={() => user?.id && markAllAsRead.mutate(user.id)}
                     disabled={unreadCount === 0}
                     className="h-8 w-8 p-0"
+                    aria-label={fa.notifications.markAllAsRead}
                   >
                     <IconCheck className="h-4 w-4" />
                   </Button>
@@ -294,6 +297,7 @@ export default function Notifications() {
                     onClick={() => user?.id && clearRead.mutate(user.id)}
                     disabled={notifications.filter((n) => n.read).length === 0}
                     className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                    aria-label={fa.notifications.actions.clearRead}
                   >
                     <IconTrashX className="h-4 w-4" />
                   </Button>
@@ -313,6 +317,7 @@ export default function Notifications() {
                     onClick={() => user?.id && clearAll.mutate(user.id)}
                     disabled={notifications.length === 0}
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                    aria-label={fa.notifications.actions.clearAll}
                   >
                     <IconTrash className="h-4 w-4" />
                   </Button>

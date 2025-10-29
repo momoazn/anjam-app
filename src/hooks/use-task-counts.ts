@@ -26,19 +26,15 @@ export function useTaskCounts() {
         (task.status === "todo" || task.status === "in_progress"),
     ).length;
 
-    const dueToday = tasks.filter(
-      (task) =>
-        task.due_date &&
-        isToday(new Date(task.due_date)) &&
-        task.status !== "done",
-    ).length;
+    const dueToday = tasks.filter((task) => {
+      const dl = (task as any).deadline as string | undefined;
+      return dl && isToday(new Date(dl)) && task.status !== "done";
+    }).length;
 
-    const overdue = tasks.filter(
-      (task) =>
-        task.due_date &&
-        isPast(new Date(task.due_date)) &&
-        task.status !== "done",
-    ).length;
+    const overdue = tasks.filter((task) => {
+      const dl = (task as any).deadline as string | undefined;
+      return dl && isPast(new Date(dl)) && task.status !== "done";
+    }).length;
 
     const inProgress = tasks.filter(
       (task) => task.status === "in_progress",

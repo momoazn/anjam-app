@@ -121,7 +121,7 @@ export function UserFields({ control, isEdit = false }: UserFieldsProps) {
             <FormLabel>{fa.users.table.columns.role}</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger aria-label={fa.users.table.columns.role}>
                   <SelectValue placeholder={fa.users.form.selectRole} />
                 </SelectTrigger>
               </FormControl>

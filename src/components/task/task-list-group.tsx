@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { fa } from "@/constants/text";
-import { useUpdateTask } from "@/hooks/tasks";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
@@ -29,8 +28,6 @@ export function TaskListGroup({
 }: TaskListGroupProps) {
   const [localSelectedTasks, setLocalSelectedTasks] =
     useState<string[]>(selectedTasks);
-  const [isDragOver, setIsDragOver] = useState(false);
-  const { mutate: updateTask } = useUpdateTask();
 
   const handleTaskSelection = (taskId: string, selected: boolean) => {
     const newSelected = selected
@@ -45,36 +42,8 @@ export function TaskListGroup({
     <section className="transition-colors duration-200">
       <TaskListHeader taskCount={taskCount} status={status} />
       <div
-        className={cn(
-          "mt-2 min-h-[30px] space-y-1 rounded-md pe-1",
-          isDragOver && "ring-primary/40 ring-2 ring-offset-2",
-        )}
-        onDragOver={(e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = "move";
-          setIsDragOver(true);
-        }}
-        onDragEnter={(e) => {
-          e.preventDefault();
-          setIsDragOver(true);
-        }}
-        onDragLeave={() => setIsDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setIsDragOver(false);
-          try {
-            const data = e.dataTransfer.getData("application/json");
-            const parsed = JSON.parse(data) as {
-              taskId?: string;
-              fromStatus?: TasksStatusOptions;
-            };
-            if (!parsed?.taskId) return;
-            if (parsed.fromStatus === status) return;
-            updateTask({ id: parsed.taskId, updates: { status } });
-          } catch {
-            // ignore malformed payloads
-          }
-        }}
+        className={cn("mt-2 min-h-[30px] space-y-1 rounded-md pe-1")}
+        role="list"
       >
         {tasks?.length > 0 ? (
           tasks?.map((task) => (

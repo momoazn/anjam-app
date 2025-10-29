@@ -83,10 +83,10 @@ function App() {
             <ScrollToTop />
             <AppLayout />
             <Toaster
-              position="bottom-left"
+              position="bottom-right"
               className="font-vazirmatn"
               toastOptions={{
-                duration: 4000,
+                duration: 3000,
               }}
             />
           </NuqsAdapter>

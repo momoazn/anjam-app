@@ -23,7 +23,7 @@ import { TaskFields } from "@/components/forms/task-fields";
 import { Loader2 } from "lucide-react";
 
 const taskFormSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  title: z.string().min(1, { message: fa.tasks.addTask.issueTitle }),
   description: z.string(),
   assignee: z.string(),
   priority: z.nativeEnum(TasksPriorityOptions),

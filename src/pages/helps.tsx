@@ -376,17 +376,6 @@ export default function Helps() {
                 </div>
               </div>
             </div>
-
-            {/* <div>
-              <h3 className="mb-2 text-lg font-semibold">مدیریت تسک‌ها</h3>
-              <ul className="list-inside list-disc space-y-1">
-                <li>تغییر وضعیت تسک با کشیدن و رها کردن (Drag & Drop)</li>
-                <li>فیلتر کردن تسک‌ها بر اساس وضعیت</li>
-                <li>مرتب‌سازی بر اساس اولویت</li>
-                <li>جستجو در تسک‌ها</li>
-                <li>مشاهده تاریخچه تغییرات</li>
-              </ul>
-            </div> */}
           </AccordionContent>
         </AccordionItem>
 

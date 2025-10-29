@@ -161,27 +161,30 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             return (
               <FormItem>
                 <FormControl>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                    onClick={() => {
-                      // Toggle through statuses
-                      const currentIndex = Object.values(
-                        TasksStatusOptions,
-                      ).indexOf(field.value);
-                      const nextIndex =
-                        (currentIndex + 1) %
-                        Object.values(TasksStatusOptions).length;
-                      field.onChange(
-                        Object.values(TasksStatusOptions)[nextIndex],
-                      );
-                    }}
-                  >
-                    <StatusIcon className={`size-3 ${statusIconColor}`} />
-                    {fa.tasks.status[field.value]}
-                  </Button>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger
+                      size="sm"
+                      className="!bg-transparent dark:!bg-transparent gap-2"
+                      aria-label={fa.tasks.addTask.status}
+                    >
+                      <StatusIcon className={`size-3 ${statusIconColor}`} />
+                      <SelectValue placeholder={fa.tasks.addTask.status} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={TasksStatusOptions.todo}>
+                        {fa.tasks.status.todo}
+                      </SelectItem>
+                      <SelectItem value={TasksStatusOptions.in_progress}>
+                        {fa.tasks.status.in_progress}
+                      </SelectItem>
+                      <SelectItem value={TasksStatusOptions.done}>
+                        {fa.tasks.status.done}
+                      </SelectItem>
+                      <SelectItem value={TasksStatusOptions.canceled}>
+                        {fa.tasks.status.canceled}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
               </FormItem>
             );

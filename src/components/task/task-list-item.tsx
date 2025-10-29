@@ -1,6 +1,6 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { useRef } from "react";
+import { } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,7 +52,7 @@ export function TaskListItem({
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
-  const draggingRef = useRef(false);
+  
 
   return (
     <EditTaskDialog task={task} onSuccess={onSuccess}>
@@ -63,21 +63,6 @@ export function TaskListItem({
             "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-400/10",
           className,
         )}
-        draggable
-        onDragStart={(e) => {
-          draggingRef.current = true;
-          e.dataTransfer.setData(
-            "application/json",
-            JSON.stringify({ taskId: task.id, fromStatus: task.status }),
-          );
-          e.dataTransfer.effectAllowed = "move";
-          // Make element look dragged
-          e.currentTarget.classList.add("opacity-60");
-        }}
-        onDragEnd={(e) => {
-          draggingRef.current = false;
-          e.currentTarget.classList.remove("opacity-60");
-        }}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -86,12 +71,6 @@ export function TaskListItem({
             // Trigger the dialog
             const button = e.currentTarget.querySelector("button");
             button?.click();
-          }
-        }}
-        onClick={(e) => {
-          if (draggingRef.current) {
-            e.preventDefault();
-            e.stopPropagation();
           }
         }}
         aria-label={fa.task.editTask.replace("{title}", task.title)}

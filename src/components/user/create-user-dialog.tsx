@@ -19,7 +19,8 @@ import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: fa.auth.errors.usernameRequired }),
-  password: z.string().min(8, { message: fa.auth.errors.passwordRequired }),
+  // Use explicit min-length message for clarity
+  password: z.string().min(8, { message: fa.auth.errors.passwordMinLength }),
   first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
   last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
@@ -36,7 +37,9 @@ export function CreateUserDialog({
 }: CreateUserDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: "onBlur",
+    // Validate and clear errors as user types for better UX
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       username: "",
       password: "",
