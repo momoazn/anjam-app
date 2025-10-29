@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type SidebarBadgeProps = {
   count: number;
@@ -29,7 +30,7 @@ export function SidebarBadge({
         className,
       )}
     >
-      {count > 99 ? "99+" : count}
+      {count > 99 ? "۹۹+" : digitsEnToFa(count)}
     </Badge>
   );
 }
