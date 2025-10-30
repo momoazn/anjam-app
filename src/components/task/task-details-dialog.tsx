@@ -1,10 +1,13 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { TaskFields } from "@/components/forms/task-fields";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,23 +15,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { Form } from "@/components/ui/form";
+import { Separator } from "@/components/ui/separator";
 import { fa } from "@/constants/text";
+import { useComments } from "@/hooks/comments";
+import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
 import {
   TasksPriorityOptions,
   TasksResponse,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
-import { useComments } from "@/hooks/comments";
-import { TaskFields } from "@/components/forms/task-fields";
-import { CommentsList } from "./comments-list";
-import { CommentComposer } from "./comment-composer";
-import { Loader2, MessageSquare } from "lucide-react";
-import { priorityColors, priorityIcons, taskStatusIcons, taskStatusBadgeSolids } from "@/lib/tasks-utils";
+import {
+  priorityColors,
+  priorityIcons,
+  taskStatusBadgeSolids,
+  taskStatusIcons,
+} from "@/lib/tasks-utils";
 import { UserAvatar } from "../user-avatar";
-import { Badge } from "@/components/ui/badge";
+import { CommentComposer } from "./comment-composer";
+import { CommentsList } from "./comments-list";
 
 const taskFormSchema = z.object({
   title: z.string().min(1, { message: fa.tasks.addTask.issueTitle }),
@@ -166,9 +171,16 @@ type TaskDetailsDialogProps = {
   onEdit?: () => void;
 };
 
-export function TaskDetailsDialog({ children, task, onEdit }: TaskDetailsDialogProps) {
+export function TaskDetailsDialog({
+  children,
+  task,
+  onEdit,
+}: TaskDetailsDialogProps) {
   const [open, setOpen] = useState(false);
-  const { data: comments = [], isLoading: commentsLoading } = useComments(task.id, { enabled: open });
+  const { data: comments = [], isLoading: commentsLoading } = useComments(
+    task.id,
+    { enabled: open },
+  );
 
   const StatusIcon = taskStatusIcons[task.status];
   const PriorityIcon = priorityIcons[task.priority];
@@ -177,16 +189,16 @@ export function TaskDetailsDialog({ children, task, onEdit }: TaskDetailsDialogP
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogTitle className="sr-only">{fa.tasks.details.title}</DialogTitle>
-      <DialogContent className="sm:max-w-[960px] max-h-[90vh] overflow-y-auto p-6">
+      <DialogContent className="max-h-[90vh] overflow-y-auto p-6 sm:max-w-[960px]">
         <div className="space-y-6">
           {/* Task Header */}
           <div className="space-y-4">
             <div className="flex items-start justify-between">
-              <div className="space-y-2 flex-1">
-                <h2 className="text-2xl font-semibold leading-relaxed">
+              <div className="flex-1 space-y-2">
+                <h2 className="text-2xl leading-relaxed font-semibold">
                   {task.title}
                 </h2>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="text-muted-foreground flex items-center gap-2 text-sm">
                   <span>Created</span>
                   <span>{formatTaskDate(task.created)}</span>
                   {task.expand?.creator && (
@@ -196,7 +208,8 @@ export function TaskDetailsDialog({ children, task, onEdit }: TaskDetailsDialogP
                       <div className="flex items-center gap-2">
                         <UserAvatar user={task.expand.creator} />
                         <span>
-                          {task.expand.creator.first_name && task.expand.creator.last_name
+                          {task.expand.creator.first_name &&
+                          task.expand.creator.last_name
                             ? `${task.expand.creator.first_name} ${task.expand.creator.last_name}`.trim()
                             : task.expand.creator.username}
                         </span>
@@ -205,19 +218,19 @@ export function TaskDetailsDialog({ children, task, onEdit }: TaskDetailsDialogP
                   )}
                 </div>
               </div>
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <Badge
                   variant="default"
                   className={`${taskStatusBadgeSolids[task.status]}`}
                 >
-                  <StatusIcon className="w-3 h-3 mr-1" />
+                  <StatusIcon className="mr-1 h-3 w-3" />
                   {fa.tasks.status[task.status]}
                 </Badge>
                 <Badge
                   variant="outline"
                   className={`${priorityColors[task.priority]} border-current`}
                 >
-                  <PriorityIcon className="w-3 h-3 mr-1" />
+                  <PriorityIcon className="mr-1 h-3 w-3" />
                   {fa.tasks.priority[task.priority]}
                 </Badge>
                 <Button
@@ -241,13 +254,16 @@ export function TaskDetailsDialog({ children, task, onEdit }: TaskDetailsDialogP
                   <div className="inline-flex items-center gap-2">
                     <UserAvatar user={task.expand.assignee} />
                     <span>
-                      {task.expand.assignee.first_name && task.expand.assignee.last_name
+                      {task.expand.assignee.first_name &&
+                      task.expand.assignee.last_name
                         ? `${task.expand.assignee.first_name} ${task.expand.assignee.last_name}`.trim()
                         : task.expand.assignee.username}
                     </span>
                   </div>
                 ) : (
-                  <span className="text-muted-foreground">{fa.tasks.addTask.unassigned}</span>
+                  <span className="text-muted-foreground">
+                    {fa.tasks.addTask.unassigned}
+                  </span>
                 )}
               </div>
               <div>
@@ -281,13 +297,15 @@ export function TaskDetailsDialog({ children, task, onEdit }: TaskDetailsDialogP
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
-              <h3 className="font-medium">نظرات</h3>
-              <Badge variant="secondary" className="text-xs">{comments.length}</Badge>
+              <h3 className="font-medium">{fa.comments.title}</h3>
+              <Badge variant="secondary" className="text-xs">
+                {comments.length}
+              </Badge>
             </div>
 
             {commentsLoading ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin" />
+                <Loader2 className="h-6 w-6 animate-spin" />
               </div>
             ) : (
               <>

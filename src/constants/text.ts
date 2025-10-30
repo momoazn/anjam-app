@@ -639,6 +639,30 @@ export const fa = {
     sortByDate: "مرتب‌سازی بر اساس تاریخ",
     showCompletedTasks: "نمایش تسک‌های تکمیل‌شده",
   },
+  comments: {
+    title: "نظرات",
+    empty: {
+      noComments: "هنوز نظری ثبت نشده است.",
+      beFirst: "اولین نفری باشید که نظر می‌دهد!",
+    },
+    composer: {
+      placeholder: "نظر خود را بنویسید...",
+      placeholderDisabled: "برای ارسال نظر وارد شوید",
+      send: "ارسال نظر",
+    },
+    item: {
+      deleted: "نظر حذف شده است",
+      actions: "اقدامات نظر",
+      edit: "ویرایش",
+      delete: "حذف",
+      deleting: "در حال حذف...",
+      editPlaceholder: "ویرایش نظر...",
+      saving: "در حال ذخیره...",
+      save: "ذخیره",
+      cancel: "انصراف",
+      edited: "· ویرایش شده",
+    },
+  },
   helps: {
     title: "راهنمای استفاده از سیستم",
     description: "راهنمای کامل برای استفاده از امکانات سیستم مدیریت تسک‌ها",

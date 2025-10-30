@@ -35,9 +35,9 @@ export function useComments(
   return useQuery({
     queryKey: queryKeys.comments.byTask(taskId),
     queryFn: async (): Promise<CommentWithUser[]> => {
-      // Exclude soft-deleted comments (deleted_at empty or null)
+      // Exclude soft-deleted comments (only include non-deleted)
       return await pb.collection("comments").getFullList<CommentWithUser>({
-        filter: `task = "${taskId}" && (deleted_at = '' || deleted_at = null)`,
+        filter: `task = "${taskId}" && deleted_at = ""`,
         sort: "-created",
         expand: "user",
         batch: 100,

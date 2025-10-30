@@ -12,8 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
-import { CommentWithUser } from "@/hooks/comments";
-import { useUpdateComment, useSoftDeleteComment } from "@/hooks/comments";
+import {
+  CommentWithUser,
+  useSoftDeleteComment,
+  useUpdateComment,
+} from "@/hooks/comments";
 import { useAuthUser } from "@/store/auth-store";
 import { UserAvatar } from "../user-avatar";
 
@@ -121,7 +124,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
             </span>
           </div>
           <p className="text-muted-foreground text-sm italic">
-            نظر حذف شده است
+            {fa.comments.item.deleted}
           </p>
         </div>
       </div>
@@ -155,13 +158,13 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                   variant="ghost"
                   size="sm"
                   className="h-6 w-6 p-0"
-                  aria-label="اقدامات نظر"
+                  aria-label={fa.comments.item.actions}
                   disabled={
                     updateComment.isPending || softDeleteComment.isPending
                   }
                 >
                   <MoreHorizontal className="h-3 w-3" />
-                  <span className="sr-only">اقدامات نظر</span>
+                  <span className="sr-only">{fa.comments.item.actions}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -172,7 +175,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                   }}
                 >
                   <Edit className="mr-2 h-3 w-3" />
-                  ویرایش
+                  {fa.comments.item.edit}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={(e) => {
@@ -183,7 +186,9 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                   disabled={softDeleteComment.isPending}
                 >
                   <Trash2 className="mr-2 h-3 w-3" />
-                  {softDeleteComment.isPending ? "در حال حذف..." : "حذف"}
+                  {softDeleteComment.isPending
+                    ? fa.comments.item.deleting
+                    : fa.comments.item.delete}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -195,7 +200,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
               className="min-h-[80px] resize-none"
-              placeholder="ویرایش نظر..."
+              placeholder={fa.comments.item.editPlaceholder}
               ref={textareaRef}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
@@ -215,7 +220,9 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 onClick={handleSaveEdit}
                 disabled={!editContent.trim() || updateComment.isPending}
               >
-                {updateComment.isPending ? "در حال ذخیره..." : "ذخیره"}
+                {updateComment.isPending
+                  ? fa.comments.item.saving
+                  : fa.comments.item.save}
               </Button>
               <Button
                 size="sm"
@@ -223,7 +230,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 onClick={handleCancelEdit}
                 disabled={updateComment.isPending}
               >
-                انصراف
+                {fa.comments.item.cancel}
               </Button>
             </div>
           </div>
@@ -232,7 +239,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
             {comment.content?.trim() || "—"}
             {!deleted && wasEdited && (
               <span className="text-muted-foreground ml-2 text-[10px]">
-                · ویرایش شده
+                {fa.comments.item.edited}
               </span>
             )}
           </div>

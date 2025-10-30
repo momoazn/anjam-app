@@ -30,10 +30,13 @@ export function useEntityMutation<TVariables = Record<string, unknown>>({
     onSuccess: () => {
       // Invalidate specified queries
       invalidateQueries.forEach((queryKey) => {
+        // Handle collections with specific query key structures
         if (queryKey === "tasks") {
-          // For tasks, invalidate all task-related queries to ensure all task lists refresh
           queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        } else if (queryKey === "comments") {
+          queryClient.invalidateQueries({ queryKey: queryKeys.comments.all });
         } else {
+          // Fallback to simple array matching for other collections
           queryClient.invalidateQueries({ queryKey: [queryKey] });
         }
       });
@@ -82,10 +85,13 @@ export function useEntityUpdateMutation<TVariables = Record<string, unknown>>({
     onSuccess: () => {
       // Invalidate specified queries
       invalidateQueries.forEach((queryKey) => {
+        // Handle collections with specific query key structures
         if (queryKey === "tasks") {
-          // For tasks, invalidate all task-related queries to ensure all task lists refresh
           queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        } else if (queryKey === "comments") {
+          queryClient.invalidateQueries({ queryKey: queryKeys.comments.all });
         } else {
+          // Fallback to simple array matching for other collections
           queryClient.invalidateQueries({ queryKey: [queryKey] });
         }
       });
@@ -132,10 +138,13 @@ export function useEntityDeleteMutation({
     onSuccess: () => {
       // Invalidate specified queries
       invalidateQueries.forEach((queryKey) => {
+        // Handle collections with specific query key structures
         if (queryKey === "tasks") {
-          // For tasks, invalidate all task-related queries to ensure all task lists refresh
           queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        } else if (queryKey === "comments") {
+          queryClient.invalidateQueries({ queryKey: queryKeys.comments.all });
         } else {
+          // Fallback to simple array matching for other collections
           queryClient.invalidateQueries({ queryKey: [queryKey] });
         }
       });

@@ -1,6 +1,8 @@
+import { useMemo, useState } from "react";
+
+import { fa } from "@/constants/text";
 import { CommentWithUser } from "@/hooks/comments";
 import { cn } from "@/lib/utils";
-import { useMemo, useState } from "react";
 import { CommentItem } from "./comment-item";
 
 type CommentsListProps = {
@@ -21,8 +23,8 @@ export function CommentsList({ comments, className }: CommentsListProps) {
   if (visibleComments.length === 0) {
     return (
       <div className={cn("text-muted-foreground py-10 text-center", className)}>
-        <p>هنوز نظری ثبت نشده است.</p>
-        <p className="text-sm">اولین نفری باشید که نظر می‌دهد!</p>
+        <p>{fa.comments.empty.noComments}</p>
+        <p className="text-sm">{fa.comments.empty.beFirst}</p>
       </div>
     );
   }
