@@ -70,6 +70,18 @@ export const queryKeys = {
   },
 
   /**
+   * Comment-related query keys
+   * - all: Base key for all comment queries
+   * - lists: For comment list queries
+   * - byTask: For comments filtered by task ID
+   */
+  comments: {
+    all: ["comments"] as const,
+    lists: () => [...queryKeys.comments.all, "list"] as const,
+    byTask: (taskId: string) => [...queryKeys.comments.lists(), "task", taskId] as const,
+  },
+
+  /**
    * Authentication-related query keys
    * - isInitialAdmin: For checking if initial admin setup is needed
    */

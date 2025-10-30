@@ -360,6 +360,7 @@ export const fa = {
     },
     details: {
       title: "جزئیات تسک",
+      unknownUser: "کاربر ناشناس",
       buttons: {
         save: "ذخیره",
         saving: "در حال ذخیره...",

@@ -40,6 +40,14 @@ export {
 // Auth hooks
 export { useIsInitialAdmin } from "./auth";
 
+// Comment hooks
+export {
+  useComments,
+  useCreateComment,
+  useUpdateComment,
+  useSoftDeleteComment,
+} from "./comments";
+
 // App-level data hooks
 export { useAppData, useProjectUsersFromAppData } from "./use-app-data";
 

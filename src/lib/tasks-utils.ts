@@ -47,6 +47,14 @@ export const taskStatusColors: Record<TasksStatusOptions, string> = {
   canceled: "text-gray-500 dark:text-gray-400",
 };
 
+// Higher-contrast badge backgrounds for statuses (WCAG-friendly)
+export const taskStatusBadgeSolids: Record<TasksStatusOptions, string> = {
+  todo: "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100",
+  in_progress: "bg-yellow-500 text-white dark:bg-yellow-500 dark:text-white",
+  done: "bg-purple-600 text-white dark:bg-purple-500 dark:text-white",
+  canceled: "bg-gray-500 text-white dark:bg-gray-400 dark:text-white",
+};
+
 export const taskStatusIcons: Record<TasksStatusOptions, Icon> = {
   todo: IconCircle,
   in_progress: IconCircleHalf2,

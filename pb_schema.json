@@ -811,11 +811,11 @@
   },
   {
     "id": "pbc_533777971",
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id = user",
+    "deleteRule": "@request.auth.id = user",
     "name": "comments",
     "type": "base",
     "fields": [
@@ -889,6 +889,20 @@
         "presentable": false,
         "system": false,
         "type": "autodate"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_deleted_at",
+        "max": 64,
+        "min": 0,
+        "name": "deleted_at",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       }
     ],
     "indexes": [],

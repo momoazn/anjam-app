@@ -1,6 +1,6 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import {} from "react";
+import { useRef } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,7 +15,7 @@ import {
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "../user-avatar";
-import { EditTaskDialog } from "./task-details-dialog";
+import { EditTaskDialog, TaskDetailsDialog } from "./task-details-dialog";
 
 const formatDateShort = (dateString?: string | null) => {
   if (!dateString) {
@@ -32,7 +32,6 @@ type TaskListItemProps = {
   task: TaskWithProject;
   className?: string;
   showProject?: boolean;
-  onSuccess?: () => void;
   isSelectable?: boolean;
   isSelected?: boolean;
   onSelectionChange?: (selected: boolean) => void;
@@ -42,11 +41,11 @@ export function TaskListItem({
   task,
   className,
   showProject = false,
-  onSuccess,
   isSelectable = false,
   isSelected = false,
   onSelectionChange,
 }: TaskListItemProps) {
+  const editBtnRef = useRef<HTMLButtonElement | null>(null);
   const StatusIcon = taskStatusIcons[task.status];
   const statusIconColor = taskStatusColors[task.status];
   const PriorityIcon = priorityIcons[task.priority];
@@ -54,7 +53,14 @@ export function TaskListItem({
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
 
   return (
-    <EditTaskDialog task={task} onSuccess={onSuccess}>
+    <>
+      {/* Hidden edit trigger wired to the existing EditTaskDialog */}
+      <EditTaskDialog task={task} onSuccess={() => {}}>
+        <button ref={editBtnRef} type="button" className="sr-only">
+          edit
+        </button>
+      </EditTaskDialog>
+      <TaskDetailsDialog task={task} onEdit={() => editBtnRef.current?.click()}>
       <div
         className={cn(
           "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-center justify-between rounded-md px-3 py-2 transition-all duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2 hover:scale-[1.01] hover:shadow-sm active:scale-[0.99]",
@@ -75,29 +81,29 @@ export function TaskListItem({
         aria-label={fa.task.editTask.replace("{title}", task.title)}
       >
         {/* Left side: Checkbox, Icon, ID, Title */}
-        <div className="flex min-w-0 flex-grow items-center gap-2">
+        <div className="flex min-w-0 grow items-center gap-2">
           {isSelectable && (
             <Checkbox
               checked={isSelected}
               onCheckedChange={(checked) =>
                 onSelectionChange?.(checked as boolean)
               }
-              className="flex-shrink-0 transition-transform hover:scale-110"
+              className="shrink-0 transition-transform hover:scale-110"
               onClick={(e) => e.stopPropagation()}
             />
           )}
           <PriorityIcon
             className={cn(
-              `size-5 flex-shrink-0 transition-transform group-hover:scale-110`,
+              `size-5 shrink-0 transition-transform group-hover:scale-110`,
               priorityIconColor,
             )}
           />
-          <span className="text-muted-foreground group-hover:text-foreground w-16 flex-shrink-0 font-mono text-xs transition-all duration-200 ease-in-out">
+          <span className="text-muted-foreground group-hover:text-foreground w-16 shrink-0 font-mono text-xs transition-all duration-200 ease-in-out">
             {task.display_id}
           </span>
           <StatusIcon
             className={cn(
-              `size-4 flex-shrink-0 transition-transform group-hover:scale-110`,
+              `size-4 shrink-0 transition-transform group-hover:scale-110`,
               statusIconColor,
             )}
           />
@@ -118,7 +124,7 @@ export function TaskListItem({
         </div>
 
         {/* Right side: Tags, Date, Assignee */}
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {/* Tags */}
           {task.tags && task.tags.length > 0 && (
             <div className="hidden items-center gap-1 md:flex">
@@ -147,7 +153,7 @@ export function TaskListItem({
           )}
 
           {/* Date */}
-          <span className="text-muted-foreground group-hover:text-foreground w-[70px] flex-shrink-0 text-right text-xs transition-colors duration-200">
+          <span className="text-muted-foreground group-hover:text-foreground w-[70px] shrink-0 text-right text-xs transition-colors duration-200">
             {formatDateShort(task.deadline)}
           </span>
 
@@ -163,6 +169,7 @@ export function TaskListItem({
           </div>
         </div>
       </div>
-    </EditTaskDialog>
+    </TaskDetailsDialog>
+    </>
   );
 }
