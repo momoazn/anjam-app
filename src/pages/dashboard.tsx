@@ -244,14 +244,14 @@ export default function Dashboard() {
               {fa.dashboard.taskStatus}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex min-h-[300px] items-center justify-center">
             <ChartContainer
               config={{
                 count: {
                   label: fa.dashboard.chart.count,
                 },
               }}
-              className="h-[180px] md:h-[200px]"
+              className="mx-auto h-[200px] max-w-[520px] md:h-[200px]"
             >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
