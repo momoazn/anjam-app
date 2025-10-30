@@ -9,7 +9,10 @@ import { useQuery } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import { CommentsResponse, UsersResponse } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
-import { useEntityMutation, useEntityUpdateMutation } from "./use-entity-mutation";
+import {
+  useEntityMutation,
+  useEntityUpdateMutation,
+} from "./use-entity-mutation";
 
 export type CommentWithUser = CommentsResponse<{
   user: UsersResponse;
@@ -32,8 +35,9 @@ export function useComments(
   return useQuery({
     queryKey: queryKeys.comments.byTask(taskId),
     queryFn: async (): Promise<CommentWithUser[]> => {
+      // Exclude soft-deleted comments (deleted_at empty or null)
       return await pb.collection("comments").getFullList<CommentWithUser>({
-        filter: `task = "${taskId}"`,
+        filter: `task = "${taskId}" && (deleted_at = '' || deleted_at = null)`,
         sort: "-created",
         expand: "user",
         batch: 100,

@@ -1,7 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,11 +27,14 @@ const formatCommentDate = (dateString: string) => {
 
 type CommentItemProps = {
   comment: CommentWithUser;
+  onDeleted?: (id: string) => void;
 };
 
-export function CommentItem({ comment }: CommentItemProps) {
+export function CommentItem({ comment, onDeleted }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content || "");
+  const [locallyDeleted, setLocallyDeleted] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const currentUser = useAuthUser();
   const isAuthor = currentUser?.id === comment.expand.user?.id;
@@ -69,13 +72,37 @@ export function CommentItem({ comment }: CommentItemProps) {
   };
 
   const handleSoftDelete = () => {
-    softDeleteComment.mutate({
-      id: comment.id,
-      updates: { deleted_at: new Date().toISOString() },
-    });
+    if (softDeleteComment.isPending) return;
+    setLocallyDeleted(true);
+    softDeleteComment.mutate(
+      {
+        id: comment.id,
+        updates: { deleted_at: new Date().toISOString() },
+      },
+      {
+        onSuccess: () => onDeleted?.(comment.id),
+        onError: () => setLocallyDeleted(false),
+      },
+    );
   };
 
-  if (isDeleted) {
+  // Autofocus and place caret at end when editing
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      const el = textareaRef.current;
+      el.focus();
+      const len = el.value.length;
+      try {
+        el.setSelectionRange(len, len);
+      } catch {
+        // ignore
+      }
+    }
+  }, [isEditing]);
+
+  const deleted = isDeleted || locallyDeleted;
+
+  if (deleted) {
     return (
       <div className="bg-muted/30 flex gap-3 rounded-lg p-4">
         <div className="shrink-0">
@@ -94,12 +121,14 @@ export function CommentItem({ comment }: CommentItemProps) {
             </span>
           </div>
           <p className="text-muted-foreground text-sm italic">
-            Comment deleted
+            نظر حذف شده است
           </p>
         </div>
       </div>
     );
   }
+
+  const wasEdited = comment.updated && comment.updated !== comment.created;
 
   return (
     <div className="hover:bg-muted/30 flex gap-3 rounded-lg p-4 transition-colors">
@@ -119,25 +148,42 @@ export function CommentItem({ comment }: CommentItemProps) {
               {formatCommentDate(comment.created)}
             </span>
           </div>
-          {isAuthor && !isDeleted && (
+          {isAuthor && !deleted && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  aria-label="اقدامات نظر"
+                  disabled={
+                    updateComment.isPending || softDeleteComment.isPending
+                  }
+                >
                   <MoreHorizontal className="h-3 w-3" />
                   <span className="sr-only">اقدامات نظر</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleEdit}>
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    handleEdit();
+                  }}
+                >
                   <Edit className="mr-2 h-3 w-3" />
                   ویرایش
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={handleSoftDelete}
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    handleSoftDelete();
+                  }}
                   className="text-destructive focus:text-destructive"
+                  disabled={softDeleteComment.isPending}
                 >
                   <Trash2 className="mr-2 h-3 w-3" />
-                  حذف
+                  {softDeleteComment.isPending ? "در حال حذف..." : "حذف"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -150,6 +196,18 @@ export function CommentItem({ comment }: CommentItemProps) {
               onChange={(e) => setEditContent(e.target.value)}
               className="min-h-[80px] resize-none"
               placeholder="ویرایش نظر..."
+              ref={textareaRef}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  handleSaveEdit();
+                }
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  handleCancelEdit();
+                }
+              }}
+              disabled={updateComment.isPending}
             />
             <div className="flex gap-2">
               <Button
@@ -170,7 +228,14 @@ export function CommentItem({ comment }: CommentItemProps) {
             </div>
           </div>
         ) : (
-          <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
+          <div className="text-sm whitespace-pre-wrap" dir="auto">
+            {comment.content?.trim() || "—"}
+            {!deleted && wasEdited && (
+              <span className="text-muted-foreground ml-2 text-[10px]">
+                · ویرایش شده
+              </span>
+            )}
+          </div>
         )}
       </div>
     </div>
