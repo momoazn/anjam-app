@@ -102,34 +102,65 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
         <FormField
           control={control}
           name="assignee"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    size="default"
-                    className="!bg-transparent dark:!bg-transparent"
-                  >
-                    <SelectValue placeholder={fa.tasks.addTask.unassigned} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={fa.tasks.addTask.unassigned}>
-                      <UserAvatar username={fa.tasks.addTask.unassigned} />
-                      {fa.tasks.addTask.unassigned}
-                    </SelectItem>
-                    {assignees?.map((u) => (
-                      <SelectItem key={u.id} value={u.id}>
-                        <UserAvatar username={u.username} />
-                        <span>
-                          {u.first_name} {u.last_name}
-                        </span>
+          render={({ field }) => {
+            const selectedUser = assignees?.find((u) => u.id === field.value);
+            const selectedDisplayName = selectedUser
+              ? [selectedUser.first_name, selectedUser.last_name]
+                  .filter(Boolean)
+                  .join(" ") ||
+                selectedUser.username ||
+                ""
+              : fa.tasks.addTask.unassigned;
+
+            return (
+              <FormItem>
+                <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger
+                      size="default"
+                      className="!bg-transparent dark:!bg-transparent"
+                    >
+                      {field.value &&
+                      field.value !== fa.tasks.addTask.unassigned &&
+                      selectedUser ? (
+                        <div className="flex items-center gap-2">
+                          <UserAvatar username={selectedUser.username} />
+                          <span>{selectedDisplayName}</span>
+                        </div>
+                      ) : (
+                        <span>{fa.tasks.addTask.unassigned}</span>
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={fa.tasks.addTask.unassigned}>
+                        <div className="flex items-center gap-2">
+                          <UserAvatar username={fa.tasks.addTask.unassigned} />
+                          <span>{fa.tasks.addTask.unassigned}</span>
+                        </div>
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-            </FormItem>
-          )}
+                      {assignees?.map((u) => {
+                        const displayName =
+                          [u.first_name, u.last_name]
+                            .filter(Boolean)
+                            .join(" ") ||
+                          u.username ||
+                          "";
+
+                        return (
+                          <SelectItem key={u.id} value={u.id}>
+                            <div className="flex items-center gap-2">
+                              <UserAvatar username={u.username} />
+                              <span>{displayName}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            );
+          }}
         />
 
         <FormField

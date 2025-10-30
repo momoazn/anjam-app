@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ const taskFormSchema = z.object({
   assignee: z.string(),
   priority: z.nativeEnum(TasksPriorityOptions),
   status: z.nativeEnum(TasksStatusOptions),
+  project: z.string().min(1).optional(),
   deadline: z.date().optional(),
 });
 
@@ -42,8 +42,6 @@ export function EditTaskDialog({
   task,
   onSuccess,
 }: EditTaskDialogProps) {
-  const { id: projectId } = useParams<{ id: string }>();
-  const isInProject = Boolean(projectId);
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof taskFormSchema>>({
@@ -54,6 +52,7 @@ export function EditTaskDialog({
       assignee: task.assignee ?? fa.tasks.addTask.unassigned,
       priority: task.priority,
       status: task.status,
+      project: task.project,
       deadline: task.deadline ? new Date(task.deadline) : undefined,
     },
   });
@@ -65,6 +64,7 @@ export function EditTaskDialog({
       assignee: task.assignee ?? fa.tasks.addTask.unassigned,
       priority: task.priority,
       status: task.status,
+      project: task.project,
       deadline: task.deadline ? new Date(task.deadline) : undefined,
     });
   }, [form, task]);
@@ -85,6 +85,8 @@ export function EditTaskDialog({
       id: task.id,
       updates: {
         ...values,
+        // Only include project if present (not in project context or changed)
+        project: values.project ?? task.project,
         assignee:
           values.assignee !== fa.tasks.addTask.unassigned
             ? values.assignee
@@ -104,7 +106,7 @@ export function EditTaskDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="mt-4 space-y-4"
           >
-            <TaskFields control={form.control} isInProject={isInProject} />
+            <TaskFields control={form.control} isInProject={true} />
 
             <div className="flex items-center justify-end gap-2 pt-0">
               <Button
