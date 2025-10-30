@@ -1,12 +1,75 @@
+// Optimized localization constants for Persian (Farsi)
+// This file contains all text labels used throughout the task management application
+
 export const fa = {
+  // Application-level configuration
   app: {
     name: "مدیر تسک‌ها",
   },
+
+  // Common strings used across multiple components
   common: {
     cancel: "انصراف",
     submit: "تایید",
     delete: "حذف",
+    save: "ذخیره",
+    saving: "در حال ذخیره...",
+    edit: "ویرایش",
+    create: "ایجاد",
+    creating: "در حال ایجاد...",
+    update: "به‌روزرسانی",
+    updating: "در حال به‌روزرسانی...",
+    loading: "در حال بارگذاری...",
+
+    // Common button labels
+    buttons: {
+      ok: "تایید",
+      cancel: "انصراف",
+      save: "ذخیره",
+      delete: "حذف",
+      edit: "ویرایش",
+      create: "ایجاد",
+      update: "به‌روزرسانی",
+      close: "بستن",
+      add: "افزودن",
+      remove: "حذف",
+      view: "مشاهده",
+      search: "جستجو",
+      filter: "فیلتر",
+      clear: "پاک کردن",
+      export: "صادر",
+      import: "ورود",
+      download: "دانلود",
+      upload: "آپلود",
+      select: "انتخاب",
+      selected: "انتخاب شده",
+      all: "همه",
+      none: "هیچ‌کدام",
+      yes: "بله",
+      no: "خیر",
+    },
+
+    // Common state labels
+    states: {
+      active: "فعال",
+      inactive: "غیرفعال",
+      enabled: "فعال",
+      disabled: "غیرفعال",
+      visible: "نمایان",
+      hidden: "مخفی",
+      success: "موفق",
+      error: "خطا",
+      warning: "هشدار",
+      info: "اطلاعات",
+      pending: "در انتظار",
+      completed: "تکمیل شده",
+      inProgress: "در حال انجام",
+      done: "انجام شده",
+      canceled: "لغو شده",
+    },
   },
+
+  // Navigation menu items
   navigation: {
     allTasks: "همه تسک‌ها",
     dashboard: "داشبورد",
@@ -31,24 +94,34 @@ export const fa = {
     overdue: "گذشته‌موعد",
     inProgress: "در حال انجام",
   },
+
+  // Create new items
   create: {
     newTask: "تسک جدید",
     newProject: "پروژه جدید",
   },
+
+  // Search functionality
   search: {
     placeholder: "جستجو...",
   },
+
+  // Header section
   header: {
     title: "مدیر تسک‌ها",
     addNewTask: "افزودن تسک جدید",
     addNewProject: "پروژه جدید",
   },
+
+  // User dropdown menu
   user: {
     dropdown: {
       account: "حساب کاربری",
       logout: "خروج",
     },
   },
+
+  // Notifications module
   notifications: {
     title: "اعلان‌ها",
     pageTitle: "صفحه اعلان‌ها",
@@ -102,6 +175,8 @@ export const fa = {
     deleteSelected: "حذف انتخاب شده‌ها",
     cancel: "انصراف",
   },
+
+  // Authentication module
   auth: {
     login: {
       title: "ورود",
@@ -122,7 +197,7 @@ export const fa = {
       registerButton: "ثبت‌نام",
       loginButton: "بازگشت به ورود",
       initialAdminMessage:
-        "برای ایجاد ادمین اولیه، لطفا نام کاربری و رمز عبور خود را وارد کنید.",
+        "برای ایجاد ادمین اولیه، لطفاً نام کاربری و رمز عبور خود را وارد کنید.",
       errors: {
         credentialsRequired: "وارد کردن نام کاربری و رمز عبور الزامی است",
         passwordsMismatch: "رمزهای عبور مطابقت ندارند",
@@ -147,6 +222,8 @@ export const fa = {
       serverError: "خطا در سرور. لطفاً دوباره تلاش کنید",
     },
   },
+
+  // User management module
   users: {
     title: "کاربران",
     list: {
@@ -194,6 +271,8 @@ export const fa = {
       button: "حذف",
     },
   },
+
+  // Projects module
   projects: {
     title: "پروژه‌ها",
     projectTasks: "تسک‌های پروژه",
@@ -255,26 +334,36 @@ export const fa = {
       error: "خطا در حذف پروژه: {error}",
     },
   },
+
+  // Task management module
   tasks: {
     title: "تسک‌ها",
     allTasks: "همه تسک‌ها",
+
+    // Task priority levels
     priority: {
       urgent: "فوری",
       high: "بالا",
       medium: "متوسط",
       low: "پایین",
     },
+
+    // Task status options
     status: {
       todo: "برای انجام",
       in_progress: "در حال انجام",
       done: "انجام‌شده",
       canceled: "لغوشده",
     },
+
+    // Task tags
     tags: {
       bug: "اشکال",
       feature: "ویژگی",
       improvement: "بهبود",
     },
+
+    // Filter options
     filters: {
       search: "جستجو بر اساس عنوان تسک...",
       status: "وضعیت",
@@ -312,6 +401,8 @@ export const fa = {
       },
       moreFilters: "{count} دیگر",
     },
+
+    // Empty state messages
     emptyState: {
       noTasksFound: "هیچ تسکی پیدا نشد",
       noTasksFoundDescription:
@@ -329,12 +420,16 @@ export const fa = {
       noTasksWithFilters: "هیچ تسکی با فیلترهای فعلی مطابقت ندارد.",
       loadingTasks: "در حال بارگذاری تسک‌ها...",
     },
+
+    // Header section
     header: {
       tasksFound: "{count} تسک پیدا شد",
       manageTasks: "مدیریت و پیگیری تسک‌های خود",
       tasksInProject: "{count} تسک در این پروژه",
       manageProjectTasks: "مدیریت تسک‌های این پروژه",
     },
+
+    // Add task dialog
     addTask: {
       title: "افزودن تسک",
       issueTitle: "عنوان تسک",
@@ -354,10 +449,14 @@ export const fa = {
         newTaskForProject: "تسک جدید برای این پروژه",
       },
     },
+
+    // Task list
     list: {
       noTasks: "هیچ تسک‌ای موجود نیست",
       openMenu: "باز کردن منو",
     },
+
+    // Task details
     details: {
       title: "جزئیات تسک",
       unknownUser: "کاربر ناشناس",
@@ -367,6 +466,8 @@ export const fa = {
         cancel: "انصراف",
       },
     },
+
+    // Edit task
     edit: {
       title: "ویرایش تسک",
       success: "تسک با موفقیت به‌روزرسانی شد",
@@ -378,6 +479,8 @@ export const fa = {
       },
     },
   },
+
+  // Reports module
   reports: {
     title: "گزارش‌ها",
     dashboardTitle: "داشبورد گزارشات",
@@ -579,6 +682,8 @@ export const fa = {
       },
     },
   },
+
+  // Dashboard module
   dashboard: {
     taskStatus: "وضعیت تسک‌ها",
     title: "داشبورد",
@@ -608,6 +713,8 @@ export const fa = {
       noDeadline: "ندارد",
     },
   },
+
+  // Project section
   project: {
     progress: "پیشرفت پروژه",
     completedTasks: "تسک تکمیل شده",
@@ -615,9 +722,13 @@ export const fa = {
     users: "کاربران",
     of: "از",
   },
+
+  // Chart labels
   charts: {
     dateLabel: "تاریخ:",
   },
+
+  // Notification section
   notification: {
     new: "جدید",
     newNotifications: "اعلان‌های جدید اینجا نمایش داده خواهند شد",
@@ -628,6 +739,8 @@ export const fa = {
     markAsReadLabel: 'علامت‌گذاری اعلان "{title}" به عنوان خوانده شده',
     notificationWord: "اعلان",
   },
+
+  // Task-related labels
   task: {
     editTask: "ویرایش تسک {title}",
     completedTasks: "تسک‌های تکمیل‌شده",
@@ -639,6 +752,8 @@ export const fa = {
     sortByDate: "مرتب‌سازی بر اساس تاریخ",
     showCompletedTasks: "نمایش تسک‌های تکمیل‌شده",
   },
+
+  // Comments module
   comments: {
     title: "نظرات",
     empty: {
@@ -663,6 +778,8 @@ export const fa = {
       edited: "· ویرایش شده",
     },
   },
+
+  // Help documentation
   helps: {
     title: "راهنمای استفاده از سیستم",
     description: "راهنمای کامل برای استفاده از امکانات سیستم مدیریت تسک‌ها",
@@ -965,12 +1082,18 @@ export const fa = {
       },
     },
   },
+
+  // Loading states
   loading: {
     application: "در حال بارگذاری برنامه...",
   },
+
+  // Date picker
   datePicker: {
     placeholder: "تاریخ را انتخاب کنید",
   },
+
+  // Error messages
   errors: {
     pageLoad: {
       login: "خطا در بارگذاری صفحه ورود",
@@ -993,8 +1116,22 @@ export const fa = {
       reloadPage: "بارگذاری مجدد صفحه",
     },
   },
+
+  // 404 page
   notFound: {
     title: "404",
     message: "صفحه مورد نظر یافت نشد",
   },
 } as const;
+
+// Type helper for better TypeScript support
+export type FaKey = keyof typeof fa;
+export type FaNestedKey<T> = T extends object
+  ? {
+      [K in keyof T]: T[K] extends object
+        ? `${string & K}.${FaNestedKey<T[K]>}`
+        : string & K;
+    }[keyof T]
+  : never;
+
+export type FaPath = FaNestedKey<typeof fa>;
