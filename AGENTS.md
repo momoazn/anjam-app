@@ -33,13 +33,14 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 ## Build, Test, and Development Commands
 
-- Local dev (web+api): `bun run dev` (Vite on 5173, API on 8090 via Air).
-- Frontend only: `bun run web:dev` | Preview: `bun run web:preview`.
-- Backend only: `bun run api:dev` (Air) | Serve once: `bun run api:serve`.
-- Build: `bun run build:all` (or `build:ui`, `build:api`).
-- Quality: `bun run web:check` (typecheck+lint+format check), `web:lint:fix`, `web:format`.
-- Data utilities: `bun run seed:generate`, `seed:run`, `seed:reset`.
-- Typegen: `bun run api:typegen` (ensure DB path points to `./data/data.db`).
+- Local dev (web+api): `bun run dev` (Vite on 5173; Go server via Air).
+- Frontend only: `bun run dev:client` | Preview: `bun run serve:client`.
+- Backend only: `bun run dev:server` (Air) | Serve once: `bun run serve:server`.
+- Build: `bun run build` (or `build:client`, `build:server`, `build:win`).
+- Quality: `bun run check` (typecheck+lint+format check), `fix`, `fmt`, `fmt:check`, `lint`, `lint:check`, `type:check`.
+- Data utilities: `bun run seed:generate`, `seed:truncate`, `seed:insert`, `seed`.
+- Typegen: `bun run gen:type`.
+- Clean: `bun run clean`.
 
 Prereqs: Bun 1.x, Go 1.24+, Node tooling installed (via Bun).
 
@@ -56,6 +57,12 @@ Prereqs: Bun 1.x, Go 1.24+, Node tooling installed (via Bun).
 - No test runner configured yet. Use `bun run web:check` and manual smoke tests.
 - If adding tests: prefer Vitest + React Testing Library; co-locate as `*.test.ts(x)`.
 - Aim to cover business logic in `src/lib/*` and critical components.
+
+## Schema and Type Generation
+
+- When you change `pb_schema.json`, always regenerate PocketBase types:
+  - Run: `bun run gen:type`
+  - This updates `src/lib/pocketbase-types.ts` used across the app.
 
 ## Commit & Pull Request Guidelines
 
