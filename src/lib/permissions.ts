@@ -9,7 +9,6 @@ const PERMISSIONS = {
   "tasks.view": ["admin", "supervisor", "employee"],
   "tasks.manage": ["admin", "supervisor", "employee"],
   "notifications.view": ["admin", "supervisor", "employee"],
-  "settings.view": ["admin", "supervisor", "employee"],
   "helps.view": ["admin", "supervisor", "employee"],
 } as const;
 

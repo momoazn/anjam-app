@@ -6,7 +6,6 @@ import {
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
-  IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
@@ -68,13 +67,7 @@ const data = {
     },
   ],
 
-  navSecondary: [
-    {
-      title: fa.navigation.settings,
-      url: "/settings",
-      icon: IconSettings,
-    },
-  ],
+  navSecondary: [],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -118,7 +111,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             return true;
           })}
         />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {data.navSecondary.length > 0 && (
+          <NavSecondary items={data.navSecondary} className="mt-auto" />
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
