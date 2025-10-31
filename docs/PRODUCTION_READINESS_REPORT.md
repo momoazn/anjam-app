@@ -978,12 +978,10 @@ function useTasks(page = 1, perPage = 20) {
   return useQuery({
     queryKey: ["tasks", page, perPage],
     queryFn: () =>
-      pb
-        .collection("tasks")
-        .getList(page, perPage, {
-          sort: "-created",
-          expand: "project,assignee",
-        }),
+      pb.collection("tasks").getList(page, perPage, {
+        sort: "-created",
+        expand: "project,assignee",
+      }),
     staleTime: 5 * 60 * 1000,
   });
 }

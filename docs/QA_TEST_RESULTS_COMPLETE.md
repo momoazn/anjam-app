@@ -486,11 +486,13 @@ No critical bugs identified during automated visual/display testing.
 ## Minor Issues & Observations
 
 1. **Form Validation Display:**
+
    - Code field validation shows error even when field appears to have correct length (3 characters)
    - May be a timing/state update issue in browser automation
    - Manual testing required to confirm
 
 2. **Project Code Length:**
+
    - Project code must be exactly 3 characters
    - Consider adding visual indicator or helper text
 

@@ -78,7 +78,8 @@ export const queryKeys = {
   comments: {
     all: ["comments"] as const,
     lists: () => [...queryKeys.comments.all, "list"] as const,
-    byTask: (taskId: string) => [...queryKeys.comments.lists(), "task", taskId] as const,
+    byTask: (taskId: string) =>
+      [...queryKeys.comments.lists(), "task", taskId] as const,
   },
 
   /**
