@@ -24,7 +24,6 @@ import (
 	"github.com/pocketbase/pocketbase/cmd"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/security"
-	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 //go:embed dist
@@ -32,28 +31,6 @@ var staticFiles embed.FS
 
 //go:embed pb_schema.json
 var schemaJSON []byte
-
-const (
-	// Base role rules
-	adminAccessRule    = `@request.auth.role = "admin"`
-	supervisorRoleRule = `@request.auth.role = "supervisor"`
-
-	// Project access rules
-	projectSupervisorRule         = `supervisor.id = @request.auth.id`
-	projectParticipantRule        = `@collection.users_projects.project.id ?= id && @collection.users_projects.user.id ?= @request.auth.id`
-	projectCreateAsSupervisorRule = `@request.body.supervisor = @request.auth.id`
-
-	// Task access rules
-	taskProjectSupervisorRule  = `project.supervisor.id = @request.auth.id`
-	taskProjectParticipantRule = `@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id`
-	taskCreateInProjectRule    = `@request.body.project != "" && @collection.users_projects.project.id ?= @request.body.project && @collection.users_projects.user.id ?= @request.auth.id`
-	taskCreateAsSupervisorRule = `@request.auth.role = "supervisor" && @request.body.project != ""`
-
-	// User access rules
-	userSelfAccessRule          = `@request.auth.id = id`
-	userAdminAccessRule         = `@request.auth.role = "admin"`
-	userSharedProjectAccessRule = `@collection.users.id = @collection.users_projects.user.id && @collection.users_projects.project.id = @collection.projects.id && (@collection.projects.supervisor.id = @request.auth.id || (@collection.projects.id = @collection.users_projects.project.id && @request.auth.id = @collection.users_projects.user.id))`
-)
 
 type BasicUser struct {
 	ID        string `json:"id"`
@@ -81,7 +58,6 @@ func main() {
 	// --- Bind Serve Event Handlers ---
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
-	app.OnServe().BindFunc(configureCollectionRules)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 
 	// --- Bind Record Event Handlers ---
@@ -308,113 +284,6 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 		log.Println("Default application admin user created for development use.")
 	} else {
 		log.Println("Admin user(s) already exist; no defaults created.")
-	}
-
-	return nil
-}
-
-func configureCollectionRules(e *core.ServeEvent) error {
-	log.Println("Configuring collection API rules...")
-
-	if err := configureProjectsRules(e); err != nil {
-		return err
-	}
-	if err := configureTasksRules(e); err != nil {
-		return err
-	}
-	if err := configureUsersProjectsRules(e); err != nil {
-		return err
-	}
-	if err := configureUsersRules(e); err != nil {
-		return err
-	}
-
-	log.Println("Collection API rules configured successfully.")
-	return e.Next()
-}
-
-func configureProjectsRules(e *core.ServeEvent) error {
-	projectsCollection, err := e.App.FindCollectionByNameOrId("projects")
-	if err != nil {
-		log.Printf("Error finding 'projects' collection: %v", err)
-		return err
-	}
-
-	// Project rules
-	projectsCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s) || %s`, adminAccessRule, supervisorRoleRule, projectSupervisorRule, projectParticipantRule))
-	projectsCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s) || %s`, adminAccessRule, supervisorRoleRule, projectSupervisorRule, projectParticipantRule))
-	projectsCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, supervisorRoleRule, projectCreateAsSupervisorRule))
-	projectsCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, supervisorRoleRule, projectSupervisorRule))
-	projectsCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || (%s && %s)`, adminAccessRule, supervisorRoleRule, projectSupervisorRule))
-
-	if err := e.App.Save(projectsCollection); err != nil {
-		log.Printf("Error saving 'projects' collection rules: %v", err)
-		return err
-	}
-
-	return nil
-}
-
-func configureTasksRules(e *core.ServeEvent) error {
-	tasksCollection, err := e.App.FindCollectionByNameOrId("tasks")
-	if err != nil {
-		log.Printf("Error finding 'tasks' collection: %v", err)
-		return err
-	}
-
-	// Task rules
-	tasksCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
-	tasksCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
-	tasksCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskCreateAsSupervisorRule, taskCreateInProjectRule))
-	tasksCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s || %s`, adminAccessRule, taskProjectSupervisorRule, taskProjectParticipantRule))
-	tasksCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, taskProjectSupervisorRule))
-
-	if err := e.App.Save(tasksCollection); err != nil {
-		log.Printf("Error saving 'tasks' collection rules: %v", err)
-		return err
-	}
-
-	return nil
-}
-
-func configureUsersProjectsRules(e *core.ServeEvent) error {
-	usersProjectsCollection, err := e.App.FindCollectionByNameOrId("users_projects")
-	if err != nil {
-		log.Printf("Error finding 'users_projects' collection: %v", err)
-		return err
-	}
-
-	// Users_Projects rules
-	usersProjectsCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)`, adminAccessRule))
-	usersProjectsCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)`, adminAccessRule))
-	usersProjectsCollection.CreateRule = types.Pointer(fmt.Sprintf(`%s || (@collection.projects.id ?= @request.body.project && @collection.projects.supervisor.id ?= @request.auth.id)`, adminAccessRule))
-	usersProjectsCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id`, adminAccessRule))
-	usersProjectsCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || project.supervisor.id = @request.auth.id`, adminAccessRule))
-
-	if err := e.App.Save(usersProjectsCollection); err != nil {
-		log.Printf("Error saving 'users_projects' collection rules: %v", err)
-		return err
-	}
-
-	return nil
-}
-
-func configureUsersRules(e *core.ServeEvent) error {
-	usersCollection, err := e.App.FindCollectionByNameOrId("users")
-	if err != nil {
-		log.Printf("Error finding 'users' collection: %v", err)
-		return err
-	}
-
-	usersCollection.ListRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
-	usersCollection.ViewRule = types.Pointer(fmt.Sprintf(`%s || %s || %s || %s`, adminAccessRule, supervisorRoleRule, userSelfAccessRule, userSharedProjectAccessRule))
-	usersCollection.CreateRule = types.Pointer("") // Allow public registration
-	usersCollection.UpdateRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, userSelfAccessRule))
-	usersCollection.DeleteRule = types.Pointer(fmt.Sprintf(`%s || %s`, adminAccessRule, supervisorRoleRule))
-
-	if err := e.App.Save(usersCollection); err != nil {
-		log.Printf("Error saving 'users' collection rules: %v", err)
-		return err
 	}
 
 	return nil
