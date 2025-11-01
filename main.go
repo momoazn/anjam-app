@@ -341,14 +341,14 @@ func generateUniqueProjectCode(app core.App) (string, error) {
 }
 
 func handleTaskCreation(e *core.RecordEvent) error {
-    log.Printf("Task creation attempt by user %s for project %s", e.Record.GetString("creator"), e.Record.GetString("project"))
-    if err := setTaskDisplayID(e); err != nil {
-        log.Printf("Error setting task display ID: %v", err)
-        return err
-    }
-    setTaskDefaults(e)
-    log.Printf("Task creation successful, display_id: %s", e.Record.GetString("display_id"))
-    return e.Next()
+	log.Printf("Task creation attempt by user %s for project %s", e.Record.GetString("creator"), e.Record.GetString("project"))
+	if err := setTaskDisplayID(e); err != nil {
+		log.Printf("Error setting task display ID: %v", err)
+		return err
+	}
+	setTaskDefaults(e)
+	log.Printf("Task creation successful, display_id: %s", e.Record.GetString("display_id"))
+	return e.Next()
 }
 
 func setTaskDisplayID(e *core.RecordEvent) error {
@@ -500,7 +500,7 @@ func handleTaskAssignmentNotification(e *core.RecordEvent) error {
 	}
 
 	// Don't notify if the assignee is the same as the creator/updater
-    if e.Record.GetString("creator") == assigneeId {
+	if e.Record.GetString("creator") == assigneeId {
 		return e.Next()
 	}
 
