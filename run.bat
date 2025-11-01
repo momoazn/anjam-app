@@ -59,4 +59,5 @@ echo ==========================================
 echo.
 
 REM Pass host and port using the correct --http flag
+REM Don't set --https at all - this prevents PocketBase from trying to use HTTPS
 task-manager.exe serve --http=%SERVER_ADDR%

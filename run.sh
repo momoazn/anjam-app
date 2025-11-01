@@ -52,4 +52,5 @@ echo "=========================================="
 echo ""
 
 # Pass host and port using the correct --http flag
+# Don't set --https at all - this prevents PocketBase from trying to use HTTPS
 ./task-manager serve --http="$SERVER_ADDR"

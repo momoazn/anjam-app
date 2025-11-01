@@ -31,5 +31,6 @@ data/
 tmp/
 
 task-manager
+task-manager.exe
 
 testing/

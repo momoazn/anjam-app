@@ -11,9 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"path"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -43,19 +41,40 @@ func allowDefaultCredentials(app core.App) bool {
 	if app.IsDev() {
 		return true
 	}
+
+	// On initial run, always allow default credentials to be created
+	usersCollection, err := app.FindCollectionByNameOrId("users")
+	if err != nil {
+		// If collection doesn't exist yet, allow defaults
+		return true
+	}
+
+	totalAdmins, err := app.CountRecords(usersCollection.Id, dbx.HashExp{"role": "admin"})
+	if err != nil {
+		// On error, allow defaults (safer for first run)
+		return true
+	}
+
+	// If no admins exist, allow creation of default admin
+	if totalAdmins == 0 {
+		return true
+	}
+
+	// If admins exist and not in dev mode, check environment variable
 	return strings.EqualFold(os.Getenv("TM_ALLOW_DEFAULT_ACCOUNTS"), "true")
 }
 
 func main() {
-	app := pocketbase.NewWithConfig(pocketbase.Config{
-		DefaultDataDir: "./data",
-	})
+    app := pocketbase.NewWithConfig(pocketbase.Config{
+        DefaultDataDir: "./data",
+    })
 
-	if !allowDefaultCredentials(app) {
-		log.Println("Default credential bootstrap disabled; provision admin accounts manually or via initial setup.")
-	}
+    // Disable HTTPS enforcement by setting AppURL to http
+    // This must be done before serving to prevent HTTPS redirects
+    app.Settings().Meta.AppURL = "http://localhost"
 
 	// --- Bind Serve Event Handlers ---
+	app.OnServe().BindFunc(disableHTTPSEnforcement)
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
@@ -83,25 +102,6 @@ func main() {
 }
 
 // --- Helper Functions ---
-
-func openBrowser(serverAddr string) {
-	var cmd *exec.Cmd
-	switch runtime.GOOS {
-	case "linux":
-		cmd = exec.Command("xdg-open", serverAddr)
-	case "windows":
-		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", serverAddr)
-	case "darwin":
-		cmd = exec.Command("open", serverAddr)
-	default:
-		log.Printf("Unsupported OS %q for automatic browser opening. Please open %s manually.", runtime.GOOS, serverAddr)
-		return
-	}
-
-	if err := cmd.Start(); err != nil {
-		log.Printf("Error opening browser: %v", err)
-	}
-}
 
 func staticHandler(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error {
 	// Prevent API access through the static handler
@@ -162,6 +162,12 @@ func startApp(app *pocketbase.PocketBase) {
 			log.Fatalf("Failed to bootstrap app: %v", err)
 		}
 		serveCmd := cmd.NewServeCommand(app, false)
+		// Avoid treating the literal token "serve" as a domain arg
+		serveCmd.SetArgs(cleanServeArgs(os.Args[1:]))
+		// If user didn't pass --https, default it to empty to prevent redirects
+		if !hasFlag(os.Args[1:], "--https") {
+			_ = serveCmd.Flags().Set("https", "")
+		}
 		if err := serveCmd.Execute(); err != nil {
 			log.Fatalf("Failed to execute serve command: %v", err)
 		}
@@ -191,6 +197,92 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 }
 
 // --- Serve Event Handlers ---
+
+func disableHTTPSEnforcement(e *core.ServeEvent) error {
+    // Ensure AppURL uses http:// to disable HTTPS enforcement and secure cookies
+    currentURL := e.App.Settings().Meta.AppURL
+
+    log.Printf("Current AppURL: %s", currentURL)
+
+    // Convert any https:// to http://
+    if strings.HasPrefix(currentURL, "https://") {
+        newURL := "http://" + currentURL[8:]
+        e.App.Settings().Meta.AppURL = newURL
+        log.Printf("Converted HTTPS AppURL to HTTP: %s", newURL)
+    } else if currentURL == "" || !strings.HasPrefix(currentURL, "http://") {
+        // If AppURL is not set or invalid, set it to http://localhost
+        e.App.Settings().Meta.AppURL = "http://localhost"
+        log.Printf("Set AppURL to: http://localhost")
+    }
+
+    // If the binary was started with --http, prefer that host:port for AppURL
+    if httpHostPort := resolveHTTPHostPortFromArgs(os.Args); httpHostPort != "" {
+        // Normalize host for browsers if needed
+        host, port := splitHostPort(httpHostPort)
+        if host == "0.0.0.0" || host == "::" || host == "" || host == "*" {
+            host = "localhost"
+        }
+        e.App.Settings().Meta.AppURL = fmt.Sprintf("http://%s:%s", host, port)
+    }
+
+    log.Println("✓ HTTPS enforcement disabled - HTTP connections are allowed")
+    log.Printf("✓ AppURL is now: %s", e.App.Settings().Meta.AppURL)
+
+    return e.Next()
+}
+
+// resolveHTTPHostPortFromArgs extracts the value passed to --http
+// Supports both "--http=host:port" and "--http", "host:port" forms.
+func resolveHTTPHostPortFromArgs(args []string) string {
+    for i := 0; i < len(args); i++ {
+        a := args[i]
+        if strings.HasPrefix(a, "--http=") {
+            v := strings.TrimPrefix(a, "--http=")
+            if v != "" {
+                return v
+            }
+        }
+        if a == "--http" && i+1 < len(args) {
+            v := args[i+1]
+            if v != "" && !strings.HasPrefix(v, "--") {
+                return v
+            }
+        }
+    }
+    return ""
+}
+
+func splitHostPort(hostport string) (string, string) {
+    // Very small helper; assumes IPv4 host:port input used by our launcher
+    if hp := strings.TrimSpace(hostport); hp != "" {
+        if idx := strings.LastIndex(hp, ":"); idx != -1 && idx < len(hp)-1 {
+            return hp[:idx], hp[idx+1:]
+        }
+    }
+    return hostport, "80"
+}
+
+// cleanServeArgs removes the literal subcommand token "serve" so the
+// ServeCommand doesn't treat it as a positional domain argument.
+func cleanServeArgs(args []string) []string {
+    cleaned := make([]string, 0, len(args))
+    for _, a := range args {
+        if a == "serve" {
+            continue
+        }
+        cleaned = append(cleaned, a)
+    }
+    return cleaned
+}
+
+func hasFlag(args []string, name string) bool {
+    for _, a := range args {
+        if strings.HasPrefix(a, name) { // matches --https or --https=
+            return true
+        }
+    }
+    return false
+}
 
 func importSchema(e *core.ServeEvent) error {
 	if len(schemaJSON) == 0 {
@@ -244,7 +336,7 @@ func ensurePocketBaseSuperuser(e *core.ServeEvent) error {
 			return err
 		}
 
-		log.Println("Default PocketBase superuser created for development use.")
+		log.Println("Default PocketBase superuser created (email: admin@example.com, password: admin12345)")
 	} else {
 		log.Println("PocketBase superuser(s) already exist; no defaults created.")
 	}
@@ -281,7 +373,7 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 			return err
 		}
 
-		log.Println("Default application admin user created for development use.")
+		log.Println("Default application admin user created (username: admin, password: admin12345)")
 	} else {
 		log.Println("Admin user(s) already exist; no defaults created.")
 	}
