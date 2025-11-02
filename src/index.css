@@ -1,6 +1,27 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@layer base {
+  button,
+  [type="button"],
+  [type="reset"],
+  [type="submit"],
+  [role="button"],
+  a {
+    @apply cursor-pointer;
+  }
+
+  button:disabled,
+  [type="button"]:disabled,
+  [type="reset"]:disabled,
+  [type="submit"]:disabled,
+  [role="button"][aria-disabled="true"],
+  a[aria-disabled="true"],
+  a[disabled] {
+    @apply cursor-not-allowed;
+  }
+}
+
 @font-face {
   font-family: "Vazirmatn";
   src: url("/Vazirmatn-VariableFont_wght.ttf") format("truetype");
