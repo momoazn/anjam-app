@@ -442,7 +442,7 @@ export default function Reports() {
                       <TooltipTrigger asChild>
                         <button
                           aria-label={"راهنمای نمودار زمان‌بندی"}
-                          className="text-muted-foreground hover:text-foreground"
+                          className="text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                           <Info className="h-4 w-4" />
                         </button>
@@ -499,7 +499,7 @@ export default function Reports() {
                       <TooltipTrigger asChild>
                         <button
                           aria-label={"راهنمای نمودار اولویت‌ها"}
-                          className="text-muted-foreground hover:text-foreground"
+                          className="text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                           <Info className="h-4 w-4" />
                         </button>
