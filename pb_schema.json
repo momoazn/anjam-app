@@ -1112,6 +1112,47 @@
         "required": false,
         "system": false,
         "type": "relation"
+      },
+      {
+        "convertUrls": false,
+        "hidden": false,
+        "id": "editor1234567890",
+        "maxSize": 0,
+        "name": "description",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "editor"
+      },
+      {
+        "hidden": false,
+        "id": "file9876543210",
+        "maxSelect": 99,
+        "maxSize": 52428800,
+        "mimeTypes": [
+          "application/pdf",
+          "image/*",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "text/*",
+          "text/csv",
+          "application/csv",
+          "text/plain",
+          "application/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "name": "assets",
+        "presentable": false,
+        "protected": true,
+        "required": false,
+        "system": false,
+        "thumbs": ["100x100"],
+        "type": "file"
       }
     ],
     "indexes": [],

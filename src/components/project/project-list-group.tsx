@@ -1,4 +1,4 @@
-import { Edit, Target, Trash, Users } from "lucide-react";
+import { Edit, Target, Trash, Users, FileText } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -63,7 +63,8 @@ export function ProjectListGroup({
           return (
             <Card
               key={project.id}
-              className="transition-shadow hover:shadow-md"
+              className="cursor-pointer transition-shadow hover:shadow-md"
+              onClick={() => navigate(`/projects/${project.id}/details`)}
             >
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center justify-between">
@@ -74,7 +75,10 @@ export function ProjectListGroup({
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={() => onEdit(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(project);
+                        }}
                       >
                         <Edit className="h-3 w-3" />
                       </Button>
@@ -82,7 +86,10 @@ export function ProjectListGroup({
                         variant="ghost"
                         size="icon"
                         className="text-destructive h-6 w-6"
-                        onClick={() => handleDelete(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(project);
+                        }}
                       >
                         <Trash className="h-3 w-3" />
                       </Button>
@@ -118,7 +125,22 @@ export function ProjectListGroup({
                     variant="outline"
                     size="sm"
                     className="flex-1"
-                    onClick={() => navigate(`/projects/${project.id}/tasks`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/projects/${project.id}/details`);
+                    }}
+                  >
+                    <FileText className="mr-2 h-3 w-3" />
+                    {fa.projects.details.viewDetails}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/projects/${project.id}/tasks`);
+                    }}
                   >
                     <Target className="mr-2 h-3 w-3" />
                     {fa.project.tasks}
@@ -127,7 +149,10 @@ export function ProjectListGroup({
                     variant="outline"
                     size="sm"
                     className="flex-1"
-                    onClick={() => navigate(`/projects/${project.id}/users`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/projects/${project.id}/users`);
+                    }}
                   >
                     <Users className="mr-2 h-3 w-3" />
                     {fa.project.users}

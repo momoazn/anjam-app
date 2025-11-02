@@ -27,6 +27,11 @@ const Projects = React.lazy(() =>
     default: () => <div>{fa.errors.pageLoad.projects}</div>,
   })),
 );
+const ProjectDetails = React.lazy(() =>
+  import("@/pages/project-details").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.projects}</div>,
+  })),
+);
 const Tasks = React.lazy(() =>
   import("@/pages/tasks").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.tasks}</div>,
@@ -144,6 +149,12 @@ const routes: RouteType[] = [
     element: <Projects />,
     protected: true,
     title: fa.navigation.projects,
+  },
+  {
+    path: "/projects/:id/details",
+    element: <ProjectDetails />,
+    protected: true,
+    title: fa.projects.details.title,
   },
   {
     path: "/login",

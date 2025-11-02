@@ -2,6 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { ClientResponseError } from "pocketbase";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,15 +17,18 @@ import {
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
-import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
 import { ProjectFields } from "@/components/forms/project-fields";
 import { Loader2 } from "lucide-react";
+import { pb } from "@/lib/pocketbase";
+import { FileWithPreview } from "@/hooks/use-file-upload";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
   code: z.string().length(3, {
     message: fa.projects.create.form.codeLength,
   }),
+  description: z.string().optional(),
+  assets: z.array(z.any()).optional(),
 });
 
 type EditProjectDialogProps = {
@@ -36,11 +42,15 @@ export function EditProjectDialog({
   onOpenChange,
   project,
 }: EditProjectDialogProps) {
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
       name: "",
       code: "",
+      description: "",
+      assets: [],
     },
   });
 
@@ -49,24 +59,71 @@ export function EditProjectDialog({
       form.reset({
         name: project.name,
         code: project.code,
+        // Convert HTML breaks back to newlines for textarea
+        description: (project.description || "").replace(/<br>/g, "\n"),
+        assets: [],
       });
     }
   }, [form, project]);
 
-  const { mutate: updateProject, isPending } = useEntityUpdateMutation({
-    collection: "projects",
-    successMessage: fa.projects.edit.success,
-    errorMessage: fa.projects.edit.error,
-    invalidateQueries: ["projects"],
+  const { mutate: updateProject, isPending } = useMutation({
+    mutationFn: async (data: z.infer<typeof projectFormSchema>) => {
+      if (!project) throw new Error("Project not found");
+
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("code", data.code.toUpperCase());
+
+      if (data.description !== undefined) {
+        // Convert line breaks to HTML
+        const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
+        formData.append("description", descriptionWithBreaks);
+      }
+
+      // Handle new file uploads
+      if (data.assets && data.assets.length > 0) {
+        data.assets.forEach((file: FileWithPreview) => {
+          formData.append("assets", file);
+        });
+      }
+
+      return pb.collection("projects").update(project.id, formData);
+    },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      toast.success(fa.projects.edit.success);
       form.reset();
       onOpenChange(false);
+    },
+    onError: (error: Error) => {
+      // Parse PocketBase validation errors
+      let errorMessage = error.message;
+
+      if (error instanceof ClientResponseError && error.data?.data) {
+        const validationErrors = error.data.data as Record<
+          string,
+          { code: string; message: string }
+        >;
+        const errorMessages: string[] = [];
+
+        Object.keys(validationErrors).forEach((field) => {
+          const fieldError = validationErrors[field];
+          if (fieldError.message) {
+            errorMessages.push(fieldError.message);
+          }
+        });
+
+        if (errorMessages.length > 0) {
+          errorMessage = errorMessages.join(" | ");
+        }
+      }
+
+      toast.error(fa.projects.edit.error.replace("{error}", errorMessage));
     },
   });
 
   function onSubmit(values: z.infer<typeof projectFormSchema>) {
-    if (!project) return;
-    updateProject({ id: project.id, updates: values });
+    updateProject(values);
   }
 
   return (

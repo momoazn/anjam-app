@@ -1,7 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ClientResponseError } from "pocketbase";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import { ProjectFields } from "@/components/forms/project-fields";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,8 +17,8 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
-import { useEntityMutation } from "@/hooks/use-entity-mutation";
-import { ProjectFields } from "@/components/forms/project-fields";
+import { FileWithPreview } from "@/hooks/use-file-upload";
+import { pb } from "@/lib/pocketbase";
 import { useAuthUser } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 
@@ -23,6 +27,8 @@ const projectFormSchema = z.object({
   code: z.string().length(3, {
     message: fa.projects.create.form.codeLength,
   }),
+  description: z.string().optional(),
+  assets: z.array(z.any()).optional(),
 });
 
 type CreateProjectDialogProps = {
@@ -35,31 +41,74 @@ export function CreateProjectDialog({
   onOpenChange,
 }: CreateProjectDialogProps) {
   const user = useAuthUser();
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
       name: "",
       code: "",
+      description: "",
+      assets: [],
     },
   });
 
-  const { mutate: createProject, isPending } = useEntityMutation({
-    collection: "projects",
-    successMessage: fa.projects.create.success,
-    errorMessage: fa.projects.create.error,
-    invalidateQueries: ["projects"],
+  const { mutate: createProject, isPending } = useMutation({
+    mutationFn: async (data: z.infer<typeof projectFormSchema>) => {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("code", data.code.toUpperCase());
+      formData.append("supervisor", user?.id || "");
+
+      if (data.description) {
+        // Convert line breaks to HTML
+        const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
+        formData.append("description", descriptionWithBreaks);
+      }
+
+      if (data.assets && data.assets.length > 0) {
+        data.assets.forEach((file: FileWithPreview) => {
+          formData.append("assets", file);
+        });
+      }
+
+      return pb.collection("projects").create(formData);
+    },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      toast.success(fa.projects.create.success);
       form.reset();
       onOpenChange(false);
+    },
+    onError: (error: Error) => {
+      // Parse PocketBase validation errors
+      let errorMessage = error.message;
+
+      if (error instanceof ClientResponseError && error.data?.data) {
+        const validationErrors = error.data.data as Record<
+          string,
+          { code: string; message: string }
+        >;
+        const errorMessages: string[] = [];
+
+        Object.keys(validationErrors).forEach((field) => {
+          const fieldError = validationErrors[field];
+          if (fieldError.message) {
+            errorMessages.push(fieldError.message);
+          }
+        });
+
+        if (errorMessages.length > 0) {
+          errorMessage = errorMessages.join(" | ");
+        }
+      }
+
+      toast.error(fa.projects.create.error.replace("{error}", errorMessage));
     },
   });
 
   function onSubmit(values: z.infer<typeof projectFormSchema>) {
-    createProject({
-      ...values,
-      code: values.code.toUpperCase(),
-      supervisor: user?.id,
-    });
+    createProject(values);
   }
 
   return (
