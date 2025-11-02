@@ -65,16 +65,11 @@ func allowDefaultCredentials(app core.App) bool {
 }
 
 func main() {
-    app := pocketbase.NewWithConfig(pocketbase.Config{
-        DefaultDataDir: "./data",
-    })
-
-    // Disable HTTPS enforcement by setting AppURL to http
-    // This must be done before serving to prevent HTTPS redirects
-    app.Settings().Meta.AppURL = "http://localhost"
+	app := pocketbase.NewWithConfig(pocketbase.Config{
+		DefaultDataDir: "./data",
+	})
 
 	// --- Bind Serve Event Handlers ---
-	app.OnServe().BindFunc(disableHTTPSEnforcement)
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
@@ -198,90 +193,26 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 
 // --- Serve Event Handlers ---
 
-func disableHTTPSEnforcement(e *core.ServeEvent) error {
-    // Ensure AppURL uses http:// to disable HTTPS enforcement and secure cookies
-    currentURL := e.App.Settings().Meta.AppURL
-
-    log.Printf("Current AppURL: %s", currentURL)
-
-    // Convert any https:// to http://
-    if strings.HasPrefix(currentURL, "https://") {
-        newURL := "http://" + currentURL[8:]
-        e.App.Settings().Meta.AppURL = newURL
-        log.Printf("Converted HTTPS AppURL to HTTP: %s", newURL)
-    } else if currentURL == "" || !strings.HasPrefix(currentURL, "http://") {
-        // If AppURL is not set or invalid, set it to http://localhost
-        e.App.Settings().Meta.AppURL = "http://localhost"
-        log.Printf("Set AppURL to: http://localhost")
-    }
-
-    // If the binary was started with --http, prefer that host:port for AppURL
-    if httpHostPort := resolveHTTPHostPortFromArgs(os.Args); httpHostPort != "" {
-        // Normalize host for browsers if needed
-        host, port := splitHostPort(httpHostPort)
-        if host == "0.0.0.0" || host == "::" || host == "" || host == "*" {
-            host = "localhost"
-        }
-        e.App.Settings().Meta.AppURL = fmt.Sprintf("http://%s:%s", host, port)
-    }
-
-    log.Println("✓ HTTPS enforcement disabled - HTTP connections are allowed")
-    log.Printf("✓ AppURL is now: %s", e.App.Settings().Meta.AppURL)
-
-    return e.Next()
-}
-
-// resolveHTTPHostPortFromArgs extracts the value passed to --http
-// Supports both "--http=host:port" and "--http", "host:port" forms.
-func resolveHTTPHostPortFromArgs(args []string) string {
-    for i := 0; i < len(args); i++ {
-        a := args[i]
-        if strings.HasPrefix(a, "--http=") {
-            v := strings.TrimPrefix(a, "--http=")
-            if v != "" {
-                return v
-            }
-        }
-        if a == "--http" && i+1 < len(args) {
-            v := args[i+1]
-            if v != "" && !strings.HasPrefix(v, "--") {
-                return v
-            }
-        }
-    }
-    return ""
-}
-
-func splitHostPort(hostport string) (string, string) {
-    // Very small helper; assumes IPv4 host:port input used by our launcher
-    if hp := strings.TrimSpace(hostport); hp != "" {
-        if idx := strings.LastIndex(hp, ":"); idx != -1 && idx < len(hp)-1 {
-            return hp[:idx], hp[idx+1:]
-        }
-    }
-    return hostport, "80"
-}
-
 // cleanServeArgs removes the literal subcommand token "serve" so the
 // ServeCommand doesn't treat it as a positional domain argument.
 func cleanServeArgs(args []string) []string {
-    cleaned := make([]string, 0, len(args))
-    for _, a := range args {
-        if a == "serve" {
-            continue
-        }
-        cleaned = append(cleaned, a)
-    }
-    return cleaned
+	cleaned := make([]string, 0, len(args))
+	for _, a := range args {
+		if a == "serve" {
+			continue
+		}
+		cleaned = append(cleaned, a)
+	}
+	return cleaned
 }
 
 func hasFlag(args []string, name string) bool {
-    for _, a := range args {
-        if strings.HasPrefix(a, name) { // matches --https or --https=
-            return true
-        }
-    }
-    return false
+	for _, a := range args {
+		if strings.HasPrefix(a, name) { // matches --https or --https=
+			return true
+		}
+	}
+	return false
 }
 
 func importSchema(e *core.ServeEvent) error {
@@ -622,7 +553,7 @@ func handleTaskUpdateNotification(e *core.RecordEvent) error {
 	newStatus := e.Record.GetString("status")
 
 	if oldStatus == newStatus {
-		return e.Next() // No status change
+		return e.Next()
 	}
 
 	assigneeId := e.Record.GetString("assignee")
