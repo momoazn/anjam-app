@@ -108,7 +108,7 @@ export function ProjectsSubmenu() {
                               e.stopPropagation();
                               toggleStar(project.id);
                             }}
-                            className="ml-auto opacity-50 transition-opacity hover:opacity-100"
+                            className="ml-auto cursor-pointer opacity-50 transition-opacity hover:opacity-100"
                           >
                             <IconStarFilled className="h-3 w-3 text-yellow-500" />
                           </button>

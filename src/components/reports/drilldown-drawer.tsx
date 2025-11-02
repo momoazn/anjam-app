@@ -62,7 +62,7 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
           <DrawerTitle>{title}</DrawerTitle>
           <button
             onClick={() => onOpenChange(false)}
-            className="ring-offset-background focus:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            className="ring-offset-background focus:ring-ring cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
           >
             <X className="h-4 w-4" />
           </button>
