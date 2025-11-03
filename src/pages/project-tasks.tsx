@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,7 +21,7 @@ import { FilterX, FolderOpen, Plus } from "lucide-react";
 
 // Loading skeleton component for project tasks
 const ProjectTaskListSkeleton = () => (
-  <div className="space-y-4">
+  <div className="space-y-4" data-animate-stagger>
     {statusOrder?.map((status) => (
       <Card key={status} className="overflow-hidden">
         <div className="bg-muted/30 flex items-center justify-between border-b px-4 py-2">
@@ -31,7 +32,7 @@ const ProjectTaskListSkeleton = () => (
           </div>
           <Skeleton className="h-6 w-6 rounded" />
         </div>
-        <div className="space-y-2 p-2">
+        <div className="space-y-2 p-2" data-animate-stagger>
           {[1, 2].map((i) => (
             <div
               key={i}
@@ -74,7 +75,10 @@ const ProjectEmptyState = ({
   if (hasFilters) {
     return (
       <Card className="border-dashed">
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+        <CardContent
+          className="flex flex-col items-center justify-center py-12 text-center"
+          data-animate-stagger
+        >
           <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="mb-2 text-lg font-semibold">
             {fa.tasks.emptyState.noTasksInProject}
@@ -92,8 +96,11 @@ const ProjectEmptyState = ({
 
   return (
     <Card className="border-dashed">
-      <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+      <CardContent
+        className="flex flex-col items-center justify-center py-12 text-center"
+        data-animate-stagger
+      >
+        <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full" data-interactive-pulse>
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">
@@ -164,9 +171,9 @@ export default function ProjectTasks() {
   const totalTasks = filteredTasks?.length || 0;
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <PageTransition className="container mx-auto px-4 py-6">
       {/* Header Section */}
-      <div className="mb-6">
+      <div className="mb-6" data-animate-stagger>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2">
@@ -194,7 +201,7 @@ export default function ProjectTasks() {
       </div>
 
       {/* Search and Filter Controls */}
-      <div className="mb-6">
+      <div className="mb-6" data-animate-stagger>
         <TaskFilters
           searchTerm={searchTerm}
           selectedStatus={selectedStatus}
@@ -214,7 +221,7 @@ export default function ProjectTasks() {
       </div>
 
       {/* Task List */}
-      <div className="space-y-4">
+      <div className="space-y-4" data-animate-stagger>
         {isLoadingTasks ? (
           <ProjectTaskListSkeleton />
         ) : !filteredTasks || filteredTasks.length === 0 ? (
@@ -238,6 +245,6 @@ export default function ProjectTasks() {
           })
         )}
       </div>
-    </div>
+    </PageTransition>
   );
 }

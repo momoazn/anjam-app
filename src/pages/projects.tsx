@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CreateProjectDialog } from "@/components/project/create-project-dialog";
 import { EditProjectDialog } from "@/components/project/edit-project-dialog";
 import { ProjectListGroup } from "@/components/project/project-list-group";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { fa } from "@/constants/text";
 import { ProjectsResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
@@ -34,7 +35,7 @@ export default function Projects() {
 
   return (
     <>
-      <div className="container mx-auto p-4 md:p-6">
+      <PageTransition className="container mx-auto p-4 md:p-6">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
@@ -69,7 +70,7 @@ export default function Projects() {
             canEditDelete={isAdmin || isSupervisor}
           />
         )}
-      </div>
+      </PageTransition>
 
       <CreateProjectDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
       <EditProjectDialog

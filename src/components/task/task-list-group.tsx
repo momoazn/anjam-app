@@ -39,10 +39,11 @@ export function TaskListGroup({
   };
 
   return (
-    <section className="transition-colors duration-200">
+    <section className="transition-colors duration-200" data-animate-stagger>
       <TaskListHeader taskCount={taskCount} status={status} />
       <div
         className={cn("mt-2 min-h-[30px] space-y-1 rounded-md pe-1")}
+        data-animate-stagger
         role="list"
       >
         {tasks?.length > 0 ? (

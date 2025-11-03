@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fa } from "@/constants/text";
@@ -50,11 +51,19 @@ export default function Login() {
 
   return (
     <div className="bg-background flex min-h-screen items-center justify-center">
-      <div className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow">
+      <PageTransition
+        className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow"
+        disableStagger
+      >
         <h2 className="text-foreground text-center text-3xl font-bold">
           {fa.auth.login.title}
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          noValidate
+          data-animate-stagger
+        >
           <div>
             <Label className="text-foreground block text-sm font-medium">
               {fa.auth.login.username}
@@ -123,7 +132,7 @@ export default function Login() {
             {fa.auth.login.registerButton}
           </Button>
         </form>
-      </div>
+      </PageTransition>
     </div>
   );
 }

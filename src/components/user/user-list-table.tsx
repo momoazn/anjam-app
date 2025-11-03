@@ -27,7 +27,7 @@ export function UserListTable({
   isAdmin,
 }: UserListTableProps) {
   return (
-    <Table>
+    <Table data-animate-stagger>
       <TableHeader>
         <TableRow>
           <TableHead className="text-right">
@@ -46,9 +46,9 @@ export function UserListTable({
           )}
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody data-animate-stagger>
         {users.map((user) => (
-          <TableRow key={user.id}>
+          <TableRow key={user.id} data-interactive-item>
             <TableCell className="flex text-right">
               <div className="flex items-center justify-end gap-2 self-start">
                 <UserAvatar user={user} />
