@@ -27,6 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
 import { FileWithPreview } from "@/hooks/use-file-upload";
+import { queryKeys } from "@/hooks";
 import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 import { TasksResponse } from "@/lib/pocketbase-types";
 import { getUserInitials } from "@/lib/utils";
@@ -46,7 +47,7 @@ export default function ProjectDetails() {
   const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
 
   const { data: project, isLoading: projectLoading } = useQuery({
-    queryKey: ["projects", id],
+    queryKey: queryKeys.projects.detail(id ?? ""),
     queryFn: async () => {
       if (!id) throw new Error("Project ID is required");
       return pb.collection("projects").getOne<ProjectWithSupervisor>(id, {
@@ -103,8 +104,12 @@ export default function ProjectDetails() {
       return pb.collection("projects").update(id, formData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projects", id] });
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      if (id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.projects.detail(id),
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
       toast.success(fa.projects.edit.success);
       setIsEditing(false);
       setNewFiles([]);

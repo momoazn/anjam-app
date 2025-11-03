@@ -21,7 +21,7 @@ import { queryKeys } from "./query-keys";
 export function useAppData() {
   // Fetch all projects
   const projectsQuery = useQuery({
-    queryKey: queryKeys.projects.lists(),
+    queryKey: queryKeys.projects.list({ batch: 100, sort: "-created" }),
     queryFn: () =>
       pb.collection("projects").getFullList<ProjectsResponse>({
         batch: 100,
