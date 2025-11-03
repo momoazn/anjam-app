@@ -65,6 +65,7 @@ const TimelinessDonut = lazy(() =>
   })),
 );
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageTransition } from "@/components/page-transition";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
@@ -338,12 +339,12 @@ export default function Reports() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto space-y-6 p-4 md:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <PageTransition className="container mx-auto space-y-6 p-4 md:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" data-animate-stagger>
           <Skeleton className="h-8 w-48" />
         </div>
         <Skeleton className="h-16 w-full" />
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-5" data-animate-stagger>
           {[...Array(5)].map((_, i) => (
             <Card key={i}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -356,7 +357,7 @@ export default function Reports() {
             </Card>
           ))}
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2" data-animate-stagger>
           {[...Array(4)].map((_, i) => (
             <Card key={i}>
               <CardHeader className="pb-4">
@@ -368,7 +369,7 @@ export default function Reports() {
             </Card>
           ))}
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
@@ -389,7 +390,7 @@ export default function Reports() {
   const hasPriority = (totalPriority || 0) > 0;
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
@@ -402,7 +403,7 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="mb-8" aria-label="فیلترها">
+      <div className="mb-8" aria-label="فیلترها" data-animate-stagger>
         <FiltersBar
           value={filtersState}
           onChange={setFiltersState}
@@ -412,7 +413,7 @@ export default function Reports() {
       </div>
 
       {overviewMetrics && (
-        <div className="mb-6">
+        <div className="mb-6" data-animate-stagger>
           <MetricCards totals={overviewMetrics} />
         </div>
       )}
@@ -429,8 +430,8 @@ export default function Reports() {
         </TabsList>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <TabsContent value="overview" className="space-y-6" data-animate-stagger>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2" data-animate-stagger>
             <Card role="region" aria-label={fa.reports.charts.timeliness.title}>
               <CardHeader className="pb-4 text-right">
                 <div className="flex items-center gap-2">
@@ -639,7 +640,7 @@ export default function Reports() {
           </div>
 
           {selectedEmployeeSummary && productivityTrends && (
-            <div>
+            <div data-animate-stagger>
               <div className="mb-2 text-right">
                 <h3 className="text-lg font-semibold md:text-xl">
                   {fa.reports.charts.employee.productivityTrends.title} -{" "}
@@ -686,8 +687,8 @@ export default function Reports() {
         </TabsContent>
 
         {/* Insights Tab (space for future visualizations) */}
-        <TabsContent value="insights" className="space-y-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <TabsContent value="insights" className="space-y-6" data-animate-stagger>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2" data-animate-stagger>
             <Suspense fallback={<Skeleton className="h-80 w-full" />}>
               <div dir="ltr">
                 <OvertimeAnalysisChart data={overtimeAnalysis} />
@@ -710,6 +711,6 @@ export default function Reports() {
           title={drilldown?.title || ""}
         />
       </Suspense>
-    </div>
+    </PageTransition>
   );
 }

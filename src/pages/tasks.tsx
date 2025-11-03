@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { CreateTaskDialog } from "@/components/task/create-task-dialog";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,7 +18,7 @@ import { statusOrder } from "@/lib/tasks-utils";
 
 // Loading skeleton component
 const TaskListSkeleton = () => (
-  <div className="space-y-4">
+  <div className="space-y-4" data-animate-stagger>
     {statusOrder?.map((status) => (
       <Card key={status} className="overflow-hidden">
         <div className="bg-muted/30 flex items-center justify-between border-b px-4 py-2">
@@ -28,7 +29,7 @@ const TaskListSkeleton = () => (
           </div>
           <Skeleton className="h-6 w-6 rounded" />
         </div>
-        <div className="space-y-2 p-2">
+        <div className="space-y-2 p-2" data-animate-stagger>
           {[1, 2].map((i) => (
             <div
               key={i}
@@ -65,7 +66,10 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
   if (hasFilters) {
     return (
       <Card className="border-dashed">
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+        <CardContent
+          className="flex flex-col items-center justify-center py-12 text-center"
+          data-animate-stagger
+        >
           <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="mb-2 text-lg font-semibold">
             {fa.tasks.emptyState.noTasksFound}
@@ -80,8 +84,11 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
 
   return (
     <Card className="border-dashed">
-      <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+      <CardContent
+        className="flex flex-col items-center justify-center py-12 text-center"
+        data-animate-stagger
+      >
+        <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full" data-interactive-pulse>
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">
@@ -156,7 +163,7 @@ export default function Tasks() {
   const totalTasks = filteredTasks?.length || 0;
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       {/* Header Section */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -182,7 +189,7 @@ export default function Tasks() {
       </div>
 
       {/* Search and Filter Controls */}
-      <div className="mb-8">
+      <div className="mb-8" data-animate-stagger>
         <TaskFilters
           searchTerm={searchTerm}
           selectedStatus={selectedStatus}
@@ -202,7 +209,7 @@ export default function Tasks() {
       </div>
 
       {/* Task List */}
-      <div className="space-y-6">
+      <div className="space-y-6" data-animate-stagger>
         {isLoadingTasks ? (
           <TaskListSkeleton />
         ) : !filteredTasks || filteredTasks.length === 0 ? (
@@ -222,6 +229,6 @@ export default function Tasks() {
           })
         )}
       </div>
-    </div>
+    </PageTransition>
   );
 }

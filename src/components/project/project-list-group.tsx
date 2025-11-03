@@ -57,7 +57,10 @@ export function ProjectListGroup({
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div
+        className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+        data-animate-stagger
+      >
         {projects.map((project) => {
           const progress = getProjectProgress(project.id);
           return (

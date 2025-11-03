@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/page-transition";
 import {
   Dialog,
   DialogContent,
@@ -110,8 +111,8 @@ export default function ProjectUsers() {
   );
 
   return (
-    <div className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
-      <div className="flex items-center justify-between">
+    <PageTransition className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
+      <div className="flex items-center justify-between" data-animate-stagger>
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold">{fa.projects.users.title}</h1>
           {projectUsers && (
@@ -156,8 +157,8 @@ export default function ProjectUsers() {
         )}
       </div>
 
-      <div className="rounded-md border">
-        <Table dir="rtl">
+      <div className="rounded-md border" data-animate-stagger>
+        <Table dir="rtl" data-animate-stagger>
           <TableHeader>
             <TableRow>
               <TableHead className="text-right">
@@ -173,8 +174,8 @@ export default function ProjectUsers() {
               )}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            <TableRow>
+          <TableBody data-animate-stagger>
+            <TableRow data-interactive-item>
               <TableCell className="flex">
                 <div className="flex items-center justify-end gap-2 self-start">
                   <UserAvatar user={project?.expand?.supervisor} />
@@ -186,7 +187,7 @@ export default function ProjectUsers() {
               </TableCell>
             </TableRow>
             {projectUsers?.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id} data-interactive-item>
                 <TableCell className="flex">
                   <div className="flex items-center justify-end gap-2 self-start">
                     <UserAvatar user={user} />
@@ -218,6 +219,6 @@ export default function ProjectUsers() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </PageTransition>
   );
 }

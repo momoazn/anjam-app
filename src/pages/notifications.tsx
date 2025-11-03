@@ -15,6 +15,7 @@ import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PageTransition } from "@/components/page-transition";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -93,6 +94,7 @@ function NotificationItem({
         "group hover:bg-muted/50 flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors",
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
       )}
+      data-interactive-item
     >
       {/* Actions - Left side */}
       <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
@@ -160,8 +162,14 @@ function NotificationItem({
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+    <div
+      className="flex flex-col items-center justify-center py-12 text-center"
+      data-animate-stagger
+    >
+      <div
+        className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+        data-interactive-pulse
+      >
         <IconBellOff className="text-muted-foreground/50 h-8 w-8" />
       </div>
       <h3 className="text-foreground mb-2 text-lg font-semibold">
@@ -254,7 +262,7 @@ export default function Notifications() {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-right">
@@ -332,7 +340,10 @@ export default function Notifications() {
       </div>
 
       {/* Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div
+        className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4"
+        data-animate-stagger
+      >
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -396,7 +407,10 @@ export default function Notifications() {
       </div>
 
       {/* Filters and Sort */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div
+        className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        data-animate-stagger
+      >
         <Tabs
           value={filter}
           onValueChange={(value) => setFilter(value as FilterType)}
@@ -434,8 +448,14 @@ export default function Notifications() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+        <div
+          className="flex flex-col items-center justify-center py-12 text-center"
+          data-animate-stagger
+        >
+          <div
+            className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+            data-interactive-pulse
+          >
             <IconBell className="text-muted-foreground/50 h-8 w-8 animate-pulse" />
           </div>
           <h3 className="text-foreground mb-2 text-lg font-semibold">
@@ -449,7 +469,10 @@ export default function Notifications() {
 
       {/* Error State */}
       {error && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
+        <div
+          className="flex flex-col items-center justify-center py-12 text-center"
+          data-animate-stagger
+        >
           <div className="bg-destructive/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
             <IconBell className="text-destructive h-8 w-8" />
           </div>
@@ -467,7 +490,7 @@ export default function Notifications() {
         <EmptyState />
       ) : !isLoading && !error ? (
         <ScrollArea className="h-[600px]">
-          <div className="space-y-6">
+          <div className="space-y-6" data-animate-stagger>
             {Object.entries(groupedNotifications).map(
               ([group, groupNotifications]) => {
                 if (groupNotifications.length === 0) return null;
@@ -477,7 +500,7 @@ export default function Notifications() {
                     <h3 className="text-foreground mb-3 text-right text-sm font-semibold">
                       {getGroupTitle(group)}
                     </h3>
-                    <div className="space-y-2">
+                    <div className="space-y-2" data-animate-stagger>
                       {groupNotifications.map((notification) => (
                         <NotificationItem
                           key={notification.id}
@@ -494,6 +517,6 @@ export default function Notifications() {
           </div>
         </ScrollArea>
       ) : null}
-    </div>
+    </PageTransition>
   );
 }

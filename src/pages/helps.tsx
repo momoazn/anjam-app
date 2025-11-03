@@ -4,13 +4,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { PageTransition } from "@/components/page-transition";
 import { Separator } from "@/components/ui/separator";
 import { fa } from "@/constants/text";
 import { HelpCircle } from "lucide-react";
 
 export default function Helps() {
   return (
-    <div className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
@@ -21,13 +22,18 @@ export default function Helps() {
         </div>
       </div>
       <Separator className="mb-6" />
-      <Accordion type="single" collapsible className="w-full space-y-4">
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full space-y-4"
+        data-animate-stagger
+      >
         {/* Getting Started Section */}
         <AccordionItem value="getting-started">
           <AccordionTrigger className="text-lg md:text-xl">
             {fa.helps.content.gettingStarted.title}
           </AccordionTrigger>
-          <AccordionContent className="space-y-4 p-4">
+          <AccordionContent className="space-y-4 p-4" data-animate-stagger>
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
                 {fa.helps.content.gettingStarted.steps.title}
@@ -76,8 +82,8 @@ export default function Helps() {
               <h3 className="mb-2 text-base font-semibold md:text-lg">
                 {fa.helps.content.gettingStarted.keyboardShortcuts.title}
               </h3>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <div className="rounded border p-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" data-animate-stagger>
+                <div className="rounded border p-2" data-interactive-item>
                   <code className="text-sm">Ctrl/Cmd + K</code>
                   <span className="text-muted-foreground mr-2">
                     :{" "}
@@ -87,21 +93,21 @@ export default function Helps() {
                     }
                   </span>
                 </div>
-                <div className="rounded border p-2">
+                <div className="rounded border p-2" data-interactive-item>
                   <code className="text-sm">Ctrl/Cmd + N</code>
                   <span className="text-muted-foreground mr-2">
                     :{" "}
                     {fa.helps.content.gettingStarted.keyboardShortcuts.newTask}
                   </span>
                 </div>
-                <div className="rounded border p-2">
+                <div className="rounded border p-2" data-interactive-item>
                   <code className="text-sm">Ctrl/Cmd + P</code>
                   <span className="text-muted-foreground mr-2">
                     :{" "}
                     {fa.helps.content.gettingStarted.keyboardShortcuts.projects}
                   </span>
                 </div>
-                <div className="rounded border p-2">
+                <div className="rounded border p-2" data-interactive-item>
                   <code className="text-sm">Ctrl/Cmd + D</code>
                   <span className="text-muted-foreground mr-2">
                     :{" "}
@@ -121,7 +127,7 @@ export default function Helps() {
           <AccordionTrigger className="text-lg md:text-xl">
             {fa.helps.content.features.title}
           </AccordionTrigger>
-          <AccordionContent className="space-y-4 p-4">
+          <AccordionContent className="space-y-4 p-4" data-animate-stagger>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
                 {fa.helps.content.features.userManagement.title}
@@ -179,7 +185,7 @@ export default function Helps() {
           <AccordionTrigger className="text-lg md:text-xl">
             {fa.helps.content.roles.title}
           </AccordionTrigger>
-          <AccordionContent className="space-y-4 p-4">
+          <AccordionContent className="space-y-4 p-4" data-animate-stagger>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
                 {fa.helps.content.roles.admin.title}
@@ -497,6 +503,6 @@ export default function Helps() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </div>
+    </PageTransition>
   );
 }

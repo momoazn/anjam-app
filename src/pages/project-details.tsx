@@ -17,6 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { ProjectAssets } from "@/components/project/project-assets";
+import { PageTransition } from "@/components/page-transition";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -183,9 +184,9 @@ export default function ProjectDetails() {
 
   if (!project) {
     return (
-      <div className="container mx-auto p-6">
+      <PageTransition className="container mx-auto p-6">
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
+          <CardContent className="flex flex-col items-center justify-center py-12" data-animate-stagger>
             <Folder className="text-muted-foreground mb-4 h-12 w-12" />
             <p className="text-muted-foreground">پروژه یافت نشد</p>
             <Button
@@ -198,7 +199,7 @@ export default function ProjectDetails() {
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </PageTransition>
     );
   }
 
@@ -219,7 +220,7 @@ export default function ProjectDetails() {
   };
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <PageTransition className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -287,7 +288,7 @@ export default function ProjectDetails() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3" data-animate-stagger>
         {/* Main Content */}
         <div className="space-y-6 lg:col-span-2">
           {/* Project Information */}
@@ -300,7 +301,7 @@ export default function ProjectDetails() {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Supervisor */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3" data-animate-stagger>
                 <User className="text-muted-foreground h-5 w-5" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">
@@ -337,7 +338,7 @@ export default function ProjectDetails() {
               <Separator />
 
               {/* Dates */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4" data-animate-stagger>
                 <div className="flex items-start gap-3">
                   <Calendar className="text-muted-foreground mt-0.5 h-5 w-5" />
                   <div className="flex-1">
@@ -410,23 +411,24 @@ export default function ProjectDetails() {
                 <>
                   {/* Existing Files */}
                   {project.assets && project.assets.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">
-                        {fa.projects.files.existingFiles}
-                      </h4>
-                      <div className="grid grid-cols-1 gap-2">
-                        {project.assets
-                          .filter(
-                            (filename) => !filesToDelete.includes(filename),
-                          )
-                          .map((filename, index) => (
-                            <div
-                              key={`${filename}-${index}`}
-                              className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
-                            >
-                              <span className="flex-1 truncate text-sm">
-                                {filename}
-                              </span>
+                      <div className="space-y-2" data-animate-stagger>
+                        <h4 className="text-sm font-medium">
+                          {fa.projects.files.existingFiles}
+                        </h4>
+                        <div className="grid grid-cols-1 gap-2" data-animate-stagger>
+                          {project.assets
+                            .filter(
+                              (filename) => !filesToDelete.includes(filename),
+                            )
+                            .map((filename, index) => (
+                              <div
+                                key={`${filename}-${index}`}
+                                className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
+                                data-interactive-item
+                              >
+                                <span className="flex-1 truncate text-sm">
+                                  {filename}
+                                </span>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -443,7 +445,7 @@ export default function ProjectDetails() {
                   )}
 
                   {/* New Files Upload */}
-                  <div className="space-y-2">
+                  <div className="space-y-2" data-animate-stagger>
                     <h4 className="flex items-center gap-2 text-sm font-medium">
                       <Upload className="h-4 w-4" />
                       {fa.projects.files.addNewFiles}
@@ -463,7 +465,7 @@ export default function ProjectDetails() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-6" data-animate-stagger>
           {/* Statistics */}
           <Card>
             <CardHeader>
@@ -471,20 +473,20 @@ export default function ProjectDetails() {
             </CardHeader>
             <CardContent className="space-y-4">
               {tasksLoading ? (
-                <div className="space-y-3">
+                <div className="space-y-3" data-animate-stagger>
                   <Skeleton className="h-16 w-full" />
                   <Skeleton className="h-16 w-full" />
                   <Skeleton className="h-16 w-full" />
                 </div>
               ) : (
                 <>
-                  <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
+                  <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3" data-interactive-item>
                     <span className="text-sm font-medium">
                       {fa.projects.details.totalTasks}
                     </span>
                     <span className="text-2xl font-bold">{totalTasks}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-green-500/10 p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-green-500/10 p-3" data-interactive-item>
                     <span className="text-sm font-medium">
                       {fa.projects.details.completedTasks}
                     </span>
@@ -492,7 +494,7 @@ export default function ProjectDetails() {
                       {completedTasks}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-blue-500/10 p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-blue-500/10 p-3" data-interactive-item>
                     <span className="text-sm font-medium">
                       {fa.projects.details.inProgressTasks}
                     </span>
@@ -510,7 +512,7 @@ export default function ProjectDetails() {
             <CardHeader>
               <CardTitle>عملیات سریع</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2" data-animate-stagger>
               <Button
                 variant="outline"
                 className="w-full justify-start"
@@ -529,13 +531,13 @@ export default function ProjectDetails() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }
 
 function ProjectDetailsSkeleton() {
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <PageTransition className="container mx-auto space-y-6 p-6">
       <div className="flex items-center gap-4">
         <Skeleton className="h-10 w-10 rounded" />
         <div className="space-y-2">
@@ -544,13 +546,13 @@ function ProjectDetailsSkeleton() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3" data-animate-stagger>
+        <div className="space-y-6 lg:col-span-2" data-animate-stagger>
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-32" />
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4" data-animate-stagger>
               <Skeleton className="h-20 w-full" />
               <Skeleton className="h-20 w-full" />
             </CardContent>
@@ -564,12 +566,12 @@ function ProjectDetailsSkeleton() {
             </CardContent>
           </Card>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-6" data-animate-stagger>
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-24" />
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3" data-animate-stagger>
               <Skeleton className="h-16 w-full" />
               <Skeleton className="h-16 w-full" />
               <Skeleton className="h-16 w-full" />
@@ -577,6 +579,6 @@ function ProjectDetailsSkeleton() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

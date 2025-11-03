@@ -68,6 +68,7 @@ export function TaskListItem({
               "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-400/10",
             className,
           )}
+          data-interactive-item
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {

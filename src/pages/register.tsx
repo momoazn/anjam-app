@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -111,13 +112,16 @@ export default function Register() {
 
   return (
     <div className="bg-background flex min-h-screen items-center justify-center">
-      <div className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow">
+      <PageTransition
+        className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow"
+        disableStagger
+      >
         <h2 className="text-foreground text-center text-3xl font-bold">
           {fa.auth.register.title}
         </h2>
 
         {isInitialAdmin && (
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4" data-animate-stagger>
             <Separator />
             <p className="text-center">
               {fa.auth.register.initialAdminMessage}
@@ -126,7 +130,12 @@ export default function Register() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          noValidate
+          data-animate-stagger
+        >
           <div>
             <Label className="text-foreground block text-sm font-medium">
               {fa.auth.register.username}
@@ -224,7 +233,7 @@ export default function Register() {
             </Button>
           )}
         </form>
-      </div>
+      </PageTransition>
     </div>
   );
 }

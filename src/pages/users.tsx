@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/page-transition";
 import { CreateUserDialog } from "@/components/user/create-user-dialog";
 import { DeleteUserDialog } from "@/components/user/delete-user-dialog";
 import { EditUserDialog } from "@/components/user/edit-user-dialog";
@@ -48,7 +49,7 @@ export default function Users() {
 
   return (
     <>
-      <div className="container mx-auto p-4 md:p-6">
+      <PageTransition className="container mx-auto p-4 md:p-6">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
@@ -84,7 +85,7 @@ export default function Users() {
             isAdmin={isAdmin}
           />
         )}
-      </div>
+      </PageTransition>
 
       <CreateUserDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
       <EditUserDialog
