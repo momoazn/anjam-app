@@ -30,7 +30,7 @@ export function useProjects(
   const { enabled = true, batch = 100, sort = "-created" } = options;
 
   return useQuery({
-    queryKey: queryKeys.projects.lists(),
+    queryKey: queryKeys.projects.list({ batch, sort }),
     queryFn: () =>
       pb.collection("projects").getFullList<ProjectsResponse>({
         batch,

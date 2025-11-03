@@ -19,6 +19,7 @@ import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 
@@ -75,7 +76,7 @@ export function CreateProjectDialog({
       return pb.collection("projects").create(formData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
       toast.success(fa.projects.create.success);
       form.reset();
       onOpenChange(false);

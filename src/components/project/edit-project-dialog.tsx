@@ -21,6 +21,7 @@ import { ProjectFields } from "@/components/forms/project-fields";
 import { Loader2 } from "lucide-react";
 import { pb } from "@/lib/pocketbase";
 import { FileWithPreview } from "@/hooks/use-file-upload";
+import { queryKeys } from "@/hooks";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
@@ -90,7 +91,12 @@ export function EditProjectDialog({
       return pb.collection("projects").update(project.id, formData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      if (project) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.projects.detail(project.id),
+        });
+      }
       toast.success(fa.projects.edit.success);
       form.reset();
       onOpenChange(false);

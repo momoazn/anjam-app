@@ -65,11 +65,15 @@ export default function ProjectUsers() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["project-users", id] });
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      if (id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.projects.detail(id),
+        });
+      }
       setIsAddUserOpen(false);
       toast.success(fa.projects.users.addSuccess);
     },
@@ -91,11 +95,15 @@ export default function ProjectUsers() {
         }
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["project-users", id] });
         queryClient.invalidateQueries({
           queryKey: queryKeys.users.allProjectUsers(),
         });
-        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+        if (id) {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.projects.detail(id),
+          });
+        }
         toast.success(fa.projects.users.removeSuccess);
       },
       onError: (error) => {
