@@ -31,6 +31,7 @@ import { FileWithPreview } from "@/hooks/use-file-upload";
 import { queryKeys } from "@/hooks";
 import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 import { TasksResponse } from "@/lib/pocketbase-types";
+import { formatTimeSpent } from "@/lib/time-utils";
 import { getUserInitials } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
@@ -214,6 +215,11 @@ export default function ProjectDetails() {
     tasks?.filter((task) => task.status === "done").length || 0;
   const inProgressTasks =
     tasks?.filter((task) => task.status === "in_progress").length || 0;
+  const totalTimeSpent =
+    tasks?.reduce(
+      (sum, task) => sum + (task.time_spent_minutes || 0),
+      0,
+    ) || 0;
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -482,6 +488,7 @@ export default function ProjectDetails() {
                   <Skeleton className="h-16 w-full" />
                   <Skeleton className="h-16 w-full" />
                   <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
                 </div>
               ) : (
                 <>
@@ -505,6 +512,14 @@ export default function ProjectDetails() {
                     </span>
                     <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {inProgressTasks}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg bg-purple-500/10 p-3" data-interactive-item>
+                    <span className="text-sm font-medium">
+                      {fa.projects.details.totalTimeSpent}
+                    </span>
+                    <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                      {formatTimeSpent(totalTimeSpent)}
                     </span>
                   </div>
                 </>

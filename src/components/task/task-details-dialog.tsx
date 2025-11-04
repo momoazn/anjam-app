@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { Loader2, MessageSquare } from "lucide-react";
+import { Clock, Loader2, MessageSquare, Pencil, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { TaskFields } from "@/components/forms/task-fields";
@@ -31,6 +32,13 @@ import {
   taskStatusBadgeSolids,
   taskStatusIcons,
 } from "@/lib/tasks-utils";
+import {
+  formatTimeSpent,
+  minutesToHoursAndMinutes,
+  parseTimeInput,
+} from "@/lib/time-utils";
+import { useAuthUser } from "@/store/auth-store";
+import { Input } from "@/components/ui/input";
 import { UserAvatar } from "../user-avatar";
 import { CommentComposer } from "./comment-composer";
 import { CommentsList } from "./comments-list";
@@ -182,6 +190,63 @@ export function TaskDetailsDialog({
     { enabled: open },
   );
 
+  // Time tracking state
+  const authUser = useAuthUser();
+  const [isEditingTime, setIsEditingTime] = useState(false);
+  const currentTime = minutesToHoursAndMinutes(task.time_spent_minutes);
+  const [hours, setHours] = useState(currentTime.hours);
+  const [minutes, setMinutes] = useState(currentTime.minutes);
+
+  // Update time inputs when task changes
+  useEffect(() => {
+    const time = minutesToHoursAndMinutes(task.time_spent_minutes);
+    setHours(time.hours);
+    setMinutes(time.minutes);
+  }, [task.time_spent_minutes]);
+
+  // Check if user can edit time
+  const canEditTime =
+    authUser?.role === "admin" ||
+    authUser?.role === "supervisor" ||
+    (authUser?.id === task.assignee && authUser?.role === "employee");
+
+  // Mutation for updating time
+  const { mutate: updateTime, isPending: isUpdatingTime } =
+    useEntityUpdateMutation({
+      collection: "tasks",
+      successMessage: fa.tasks.details.timeTracking.updateSuccess,
+      errorMessage: fa.tasks.details.timeTracking.updateError,
+      invalidateQueries: ["tasks"],
+      onSuccess: () => {
+        setIsEditingTime(false);
+      },
+    });
+
+  const handleSaveTime = () => {
+    const h = Number(hours) || 0;
+    const m = Number(minutes) || 0;
+
+    if (h < 0 || m < 0 || m >= 60) {
+      toast.error(fa.tasks.details.timeTracking.invalidInput);
+      return;
+    }
+
+    const totalMinutes = parseTimeInput(h, m);
+    updateTime({
+      id: task.id,
+      updates: {
+        time_spent_minutes: totalMinutes,
+      },
+    });
+  };
+
+  const handleCancelTimeEdit = () => {
+    const time = minutesToHoursAndMinutes(task.time_spent_minutes);
+    setHours(time.hours);
+    setMinutes(time.minutes);
+    setIsEditingTime(false);
+  };
+
   const StatusIcon = taskStatusIcons[task.status];
   const PriorityIcon = priorityIcons[task.priority];
 
@@ -278,6 +343,90 @@ export function TaskDetailsDialog({
                 <span className="text-muted-foreground">شناسه نمایش:</span>{" "}
                 {task.display_id || task.id}
               </div>
+            </div>
+
+            {/* Time Tracking Section */}
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-primary" />
+                  <h3 className="font-medium">
+                    {fa.tasks.details.timeTracking.title}
+                  </h3>
+                </div>
+                {!isEditingTime && canEditTime && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setIsEditingTime(true)}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {fa.tasks.details.timeTracking.editTime}
+                  </Button>
+                )}
+              </div>
+
+              {isEditingTime ? (
+                <div className="mt-4 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <label className="mb-2 block text-sm font-medium">
+                        {fa.tasks.details.timeTracking.hours}
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={hours}
+                        onChange={(e) => setHours(Number(e.target.value))}
+                        disabled={isUpdatingTime}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="mb-2 block text-sm font-medium">
+                        {fa.tasks.details.timeTracking.minutes}
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="59"
+                        value={minutes}
+                        onChange={(e) => setMinutes(Number(e.target.value))}
+                        disabled={isUpdatingTime}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={handleSaveTime}
+                      disabled={isUpdatingTime}
+                    >
+                      {isUpdatingTime ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="mr-2 h-4 w-4" />
+                      )}
+                      {fa.tasks.details.timeTracking.saveTime}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCancelTimeEdit}
+                      disabled={isUpdatingTime}
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      {fa.tasks.details.timeTracking.cancelEdit}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-2">
+                  <p className="text-2xl font-semibold text-primary">
+                    {formatTimeSpent(task.time_spent_minutes) ||
+                      fa.tasks.details.timeTracking.noTimeTracked}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Task Description */}

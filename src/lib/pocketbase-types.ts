@@ -169,6 +169,7 @@ export type TasksRecord = {
 	project: RecordIdString
 	status: TasksStatusOptions
 	tags?: RecordIdString[]
+	time_spent_minutes?: number
 	title?: string
 	updated?: IsoDateString
 }

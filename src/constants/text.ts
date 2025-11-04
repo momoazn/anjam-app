@@ -355,6 +355,7 @@ export const fa = {
       totalTasks: "تعداد تسک‌ها",
       completedTasks: "تسک‌های تکمیل‌شده",
       inProgressTasks: "تسک‌های در حال انجام",
+      totalTimeSpent: "کل زمان صرف شده",
       backToProjects: "بازگشت به پروژه‌ها",
     },
     files: {
@@ -514,6 +515,19 @@ export const fa = {
     details: {
       title: "جزئیات تسک",
       unknownUser: "کاربر ناشناس",
+      unknownProject: "پروژه نامشخص",
+      timeTracking: {
+        title: "زمان صرف شده",
+        hours: "ساعت",
+        minutes: "دقیقه",
+        editTime: "ویرایش زمان",
+        saveTime: "ذخیره زمان",
+        cancelEdit: "انصراف",
+        noTimeTracked: "هنوز زمانی ثبت نشده",
+        updateSuccess: "زمان با موفقیت به‌روزرسانی شد",
+        updateError: "خطا در به‌روزرسانی زمان",
+        invalidInput: "لطفاً مقدار معتبر برای ساعت و دقیقه وارد کنید",
+      },
       buttons: {
         save: "ذخیره",
         saving: "در حال ذخیره...",
