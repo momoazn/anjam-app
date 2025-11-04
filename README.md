@@ -1,54 +1,193 @@
-# React + TypeScript + Vite
+# Task Manager Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive task and project management application built with React, TypeScript, PocketBase, and Go.
 
-Currently, two official plugins are available:
+## 🚀 Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
 
-## Expanding the ESLint configuration
+- [Bun](https://bun.sh) 1.x
+- [Go](https://go.dev) 1.24+
+- Node.js tooling (installed via Bun)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Installation
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```bash
+# Install dependencies
+bun install
+
+# Start development server (frontend + backend)
+bun run dev
+
+# Or run separately:
+bun run dev:client  # Frontend only (Vite on 5173)
+bun run dev:server  # Backend only (Air)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Build
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+```bash
+# Build everything
+bun run build
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+# Build individually
+bun run build:client
+bun run build:server
+bun run build:win
 ```
+
+## 📋 Available Scripts
+
+### Development
+
+- `bun run dev` - Start both frontend and backend in development mode
+- `bun run dev:client` - Start frontend only (Vite dev server)
+- `bun run dev:server` - Start backend only (Air live reload)
+
+### Building
+
+- `bun run build` - Build both frontend and backend
+- `bun run build:client` - Build frontend for production
+- `bun run build:server` - Build backend for production
+- `bun run serve:client` - Preview built frontend
+- `bun run serve:server` - Serve built backend
+
+### Quality Checks
+
+- `bun run check` - Run typecheck, lint, and format checks
+- `bun run fix` - Fix lint and formatting issues
+- `bun run fmt` - Format code with Prettier
+- `bun run lint` - Run ESLint
+- `bun run type:check` - Run TypeScript type checking
+
+### Database
+
+- `bun run seed:generate` - Generate seed data
+- `bun run seed:insert` - Insert seed data into database
+- `bun run seed:truncate` - Clear all data from database
+- `bun run seed` - Full seed process (truncate + generate + insert)
+
+### Utilities
+
+- `bun run gen:type` - Regenerate PocketBase TypeScript types
+- `bun run clean` - Clean build artifacts and dependencies
+
+## 🏗️ Project Structure
+
+### Backend (PocketBase)
+
+- `main.go` - Go backend serving API and embedded frontend
+- `data/` - SQLite database files (`data.db`)
+- `pb_schema.json` - Database collection schema
+
+### Frontend (React + TypeScript)
+
+- `src/` - React application
+  - `components/` - Reusable UI components
+  - `pages/` - Page components
+  - `lib/` - Utilities and business logic
+  - `store/` - State management
+- `public/` - Static assets
+- `dist/` - Vite build output (embedded by Go)
+
+### Documentation
+
+- `docs/` - Project documentation
+- `scripts/` - Utility scripts
+- `mock-data/` - Example data files
+
+## 📝 Coding Style & Conventions
+
+### TypeScript
+
+- Strict mode enabled
+- Prefer explicit types for public APIs
+- Use path alias `@/` (configured in `tsconfig` and `vite.config.ts`)
+
+### React Components
+
+- PascalCase exports
+- Kebab-case file names (e.g., `task-list-item.tsx`)
+- Use functional components with hooks
+
+### Formatting
+
+- 2 spaces indentation
+- Prettier for code formatting (with Tailwind plugin)
+- ESLint for linting (TypeScript + React Hooks)
+- Avoid default exports for shared utilities
+
+## 🧪 Testing
+
+No test runner configured yet. Use `bun run check` and manual smoke tests.
+
+When adding tests:
+
+- Prefer [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/react)
+- Co-locate test files as `*.test.ts(x)`
+- Aim to cover business logic in `src/lib/*` and critical components
+
+## 🗄️ Schema & Type Generation
+
+When changing `pb_schema.json`:
+
+1. Update the schema file
+2. Run `bun run gen:type` to regenerate types
+3. This updates `src/lib/pocketbase-types.ts` used across the app
+
+## 🚀 Deployment
+
+The application serves both API and frontend from a single Go binary. The frontend build is embedded in the Go server.
+
+### Production Checklist
+
+- [ ] Change default admin credentials
+- [ ] Configure production database
+- [ ] Set environment variables
+- [ ] Run `bun run check` - all checks must pass
+- [ ] Run `bun run build` - build must succeed
+- [ ] Test the application in production mode
+
+## 🔒 Security
+
+- Development seeds create default admin users - **change credentials before production**
+- Do not commit real production data
+- Keep secrets out of version control
+- Frontend proxies `/api` to `http://localhost:8090` (see `vite.config.ts`)
+
+## 📚 Documentation
+
+See the `docs/` directory for comprehensive documentation:
+
+- [Project Overview](./docs/PROJECT_OVERVIEW.md) - High-level introduction
+- [Development Guide](./docs/DEVELOPMENT_GUIDE.md) - Technical guidance
+- [Development Roadmap](./docs/DEVELOPMENT_ROADMAP.md) - Strategic planning
+- [Implementation Status](./docs/IMPLEMENTATION_STATUS.md) - Current state
+- [QA Testing Guide (SLIM)](./docs/QA_TESTING_GUIDE_SLIM.md) - Testing procedures
+
+## 🤝 Contributing
+
+### Commit Messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `refactor:` - Code refactoring
+- `chore:` - Maintenance tasks
+- `docs:` - Documentation changes
+
+Example: `feat(tasks): add drag-and-drop reordering`
+
+### Pull Requests
+
+1. Run `bun run check` - all checks must pass
+2. Run `bun run build` - build must succeed
+3. Include clear description
+4. Link related issues
+5. Provide test/QA steps
+6. Add screenshots/GIFs for UI changes
+
+## 📄 License
+
+This project is private and confidential.
