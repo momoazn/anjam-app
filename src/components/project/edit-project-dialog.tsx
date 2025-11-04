@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ClientResponseError } from "pocketbase";
 
 import { Button } from "@/components/ui/button";
+import { useAuthUser } from "@/store/auth-store";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,7 @@ const projectFormSchema = z.object({
   }),
   description: z.string().optional(),
   assets: z.array(z.any()).optional(),
+  supervisor: z.string().optional(),
 });
 
 type EditProjectDialogProps = {
@@ -44,6 +46,8 @@ export function EditProjectDialog({
   project,
 }: EditProjectDialogProps) {
   const queryClient = useQueryClient();
+  const user = useAuthUser();
+  const isAdmin = user?.role === "admin";
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
@@ -52,6 +56,7 @@ export function EditProjectDialog({
       code: "",
       description: "",
       assets: [],
+      supervisor: "",
     },
   });
 
@@ -63,6 +68,7 @@ export function EditProjectDialog({
         // Convert HTML breaks back to newlines for textarea
         description: (project.description || "").replace(/<br>/g, "\n"),
         assets: [],
+        supervisor: project.supervisor || "",
       });
     }
   }, [form, project]);
@@ -74,6 +80,10 @@ export function EditProjectDialog({
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("code", data.code.toUpperCase());
+
+      if (data.supervisor) {
+        formData.append("supervisor", data.supervisor);
+      }
 
       if (data.description !== undefined) {
         // Convert line breaks to HTML
@@ -140,7 +150,11 @@ export function EditProjectDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <ProjectFields control={form.control} />
+            <ProjectFields
+              control={form.control}
+              showSupervisor={true}
+              isAdmin={isAdmin}
+            />
             <DialogFooter>
               <Button type="submit" disabled={isPending}>
                 {isPending ? (

@@ -15,6 +15,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -48,6 +58,11 @@ export default function ProjectUsers() {
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
   const canManageUsers = isAdmin || isSupervisor;
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+  const [userToRemove, setUserToRemove] = useState<{
+    id: string;
+    username: string;
+  } | null>(null);
 
   const { data: project } = useProjectWithSupervisor({
     id: id as string,
@@ -88,6 +103,19 @@ export default function ProjectUsers() {
   const { mutate: removeUserFromProject, isPending: isRemovingUser } =
     useMutation({
       mutationFn: async (userId: string) => {
+        // First, unassign all tasks in this project that are assigned to this user
+        const tasks = await pb.collection("tasks").getFullList({
+          filter: `project = "${id}" && assignee = "${userId}"`,
+        });
+
+        // Update all matching tasks to have no assignee
+        await Promise.all(
+          tasks.map((task) =>
+            pb.collection("tasks").update(task.id, { assignee: "" }),
+          ),
+        );
+
+        // Then remove the user from the project
         const records = await pb.collection("users_projects").getFullList({
           filter: `user = "${userId}" && project = "${id}"`,
         });
@@ -105,6 +133,8 @@ export default function ProjectUsers() {
             queryKey: queryKeys.projects.detail(id),
           });
         }
+        setIsRemoveDialogOpen(false);
+        setUserToRemove(null);
         toast.success(fa.projects.users.removeSuccess);
       },
       onError: (error) => {
@@ -211,14 +241,13 @@ export default function ProjectUsers() {
                       variant="ghost"
                       size="icon"
                       className="text-destructive"
-                      onClick={() => removeUserFromProject(user.id)}
+                      onClick={() => {
+                        setUserToRemove({ id: user.id, username: user.username });
+                        setIsRemoveDialogOpen(true);
+                      }}
                       disabled={isRemovingUser}
                     >
-                      {isRemovingUser ? (
-                        <Loader2 className="text-muted-foreground size-4 animate-spin" />
-                      ) : (
-                        <Trash className="size-4" />
-                      )}
+                      <Trash className="size-4" />
                     </Button>
                   </TableCell>
                 )}
@@ -227,6 +256,41 @@ export default function ProjectUsers() {
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog
+        open={isRemoveDialogOpen}
+        onOpenChange={setIsRemoveDialogOpen}
+      >
+        <AlertDialogContent className="text-right">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-right text-lg font-bold">
+              {fa.projects.users.remove.title}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground text-right">
+              {fa.projects.users.remove.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
+            <AlertDialogCancel className="order-2">
+              {fa.common.cancel}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (userToRemove) {
+                  removeUserFromProject(userToRemove.id);
+                }
+              }}
+              disabled={isRemovingUser}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
+            >
+              {isRemovingUser ? (
+                <Loader2 className="text-muted-foreground ml-2 size-4 animate-spin" />
+              ) : null}
+              {fa.common.delete}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageTransition>
   );
 }

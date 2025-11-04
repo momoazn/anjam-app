@@ -30,6 +30,7 @@ const projectFormSchema = z.object({
   }),
   description: z.string().optional(),
   assets: z.array(z.any()).optional(),
+  supervisor: z.string().optional(),
 });
 
 type CreateProjectDialogProps = {
@@ -43,6 +44,7 @@ export function CreateProjectDialog({
 }: CreateProjectDialogProps) {
   const user = useAuthUser();
   const queryClient = useQueryClient();
+  const isAdmin = user?.role === "admin";
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
@@ -51,6 +53,7 @@ export function CreateProjectDialog({
       code: "",
       description: "",
       assets: [],
+      supervisor: user?.id || "",
     },
   });
 
@@ -59,7 +62,7 @@ export function CreateProjectDialog({
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("code", data.code.toUpperCase());
-      formData.append("supervisor", user?.id || "");
+      formData.append("supervisor", data.supervisor || user?.id || "");
 
       if (data.description) {
         // Convert line breaks to HTML
@@ -123,7 +126,11 @@ export function CreateProjectDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <ProjectFields control={form.control} />
+            <ProjectFields
+              control={form.control}
+              showSupervisor={true}
+              isAdmin={isAdmin}
+            />
             <DialogFooter>
               <Button type="submit" disabled={isPending}>
                 {isPending ? (
