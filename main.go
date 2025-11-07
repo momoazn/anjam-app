@@ -817,8 +817,11 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 	statusConfigId := e.Request.PathValue("id")
 
 	// Ensure the requester is authenticated and authorized
-	reqInfo := apis.RequestInfo(e.Request)
-	authRecord := reqInfo.AuthRecord
+	requestInfo, err := e.RequestInfo()
+	if err != nil {
+		return e.BadRequestError("Invalid request", err)
+	}
+	authRecord := requestInfo.Auth
 	if authRecord == nil {
 		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
 	}
