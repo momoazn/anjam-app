@@ -1345,7 +1345,18 @@
         "required": false,
         "system": false,
         "type": "select",
-        "values": ["todo", "in_progress", "done", "canceled"]
+        "values": [
+          "todo",
+          "in_progress",
+          "pending",
+          "done",
+          "canceled",
+          "blocked",
+          "review",
+          "testing",
+          "ready",
+          "on_hold"
+        ]
       },
       {
         "cascadeDelete": false,

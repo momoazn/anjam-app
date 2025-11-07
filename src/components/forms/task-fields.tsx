@@ -17,12 +17,7 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import {
-  priorityColors,
-  priorityIcons,
-  taskStatusColors,
-  taskStatusIcons,
-} from "@/lib/tasks-utils";
+import { priorityColors, priorityIcons } from "@/lib/tasks-utils";
 import {
   useProjects,
   useProjectUsersFromAppData,
@@ -76,7 +71,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   );
 
   // Filter to only show enabled statuses
-  const enabledStatuses = statusConfigs?.filter((status) => status.enabled) || [];
+  const enabledStatuses =
+    statusConfigs?.filter((status) => status.enabled) || [];
 
   // Use projectUsers when in project context, otherwise use all users
   const assignees = projectId ? projectUsers : users;
@@ -228,7 +224,9 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           control={control}
           name="status_config"
           render={({ field }) => {
-            const selectedStatus = enabledStatuses.find((s) => s.id === field.value);
+            const selectedStatus = enabledStatuses.find(
+              (s) => s.id === field.value,
+            );
             const StatusIcon = selectedStatus
               ? getIconComponent(selectedStatus.icon)
               : TablerIcons.IconCircle;

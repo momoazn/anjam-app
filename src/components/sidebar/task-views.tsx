@@ -29,7 +29,7 @@ const taskViews = [
   },
   {
     title: fa.navigation.myTasks,
-    url: "/tasks?assigned=me&status=todo,in_progress",
+    url: "/tasks?assigned=me&status=todo,in_progress,pending",
     icon: IconChecklist,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
   },

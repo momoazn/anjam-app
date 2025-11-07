@@ -60,13 +60,19 @@ const TIME_PRESETS = {
 } as const;
 
 const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] = [
-  { label: fa.reports.todo, value: "todo" as TasksStatusOptions },
+  { label: fa.tasks.status.todo, value: "todo" as TasksStatusOptions },
   {
-    label: fa.reports.inProgress,
+    label: fa.tasks.status.in_progress,
     value: "in_progress" as TasksStatusOptions,
   },
-  { label: fa.reports.completed, value: "done" as TasksStatusOptions },
-  { label: fa.reports.canceled, value: "canceled" as TasksStatusOptions },
+  { label: fa.tasks.status.pending, value: "pending" as TasksStatusOptions },
+  { label: fa.tasks.status.done, value: "done" as TasksStatusOptions },
+  { label: fa.tasks.status.canceled, value: "canceled" as TasksStatusOptions },
+  { label: fa.tasks.status.blocked, value: "blocked" as TasksStatusOptions },
+  { label: fa.tasks.status.review, value: "review" as TasksStatusOptions },
+  { label: fa.tasks.status.testing, value: "testing" as TasksStatusOptions },
+  { label: fa.tasks.status.ready, value: "ready" as TasksStatusOptions },
+  { label: fa.tasks.status.on_hold, value: "on_hold" as TasksStatusOptions },
 ];
 
 const PRIORITY_OPTIONS: { label: string; value: TasksPriorityOptions }[] = [

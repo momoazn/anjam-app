@@ -102,7 +102,10 @@ export function useTaskFilters(
 
       // Special handling for "My Tasks" which should show both todo and in_progress
       if (selectedAssignee === "me" && selectedStatus === ALL_FILTER_VALUE) {
-        matchesStatus = task.status === "todo" || task.status === "in_progress";
+        matchesStatus =
+          task.status === TasksStatusOptions.todo ||
+          task.status === TasksStatusOptions.in_progress ||
+          task.status === TasksStatusOptions.pending;
       }
       const matchesPriority =
         selectedPriority === ALL_FILTER_VALUE
