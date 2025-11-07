@@ -44,6 +44,11 @@ export default function Dashboard() {
         t.status !== TasksStatusOptions.done,
     ).length;
 
+    const waitingStatuses: TasksStatusOptions[] = [
+      TasksStatusOptions.todo,
+      TasksStatusOptions.pending,
+    ];
+
     return {
       total: userTasks.length,
       completed: userTasks.filter((t) => t.status === TasksStatusOptions.done)
@@ -51,8 +56,9 @@ export default function Dashboard() {
       inProgress: userTasks.filter(
         (t) => t.status === TasksStatusOptions.in_progress,
       ).length,
-      pending: userTasks.filter((t) => t.status === TasksStatusOptions.todo)
-        .length,
+      pending: userTasks.filter((t) =>
+        waitingStatuses.includes(t.status as TasksStatusOptions),
+      ).length,
       overdue,
     };
   }, [userTasks, isLoadingTasks]);
@@ -93,16 +99,11 @@ export default function Dashboard() {
     );
 
     return Object.entries(statusCounts).map(([status, count]) => ({
-      status:
-        status === "todo"
-          ? fa.tasks.status.todo
-          : status === "in_progress"
-            ? fa.tasks.status.in_progress
-            : status === "done"
-              ? fa.tasks.status.done
-              : fa.tasks.status.canceled,
+      status: fa.tasks.status[status as TasksStatusOptions] || status,
       count,
-      fill: taskStatusBgColors[status as TasksStatusOptions],
+      fill:
+        taskStatusBgColors[status as TasksStatusOptions] ||
+        taskStatusBgColors[TasksStatusOptions.todo],
     }));
   }, [userTasks, isLoadingTasks]);
 

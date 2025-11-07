@@ -816,11 +816,36 @@ func handleGetProjectUsers(e *core.RequestEvent) error {
 func handleToggleStatusConfig(e *core.RequestEvent) error {
 	statusConfigId := e.Request.PathValue("id")
 
+	// Ensure the requester is authenticated and authorized
+	reqInfo := apis.RequestInfo(e.Request)
+	authRecord := reqInfo.AuthRecord
+	if authRecord == nil {
+		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+	}
+
+	role := authRecord.GetString("role")
+	if role != "admin" && role != "supervisor" {
+		return e.JSON(403, map[string]string{"error": "مجوز تغییر وضعیت را ندارید"})
+	}
+
 	// Fetch the status config
 	statusConfig, err := e.App.FindRecordById("status_configs", statusConfigId)
 	if err != nil {
 		log.Printf("Error finding status config %q: %v", statusConfigId, err)
 		return e.JSON(404, map[string]string{"error": "Status config not found"})
+	}
+
+	projectId := statusConfig.GetString("project")
+	if role == "supervisor" {
+		projectRecord, err := e.App.FindRecordById("projects", projectId)
+		if err != nil {
+			log.Printf("Error verifying supervisor for project %q: %v", projectId, err)
+			return e.JSON(403, map[string]string{"error": "دسترسی لازم برای این پروژه را ندارید"})
+		}
+
+		if projectRecord.GetString("supervisor") != authRecord.Id {
+			return e.JSON(403, map[string]string{"error": "فقط سرپرست پروژه می‌تواند وضعیت‌ها را تغییر دهد"})
+		}
 	}
 
 	currentEnabled := statusConfig.GetBool("enabled")
@@ -830,18 +855,33 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 	if !newEnabled {
 		var taskCount int
 		err := e.App.DB().NewQuery(`
-			SELECT COUNT(*) FROM tasks WHERE status_config = {:statusConfigId}
-		`).Bind(dbx.Params{"statusConfigId": statusConfigId}).Row(&taskCount)
+                        SELECT COUNT(*) FROM tasks WHERE status_config = {:statusConfigId}
+                `).Bind(dbx.Params{"statusConfigId": statusConfigId}).Row(&taskCount)
 
 		if err != nil {
 			log.Printf("Error checking tasks for status config %q: %v", statusConfigId, err)
 			return e.JSON(500, map[string]string{"error": "Failed to check task usage"})
 		}
 
-		if taskCount > 0 {
+		var legacyCount int
+		statusKey := statusConfig.GetString("key")
+		if projectId != "" && statusKey != "" {
+			legacyErr := e.App.DB().NewQuery(`
+                                SELECT COUNT(*) FROM tasks
+                                WHERE project = {:projectId} AND status = {:statusKey}
+                        `).Bind(dbx.Params{"projectId": projectId, "statusKey": statusKey}).Row(&legacyCount)
+
+			if legacyErr != nil {
+				log.Printf("Error checking legacy status usage for %q: %v", statusConfigId, legacyErr)
+				return e.JSON(500, map[string]string{"error": "Failed to check legacy task usage"})
+			}
+		}
+
+		totalUsage := taskCount + legacyCount
+		if totalUsage > 0 {
 			return e.JSON(400, map[string]interface{}{
-				"error":      "Cannot disable status that is currently in use",
-				"task_count": taskCount,
+				"error":      "امکان غیرفعال‌سازی وضعیتی که در حال استفاده است وجود ندارد",
+				"task_count": totalUsage,
 			})
 		}
 	}

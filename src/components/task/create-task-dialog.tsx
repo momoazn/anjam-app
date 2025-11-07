@@ -14,10 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { TasksPriorityOptions } from "@/lib/pocketbase-types";
 import { useEntityMutation } from "@/hooks/use-entity-mutation";
 import { TaskFields } from "@/components/forms/task-fields";
 import { useAuthUser } from "@/store/auth-store";
