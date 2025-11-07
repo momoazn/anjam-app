@@ -87,8 +87,6 @@ func main() {
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.GET("/api/tm/is-initial", handleCheckInitialAdmin)
-		se.Router.POST("/api/tm/create-initial-admin", handleCreateInitialAdmin)
 		se.Router.GET("/api/tm/projects/{id}/users", handleGetProjectUsers)
 		se.Router.PATCH("/api/tm/status-configs/{id}/toggle", handleToggleStatusConfig)
 
@@ -739,60 +737,6 @@ func setTaskDefaults(e *core.RecordEvent) {
 	if e.Record.GetString("priority") == "" {
 		e.Record.Set("priority", "medium")
 	}
-}
-
-func handleCheckInitialAdmin(e *core.RequestEvent) error {
-	_, err := e.App.FindCollectionByNameOrId("users")
-	if err != nil {
-		log.Printf("Error finding users collection: %v", err)
-		return e.JSON(400, err.Error())
-	}
-
-	var anyUserExists BasicUser
-	err = e.App.DB().NewQuery("SELECT * FROM users LIMIT 1").One(&anyUserExists)
-	if err != nil {
-		log.Printf("Error finding any user: %v", err)
-		return e.JSON(204, map[string]bool{"exists": false})
-	}
-
-	return e.JSON(200, map[string]bool{"exists": anyUserExists.ID != ""})
-}
-
-func handleCreateInitialAdmin(e *core.RequestEvent) error {
-	usersCollection, err := e.App.FindCollectionByNameOrId("users")
-	if err != nil {
-		log.Printf("Error finding users collection: %v", err)
-		return e.JSON(400, err.Error())
-	}
-
-	var anyUserExists BasicUser
-	err = e.App.DB().NewQuery("SELECT * FROM users LIMIT 1").One(&anyUserExists)
-	if err != nil && err.Error() != "sql: no rows in result set" {
-		log.Printf("Error finding any user: %v", err)
-		return e.JSON(400, err.Error())
-	}
-
-	if anyUserExists.ID != "" {
-		log.Println("Admin already exists, skipping creation.")
-		return e.JSON(200, "Admin already exists")
-	}
-
-	body := struct {
-		Username string `json:"username" form:"username"`
-		Password string `json:"password" form:"password"`
-	}{}
-	if err := e.BindBody(&body); err != nil {
-		return e.BadRequestError("Failed to read request data", err)
-	}
-
-	record := core.NewRecord(usersCollection)
-	record.Set("username", body.Username)
-	record.Set("password", body.Password)
-	record.Set("role", "admin")
-
-	log.Printf("Creating initial admin user: %s", body.Username)
-
-	return e.App.Save(record)
 }
 
 func handleGetProjectUsers(e *core.RequestEvent) error {

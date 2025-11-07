@@ -85,14 +85,6 @@ export const queryKeys = {
   },
 
   /**
-   * Authentication-related query keys
-   * - isInitialAdmin: For checking if initial admin setup is needed
-   */
-  auth: {
-    isInitialAdmin: ["auth", "is-initial-admin"] as const,
-  },
-
-  /**
    * Status Config-related query keys
    * - all: Base key for all status config queries
    * - lists: For status config list queries

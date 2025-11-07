@@ -37,9 +37,6 @@ export {
   useDeleteUser,
 } from "./users";
 
-// Auth hooks
-export { useIsInitialAdmin } from "./auth";
-
 // Comment hooks
 export {
   useComments,

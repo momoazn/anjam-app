@@ -6,32 +6,11 @@ import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { fa } from "@/constants/text";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
-import { useIsInitialAdmin } from "@/hooks";
 import { useAuthStore } from "@/store/auth-store";
-
-const createInitialAdmin = async (username: string, password: string) => {
-  const response = await fetch("/api/tm/create-initial-admin", {
-    method: "POST",
-    body: JSON.stringify({
-      username: username.trim().toLowerCase(),
-      password: password.trim(),
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    return false;
-  }
-
-  return true;
-};
 
 export default function Register() {
   const navigate = useNavigate();
@@ -46,8 +25,6 @@ export default function Register() {
     password?: string;
     confirmPassword?: string;
   }>({});
-
-  const { data: isInitialAdmin } = useIsInitialAdmin();
 
   if (user) {
     return <Navigate to="/" replace />;
@@ -73,19 +50,6 @@ export default function Register() {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       toast.error(fa.auth.register.errors.credentialsRequired);
-      return;
-    }
-
-    if (isInitialAdmin) {
-      const isAdminCreated = await createInitialAdmin(username, password);
-      if (!isAdminCreated) {
-        toast.error(fa.auth.register.errors.adminCreationFailed);
-        return;
-      }
-
-      await pb.collection("users").authWithPassword(username, password);
-      login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
-      navigate("/", { replace: true });
       return;
     }
 
@@ -119,16 +83,6 @@ export default function Register() {
         <h2 className="text-foreground text-center text-3xl font-bold">
           {fa.auth.register.title}
         </h2>
-
-        {isInitialAdmin && (
-          <div className="flex flex-col items-center gap-4" data-animate-stagger>
-            <Separator />
-            <p className="text-center">
-              {fa.auth.register.initialAdminMessage}
-            </p>
-            <Separator />
-          </div>
-        )}
 
         <form
           onSubmit={handleSubmit}
@@ -221,17 +175,15 @@ export default function Register() {
               : fa.auth.register.registerButton}
           </Button>
 
-          {!isInitialAdmin && (
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => navigate("/login")}
-              type="button"
-              disabled={submitting}
-            >
-              {fa.auth.register.loginButton}
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => navigate("/login")}
+            type="button"
+            disabled={submitting}
+          >
+            {fa.auth.register.loginButton}
+          </Button>
         </form>
       </PageTransition>
     </div>
