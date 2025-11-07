@@ -52,10 +52,16 @@ export type TaskStatsData = {
 
 // Status labels mapping
 const STATUS_LABELS: Record<TasksStatusOptions, string> = {
-  [TasksStatusOptions.todo]: fa.reports.todo,
-  [TasksStatusOptions.in_progress]: fa.reports.inProgress,
-  [TasksStatusOptions.done]: fa.reports.completed,
-  [TasksStatusOptions.canceled]: fa.reports.canceled,
+  [TasksStatusOptions.todo]: fa.tasks.status.todo,
+  [TasksStatusOptions.in_progress]: fa.tasks.status.in_progress,
+  [TasksStatusOptions.pending]: fa.tasks.status.pending,
+  [TasksStatusOptions.done]: fa.tasks.status.done,
+  [TasksStatusOptions.canceled]: fa.tasks.status.canceled,
+  [TasksStatusOptions.blocked]: fa.tasks.status.blocked,
+  [TasksStatusOptions.review]: fa.tasks.status.review,
+  [TasksStatusOptions.testing]: fa.tasks.status.testing,
+  [TasksStatusOptions.ready]: fa.tasks.status.ready,
+  [TasksStatusOptions.on_hold]: fa.tasks.status.on_hold,
 };
 
 // Priority labels mapping
@@ -178,8 +184,10 @@ export function calculateTaskStats(tasks: TaskWithProject[]): TaskStatsData {
     inProgressTasks: tasks.filter(
       (task) => task.status === TasksStatusOptions.in_progress,
     ).length,
-    pendingTasks: tasks.filter(
-      (task) => task.status === TasksStatusOptions.todo,
+    pendingTasks: tasks.filter((task) =>
+      [TasksStatusOptions.todo, TasksStatusOptions.pending].includes(
+        task.status as TasksStatusOptions,
+      ),
     ).length,
   };
 }

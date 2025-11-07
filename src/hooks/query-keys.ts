@@ -91,4 +91,20 @@ export const queryKeys = {
   auth: {
     isInitialAdmin: ["auth", "is-initial-admin"] as const,
   },
+
+  /**
+   * Status Config-related query keys
+   * - all: Base key for all status config queries
+   * - lists: For status config list queries
+   * - detail: For individual status config queries
+   * - byProject: For status configs filtered by project ID
+   */
+  statusConfigs: {
+    all: ["status_configs"] as const,
+    lists: () => [...queryKeys.statusConfigs.all, "list"] as const,
+    detail: (id: string) =>
+      [...queryKeys.statusConfigs.all, "detail", id] as const,
+    byProject: (projectId: string) =>
+      [...queryKeys.statusConfigs.all, "project", projectId] as const,
+  },
 } as const;

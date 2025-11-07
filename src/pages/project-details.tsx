@@ -17,6 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { ProjectAssets } from "@/components/project/project-assets";
+import { ProjectStatusManager } from "@/components/project/project-status-manager";
 import { PageTransition } from "@/components/page-transition";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -473,6 +474,11 @@ export default function ProjectDetails() {
               )}
             </CardContent>
           </Card>
+
+          {/* Status Management - Only visible to admins and project supervisors */}
+          {canEdit && id && (
+            <ProjectStatusManager projectId={id} />
+          )}
         </div>
 
         {/* Sidebar */}

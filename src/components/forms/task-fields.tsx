@@ -1,5 +1,7 @@
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 import { useParams } from "react-router-dom";
+import { Icon } from "@tabler/icons-react";
+import * as TablerIcons from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,13 +17,13 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
+import { priorityColors, priorityIcons } from "@/lib/tasks-utils";
 import {
-  priorityColors,
-  priorityIcons,
-  taskStatusColors,
-  taskStatusIcons,
-} from "@/lib/tasks-utils";
-import { useProjects, useProjectUsersFromAppData, useUsers } from "@/hooks";
+  useProjects,
+  useProjectUsersFromAppData,
+  useUsers,
+  useProjectStatusConfigs,
+} from "@/hooks";
 import DatePicker from "../ui/date-picker";
 import {
   Select,
@@ -38,7 +40,8 @@ type TaskFieldsProps = {
     description: string;
     assignee: string;
     priority: TasksPriorityOptions;
-    status: TasksStatusOptions;
+    status?: TasksStatusOptions;
+    status_config?: string;
     project?: string;
     deadline?: Date;
   }>;
@@ -49,6 +52,9 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   const { id: projectId } = useParams<{ id: string }>();
   const actualIsInProject = isInProject || Boolean(projectId);
 
+  // Watch the project field to fetch status configs when project changes
+  const selectedProjectId = useWatch({ control, name: "project" }) || projectId;
+
   // Fetch available projects
   const { data: projects } = useProjects({ enabled: !actualIsInProject });
 
@@ -58,8 +64,40 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   // Fetch all users when not in project context
   const { data: users } = useUsers({ enabled: !projectId });
 
+  // Fetch status configs for the selected project
+  const { data: statusConfigs } = useProjectStatusConfigs(
+    selectedProjectId || "",
+    { enabled: Boolean(selectedProjectId) },
+  );
+
+  // Filter to only show enabled statuses
+  const enabledStatuses =
+    statusConfigs?.filter((status) => status.enabled) || [];
+
   // Use projectUsers when in project context, otherwise use all users
   const assignees = projectId ? projectUsers : users;
+
+  // Helper function to get icon component by name
+  const getIconComponent = (iconName: string | undefined): Icon => {
+    if (!iconName) return TablerIcons.IconCircle;
+    const icon = (TablerIcons as Record<string, Icon>)[iconName];
+    return icon || TablerIcons.IconCircle;
+  };
+
+  // Helper function to get color class by color name
+  const getColorClass = (color: string | undefined): string => {
+    if (!color) return "text-gray-500";
+    const colorMap: Record<string, string> = {
+      gray: "text-gray-500 dark:text-gray-400",
+      yellow: "text-yellow-500 dark:text-yellow-400",
+      purple: "text-purple-600 dark:text-purple-400",
+      blue: "text-blue-500 dark:text-blue-400",
+      green: "text-green-500 dark:text-green-400",
+      red: "text-red-500 dark:text-red-400",
+      orange: "text-orange-500 dark:text-orange-400",
+    };
+    return colorMap[color] || "text-gray-500";
+  };
 
   return (
     <>
@@ -184,10 +222,17 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
         <FormField
           control={control}
-          name="status"
+          name="status_config"
           render={({ field }) => {
-            const StatusIcon = taskStatusIcons[field.value];
-            const statusIconColor = taskStatusColors[field.value];
+            const selectedStatus = enabledStatuses.find(
+              (s) => s.id === field.value,
+            );
+            const StatusIcon = selectedStatus
+              ? getIconComponent(selectedStatus.icon)
+              : TablerIcons.IconCircle;
+            const statusIconColor = selectedStatus
+              ? getColorClass(selectedStatus.color)
+              : "text-gray-500";
 
             return (
               <FormItem>
@@ -199,21 +244,23 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       aria-label={fa.tasks.addTask.status}
                     >
                       <StatusIcon className={`size-3 ${statusIconColor}`} />
-                      <SelectValue placeholder={fa.tasks.addTask.status} />
+                      <SelectValue placeholder={fa.tasks.addTask.status}>
+                        {selectedStatus?.name || fa.tasks.addTask.status}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={TasksStatusOptions.todo}>
-                        {fa.tasks.status.todo}
-                      </SelectItem>
-                      <SelectItem value={TasksStatusOptions.in_progress}>
-                        {fa.tasks.status.in_progress}
-                      </SelectItem>
-                      <SelectItem value={TasksStatusOptions.done}>
-                        {fa.tasks.status.done}
-                      </SelectItem>
-                      <SelectItem value={TasksStatusOptions.canceled}>
-                        {fa.tasks.status.canceled}
-                      </SelectItem>
+                      {enabledStatuses.map((status) => {
+                        const Icon = getIconComponent(status.icon);
+                        const colorClass = getColorClass(status.color);
+                        return (
+                          <SelectItem key={status.id} value={status.id}>
+                            <div className="flex items-center gap-2">
+                              <Icon className={`size-3 ${colorClass}`} />
+                              <span>{status.name}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </FormControl>

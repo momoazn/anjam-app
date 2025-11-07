@@ -14,10 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { TasksPriorityOptions } from "@/lib/pocketbase-types";
 import { useEntityMutation } from "@/hooks/use-entity-mutation";
 import { TaskFields } from "@/components/forms/task-fields";
 import { useAuthUser } from "@/store/auth-store";
@@ -28,20 +25,20 @@ const taskFormSchema = z.object({
   description: z.string(),
   assignee: z.string(),
   priority: z.nativeEnum(TasksPriorityOptions),
-  status: z.nativeEnum(TasksStatusOptions),
+  status_config: z.string().optional(),
   project: z.string().min(1, { message: "Project is required" }),
   deadline: z.date().optional(),
 });
 
 type CreateTaskDialogProps = {
   children: React.ReactNode;
-  initialStatus?: TasksStatusOptions;
+  initialStatusConfig?: string;
   onSuccess?: () => void;
 };
 
 export function CreateTaskDialog({
   children,
-  initialStatus = TasksStatusOptions.todo,
+  initialStatusConfig,
   onSuccess,
 }: CreateTaskDialogProps) {
   const [open, setOpen] = useState(false);
@@ -56,7 +53,7 @@ export function CreateTaskDialog({
       description: "",
       assignee: fa.tasks.addTask.unassigned,
       priority: TasksPriorityOptions.medium,
-      status: initialStatus,
+      status_config: initialStatusConfig,
       project: projectId ?? "",
       deadline: undefined,
     },

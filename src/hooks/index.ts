@@ -48,6 +48,16 @@ export {
   useSoftDeleteComment,
 } from "./comments";
 
+// Status Config hooks
+export {
+  useProjectStatusConfigs,
+  useStatusConfig,
+  useCreateStatusConfig,
+  useUpdateStatusConfig,
+  useDeleteStatusConfig,
+  type StatusConfigsResponse,
+} from "./status-configs";
+
 // App-level data hooks
 export { useAppData, useProjectUsersFromAppData } from "./use-app-data";
 

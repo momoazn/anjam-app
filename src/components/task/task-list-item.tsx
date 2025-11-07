@@ -1,12 +1,14 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
 import { useRef } from "react";
+import { Icon } from "@tabler/icons-react";
+import * as TablerIcons from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { fa } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
-import { UsersResponse } from "@/lib/pocketbase-types";
+import { UsersResponse, StatusConfigsRecord } from "@/lib/pocketbase-types";
 import {
   priorityColors,
   priorityIcons,
@@ -28,6 +30,28 @@ const formatDateShort = (dateString?: string | null) => {
   return digitsEnToFa(format(date, "dd MMMM"));
 };
 
+// Helper function to get icon component by name
+const getIconComponent = (iconName: string | undefined): Icon => {
+  if (!iconName) return TablerIcons.IconCircle;
+  const icon = (TablerIcons as Record<string, Icon>)[iconName];
+  return icon || TablerIcons.IconCircle;
+};
+
+// Helper function to get color class by color name
+const getColorClass = (color: string | undefined): string => {
+  if (!color) return "text-gray-500 dark:text-gray-400";
+  const colorMap: Record<string, string> = {
+    gray: "text-gray-500 dark:text-gray-400",
+    yellow: "text-yellow-500 dark:text-yellow-400",
+    purple: "text-purple-600 dark:text-purple-400",
+    blue: "text-blue-500 dark:text-blue-400",
+    green: "text-green-500 dark:text-green-400",
+    red: "text-red-500 dark:text-red-400",
+    orange: "text-orange-500 dark:text-orange-400",
+  };
+  return colorMap[color] || "text-gray-500 dark:text-gray-400";
+};
+
 type TaskListItemProps = {
   task: TaskWithProject;
   className?: string;
@@ -46,8 +70,16 @@ export function TaskListItem({
   onSelectionChange,
 }: TaskListItemProps) {
   const editBtnRef = useRef<HTMLButtonElement | null>(null);
-  const StatusIcon = taskStatusIcons[task.status];
-  const statusIconColor = taskStatusColors[task.status];
+
+  // Get custom status config if available, otherwise fall back to default
+  const statusConfig = task.expand?.status_config as StatusConfigsRecord | undefined;
+  const StatusIcon = statusConfig
+    ? getIconComponent(statusConfig.icon)
+    : taskStatusIcons[task.status];
+  const statusIconColor = statusConfig
+    ? getColorClass(statusConfig.color)
+    : taskStatusColors[task.status];
+
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
