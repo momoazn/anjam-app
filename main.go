@@ -90,6 +90,7 @@ func main() {
 		se.Router.GET("/api/tm/is-initial", handleCheckInitialAdmin)
 		se.Router.POST("/api/tm/create-initial-admin", handleCreateInitialAdmin)
 		se.Router.GET("/api/tm/projects/{id}/users", handleGetProjectUsers)
+		se.Router.PATCH("/api/tm/status-configs/{id}/toggle", handleToggleStatusConfig)
 
 		return se.Next()
 	})
@@ -334,8 +335,8 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 
 // --- Record Event Handlers ---
 
-// DefaultStatusConfig represents a default status configuration
-type DefaultStatusConfig struct {
+// PredefinedStatusConfig represents a predefined status configuration
+type PredefinedStatusConfig struct {
 	Key         string
 	Name        string
 	Color       string
@@ -343,60 +344,125 @@ type DefaultStatusConfig struct {
 	Order       int
 	IsCompleted bool
 	IsCanceled  bool
+	IsDefault   bool // Default statuses are enabled by default
 }
 
-// getDefaultStatusConfigs returns the default status configurations
-func getDefaultStatusConfigs() []DefaultStatusConfig {
-	return []DefaultStatusConfig{
+// getPredefinedStatusConfigs returns all predefined status configurations
+func getPredefinedStatusConfigs() []PredefinedStatusConfig {
+	return []PredefinedStatusConfig{
 		{
 			Key:         "todo",
-			Name:        "Todo",
+			Name:        "انجام نشده",
 			Color:       "gray",
 			Icon:        "IconCircle",
 			Order:       1,
 			IsCompleted: false,
 			IsCanceled:  false,
+			IsDefault:   true,
 		},
 		{
 			Key:         "in_progress",
-			Name:        "In Progress",
+			Name:        "در حال انجام",
 			Color:       "yellow",
 			Icon:        "IconCircleHalf2",
 			Order:       2,
 			IsCompleted: false,
 			IsCanceled:  false,
+			IsDefault:   true,
+		},
+		{
+			Key:         "pending",
+			Name:        "در انتظار",
+			Color:       "orange",
+			Icon:        "IconClock",
+			Order:       3,
+			IsCompleted: false,
+			IsCanceled:  false,
+			IsDefault:   true,
 		},
 		{
 			Key:         "done",
-			Name:        "Done",
-			Color:       "purple",
+			Name:        "انجام شده",
+			Color:       "green",
 			Icon:        "IconCircleCheck",
-			Order:       3,
+			Order:       4,
 			IsCompleted: true,
 			IsCanceled:  false,
+			IsDefault:   true,
 		},
 		{
 			Key:         "canceled",
-			Name:        "Canceled",
-			Color:       "gray",
+			Name:        "لغو شده",
+			Color:       "red",
 			Icon:        "IconCircleX",
-			Order:       4,
+			Order:       5,
 			IsCompleted: false,
 			IsCanceled:  true,
+			IsDefault:   true,
+		},
+		{
+			Key:         "blocked",
+			Name:        "مسدود شده",
+			Color:       "red",
+			Icon:        "IconAlertCircle",
+			Order:       6,
+			IsCompleted: false,
+			IsCanceled:  false,
+			IsDefault:   false,
+		},
+		{
+			Key:         "review",
+			Name:        "در حال بررسی",
+			Color:       "blue",
+			Icon:        "IconEye",
+			Order:       7,
+			IsCompleted: false,
+			IsCanceled:  false,
+			IsDefault:   false,
+		},
+		{
+			Key:         "testing",
+			Name:        "در حال تست",
+			Color:       "purple",
+			Icon:        "IconTestPipe",
+			Order:       8,
+			IsCompleted: false,
+			IsCanceled:  false,
+			IsDefault:   false,
+		},
+		{
+			Key:         "ready",
+			Name:        "آماده",
+			Color:       "green",
+			Icon:        "IconCircleCheck",
+			Order:       9,
+			IsCompleted: false,
+			IsCanceled:  false,
+			IsDefault:   false,
+		},
+		{
+			Key:         "on_hold",
+			Name:        "متوقف شده",
+			Color:       "gray",
+			Icon:        "IconPlayerPause",
+			Order:       10,
+			IsCompleted: false,
+			IsCanceled:  false,
+			IsDefault:   false,
 		},
 	}
 }
 
-// createDefaultStatusConfigsForProject creates default status configs for a project
-func createDefaultStatusConfigsForProject(app core.App, projectId string) error {
+// createPredefinedStatusConfigsForProject creates all predefined status configs for a project
+func createPredefinedStatusConfigsForProject(app core.App, projectId string) error {
 	statusConfigsCollection, err := app.FindCollectionByNameOrId("status_configs")
 	if err != nil {
 		log.Printf("Error finding status_configs collection: %v", err)
 		return err
 	}
 
-	defaultStatuses := getDefaultStatusConfigs()
-	for _, status := range defaultStatuses {
+	predefinedStatuses := getPredefinedStatusConfigs()
+	for _, status := range predefinedStatuses {
 		record := core.NewRecord(statusConfigsCollection)
 		record.Set("project", projectId)
 		record.Set("key", status.Key)
@@ -406,14 +472,15 @@ func createDefaultStatusConfigsForProject(app core.App, projectId string) error 
 		record.Set("order", status.Order)
 		record.Set("is_completed", status.IsCompleted)
 		record.Set("is_canceled", status.IsCanceled)
+		record.Set("enabled", status.IsDefault) // Enable default statuses, disable others
 
 		if err := app.Save(record); err != nil {
-			log.Printf("Error creating default status config %s for project %s: %v", status.Key, projectId, err)
+			log.Printf("Error creating status config %s for project %s: %v", status.Key, projectId, err)
 			return err
 		}
 	}
 
-	log.Printf("Created default status configs for project %s", projectId)
+	log.Printf("Created all predefined status configs for project %s", projectId)
 	return nil
 }
 
@@ -449,8 +516,8 @@ func migrateProjectStatusConfigs(e *core.ServeEvent) error {
 		}
 
 		if statusConfigCount == 0 {
-			if err := createDefaultStatusConfigsForProject(e.App, project.ID); err != nil {
-				log.Printf("Error creating default status configs for project %s: %v", project.ID, err)
+			if err := createPredefinedStatusConfigsForProject(e.App, project.ID); err != nil {
+				log.Printf("Error creating predefined status configs for project %s: %v", project.ID, err)
 				continue
 			}
 
@@ -529,11 +596,11 @@ func migrateTasksToStatusConfig(app core.App, projectId string) error {
 	return nil
 }
 
-// handleProjectStatusConfigsCreation creates default status configs after a project is created
+// handleProjectStatusConfigsCreation creates predefined status configs after a project is created
 func handleProjectStatusConfigsCreation(e *core.RecordEvent) error {
 	projectId := e.Record.Id
-	if err := createDefaultStatusConfigsForProject(e.App, projectId); err != nil {
-		log.Printf("Error creating default status configs for new project %s: %v", projectId, err)
+	if err := createPredefinedStatusConfigsForProject(e.App, projectId); err != nil {
+		log.Printf("Error creating predefined status configs for new project %s: %v", projectId, err)
 		// Don't fail project creation if status config creation fails
 		return e.Next()
 	}
@@ -744,6 +811,49 @@ func handleGetProjectUsers(e *core.RequestEvent) error {
 		return e.JSON(400, err.Error())
 	}
 	return e.JSON(200, users)
+}
+
+func handleToggleStatusConfig(e *core.RequestEvent) error {
+	statusConfigId := e.Request.PathValue("id")
+
+	// Fetch the status config
+	statusConfig, err := e.App.FindRecordById("status_configs", statusConfigId)
+	if err != nil {
+		log.Printf("Error finding status config %q: %v", statusConfigId, err)
+		return e.JSON(404, map[string]string{"error": "Status config not found"})
+	}
+
+	currentEnabled := statusConfig.GetBool("enabled")
+	newEnabled := !currentEnabled
+
+	// If disabling, check if any tasks are using this status
+	if !newEnabled {
+		var taskCount int
+		err := e.App.DB().NewQuery(`
+			SELECT COUNT(*) FROM tasks WHERE status_config = {:statusConfigId}
+		`).Bind(dbx.Params{"statusConfigId": statusConfigId}).Row(&taskCount)
+
+		if err != nil {
+			log.Printf("Error checking tasks for status config %q: %v", statusConfigId, err)
+			return e.JSON(500, map[string]string{"error": "Failed to check task usage"})
+		}
+
+		if taskCount > 0 {
+			return e.JSON(400, map[string]interface{}{
+				"error":      "Cannot disable status that is currently in use",
+				"task_count": taskCount,
+			})
+		}
+	}
+
+	// Toggle the enabled field
+	statusConfig.Set("enabled", newEnabled)
+	if err := e.App.Save(statusConfig); err != nil {
+		log.Printf("Error toggling status config %q: %v", statusConfigId, err)
+		return e.JSON(500, map[string]string{"error": "Failed to update status"})
+	}
+
+	return e.JSON(200, map[string]bool{"enabled": newEnabled})
 }
 
 // --- Notification Handlers ---

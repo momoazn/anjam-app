@@ -141,6 +141,7 @@ export type ProjectsRecord = {
 export type StatusConfigsRecord = {
 	color?: string
 	created: IsoAutoDateString
+	enabled?: boolean
 	icon?: string
 	id: string
 	is_canceled?: boolean

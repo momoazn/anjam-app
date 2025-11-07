@@ -75,6 +75,9 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
     { enabled: Boolean(selectedProjectId) },
   );
 
+  // Filter to only show enabled statuses
+  const enabledStatuses = statusConfigs?.filter((status) => status.enabled) || [];
+
   // Use projectUsers when in project context, otherwise use all users
   const assignees = projectId ? projectUsers : users;
 
@@ -225,7 +228,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           control={control}
           name="status_config"
           render={({ field }) => {
-            const selectedStatus = statusConfigs?.find((s) => s.id === field.value);
+            const selectedStatus = enabledStatuses.find((s) => s.id === field.value);
             const StatusIcon = selectedStatus
               ? getIconComponent(selectedStatus.icon)
               : TablerIcons.IconCircle;
@@ -248,7 +251,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {statusConfigs?.map((status) => {
+                      {enabledStatuses.map((status) => {
                         const Icon = getIconComponent(status.icon);
                         const colorClass = getColorClass(status.color);
                         return (
