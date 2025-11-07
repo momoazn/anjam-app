@@ -72,10 +72,12 @@ func main() {
 	// --- Bind Serve Event Handlers ---
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
+	app.OnServe().BindFunc(migrateProjectStatusConfigs)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
+	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectStatusConfigsCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
@@ -332,6 +334,212 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 
 // --- Record Event Handlers ---
 
+// DefaultStatusConfig represents a default status configuration
+type DefaultStatusConfig struct {
+	Key         string
+	Name        string
+	Color       string
+	Icon        string
+	Order       int
+	IsCompleted bool
+	IsCanceled  bool
+}
+
+// getDefaultStatusConfigs returns the default status configurations
+func getDefaultStatusConfigs() []DefaultStatusConfig {
+	return []DefaultStatusConfig{
+		{
+			Key:         "todo",
+			Name:        "Todo",
+			Color:       "gray",
+			Icon:        "IconCircle",
+			Order:       1,
+			IsCompleted: false,
+			IsCanceled:  false,
+		},
+		{
+			Key:         "in_progress",
+			Name:        "In Progress",
+			Color:       "yellow",
+			Icon:        "IconCircleHalf2",
+			Order:       2,
+			IsCompleted: false,
+			IsCanceled:  false,
+		},
+		{
+			Key:         "done",
+			Name:        "Done",
+			Color:       "purple",
+			Icon:        "IconCircleCheck",
+			Order:       3,
+			IsCompleted: true,
+			IsCanceled:  false,
+		},
+		{
+			Key:         "canceled",
+			Name:        "Canceled",
+			Color:       "gray",
+			Icon:        "IconCircleX",
+			Order:       4,
+			IsCompleted: false,
+			IsCanceled:  true,
+		},
+	}
+}
+
+// createDefaultStatusConfigsForProject creates default status configs for a project
+func createDefaultStatusConfigsForProject(app core.App, projectId string) error {
+	statusConfigsCollection, err := app.FindCollectionByNameOrId("status_configs")
+	if err != nil {
+		log.Printf("Error finding status_configs collection: %v", err)
+		return err
+	}
+
+	defaultStatuses := getDefaultStatusConfigs()
+	for _, status := range defaultStatuses {
+		record := core.NewRecord(statusConfigsCollection)
+		record.Set("project", projectId)
+		record.Set("key", status.Key)
+		record.Set("name", status.Name)
+		record.Set("color", status.Color)
+		record.Set("icon", status.Icon)
+		record.Set("order", status.Order)
+		record.Set("is_completed", status.IsCompleted)
+		record.Set("is_canceled", status.IsCanceled)
+
+		if err := app.Save(record); err != nil {
+			log.Printf("Error creating default status config %s for project %s: %v", status.Key, projectId, err)
+			return err
+		}
+	}
+
+	log.Printf("Created default status configs for project %s", projectId)
+	return nil
+}
+
+// migrateProjectStatusConfigs creates status configs for existing projects that don't have them
+func migrateProjectStatusConfigs(e *core.ServeEvent) error {
+	log.Println("Starting status configs migration for existing projects...")
+
+	// Get all projects
+	var projects []struct {
+		ID string `db:"id"`
+	}
+	err := e.App.DB().NewQuery("SELECT id FROM projects").All(&projects)
+	if err != nil && !strings.Contains(err.Error(), "no such table") {
+		log.Printf("Error fetching projects for migration: %v", err)
+		return e.Next()
+	}
+
+	if len(projects) == 0 {
+		log.Println("No projects found for status configs migration.")
+		return e.Next()
+	}
+
+	// For each project, check if it has status configs
+	for _, project := range projects {
+		var statusConfigCount int
+		err := e.App.DB().NewQuery(`
+			SELECT COUNT(*) FROM status_configs WHERE project = {:projectId}
+		`).Bind(dbx.Params{"projectId": project.ID}).Row(&statusConfigCount)
+
+		if err != nil && !strings.Contains(err.Error(), "no such table") {
+			log.Printf("Error checking status configs for project %s: %v", project.ID, err)
+			continue
+		}
+
+		if statusConfigCount == 0 {
+			if err := createDefaultStatusConfigsForProject(e.App, project.ID); err != nil {
+				log.Printf("Error creating default status configs for project %s: %v", project.ID, err)
+				continue
+			}
+
+			// Migrate existing tasks to use status_config
+			if err := migrateTasksToStatusConfig(e.App, project.ID); err != nil {
+				log.Printf("Error migrating tasks for project %s: %v", project.ID, err)
+			}
+		}
+	}
+
+	log.Println("Status configs migration completed.")
+	return e.Next()
+}
+
+// migrateTasksToStatusConfig updates tasks to use status_config based on their status field
+func migrateTasksToStatusConfig(app core.App, projectId string) error {
+	// Get status config mappings for this project
+	var statusConfigs []struct {
+		ID  string `db:"id"`
+		Key string `db:"key"`
+	}
+	err := app.DB().NewQuery(`
+		SELECT id, key FROM status_configs WHERE project = {:projectId}
+	`).Bind(dbx.Params{"projectId": projectId}).All(&statusConfigs)
+
+	if err != nil {
+		return err
+	}
+
+	// Create a map of key -> status_config_id
+	statusConfigMap := make(map[string]string)
+	for _, sc := range statusConfigs {
+		statusConfigMap[sc.Key] = sc.ID
+	}
+
+	// Get all tasks for this project that don't have a status_config
+	var tasks []struct {
+		ID     string `db:"id"`
+		Status string `db:"status"`
+	}
+	err = app.DB().NewQuery(`
+		SELECT id, status FROM tasks
+		WHERE project = {:projectId} AND (status_config IS NULL OR status_config = '')
+	`).Bind(dbx.Params{"projectId": projectId}).All(&tasks)
+
+	if err != nil && !strings.Contains(err.Error(), "no such column") {
+		return err
+	}
+
+	// Update each task with the appropriate status_config
+	tasksCollection, err := app.FindCollectionByNameOrId("tasks")
+	if err != nil {
+		return err
+	}
+
+	for _, task := range tasks {
+		statusConfigId, exists := statusConfigMap[task.Status]
+		if !exists {
+			log.Printf("Warning: No status config found for status %s, using 'todo' as default", task.Status)
+			statusConfigId = statusConfigMap["todo"]
+		}
+
+		taskRecord, err := app.FindRecordById(tasksCollection.Id, task.ID)
+		if err != nil {
+			log.Printf("Error finding task %s: %v", task.ID, err)
+			continue
+		}
+
+		taskRecord.Set("status_config", statusConfigId)
+		if err := app.Save(taskRecord); err != nil {
+			log.Printf("Error updating task %s with status_config: %v", task.ID, err)
+		}
+	}
+
+	log.Printf("Migrated %d tasks to use status_config for project %s", len(tasks), projectId)
+	return nil
+}
+
+// handleProjectStatusConfigsCreation creates default status configs after a project is created
+func handleProjectStatusConfigsCreation(e *core.RecordEvent) error {
+	projectId := e.Record.Id
+	if err := createDefaultStatusConfigsForProject(e.App, projectId); err != nil {
+		log.Printf("Error creating default status configs for new project %s: %v", projectId, err)
+		// Don't fail project creation if status config creation fails
+		return e.Next()
+	}
+	return e.Next()
+}
+
 func handleProjectCreation(e *core.RecordEvent) error {
 	if e.Record.GetString("code") != "" {
 		log.Printf("Project code (%q) already set for %q, skipping code generation.", e.Record.GetString("code"), e.Record.GetString("name"))
@@ -434,6 +642,30 @@ func getNextTaskNumber(app core.App, projectId string) (int, error) {
 }
 
 func setTaskDefaults(e *core.RecordEvent) {
+	// Set default status_config if not provided
+	if e.Record.GetString("status_config") == "" {
+		projectId := e.Record.GetString("project")
+		if projectId != "" {
+			// Get the default "todo" status config for this project
+			var statusConfig struct {
+				ID string `db:"id"`
+			}
+			err := e.App.DB().NewQuery(`
+				SELECT id FROM status_configs
+				WHERE project = {:projectId} AND key = 'todo'
+				LIMIT 1
+			`).Bind(dbx.Params{"projectId": projectId}).One(&statusConfig)
+
+			if err == nil && statusConfig.ID != "" {
+				e.Record.Set("status_config", statusConfig.ID)
+				log.Printf("Set default status_config for task: %s", statusConfig.ID)
+			} else {
+				log.Printf("Warning: Could not find default 'todo' status config for project %s: %v", projectId, err)
+			}
+		}
+	}
+
+	// Keep the old status field for backward compatibility
 	if e.Record.GetString("status") == "" {
 		e.Record.Set("status", "todo")
 	}

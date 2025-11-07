@@ -1342,10 +1342,23 @@
         "maxSelect": 1,
         "name": "status",
         "presentable": false,
-        "required": true,
+        "required": false,
         "system": false,
         "type": "select",
         "values": ["todo", "in_progress", "done", "canceled"]
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "pbc_status_configs",
+        "hidden": false,
+        "id": "relation_status_config",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "status_config",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
       },
       {
         "hidden": false,
@@ -1502,6 +1515,155 @@
       }
     ],
     "indexes": [],
+    "system": false
+  },
+  {
+    "id": "pbc_status_configs",
+    "listRule": "@request.auth.role = \"admin\" || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)",
+    "viewRule": "@request.auth.role = \"admin\" || project.supervisor.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)",
+    "createRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"supervisor\" && @request.body.project != \"\" && @collection.projects.id ?= @request.body.project && @collection.projects.supervisor.id ?= @request.auth.id)",
+    "updateRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id)",
+    "deleteRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id)",
+    "name": "status_configs",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "pbc_484305853",
+        "hidden": false,
+        "id": "relation_project_sc",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "project",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_name_sc",
+        "max": 100,
+        "min": 1,
+        "name": "name",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_key_sc",
+        "max": 50,
+        "min": 1,
+        "name": "key",
+        "pattern": "^[a-z0-9_]+$",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_color_sc",
+        "max": 50,
+        "min": 0,
+        "name": "color",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_icon_sc",
+        "max": 50,
+        "min": 0,
+        "name": "icon",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "number_order_sc",
+        "max": null,
+        "min": 0,
+        "name": "order",
+        "onlyInt": true,
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "hidden": false,
+        "id": "bool_is_completed_sc",
+        "name": "is_completed",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "bool_is_canceled_sc",
+        "name": "is_canceled",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_status_configs_project_key ON status_configs (project, key)"
+    ],
     "system": false
   }
 ]
