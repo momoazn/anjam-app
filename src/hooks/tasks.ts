@@ -76,7 +76,7 @@ export function useTasks(
 ) {
   const {
     projectId,
-    expandFields = "project,assignee",
+    expandFields = "project,assignee,status_config",
     mode = "paged",
     enabled = true,
   } = options;
