@@ -38,7 +38,6 @@ README.md
 *.md
 
 # Docker
-Dockerfile
 .dockerignore
 
 # Testing
@@ -54,6 +53,7 @@ pids
 *.pid
 *.seed
 *.pid.lock
+data
 
 # Optional npm cache directory
 .npm

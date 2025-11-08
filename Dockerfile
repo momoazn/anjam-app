@@ -1,25 +1,24 @@
 # Stage 1: Build Frontend (Bun + Node)
-FROM node:22-bullseye AS frontend-builder
+FROM node:22-bullseye-slim AS frontend-builder
+
+ARG BUN_VERSION=1.2.9
 
 # Install bun
-RUN npm install -g bun@1.2.9
+RUN npm install -g "bun@${BUN_VERSION}"
 
 # Set working directory
 WORKDIR /app
 
 # Copy package files
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
+
+# Install dependencies using the locked configuration
+RUN bun install --frozen-lockfile
+
+# Copy configuration needed for the build plus source/public assets
+COPY index.html ./
 COPY vite.config.ts ./
-COPY tsconfig.json ./
-COPY tsconfig.app.json ./
-COPY tsconfig.node.json ./
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
-
-# Install dependencies
-RUN bun install
-
-# Copy source code
+COPY tsconfig*.json ./
 COPY src ./src
 COPY public ./public
 
