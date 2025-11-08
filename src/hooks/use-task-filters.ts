@@ -81,6 +81,9 @@ export function useTaskFilters(
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];
     return tasks.filter((task) => {
+      if (task.deleted_at) {
+        return false;
+      }
       // Search logic
       const matchesSearch =
         task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

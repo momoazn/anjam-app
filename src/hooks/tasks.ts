@@ -29,7 +29,7 @@ function getTasks(
   mode: "paged" | "full" = "paged",
 ): Promise<TaskWithProject[]> {
   const currentUser = pb.authStore.record as UsersResponse | null;
-  const filters: string[] = [];
+  const filters: string[] = ['(deleted_at = "" || deleted_at = null)'];
 
   // Apply role-based filtering
   if (currentUser?.role === UsersRoleOptions.employee) {
@@ -98,7 +98,13 @@ export function useTask(options: { id: string; enabled?: boolean }) {
 
   return useQuery({
     queryKey: queryKeys.tasks.detail(id),
-    queryFn: () => pb.collection("tasks").getOne<TaskWithProject>(id),
+    queryFn: async () => {
+      const task = await pb.collection("tasks").getOne<TaskWithProject>(id);
+      if (task.deleted_at) {
+        throw new Error("Task not found");
+      }
+      return task;
+    },
     enabled: enabled && Boolean(id),
   });
 }
@@ -245,22 +251,25 @@ export function useUpdateTask(
 }
 
 /**
- * Hook to delete a task
+ * Hook to soft delete a task
  * @param options - Mutation options
- * @returns Mutation function for deleting tasks
+ * @returns Mutation function for soft deleting tasks
  */
 export function useDeleteTask(
-  options?: UseMutationOptions<void, Error, string>,
+  options?: UseMutationOptions<TasksResponse, Error, string>,
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    ...(options ?? {}),
     mutationFn: async (id: string) => {
-      await pb.collection("tasks").delete(id);
+      return pb.collection("tasks").update<TasksResponse>(id, {
+        deleted_at: new Date().toISOString(),
+      });
     },
-    onSuccess: () => {
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      options?.onSuccess?.(data, variables, context);
     },
-    ...options,
   });
 }

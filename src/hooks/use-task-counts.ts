@@ -14,7 +14,7 @@ export function useTaskCounts() {
     const tasksData = queryClient.getQueryData<TaskWithProject[]>(
       queryKeys.tasks.list(undefined, "project,assignee", "full"),
     );
-    return tasksData || [];
+    return (tasksData || []).filter((task) => !task.deleted_at);
   }, [queryClient]);
 
   const counts = useMemo(() => {
