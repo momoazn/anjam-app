@@ -11,6 +11,16 @@ import { TaskFields } from "@/components/forms/task-fields";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogTitle,
@@ -20,6 +30,7 @@ import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { fa } from "@/constants/text";
 import { useComments } from "@/hooks/comments";
+import { useDeleteTask } from "@/hooks/tasks";
 import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
 import {
   TasksPriorityOptions,
@@ -185,10 +196,22 @@ export function TaskDetailsDialog({
   onEdit,
 }: TaskDetailsDialogProps) {
   const [open, setOpen] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { data: comments = [], isLoading: commentsLoading } = useComments(
     task.id,
     { enabled: open },
   );
+
+  const deleteTask = useDeleteTask({
+    onSuccess: () => {
+      toast.success(fa.tasks.delete.success);
+      setShowDeleteDialog(false);
+      setOpen(false);
+    },
+    onError: (error) => {
+      toast.error(fa.tasks.delete.error.replace("{error}", error.message));
+    },
+  });
 
   // Time tracking state
   const authUser = useAuthUser();
@@ -307,6 +330,19 @@ export function TaskDetailsDialog({
                   }}
                 >
                   ویرایش
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setShowDeleteDialog(true)}
+                  disabled={deleteTask.isPending}
+                >
+                  {deleteTask.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  {deleteTask.isPending
+                    ? fa.tasks.details.buttons.deleting
+                    : fa.tasks.details.buttons.delete}
                 </Button>
               </div>
             </div>
@@ -465,6 +501,36 @@ export function TaskDetailsDialog({
           </div>
         </div>
       </DialogContent>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="text-right">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-right text-lg font-bold">
+              {fa.tasks.delete.title}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground text-right">
+              {fa.tasks.delete.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
+            <AlertDialogCancel
+              className="order-2"
+              disabled={deleteTask.isPending}
+            >
+              {fa.tasks.delete.cancel}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteTask.mutate(task.id)}
+              disabled={deleteTask.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
+            >
+              {deleteTask.isPending ? (
+                <Loader2 className="ml-2 h-4 w-4 animate-spin text-muted-foreground" />
+              ) : null}
+              {fa.tasks.delete.confirm}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

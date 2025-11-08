@@ -1431,6 +1431,20 @@
         "type": "number"
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_tasks_deleted_at",
+        "max": 64,
+        "min": 0,
+        "name": "deleted_at",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
         "hidden": false,
         "id": "autodate2990389176",
         "name": "created",

@@ -545,6 +545,8 @@ export const fa = {
         save: "ذخیره",
         saving: "در حال ذخیره...",
         cancel: "انصراف",
+        delete: "حذف تسک",
+        deleting: "در حال حذف...",
       },
     },
 
@@ -558,6 +560,17 @@ export const fa = {
         saving: "در حال ذخیره...",
         cancel: "انصراف",
       },
+    },
+
+    // Delete task
+    delete: {
+      title: "حذف تسک",
+      description:
+        "آیا از حذف این تسک اطمینان دارید؟ پس از حذف، این تسک دیگر در فهرست‌ها نمایش داده نخواهد شد.",
+      confirm: "حذف تسک",
+      cancel: "انصراف",
+      success: "تسک با موفقیت حذف شد",
+      error: "خطا در حذف تسک: {error}",
     },
   },
 
