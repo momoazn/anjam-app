@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  task-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    volumes:
+      # Mount data directory to persist database across container restarts
+      - task-manager-data:/app/data
+    environment:
+      # Set to false in production to prevent default admin creation
+      # after the first run
+      - TM_ALLOW_DEFAULT_ACCOUNTS=true
+    # Restart policy
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "/app/task-manager", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  task-manager-data:
+    driver: local
