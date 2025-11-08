@@ -30,13 +30,6 @@ var staticFiles embed.FS
 //go:embed pb_schema.json
 var schemaJSON []byte
 
-type BasicUser struct {
-	ID        string `json:"id"`
-	Username  string `json:"username"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-}
-
 func allowDefaultCredentials(app core.App) bool {
 	if app.IsDev() {
 		return true
@@ -87,7 +80,6 @@ func main() {
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.GET("/api/tm/projects/{id}/users", handleGetProjectUsers)
 		se.Router.PATCH("/api/tm/status-configs/{id}/toggle", handleToggleStatusConfig)
 
 		return se.Next()
@@ -739,24 +731,6 @@ func setTaskDefaults(e *core.RecordEvent) {
 	}
 }
 
-func handleGetProjectUsers(e *core.RequestEvent) error {
-	projectId := e.Request.PathValue("id")
-	var users []BasicUser
-	query := `
-		SELECT * FROM users
-		WHERE id IN (
-			SELECT user FROM users_projects
-			WHERE project = {:projectId}
-		)
-	`
-	err := e.App.DB().NewQuery(query).Bind(dbx.Params{"projectId": projectId}).All(&users)
-	if err != nil {
-		log.Printf("Error fetching project users for project %q: %v", projectId, err)
-		return e.JSON(400, err.Error())
-	}
-	return e.JSON(200, users)
-}
-
 func handleToggleStatusConfig(e *core.RequestEvent) error {
 	statusConfigId := e.Request.PathValue("id")
 
@@ -802,8 +776,8 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 	if !newEnabled {
 		var taskCount int
 		err := e.App.DB().NewQuery(`
-                        SELECT COUNT(*) FROM tasks WHERE status_config = {:statusConfigId}
-                `).Bind(dbx.Params{"statusConfigId": statusConfigId}).Row(&taskCount)
+			SELECT COUNT(*) FROM tasks WHERE status_config = {:statusConfigId}
+		`).Bind(dbx.Params{"statusConfigId": statusConfigId}).Row(&taskCount)
 
 		if err != nil {
 			log.Printf("Error checking tasks for status config %q: %v", statusConfigId, err)
@@ -814,9 +788,9 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 		statusKey := statusConfig.GetString("key")
 		if projectId != "" && statusKey != "" {
 			legacyErr := e.App.DB().NewQuery(`
-                                SELECT COUNT(*) FROM tasks
-                                WHERE project = {:projectId} AND status = {:statusKey}
-                        `).Bind(dbx.Params{"projectId": projectId, "statusKey": statusKey}).Row(&legacyCount)
+				SELECT COUNT(*) FROM tasks
+				WHERE project = {:projectId} AND status = {:statusKey}
+			`).Bind(dbx.Params{"projectId": projectId, "statusKey": statusKey}).Row(&legacyCount)
 
 			if legacyErr != nil {
 				log.Printf("Error checking legacy status usage for %q: %v", statusConfigId, legacyErr)
