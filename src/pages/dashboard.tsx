@@ -21,7 +21,6 @@ import {
   ListTodo,
   Plus,
   Target,
-  TrendingUp,
 } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -349,47 +348,6 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           )}
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-                <TrendingUp className="h-4 w-4 md:h-5 md:w-5" />
-                {fa.dashboard.quickActions}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 md:space-y-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start gap-2 text-xs md:text-sm"
-                  onClick={() => navigate("/tasks")}
-                >
-                  <ListTodo className="h-3 w-3 md:h-4 md:w-4" />
-                  {fa.dashboard.viewAllTasks}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start gap-2 text-xs md:text-sm"
-                  onClick={() => navigate("/projects")}
-                >
-                  <Target className="h-3 w-3 md:h-4 md:w-4" />
-                  {fa.dashboard.manageProjects}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start gap-2 text-xs md:text-sm"
-                  onClick={() => navigate("/reports")}
-                >
-                  <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
-                  {fa.dashboard.viewReports}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </PageTransition>
