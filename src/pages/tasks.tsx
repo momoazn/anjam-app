@@ -88,7 +88,10 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
         className="flex flex-col items-center justify-center py-12 text-center"
         data-animate-stagger
       >
-        <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full" data-interactive-pulse>
+        <div
+          className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full"
+          data-interactive-pulse
+        >
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">

@@ -340,11 +340,17 @@ export default function Reports() {
   if (isLoading) {
     return (
       <PageTransition className="container mx-auto space-y-6 p-4 md:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" data-animate-stagger>
+        <div
+          className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+          data-animate-stagger
+        >
           <Skeleton className="h-8 w-48" />
         </div>
         <Skeleton className="h-16 w-full" />
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-5" data-animate-stagger>
+        <div
+          className="grid grid-cols-2 gap-4 md:grid-cols-5"
+          data-animate-stagger
+        >
           {[...Array(5)].map((_, i) => (
             <Card key={i}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -357,7 +363,10 @@ export default function Reports() {
             </Card>
           ))}
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2" data-animate-stagger>
+        <div
+          className="grid grid-cols-1 gap-6 md:grid-cols-2"
+          data-animate-stagger
+        >
           {[...Array(4)].map((_, i) => (
             <Card key={i}>
               <CardHeader className="pb-4">
@@ -430,8 +439,15 @@ export default function Reports() {
         </TabsList>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6" data-animate-stagger>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2" data-animate-stagger>
+        <TabsContent
+          value="overview"
+          className="space-y-6"
+          data-animate-stagger
+        >
+          <div
+            className="grid grid-cols-1 gap-6 md:grid-cols-2"
+            data-animate-stagger
+          >
             <Card role="region" aria-label={fa.reports.charts.timeliness.title}>
               <CardHeader className="pb-4 text-right">
                 <div className="flex items-center gap-2">
@@ -687,8 +703,15 @@ export default function Reports() {
         </TabsContent>
 
         {/* Insights Tab (space for future visualizations) */}
-        <TabsContent value="insights" className="space-y-6" data-animate-stagger>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2" data-animate-stagger>
+        <TabsContent
+          value="insights"
+          className="space-y-6"
+          data-animate-stagger
+        >
+          <div
+            className="grid grid-cols-1 gap-6 md:grid-cols-2"
+            data-animate-stagger
+          >
             <Suspense fallback={<Skeleton className="h-80 w-full" />}>
               <div dir="ltr">
                 <OvertimeAnalysisChart data={overtimeAnalysis} />

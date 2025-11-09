@@ -193,7 +193,10 @@ export default function ProjectDetails() {
     return (
       <PageTransition className="container mx-auto p-6">
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12" data-animate-stagger>
+          <CardContent
+            className="flex flex-col items-center justify-center py-12"
+            data-animate-stagger
+          >
             <Folder className="text-muted-foreground mb-4 h-12 w-12" />
             <p className="text-muted-foreground">پروژه یافت نشد</p>
             <Button
@@ -217,10 +220,7 @@ export default function ProjectDetails() {
   const inProgressTasks =
     tasks?.filter((task) => task.status === "in_progress").length || 0;
   const totalTimeSpent =
-    tasks?.reduce(
-      (sum, task) => sum + (task.time_spent_minutes || 0),
-      0,
-    ) || 0;
+    tasks?.reduce((sum, task) => sum + (task.time_spent_minutes || 0), 0) || 0;
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -300,7 +300,10 @@ export default function ProjectDetails() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3" data-animate-stagger>
+      <div
+        className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+        data-animate-stagger
+      >
         {/* Main Content */}
         <div className="space-y-6 lg:col-span-2">
           {/* Project Information */}
@@ -423,24 +426,27 @@ export default function ProjectDetails() {
                 <>
                   {/* Existing Files */}
                   {project.assets && project.assets.length > 0 && (
-                      <div className="space-y-2" data-animate-stagger>
-                        <h4 className="text-sm font-medium">
-                          {fa.projects.files.existingFiles}
-                        </h4>
-                        <div className="grid grid-cols-1 gap-2" data-animate-stagger>
-                          {project.assets
-                            .filter(
-                              (filename) => !filesToDelete.includes(filename),
-                            )
-                            .map((filename, index) => (
-                              <div
-                                key={`${filename}-${index}`}
-                                className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
-                                data-interactive-item
-                              >
-                                <span className="flex-1 truncate text-sm">
-                                  {filename}
-                                </span>
+                    <div className="space-y-2" data-animate-stagger>
+                      <h4 className="text-sm font-medium">
+                        {fa.projects.files.existingFiles}
+                      </h4>
+                      <div
+                        className="grid grid-cols-1 gap-2"
+                        data-animate-stagger
+                      >
+                        {project.assets
+                          .filter(
+                            (filename) => !filesToDelete.includes(filename),
+                          )
+                          .map((filename, index) => (
+                            <div
+                              key={`${filename}-${index}`}
+                              className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
+                              data-interactive-item
+                            >
+                              <span className="flex-1 truncate text-sm">
+                                {filename}
+                              </span>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -476,9 +482,7 @@ export default function ProjectDetails() {
           </Card>
 
           {/* Status Management - Only visible to admins and project supervisors */}
-          {canEdit && id && (
-            <ProjectStatusManager projectId={id} />
-          )}
+          {canEdit && id && <ProjectStatusManager projectId={id} />}
         </div>
 
         {/* Sidebar */}
@@ -498,13 +502,19 @@ export default function ProjectDetails() {
                 </div>
               ) : (
                 <>
-                  <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3" data-interactive-item>
+                  <div
+                    className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
+                    data-interactive-item
+                  >
                     <span className="text-sm font-medium">
                       {fa.projects.details.totalTasks}
                     </span>
                     <span className="text-2xl font-bold">{totalTasks}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-green-500/10 p-3" data-interactive-item>
+                  <div
+                    className="flex items-center justify-between rounded-lg bg-green-500/10 p-3"
+                    data-interactive-item
+                  >
                     <span className="text-sm font-medium">
                       {fa.projects.details.completedTasks}
                     </span>
@@ -512,7 +522,10 @@ export default function ProjectDetails() {
                       {completedTasks}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-blue-500/10 p-3" data-interactive-item>
+                  <div
+                    className="flex items-center justify-between rounded-lg bg-blue-500/10 p-3"
+                    data-interactive-item
+                  >
                     <span className="text-sm font-medium">
                       {fa.projects.details.inProgressTasks}
                     </span>
@@ -520,7 +533,10 @@ export default function ProjectDetails() {
                       {inProgressTasks}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-purple-500/10 p-3" data-interactive-item>
+                  <div
+                    className="flex items-center justify-between rounded-lg bg-purple-500/10 p-3"
+                    data-interactive-item
+                  >
                     <span className="text-sm font-medium">
                       {fa.projects.details.totalTimeSpent}
                     </span>
@@ -572,7 +588,10 @@ function ProjectDetailsSkeleton() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3" data-animate-stagger>
+      <div
+        className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+        data-animate-stagger
+      >
         <div className="space-y-6 lg:col-span-2" data-animate-stagger>
           <Card>
             <CardHeader>

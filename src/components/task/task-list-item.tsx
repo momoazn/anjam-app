@@ -72,7 +72,9 @@ export function TaskListItem({
   const editBtnRef = useRef<HTMLButtonElement | null>(null);
 
   // Get custom status config if available, otherwise fall back to default
-  const statusConfig = task.expand?.status_config as StatusConfigsRecord | undefined;
+  const statusConfig = task.expand?.status_config as
+    | StatusConfigsRecord
+    | undefined;
   const StatusIcon = statusConfig
     ? getIconComponent(statusConfig.icon)
     : taskStatusIcons[task.status];

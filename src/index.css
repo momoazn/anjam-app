@@ -324,7 +324,9 @@
   }
 
   [data-interactive-card] {
-    transition: transform 220ms ease, box-shadow 220ms ease;
+    transition:
+      transform 220ms ease,
+      box-shadow 220ms ease;
   }
 
   [data-interactive-card]:hover,
@@ -340,7 +342,10 @@
 
   [data-interactive-item] {
     position: relative;
-    transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+    transition:
+      transform 200ms ease,
+      background-color 200ms ease,
+      box-shadow 200ms ease;
   }
 
   [data-interactive-item]::after {
@@ -354,7 +359,9 @@
     border-radius: 9999px;
     background: color-mix(in srgb, var(--color-primary) 30%, transparent);
     opacity: 0;
-    transition: opacity 200ms ease, transform 200ms ease;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
   }
 
   [data-interactive-item]:hover {

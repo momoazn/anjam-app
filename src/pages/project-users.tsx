@@ -242,7 +242,10 @@ export default function ProjectUsers() {
                       size="icon"
                       className="text-destructive"
                       onClick={() => {
-                        setUserToRemove({ id: user.id, username: user.username });
+                        setUserToRemove({
+                          id: user.id,
+                          username: user.username,
+                        });
                         setIsRemoveDialogOpen(true);
                       }}
                       disabled={isRemovingUser}

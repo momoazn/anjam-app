@@ -65,9 +65,10 @@ export function parseTimeInput(hours: number, minutes: number): number {
  * @param minutes - Total minutes
  * @returns Object with hours and minutes
  */
-export function minutesToHoursAndMinutes(
-  minutes: number | null | undefined,
-): { hours: number; minutes: number } {
+export function minutesToHoursAndMinutes(minutes: number | null | undefined): {
+  hours: number;
+  minutes: number;
+} {
   if (minutes == null || minutes <= 0) {
     return { hours: 0, minutes: 0 };
   }

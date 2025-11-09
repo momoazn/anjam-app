@@ -82,7 +82,10 @@ export default function Helps() {
               <h3 className="mb-2 text-base font-semibold md:text-lg">
                 {fa.helps.content.gettingStarted.keyboardShortcuts.title}
               </h3>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" data-animate-stagger>
+              <div
+                className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+                data-animate-stagger
+              >
                 <div className="rounded border p-2" data-interactive-item>
                   <code className="text-sm">Ctrl/Cmd + K</code>
                   <span className="text-muted-foreground mr-2">

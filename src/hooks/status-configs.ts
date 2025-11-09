@@ -63,7 +63,8 @@ export function useStatusConfig(
 
   return useQuery({
     queryKey: queryKeys.statusConfigs.detail(id),
-    queryFn: () => pb.collection("status_configs").getOne<StatusConfigsResponse>(id),
+    queryFn: () =>
+      pb.collection("status_configs").getOne<StatusConfigsResponse>(id),
     enabled: enabled && Boolean(id),
   });
 }
@@ -113,7 +114,13 @@ export function useUpdateStatusConfig(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<StatusConfigsRecord> }) =>
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<StatusConfigsRecord>;
+    }) =>
       pb.collection("status_configs").update<StatusConfigsResponse>(id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.statusConfigs.all });
@@ -136,7 +143,11 @@ export function useUpdateStatusConfig(
  * @returns Mutation function for deleting status configs
  */
 export function useDeleteStatusConfig(
-  options?: UseMutationOptions<boolean, Error, { id: string; projectId: string }>,
+  options?: UseMutationOptions<
+    boolean,
+    Error,
+    { id: string; projectId: string }
+  >,
 ) {
   const queryClient = useQueryClient();
 

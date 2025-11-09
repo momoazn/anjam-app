@@ -382,10 +382,10 @@ export function TaskDetailsDialog({
             </div>
 
             {/* Time Tracking Section */}
-            <div className="rounded-lg border bg-muted/30 p-4">
+            <div className="bg-muted/30 rounded-lg border p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-primary" />
+                  <Clock className="text-primary h-5 w-5" />
                   <h3 className="font-medium">
                     {fa.tasks.details.timeTracking.title}
                   </h3>
@@ -457,7 +457,7 @@ export function TaskDetailsDialog({
                 </div>
               ) : (
                 <div className="mt-2">
-                  <p className="text-2xl font-semibold text-primary">
+                  <p className="text-primary text-2xl font-semibold">
                     {formatTimeSpent(task.time_spent_minutes) ||
                       fa.tasks.details.timeTracking.noTimeTracked}
                   </p>
@@ -524,7 +524,7 @@ export function TaskDetailsDialog({
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
             >
               {deleteTask.isPending ? (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin text-muted-foreground" />
+                <Loader2 className="text-muted-foreground ml-2 h-4 w-4 animate-spin" />
               ) : null}
               {fa.tasks.delete.confirm}
             </AlertDialogAction>
