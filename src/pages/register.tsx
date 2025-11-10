@@ -12,15 +12,14 @@ import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 
+// PocketBase doesn't expose `password`/`tokenKey` on auth responses in prod
 function isUsersRecord(record: object | null): record is UsersRecord {
   return (
     record !== null &&
     typeof record === "object" &&
     "id" in record &&
     "username" in record &&
-    "role" in record &&
-    "password" in record &&
-    "tokenKey" in record
+    "role" in record
   );
 }
 

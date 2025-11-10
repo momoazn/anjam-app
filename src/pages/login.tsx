@@ -12,15 +12,15 @@ import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 
+// In production, PocketBase auth response record doesn't include sensitive fields
+// like `password` or `tokenKey`. Use a minimal runtime check.
 function isUsersRecord(record: object | null): record is UsersRecord {
   return (
     record !== null &&
     typeof record === "object" &&
     "id" in record &&
     "username" in record &&
-    "role" in record &&
-    "password" in record &&
-    "tokenKey" in record
+    "role" in record
   );
 }
 
