@@ -25,8 +25,8 @@ import { Loader2 } from "lucide-react";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
-  code: z.string().length(3, {
-    message: fa.projects.create.form.codeLength,
+  code: z.string().min(1, {
+    message: fa.projects.create.form.codeRequired,
   }),
   description: z.string().optional(),
   assets: z.array(z.instanceof(File)).optional(),

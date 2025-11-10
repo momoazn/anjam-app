@@ -167,8 +167,8 @@ export default function ProjectDetails() {
       toast.error(fa.projects.create.form.nameRequired);
       return;
     }
-    if (editedCode.length !== 3) {
-      toast.error(fa.projects.create.form.codeLength);
+    if (!editedCode.trim()) {
+      toast.error(fa.projects.create.form.codeRequired);
       return;
     }
 
