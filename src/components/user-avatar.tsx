@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fa } from "@/constants/text";
+import { cn } from "@/lib/utils";
 
 function getUserInitials({
   first_name,
@@ -28,17 +29,21 @@ type UserAvatarProps = {
     avatar?: string;
   };
   showUnassigned?: boolean;
+  className?: string;
 };
 
 export function UserAvatar({
   user,
   username,
   showUnassigned = false,
+  className,
 }: UserAvatarProps) {
+  const avatarClassName = cn("ring-sidebar-border/10 ring-2", className || "h-10 w-10");
+  
   // If we have a user object, use it
   if (user) {
     return (
-      <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+      <Avatar className={avatarClassName}>
         <AvatarImage src={user.avatar} className="object-cover" />
         <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground text-sm font-semibold">
           {getUserInitials({
@@ -54,7 +59,7 @@ export function UserAvatar({
   // If we have a username (even if it's an ID), show initials
   if (username) {
     return (
-      <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+      <Avatar className={avatarClassName}>
         <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
           {getUserInitials({ username })}
         </AvatarFallback>
@@ -65,7 +70,7 @@ export function UserAvatar({
   // Show unassigned indicator if explicitly requested
   if (showUnassigned) {
     return (
-      <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+      <Avatar className={avatarClassName}>
         <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
           {fa.tasks.addTask.unassigned}
         </AvatarFallback>
@@ -75,7 +80,7 @@ export function UserAvatar({
 
   // Fallback for no data
   return (
-    <Avatar className="ring-sidebar-border/10 h-10 w-10 ring-2">
+    <Avatar className={avatarClassName}>
       <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
         ?
       </AvatarFallback>
