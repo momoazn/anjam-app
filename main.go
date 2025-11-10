@@ -19,7 +19,6 @@ import (
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
-	"github.com/pocketbase/pocketbase/cmd"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/security"
 )
@@ -65,12 +64,10 @@ func main() {
 	// --- Bind Serve Event Handlers ---
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
-	app.OnServe().BindFunc(migrateProjectStatusConfigs)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
-	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectStatusConfigsCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
@@ -149,15 +146,14 @@ func startApp(app *pocketbase.PocketBase) {
 		if err := app.Bootstrap(); err != nil {
 			log.Fatalf("Failed to bootstrap app: %v", err)
 		}
-		serveCmd := cmd.NewServeCommand(app, false)
-		// Avoid treating the literal token "serve" as a domain arg
-		serveCmd.SetArgs(cleanServeArgs(os.Args[1:]))
-		// If user didn't pass --https, default it to empty to prevent redirects
-		if !hasFlag(os.Args[1:], "--https") {
-			_ = serveCmd.Flags().Set("https", "")
-		}
-		if err := serveCmd.Execute(); err != nil {
-			log.Fatalf("Failed to execute serve command: %v", err)
+
+		// Start HTTP server on 0.0.0.0:8090 for container environments
+		log.Println("Starting HTTP server on 0.0.0.0:8090...")
+		if err := apis.Serve(app, apis.ServeConfig{
+			HttpAddr: "0.0.0.0:8090",
+			ShowStartBanner: true,
+		}); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
 		}
 	}
 }
@@ -324,278 +320,6 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 }
 
 // --- Record Event Handlers ---
-
-// PredefinedStatusConfig represents a predefined status configuration
-type PredefinedStatusConfig struct {
-	Key         string
-	Name        string
-	Color       string
-	Icon        string
-	Order       int
-	IsCompleted bool
-	IsCanceled  bool
-	IsDefault   bool // Default statuses are enabled by default
-}
-
-// getPredefinedStatusConfigs returns all predefined status configurations
-func getPredefinedStatusConfigs() []PredefinedStatusConfig {
-	return []PredefinedStatusConfig{
-		{
-			Key:         "todo",
-			Name:        "انجام نشده",
-			Color:       "gray",
-			Icon:        "IconCircle",
-			Order:       1,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   true,
-		},
-		{
-			Key:         "in_progress",
-			Name:        "در حال انجام",
-			Color:       "yellow",
-			Icon:        "IconCircleHalf2",
-			Order:       2,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   true,
-		},
-		{
-			Key:         "pending",
-			Name:        "در انتظار",
-			Color:       "orange",
-			Icon:        "IconClock",
-			Order:       3,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   true,
-		},
-		{
-			Key:         "done",
-			Name:        "انجام شده",
-			Color:       "green",
-			Icon:        "IconCircleCheck",
-			Order:       4,
-			IsCompleted: true,
-			IsCanceled:  false,
-			IsDefault:   true,
-		},
-		{
-			Key:         "canceled",
-			Name:        "لغو شده",
-			Color:       "red",
-			Icon:        "IconCircleX",
-			Order:       5,
-			IsCompleted: false,
-			IsCanceled:  true,
-			IsDefault:   true,
-		},
-		{
-			Key:         "blocked",
-			Name:        "مسدود شده",
-			Color:       "red",
-			Icon:        "IconAlertCircle",
-			Order:       6,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   false,
-		},
-		{
-			Key:         "review",
-			Name:        "در حال بررسی",
-			Color:       "blue",
-			Icon:        "IconEye",
-			Order:       7,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   false,
-		},
-		{
-			Key:         "testing",
-			Name:        "در حال تست",
-			Color:       "purple",
-			Icon:        "IconTestPipe",
-			Order:       8,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   false,
-		},
-		{
-			Key:         "ready",
-			Name:        "آماده",
-			Color:       "green",
-			Icon:        "IconCircleCheck",
-			Order:       9,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   false,
-		},
-		{
-			Key:         "on_hold",
-			Name:        "متوقف شده",
-			Color:       "gray",
-			Icon:        "IconPlayerPause",
-			Order:       10,
-			IsCompleted: false,
-			IsCanceled:  false,
-			IsDefault:   false,
-		},
-	}
-}
-
-// createPredefinedStatusConfigsForProject creates all predefined status configs for a project
-func createPredefinedStatusConfigsForProject(app core.App, projectId string) error {
-	statusConfigsCollection, err := app.FindCollectionByNameOrId("status_configs")
-	if err != nil {
-		log.Printf("Error finding status_configs collection: %v", err)
-		return err
-	}
-
-	predefinedStatuses := getPredefinedStatusConfigs()
-	for _, status := range predefinedStatuses {
-		record := core.NewRecord(statusConfigsCollection)
-		record.Set("project", projectId)
-		record.Set("key", status.Key)
-		record.Set("name", status.Name)
-		record.Set("color", status.Color)
-		record.Set("icon", status.Icon)
-		record.Set("order", status.Order)
-		record.Set("is_completed", status.IsCompleted)
-		record.Set("is_canceled", status.IsCanceled)
-		record.Set("enabled", status.IsDefault) // Enable default statuses, disable others
-
-		if err := app.Save(record); err != nil {
-			log.Printf("Error creating status config %s for project %s: %v", status.Key, projectId, err)
-			return err
-		}
-	}
-
-	log.Printf("Created all predefined status configs for project %s", projectId)
-	return nil
-}
-
-// migrateProjectStatusConfigs creates status configs for existing projects that don't have them
-func migrateProjectStatusConfigs(e *core.ServeEvent) error {
-	log.Println("Starting status configs migration for existing projects...")
-
-	// Get all projects
-	var projects []struct {
-		ID string `db:"id"`
-	}
-	err := e.App.DB().NewQuery("SELECT id FROM projects").All(&projects)
-	if err != nil && !strings.Contains(err.Error(), "no such table") {
-		log.Printf("Error fetching projects for migration: %v", err)
-		return e.Next()
-	}
-
-	if len(projects) == 0 {
-		log.Println("No projects found for status configs migration.")
-		return e.Next()
-	}
-
-	// For each project, check if it has status configs
-	for _, project := range projects {
-		var statusConfigCount int
-		err := e.App.DB().NewQuery(`
-			SELECT COUNT(*) FROM status_configs WHERE project = {:projectId}
-		`).Bind(dbx.Params{"projectId": project.ID}).Row(&statusConfigCount)
-
-		if err != nil && !strings.Contains(err.Error(), "no such table") {
-			log.Printf("Error checking status configs for project %s: %v", project.ID, err)
-			continue
-		}
-
-		if statusConfigCount == 0 {
-			if err := createPredefinedStatusConfigsForProject(e.App, project.ID); err != nil {
-				log.Printf("Error creating predefined status configs for project %s: %v", project.ID, err)
-				continue
-			}
-
-			// Migrate existing tasks to use status_config
-			if err := migrateTasksToStatusConfig(e.App, project.ID); err != nil {
-				log.Printf("Error migrating tasks for project %s: %v", project.ID, err)
-			}
-		}
-	}
-
-	log.Println("Status configs migration completed.")
-	return e.Next()
-}
-
-// migrateTasksToStatusConfig updates tasks to use status_config based on their status field
-func migrateTasksToStatusConfig(app core.App, projectId string) error {
-	// Get status config mappings for this project
-	var statusConfigs []struct {
-		ID  string `db:"id"`
-		Key string `db:"key"`
-	}
-	err := app.DB().NewQuery(`
-		SELECT id, key FROM status_configs WHERE project = {:projectId}
-	`).Bind(dbx.Params{"projectId": projectId}).All(&statusConfigs)
-
-	if err != nil {
-		return err
-	}
-
-	// Create a map of key -> status_config_id
-	statusConfigMap := make(map[string]string)
-	for _, sc := range statusConfigs {
-		statusConfigMap[sc.Key] = sc.ID
-	}
-
-	// Get all tasks for this project that don't have a status_config
-	var tasks []struct {
-		ID     string `db:"id"`
-		Status string `db:"status"`
-	}
-	err = app.DB().NewQuery(`
-		SELECT id, status FROM tasks
-		WHERE project = {:projectId} AND (status_config IS NULL OR status_config = '')
-	`).Bind(dbx.Params{"projectId": projectId}).All(&tasks)
-
-	if err != nil && !strings.Contains(err.Error(), "no such column") {
-		return err
-	}
-
-	// Update each task with the appropriate status_config
-	tasksCollection, err := app.FindCollectionByNameOrId("tasks")
-	if err != nil {
-		return err
-	}
-
-	for _, task := range tasks {
-		statusConfigId, exists := statusConfigMap[task.Status]
-		if !exists {
-			log.Printf("Warning: No status config found for status %s, using 'todo' as default", task.Status)
-			statusConfigId = statusConfigMap["todo"]
-		}
-
-		taskRecord, err := app.FindRecordById(tasksCollection.Id, task.ID)
-		if err != nil {
-			log.Printf("Error finding task %s: %v", task.ID, err)
-			continue
-		}
-
-		taskRecord.Set("status_config", statusConfigId)
-		if err := app.Save(taskRecord); err != nil {
-			log.Printf("Error updating task %s with status_config: %v", task.ID, err)
-		}
-	}
-
-	log.Printf("Migrated %d tasks to use status_config for project %s", len(tasks), projectId)
-	return nil
-}
-
-// handleProjectStatusConfigsCreation creates predefined status configs after a project is created
-func handleProjectStatusConfigsCreation(e *core.RecordEvent) error {
-	projectId := e.Record.Id
-	if err := createPredefinedStatusConfigsForProject(e.App, projectId); err != nil {
-		log.Printf("Error creating predefined status configs for new project %s: %v", projectId, err)
-		// Don't fail project creation if status config creation fails
-		return e.Next()
-	}
-	return e.Next()
-}
 
 func handleProjectCreation(e *core.RecordEvent) error {
 	if e.Record.GetString("code") != "" {
