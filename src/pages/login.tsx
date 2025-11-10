@@ -135,9 +135,7 @@ export default function Login() {
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting
-              ? fa.auth.login.loggingIn
-              : fa.auth.login.loginButton}
+            {submitting ? fa.auth.login.loggingIn : fa.auth.login.loginButton}
           </Button>
 
           <Button

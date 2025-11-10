@@ -756,7 +756,8 @@ export function computeProductivityTrend(
         role: UsersRoleOptions.employee,
         password: "",
         tokenKey: "",
-      } satisfies Partial<UsersRecord> & Pick<UsersRecord, "id" | "username" | "role" | "password" | "tokenKey">,
+      } satisfies Partial<UsersRecord> &
+        Pick<UsersRecord, "id" | "username" | "role" | "password" | "tokenKey">,
     ],
     range,
     bucket,

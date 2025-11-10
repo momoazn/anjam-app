@@ -8,7 +8,8 @@
       "Bash(go build:*)",
       "Bash(bun run fmt)",
       "Bash(bun run lint:check:*)",
-      "Bash(bun run build:*)"
+      "Bash(bun run build:*)",
+      "Bash(bun run fmt:check:*)"
     ],
     "deny": [],
     "ask": []
