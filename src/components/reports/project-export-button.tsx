@@ -27,13 +27,42 @@ export function ProjectExportButton({
   const handleExport = async () => {
     if (isExporting) return;
 
+    // Validate data before export
+    if (!project) {
+      toast.error("پروژه یافت نشد");
+      return;
+    }
+
+    // Warn user about empty export
+    if (taskCount === 0) {
+      const confirmed = window.confirm(fa.reports.exportProjectNoTasks);
+      if (!confirmed) return;
+    }
+
     setIsExporting(true);
     try {
       await exportProjectToExcel(project, tasks, users);
-      toast.success(fa.reports.exportProjectSuccess);
+
+      // Show success message with task count if available
+      const successMessage =
+        taskCount > 0
+          ? fa.reports.exportProjectSuccessWithCount.replace(
+              "{count}",
+              digitsEnToFa(taskCount),
+            )
+          : fa.reports.exportProjectSuccess;
+
+      toast.success(successMessage, { duration: 3000 });
     } catch (error) {
       console.error("Error exporting project:", error);
-      toast.error(fa.reports.exportProjectError);
+
+      // Show specific error message if available
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : fa.reports.exportProjectError;
+
+      toast.error(errorMessage, { duration: 5000 });
     } finally {
       setIsExporting(false);
     }

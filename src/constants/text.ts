@@ -656,6 +656,8 @@ export const fa = {
     exportingProject: "در حال صادر...",
     exportProjectSuccess: "صادرات با موفقیت انجام شد",
     exportProjectError: "خطا در صادرات",
+    exportProjectNoTasks: "این پروژه تسکی ندارد. آیا می‌خواهید فایل خالی صادر کنید؟",
+    exportProjectSuccessWithCount: "صادرات {count} تسک با موفقیت انجام شد",
     projectsExportSection: "صادرات پروژه‌ها",
     projectDetails: "جزئیات پروژه",
     projectTasks: "تسک‌های پروژه",
