@@ -652,6 +652,14 @@ export const fa = {
       connector: "تا",
       label: "بازه زمانی:",
     },
+    exportProject: "صادر به اکسل",
+    exportingProject: "در حال صادر...",
+    exportProjectSuccess: "صادرات با موفقیت انجام شد",
+    exportProjectError: "خطا در صادرات",
+    projectsExportSection: "صادرات پروژه‌ها",
+    projectDetails: "جزئیات پروژه",
+    projectTasks: "تسک‌های پروژه",
+    noTasksInProject: "این پروژه تسکی ندارد",
     charts: {
       throughput: {
         title: "روند تکمیل تسک‌ها",
