@@ -21,8 +21,11 @@ import { AppRoutes } from "./router";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+      staleTime: 0, // Always consider data stale to trigger refetch
+      refetchOnMount: "always", // Always refetch when component mounts
       retry: 1, // Simple retry logic
+      // placeholderData keeps showing cached data while fetching new data
+      placeholderData: (previousData) => previousData,
     },
   },
 });

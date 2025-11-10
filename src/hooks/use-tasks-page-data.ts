@@ -33,7 +33,6 @@ export function useTasksPageData() {
         batch: 100,
         sort: "-created",
       }),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   return {
