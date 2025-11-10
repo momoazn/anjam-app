@@ -31,7 +31,7 @@ import { Separator } from "@/components/ui/separator";
 import { fa } from "@/constants/text";
 import { useComments } from "@/hooks/comments";
 import { useDeleteTask } from "@/hooks/tasks";
-import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
+import { useUpdateTask } from "@/hooks";
 import {
   TasksPriorityOptions,
   TasksResponse,
@@ -102,11 +102,7 @@ export function EditTaskDialog({
     });
   }, [form, task]);
 
-  const { mutate: updateTask, isPending } = useEntityUpdateMutation({
-    collection: "tasks",
-    successMessage: fa.tasks.edit.success,
-    errorMessage: fa.tasks.edit.error,
-    invalidateQueries: ["tasks"],
+  const { mutate: updateTask, isPending } = useUpdateTask({
     onSuccess: () => {
       setOpen(false);
       onSuccess?.();
@@ -234,16 +230,11 @@ export function TaskDetailsDialog({
     (authUser?.id === task.assignee && authUser?.role === "employee");
 
   // Mutation for updating time
-  const { mutate: updateTime, isPending: isUpdatingTime } =
-    useEntityUpdateMutation({
-      collection: "tasks",
-      successMessage: fa.tasks.details.timeTracking.updateSuccess,
-      errorMessage: fa.tasks.details.timeTracking.updateError,
-      invalidateQueries: ["tasks"],
-      onSuccess: () => {
-        setIsEditingTime(false);
-      },
-    });
+  const { mutate: updateTime, isPending: isUpdatingTime } = useUpdateTask({
+    onSuccess: () => {
+      setIsEditingTime(false);
+    },
+  });
 
   const handleSaveTime = () => {
     const h = Number(hours) || 0;

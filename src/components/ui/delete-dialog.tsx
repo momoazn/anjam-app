@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { fa } from "@/constants/text";
-import { useEntityDeleteMutation } from "@/hooks/use-entity-mutation";
+import { useDeleteTask, useDeleteProject, useDeleteUser } from "@/hooks";
 import { Loader2 } from "lucide-react";
 
 type DeleteDialogProps = {
@@ -18,10 +18,7 @@ type DeleteDialogProps = {
   entityId: string | null;
   title: string;
   description: string;
-  collection: string;
-  successMessage: string;
-  errorMessage: string;
-  invalidateQueries: string[];
+  collection: "tasks" | "projects" | "users";
 };
 
 export function DeleteDialog({
@@ -31,19 +28,39 @@ export function DeleteDialog({
   title,
   description,
   collection,
-  successMessage,
-  errorMessage,
-  invalidateQueries,
 }: DeleteDialogProps) {
-  const { mutate: deleteEntity, isPending } = useEntityDeleteMutation({
-    collection,
-    successMessage,
-    errorMessage,
-    invalidateQueries,
+  const deleteTaskMutation = useDeleteTask({
     onSuccess: () => {
       onOpenChange(false);
     },
   });
+
+  const deleteProjectMutation = useDeleteProject({
+    onSuccess: () => {
+      onOpenChange(false);
+    },
+  });
+
+  const deleteUserMutation = useDeleteUser({
+    onSuccess: () => {
+      onOpenChange(false);
+    },
+  });
+
+  const getMutationForCollection = () => {
+    switch (collection) {
+      case "tasks":
+        return deleteTaskMutation;
+      case "projects":
+        return deleteProjectMutation;
+      case "users":
+        return deleteUserMutation;
+      default:
+        throw new Error(`Unsupported collection: ${collection}`);
+    }
+  };
+
+  const { mutate: deleteEntity, isPending } = getMutationForCollection();
 
   const handleDelete = () => {
     if (entityId) {

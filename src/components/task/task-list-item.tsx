@@ -33,8 +33,12 @@ const formatDateShort = (dateString?: string | null) => {
 // Helper function to get icon component by name
 const getIconComponent = (iconName: string | undefined): Icon => {
   if (!iconName) return TablerIcons.IconCircle;
-  const icon = (TablerIcons as Record<string, Icon>)[iconName];
-  return icon || TablerIcons.IconCircle;
+  // Type guard to check if the property exists and is an Icon component
+  const iconKey = iconName as keyof typeof TablerIcons;
+  if (iconKey in TablerIcons && typeof TablerIcons[iconKey] === "function") {
+    return TablerIcons[iconKey] as Icon;
+  }
+  return TablerIcons.IconCircle;
 };
 
 // Helper function to get color class by color name

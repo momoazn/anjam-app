@@ -4,7 +4,11 @@
       "Bash(bun run check)",
       "Bash(bun run type:check)",
       "mcp__context7__get-library-docs",
-      "mcp__context7__resolve-library-id"
+      "mcp__context7__resolve-library-id",
+      "Bash(go build:*)",
+      "Bash(bun run fmt)",
+      "Bash(bun run lint:check:*)",
+      "Bash(bun run build:*)"
     ],
     "deny": [],
     "ask": []

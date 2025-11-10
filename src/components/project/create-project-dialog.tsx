@@ -29,7 +29,7 @@ const projectFormSchema = z.object({
     message: fa.projects.create.form.codeLength,
   }),
   description: z.string().optional(),
-  assets: z.array(z.any()).optional(),
+  assets: z.array(z.instanceof(File)).optional(),
   supervisor: z.string().optional(),
 });
 

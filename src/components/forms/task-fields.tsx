@@ -20,7 +20,7 @@ import {
 import { priorityColors, priorityIcons } from "@/lib/tasks-utils";
 import {
   useProjects,
-  useProjectUsersFromAppData,
+  useProjectUsers,
   useUsers,
   useProjectStatusConfigs,
 } from "@/hooks";
@@ -59,7 +59,9 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   const { data: projects } = useProjects({ enabled: !actualIsInProject });
 
   // Fetch project users when in project context
-  const { data: projectUsers } = useProjectUsersFromAppData(projectId || "");
+  const { data: projectUsers } = useProjectUsers({
+    projectId: projectId || "",
+  });
 
   // Fetch all users when not in project context
   const { data: users } = useUsers({ enabled: !projectId });
@@ -80,8 +82,12 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   // Helper function to get icon component by name
   const getIconComponent = (iconName: string | undefined): Icon => {
     if (!iconName) return TablerIcons.IconCircle;
-    const icon = (TablerIcons as Record<string, Icon>)[iconName];
-    return icon || TablerIcons.IconCircle;
+    // Type guard to check if the property exists and is an Icon component
+    const iconKey = iconName as keyof typeof TablerIcons;
+    if (iconKey in TablerIcons && typeof TablerIcons[iconKey] === "function") {
+      return TablerIcons[iconKey] as Icon;
+    }
+    return TablerIcons.IconCircle;
   };
 
   // Helper function to get color class by color name

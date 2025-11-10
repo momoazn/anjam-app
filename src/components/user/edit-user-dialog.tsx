@@ -14,7 +14,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useEntityUpdateMutation } from "@/hooks/use-entity-mutation";
+import { useUpdateUser } from "@/hooks";
 import { UserFields } from "@/components/forms/user-fields";
 import { Loader2 } from "lucide-react";
 
@@ -57,11 +57,7 @@ export function EditUserDialog({
     }
   }, [form, user]);
 
-  const { mutate: updateUser, isPending } = useEntityUpdateMutation({
-    collection: "users",
-    successMessage: fa.users.edit.success,
-    errorMessage: fa.users.edit.error,
-    invalidateQueries: ["users"],
+  const { mutate: updateUser, isPending } = useUpdateUser({
     onSuccess: () => {
       form.reset();
       onOpenChange(false);

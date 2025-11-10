@@ -124,8 +124,61 @@ export function useCreateUser(
   return useMutation({
     mutationFn: (userData: Omit<UsersRecord, "id" | "created" | "updated">) =>
       pb.collection("users").create(userData),
-    onSuccess: () => {
+    onMutate: async (newUser) => {
+      // Cancel outgoing refetches for all user-related queries
+      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
+
+      // Snapshot previous values
+      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
+        queryKey: queryKeys.users.all,
+      });
+
+      // Optimistically update cache with new user
+      const optimisticUser = {
+        ...newUser,
+        id: `temp-${Date.now()}`, // Temporary ID for optimistic update
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
+      } as UsersResponse;
+
+      queryClient.setQueriesData<UsersResponse[]>(
+        { queryKey: queryKeys.users.all },
+        (old: UsersResponse[] | undefined) => {
+          if (!old) return [optimisticUser];
+          return [optimisticUser, ...old];
+        },
+      );
+
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (
+        context &&
+        typeof context === "object" &&
+        "previousQueries" in context &&
+        Array.isArray(context.previousQueries)
+      ) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSuccess: (data, variables, context) => {
+      // Comprehensive refetch after successful creation
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
+
+      // Invalidate project-user relationships
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.allProjectUsers(),
+      });
+
+      // Invalidate tasks as new user might affect assignee options
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
   });
@@ -153,8 +206,82 @@ export function useUpdateUser(
       id: string;
       updates: Partial<UsersRecord>;
     }) => pb.collection("users").update(id, updates),
-    onSuccess: () => {
+    onMutate: async ({ id, updates }) => {
+      // Cancel outgoing refetches for all user-related queries
+      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
+
+      // Snapshot previous values
+      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
+        queryKey: queryKeys.users.all,
+      });
+
+      // Optimistically update cache
+      queryClient.setQueriesData<UsersResponse[]>(
+        { queryKey: queryKeys.users.all },
+        (old: UsersResponse[] | undefined) => {
+          if (!old) return old;
+          return old.map((user: UsersResponse) => {
+            if (user.id === id) {
+              return { ...user, ...updates } as UsersResponse;
+            }
+            return user;
+          });
+        },
+      );
+
+      // Also update specific user detail query
+      queryClient.setQueryData<UsersResponse>(
+        queryKeys.users.detail(id),
+        (old) => {
+          if (!old) return old;
+          return { ...old, ...updates } as UsersResponse;
+        },
+      );
+
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (
+        context &&
+        typeof context === "object" &&
+        "previousQueries" in context &&
+        Array.isArray(context.previousQueries)
+      ) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSuccess: (data, variables, context) => {
+      // Comprehensive refetch after successful update
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
+
+      // Invalidate specific user detail
+      if (variables?.id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.users.detail(variables.id),
+        });
+      }
+
+      // Invalidate project-user relationships
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.allProjectUsers(),
+      });
+
+      // Invalidate tasks if user role or name changed (affects assignee display)
+      if (
+        variables?.updates &&
+        (variables.updates.role ||
+          variables.updates.first_name ||
+          variables.updates.last_name)
+      ) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+      }
+
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
   });
@@ -174,8 +301,57 @@ export function useDeleteUser(
     mutationFn: async (id: string) => {
       await pb.collection("users").delete(id);
     },
-    onSuccess: () => {
+    onMutate: async (id: string) => {
+      // Cancel outgoing refetches for all user-related queries
+      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
+
+      // Snapshot previous values
+      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
+        queryKey: queryKeys.users.all,
+      });
+
+      // Optimistically remove user from cache
+      queryClient.setQueriesData<UsersResponse[]>(
+        { queryKey: queryKeys.users.all },
+        (old: UsersResponse[] | undefined) => {
+          if (!old) return old;
+          return old.filter((user) => user.id !== id);
+        },
+      );
+
+      // Remove from user detail cache
+      queryClient.removeQueries({ queryKey: queryKeys.users.detail(id) });
+
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (
+        context &&
+        typeof context === "object" &&
+        "previousQueries" in context &&
+        Array.isArray(context.previousQueries)
+      ) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSuccess: (data, variables, context) => {
+      // Comprehensive refetch after successful deletion
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
+
+      // Invalidate project-user relationships
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.allProjectUsers(),
+      });
+
+      // Invalidate tasks as user deletion affects assignee filtering
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+
+      options?.onSuccess?.(data, variables, context);
     },
     ...options,
   });

@@ -10,6 +10,7 @@ import {
   useQuery,
   useQueryClient,
   UseMutationOptions,
+  QueryKey,
 } from "@tanstack/react-query";
 import { pb, TaskWithProject } from "../lib/pocketbase";
 import {
@@ -119,7 +120,7 @@ export function useCreateTask(
     TasksResponse,
     Error,
     Omit<TasksRecord, "id" | "created" | "updated">,
-    { previousQueries: [readonly unknown[], TaskWithProject[] | undefined][] }
+    { previousQueries: [QueryKey, TaskWithProject[] | undefined][] }
   >,
 ) {
   const queryClient = useQueryClient();
@@ -128,10 +129,10 @@ export function useCreateTask(
     mutationFn: (taskData: Omit<TasksRecord, "id" | "created" | "updated">) =>
       pb.collection("tasks").create(taskData),
     onMutate: async (newTask) => {
-      // Cancel any outgoing refetches
+      // Cancel any outgoing refetches for all task-related queries
       await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
 
-      // Snapshot previous values
+      // Snapshot previous values for all task queries
       const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
         queryKey: queryKeys.tasks.all,
       });
@@ -145,6 +146,7 @@ export function useCreateTask(
         expand: {},
       } as TaskWithProject;
 
+      // Update all task list queries
       queryClient.setQueriesData<TaskWithProject[]>(
         { queryKey: queryKeys.tasks.all },
         (old: TaskWithProject[] | undefined) => {
@@ -164,8 +166,11 @@ export function useCreateTask(
       }
     },
     onSettled: () => {
-      // Always refetch after error or success
+      // Comprehensive refetch after error or success
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+      // Also invalidate projects as task count might change
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
     },
     ...options,
   });
@@ -202,10 +207,10 @@ export function useUpdateTask(
       id: string;
       updates: Partial<TasksRecord>;
     }) => {
-      // Cancel outgoing refetches
+      // Cancel outgoing refetches for all task-related queries
       await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
 
-      // Snapshot previous values
+      // Snapshot previous values for all task queries
       const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
         queryKey: queryKeys.tasks.all,
       });
@@ -227,6 +232,15 @@ export function useUpdateTask(
         },
       );
 
+      // Also update the specific task detail query
+      queryClient.setQueryData<TaskWithProject>(
+        queryKeys.tasks.detail(id),
+        (old) => {
+          if (!old) return old;
+          return { ...old, ...updates } as TaskWithProject;
+        },
+      );
+
       return { previousQueries };
     },
     onError: (_error, _variables, context) => {
@@ -242,9 +256,23 @@ export function useUpdateTask(
         });
       }
     },
-    onSettled: () => {
-      // Always refetch after error or success
+    onSettled: (_data, _error, variables) => {
+      // Comprehensive refetch after error or success
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+
+      // Invalidate specific task detail
+      if (variables?.id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tasks.detail(variables.id),
+        });
+      }
+
+      // Invalidate projects if task project changed
+      if (variables?.updates?.project) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      }
     },
     ...options,
   });
@@ -267,8 +295,51 @@ export function useDeleteTask(
         deleted_at: new Date().toISOString(),
       });
     },
+    onMutate: async (id: string) => {
+      // Cancel outgoing refetches for all task-related queries
+      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
+
+      // Snapshot previous values
+      const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
+        queryKey: queryKeys.tasks.all,
+      });
+
+      // Optimistically remove task from cache
+      queryClient.setQueriesData<TaskWithProject[]>(
+        { queryKey: queryKeys.tasks.all },
+        (old: TaskWithProject[] | undefined) => {
+          if (!old) return old;
+          return old.filter((task) => task.id !== id);
+        },
+      );
+
+      // Remove from task detail cache
+      queryClient.removeQueries({ queryKey: queryKeys.tasks.detail(id) });
+
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (
+        context &&
+        typeof context === "object" &&
+        "previousQueries" in context &&
+        Array.isArray(context.previousQueries)
+      ) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
     onSuccess: (data, variables, context) => {
+      // Comprehensive refetch after successful deletion
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+
+      // Invalidate projects as task count changes
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+
       options?.onSuccess?.(data, variables, context);
     },
   });

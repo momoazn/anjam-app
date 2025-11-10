@@ -12,6 +12,18 @@ import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 
+function isUsersRecord(record: object | null): record is UsersRecord {
+  return (
+    record !== null &&
+    typeof record === "object" &&
+    "id" in record &&
+    "username" in record &&
+    "role" in record &&
+    "password" in record &&
+    "tokenKey" in record
+  );
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const login = useAuthStore().login;
@@ -40,10 +52,16 @@ export default function Login() {
       await pb
         .collection("users")
         .authWithPassword(username.trim().toLowerCase(), password.trim());
-      login(pb.authStore.record as unknown as UsersRecord, pb.authStore.token);
-      navigate("/", { replace: true });
-    } catch (error: unknown) {
-      handlePocketBaseError(error);
+      if (
+        pb.authStore.record &&
+        pb.authStore.token &&
+        isUsersRecord(pb.authStore.record)
+      ) {
+        login(pb.authStore.record, pb.authStore.token);
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      handlePocketBaseError(error as Error);
     } finally {
       setSubmitting(false);
     }

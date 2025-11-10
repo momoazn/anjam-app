@@ -27,7 +27,7 @@ type ProjectFieldsProps = {
     name: string;
     code: string;
     description?: string;
-    assets?: unknown[];
+    assets?: FileWithPreview[];
     supervisor?: string;
   }>;
   showDescription?: boolean;

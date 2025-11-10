@@ -14,10 +14,25 @@ type PocketBaseError = {
   status?: number;
 };
 
-export function handlePocketBaseError(error: unknown): void {
+function isPocketBaseError(
+  error: Error | PocketBaseError,
+): error is PocketBaseError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    ("data" in error || "status" in error || "message" in error)
+  );
+}
+
+export function handlePocketBaseError(error: Error | PocketBaseError): void {
   console.error(error);
 
-  const pbError = error as PocketBaseError;
+  if (!isPocketBaseError(error)) {
+    toast.error(fa.auth.errors.serverError);
+    return;
+  }
+
+  const pbError = error;
 
   // Handle PocketBase validation errors
   if (pbError?.data?.data) {

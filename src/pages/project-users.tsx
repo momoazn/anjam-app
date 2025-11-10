@@ -41,11 +41,7 @@ import {
 } from "@/components/ui/table";
 import { UserAvatar } from "@/components/user-avatar";
 import { fa } from "@/constants/text";
-import {
-  useProjectUsersFromAppData,
-  useProjectWithSupervisor,
-  useUsers,
-} from "@/hooks";
+import { useProjectUsers, useProjectWithSupervisor, useUsers } from "@/hooks";
 import { pb } from "@/lib/pocketbase";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
@@ -67,7 +63,7 @@ export default function ProjectUsers() {
   const { data: project } = useProjectWithSupervisor({
     id: id as string,
   });
-  const { data: projectUsers } = useProjectUsersFromAppData(id as string);
+  const { data: projectUsers } = useProjectUsers({ projectId: id as string });
 
   // Get all users for adding new users to project
   const { data: allUsers } = useUsers({ enabled: canManageUsers });

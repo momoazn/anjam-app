@@ -13,7 +13,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useEntityMutation } from "@/hooks/use-entity-mutation";
+import { useCreateUser } from "@/hooks";
 import { UserFields } from "@/components/forms/user-fields";
 import { Loader2 } from "lucide-react";
 
@@ -49,11 +49,7 @@ export function CreateUserDialog({
     },
   });
 
-  const { mutate: createUser, isPending } = useEntityMutation({
-    collection: "users",
-    successMessage: fa.users.create.success,
-    errorMessage: fa.users.create.error,
-    invalidateQueries: ["users"],
+  const { mutate: createUser, isPending } = useCreateUser({
     onSuccess: () => {
       form.reset();
       onOpenChange(false);

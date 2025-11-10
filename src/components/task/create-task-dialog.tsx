@@ -15,7 +15,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { TasksPriorityOptions } from "@/lib/pocketbase-types";
-import { useEntityMutation } from "@/hooks/use-entity-mutation";
+import { useCreateTask } from "@/hooks";
 import { TaskFields } from "@/components/forms/task-fields";
 import { useAuthUser } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
@@ -59,11 +59,7 @@ export function CreateTaskDialog({
     },
   });
 
-  const { mutate: createTask, isPending } = useEntityMutation({
-    collection: "tasks",
-    successMessage: fa.tasks.addTask.success,
-    errorMessage: fa.tasks.addTask.error,
-    invalidateQueries: ["tasks"],
+  const { mutate: createTask, isPending } = useCreateTask({
     onSuccess: () => {
       onSuccess?.();
       form.reset();

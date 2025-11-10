@@ -302,10 +302,15 @@ function ChartLegendContent({
   );
 }
 
+type ChartPayload = {
+  payload?: Record<string, string | number>;
+  [key: string]: string | number | Record<string, string | number> | undefined;
+};
+
 // Helper to extract item config from a payload.
 function getPayloadConfigFromPayload(
   config: ChartConfig,
-  payload: unknown,
+  payload: ChartPayload | Record<string, never>,
   key: string,
 ) {
   if (typeof payload !== "object" || payload === null) {
