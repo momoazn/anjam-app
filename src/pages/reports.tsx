@@ -90,8 +90,11 @@ import {
 } from "@/lib/reports-utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
-import { useProjects, useTasks, useUsers } from "@/hooks";
+import { useProjects, useTasks, useUsers, queryKeys } from "@/hooks";
 import type { TaskWithProject } from "@/lib/pocketbase";
+import { ProjectExportButton } from "@/components/reports/project-export-button";
+import { useQuery } from "@tanstack/react-query";
+import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 
 type DrilldownState = {
   title: string;
@@ -138,6 +141,16 @@ export default function Reports() {
   });
   const { data: users, isPending: usersPending } = useUsers();
   const { data: projects, isPending: projectsPending } = useProjects();
+
+  // Fetch projects with supervisor expanded for export
+  const { data: projectsWithSupervisor } = useQuery({
+    queryKey: [...queryKeys.projects.all, "supervisor"],
+    queryFn: () =>
+      pb.collection("projects").getFullList<ProjectWithSupervisor>({
+        expand: "supervisor",
+      }),
+    enabled: !projectsPending && !!projects,
+  });
 
   const isLoading = tasksPending || usersPending || projectsPending;
 
@@ -420,6 +433,59 @@ export default function Reports() {
           users={users || []}
         />
       </div>
+
+      {/* Projects Export Section */}
+      {projects && projects.length > 0 && (
+        <Card className="mb-6" data-animate-stagger>
+          <CardHeader>
+            <CardTitle>{fa.reports.projectsExportSection}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project) => {
+                const projectWithSupervisor = projectsWithSupervisor?.find(
+                  (p) => p.id === project.id,
+                ) || {
+                  ...project,
+                  expand: { supervisor: undefined },
+                };
+                const projectTasks =
+                  tasks?.filter((task) => task.project === project.id) || [];
+                const taskCount = projectTasks.length;
+
+                return (
+                  <div
+                    key={project.id}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate font-semibold">{project.name}</h3>
+                      {project.code && (
+                        <p className="text-muted-foreground text-sm">
+                          {project.code}
+                        </p>
+                      )}
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        {taskCount > 0
+                          ? `${taskCount} تسک`
+                          : fa.reports.noTasksInProject}
+                      </p>
+                    </div>
+                    <div className="ml-4 shrink-0">
+                      <ProjectExportButton
+                        project={projectWithSupervisor}
+                        tasks={tasks || []}
+                        users={users || []}
+                        taskCount={taskCount}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {overviewMetrics && (
         <div className="mb-6" data-animate-stagger>
