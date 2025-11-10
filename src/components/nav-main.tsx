@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks";
@@ -33,6 +34,7 @@ export function NavMain({
 }) {
   const queryClient = useQueryClient();
   const location = useLocation();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   // Pull out items we want to place right after quick create
   const dashboardItem = items.find((i) => i.title === fa.navigation.dashboard);
@@ -84,7 +86,16 @@ export function NavMain({
                   ? path === "/"
                   : path === it.url || path.startsWith(it.url + "/");
               return (
-                <NavLink to={it.url} key={it.title} end={it.url === "/"}>
+                <NavLink
+                  to={it.url}
+                  key={it.title}
+                  end={it.url === "/"}
+                  onClick={() => {
+                    if (isMobile) {
+                      setOpenMobile(false);
+                    }
+                  }}
+                >
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       tooltip={it.title}
@@ -116,7 +127,15 @@ export function NavMain({
             const path = location.pathname;
             const active = path === item.url || path.startsWith(item.url + "/");
             return (
-              <NavLink to={item.url} key={item.title}>
+              <NavLink
+                to={item.url}
+                key={item.title}
+                onClick={() => {
+                  if (isMobile) {
+                    setOpenMobile(false);
+                  }
+                }}
+              >
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     tooltip={item.title}

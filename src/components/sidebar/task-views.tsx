@@ -77,6 +77,11 @@ export function TaskViews() {
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : ""
                   }
+                  onClick={() => {
+                    if (isMobile) {
+                      setOpenMobile(false);
+                    }
+                  }}
                 >
                   <view.icon />
                   <span>{view.title}</span>

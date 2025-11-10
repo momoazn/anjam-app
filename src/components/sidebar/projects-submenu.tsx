@@ -23,7 +23,7 @@ export function ProjectsSubmenu() {
   const { data: projects = [] } = useProjects();
   const { byProject } = useTaskCounts();
   const { toggleStar, isStarred } = useSidebarActions();
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
 
   const starredProjects = useMemo(() => {
     return projects.filter((project) => isStarred(project.id));
@@ -45,7 +45,14 @@ export function ProjectsSubmenu() {
           {/* All Projects */}
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip={fa.navigation.allProjects}>
-              <NavLink to="/projects">
+              <NavLink
+                to="/projects"
+                onClick={() => {
+                  if (isMobile) {
+                    setOpenMobile(false);
+                  }
+                }}
+              >
                 <IconFolder />
                 <span>{fa.navigation.allProjects}</span>
               </NavLink>
@@ -65,7 +72,14 @@ export function ProjectsSubmenu() {
                   <SidebarMenuSub>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <NavLink to={`/projects/${project.id}/tasks`}>
+                        <NavLink
+                          to={`/projects/${project.id}/tasks`}
+                          onClick={() => {
+                            if (isMobile) {
+                              setOpenMobile(false);
+                            }
+                          }}
+                        >
                           <span className="truncate">
                             {project.code} - {project.name}
                           </span>
@@ -94,7 +108,14 @@ export function ProjectsSubmenu() {
                   <SidebarMenuSub>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <NavLink to={`/projects/${project.id}/tasks`}>
+                        <NavLink
+                          to={`/projects/${project.id}/tasks`}
+                          onClick={() => {
+                            if (isMobile) {
+                              setOpenMobile(false);
+                            }
+                          }}
+                        >
                           <span className="truncate">
                             {project.code} - {project.name}
                           </span>

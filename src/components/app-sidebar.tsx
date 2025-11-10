@@ -19,6 +19,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
 import { can } from "@/lib/permissions";
@@ -68,6 +69,35 @@ const data = {
   navSecondary: [],
 };
 
+function AppSidebarHeader() {
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  return (
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            className="hover:text-foreground active:text-foreground hover:bg-transparent active:bg-transparent data-[slot=sidebar-menu-button]:!p-1.5"
+          >
+            <NavLink
+              to="/"
+              onClick={() => {
+                if (isMobile) {
+                  setOpenMobile(false);
+                }
+              }}
+            >
+              <IconInnerShadowTop className="!size-5" />
+              <span className="text-base font-semibold">{fa.app.name}</span>
+            </NavLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
+  );
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthUser();
 
@@ -77,21 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="hover:text-foreground active:text-foreground hover:bg-transparent active:bg-transparent data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <NavLink to="/">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">{fa.app.name}</span>
-              </NavLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+      <AppSidebarHeader />
       <SidebarContent>
         <NavMain
           items={data.navMain.filter((item) => {
