@@ -20,6 +20,10 @@ export const fa = {
     update: "به‌روزرسانی",
     updating: "در حال به‌روزرسانی...",
     loading: "در حال بارگذاری...",
+    theme: {
+      switchToLight: "تغییر به حالت روشن",
+      switchToDark: "تغییر به حالت تاریک",
+    },
 
     // Common button labels
     buttons: {
@@ -319,6 +323,7 @@ export const fa = {
         name: "نام",
         nameRequired: "وارد کردن نام الزامی است",
         code: "کد",
+        codeRequired: "وارد کردن کد الزامی است",
         codeLength: "کد باید 3 کاراکتر باشد",
         description: "توضیحات",
         descriptionPlaceholder: "توضیحات و جزئیات پروژه را وارد کنید...",

@@ -1,4 +1,5 @@
 import { NotificationDropdown } from "@/components/notification-dropdown";
+import { HeaderUserMenu } from "@/components/header-user-menu";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -202,7 +203,7 @@ export function SiteHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 flex-shrink-0"
               title={fa.navigation.quickCreate.tooltip}
             >
               <Plus className="h-4 w-4" />
@@ -234,25 +235,29 @@ export function SiteHeader() {
           </div>
         </form>
 
-        <NotificationDropdown />
+        <div className="flex items-center gap-2">
+          <NotificationDropdown />
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className="h-8 w-8"
-        >
-          {resolvedTheme === "dark" ? (
-            <Sun className="h-4 w-4" />
-          ) : (
-            <Moon className="h-4 w-4" />
-          )}
-          <span className="sr-only">
-            {resolvedTheme === "dark"
-              ? "Switch to light mode"
-              : "Switch to dark mode"}
-          </span>
-        </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="h-8 w-8 flex-shrink-0"
+          >
+            {resolvedTheme === "dark" ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+            <span className="sr-only">
+              {resolvedTheme === "dark"
+                ? fa.common.theme.switchToLight
+                : fa.common.theme.switchToDark}
+            </span>
+          </Button>
+
+          <HeaderUserMenu />
+        </div>
       </div>
     </header>
   );
