@@ -65,7 +65,7 @@ export function NavMain({
             >
               <SidebarMenuButton
                 tooltip={fa.navigation.quickCreate.tooltip}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/90 min-w-8"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8"
               >
                 <IconCirclePlusFilled />
                 <span>{fa.navigation.quickCreate.button}</span>
