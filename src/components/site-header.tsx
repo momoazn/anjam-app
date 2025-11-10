@@ -171,20 +171,22 @@ export function SiteHeader() {
 
   return (
     <header className="flex h-10 shrink-0 items-center gap-2 border-b transition-[width] ease-linear">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ms-1" />
+      <div className="flex min-w-0 flex-1 items-center gap-1 px-2 sm:gap-1 sm:px-4 lg:gap-2 lg:px-6">
+        <SidebarTrigger className="-ms-1 shrink-0" />
         <Separator
           orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4"
+          className="mx-1 hidden data-[orientation=vertical]:h-4 sm:mx-2 sm:block"
         />
-        <Breadcrumb>
+        <Breadcrumb className="min-w-0 flex-1">
           <BreadcrumbList>
             {crumbs.map((c, idx) => (
               <Fragment key={`c-${idx}`}>
                 <BreadcrumbItem>
                   {c.to ? (
                     <BreadcrumbLink asChild>
-                      <Link to={c.to}>{c.label}</Link>
+                      <Link to={c.to} className="truncate">
+                        {c.label}
+                      </Link>
                     </BreadcrumbLink>
                   ) : (
                     <BreadcrumbPage>{c.label}</BreadcrumbPage>
@@ -196,7 +198,7 @@ export function SiteHeader() {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="ml-auto flex items-center gap-2 px-3">
+      <div className="ml-auto flex shrink-0 items-center gap-1 px-2 sm:gap-2 sm:px-3">
         {/* Quick Create Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
