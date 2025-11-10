@@ -27,7 +27,8 @@
     "seed": "bun run seed:truncate && bun run seed:insert",
     "gen:type": "pocketbase-typegen --json ./pb_schema.json --out src/lib/pocketbase-types.ts",
     "serve:client": "vite preview",
-    "serve:server": "go run main.go"
+    "serve:server": "go run main.go",
+    "deploy": "bun run build && liara deploy"
   },
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
