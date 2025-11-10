@@ -1,5 +1,6 @@
 // Optimized localization constants for Persian (Farsi)
 // This file contains all text labels used throughout the task management application
+// All text has been rewritten to be natural, concise, motivating, and user-friendly
 
 export const fa = {
   // Application-level configuration
@@ -21,19 +22,19 @@ export const fa = {
     updating: "در حال به‌روزرسانی...",
     loading: "در حال بارگذاری...",
     theme: {
-      switchToLight: "تغییر به حالت روشن",
-      switchToDark: "تغییر به حالت تاریک",
+      switchToLight: "روشن کردن صفحه",
+      switchToDark: "تاریک کردن صفحه",
     },
 
     // Common button labels
     buttons: {
-      ok: "تایید",
+      ok: "باشه",
       cancel: "انصراف",
       save: "ذخیره",
       delete: "حذف",
       edit: "ویرایش",
       create: "ایجاد",
-      update: "به‌روزرسانی",
+      update: "ذخیره تغییرات",
       close: "بستن",
       add: "افزودن",
       remove: "حذف",
@@ -41,8 +42,8 @@ export const fa = {
       search: "جستجو",
       filter: "فیلتر",
       clear: "پاک کردن",
-      export: "صادر",
-      import: "ورود",
+      export: "خروجی",
+      import: "ورودی",
       download: "دانلود",
       upload: "آپلود",
       select: "انتخاب",
@@ -86,7 +87,7 @@ export const fa = {
     notifications: "اعلان‌ها",
     quickCreate: {
       button: "ایجاد سریع",
-      tooltip: "ایجاد فوری",
+      tooltip: "ایجاد سریع تسک یا پروژه",
     },
     projectsSection: "پروژه‌ها",
     allProjects: "همه پروژه‌ها",
@@ -107,7 +108,7 @@ export const fa = {
 
   // Search functionality
   search: {
-    placeholder: "جستجو...",
+    placeholder: "جستجو در تسک‌ها و پروژه‌ها...",
   },
 
   // Header section
@@ -121,21 +122,21 @@ export const fa = {
   user: {
     dropdown: {
       account: "حساب کاربری",
-      logout: "خروج",
+      logout: "خروج از حساب",
     },
   },
 
   // Notifications module
   notifications: {
     title: "اعلان‌ها",
-    pageTitle: "صفحه اعلان‌ها",
-    pageDescription: "مشاهده و مدیریت تمام اعلان‌های شما",
-    markAllAsRead: "علامت‌گذاری همه به عنوان خوانده‌شده",
-    clearAll: "حذف همه",
-    noNotifications: "اعلان جدیدی وجود ندارد",
+    pageTitle: "اعلان‌ها",
+    pageDescription: "همه اعلان‌هایتان را در یکجا ببینید",
+    markAllAsRead: "خواندن همه",
+    clearAll: "پاک کردن همه",
+    noNotifications: "اعلان جدیدی ندارید",
     emptyState: {
-      title: "هیچ اعلانی وجود ندارد",
-      description: "وقتی اعلان جدیدی دریافت کنید، اینجا نمایش داده خواهد شد",
+      title: "هیچ اعلانی ندارید",
+      description: "وقتی اعلان جدیدی برایتان بیاید، اینجا نمایش داده می‌شود",
     },
     filters: {
       all: "همه",
@@ -147,16 +148,16 @@ export const fa = {
       oldest: "قدیمی‌ترین",
     },
     types: {
-      task_assigned: "تخصیص تسک",
+      task_assigned: "تسک جدید",
       project_updated: "به‌روزرسانی پروژه",
       system: "سیستم",
-      comment: "نظر",
+      comment: "نظر جدید",
     },
     actions: {
-      markAsRead: "علامت‌گذاری به عنوان خوانده‌شده",
+      markAsRead: "خوانده شد",
       delete: "حذف",
       viewAll: "مشاهده همه",
-      clearRead: "حذف خوانده‌شده‌ها",
+      clearRead: "پاک کردن خوانده‌شده‌ها",
     },
     groups: {
       today: "امروز",
@@ -171,61 +172,61 @@ export const fa = {
       deletable: "قابل حذف",
     },
     buttons: {
-      markAsRead: "علامت‌گذاری به عنوان خوانده‌شده",
+      markAsRead: "خوانده شد",
     },
     selected: "انتخاب شده",
     selectAll: "انتخاب همه",
-    deselectAll: "لغو انتخاب همه",
-    deleteSelected: "حذف انتخاب شده‌ها",
+    deselectAll: "لغو انتخاب",
+    deleteSelected: "حذف انتخاب‌شده‌ها",
     cancel: "انصراف",
   },
 
   // Authentication module
   auth: {
     login: {
-      title: "ورود",
+      title: "ورود به سیستم",
       username: "نام کاربری",
       password: "رمز عبور",
       loginButton: "ورود",
       loggingIn: "در حال ورود...",
       registerButton: "ثبت‌نام",
       errors: {
-        credentialsRequired: "وارد کردن نام کاربری و رمز عبور الزامی است",
-        invalidCredentials: "نام کاربری یا رمز عبور نادرست است",
+        credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
+        invalidCredentials: "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید",
       },
     },
     register: {
-      title: "ثبت‌نام",
+      title: "ایجاد حساب کاربری",
       username: "نام کاربری",
       password: "رمز عبور",
-      confirmPassword: "تأیید رمز عبور",
-      registerButton: "ثبت‌نام",
-      registering: "در حال ثبت‌نام...",
+      confirmPassword: "تکرار رمز عبور",
+      registerButton: "ایجاد حساب",
+      registering: "در حال ایجاد حساب...",
       loginButton: "بازگشت به ورود",
       initialAdminMessage:
-        "برای ایجاد ادمین اولیه، لطفاً نام کاربری و رمز عبور خود را وارد کنید.",
+        "برای شروع، حساب مدیر سیستم را بسازید. نام کاربری و رمز عبور دلخواهتان را وارد کنید.",
       errors: {
-        credentialsRequired: "وارد کردن نام کاربری و رمز عبور الزامی است",
-        passwordsMismatch: "رمزهای عبور مطابقت ندارند",
-        adminCreationFailed: "خطا در ایجاد ادمین اولیه",
+        credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
+        passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",
+        adminCreationFailed: "متأسفانه نتوانستیم حساب مدیر را بسازیم. دوباره تلاش کنید",
       },
     },
     errors: {
-      usernameRequired: "وارد کردن نام کاربری الزامی است",
+      usernameRequired: "نام کاربری را وارد کنید",
       passwordRequired: "رمز عبور باید حداقل ۸ کاراکتر باشد",
-      passwordConfirmRequired: "وارد کردن تأیید رمز عبور الزامی است",
-      passwordsMismatch: "رمزهای عبور مطابقت ندارند",
-      firstNameRequired: "وارد کردن نام الزامی است",
-      lastNameRequired: "وارد کردن نام خانوادگی الزامی است",
-      passwordMinLength: "رمز عبور باید حداقل 8 کاراکتر باشد",
-      usernameMinLength: "نام کاربری باید حداقل 3 کاراکتر باشد",
-      usernameMaxLength: "نام کاربری نمی‌تواند بیش از 50 کاراکتر باشد",
-      passwordMaxLength: "رمز عبور نمی‌تواند بیش از 100 کاراکتر باشد",
-      usernameInvalid: "نام کاربری نامعتبر است",
-      passwordInvalid: "رمز عبور نامعتبر است",
-      userAlreadyExists: "کاربری با این نام کاربری قبلاً وجود دارد",
-      invalidCredentials: "نام کاربری یا رمز عبور نادرست است",
-      serverError: "خطا در سرور. لطفاً دوباره تلاش کنید",
+      passwordConfirmRequired: "لطفاً رمز عبور را دوباره وارد کنید",
+      passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",
+      firstNameRequired: "نام را وارد کنید",
+      lastNameRequired: "نام خانوادگی را وارد کنید",
+      passwordMinLength: "رمز عبور باید حداقل ۸ کاراکتر باشد",
+      usernameMinLength: "نام کاربری باید حداقل ۳ کاراکتر باشد",
+      usernameMaxLength: "نام کاربری نمی‌تواند بیشتر از ۵۰ کاراکتر باشد",
+      passwordMaxLength: "رمز عبور نمی‌تواند بیشتر از ۱۰۰ کاراکتر باشد",
+      usernameInvalid: "نام کاربری معتبر نیست",
+      passwordInvalid: "رمز عبور معتبر نیست",
+      userAlreadyExists: "این نام کاربری قبلاً استفاده شده. نام دیگری انتخاب کنید",
+      invalidCredentials: "نام کاربری یا رمز عبور اشتباه است",
+      serverError: "مشکلی پیش آمده. چند لحظه صبر کنید و دوباره تلاش کنید",
     },
   },
 
@@ -257,24 +258,24 @@ export const fa = {
     },
     create: {
       button: "کاربر جدید",
-      title: "ایجاد کاربر جدید",
-      success: "کاربر با موفقیت ایجاد شد",
-      error: "خطا در ایجاد کاربر: {error}",
+      title: "افزودن کاربر جدید",
+      success: "عالی! کاربر جدید با موفقیت اضافه شد",
+      error: "نتوانستیم کاربر را اضافه کنیم: {error}",
       errors: {
-        usernameRequired: "وارد کردن نام کاربری الزامی است",
+        usernameRequired: "نام کاربری را وارد کنید",
         passwordRequired: "رمز عبور باید حداقل ۸ کاراکتر باشد",
-        passwordConfirmRequired: "وارد کردن تأیید رمز عبور الزامی است",
-        passwordsMismatch: "رمزهای عبور مطابقت ندارند",
+        passwordConfirmRequired: "لطفاً رمز عبور را دوباره وارد کنید",
+        passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",
       },
     },
     edit: {
       title: "ویرایش کاربر",
-      button: "به‌روزرسانی",
+      button: "ذخیره تغییرات",
     },
     delete: {
       title: "حذف کاربر",
-      description: "آیا از حذف این کاربر اطمینان دارید؟",
-      button: "حذف",
+      description: "مطمئنید که می‌خواهید این کاربر را حذف کنید؟",
+      button: "بله، حذف کن",
     },
   },
 
@@ -288,12 +289,12 @@ export const fa = {
       thisProject: "این پروژه",
     },
     users: {
-      title: "کاربران پروژه",
+      title: "اعضای پروژه",
       count: "کاربر",
-      add: "افزودن کاربر",
+      add: "افزودن عضو",
       addDialog: {
-        title: "افزودن کاربر به پروژه",
-        selectPlaceholder: "انتخاب کاربر",
+        title: "افزودن عضو به پروژه",
+        selectPlaceholder: "کاربر را انتخاب کنید",
       },
       table: {
         user: "کاربر",
@@ -301,90 +302,90 @@ export const fa = {
         actions: "عملیات",
       },
       remove: {
-        title: "حذف کاربر از پروژه",
+        title: "حذف عضو از پروژه",
         description:
-          "آیا از حذف این کاربر اطمینان دارید؟ تسک‌های تخصیص داده شده به این کاربر بدون مسئول خواهند شد ولی تسک‌ها حفظ می‌شوند.",
+          "با حذف این کاربر، تسک‌هایش بدون مسئول می‌شوند اما خود تسک‌ها باقی می‌مانند. مطمئنید که می‌خواهید ادامه دهید؟",
       },
-      addSuccess: "کاربر با موفقیت به پروژه اضافه شد",
-      addError: "خطا در افزودن کاربر به پروژه",
-      removeSuccess: "کاربر با موفقیت از پروژه حذف شد",
-      removeError: "خطا در حذف کاربر از پروژه",
+      addSuccess: "عالی! عضو جدید به پروژه اضافه شد",
+      addError: "نتوانستیم عضو را اضافه کنیم. دوباره تلاش کنید",
+      removeSuccess: "عضو از پروژه حذف شد",
+      removeError: "نتوانستیم عضو را حذف کنیم. دوباره تلاش کنید",
     },
     list: {
-      noProjects: "هیچ پروژه‌ای موجود نیست",
+      noProjects: "هنوز پروژه‌ای نساخته‌اید",
       count: "{count} پروژه",
       viewTasks: "مشاهده تسک‌ها",
     },
     create: {
       button: "پروژه جدید",
-      title: "ایجاد پروژه جدید",
-      description: "یک پروژه جدید به فضای کاری خود اضافه کنید.",
+      title: "ساخت پروژه جدید",
+      description: "پروژه جدیدتان را بسازید و کار را شروع کنید",
       form: {
-        name: "نام",
-        nameRequired: "وارد کردن نام الزامی است",
-        code: "کد",
-        codeRequired: "وارد کردن کد الزامی است",
-        codeLength: "کد باید 3 کاراکتر باشد",
+        name: "نام پروژه",
+        nameRequired: "نام پروژه را وارد کنید",
+        code: "کد پروژه",
+        codeRequired: "کد پروژه را وارد کنید",
+        codeLength: "کد پروژه باید ۳ کاراکتر باشد",
         description: "توضیحات",
-        descriptionPlaceholder: "توضیحات و جزئیات پروژه را وارد کنید...",
+        descriptionPlaceholder: "درباره این پروژه بنویسید...",
         assets: "فایل‌های پیوست",
-        assetsPlaceholder: "فایل‌های مرتبط با پروژه را بارگذاری کنید",
+        assetsPlaceholder: "فایل‌های مرتبط را اینجا بکشید یا کلیک کنید",
         supervisor: "سرپرست",
-        selectSupervisor: "انتخاب سرپرست",
+        selectSupervisor: "سرپرست را انتخاب کنید",
       },
-      submit: "ایجاد پروژه",
-      success: "پروژه با موفقیت ایجاد شد",
-      error: "خطا در ایجاد پروژه: {error}",
+      submit: "ساخت پروژه",
+      success: "عالی! پروژه جدیدتان آماده است",
+      error: "نتوانستیم پروژه را بسازیم: {error}",
     },
     edit: {
       title: "ویرایش پروژه",
-      description: "جزئیات پروژه را به‌روزرسانی کنید.",
-      submit: "به‌روزرسانی پروژه",
-      success: "پروژه با موفقیت به‌روزرسانی شد",
-      error: "خطا در به‌روزرسانی پروژه: {error}",
+      description: "اطلاعات پروژه را به‌روزرسانی کنید",
+      submit: "ذخیره تغییرات",
+      success: "تغییرات با موفقیت ذخیره شد",
+      error: "نتوانستیم تغییرات را ذخیره کنیم: {error}",
       fileValidationError:
-        "برخی از فایل‌ها قابل بارگذاری نیستند. لطفاً نوع فایل‌ها را بررسی کنید.",
+        "بعضی از فایل‌ها قابل بارگذاری نیستند. لطفاً نوع فایل‌ها را بررسی کنید",
     },
     delete: {
       title: "حذف پروژه",
       confirm:
-        "آیا از حذف این پروژه اطمینان دارید؟ با حذف پروژه، تمامی تسک های مربوط به آن نیز حذف خواهند شد.",
-      submit: "حذف پروژه",
-      success: "پروژه با موفقیت حذف شد",
-      error: "خطا در حذف پروژه: {error}",
+        "مطمئنید که می‌خواهید این پروژه را حذف کنید؟ با حذف پروژه، همه تسک‌هایش هم حذف می‌شوند.",
+      submit: "بله، حذف کن",
+      success: "پروژه حذف شد",
+      error: "نتوانستیم پروژه را حذف کنیم: {error}",
     },
     details: {
       title: "جزئیات پروژه",
       viewDetails: "مشاهده جزئیات",
       information: "اطلاعات",
       supervisor: "سرپرست",
-      createdAt: "تاریخ ایجاد",
-      updatedAt: "آخرین به‌روزرسانی",
+      createdAt: "تاریخ ساخت",
+      updatedAt: "آخرین تغییر",
       description: "توضیحات",
-      noDescription: "توضیحاتی برای این پروژه ثبت نشده است.",
+      noDescription: "هنوز توضیحاتی برای این پروژه نوشته نشده",
       files: "فایل‌های پیوست",
       filesCount: "{count} فایل",
-      noFiles: "فایلی برای این پروژه بارگذاری نشده است.",
+      noFiles: "هنوز فایلی بارگذاری نشده",
       statistics: "آمار",
       totalTasks: "تعداد تسک‌ها",
-      completedTasks: "تسک‌های تکمیل‌شده",
-      inProgressTasks: "تسک‌های در حال انجام",
+      completedTasks: "تکمیل شده",
+      inProgressTasks: "در حال انجام",
       totalTimeSpent: "کل زمان صرف شده",
       backToProjects: "بازگشت به پروژه‌ها",
     },
     files: {
       upload: "بارگذاری فایل",
       dropzone: "فایل‌ها را اینجا بکشید یا کلیک کنید",
-      dropzoneActive: "فایل‌ها را اینجا رها کنید...",
-      selectFiles: "انتخاب فایل‌ها",
+      dropzoneActive: "رها کنید...",
+      selectFiles: "انتخاب فایل",
       maxSize: "حداکثر حجم: {size}",
       allowedTypes:
-        "فرمت‌های مجاز: PDF, تصاویر, اسناد Word/Excel/PowerPoint, فایل‌های متنی (TXT, CSV, JSON, XML)",
+        "فرمت‌های مجاز: PDF، تصاویر، Word، Excel، PowerPoint، TXT، CSV، JSON، XML",
       uploading: "در حال بارگذاری...",
       uploadSuccess: "فایل با موفقیت بارگذاری شد",
-      uploadError: "خطا در بارگذاری فایل",
-      deleteSuccess: "فایل با موفقیت حذف شد",
-      deleteError: "خطا در حذف فایل",
+      uploadError: "نتوانستیم فایل را بارگذاری کنیم. دوباره تلاش کنید",
+      deleteSuccess: "فایل حذف شد",
+      deleteError: "نتوانستیم فایل را حذف کنیم. دوباره تلاش کنید",
       download: "دانلود",
       remove: "حذف",
       preview: "پیش‌نمایش",
@@ -392,14 +393,14 @@ export const fa = {
       fileSize: "حجم فایل",
       fileType: "نوع فایل",
       existingFiles: "فایل‌های موجود",
-      addNewFiles: "افزودن فایل‌های جدید",
+      addNewFiles: "افزودن فایل جدید",
       validation: {
-        tooLarge: "حجم فایل بیش از حد مجاز است (حداکثر {max})",
+        tooLarge: "فایل خیلی بزرگ است. حداکثر حجم: {max}",
         invalidType:
-          "نوع فایل '{fileName}' مجاز نیست. فرمت‌های مجاز: PDF, تصاویر, Word, Excel, PowerPoint, CSV, TXT, JSON, XML",
-        uploadFailed: "بارگذاری فایل با خطا مواجه شد",
+          "فرمت فایل «{fileName}» مجاز نیست. فرمت‌های مجاز: PDF، تصاویر، Word، Excel، PowerPoint، CSV، TXT، JSON، XML",
+        uploadFailed: "بارگذاری فایل ناموفق بود. دوباره تلاش کنید",
         mimeTypeError:
-          "فایل '{fileName}' دارای فرمت نامعتبر است و قابل بارگذاری نیست",
+          "فرمت فایل «{fileName}» نامعتبر است و قابل بارگذاری نیست",
       },
     },
   },
@@ -427,8 +428,8 @@ export const fa = {
       ready: "آماده",
       blocked: "مسدود شده",
       on_hold: "متوقف شده",
-      done: "انجام‌شده",
-      canceled: "لغوشده",
+      done: "انجام شده",
+      canceled: "لغو شده",
     },
 
     // Task tags
@@ -440,7 +441,7 @@ export const fa = {
 
     // Filter options
     filters: {
-      search: "جستجو بر اساس عنوان تسک...",
+      search: "جستجو در تسک‌ها...",
       status: "وضعیت",
       priority: "اولویت",
       assignee: "مسئول",
@@ -457,16 +458,16 @@ export const fa = {
       overdue: "گذشته‌موعد",
       activeFilters: "فیلترهای فعال:",
       clearAll: "پاک کردن همه",
-      searchByTitleOrAssignee: "جستجو بر اساس عنوان یا مسئول تسک...",
-      advancedFilters: "فیلترهای پیشرفته:",
+      searchByTitleOrAssignee: "جستجو بر اساس عنوان یا مسئول...",
+      advancedFilters: "فیلترهای پیشرفته",
       clearFilters: "پاک کردن فیلترها",
       labels: {
-        search: "جستجو:",
-        status: "وضعیت:",
-        priority: "اولویت:",
-        assignee: "مسئول:",
-        date: "تاریخ:",
-        tag: "برچسب:",
+        search: "جستجو",
+        status: "وضعیت",
+        priority: "اولویت",
+        assignee: "مسئول",
+        date: "تاریخ",
+        tag: "برچسب",
       },
       dateLabels: {
         today: "امروز",
@@ -474,51 +475,51 @@ export const fa = {
         month: "این ماه",
         overdue: "گذشته‌موعد",
       },
-      moreFilters: "{count} دیگر",
+      moreFilters: "{count} مورد دیگر",
     },
 
     // Empty state messages
     emptyState: {
-      noTasksFound: "هیچ تسکی پیدا نشد",
+      noTasksFound: "تسکی پیدا نشد",
       noTasksFoundDescription:
-        "با فیلترهای فعلی هیچ تسکی مطابقت ندارد. لطفاً فیلترها را تغییر دهید یا پاک کنید.",
-      noTasksInProject: "هیچ تسکی در این پروژه پیدا نشد",
+        "با فیلترهای فعلی تسکی پیدا نشد. فیلترها را تغییر دهید یا پاک کنید",
+      noTasksInProject: "تسکی در این پروژه نیست",
       noTasksInProjectDescription:
-        "با فیلترهای فعلی هیچ تسکی در پروژه «{projectName}» مطابقت ندارد.",
-      noTasksYet: "هنوز تسکی وجود ندارد",
+        "با فیلترهای فعلی تسکی در پروژه «{projectName}» پیدا نشد",
+      noTasksYet: "هنوز تسکی نساخته‌اید",
       noTasksYetDescription:
-        "اولین تسک خود را ایجاد کنید تا مدیریت کارها را شروع کنید.",
+        "اولین تسکتان را بسازید و کار را شروع کنید",
       projectNoTasksYet: "این پروژه هنوز تسکی ندارد",
       projectNoTasksYetDescription:
-        "اولین تسک را برای پروژه «{projectName}» ایجاد کنید.",
-      createFirstTask: "ایجاد اولین تسک",
-      noTasksWithFilters: "هیچ تسکی با فیلترهای فعلی مطابقت ندارد.",
+        "اولین تسک را برای پروژه «{projectName}» بسازید",
+      createFirstTask: "ساخت اولین تسک",
+      noTasksWithFilters: "با این فیلترها تسکی پیدا نشد",
       loadingTasks: "در حال بارگذاری تسک‌ها...",
     },
 
     // Header section
     header: {
       tasksFound: "{count} تسک پیدا شد",
-      manageTasks: "مدیریت و پیگیری تسک‌های خود",
+      manageTasks: "تسک‌هایتان را مدیریت کنید",
       tasksInProject: "{count} تسک در این پروژه",
-      manageProjectTasks: "مدیریت تسک‌های این پروژه",
+      manageProjectTasks: "تسک‌های این پروژه",
     },
 
     // Add task dialog
     addTask: {
-      title: "افزودن تسک",
+      title: "ساخت تسک جدید",
       issueTitle: "عنوان تسک",
-      description: "توضیحات تسک",
+      description: "توضیحات",
       status: "وضعیت",
       priority: "اولویت",
       assignee: "مسئول",
-      unassigned: "اختصاص‌نیافته",
+      unassigned: "بدون مسئول",
       selectProject: "انتخاب پروژه",
-      success: "تسک با موفقیت ایجاد شد",
-      error: "خطا در ایجاد تسک: {error}",
+      success: "عالی! تسک جدیدتان آماده است",
+      error: "نتوانستیم تسک را بسازیم: {error}",
       buttons: {
-        create: "ایجاد",
-        creating: "در حال ایجاد...",
+        create: "ساخت تسک",
+        creating: "در حال ساخت...",
         more: "بیشتر",
         newTask: "تسک جدید",
         newTaskForProject: "تسک جدید برای این پروژه",
@@ -527,26 +528,26 @@ export const fa = {
 
     // Task list
     list: {
-      noTasks: "هیچ تسک‌ای موجود نیست",
+      noTasks: "تسکی وجود ندارد",
       openMenu: "باز کردن منو",
     },
 
     // Task details
     details: {
       title: "جزئیات تسک",
-      unknownUser: "کاربر ناشناس",
-      unknownProject: "پروژه نامشخص",
+      unknownUser: "بدون مسئول",
+      unknownProject: "بدون پروژه",
       timeTracking: {
         title: "زمان صرف شده",
         hours: "ساعت",
         minutes: "دقیقه",
         editTime: "ویرایش زمان",
-        saveTime: "ذخیره زمان",
+        saveTime: "ذخیره",
         cancelEdit: "انصراف",
         noTimeTracked: "هنوز زمانی ثبت نشده",
-        updateSuccess: "زمان با موفقیت به‌روزرسانی شد",
-        updateError: "خطا در به‌روزرسانی زمان",
-        invalidInput: "لطفاً مقدار معتبر برای ساعت و دقیقه وارد کنید",
+        updateSuccess: "زمان به‌روزرسانی شد",
+        updateError: "نتوانستیم زمان را به‌روزرسانی کنیم",
+        invalidInput: "لطفاً ساعت و دقیقه را به درستی وارد کنید",
       },
       buttons: {
         save: "ذخیره",
@@ -560,8 +561,8 @@ export const fa = {
     // Edit task
     edit: {
       title: "ویرایش تسک",
-      success: "تسک با موفقیت به‌روزرسانی شد",
-      error: "خطا در به‌روزرسانی تسک: {error}",
+      success: "تغییرات با موفقیت ذخیره شد",
+      error: "نتوانستیم تغییرات را ذخیره کنیم: {error}",
       buttons: {
         save: "ذخیره",
         saving: "در حال ذخیره...",
@@ -573,18 +574,18 @@ export const fa = {
     delete: {
       title: "حذف تسک",
       description:
-        "آیا از حذف این تسک اطمینان دارید؟ پس از حذف، این تسک دیگر در فهرست‌ها نمایش داده نخواهد شد.",
-      confirm: "حذف تسک",
+        "مطمئنید که می‌خواهید این تسک را حذف کنید؟ بعد از حذف، دیگر در فهرست‌ها نمایش داده نمی‌شود.",
+      confirm: "بله، حذف کن",
       cancel: "انصراف",
-      success: "تسک با موفقیت حذف شد",
-      error: "خطا در حذف تسک: {error}",
+      success: "تسک حذف شد",
+      error: "نتوانستیم تسک را حذف کنیم: {error}",
     },
   },
 
   // Reports module
   reports: {
     title: "گزارش‌ها",
-    dashboardTitle: "داشبورد گزارشات",
+    dashboardTitle: "گزارش‌ها",
     completed: "تکمیل شده",
     inProgress: "در حال انجام",
     canceled: "لغو شده",
@@ -596,18 +597,18 @@ export const fa = {
     status: "وضعیت",
     priority: "اولویت",
     clearFilters: "پاک کردن فیلترها",
-    completedTasks: "تسک‌های تکمیل شده",
+    completedTasks: "تکمیل شده",
     totalTasks: "کل تسک‌ها",
     inProgressTasks: "در حال انجام",
-    noData: "هیچ داده‌ای برای نمایش وجود ندارد",
-    noTasksFound: "هیچ تسکی یافت نشد",
+    noData: "داده‌ای برای نمایش نیست",
+    noTasksFound: "تسکی پیدا نشد",
     project: "پروژه",
     taskStatus: "وضعیت",
     taskPriority: "اولویت",
     taskCompleted: "تکمیل شده",
     completionRate: "نرخ تکمیل",
     name: "نام",
-    completedTasksCount: "تعداد تسک‌های تکمیل شده",
+    completedTasksCount: "تعداد تکمیل شده",
     todo: "برای انجام",
     pending: "در انتظار",
     blocked: "مسدود شده",
@@ -618,25 +619,25 @@ export const fa = {
     deadline: "مهلت",
     age: "سن",
     ageUnit: "(روز)",
-    assignee: "مجری",
-    assignee_plural: "مجریان",
+    assignee: "مسئول",
+    assignee_plural: "مسئولین",
     tags: "برچسب‌ها",
     timePresets: {
       today: "امروز",
       last7Days: "۷ روز گذشته",
       last30Days: "۳۰ روز گذشته",
-      currentQuarter: "ربع جاری",
+      currentQuarter: "سه‌ماهه جاری",
       currentYear: "سال جاری",
       custom: "سفارشی",
     },
     selectProjects: "انتخاب پروژه‌ها",
-    selectAssignees: "انتخاب مجریان",
+    selectAssignees: "انتخاب مسئولین",
     selectStatuses: "انتخاب وضعیت‌ها",
     selectPriorities: "انتخاب اولویت‌ها",
     to: "تا",
-    topPerformers: "برترین مجریان",
+    topPerformers: "بهترین عملکردها",
     rank: "#",
-    onTimeRate: "نرخ به‌ موقع",
+    onTimeRate: "نرخ به‌موقعی",
     totalTasksCard: "کل تسک‌ها",
     overdue: "گذشته مهلت",
     onTime: "به‌موقع",
@@ -651,19 +652,20 @@ export const fa = {
     fallbacks: {
       taskTitle: "بدون عنوان",
       projectName: "نامشخص",
-      assigneeName: "نامشخص",
+      assigneeName: "بدون مسئول",
     },
     range: {
       connector: "تا",
-      label: "بازه زمانی:",
+      label: "بازه زمانی",
     },
-    exportProject: "صادر به اکسل",
-    exportingProject: "در حال صادر...",
-    exportProjectSuccess: "صادرات با موفقیت انجام شد",
-    exportProjectError: "خطا در صادرات",
-    exportProjectNoTasks: "این پروژه تسکی ندارد. آیا می‌خواهید فایل خالی صادر کنید؟",
-    exportProjectSuccessWithCount: "صادرات {count} تسک با موفقیت انجام شد",
-    projectsExportSection: "صادرات پروژه‌ها",
+    exportProject: "خروجی اکسل",
+    exportingProject: "در حال خروجی...",
+    exportProjectSuccess: "خروجی با موفقیت آماده شد",
+    exportProjectError: "نتوانستیم خروجی بگیریم",
+    exportProjectNoTasks:
+      "این پروژه تسکی ندارد. آیا می‌خواهید فایل خالی خروجی بگیرید؟",
+    exportProjectSuccessWithCount: "خروجی {count} تسک با موفقیت آماده شد",
+    projectsExportSection: "خروجی پروژه‌ها",
     projectDetails: "جزئیات پروژه",
     projectTasks: "تسک‌های پروژه",
     noTasksInProject: "این پروژه تسکی ندارد",
@@ -675,16 +677,16 @@ export const fa = {
           weekly: "هفتگی",
         },
         drilldownTitle: "تسک‌های تکمیل شده در {label}",
-        noData: "داده‌ای برای نمایش روند تکمیل در این بازه وجود ندارد",
+        noData: "داده‌ای برای این بازه وجود ندارد",
       },
       timeliness: {
         title: "توزیع به‌موقعی تکمیل",
-        noData: "هیچ تکمیلِ ثبت‌شده‌ای برای این بازه وجود ندارد",
+        noData: "تکمیل ثبت‌شده‌ای برای این بازه وجود ندارد",
       },
       priorities: {
         title: "توزیع اولویت‌ها",
         drilldownTitle: "اولویت {name}",
-        noData: "هیچ تسکی مطابق فیلترها برای نمایش اولویت‌ها نیست",
+        noData: "تسکی مطابق فیلترها پیدا نشد",
       },
       users: {
         drilldownTitle: "تسک‌های {firstName} {lastName}",
@@ -707,14 +709,14 @@ export const fa = {
             daily: "روزانه",
             weekly: "هفتگی",
             monthly: "ماهانه",
-            quarterly: "ربع‌وار",
+            quarterly: "سه‌ماهه",
             annual: "سالانه",
           },
           drilldownTitle: "تسک‌های تکمیل شده در {label}",
-          noData: "داده‌ای برای نمایش روند بهره‌وری در این بازه وجود ندارد",
+          noData: "داده‌ای برای این بازه وجود ندارد",
         },
         performanceTable: {
-          title: "جدول عملکرد کارکنان",
+          title: "عملکرد کارکنان",
           columns: {
             name: "نام",
             totalAssigned: "کل تخصیص‌یافته",
@@ -725,21 +727,21 @@ export const fa = {
             efficiencyScore: "امتیاز کارایی",
           },
           drilldownTitle: "تسک‌های {name}",
-          noData: "هیچ داده‌ای برای نمایش عملکرد کارکنان وجود ندارد",
+          noData: "داده‌ای برای نمایش نیست",
           searchPlaceholder: "جستجو بر اساس نام...",
           rowsPerPage: "ردیف در صفحه",
-          exportCsv: "صادر به CSV",
+          exportCsv: "خروجی CSV",
         },
         comparisonChart: {
           title: "مقایسه با میانگین تیم",
           vsTeam: "در برابر میانگین تیم",
-          noData: "داده‌ای برای مقایسه عملکرد وجود ندارد",
+          noData: "داده‌ای برای مقایسه وجود ندارد",
         },
         emptyStates: {
-          noEmployees: "هیچ کارمندی برای نمایش گزارش وجود ندارد",
-          noData: "هیچ داده‌ای برای نمایش گزارش عملکرد کارکنان وجود ندارد",
+          noEmployees: "کارمندی برای نمایش نیست",
+          noData: "داده‌ای برای نمایش گزارش نیست",
           largeDataset:
-            "داده‌های زیادی برای پردازش وجود دارد. لطفاً بازه زمانی را محدود کنید.",
+            "داده‌های زیادی برای پردازش وجود دارد. لطفاً بازه زمانی را کوچکتر کنید",
         },
         tooltips: {
           totalAssigned:
@@ -747,13 +749,14 @@ export const fa = {
           completed: "تعداد تسک‌های تکمیل‌شده در بازه زمانی",
           completionRate: "نسبت تسک‌های تکمیل‌شده به کل تخصیص‌یافته",
           onTimeRate: "نسبت تسک‌های تکمیل‌شده به‌موقع به کل تکمیل‌شده",
-          avgTimeToComplete: "میانگین زمان سپری‌شده از ایجاد تا تکمیل تسک‌ها",
+          avgTimeToComplete:
+            "میانگین زمان سپری‌شده از ساخت تا تکمیل تسک‌ها",
           efficiencyScore: "نسبت تسک‌های تکمیل‌شده به کل تخصیص‌یافته",
-          overtimeIndicator: "شاخص تقریبی اضافه‌کاری بر اساس مهلت‌ها",
+          overtimeIndicator: "برآورد ساعات اضافه‌کاری مورد نیاز",
         },
         overtimeAnalysis: {
           title: "تحلیل اضافه‌کاری و بار کاری",
-          description: "بررسی الگوهای اضافه‌کاری و توزیع بار کاری کارکنان",
+          description: "بررسی الگوهای اضافه‌کاری و توزیع بار کاری",
           chartTitle: "شاخص‌های اضافه‌کاری",
           workloadChartTitle: "توزیع بار کاری",
           columns: {
@@ -782,11 +785,11 @@ export const fa = {
             capacityUtilization: "درصد استفاده از ظرفیت کاری",
             workloadLevel: "سطح بار کاری بر اساس استفاده از ظرفیت",
           },
-          noData: "داده‌ای برای تحلیل اضافه‌کاری وجود ندارد",
+          noData: "داده‌ای برای تحلیل وجود ندارد",
         },
         productivityTrends: {
           title: "روندهای بهره‌وری",
-          description: "تحلیل روندهای بهره‌وری با قابلیت پیش‌بینی",
+          description: "تحلیل روندهای بهره‌وری با پیش‌بینی",
           chartTitle: "روند بهره‌وری با پیش‌بینی",
           trendLabels: {
             increasing: "افزایشی",
@@ -808,11 +811,11 @@ export const fa = {
     taskShort: "تسک",
     projectSummary: "خلاصه پروژه‌ها",
     recentTasks: "تسک‌های اخیر",
-    overdueTasks: "تسک‌های گذشته‌موعد",
+    overdueTasks: "گذشته‌موعد",
     quickActions: "اقدامات سریع",
     viewAllTasks: "مشاهده همه تسک‌ها",
     manageProjects: "مدیریت پروژه‌ها",
-    viewReports: "مشاهده گزارشات",
+    viewReports: "مشاهده گزارش‌ها",
     tasksCompleted: "٪{percentage} تکمیل شده",
     of: "از",
     stats: {
@@ -842,13 +845,13 @@ export const fa = {
 
   // Chart labels
   charts: {
-    dateLabel: "تاریخ:",
+    dateLabel: "تاریخ",
   },
 
   // Notification section
   notification: {
     new: "جدید",
-    newNotifications: "اعلان‌های جدید اینجا نمایش داده خواهند شد",
+    newNotifications: "اعلان‌های جدید اینجا نمایش داده می‌شوند",
     unreadCount: "اعلان خوانده نشده",
     notificationsLabel: "اعلان",
     notificationsPanel: "پنل اعلان‌ها",
@@ -860,31 +863,31 @@ export const fa = {
   // Task-related labels
   task: {
     editTask: "ویرایش تسک {title}",
-    completedTasks: "تسک‌های تکمیل‌شده",
+    completedTasks: "تکمیل شده",
     sortByPriority: "مرتب‌سازی بر اساس اولویت",
     newTask: "تسک جدید",
     newTaskForProject: "تسک جدید برای این پروژه",
     addNewTask: "افزودن تسک جدید",
     moreOptions: "گزینه‌های بیشتر",
     sortByDate: "مرتب‌سازی بر اساس تاریخ",
-    showCompletedTasks: "نمایش تسک‌های تکمیل‌شده",
+    showCompletedTasks: "نمایش تکمیل شده‌ها",
   },
 
   // Comments module
   comments: {
     title: "نظرات",
     empty: {
-      noComments: "هنوز نظری ثبت نشده است.",
+      noComments: "هنوز نظری ثبت نشده",
       beFirst: "اولین نفری باشید که نظر می‌دهد!",
     },
     composer: {
-      placeholder: "نظر خود را بنویسید...",
+      placeholder: "نظرتان را بنویسید...",
       placeholderDisabled: "برای ارسال نظر وارد شوید",
-      send: "ارسال نظر",
+      send: "ارسال",
     },
     item: {
-      deleted: "نظر حذف شده است",
-      actions: "اقدامات نظر",
+      deleted: "این نظر حذف شده",
+      actions: "گزینه‌های نظر",
       edit: "ویرایش",
       delete: "حذف",
       deleting: "در حال حذف...",
@@ -898,8 +901,8 @@ export const fa = {
 
   // Help documentation
   helps: {
-    title: "راهنمای استفاده از سیستم",
-    description: "راهنمای کامل برای استفاده از امکانات سیستم مدیریت تسک‌ها",
+    title: "راهنما",
+    description: "راهنمای کامل استفاده از سیستم مدیریت تسک‌ها",
     buttons: {
       faq: "سوالات متداول",
       support: "تماس با پشتیبانی",
@@ -907,27 +910,27 @@ export const fa = {
     content: {
       dashboard: "داشبورد اصلی آمار و اطلاعات کلی را نمایش می‌دهد",
       gettingStarted: {
-        title: "شروع کار با سیستم",
+        title: "شروع کار",
         steps: {
-          title: "مراحل شروع کار",
+          title: "مراحل شروع",
           login: {
             label: "ورود به سیستم",
-            description: "با نام کاربری و رمز عبور خود وارد شوید",
+            description: "با نام کاربری و رمز عبورتان وارد شوید",
           },
           dashboard: {
             label: "آشنایی با داشبورد",
             description: "داشبورد اصلی آمار و اطلاعات کلی را نمایش می‌دهد",
           },
           createProject: {
-            label: "ایجاد اولین پروژه",
-            description: "از بخش پروژه‌ها، پروژه جدیدی ایجاد کنید",
+            label: "ساخت اولین پروژه",
+            description: "از بخش پروژه‌ها، پروژه جدیدی بسازید",
           },
           addMembers: {
             label: "افزودن اعضا",
             description: "کاربران را به پروژه اضافه کنید",
           },
           createTasks: {
-            label: "ایجاد تسک‌ها",
+            label: "ساخت تسک‌ها",
             description: "تسک‌های کاری را تعریف و تخصیص دهید",
           },
         },
@@ -940,38 +943,38 @@ export const fa = {
         },
       },
       features: {
-        title: "امکانات و ویژگی‌ها",
+        title: "امکانات",
         userManagement: {
           title: "مدیریت کاربران",
           items: [
-            "ایجاد و مدیریت کاربران با نقش‌های مختلف",
+            "ساخت و مدیریت کاربران با نقش‌های مختلف",
             "تعیین دسترسی‌های کاربران",
             "مدیریت عضویت کاربران در پروژه‌ها",
-            "تغییر نقش کاربران توسط مدیران سیستم",
+            "تغییر نقش کاربران توسط مدیران",
             "امکان تغییر اطلاعات شخصی توسط خود کاربر",
           ],
         },
         projectManagement: {
           title: "مدیریت پروژه‌ها",
           items: [
-            "ایجاد و مدیریت پروژه‌های مختلف",
+            "ساخت و مدیریت پروژه‌های مختلف",
             "تعیین سرپرست و اعضای پروژه",
             "مشاهده وضعیت کلی پروژه",
             "دسته‌بندی و مدیریت تسک‌ها",
-            "نمایش آمار و وضعیت پیشرفت پروژه",
-            "مدیریت دسترسی اعضای پروژه",
+            "نمایش آمار و وضعیت پیشرفت",
+            "مدیریت دسترسی اعضا",
           ],
         },
         taskManagement: {
           title: "مدیریت تسک‌ها",
           items: [
-            "ایجاد و مدیریت تسک‌ها با جزئیات کامل",
-            "تعیین اولویت و وضعیت تسک‌ها",
+            "ساخت و مدیریت تسک‌ها با جزئیات کامل",
+            "تعیین اولویت و وضعیت",
             "اختصاص تسک به کاربران",
             "تعیین مهلت انجام",
-            "دسته‌بندی تسک‌ها بر اساس وضعیت",
-            "شماره‌گذاری خودکار تسک‌ها (مثال: PRJ-001)",
-            "امکان فیلتر تسک‌ها بر اساس وضعیت و اولویت",
+            "دسته‌بندی بر اساس وضعیت",
+            "شماره‌گذاری خودکار (مثال: PRJ-001)",
+            "امکان فیلتر بر اساس وضعیت و اولویت",
           ],
         },
         ui: {
@@ -985,34 +988,34 @@ export const fa = {
         },
       },
       roles: {
-        title: "نقش‌های کاربری و دسترسی‌ها",
+        title: "نقش‌ها و دسترسی‌ها",
         admin: {
-          title: "مدیر سیستم (Admin)",
+          title: "مدیر سیستم",
           items: [
-            "دسترسی کامل به تمام بخش‌های سیستم",
-            "ایجاد، ویرایش و حذف کاربران با هر نقشی",
-            "نمایش همه پروژه‌ها",
-            "ایجاد، ویرایش و حذف تمام تسک‌ها",
-            "مدیریت دسترسی‌های کاربران به پروژه‌ها",
+            "دسترسی کامل به تمام بخش‌ها",
+            "ساخت، ویرایش و حذف کاربران",
+            "مشاهده همه پروژه‌ها",
+            "ساخت، ویرایش و حذف تمام تسک‌ها",
+            "مدیریت دسترسی‌های کاربران",
             "تغییر نقش کاربران",
           ],
         },
         supervisor: {
-          title: "سرپرست (Supervisor)",
+          title: "سرپرست",
           items: [
-            "ایجاد و مدیریت پروژه‌های خود",
+            "ساخت و مدیریت پروژه‌های خود",
             "اضافه کردن کاربران به پروژه‌های تحت نظارت",
-            "ایجاد و مدیریت تسک‌ها در پروژه‌های تحت نظارت",
-            "مشاهده و ویرایش اطلاعات کاربران پروژه‌های تحت نظارت",
+            "ساخت و مدیریت تسک‌ها در پروژه‌های تحت نظارت",
+            "مشاهده و ویرایش اطلاعات کاربران پروژه",
             "تعیین وضعیت و اولویت تسک‌ها",
-            "مشاهده گزارش عملکرد اعضای پروژه",
+            "مشاهده گزارش عملکرد اعضا",
             "تعیین مهلت زمانی برای تسک‌ها",
           ],
         },
         employee: {
-          title: "کارمند (Employee)",
+          title: "کارمند",
           items: [
-            "مشاهده پروژه‌هایی که در آن‌ها عضو است",
+            "مشاهده پروژه‌هایی که عضو است",
             "مشاهده و ویرایش تسک‌های اختصاص داده شده",
             "به‌روزرسانی وضعیت تسک‌های خود",
             "مشاهده سایر اعضای پروژه",
@@ -1026,39 +1029,39 @@ export const fa = {
         about: {
           title: "درباره پروژه‌ها",
           description:
-            "پروژه‌ها واحدهای اصلی سازماندهی کار در سیستم هستند. هر پروژه شامل:",
+            "پروژه‌ها واحدهای اصلی سازماندهی کار هستند. هر پروژه شامل:",
           items: [
             "نام پروژه",
             "کد پروژه",
             "سرپرست پروژه",
             "اعضای پروژه",
             "مجموعه‌ای از تسک‌ها",
-            "تاریخ ایجاد و آخرین به‌روزرسانی",
+            "تاریخ ساخت و آخرین تغییر",
           ],
         },
         createEdit: {
-          title: "ایجاد و ویرایش پروژه",
-          description: "برای ایجاد پروژه جدید:",
+          title: "ساخت و ویرایش پروژه",
+          description: "برای ساخت پروژه جدید:",
           steps: [
             'به بخش "پروژه‌ها" بروید',
             'روی دکمه "پروژه جدید" کلیک کنید',
             "نام پروژه را وارد کنید",
-            "کد پروژه را وارد کنید (باید ۳ حرفی و با حروف بزرگ باشد)",
-            'دکمه "ایجاد" را بزنید',
+            "کد پروژه را وارد کنید",
+            'دکمه "ساخت پروژه" را بزنید',
           ],
-          afterCreate: "پس از ایجاد پروژه می‌توانید:",
+          afterCreate: "بعد از ساخت پروژه می‌توانید:",
           afterSteps: [
             "اعضای پروژه را اضافه کنید",
-            "تسک‌های جدید ایجاد کنید",
-            "وضعیت کلی پروژه را مشاهده کنید",
+            "تسک‌های جدید بسازید",
+            "وضعیت کلی پروژه را ببینید",
             "گزارش‌های پیشرفت را بررسی کنید",
           ],
         },
         members: {
-          title: "مدیریت اعضای پروژه",
+          title: "مدیریت اعضا",
           items: [
-            "افزودن کاربران جدید به پروژه",
-            "حذف کاربران از پروژه",
+            "افزودن کاربران جدید",
+            "حذف کاربران",
             "مشاهده لیست اعضای فعلی",
             "تعیین دسترسی‌های اعضا",
           ],
@@ -1066,9 +1069,9 @@ export const fa = {
         access: {
           title: "دسترسی به پروژه‌ها",
           items: [
-            "مدیران سیستم: دسترسی به تمام پروژه‌ها",
-            "سرپرستان: دسترسی به پروژه‌های تحت نظارت خود",
-            "کارمندان: دسترسی به پروژه‌هایی که در آن‌ها عضو هستند",
+            "مدیران: دسترسی به تمام پروژه‌ها",
+            "سرپرستان: دسترسی به پروژه‌های تحت نظارت",
+            "کارمندان: دسترسی به پروژه‌هایی که عضو هستند",
           ],
         },
       },
@@ -1080,7 +1083,7 @@ export const fa = {
           items: [
             "عنوان و توضیحات",
             "شماره منحصر به فرد (مثال: PRJ-001)",
-            "وضعیت (برای انجام، در حال انجام، در انتظار، انجام‌شده، لغوشده و سایر وضعیت‌های فعال)",
+            "وضعیت (برای انجام، در حال انجام، در انتظار، انجام شده، لغو شده و سایر)",
             "اولویت (فوری، بالا، متوسط، پایین)",
             "مسئول انجام",
             "مهلت انجام",
@@ -1088,40 +1091,39 @@ export const fa = {
         },
         statuses: {
           title: "وضعیت‌های تسک",
-          todo: "برای انجام (Todo): تسک‌های جدید که هنوز شروع نشده‌اند",
+          todo: "برای انجام: تسک‌های جدید که هنوز شروع نشده‌اند",
           inProgress:
-            "در حال انجام (In Progress): تسک‌هایی که در حال حاضر روی آن‌ها کار می‌شود",
+            "در حال انجام: تسک‌هایی که در حال حاضر روی آن‌ها کار می‌شود",
           pending:
-            "در انتظار (Pending): تسک‌هایی که نیازمند تأیید یا پیش‌شرط دیگری هستند",
+            "در انتظار: تسک‌هایی که نیازمند تأیید یا پیش‌شرط دیگری هستند",
           review:
-            "در حال بررسی (Review): تسک‌هایی که برای بازبینی یا تأیید ارسال شده‌اند",
-          testing:
-            "در حال تست (Testing): تسک‌هایی که در مرحله آزمایش قرار دارند",
-          ready: "آماده (Ready): تسک‌هایی که آماده تحویل یا اجرا هستند",
+            "در حال بررسی: تسک‌هایی که برای بازبینی یا تأیید ارسال شده‌اند",
+          testing: "در حال تست: تسک‌هایی که در مرحله آزمایش قرار دارند",
+          ready: "آماده: تسک‌هایی که آماده تحویل یا اجرا هستند",
           blocked:
-            "مسدود شده (Blocked): تسک‌هایی که به دلیل مانع یا وابستگی متوقف شده‌اند",
-          onHold: "متوقف شده (On Hold): تسک‌هایی که موقتاً نگه داشته شده‌اند",
-          done: "انجام‌شده (Done): تسک‌های تکمیل شده",
-          canceled: "لغوشده (Canceled): تسک‌هایی که به هر دلیلی لغو شده‌اند",
+            "مسدود شده: تسک‌هایی که به دلیل مانع یا وابستگی متوقف شده‌اند",
+          onHold: "متوقف شده: تسک‌هایی که موقتاً نگه داشته شده‌اند",
+          done: "انجام شده: تسک‌های تکمیل شده",
+          canceled: "لغو شده: تسک‌هایی که به هر دلیلی لغو شده‌اند",
         },
         priorities: {
           title: "اولویت‌های تسک",
-          urgent: "فوری (Urgent): نیاز به رسیدگی فوری دارد",
-          high: "بالا (High): اولویت بالا برای انجام",
-          medium: "متوسط (Medium): اولویت معمولی",
-          low: "پایین (Low): می‌تواند با تأخیر انجام شود",
+          urgent: "فوری: نیاز به رسیدگی فوری دارد",
+          high: "بالا: اولویت بالا برای انجام",
+          medium: "متوسط: اولویت معمولی",
+          low: "پایین: می‌تواند با تأخیر انجام شود",
         },
         createEdit: {
-          title: "ایجاد و ویرایش تسک",
-          description: "برای ایجاد تسک جدید:",
+          title: "ساخت و ویرایش تسک",
+          description: "برای ساخت تسک جدید:",
           steps: [
             'وارد پروژه مورد نظر شوید یا از بخش "تسک‌ها" استفاده کنید',
             'روی دکمه "افزودن تسک" یا دکمه "+" کلیک کنید',
-            "عنوان و توضیحات تسک را وارد کنید",
+            "عنوان و توضیحات را وارد کنید",
             "اولویت و وضعیت را تعیین کنید",
             "مسئول انجام را مشخص کنید",
             "در صورت نیاز، مهلت انجام را تعیین کنید",
-            'دکمه "ایجاد" را بزنید',
+            'دکمه "ساخت تسک" را بزنید',
           ],
         },
         tips: {
@@ -1150,60 +1152,60 @@ export const fa = {
         problems: {
           title: "مشکلات رایج",
           login: {
-            title: "نمی‌توانم وارد سیستم شوم",
+            title: "نمی‌توانم وارد شوم",
             description:
-              "نام کاربری و رمز عبور خود را بررسی کنید. در صورت فراموشی، با مدیر سیستم تماس بگیرید.",
+              "نام کاربری و رمز عبورتان را بررسی کنید. اگر فراموش کرده‌اید، با مدیر سیستم تماس بگیرید",
           },
           noTasks: {
             title: "تسک‌ها نمایش داده نمی‌شوند",
             description:
-              "فیلترهای اعمال شده را بررسی کنید و در صورت نیاز آنها را پاک کنید.",
+              "فیلترهای اعمال شده را بررسی کنید و در صورت نیاز آن‌ها را پاک کنید",
           },
           cannotCreateTask: {
-            title: "نمی‌توانم تسک جدیدی ایجاد کنم",
+            title: "نمی‌توانم تسک جدید بسازم",
             description:
-              "مطمئن شوید که به پروژه مورد نظر دسترسی دارید و نقش شما اجازه ایجاد تسک را می‌دهد.",
+              "مطمئن شوید که به پروژه مورد نظر دسترسی دارید و نقش شما اجازه ساخت تسک را می‌دهد",
           },
           reportsNotLoading: {
             title: "گزارش‌ها بارگذاری نمی‌شوند",
             description:
-              "اتصال اینترنت خود را بررسی کنید و صفحه را مجدداً بارگذاری کنید.",
+              "اتصال اینترنتتان را بررسی کنید و صفحه را دوباره بارگذاری کنید",
           },
         },
         support: {
           title: "تماس با پشتیبانی",
           description:
-            'در صورت بروز مشکل یا نیاز به راهنمایی بیشتر، از طریق بخش "تماس با پشتیبانی" یا ایمیل با تیم فنی ارتباط برقرار کنید.',
+            'اگر مشکلی دارید یا نیاز به راهنمایی بیشتر دارید، از طریق بخش "تماس با پشتیبانی" یا ایمیل با تیم فنی ارتباط برقرار کنید',
         },
       },
       system: {
-        title: "ویژگی‌های پیشرفته سیستم",
+        title: "ویژگی‌های پیشرفته",
         security: {
           title: "امنیت و دسترسی",
           items: [
             "احراز هویت امن کاربران",
-            "کنترل دسترسی بر اساس نقش‌های کاربری",
+            "کنترل دسترسی بر اساس نقش‌ها",
             "رمزگذاری داده‌های حساس",
-            "ثبت فعالیت‌های کاربران برای پیگیری",
+            "ثبت فعالیت‌های کاربران",
           ],
         },
         ui: {
-          title: "رابط کاربری هوشمند",
+          title: "رابط کاربری",
           items: [
             "طراحی کاملاً واکنش‌گرا برای موبایل و دسکتاپ",
             "پشتیبانی از تم روشن و تاریک",
             "پشتیبانی کامل از زبان فارسی",
             "کلیدهای میانبر برای دسترسی سریع",
-            "دسترسی‌پذیری کامل برای کاربران کم‌توان",
+            "دسترسی‌پذیری کامل",
           ],
         },
         performance: {
           title: "کارایی و سرعت",
           items: [
-            "بارگذاری سریع صفحات و داده‌ها",
+            "بارگذاری سریع صفحات",
             "به‌روزرسانی خودکار اطلاعات",
             "ذخیره‌سازی محلی برای عملکرد بهتر",
-            "همگام‌سازی داده‌ها در زمان واقعی",
+            "همگام‌سازی در زمان واقعی",
           ],
         },
       },
@@ -1212,7 +1214,7 @@ export const fa = {
 
   // Loading states
   loading: {
-    application: "در حال بارگذاری برنامه...",
+    application: "در حال بارگذاری...",
   },
 
   // Date picker
@@ -1223,31 +1225,32 @@ export const fa = {
   // Error messages
   errors: {
     pageLoad: {
-      login: "خطا در بارگذاری صفحه ورود",
-      register: "خطا در بارگذاری صفحه ثبت نام",
-      dashboard: "خطا در بارگذاری داشبورد",
-      projects: "خطا در بارگذاری پروژه‌ها",
-      tasks: "خطا در بارگذاری تسک‌ها",
-      projectTasks: "خطا در بارگذاری تسک‌ها پروژه",
-      users: "خطا در بارگذاری کاربران",
-      projectUsers: "خطا در بارگذاری کاربران پروژه",
-      reports: "خطا در بارگذاری گزارشات",
-      helps: "خطا در بارگذاری راهنما",
-      notifications: "خطا در بارگذاری اعلان‌ها",
-      notFound: "صفحه یافت نشد",
+      login: "نتوانستیم صفحه ورود را بارگذاری کنیم",
+      register: "نتوانستیم صفحه ثبت‌نام را بارگذاری کنیم",
+      dashboard: "نتوانستیم داشبورد را بارگذاری کنیم",
+      projects: "نتوانستیم پروژه‌ها را بارگذاری کنیم",
+      tasks: "نتوانستیم تسک‌ها را بارگذاری کنیم",
+      projectTasks: "نتوانستیم تسک‌های پروژه را بارگذاری کنیم",
+      users: "نتوانستیم کاربران را بارگذاری کنیم",
+      projectUsers: "نتوانستیم اعضای پروژه را بارگذاری کنیم",
+      reports: "نتوانستیم گزارش‌ها را بارگذاری کنیم",
+      helps: "نتوانستیم راهنما را بارگذاری کنیم",
+      notifications: "نتوانستیم اعلان‌ها را بارگذاری کنیم",
+      notFound: "صفحه پیدا نشد",
     },
     boundary: {
-      title: "مشکلی پیش آمده",
-      description: "خطای غیرمنتظره‌ای رخ داده است. لطفاً دوباره تلاش کنید.",
+      title: "اوه! مشکلی پیش آمده",
+      description:
+        "یک خطای غیرمنتظره رخ داده. نگران نباشید، می‌توانید دوباره تلاش کنید یا صفحه را بارگذاری مجدد کنید",
       tryAgain: "تلاش مجدد",
-      reloadPage: "بارگذاری مجدد صفحه",
+      reloadPage: "بارگذاری مجدد",
     },
   },
 
   // 404 page
   notFound: {
     title: "404",
-    message: "صفحه مورد نظر یافت نشد",
+    message: "صفحه‌ای که دنبالش می‌گردید پیدا نشد",
   },
 } as const;
 
