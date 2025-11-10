@@ -76,7 +76,11 @@ export default function Register() {
       await pb
         .collection("users")
         .authWithPassword(username.trim().toLowerCase(), password.trim());
-      if (pb.authStore.record && pb.authStore.token && isUsersRecord(pb.authStore.record)) {
+      if (
+        pb.authStore.record &&
+        pb.authStore.token &&
+        isUsersRecord(pb.authStore.record)
+      ) {
         login(pb.authStore.record, pb.authStore.token);
         navigate("/", { replace: true });
       }
@@ -184,7 +188,7 @@ export default function Register() {
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting
-              ? fa.tasks.details.buttons.saving
+              ? fa.auth.register.registering
               : fa.auth.register.registerButton}
           </Button>
 

@@ -136,7 +136,7 @@ export default function Login() {
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting
-              ? fa.tasks.details.buttons.saving
+              ? fa.auth.login.loggingIn
               : fa.auth.login.loginButton}
           </Button>
 

@@ -183,6 +183,7 @@ export const fa = {
       username: "نام کاربری",
       password: "رمز عبور",
       loginButton: "ورود",
+      loggingIn: "در حال ورود...",
       registerButton: "ثبت‌نام",
       errors: {
         credentialsRequired: "وارد کردن نام کاربری و رمز عبور الزامی است",
@@ -195,6 +196,7 @@ export const fa = {
       password: "رمز عبور",
       confirmPassword: "تأیید رمز عبور",
       registerButton: "ثبت‌نام",
+      registering: "در حال ثبت‌نام...",
       loginButton: "بازگشت به ورود",
       initialAdminMessage:
         "برای ایجاد ادمین اولیه، لطفاً نام کاربری و رمز عبور خود را وارد کنید.",
