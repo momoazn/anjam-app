@@ -12,7 +12,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type ProjectListGroupProps = {
   projects: ProjectsResponse[];
-  onEdit: (project: ProjectsResponse) => void;
+  onEdit: (projectId: string) => void;
   canEditDelete: boolean;
 };
 
@@ -80,7 +80,7 @@ export function ProjectListGroup({
                         className="h-6 w-6"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onEdit(project);
+                          onEdit(project.id);
                         }}
                       >
                         <Edit className="h-3 w-3" />

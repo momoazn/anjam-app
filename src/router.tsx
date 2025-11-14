@@ -32,8 +32,33 @@ const ProjectDetails = React.lazy(() =>
     default: () => <div>{fa.errors.pageLoad.projects}</div>,
   })),
 );
+const CreateProject = React.lazy(() =>
+  import("@/pages/create-project").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.projects}</div>,
+  })),
+);
+const EditProject = React.lazy(() =>
+  import("@/pages/edit-project").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.projects}</div>,
+  })),
+);
 const Tasks = React.lazy(() =>
   import("@/pages/tasks").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
+  })),
+);
+const CreateTask = React.lazy(() =>
+  import("@/pages/create-task").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
+  })),
+);
+const TaskDetails = React.lazy(() =>
+  import("@/pages/task-details").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
+  })),
+);
+const EditTask = React.lazy(() =>
+  import("@/pages/edit-task").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.tasks}</div>,
   })),
 );
@@ -151,10 +176,22 @@ const routes: RouteType[] = [
     title: fa.navigation.projects,
   },
   {
+    path: "/projects/new",
+    element: <CreateProject />,
+    protected: true,
+    title: fa.projects.create.title,
+  },
+  {
     path: "/projects/:id/details",
     element: <ProjectDetails />,
     protected: true,
     title: fa.projects.details.title,
+  },
+  {
+    path: "/projects/:id/edit",
+    element: <EditProject />,
+    protected: true,
+    title: fa.projects.edit.title,
   },
   {
     path: "/login",
@@ -175,10 +212,34 @@ const routes: RouteType[] = [
     title: fa.tasks.title,
   },
   {
+    path: "/tasks/new",
+    element: <CreateTask />,
+    protected: true,
+    title: fa.tasks.addTask.title,
+  },
+  {
+    path: "/tasks/:id",
+    element: <TaskDetails />,
+    protected: true,
+    title: fa.tasks.details.title,
+  },
+  {
+    path: "/tasks/:id/edit",
+    element: <EditTask />,
+    protected: true,
+    title: fa.tasks.edit.title,
+  },
+  {
     path: "/projects/:id/tasks",
     element: <ProjectTasks />,
     protected: true,
     title: fa.projects.projectTasks,
+  },
+  {
+    path: "/projects/:id/tasks/new",
+    element: <CreateTask />,
+    protected: true,
+    title: fa.tasks.addTask.title,
   },
   {
     path: "/users",

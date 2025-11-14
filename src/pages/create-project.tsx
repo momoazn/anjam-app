@@ -1,27 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { ClientResponseError } from "pocketbase";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { ProjectFields } from "@/components/forms/project-fields";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
-import { Loader2 } from "lucide-react";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
@@ -33,15 +28,8 @@ const projectFormSchema = z.object({
   supervisor: z.string().optional(),
 });
 
-type CreateProjectDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
-
-export function CreateProjectDialog({
-  open,
-  onOpenChange,
-}: CreateProjectDialogProps) {
+export default function CreateProject() {
+  const navigate = useNavigate();
   const user = useAuthUser();
   const queryClient = useQueryClient();
   const isAdmin = user?.role === "admin";
@@ -81,8 +69,7 @@ export function CreateProjectDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
       toast.success(fa.projects.create.success);
-      form.reset();
-      onOpenChange(false);
+      navigate("/projects");
     },
     onError: (error: Error) => {
       // Parse PocketBase validation errors
@@ -116,32 +103,54 @@ export function CreateProjectDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{fa.projects.create.title}</DialogTitle>
-          <DialogDescription>
-            {fa.projects.create.description}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <ProjectFields
-              control={form.control}
-              showSupervisor={true}
-              isAdmin={isAdmin}
-            />
-            <DialogFooter>
-              <Button type="submit" disabled={isPending}>
-                {isPending ? (
-                  <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
-                ) : null}
-                {fa.projects.create.submit}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <PageTransition className="container mx-auto space-y-6 p-6">
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/projects")}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">{fa.projects.create.title}</h1>
+          <p className="text-muted-foreground">{fa.projects.create.description}</p>
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{fa.projects.create.title}</CardTitle>
+          <CardDescription>{fa.projects.create.description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <ProjectFields
+                control={form.control}
+                showSupervisor={true}
+                isAdmin={isAdmin}
+              />
+              <div className="flex items-center justify-end gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/projects")}
+                  disabled={isPending}
+                >
+                  {fa.common.cancel}
+                </Button>
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
+                  ) : null}
+                  {fa.projects.create.submit}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </PageTransition>
   );
 }

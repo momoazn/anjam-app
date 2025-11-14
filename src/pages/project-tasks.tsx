@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
@@ -9,14 +9,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
 
-import { CreateTaskDialog } from "@/components/task/create-task-dialog";
-import { queryKeys } from "@/hooks/query-keys";
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
-import { useQueryClient } from "@tanstack/react-query";
 import { FilterX, FolderOpen, Plus } from "lucide-react";
 
 // Loading skeleton component for project tasks
@@ -60,17 +57,13 @@ const ProjectTaskListSkeleton = () => (
 const ProjectEmptyState = ({
   hasFilters,
   projectName,
+  projectId,
 }: {
   hasFilters: boolean;
   projectName: string;
+  projectId: string;
 }) => {
-  const queryClient = useQueryClient();
-
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.tasks.all,
-    });
-  };
+  const navigate = useNavigate();
 
   if (hasFilters) {
     return (
@@ -115,12 +108,13 @@ const ProjectEmptyState = ({
             projectName,
           )}
         </p>
-        <CreateTaskDialog onSuccess={onSuccess}>
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            {fa.tasks.emptyState.createFirstTask}
-          </Button>
-        </CreateTaskDialog>
+        <Button
+          className="gap-2"
+          onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
+        >
+          <Plus className="h-4 w-4" />
+          {fa.tasks.emptyState.createFirstTask}
+        </Button>
       </CardContent>
     </Card>
   );
@@ -128,6 +122,7 @@ const ProjectEmptyState = ({
 
 export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const { project, tasks, users, isLoadingTasks, isLoadingUsers } =
     useProjectTasksPageData(projectId as string);
@@ -194,12 +189,14 @@ export default function ProjectTasks() {
                 : fa.tasks.header.manageProjectTasks}
             </p>
           </div>
-          <CreateTaskDialog onSuccess={() => {}}>
-            <Button className="gap-2" size="lg">
-              <Plus className="h-4 w-4" />
-              {fa.tasks.addTask.buttons.newTaskForProject}
-            </Button>
-          </CreateTaskDialog>
+          <Button
+            className="gap-2"
+            size="lg"
+            onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
+          >
+            <Plus className="h-4 w-4" />
+            {fa.tasks.addTask.buttons.newTaskForProject}
+          </Button>
         </div>
       </div>
 
@@ -231,6 +228,7 @@ export default function ProjectTasks() {
           <ProjectEmptyState
             hasFilters={hasActiveFilters}
             projectName={project?.name || fa.projects.fallbacks.thisProject}
+            projectId={projectId || ""}
           />
         ) : (
           statusOrder?.map((status) => {

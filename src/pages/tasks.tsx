@@ -1,7 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { FilterX, ListTodo, Plus } from "lucide-react";
 import { useMemo } from "react";
-import { CreateTaskDialog } from "@/components/task/create-task-dialog";
+import { useNavigate } from "react-router-dom";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { PageTransition } from "@/components/page-transition";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
-import { queryKeys } from "@/hooks/query-keys";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import type { TaskWithProject } from "@/lib/pocketbase";
@@ -55,13 +53,7 @@ const TaskListSkeleton = () => (
 
 // Empty state component
 const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
-  const queryClient = useQueryClient();
-
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.tasks.all,
-    });
-  };
+  const navigate = useNavigate();
 
   if (hasFilters) {
     return (
@@ -100,18 +92,17 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
         <p className="text-muted-foreground mb-6 max-w-md">
           {fa.tasks.emptyState.noTasksYetDescription}
         </p>
-        <CreateTaskDialog onSuccess={onSuccess}>
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            {fa.tasks.emptyState.createFirstTask}
-          </Button>
-        </CreateTaskDialog>
+        <Button className="gap-2" onClick={() => navigate("/tasks/new")}>
+          <Plus className="h-4 w-4" />
+          {fa.tasks.emptyState.createFirstTask}
+        </Button>
       </CardContent>
     </Card>
   );
 };
 
 export default function Tasks() {
+  const navigate = useNavigate();
   const {
     tasks: userTasks,
     users,
@@ -183,12 +174,14 @@ export default function Tasks() {
               : fa.tasks.header.manageTasks}
           </p>
         </div>
-        <CreateTaskDialog onSuccess={() => {}}>
-          <Button className="w-full gap-2 sm:w-auto" size="lg">
-            <Plus className="h-4 w-4" />
-            {fa.tasks.addTask.buttons.newTask}
-          </Button>
-        </CreateTaskDialog>
+        <Button
+          className="w-full gap-2 sm:w-auto"
+          size="lg"
+          onClick={() => navigate("/tasks/new")}
+        >
+          <Plus className="h-4 w-4" />
+          {fa.tasks.addTask.buttons.newTask}
+        </Button>
       </div>
 
       {/* Search and Filter Controls */}
