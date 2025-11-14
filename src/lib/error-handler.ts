@@ -74,11 +74,12 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
         toast.error(fa.auth.errors.serverError);
       }
     }
-  } else if (pbError?.status === 400) {
-    // Handle authentication failures
-    toast.error(fa.auth.errors.invalidCredentials);
   } else if (pbError?.message) {
+    // Display the specific error message from the backend
     toast.error(pbError.message);
+  } else if (pbError?.status === 400) {
+    // Fallback for authentication failures without a message
+    toast.error(fa.auth.errors.invalidCredentials);
   } else {
     toast.error(fa.auth.errors.serverError);
   }
