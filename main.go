@@ -5,6 +5,7 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -67,6 +68,7 @@ func main() {
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 
 	// --- Bind Record Event Handlers ---
+	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
 	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
@@ -77,8 +79,6 @@ func main() {
 
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
-	app.OnRecordAuthWithPasswordSuccess("users").BindFunc(handleAuthSuccess)
-	app.OnRecordAuthWithPasswordError("users").BindFunc(handleAuthError)
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
@@ -86,6 +86,9 @@ func main() {
 		se.Router.PATCH("/api/tm/users/{id}/toggle-active", handleToggleUserActive)
 		se.Router.PATCH("/api/tm/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/tm/users/{id}/login-logs", handleGetUserLoginLogs)
+
+		// Add middleware to track auth attempts
+		se.Router.Use(trackAuthMiddleware(app))
 
 		return se.Next()
 	})
@@ -295,6 +298,7 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 		record.Set("username", "admin")
 		record.Set("password", "admin12345")
 		record.Set("role", "admin")
+		record.Set("active", true) // Set admin as active by default
 
 		if err := e.App.Save(record); err != nil {
 			log.Printf("Error saving default admin: %v", err)
@@ -328,6 +332,22 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 }
 
 // --- Record Event Handlers ---
+
+func handleUserCreation(e *core.RecordEvent) error {
+	// Set new users as active by default
+	if e.Record.GetBool("active") == false && e.Record.Get("active") == nil {
+		e.Record.Set("active", true)
+	}
+	// Initialize failed login attempts to 0
+	if e.Record.Get("failed_login_attempts") == nil {
+		e.Record.Set("failed_login_attempts", 0)
+	}
+	// Set blocked to false by default
+	if e.Record.Get("blocked") == nil {
+		e.Record.Set("blocked", false)
+	}
+	return e.Next()
+}
 
 func handleProjectCreation(e *core.RecordEvent) error {
 	if e.Record.GetString("code") != "" {
@@ -763,35 +783,105 @@ func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 	return e.Next()
 }
 
-func handleAuthSuccess(e *core.RecordAuthWithPasswordSuccessEvent) error {
-	user := e.Record
-	if user == nil {
-		return e.Next()
+func trackAuthMiddleware(app core.App) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Only intercept auth endpoints
+			if r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/auth-with-password") {
+				// Create a response recorder to capture the response
+				rec := &responseRecorder{
+					ResponseWriter: w,
+					statusCode:     http.StatusOK,
+				}
+
+				// Store request body for later use (we need to parse it to get the identity)
+				bodyBytes, _ := io.ReadAll(r.Body)
+				r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+
+				// Parse the auth request
+				var authReq struct {
+					Identity string `json:"identity"`
+					Password string `json:"password"`
+				}
+				json.Unmarshal(bodyBytes, &authReq)
+
+				// Reset body for the actual handler
+				r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+
+				// Call the actual handler
+				next.ServeHTTP(rec, r)
+
+				// After the handler has run, check if auth succeeded or failed
+				go func() {
+					if rec.statusCode >= 200 && rec.statusCode < 300 {
+						// Success - try to find the user and reset failed attempts
+						handleSuccessfulAuth(app, authReq.Identity, r)
+					} else {
+						// Failed - increment failed attempts
+						handleFailedAuth(app, authReq.Identity, r)
+					}
+				}()
+
+				return
+			}
+
+			// For all other requests, just pass through
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// responseRecorder captures the response status code
+type responseRecorder struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (r *responseRecorder) WriteHeader(code int) {
+	r.statusCode = code
+	r.ResponseWriter.WriteHeader(code)
+}
+
+func handleSuccessfulAuth(app core.App, identity string, req *http.Request) {
+	// Find user by identity (username or email)
+	user, err := app.FindFirstRecordByFilter(
+		"users",
+		"username = {:identity} || email = {:identity}",
+		dbx.Params{"identity": identity},
+	)
+
+	if err != nil {
+		log.Printf("Error finding user for successful auth: %v", err)
+		return
 	}
 
 	// Reset failed login attempts
 	user.Set("failed_login_attempts", 0)
-	if err := e.App.Save(user); err != nil {
+	if err := app.Save(user); err != nil {
 		log.Printf("Error resetting failed login attempts for user %s: %v", user.Id, err)
 	}
 
 	// Log successful login
-	go logUserLogin(e.App, user.Id, e.HttpContext.Request(), true, "")
-
-	return e.Next()
+	logUserLogin(app, user.Id, req, true, "")
 }
 
-func handleAuthError(e *core.RecordAuthWithPasswordErrorEvent) error {
-	if e.Record == nil {
+func handleFailedAuth(app core.App, identity string, req *http.Request) {
+	// Try to find user by identity
+	user, err := app.FindFirstRecordByFilter(
+		"users",
+		"username = {:identity} || email = {:identity}",
+		dbx.Params{"identity": identity},
+	)
+
+	if err != nil {
 		// User not found - still log the attempt
-		go logUserLogin(e.App, "", e.HttpContext.Request(), false, "کاربر یافت نشد")
-		return e.Next()
+		logUserLogin(app, "", req, false, "کاربر یافت نشد")
+		return
 	}
 
-	user := e.Record
+	// Increment failed attempts
 	failedAttempts := user.GetInt("failed_login_attempts")
 	failedAttempts++
-
 	user.Set("failed_login_attempts", failedAttempts)
 
 	// Check if we should block the user
@@ -802,14 +892,12 @@ func handleAuthError(e *core.RecordAuthWithPasswordErrorEvent) error {
 		log.Printf("User %s blocked after %d failed login attempts", user.Id, failedAttempts)
 	}
 
-	if err := e.App.Save(user); err != nil {
+	if err := app.Save(user); err != nil {
 		log.Printf("Error updating failed login attempts for user %s: %v", user.Id, err)
 	}
 
 	// Log failed login
-	go logUserLogin(e.App, user.Id, e.HttpContext.Request(), false, "رمز عبور اشتباه")
-
-	return e.Next()
+	logUserLogin(app, user.Id, req, false, "رمز عبور اشتباه")
 }
 
 func logUserLogin(app core.App, userId string, req *http.Request, success bool, failureReason string) {
