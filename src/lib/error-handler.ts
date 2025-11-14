@@ -33,7 +33,7 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
   console.error("PocketBase error:", error);
   try {
     console.error("Error structure:", JSON.stringify(error, null, 2));
-  } catch (e) {
+  } catch {
     console.error("Could not stringify error");
   }
 
@@ -87,15 +87,32 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
   } else {
     // Check for error message in multiple possible locations
     const errorMessage =
-      pbError?.message ||
-      pbError?.data?.message ||
-      pbError?.response?.message;
+      pbError?.message || pbError?.data?.message || pbError?.response?.message;
 
     console.log("Extracted error message:", errorMessage);
 
     if (errorMessage) {
-      // Display the specific error message from the backend
-      toast.error(errorMessage);
+      // Check if this is an inactive user error
+      const message = errorMessage.toLowerCase();
+      if (
+        message.includes("غیرفعال") ||
+        message.includes("inactive") ||
+        message.includes("غيرفعال")
+      ) {
+        toast.error(fa.auth.errors.userInactive);
+      }
+      // Check if this is a blocked user error
+      else if (
+        message.includes("blocked") ||
+        message.includes("مسدود") ||
+        message.includes("user account") ||
+        message.includes("حساب کاربری")
+      ) {
+        toast.error(fa.auth.errors.userBlocked);
+      } else {
+        // Display the specific error message from the backend
+        toast.error(errorMessage);
+      }
     } else if (pbError?.status === 400) {
       // Fallback for authentication failures without a message
       console.log("No error message found, using generic invalidCredentials");
