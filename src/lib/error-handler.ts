@@ -30,7 +30,12 @@ function isPocketBaseError(
 }
 
 export function handlePocketBaseError(error: Error | PocketBaseError): void {
-  console.error(error);
+  console.error("PocketBase error:", error);
+  try {
+    console.error("Error structure:", JSON.stringify(error, null, 2));
+  } catch (e) {
+    console.error("Could not stringify error");
+  }
 
   if (!isPocketBaseError(error)) {
     toast.error(fa.auth.errors.serverError);
@@ -86,13 +91,17 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
       pbError?.data?.message ||
       pbError?.response?.message;
 
+    console.log("Extracted error message:", errorMessage);
+
     if (errorMessage) {
       // Display the specific error message from the backend
       toast.error(errorMessage);
     } else if (pbError?.status === 400) {
       // Fallback for authentication failures without a message
+      console.log("No error message found, using generic invalidCredentials");
       toast.error(fa.auth.errors.invalidCredentials);
     } else {
+      console.log("No error message found, using generic serverError");
       toast.error(fa.auth.errors.serverError);
     }
   }
