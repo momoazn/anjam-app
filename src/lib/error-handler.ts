@@ -9,9 +9,14 @@ type ValidationError = {
 type PocketBaseError = {
   data?: {
     data?: Record<string, ValidationError>;
+    message?: string;
   };
   message?: string;
   status?: number;
+  response?: {
+    message?: string;
+    data?: Record<string, ValidationError>;
+  };
 };
 
 function isPocketBaseError(
@@ -74,13 +79,21 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
         toast.error(fa.auth.errors.serverError);
       }
     }
-  } else if (pbError?.message) {
-    // Display the specific error message from the backend
-    toast.error(pbError.message);
-  } else if (pbError?.status === 400) {
-    // Fallback for authentication failures without a message
-    toast.error(fa.auth.errors.invalidCredentials);
   } else {
-    toast.error(fa.auth.errors.serverError);
+    // Check for error message in multiple possible locations
+    const errorMessage =
+      pbError?.message ||
+      pbError?.data?.message ||
+      pbError?.response?.message;
+
+    if (errorMessage) {
+      // Display the specific error message from the backend
+      toast.error(errorMessage);
+    } else if (pbError?.status === 400) {
+      // Fallback for authentication failures without a message
+      toast.error(fa.auth.errors.invalidCredentials);
+    } else {
+      toast.error(fa.auth.errors.serverError);
+    }
   }
 }
