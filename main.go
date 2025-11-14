@@ -87,9 +87,13 @@ func main() {
 		se.Router.PATCH("/api/tm/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/tm/users/{id}/login-logs", handleGetUserLoginLogs)
 
-		// Add middleware to track auth attempts
-		se.Router.Use(trackAuthMiddleware(app))
+		return se.Next()
+	})
 
+	// --- Add Authentication Tracking Middleware ---
+	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		// Wrap the HTTP server to intercept auth requests
+		se.Server.Handler = trackAuthMiddleware(app, se.Server.Handler)
 		return se.Next()
 	})
 
@@ -783,52 +787,50 @@ func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 	return e.Next()
 }
 
-func trackAuthMiddleware(app core.App) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Only intercept auth endpoints
-			if r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/auth-with-password") {
-				// Create a response recorder to capture the response
-				rec := &responseRecorder{
-					ResponseWriter: w,
-					statusCode:     http.StatusOK,
-				}
-
-				// Store request body for later use (we need to parse it to get the identity)
-				bodyBytes, _ := io.ReadAll(r.Body)
-				r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
-
-				// Parse the auth request
-				var authReq struct {
-					Identity string `json:"identity"`
-					Password string `json:"password"`
-				}
-				json.Unmarshal(bodyBytes, &authReq)
-
-				// Reset body for the actual handler
-				r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
-
-				// Call the actual handler
-				next.ServeHTTP(rec, r)
-
-				// After the handler has run, check if auth succeeded or failed
-				go func() {
-					if rec.statusCode >= 200 && rec.statusCode < 300 {
-						// Success - try to find the user and reset failed attempts
-						handleSuccessfulAuth(app, authReq.Identity, r)
-					} else {
-						// Failed - increment failed attempts
-						handleFailedAuth(app, authReq.Identity, r)
-					}
-				}()
-
-				return
+func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Only intercept auth endpoints
+		if r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/auth-with-password") {
+			// Create a response recorder to capture the response
+			rec := &responseRecorder{
+				ResponseWriter: w,
+				statusCode:     http.StatusOK,
 			}
 
-			// For all other requests, just pass through
-			next.ServeHTTP(w, r)
-		})
-	}
+			// Store request body for later use (we need to parse it to get the identity)
+			bodyBytes, _ := io.ReadAll(r.Body)
+			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+
+			// Parse the auth request
+			var authReq struct {
+				Identity string `json:"identity"`
+				Password string `json:"password"`
+			}
+			json.Unmarshal(bodyBytes, &authReq)
+
+			// Reset body for the actual handler
+			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+
+			// Call the actual handler
+			next.ServeHTTP(rec, r)
+
+			// After the handler has run, check if auth succeeded or failed
+			go func() {
+				if rec.statusCode >= 200 && rec.statusCode < 300 {
+					// Success - try to find the user and reset failed attempts
+					handleSuccessfulAuth(app, authReq.Identity, r)
+				} else {
+					// Failed - increment failed attempts
+					handleFailedAuth(app, authReq.Identity, r)
+				}
+			}()
+
+			return
+		}
+
+		// For all other requests, just pass through
+		next.ServeHTTP(w, r)
+	})
 }
 
 // responseRecorder captures the response status code
