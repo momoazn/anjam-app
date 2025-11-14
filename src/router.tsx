@@ -17,6 +17,11 @@ const Register = React.lazy(() =>
     default: () => <div>{fa.errors.pageLoad.register}</div>,
   })),
 );
+const PendingActivation = React.lazy(() =>
+  import("@/pages/pending-activation").catch(() => ({
+    default: () => <div>Error loading page</div>,
+  })),
+);
 const Dashboard = React.lazy(() =>
   import("@/pages/dashboard").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.dashboard}</div>,
@@ -169,6 +174,12 @@ const routes: RouteType[] = [
     title: fa.auth.register.title,
   },
   {
+    path: "/pending-activation",
+    element: <PendingActivation />,
+    protected: false,
+    title: fa.users.pendingActivation.title,
+  },
+  {
     path: "/tasks",
     element: <Tasks />,
     protected: true,
@@ -239,7 +250,11 @@ export const AppRoutes = () => {
           } else {
             element = <ProtectedRoute>{content}</ProtectedRoute>;
           }
-        } else if (route.path === "/login" || route.path === "/register") {
+        } else if (
+          route.path === "/login" ||
+          route.path === "/register" ||
+          route.path === "/pending-activation"
+        ) {
           element = <PublicRoute>{content}</PublicRoute>;
         }
 

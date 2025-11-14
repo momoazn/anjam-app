@@ -338,9 +338,14 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 // --- Record Event Handlers ---
 
 func handleUserCreation(e *core.RecordEvent) error {
-	// Set new users as active by default
-	if e.Record.GetBool("active") == false && e.Record.Get("active") == nil {
-		e.Record.Set("active", true)
+	// Set new users as inactive by default, except admins
+	if e.Record.Get("active") == nil {
+		role := e.Record.GetString("role")
+		if role == "admin" {
+			e.Record.Set("active", true) // Admins are always active
+		} else {
+			e.Record.Set("active", false) // Regular users start inactive
+		}
 	}
 	// Initialize failed login attempts to 0
 	if e.Record.Get("failed_login_attempts") == nil {
@@ -967,6 +972,11 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 	if err != nil {
 		log.Printf("Error finding user %q: %v", userId, err)
 		return e.JSON(404, map[string]string{"error": "کاربر یافت نشد"})
+	}
+
+	// Prevent deactivating admin users
+	if user.GetString("role") == "admin" {
+		return e.JSON(400, map[string]string{"error": "نمی‌توان حساب کاربری ادمین را غیرفعال کرد"})
 	}
 
 	// Toggle active status

@@ -224,7 +224,9 @@ export function UserListTable({
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() => handleToggleActive(user)}
-                            disabled={actionLoading === user.id}
+                            disabled={
+                              actionLoading === user.id || user.role === "admin"
+                            }
                           >
                             <Power className="ml-2 size-4" />
                             {user.active

@@ -276,6 +276,15 @@ export const fa = {
       activateError: "خطا در فعال‌سازی حساب کاربری",
       deactivateError: "خطا در غیرفعال‌سازی حساب کاربری",
       unblockError: "خطا در رفع مسدودی کاربر",
+      cannotDeactivateAdmin: "نمی‌توان حساب ادمین را غیرفعال کرد",
+    },
+    pendingActivation: {
+      title: "حساب شما در انتظار تأیید است",
+      message:
+        "حساب کاربری شما با موفقیت ایجاد شد، اما هنوز توسط مدیر فعال نشده است.",
+      instruction:
+        "لطفاً با مدیر سیستم تماس بگیرید تا حساب شما را فعال کنند.",
+      backToLogin: "بازگشت به صفحه ورود",
     },
     loginLogs: {
       title: "سوابق ورود {name}",

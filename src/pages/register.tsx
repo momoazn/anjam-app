@@ -9,23 +9,11 @@ import { Label } from "@/components/ui/label";
 import { fa } from "@/constants/text";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
-import { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
-
-// PocketBase doesn't expose `password`/`tokenKey` on auth responses in prod
-function isUsersRecord(record: object | null): record is UsersRecord {
-  return (
-    record !== null &&
-    typeof record === "object" &&
-    "id" in record &&
-    "username" in record &&
-    "role" in record
-  );
-}
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login, user } = useAuthStore();
+  const { user } = useAuthStore();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -73,17 +61,9 @@ export default function Register() {
         role: "employee", // Default role for new registrations
       });
 
-      await pb
-        .collection("users")
-        .authWithPassword(username.trim().toLowerCase(), password.trim());
-      if (
-        pb.authStore.record &&
-        pb.authStore.token &&
-        isUsersRecord(pb.authStore.record)
-      ) {
-        login(pb.authStore.record, pb.authStore.token);
-        navigate("/", { replace: true });
-      }
+      // New users are inactive by default, redirect to pending activation page
+      toast.success(fa.auth.register.success);
+      navigate("/pending-activation", { replace: true });
     } catch (error) {
       handlePocketBaseError(error as Error);
     } finally {
