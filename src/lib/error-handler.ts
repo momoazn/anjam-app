@@ -9,9 +9,14 @@ type ValidationError = {
 type PocketBaseError = {
   data?: {
     data?: Record<string, ValidationError>;
+    message?: string;
   };
   message?: string;
   status?: number;
+  response?: {
+    message?: string;
+    data?: Record<string, ValidationError>;
+  };
 };
 
 function isPocketBaseError(
@@ -25,7 +30,12 @@ function isPocketBaseError(
 }
 
 export function handlePocketBaseError(error: Error | PocketBaseError): void {
-  console.error(error);
+  console.error("PocketBase error:", error);
+  try {
+    console.error("Error structure:", JSON.stringify(error, null, 2));
+  } catch {
+    console.error("Could not stringify error");
+  }
 
   if (!isPocketBaseError(error)) {
     toast.error(fa.auth.errors.serverError);
@@ -74,12 +84,42 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
         toast.error(fa.auth.errors.serverError);
       }
     }
-  } else if (pbError?.status === 400) {
-    // Handle authentication failures
-    toast.error(fa.auth.errors.invalidCredentials);
-  } else if (pbError?.message) {
-    toast.error(pbError.message);
   } else {
-    toast.error(fa.auth.errors.serverError);
+    // Check for error message in multiple possible locations
+    const errorMessage =
+      pbError?.message || pbError?.data?.message || pbError?.response?.message;
+
+    console.log("Extracted error message:", errorMessage);
+
+    if (errorMessage) {
+      // Check if this is an inactive user error
+      const message = errorMessage.toLowerCase();
+      if (
+        message.includes("غیرفعال") ||
+        message.includes("inactive") ||
+        message.includes("غيرفعال")
+      ) {
+        toast.error(fa.auth.errors.userInactive);
+      }
+      // Check if this is a blocked user error
+      else if (
+        message.includes("blocked") ||
+        message.includes("مسدود") ||
+        message.includes("user account") ||
+        message.includes("حساب کاربری")
+      ) {
+        toast.error(fa.auth.errors.userBlocked);
+      } else {
+        // Display the specific error message from the backend
+        toast.error(errorMessage);
+      }
+    } else if (pbError?.status === 400) {
+      // Fallback for authentication failures without a message
+      console.log("No error message found, using generic invalidCredentials");
+      toast.error(fa.auth.errors.invalidCredentials);
+    } else {
+      console.log("No error message found, using generic serverError");
+      toast.error(fa.auth.errors.serverError);
+    }
   }
 }

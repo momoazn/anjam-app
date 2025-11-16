@@ -21,7 +21,7 @@ export default function Users() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UsersResponse | null>(null);
 
-  const { data: users, isPending: isLoadingUsers } = useUsers({
+  const { data: users, isPending: isLoadingUsers, refetch } = useUsers({
     batch: 100,
     sort: "-created",
   });
@@ -83,6 +83,7 @@ export default function Users() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             isAdmin={isAdmin}
+            onUpdate={() => refetch()}
           />
         )}
       </PageTransition>

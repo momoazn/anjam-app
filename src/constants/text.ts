@@ -192,7 +192,8 @@ export const fa = {
       registerButton: "ثبت‌نام",
       errors: {
         credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
-        invalidCredentials: "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید",
+        invalidCredentials:
+          "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید",
       },
     },
     register: {
@@ -208,7 +209,8 @@ export const fa = {
       errors: {
         credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
         passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",
-        adminCreationFailed: "متأسفانه نتوانستیم حساب مدیر را بسازیم. دوباره تلاش کنید",
+        adminCreationFailed:
+          "متأسفانه نتوانستیم حساب مدیر را بسازیم. دوباره تلاش کنید",
       },
     },
     errors: {
@@ -224,8 +226,13 @@ export const fa = {
       passwordMaxLength: "رمز عبور نمی‌تواند بیشتر از ۱۰۰ کاراکتر باشد",
       usernameInvalid: "نام کاربری معتبر نیست",
       passwordInvalid: "رمز عبور معتبر نیست",
-      userAlreadyExists: "این نام کاربری قبلاً استفاده شده. نام دیگری انتخاب کنید",
+      userAlreadyExists:
+        "این نام کاربری قبلاً استفاده شده. نام دیگری انتخاب کنید",
       invalidCredentials: "نام کاربری یا رمز عبور اشتباه است",
+      userInactive:
+        "حساب کاربری شما غیرفعال است. لطفاً با مدیر سیستم تماس بگیرید",
+      userBlocked:
+        "حساب کاربری شما مسدود شده است. لطفاً با مدیر سیستم تماس بگیرید",
       serverError: "مشکلی پیش آمده. چند لحظه صبر کنید و دوباره تلاش کنید",
     },
   },
@@ -242,6 +249,9 @@ export const fa = {
         username: "نام کاربری",
         email: "ایمیل",
         role: "نقش",
+        status: "وضعیت",
+        accountStatus: "وضعیت حساب",
+        failedAttempts: "تلاش ناموفق",
         actions: "عملیات",
       },
       roles: {
@@ -249,12 +259,54 @@ export const fa = {
         supervisor: "سرپرست",
         employee: "کارمند",
       },
+      status: {
+        active: "فعال",
+        inactive: "غیرفعال",
+        blocked: "مسدود",
+        ok: "عادی",
+      },
     },
     form: {
       firstName: "نام",
       lastName: "نام خانوادگی",
       selectRole: "انتخاب نقش",
       password: "رمز عبور",
+    },
+    actions: {
+      activate: "فعال‌سازی",
+      deactivate: "غیرفعال‌سازی",
+      unblock: "رفع مسدودی",
+      viewLogs: "سوابق ورود",
+      activateSuccess: "حساب کاربری فعال شد",
+      deactivateSuccess: "حساب کاربری غیرفعال شد",
+      unblockSuccess: "مسدودی کاربر برداشته شد",
+      activateError: "خطا در فعال‌سازی حساب کاربری",
+      deactivateError: "خطا در غیرفعال‌سازی حساب کاربری",
+      unblockError: "خطا در رفع مسدودی کاربر",
+      cannotDeactivateAdmin: "نمی‌توان حساب ادمین را غیرفعال کرد",
+    },
+    pendingActivation: {
+      title: "حساب شما در انتظار تأیید است",
+      message:
+        "حساب کاربری شما با موفقیت ایجاد شد، اما هنوز توسط مدیر فعال نشده است.",
+      instruction: "لطفاً با مدیر سیستم تماس بگیرید تا حساب شما را فعال کنند.",
+      backToLogin: "بازگشت به صفحه ورود",
+    },
+    loginLogs: {
+      title: "سوابق ورود {name}",
+      columns: {
+        date: "تاریخ",
+        time: "زمان",
+        ip: "آی‌پی",
+        status: "وضعیت",
+        reason: "دلیل",
+      },
+      status: {
+        success: "موفق",
+        failed: "ناموفق",
+      },
+      empty: "هیچ سابقه ورودی ثبت نشده است",
+      loadMore: "بارگذاری بیشتر",
     },
     create: {
       button: "کاربر جدید",
@@ -487,8 +539,7 @@ export const fa = {
       noTasksInProjectDescription:
         "با فیلترهای فعلی تسکی در پروژه «{projectName}» پیدا نشد",
       noTasksYet: "هنوز تسکی نساخته‌اید",
-      noTasksYetDescription:
-        "اولین تسکتان را بسازید و کار را شروع کنید",
+      noTasksYetDescription: "اولین تسکتان را بسازید و کار را شروع کنید",
       projectNoTasksYet: "این پروژه هنوز تسکی ندارد",
       projectNoTasksYetDescription:
         "اولین تسک را برای پروژه «{projectName}» بسازید",
@@ -749,8 +800,7 @@ export const fa = {
           completed: "تعداد تسک‌های تکمیل‌شده در بازه زمانی",
           completionRate: "نسبت تسک‌های تکمیل‌شده به کل تخصیص‌یافته",
           onTimeRate: "نسبت تسک‌های تکمیل‌شده به‌موقع به کل تکمیل‌شده",
-          avgTimeToComplete:
-            "میانگین زمان سپری‌شده از ساخت تا تکمیل تسک‌ها",
+          avgTimeToComplete: "میانگین زمان سپری‌شده از ساخت تا تکمیل تسک‌ها",
           efficiencyScore: "نسبت تسک‌های تکمیل‌شده به کل تخصیص‌یافته",
           overtimeIndicator: "برآورد ساعات اضافه‌کاری مورد نیاز",
         },

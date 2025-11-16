@@ -5,6 +5,7 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -67,6 +68,7 @@ func main() {
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 
 	// --- Bind Record Event Handlers ---
+	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
 	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
@@ -75,10 +77,23 @@ func main() {
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
 	app.OnRecordAfterCreateSuccess("users_projects").BindFunc(handleUsersProjectsCreatedNotify)
 
+	// --- Bind Authentication Event Handlers ---
+	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
+
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Router.PATCH("/api/tm/status-configs/{id}/toggle", handleToggleStatusConfig)
+		se.Router.PATCH("/api/tm/users/{id}/toggle-active", handleToggleUserActive)
+		se.Router.PATCH("/api/tm/users/{id}/unblock", handleUnblockUser)
+		se.Router.GET("/api/tm/users/{id}/login-logs", handleGetUserLoginLogs)
 
+		return se.Next()
+	})
+
+	// --- Add Authentication Tracking Middleware ---
+	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		// Wrap the HTTP server to intercept auth requests
+		se.Server.Handler = trackAuthMiddleware(app, se.Server.Handler)
 		return se.Next()
 	})
 
@@ -287,6 +302,7 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 		record.Set("username", "admin")
 		record.Set("password", "admin12345")
 		record.Set("role", "admin")
+		record.Set("active", true) // Set admin as active by default
 
 		if err := e.App.Save(record); err != nil {
 			log.Printf("Error saving default admin: %v", err)
@@ -320,6 +336,27 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 }
 
 // --- Record Event Handlers ---
+
+func handleUserCreation(e *core.RecordEvent) error {
+	// Set new users as inactive by default, except admins
+	if e.Record.Get("active") == nil {
+		role := e.Record.GetString("role")
+		if role == "admin" {
+			e.Record.Set("active", true) // Admins are always active
+		} else {
+			e.Record.Set("active", false) // Regular users start inactive
+		}
+	}
+	// Initialize failed login attempts to 0
+	if e.Record.Get("failed_login_attempts") == nil {
+		e.Record.Set("failed_login_attempts", 0)
+	}
+	// Set blocked to false by default
+	if e.Record.Get("blocked") == nil {
+		e.Record.Set("blocked", false)
+	}
+	return e.Next()
+}
 
 func handleProjectCreation(e *core.RecordEvent) error {
 	if e.Record.GetString("code") != "" {
@@ -726,4 +763,362 @@ func translateStatus(status string) string {
 	default:
 		return status
 	}
+}
+
+// --- Authentication Handlers ---
+
+const maxFailedLoginAttempts = 5
+
+func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
+	user := e.Record
+	if user == nil {
+		return e.Next()
+	}
+
+	// Check if user is active
+	if !user.GetBool("active") {
+		return apis.NewBadRequestError("حساب کاربری غیرفعال است", nil)
+	}
+
+	// Check if user is blocked
+	if user.GetBool("blocked") {
+		blockedReason := user.GetString("blocked_reason")
+		if blockedReason == "" {
+			blockedReason = "حساب کاربری مسدود شده است"
+		}
+		return apis.NewBadRequestError(blockedReason, nil)
+	}
+
+	return e.Next()
+}
+
+func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Only intercept auth endpoints
+		if r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/auth-with-password") {
+			// Create a response recorder to capture the response
+			rec := &responseRecorder{
+				ResponseWriter: w,
+				statusCode:     http.StatusOK,
+			}
+
+			// Store request body for later use (we need to parse it to get the identity)
+			bodyBytes, _ := io.ReadAll(r.Body)
+			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+
+			// Parse the auth request
+			var authReq struct {
+				Identity string `json:"identity"`
+				Password string `json:"password"`
+			}
+			json.Unmarshal(bodyBytes, &authReq)
+
+			// Reset body for the actual handler
+			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+
+			// Call the actual handler
+			next.ServeHTTP(rec, r)
+
+			// After the handler has run, check if auth succeeded or failed
+			go func() {
+				if rec.statusCode >= 200 && rec.statusCode < 300 {
+					// Success - try to find the user and reset failed attempts
+					handleSuccessfulAuth(app, authReq.Identity, r)
+				} else {
+					// Failed - increment failed attempts
+					handleFailedAuth(app, authReq.Identity, r)
+				}
+			}()
+
+			return
+		}
+
+		// For all other requests, just pass through
+		next.ServeHTTP(w, r)
+	})
+}
+
+// responseRecorder captures the response status code
+type responseRecorder struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (r *responseRecorder) WriteHeader(code int) {
+	r.statusCode = code
+	r.ResponseWriter.WriteHeader(code)
+}
+
+func handleSuccessfulAuth(app core.App, identity string, req *http.Request) {
+	// Find user by identity (username or email)
+	user, err := app.FindFirstRecordByFilter(
+		"users",
+		"username = {:identity} || email = {:identity}",
+		dbx.Params{"identity": identity},
+	)
+
+	if err != nil {
+		log.Printf("Error finding user for successful auth: %v", err)
+		return
+	}
+
+	// Reset failed login attempts
+	user.Set("failed_login_attempts", 0)
+	if err := app.Save(user); err != nil {
+		log.Printf("Error resetting failed login attempts for user %s: %v", user.Id, err)
+	}
+
+	// Log successful login
+	logUserLogin(app, user.Id, req, true, "")
+}
+
+func handleFailedAuth(app core.App, identity string, req *http.Request) {
+	// Try to find user by identity
+	user, err := app.FindFirstRecordByFilter(
+		"users",
+		"username = {:identity} || email = {:identity}",
+		dbx.Params{"identity": identity},
+	)
+
+	if err != nil {
+		// User not found - still log the attempt
+		logUserLogin(app, "", req, false, "کاربر یافت نشد")
+		return
+	}
+
+	// Increment failed attempts
+	failedAttempts := user.GetInt("failed_login_attempts")
+	failedAttempts++
+	user.Set("failed_login_attempts", failedAttempts)
+
+	// Check if we should block the user
+	if failedAttempts >= maxFailedLoginAttempts {
+		user.Set("blocked", true)
+		user.Set("blocked_at", time.Now().Format(time.RFC3339))
+		user.Set("blocked_reason", fmt.Sprintf("حساب به دلیل %d تلاش ناموفق برای ورود مسدود شد", maxFailedLoginAttempts))
+		log.Printf("User %s blocked after %d failed login attempts", user.Id, failedAttempts)
+	}
+
+	if err := app.Save(user); err != nil {
+		log.Printf("Error updating failed login attempts for user %s: %v", user.Id, err)
+	}
+
+	// Log failed login
+	logUserLogin(app, user.Id, req, false, "رمز عبور اشتباه")
+}
+
+func logUserLogin(app core.App, userId string, req *http.Request, success bool, failureReason string) {
+	collection, err := app.FindCollectionByNameOrId("user_login_logs")
+	if err != nil {
+		log.Printf("Error finding user_login_logs collection: %v", err)
+		return
+	}
+
+	// Get IP address
+	ipAddress := req.Header.Get("X-Forwarded-For")
+	if ipAddress == "" {
+		ipAddress = req.Header.Get("X-Real-IP")
+	}
+	if ipAddress == "" {
+		ipAddress = req.RemoteAddr
+	}
+
+	// Get user agent
+	userAgent := req.Header.Get("User-Agent")
+
+	record := core.NewRecord(collection)
+	if userId != "" {
+		record.Set("user", userId)
+	}
+	record.Set("ip_address", ipAddress)
+	record.Set("user_agent", userAgent)
+	record.Set("success", success)
+	if !success {
+		record.Set("failure_reason", failureReason)
+	}
+
+	if err := app.Save(record); err != nil {
+		log.Printf("Error logging user login: %v", err)
+	}
+}
+
+// --- User Management API Handlers ---
+
+func handleToggleUserActive(e *core.RequestEvent) error {
+	userId := e.Request.PathValue("id")
+
+	// Ensure the requester is authenticated and is an admin
+	requestInfo, err := e.RequestInfo()
+	if err != nil {
+		return e.BadRequestError("Invalid request", err)
+	}
+	authRecord := requestInfo.Auth
+	if authRecord == nil {
+		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+	}
+
+	role := authRecord.GetString("role")
+	if role != "admin" {
+		return e.JSON(403, map[string]string{"error": "فقط ادمین می‌تواند وضعیت فعال/غیرفعال کاربران را تغییر دهد"})
+	}
+
+	// Prevent admin from deactivating themselves
+	if authRecord.Id == userId {
+		return e.JSON(400, map[string]string{"error": "نمی‌توانید حساب کاربری خود را غیرفعال کنید"})
+	}
+
+	// Fetch the user
+	user, err := e.App.FindRecordById("users", userId)
+	if err != nil {
+		log.Printf("Error finding user %q: %v", userId, err)
+		return e.JSON(404, map[string]string{"error": "کاربر یافت نشد"})
+	}
+
+	// Prevent deactivating admin users
+	if user.GetString("role") == "admin" {
+		return e.JSON(400, map[string]string{"error": "نمی‌توان حساب کاربری ادمین را غیرفعال کرد"})
+	}
+
+	// Toggle active status
+	currentActive := user.GetBool("active")
+	newActive := !currentActive
+	user.Set("active", newActive)
+
+	if err := e.App.Save(user); err != nil {
+		log.Printf("Error toggling user active status %q: %v", userId, err)
+		return e.JSON(500, map[string]string{"error": "خطا در به‌روزرسانی وضعیت کاربر"})
+	}
+
+	return e.JSON(200, map[string]interface{}{
+		"active": newActive,
+		"message": func() string {
+			if newActive {
+				return "حساب کاربری فعال شد"
+			}
+			return "حساب کاربری غیرفعال شد"
+		}(),
+	})
+}
+
+func handleUnblockUser(e *core.RequestEvent) error {
+	userId := e.Request.PathValue("id")
+
+	// Ensure the requester is authenticated and is an admin
+	requestInfo, err := e.RequestInfo()
+	if err != nil {
+		return e.BadRequestError("Invalid request", err)
+	}
+	authRecord := requestInfo.Auth
+	if authRecord == nil {
+		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+	}
+
+	role := authRecord.GetString("role")
+	if role != "admin" {
+		return e.JSON(403, map[string]string{"error": "فقط ادمین می‌تواند کاربران را رفع مسدودی کند"})
+	}
+
+	// Fetch the user
+	user, err := e.App.FindRecordById("users", userId)
+	if err != nil {
+		log.Printf("Error finding user %q: %v", userId, err)
+		return e.JSON(404, map[string]string{"error": "کاربر یافت نشد"})
+	}
+
+	// Unblock the user
+	user.Set("blocked", false)
+	user.Set("blocked_at", "")
+	user.Set("blocked_reason", "")
+	user.Set("failed_login_attempts", 0)
+
+	if err := e.App.Save(user); err != nil {
+		log.Printf("Error unblocking user %q: %v", userId, err)
+		return e.JSON(500, map[string]string{"error": "خطا در رفع مسدودی کاربر"})
+	}
+
+	return e.JSON(200, map[string]string{
+		"message": "مسدودی کاربر با موفقیت برداشته شد",
+	})
+}
+
+func handleGetUserLoginLogs(e *core.RequestEvent) error {
+	userId := e.Request.PathValue("id")
+
+	// Ensure the requester is authenticated
+	requestInfo, err := e.RequestInfo()
+	if err != nil {
+		return e.BadRequestError("Invalid request", err)
+	}
+	authRecord := requestInfo.Auth
+	if authRecord == nil {
+		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+	}
+
+	// Check permissions: admin can view any user's logs, users can only view their own
+	role := authRecord.GetString("role")
+	if role != "admin" && authRecord.Id != userId {
+		return e.JSON(403, map[string]string{"error": "شما مجاز به مشاهده سوابق ورود این کاربر نیستید"})
+	}
+
+	// Get pagination parameters
+	page := 1
+	perPage := 50
+	if pageStr := e.Request.URL.Query().Get("page"); pageStr != "" {
+		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+			page = p
+		}
+	}
+	if perPageStr := e.Request.URL.Query().Get("perPage"); perPageStr != "" {
+		if pp, err := strconv.Atoi(perPageStr); err == nil && pp > 0 && pp <= 100 {
+			perPage = pp
+		}
+	}
+
+	// Fetch login logs
+	var logs []struct {
+		ID            string `db:"id" json:"id"`
+		User          string `db:"user" json:"user"`
+		IPAddress     string `db:"ip_address" json:"ip_address"`
+		UserAgent     string `db:"user_agent" json:"user_agent"`
+		Success       bool   `db:"success" json:"success"`
+		FailureReason string `db:"failure_reason" json:"failure_reason"`
+		Created       string `db:"created" json:"created"`
+	}
+
+	offset := (page - 1) * perPage
+	err = e.App.DB().NewQuery(`
+		SELECT id, user, ip_address, user_agent, success, failure_reason, created
+		FROM user_login_logs
+		WHERE user = {:userId}
+		ORDER BY created DESC
+		LIMIT {:limit} OFFSET {:offset}
+	`).Bind(dbx.Params{
+		"userId": userId,
+		"limit":  perPage,
+		"offset": offset,
+	}).All(&logs)
+
+	if err != nil {
+		log.Printf("Error fetching login logs for user %q: %v", userId, err)
+		return e.JSON(500, map[string]string{"error": "خطا در دریافت سوابق ورود"})
+	}
+
+	// Get total count
+	var totalCount int
+	err = e.App.DB().NewQuery(`
+		SELECT COUNT(*) FROM user_login_logs WHERE user = {:userId}
+	`).Bind(dbx.Params{"userId": userId}).Row(&totalCount)
+
+	if err != nil {
+		log.Printf("Error counting login logs for user %q: %v", userId, err)
+		totalCount = len(logs)
+	}
+
+	return e.JSON(200, map[string]interface{}{
+		"items":       logs,
+		"page":        page,
+		"perPage":     perPage,
+		"totalItems":  totalCount,
+		"totalPages":  (totalCount + perPage - 1) / perPage,
+	})
 }
