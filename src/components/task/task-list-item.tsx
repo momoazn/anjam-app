@@ -1,8 +1,8 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { useRef } from "react";
 import { Icon } from "@tabler/icons-react";
 import * as TablerIcons from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,7 +17,6 @@ import {
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "../user-avatar";
-import { EditTaskDialog, TaskDetailsDialog } from "./task-details-dialog";
 
 const formatDateShort = (dateString?: string | null) => {
   if (!dateString) {
@@ -73,7 +72,7 @@ export function TaskListItem({
   isSelected = false,
   onSelectionChange,
 }: TaskListItemProps) {
-  const editBtnRef = useRef<HTMLButtonElement | null>(null);
+  const navigate = useNavigate();
 
   // Get custom status config if available, otherwise fall back to default
   const statusConfig = task.expand?.status_config as
@@ -90,35 +89,30 @@ export function TaskListItem({
   const priorityIconColor = priorityColors[task.priority];
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
 
+  const handleClick = () => {
+    navigate(`/tasks/${task.id}`);
+  };
+
   return (
-    <>
-      {/* Hidden edit trigger wired to the existing EditTaskDialog */}
-      <EditTaskDialog task={task} onSuccess={() => {}}>
-        <button ref={editBtnRef} type="button" className="sr-only">
-          edit
-        </button>
-      </EditTaskDialog>
-      <TaskDetailsDialog task={task} onEdit={() => editBtnRef.current?.click()}>
-        <div
-          className={cn(
-            "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-center justify-between rounded-md px-3 py-2 transition-all duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2 hover:scale-[1.01] hover:shadow-sm active:scale-[0.99]",
-            isSelected &&
-              "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-400/10",
-            className,
-          )}
-          data-interactive-item
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              // Trigger the dialog
-              const button = e.currentTarget.querySelector("button");
-              button?.click();
-            }
-          }}
-          aria-label={fa.task.editTask.replace("{title}", task.title)}
-        >
+    <div
+      className={cn(
+        "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-center justify-between rounded-md px-3 py-2 transition-all duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2 hover:scale-[1.01] hover:shadow-sm active:scale-[0.99]",
+        isSelected &&
+          "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-400/10",
+        className,
+      )}
+      data-interactive-item
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      aria-label={fa.task.editTask.replace("{title}", task.title)}
+    >
           {/* Left side: Checkbox, Icon, ID, Title */}
           <div className="flex min-w-0 grow items-center gap-2">
             {isSelectable && (
@@ -207,8 +201,6 @@ export function TaskListItem({
               />
             </div>
           </div>
-        </div>
-      </TaskDetailsDialog>
-    </>
+    </div>
   );
 }
