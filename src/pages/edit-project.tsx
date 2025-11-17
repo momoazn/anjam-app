@@ -11,7 +11,13 @@ import { z } from "zod";
 import { ProjectFields } from "@/components/forms/project-fields";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";

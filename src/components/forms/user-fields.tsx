@@ -23,7 +23,7 @@ import { useAuthUser } from "@/store/auth-store";
 type UserFieldsProps = {
   control: Control<{
     username: string;
-    password: string;
+    password?: string;
     first_name: string;
     last_name: string;
     role: UsersRoleOptions;

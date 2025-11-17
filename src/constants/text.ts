@@ -204,6 +204,7 @@ export const fa = {
       registerButton: "ایجاد حساب",
       registering: "در حال ایجاد حساب...",
       loginButton: "بازگشت به ورود",
+      success: "حساب کاربری با موفقیت ایجاد شد",
       initialAdminMessage:
         "برای شروع، حساب مدیر سیستم را بسازید. نام کاربری و رمز عبور دلخواهتان را وارد کنید.",
       errors: {
@@ -561,6 +562,7 @@ export const fa = {
       title: "ساخت تسک جدید",
       issueTitle: "عنوان تسک",
       description: "توضیحات",
+      descriptionProject: "توضیحات پروژه",
       status: "وضعیت",
       priority: "اولویت",
       assignee: "مسئول",

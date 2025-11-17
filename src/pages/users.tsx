@@ -18,7 +18,11 @@ export default function Users() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UsersResponse | null>(null);
 
-  const { data: users, isPending: isLoadingUsers, refetch } = useUsers({
+  const {
+    data: users,
+    isPending: isLoadingUsers,
+    refetch,
+  } = useUsers({
     batch: 100,
     sort: "-created",
   });

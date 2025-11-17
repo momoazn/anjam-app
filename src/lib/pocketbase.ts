@@ -20,6 +20,7 @@ export const pb = new PocketBase(baseUrl) as TypedPocketBase;
 export type TaskWithProject = TasksResponse<{
   project: ProjectsResponse;
   assignee?: UsersResponse; // Make assignee optional in expand
+  creator: UsersResponse;
 }>;
 export type ProjectWithSupervisor = ProjectsResponse<{
   supervisor: UsersResponse;

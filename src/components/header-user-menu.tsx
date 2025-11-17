@@ -1,7 +1,4 @@
-import {
-  IconLogout,
-  IconUserCircle,
-} from "@tabler/icons-react";
+import { IconLogout, IconUserCircle } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
 import {

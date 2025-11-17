@@ -27,7 +27,9 @@ export default function PendingActivation() {
             <p>{fa.users.pendingActivation.message}</p>
             <div className="bg-muted flex items-start gap-2 rounded-lg p-4 text-right">
               <Mail className="text-primary mt-0.5 h-5 w-5 shrink-0" />
-              <p className="text-sm">{fa.users.pendingActivation.instruction}</p>
+              <p className="text-sm">
+                {fa.users.pendingActivation.instruction}
+              </p>
             </div>
           </div>
 

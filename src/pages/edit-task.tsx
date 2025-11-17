@@ -8,7 +8,13 @@ import { z } from "zod";
 import { TaskFields } from "@/components/forms/task-fields";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
@@ -139,11 +145,7 @@ export default function EditTask() {
   return (
     <PageTransition className="container mx-auto space-y-6 p-6">
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleCancel}
-        >
+        <Button variant="ghost" size="icon" onClick={handleCancel}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>

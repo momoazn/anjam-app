@@ -58,9 +58,7 @@ export function ProjectExportButton({
 
       // Show specific error message if available
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : fa.reports.exportProjectError;
+        error instanceof Error ? error.message : fa.reports.exportProjectError;
 
       toast.error(errorMessage, { duration: 5000 });
     } finally {

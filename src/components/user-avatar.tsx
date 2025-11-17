@@ -38,8 +38,11 @@ export function UserAvatar({
   showUnassigned = false,
   className,
 }: UserAvatarProps) {
-  const avatarClassName = cn("ring-sidebar-border/10 ring-2", className || "h-10 w-10");
-  
+  const avatarClassName = cn(
+    "ring-sidebar-border/10 ring-2",
+    className || "h-10 w-10",
+  );
+
   // If we have a user object, use it
   if (user) {
     return (

@@ -102,7 +102,7 @@ export default function TaskDetails() {
       setHours(time.hours);
       setMinutes(time.minutes);
     }
-  }, [task?.time_spent_minutes]);
+  }, [task]);
 
   // Check if user can edit time
   const canEditTime =

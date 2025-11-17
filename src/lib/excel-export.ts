@@ -220,7 +220,10 @@ export async function exportProjectToExcel(
 
   const tasksSheet = XLSX.utils.json_to_sheet(tasksData);
   // Configure column widths: شماره, عنوان, وضعیت, اولویت, مسئول, مهلت, تاریخ ایجاد, آخرین به‌روزرسانی, زمان صرف شده, توضیحات
-  configureSheetFormatting(tasksSheet, [10, 30, 15, 12, 20, 15, 15, 15, 18, 60]);
+  configureSheetFormatting(
+    tasksSheet,
+    [10, 30, 15, 12, 20, 15, 15, 15, 18, 60],
+  );
   XLSX.utils.book_append_sheet(workbook, tasksSheet, "تسک‌های پروژه");
 
   // Generate unique filename

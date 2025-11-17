@@ -112,18 +112,18 @@ export function UserLoginLogsDialog({
             )}
           </DialogTitle>
           <DialogDescription>
-            {fa.users.loginLogs.columns.ip} و {fa.users.loginLogs.columns.status}{" "}
-            تلاش‌های ورود به سیستم
+            {fa.users.loginLogs.columns.ip} و{" "}
+            {fa.users.loginLogs.columns.status} تلاش‌های ورود به سیستم
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[500px] pr-4">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
             </div>
           ) : logs.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground">
+            <div className="text-muted-foreground py-12 text-center">
               {fa.users.loginLogs.empty}
             </div>
           ) : (
@@ -190,7 +190,7 @@ export function UserLoginLogsDialog({
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t pt-4">
-            <div className="text-sm text-muted-foreground">
+            <div className="text-muted-foreground text-sm">
               صفحه {digitsEnToFa(page)} از {digitsEnToFa(totalPages)}
             </div>
             <div className="flex gap-2">

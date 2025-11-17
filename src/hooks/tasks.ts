@@ -100,7 +100,9 @@ export function useTask(options: { id: string; enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.tasks.detail(id),
     queryFn: async () => {
-      const task = await pb.collection("tasks").getOne<TaskWithProject>(id);
+      const task = await pb.collection("tasks").getOne<TaskWithProject>(id, {
+        expand: "project,assignee,creator",
+      });
       if (task.deleted_at) {
         throw new Error("Task not found");
       }

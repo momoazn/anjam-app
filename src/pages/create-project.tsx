@@ -10,7 +10,13 @@ import { z } from "zod";
 import { ProjectFields } from "@/components/forms/project-fields";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { FileWithPreview } from "@/hooks/use-file-upload";
@@ -114,7 +120,9 @@ export default function CreateProject() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold">{fa.projects.create.title}</h1>
-          <p className="text-muted-foreground">{fa.projects.create.description}</p>
+          <p className="text-muted-foreground">
+            {fa.projects.create.description}
+          </p>
         </div>
       </div>
 

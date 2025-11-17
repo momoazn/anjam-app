@@ -25,7 +25,10 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
   return (
     <li
       data-slot="breadcrumb-item"
-      className={cn("inline-flex items-center gap-1.5 min-w-0 max-w-full", className)}
+      className={cn(
+        "inline-flex max-w-full min-w-0 items-center gap-1.5",
+        className,
+      )}
       {...props}
     />
   );
@@ -44,7 +47,7 @@ function BreadcrumbLink({
     <Comp
       data-slot="breadcrumb-link"
       className={cn(
-        "hover:text-foreground cursor-pointer transition-colors truncate min-w-0",
+        "hover:text-foreground min-w-0 cursor-pointer truncate transition-colors",
         className,
       )}
       {...props}
@@ -59,7 +62,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
       role="link"
       aria-disabled="true"
       aria-current="page"
-      className={cn("text-foreground font-normal truncate min-w-0", className)}
+      className={cn("text-foreground min-w-0 truncate font-normal", className)}
       {...props}
     />
   );
