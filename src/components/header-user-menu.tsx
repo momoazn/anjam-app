@@ -3,7 +3,6 @@ import {
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -17,9 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-import { EditUserDialog } from "@/components/user/edit-user-dialog";
 import { fa } from "@/constants/text";
-import type { UsersRecord, UsersResponse } from "@/lib/pocketbase-types";
+import type { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthActions, useAuthUser } from "@/store/auth-store";
 import { UserAvatar } from "./user-avatar";
 
@@ -63,60 +61,56 @@ export function HeaderUserMenu() {
   const navigate = useNavigate();
   const user = useAuthUser();
   const logout = useAuthActions().logout;
-  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
   };
 
+  const handleEditProfile = () => {
+    if (!user) return;
+    navigate(`/users/${user.id}/edit`);
+  };
+
   if (!user) return null;
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full p-0 flex items-center justify-center"
-            title={`${user.first_name} ${user.last_name}`}
-          >
-            <UserAvatar user={user} className="h-8 w-8" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel className="p-0 font-normal">
-            <div className="bg-muted/30 flex items-center gap-3 rounded-lg p-3 text-right">
-              <UserInfo user={user} />
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg text-right transition-colors"
-              onClick={() => setIsEditOpen(true)}
-            >
-              <IconUserCircle className="size-4" />
-              <span className="flex-1">{fa.user.dropdown.account}</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator className="my-1" />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex h-8 w-8 items-center justify-center rounded-full p-0"
+          title={`${user.first_name} ${user.last_name}`}
+        >
+          <UserAvatar user={user} className="h-8 w-8" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="p-0 font-normal">
+          <div className="bg-muted/30 flex items-center gap-3 rounded-lg p-3 text-right">
+            <UserInfo user={user} />
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
           <DropdownMenuItem
-            className="text-destructive hover:bg-destructive/5 hover:text-destructive flex cursor-pointer items-center gap-3 rounded-lg text-right transition-colors"
-            onClick={handleLogout}
+            className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg text-right transition-colors"
+            onClick={handleEditProfile}
           >
-            <IconLogout className="size-4" />
-            <span className="flex-1">{fa.user.dropdown.logout}</span>
+            <IconUserCircle className="size-4" />
+            <span className="flex-1">{fa.user.dropdown.account}</span>
           </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <EditUserDialog
-        open={isEditOpen}
-        onOpenChange={setIsEditOpen}
-        user={user as UsersResponse}
-      />
-    </>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator className="my-1" />
+        <DropdownMenuItem
+          className="text-destructive hover:bg-destructive/5 hover:text-destructive flex cursor-pointer items-center gap-3 rounded-lg text-right transition-colors"
+          onClick={handleLogout}
+        >
+          <IconLogout className="size-4" />
+          <span className="flex-1">{fa.user.dropdown.logout}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

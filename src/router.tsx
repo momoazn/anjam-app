@@ -77,6 +77,16 @@ const Users = React.lazy(() =>
     default: () => <div>{fa.errors.pageLoad.users}</div>,
   })),
 );
+const CreateUser = React.lazy(() =>
+  import("@/pages/create-user").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.users}</div>,
+  })),
+);
+const EditUser = React.lazy(() =>
+  import("@/pages/edit-user").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.users}</div>,
+  })),
+);
 const ProjectUsers = React.lazy(() =>
   import("@/pages/project-users").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.projectUsers}</div>,
@@ -258,6 +268,20 @@ const routes: RouteType[] = [
     protected: true,
     permission: "users.view",
     title: fa.users.title,
+  },
+  {
+    path: "/users/new",
+    element: <CreateUser />,
+    protected: true,
+    permission: "users.create",
+    title: fa.users.create.title,
+  },
+  {
+    path: "/users/:id/edit",
+    element: <EditUser />,
+    protected: true,
+    permission: "users.update",
+    title: fa.users.edit.title,
   },
   {
     path: "/projects/:id/users",

@@ -1,13 +1,11 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Loader2, Plus, Users as UsersIcon } from "lucide-react";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
-import { CreateUserDialog } from "@/components/user/create-user-dialog";
 import { DeleteUserDialog } from "@/components/user/delete-user-dialog";
-import { EditUserDialog } from "@/components/user/edit-user-dialog";
 import { UserListTable } from "@/components/user/user-list-table";
 import { fa } from "@/constants/text";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
@@ -15,9 +13,8 @@ import { useUsers } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function Users() {
+  const navigate = useNavigate();
   const user = useAuthUser();
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UsersResponse | null>(null);
 
@@ -32,8 +29,7 @@ export default function Users() {
 
   const handleEdit = (user: UsersResponse) => {
     if (!isAdmin) return;
-    setSelectedUser(user);
-    setIsEditOpen(true);
+    navigate(`/users/${user.id}/edit`);
   };
 
   const handleDelete = (user: UsersResponse) => {
@@ -65,7 +61,7 @@ export default function Users() {
           </div>
           {isAdmin && (
             <Button
-              onClick={() => setIsCreateOpen(true)}
+              onClick={() => navigate("/users/new")}
               className="w-full gap-2 sm:w-auto"
             >
               <Plus className="h-4 w-4" />
@@ -88,12 +84,6 @@ export default function Users() {
         )}
       </PageTransition>
 
-      <CreateUserDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
-      <EditUserDialog
-        open={isEditOpen}
-        onOpenChange={setIsEditOpen}
-        user={selectedUser}
-      />
       <DeleteUserDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
