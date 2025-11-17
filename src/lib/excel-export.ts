@@ -7,7 +7,7 @@ import type { TaskWithProject } from "./pocketbase";
  * Strips HTML tags from a string securely
  * Uses DOMParser in browser, falls back to regex in SSR/Node environments
  */
-function stripHtml(html: string | null | undefined): string {
+export function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
 
   // Check if we're in a browser environment

@@ -17,12 +17,12 @@ import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { fa } from "./constants/text";
 import { AppRoutes } from "./router";
 
-// Simplified QueryClient configuration
+// Optimized QueryClient configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0, // Always consider data stale to trigger refetch
-      refetchOnMount: "always", // Always refetch when component mounts
+      staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+      refetchOnMount: true, // Refetch only if data is stale
       retry: 1, // Simple retry logic
       // placeholderData keeps showing cached data while fetching new data
       placeholderData: (previousData) => previousData,

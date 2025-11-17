@@ -30,6 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { queryKeys } from "@/hooks";
+import { stripHtml } from "@/lib/excel-export";
 import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 import { TasksResponse } from "@/lib/pocketbase-types";
 import { formatTimeSpent } from "@/lib/time-utils";
@@ -394,10 +395,9 @@ export default function ProjectDetails() {
                   className="min-h-32"
                 />
               ) : project.description ? (
-                <div
-                  className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ __html: project.description }}
-                />
+                <p className="max-w-none whitespace-pre-wrap">
+                  {stripHtml(project.description)}
+                </p>
               ) : (
                 <p className="text-muted-foreground py-6 text-center">
                   {fa.projects.details.noDescription}

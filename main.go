@@ -4,8 +4,10 @@
 package main
 
 import (
+	"database/sql"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -165,7 +167,7 @@ func startApp(app *pocketbase.PocketBase) {
 		// Start HTTP server on 0.0.0.0:8090 for container environments
 		log.Println("Starting HTTP server on 0.0.0.0:8090...")
 		if err := apis.Serve(app, apis.ServeConfig{
-			HttpAddr: "0.0.0.0:8090",
+			HttpAddr:        "0.0.0.0:8090",
 			ShowStartBanner: true,
 		}); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
@@ -376,17 +378,19 @@ func handleProjectCreation(e *core.RecordEvent) error {
 }
 
 func generateUniqueProjectCode(app core.App) (string, error) {
-	for {
+	const maxAttempts = 100
+	for attempt := 0; attempt < maxAttempts; attempt++ {
 		projectCode := generateRandomCode()
 		exists, err := app.FindFirstRecordByData("projects", "code", projectCode)
-		if err != nil && err.Error() != "sql: no rows in result set" {
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return "", err
 		}
 		if exists == nil {
 			return projectCode, nil
 		}
-		log.Printf("Project code collision for %q, generating a new one.", projectCode)
+		log.Printf("Project code collision for %q, generating a new one (attempt %d/%d).", projectCode, attempt+1, maxAttempts)
 	}
+	return "", fmt.Errorf("failed to generate unique project code after %d attempts", maxAttempts)
 }
 
 func handleTaskCreation(e *core.RecordEvent) error {
@@ -436,12 +440,11 @@ func getNextTaskNumber(app core.App, projectId string) (int, error) {
 		Limit(1).
 		One(&lastTask)
 
-	if err != nil && !strings.Contains(err.Error(), "no rows") {
-		return 0, err
-	}
-
 	if err != nil {
-		return 1, nil // No tasks exist yet
+		if errors.Is(err, sql.ErrNoRows) {
+			return 1, nil // No tasks exist yet
+		}
+		return 0, err
 	}
 
 	parts := strings.Split(lastTask.DisplayID, "-")
@@ -803,7 +806,11 @@ func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
 			}
 
 			// Store request body for later use (we need to parse it to get the identity)
-			bodyBytes, _ := io.ReadAll(r.Body)
+			bodyBytes, err := io.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, "Failed to read request body", http.StatusBadRequest)
+				return
+			}
 			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
 
 			// Parse the auth request
@@ -811,7 +818,12 @@ func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
 				Identity string `json:"identity"`
 				Password string `json:"password"`
 			}
-			json.Unmarshal(bodyBytes, &authReq)
+			if err := json.Unmarshal(bodyBytes, &authReq); err != nil {
+				// If JSON parsing fails, still allow the request to proceed
+				// The actual auth handler will handle invalid JSON
+				next.ServeHTTP(w, r)
+				return
+			}
 
 			// Reset body for the actual handler
 			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
@@ -819,16 +831,15 @@ func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
 			// Call the actual handler
 			next.ServeHTTP(rec, r)
 
-			// After the handler has run, check if auth succeeded or failed
-			go func() {
-				if rec.statusCode >= 200 && rec.statusCode < 300 {
-					// Success - try to find the user and reset failed attempts
-					handleSuccessfulAuth(app, authReq.Identity, r)
-				} else {
-					// Failed - increment failed attempts
-					handleFailedAuth(app, authReq.Identity, r)
-				}
-			}()
+			// After the handler has run, track the auth attempt synchronously
+			// This ensures tracking completes before response is sent
+			if rec.statusCode >= 200 && rec.statusCode < 300 {
+				// Success - try to find the user and reset failed attempts
+				handleSuccessfulAuth(app, authReq.Identity, r)
+			} else {
+				// Failed - increment failed attempts
+				handleFailedAuth(app, authReq.Identity, r)
+			}
 
 			return
 		}
@@ -1115,10 +1126,10 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(200, map[string]interface{}{
-		"items":       logs,
-		"page":        page,
-		"perPage":     perPage,
-		"totalItems":  totalCount,
-		"totalPages":  (totalCount + perPage - 1) / perPage,
+		"items":      logs,
+		"page":       page,
+		"perPage":    perPage,
+		"totalItems": totalCount,
+		"totalPages": (totalCount + perPage - 1) / perPage,
 	})
 }

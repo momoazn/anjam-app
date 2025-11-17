@@ -36,7 +36,9 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    if (import.meta.env.DEV) {
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
+    }
 
     // Call the onError callback if provided
     this.props.onError?.(error, errorInfo);
@@ -70,7 +72,7 @@ export class ErrorBoundary extends Component<
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {process.env.NODE_ENV === "development" && this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <div className="bg-muted rounded-md p-3">
                   <p className="text-muted-foreground font-mono text-sm">
                     {this.state.error.message}
@@ -103,7 +105,9 @@ export class ErrorBoundary extends Component<
 // Hook-based error boundary for functional components
 export function useErrorHandler() {
   return (error: Error, errorInfo?: React.ErrorInfo) => {
-    console.error("Error caught by useErrorHandler:", error, errorInfo);
+    if (import.meta.env.DEV) {
+      console.error("Error caught by useErrorHandler:", error, errorInfo);
+    }
     // You can add error reporting logic here
   };
 }
