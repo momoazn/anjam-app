@@ -85,6 +85,18 @@ export function SiteHeader() {
       }
     }
 
+    // Create pages like /projects/new
+    if (parts.length === 2) {
+      const first = parts[0];
+      const second = parts[1];
+      if (first === "projects" && second === "new") {
+        return [
+          { label: fa.navigation.dashboard, to: "/" as const },
+          { label: fa.navigation.projects, to: "/projects" as const },
+          { label: fa.projects.create.title },
+        ];
+      }
+    }
     // Projects sub-routes: /projects/:id/(tasks|users)
     if (first === "projects" && parts.length >= 3) {
       const projectId = parts[1];
