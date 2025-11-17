@@ -1,5 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal, Plus } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { fa } from "@/constants/text";
-import { queryKeys } from "@/hooks/query-keys";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import {
   taskStatusBgColors,
@@ -18,7 +17,6 @@ import {
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { CreateTaskDialog } from "./create-task-dialog";
 
 type TaskListHeaderProps = {
   taskCount: number;
@@ -26,14 +24,17 @@ type TaskListHeaderProps = {
 };
 
 export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { id: projectId } = useParams<{ id: string }>();
 
   const IconComponent = taskStatusIcons[status];
 
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.tasks.all,
-    });
+  const handleCreateTask = () => {
+    if (projectId) {
+      navigate(`/projects/${projectId}/tasks/new`);
+    } else {
+      navigate("/tasks/new");
+    }
   };
 
   return (
@@ -57,17 +58,16 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
       </div>
 
       <div className="flex items-center gap-1">
-        <CreateTaskDialog initialStatus={status} onSuccess={onSuccess}>
-          <Button
-            id="add-task-button"
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-            title={fa.task.addNewTask}
-          >
-            <Plus className="size-4" />
-          </Button>
-        </CreateTaskDialog>
+        <Button
+          id="add-task-button"
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
+          title={fa.task.addNewTask}
+          onClick={handleCreateTask}
+        >
+          <Plus className="size-4" />
+        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

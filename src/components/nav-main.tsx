@@ -1,5 +1,4 @@
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, useLocation } from "react-router-dom";
 
 import {
@@ -11,11 +10,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
-import { queryKeys } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { ProjectsSubmenu } from "./sidebar/projects-submenu";
 import { TaskViews } from "./sidebar/task-views";
-import { CreateTaskDialog } from "./task/create-task-dialog";
 
 export function NavMain({
   items,
@@ -32,7 +29,6 @@ export function NavMain({
     }[];
   }[];
 }) {
-  const queryClient = useQueryClient();
   const location = useLocation();
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -58,11 +54,12 @@ export function NavMain({
         {/* Quick create always first */}
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <CreateTaskDialog
-              onSuccess={() => {
-                queryClient.invalidateQueries({
-                  queryKey: queryKeys.tasks.all,
-                });
+            <NavLink
+              to="/tasks/new"
+              onClick={() => {
+                if (isMobile) {
+                  setOpenMobile(false);
+                }
               }}
             >
               <SidebarMenuButton
@@ -72,7 +69,7 @@ export function NavMain({
                 <IconCirclePlusFilled />
                 <span>{fa.navigation.quickCreate.button}</span>
               </SidebarMenuButton>
-            </CreateTaskDialog>
+            </NavLink>
           </SidebarMenuItem>
         </SidebarMenu>
         {/* Dashboard + Notifications right after Quick Create */}
