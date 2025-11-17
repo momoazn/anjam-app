@@ -19,8 +19,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
 import { useUsers } from "@/hooks";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { FileWithPreview } from "@/hooks/use-file-upload";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
+import { formatUserName } from "@/lib/utils";
 
 type ProjectFieldsProps = {
   control: Control<{
@@ -101,7 +102,13 @@ export function ProjectFields({
                 <SelectContent>
                   {supervisors?.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
-                      {user.username} ({user.first_name} {user.last_name})
+                      <span>
+                        {formatUserName(
+                          user.first_name,
+                          user.last_name,
+                          user.username,
+                        )}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>

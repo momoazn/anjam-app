@@ -26,6 +26,7 @@ import type {
   TasksStatusOptions,
   UsersRecord,
 } from "@/lib/pocketbase-types";
+import { formatUserName } from "@/lib/utils";
 
 export type TimeRange = {
   preset: "TODAY" | "7D" | "30D" | "QTD" | "YTD" | "CUSTOM";
@@ -186,12 +187,6 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
     });
   };
 
-  const formatUserName = (user: UsersRecord) => {
-    return user.first_name && user.last_name
-      ? `${user.first_name} ${user.last_name}`
-      : user.username;
-  };
-
   return (
     <div className="bg-card flex flex-wrap items-center gap-3 rounded-lg border p-4">
       {/* Time Range Preset */}
@@ -308,7 +303,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                     htmlFor={`user-${user.id}`}
                     className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    {formatUserName(user)}
+                    {formatUserName(
+                      user.first_name,
+                      user.last_name,
+                      user.username,
+                    )}
                   </label>
                 </div>
               ))}

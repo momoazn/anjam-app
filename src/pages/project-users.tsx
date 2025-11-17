@@ -5,15 +5,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +16,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -39,11 +39,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { UserAvatar } from "@/components/user-avatar";
 import { fa } from "@/constants/text";
 import { useProjectUsers, useProjectWithSupervisor, useUsers } from "@/hooks";
 import { pb } from "@/lib/pocketbase";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
+import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function ProjectUsers() {
@@ -181,7 +181,13 @@ export default function ProjectUsers() {
                 <SelectContent>
                   {availableUsers?.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
-                      {user.username}
+                      <span>
+                        {formatUserName(
+                          user.first_name,
+                          user.last_name,
+                          user.username,
+                        )}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -210,11 +216,14 @@ export default function ProjectUsers() {
           </TableHeader>
           <TableBody data-animate-stagger>
             <TableRow data-interactive-item>
-              <TableCell className="flex">
-                <div className="flex items-center justify-end gap-2 self-start">
-                  <UserAvatar user={project?.expand?.supervisor} />
-                  <span>{project?.expand?.supervisor.username}</span>
-                </div>
+              <TableCell className="flex justify-end">
+                <span>
+                  {formatUserName(
+                    project?.expand?.supervisor.first_name,
+                    project?.expand?.supervisor.last_name,
+                    project?.expand?.supervisor.username,
+                  )}
+                </span>
               </TableCell>
               <TableCell className="text-center">
                 {fa.users.table.roles.supervisor}
@@ -222,11 +231,14 @@ export default function ProjectUsers() {
             </TableRow>
             {projectUsers?.map((user) => (
               <TableRow key={user.id} data-interactive-item>
-                <TableCell className="flex">
-                  <div className="flex items-center justify-end gap-2 self-start">
-                    <UserAvatar user={user} />
-                    <span>{user.username}</span>
-                  </div>
+                <TableCell className="flex justify-end">
+                  <span>
+                    {formatUserName(
+                      user.first_name,
+                      user.last_name,
+                      user.username,
+                    )}
+                  </span>
                 </TableCell>
                 <TableCell className="text-center">
                   {fa.users.table.roles.employee}

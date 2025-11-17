@@ -1,20 +1,23 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { ArrowLeft, Clock, Loader2, MessageSquare, Pencil, Save, Trash2, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Clock,
+  Loader2,
+  MessageSquare,
+  Pencil,
+  Save,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { PageTransition } from "@/components/page-transition";
-import { UserAvatar } from "@/components/user-avatar";
+// Remove the UserAvatar import since it's no longer used
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,9 +28,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
+import { useDeleteTask, useTask, useUpdateTask } from "@/hooks";
 import { useComments } from "@/hooks/comments";
-import { useTask, useDeleteTask, useUpdateTask } from "@/hooks";
 import {
   priorityColors,
   priorityIcons,
@@ -39,6 +48,7 @@ import {
   minutesToHoursAndMinutes,
   parseTimeInput,
 } from "@/lib/time-utils";
+import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
 const formatTaskDate = (dateString?: string | null) => {
@@ -204,15 +214,13 @@ export default function TaskDetails() {
                 <>
                   <span>•</span>
                   <span>by</span>
-                  <div className="flex items-center gap-2">
-                    <UserAvatar user={task.expand.creator} />
-                    <span>
-                      {task.expand.creator.first_name &&
-                      task.expand.creator.last_name
-                        ? `${task.expand.creator.first_name} ${task.expand.creator.last_name}`.trim()
-                        : task.expand.creator.username}
-                    </span>
-                  </div>
+                  <span>
+                    {formatUserName(
+                      task.expand.creator.first_name,
+                      task.expand.creator.last_name,
+                      task.expand.creator.username,
+                    )}
+                  </span>
                 </>
               )}
             </div>
@@ -268,15 +276,13 @@ export default function TaskDetails() {
               <div>
                 <span className="text-muted-foreground">مسئول:</span>{" "}
                 {task.expand?.assignee ? (
-                  <div className="inline-flex items-center gap-2">
-                    <UserAvatar user={task.expand.assignee} />
-                    <span>
-                      {task.expand.assignee.first_name &&
-                      task.expand.assignee.last_name
-                        ? `${task.expand.assignee.first_name} ${task.expand.assignee.last_name}`.trim()
-                        : task.expand.assignee.username}
-                    </span>
-                  </div>
+                  <span>
+                    {formatUserName(
+                      task.expand.assignee.first_name,
+                      task.expand.assignee.last_name,
+                      task.expand.assignee.username,
+                    )}
+                  </span>
                 ) : (
                   <span className="text-muted-foreground">
                     {fa.tasks.addTask.unassigned}

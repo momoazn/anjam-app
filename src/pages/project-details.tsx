@@ -16,10 +16,9 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
+import { PageTransition } from "@/components/page-transition";
 import { ProjectAssets } from "@/components/project/project-assets";
 import { ProjectStatusManager } from "@/components/project/project-status-manager";
-import { PageTransition } from "@/components/page-transition";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpload } from "@/components/ui/file-upload";
@@ -28,13 +27,13 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
-import { FileWithPreview } from "@/hooks/use-file-upload";
 import { queryKeys } from "@/hooks";
+import { FileWithPreview } from "@/hooks/use-file-upload";
 import { stripHtml } from "@/lib/excel-export";
 import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 import { TasksResponse } from "@/lib/pocketbase-types";
 import { formatTimeSpent } from "@/lib/time-utils";
-import { getUserInitials } from "@/lib/utils";
+import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function ProjectDetails() {
@@ -324,27 +323,13 @@ export default function ProjectDetails() {
                     {fa.projects.details.supervisor}
                   </p>
                   {supervisor ? (
-                    <div className="mt-1 flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage
-                          src={pb.files.getUrl(supervisor, supervisor.avatar)}
-                        />
-                        <AvatarFallback>
-                          {getUserInitials(
-                            supervisor.first_name,
-                            supervisor.last_name,
-                            supervisor.username,
-                          )}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-muted-foreground text-sm">
-                        {getUserInitials(
-                          supervisor.first_name,
-                          supervisor.last_name,
-                          supervisor.username,
-                        )}
-                      </span>
-                    </div>
+                    <span className="text-muted-foreground text-sm">
+                      {formatUserName(
+                        supervisor.first_name,
+                        supervisor.last_name,
+                        supervisor.username,
+                      )}
+                    </span>
                   ) : (
                     <span className="text-muted-foreground text-sm">-</span>
                   )}

@@ -20,6 +20,7 @@ import {
   UsersResponse,
 } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
+import { formatUserName } from "@/lib/utils";
 import { Search, X } from "lucide-react";
 
 // Define priority order here or import from a central place if needed elsewhere
@@ -121,7 +122,7 @@ export function TaskFilters({
     if (selectedAssignee !== ALL_FILTER_VALUE) {
       const user = users?.find((u) => u.id === selectedAssignee);
       labels.push({
-        label: `${fa.tasks.filters.labels.assignee} ${user ? `${user.first_name} ${user.last_name}`.trim() : selectedAssignee}`,
+        label: `${fa.tasks.filters.labels.assignee} ${user ? formatUserName(user.first_name, user.last_name, user.username) : selectedAssignee}`,
         onClear: () => setSelectedAssignee(ALL_FILTER_VALUE),
       });
     }
@@ -230,8 +231,13 @@ export function TaskFilters({
             </SelectItem>
             {users?.map((user) => (
               <SelectItem key={user.id} value={user.id}>
-                {`${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-                  user.username}
+                <span>
+                  {formatUserName(
+                    user.first_name,
+                    user.last_name,
+                    user.username,
+                  )}
+                </span>
               </SelectItem>
             ))}
           </SelectContent>

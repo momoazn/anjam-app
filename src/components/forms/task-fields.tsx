@@ -1,9 +1,10 @@
+import * as TablerIcons from "@tabler/icons-react";
+import { Icon } from "@tabler/icons-react";
 import { Control, useWatch } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { Icon } from "@tabler/icons-react";
-import * as TablerIcons from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
+import DatePicker from "@/components/ui/date-picker";
 import {
   FormControl,
   FormField,
@@ -14,17 +15,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
 import {
+  useProjects,
+  useProjectStatusConfigs,
+  useProjectUsers,
+  useUsers,
+} from "@/hooks";
+import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { priorityColors, priorityIcons } from "@/lib/tasks-utils";
-import {
-  useProjects,
-  useProjectUsers,
-  useUsers,
-  useProjectStatusConfigs,
-} from "@/hooks";
-import DatePicker from "../ui/date-picker";
+import { formatUserName } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -32,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { UserAvatar } from "../user-avatar";
 
 type TaskFieldsProps = {
   control: Control<{
@@ -148,13 +148,6 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           name="assignee"
           render={({ field }) => {
             const selectedUser = assignees?.find((u) => u.id === field.value);
-            const selectedDisplayName = selectedUser
-              ? [selectedUser.first_name, selectedUser.last_name]
-                  .filter(Boolean)
-                  .join(" ") ||
-                selectedUser.username ||
-                ""
-              : fa.tasks.addTask.unassigned;
 
             return (
               <FormItem>
@@ -167,38 +160,32 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       {field.value &&
                       field.value !== fa.tasks.addTask.unassigned &&
                       selectedUser ? (
-                        <div className="flex items-center gap-2">
-                          <UserAvatar username={selectedUser.username} />
-                          <span>{selectedDisplayName}</span>
-                        </div>
+                        <span>
+                          {formatUserName(
+                            selectedUser.first_name,
+                            selectedUser.last_name,
+                            selectedUser.username,
+                          )}
+                        </span>
                       ) : (
                         <span>{fa.tasks.addTask.unassigned}</span>
                       )}
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value={fa.tasks.addTask.unassigned}>
-                        <div className="flex items-center gap-2">
-                          <UserAvatar username={fa.tasks.addTask.unassigned} />
-                          <span>{fa.tasks.addTask.unassigned}</span>
-                        </div>
+                        <span>{fa.tasks.addTask.unassigned}</span>
                       </SelectItem>
-                      {assignees?.map((u) => {
-                        const displayName =
-                          [u.first_name, u.last_name]
-                            .filter(Boolean)
-                            .join(" ") ||
-                          u.username ||
-                          "";
-
-                        return (
-                          <SelectItem key={u.id} value={u.id}>
-                            <div className="flex items-center gap-2">
-                              <UserAvatar username={u.username} />
-                              <span>{displayName}</span>
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
+                      {assignees?.map((u) => (
+                        <SelectItem key={u.id} value={u.id}>
+                          <span>
+                            {formatUserName(
+                              u.first_name,
+                              u.last_name,
+                              u.username,
+                            )}
+                          </span>
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>

@@ -18,3 +18,26 @@ export function getUserInitials(
   }
   return "?";
 }
+
+export function formatUserName(
+  first_name?: string,
+  last_name?: string,
+  username?: string,
+): string {
+  const nameParts: string[] = [];
+
+  if (first_name) nameParts.push(first_name.trim());
+  if (last_name) nameParts.push(last_name.trim());
+
+  const fullName = nameParts.join(" ").trim();
+
+  if (fullName && username) {
+    return `${fullName} - ${username}`;
+  }
+
+  if (fullName) {
+    return fullName;
+  }
+
+  return username ?? "";
+}
