@@ -86,6 +86,7 @@ export default function ProjectDetails() {
       filesToDelete: string[];
     }) => {
       if (!id) throw new Error("Project ID is required");
+      if (!project) throw new Error("Project not found");
 
       const formData = new FormData();
       formData.append("name", data.name);
@@ -94,9 +95,9 @@ export default function ProjectDetails() {
       const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
       formData.append("description", descriptionWithBreaks);
 
-      // Add new files
+      // Add new files using the + suffix to append (not replace) existing files
       data.newFiles.forEach((file) => {
-        formData.append("assets", file);
+        formData.append("assets+", file);
       });
 
       // Delete files using PocketBase - prefix
