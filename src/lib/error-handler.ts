@@ -30,11 +30,13 @@ function isPocketBaseError(
 }
 
 export function handlePocketBaseError(error: Error | PocketBaseError): void {
-  console.error("PocketBase error:", error);
-  try {
-    console.error("Error structure:", JSON.stringify(error, null, 2));
-  } catch {
-    console.error("Could not stringify error");
+  if (import.meta.env.DEV) {
+    console.error("PocketBase error:", error);
+    try {
+      console.error("Error structure:", JSON.stringify(error, null, 2));
+    } catch {
+      console.error("Could not stringify error");
+    }
   }
 
   if (!isPocketBaseError(error)) {
@@ -89,7 +91,9 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     const errorMessage =
       pbError?.message || pbError?.data?.message || pbError?.response?.message;
 
-    console.log("Extracted error message:", errorMessage);
+    if (import.meta.env.DEV) {
+      console.log("Extracted error message:", errorMessage);
+    }
 
     if (errorMessage) {
       // Check if this is an inactive user error
@@ -115,10 +119,14 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
       }
     } else if (pbError?.status === 400) {
       // Fallback for authentication failures without a message
-      console.log("No error message found, using generic invalidCredentials");
+      if (import.meta.env.DEV) {
+        console.log("No error message found, using generic invalidCredentials");
+      }
       toast.error(fa.auth.errors.invalidCredentials);
     } else {
-      console.log("No error message found, using generic serverError");
+      if (import.meta.env.DEV) {
+        console.log("No error message found, using generic serverError");
+      }
       toast.error(fa.auth.errors.serverError);
     }
   }
