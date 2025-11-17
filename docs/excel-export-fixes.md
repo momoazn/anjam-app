@@ -26,6 +26,7 @@ function stripHtml(html: string | null | undefined): string {
 ```
 
 **Risk Level**: High
+
 - Malicious HTML in task descriptions could execute scripts
 - Could expose user data or perform unauthorized actions
 
@@ -36,22 +37,23 @@ function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
 
   // Server-side fallback
-  if (typeof DOMParser === 'undefined') {
-    return html.replace(/<[^>]*>/g, '').trim();
+  if (typeof DOMParser === "undefined") {
+    return html.replace(/<[^>]*>/g, "").trim();
   }
 
   try {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    return doc.body.textContent || '';
+    const doc = parser.parseFromString(html, "text/html");
+    return doc.body.textContent || "";
   } catch {
     // Fallback to regex if parsing fails
-    return html.replace(/<[^>]*>/g, '').trim();
+    return html.replace(/<[^>]*>/g, "").trim();
   }
 }
 ```
 
 **Why DOMParser is safer**:
+
 - Parses HTML in a sandboxed context
 - Doesn't execute scripts
 - More explicit about intent
@@ -64,7 +66,7 @@ bun add -D @types/dompurify
 ```
 
 ```typescript
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
@@ -72,7 +74,7 @@ function stripHtml(html: string | null | undefined): string {
   // Sanitize and then extract text
   const clean = DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [], // Remove all tags
-    KEEP_CONTENT: true // Keep text content
+    KEEP_CONTENT: true, // Keep text content
   });
 
   return clean.trim();
@@ -86,11 +88,11 @@ function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
 
   return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')   // Remove styles
-    .replace(/<[^>]+>/g, '')  // Remove all HTML tags
-    .replace(/&nbsp;/g, ' ')  // Replace &nbsp;
-    .replace(/&[a-z]+;/gi, '') // Remove HTML entities
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "") // Remove scripts
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "") // Remove styles
+    .replace(/<[^>]+>/g, "") // Remove all HTML tags
+    .replace(/&nbsp;/g, " ") // Replace &nbsp;
+    .replace(/&[a-z]+;/gi, "") // Remove HTML entities
     .trim();
 }
 ```
@@ -117,24 +119,24 @@ function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
 
   // Check if we're in a browser environment
-  if (typeof document === 'undefined' || typeof DOMParser === 'undefined') {
+  if (typeof document === "undefined" || typeof DOMParser === "undefined") {
     // Server-side fallback: regex-based stripping
     return html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-      .replace(/<[^>]+>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&[a-z]+;/gi, '')
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&[a-z]+;/gi, "")
       .trim();
   }
 
   // Browser environment: use DOMParser
   try {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    return doc.body.textContent || '';
+    const doc = parser.parseFromString(html, "text/html");
+    return doc.body.textContent || "";
   } catch {
-    return html.replace(/<[^>]+>/g, '').trim();
+    return html.replace(/<[^>]+>/g, "").trim();
   }
 }
 ```
@@ -143,25 +145,25 @@ function stripHtml(html: string | null | undefined): string {
 
 ```typescript
 // Add to test file
-describe('stripHtml', () => {
-  it('should work in browser environment', () => {
-    expect(stripHtml('<p>Hello</p>')).toBe('Hello');
+describe("stripHtml", () => {
+  it("should work in browser environment", () => {
+    expect(stripHtml("<p>Hello</p>")).toBe("Hello");
   });
 
-  it('should handle null and undefined', () => {
-    expect(stripHtml(null)).toBe('');
-    expect(stripHtml(undefined)).toBe('');
+  it("should handle null and undefined", () => {
+    expect(stripHtml(null)).toBe("");
+    expect(stripHtml(undefined)).toBe("");
   });
 
-  it('should remove script tags', () => {
-    expect(stripHtml('<script>alert("xss")</script>Hello')).toBe('Hello');
+  it("should remove script tags", () => {
+    expect(stripHtml('<script>alert("xss")</script>Hello')).toBe("Hello");
   });
 
-  it('should handle complex HTML', () => {
-    const html = '<div><p>Line 1</p><br/><p>Line 2</p></div>';
+  it("should handle complex HTML", () => {
+    const html = "<div><p>Line 1</p><br/><p>Line 2</p></div>";
     const result = stripHtml(html);
-    expect(result).toContain('Line 1');
-    expect(result).toContain('Line 2');
+    expect(result).toContain("Line 1");
+    expect(result).toContain("Line 2");
   });
 });
 ```
@@ -178,6 +180,7 @@ describe('stripHtml', () => {
 Excel columns default to narrow widths, making Persian text difficult to read.
 
 **Before**:
+
 ```typescript
 const projectSheet = XLSX.utils.json_to_sheet(projectData);
 XLSX.utils.book_append_sheet(workbook, projectSheet, "جزئیات پروژه");
@@ -187,12 +190,13 @@ XLSX.utils.book_append_sheet(workbook, tasksSheet, "تسک‌های پروژه")
 ```
 
 **After**:
+
 ```typescript
 // Project Details Sheet
 const projectSheet = XLSX.utils.json_to_sheet(projectData);
 
 // Set column widths (width in characters)
-projectSheet['!cols'] = [
+projectSheet["!cols"] = [
   { wch: 25 }, // نام
   { wch: 15 }, // کد
   { wch: 50 }, // توضیحات
@@ -207,7 +211,7 @@ XLSX.utils.book_append_sheet(workbook, projectSheet, "جزئیات پروژه");
 const tasksSheet = XLSX.utils.json_to_sheet(tasksData);
 
 // Set column widths
-tasksSheet['!cols'] = [
+tasksSheet["!cols"] = [
   { wch: 10 }, // شماره
   { wch: 30 }, // عنوان
   { wch: 15 }, // وضعیت
@@ -228,15 +232,15 @@ XLSX.utils.book_append_sheet(workbook, tasksSheet, "تسک‌های پروژه")
 ```typescript
 // Add auto-filter to tasks sheet
 if (tasksData.length > 0) {
-  tasksSheet['!autofilter'] = { ref: `A1:J${tasksData.length + 1}` };
+  tasksSheet["!autofilter"] = { ref: `A1:J${tasksData.length + 1}` };
 }
 
 // Freeze header row
-tasksSheet['!freeze'] = { xSplit: 0, ySplit: 1 };
+tasksSheet["!freeze"] = { xSplit: 0, ySplit: 1 };
 
 // Set row height for header
-if (!tasksSheet['!rows']) tasksSheet['!rows'] = [];
-tasksSheet['!rows'][0] = { hpt: 20 }; // Header height in points
+if (!tasksSheet["!rows"]) tasksSheet["!rows"] = [];
+tasksSheet["!rows"][0] = { hpt: 20 }; // Header height in points
 ```
 
 **Complete Enhanced Function**:
@@ -250,24 +254,24 @@ function configureSheetFormatting(
   freezeHeader: boolean = true,
 ) {
   // Set column widths
-  sheet['!cols'] = columnWidths.map(wch => ({ wch }));
+  sheet["!cols"] = columnWidths.map((wch) => ({ wch }));
 
   // Add auto-filter
   if (hasAutoFilter) {
-    const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
-    sheet['!autofilter'] = {
-      ref: XLSX.utils.encode_range(range)
+    const range = XLSX.utils.decode_range(sheet["!ref"] || "A1");
+    sheet["!autofilter"] = {
+      ref: XLSX.utils.encode_range(range),
     };
   }
 
   // Freeze header row
   if (freezeHeader) {
-    sheet['!freeze'] = { xSplit: 0, ySplit: 1 };
+    sheet["!freeze"] = { xSplit: 0, ySplit: 1 };
   }
 
   // Set header row height
-  if (!sheet['!rows']) sheet['!rows'] = [];
-  sheet['!rows'][0] = { hpt: 20 };
+  if (!sheet["!rows"]) sheet["!rows"] = [];
+  sheet["!rows"][0] = { hpt: 20 };
 }
 
 // Usage in exportProjectToExcel:
@@ -298,6 +302,7 @@ const filename = `${projectName}-${currentDate}.xlsx`;
 ```
 
 **Problems**:
+
 - Multiple exports on same day = same filename
 - Similar project names may collide after sanitization
 - Browser download may auto-rename (filename.xlsx, filename(1).xlsx, etc.)
@@ -328,7 +333,7 @@ const filename = `export_${projectName}_${timestamp}.xlsx`;
 **Solution 3: UUID-based (Most Unique)**
 
 ```typescript
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 
 const projectName = (project.name || "project")
   .replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, "_")
@@ -350,6 +355,7 @@ const filename = `${projectName}_${currentDate}_${uniqueId}.xlsx`;
 Synchronous processing of large datasets (1000+ tasks) can freeze the browser UI.
 
 **Current Code**:
+
 ```typescript
 export async function exportProjectToExcel(...) {
   // All processing happens synchronously
@@ -372,7 +378,7 @@ export async function exportProjectToExcel(
   project: ProjectsResponse<{ supervisor?: UsersResponse }>,
   tasks: TaskWithProject[],
   users: UsersResponse[],
-  options?: { maxTasks?: number; onProgress?: (percent: number) => void }
+  options?: { maxTasks?: number; onProgress?: (percent: number) => void },
 ): Promise<void> {
   const projectTasks = tasks.filter((task) => task.project === project.id);
 
@@ -380,7 +386,7 @@ export async function exportProjectToExcel(
   const maxTasks = options?.maxTasks || 10000;
   if (projectTasks.length > maxTasks) {
     throw new Error(
-      `این پروژه ${projectTasks.length} تسک دارد. حداکثر ${maxTasks} تسک قابل صادرات است.`
+      `این پروژه ${projectTasks.length} تسک دارد. حداکثر ${maxTasks} تسک قابل صادرات است.`,
     );
   }
 
@@ -395,7 +401,7 @@ Create `src/workers/excel-export.worker.ts`:
 ```typescript
 import * as XLSX from "xlsx";
 
-self.addEventListener('message', (e) => {
+self.addEventListener("message", (e) => {
   const { projectData, tasksData } = e.data;
 
   try {
@@ -409,22 +415,22 @@ self.addEventListener('message', (e) => {
 
     // Generate binary string
     const wbout = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'binary'
+      bookType: "xlsx",
+      type: "binary",
     });
 
     // Convert to ArrayBuffer
     const buf = new ArrayBuffer(wbout.length);
     const view = new Uint8Array(buf);
     for (let i = 0; i < wbout.length; i++) {
-      view[i] = wbout.charCodeAt(i) & 0xFF;
+      view[i] = wbout.charCodeAt(i) & 0xff;
     }
 
     self.postMessage({ success: true, data: buf }, [buf]);
   } catch (error) {
     self.postMessage({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -454,13 +460,15 @@ async function exportProjectToExcelWithWorker(
   users: UsersResponse[],
 ): Promise<void> {
   // Prepare data
-  const projectData = [/* ... */];
+  const projectData = [
+    /* ... */
+  ];
   const tasksData = projectTasks.map(/* ... */);
 
   return new Promise((resolve, reject) => {
     const worker = new Worker(
-      new URL('../workers/excel-export.worker.ts', import.meta.url),
-      { type: 'module' }
+      new URL("../workers/excel-export.worker.ts", import.meta.url),
+      { type: "module" },
     );
 
     worker.postMessage({ projectData, tasksData });
@@ -469,10 +477,10 @@ async function exportProjectToExcelWithWorker(
       if (e.data.success) {
         // Download the file
         const blob = new Blob([e.data.data], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = generateFilename(project);
         a.click();
@@ -505,11 +513,12 @@ async function exportProjectToExcelWithWorker(
 **Location**: `src/lib/excel-export.ts:129-143`
 
 **Current Behavior**:
+
 ```typescript
 if (tasksData.length === 0) {
   tasksData.push({
-    "شماره": "-",
-    "عنوان": "این پروژه تسکی ندارد",
+    شماره: "-",
+    عنوان: "این پروژه تسکی ندارد",
     // ... all fields with "-" or 0
   });
 }
@@ -518,24 +527,34 @@ if (tasksData.length === 0) {
 **Question**: Should we add this placeholder row, or leave the sheet empty?
 
 **Option 1: Keep Current (Shows explicit message)**
+
 - ✅ User immediately sees "no tasks" message
 - ❌ Pollutes data if user imports to another system
 
 **Option 2: Empty Sheet with Note**
+
 ```typescript
 if (tasksData.length === 0) {
   // Add a note instead of a data row
-  tasksSheet['!margins'] = { top: 0.75, bottom: 0.75, left: 0.7, right: 0.7, header: 0.3, footer: 0.3 };
+  tasksSheet["!margins"] = {
+    top: 0.75,
+    bottom: 0.75,
+    left: 0.7,
+    right: 0.7,
+    header: 0.3,
+    footer: 0.3,
+  };
   // Note: xlsx doesn't support comments in JSON-to-sheet, but we can add an extra sheet
 }
 ```
 
 **Option 3: Add Separate Info Sheet**
+
 ```typescript
 if (tasksData.length === 0) {
   // Create info sheet
   const infoSheet = XLSX.utils.json_to_sheet([
-    { "اطلاعیه": "این پروژه هیچ تسکی ندارد" }
+    { اطلاعیه: "این پروژه هیچ تسکی ندارد" },
   ]);
   XLSX.utils.book_append_sheet(workbook, infoSheet, "اطلاعیه");
 }
@@ -550,6 +569,7 @@ if (tasksData.length === 0) {
 **Location**: `src/components/reports/project-export-button.tsx:30-43`
 
 **Current Error Handling**:
+
 ```typescript
 try {
   await exportProjectToExcel(project, tasks, users);
@@ -572,29 +592,28 @@ try {
   if (!tasks || tasks.length === 0) {
     // Optional: warn user about empty export
     const confirmed = window.confirm(
-      "این پروژه هیچ تسکی ندارد. آیا می‌خواهید فایل خالی صادر کنید?"
+      "این پروژه هیچ تسکی ندارد. آیا می‌خواهید فایل خالی صادر کنید?",
     );
     if (!confirmed) return;
   }
 
   await exportProjectToExcel(project, tasks, users);
 
-  toast.success(
-    `صادرات ${taskCount} تسک با موفقیت انجام شد`,
-    { duration: 3000 }
-  );
+  toast.success(`صادرات ${taskCount} تسک با موفقیت انجام شد`, {
+    duration: 3000,
+  });
 } catch (error) {
   console.error("Error exporting project:", error);
 
-  const errorMessage = error instanceof Error
-    ? error.message
-    : fa.reports.exportProjectError;
+  const errorMessage =
+    error instanceof Error ? error.message : fa.reports.exportProjectError;
 
   toast.error(errorMessage, { duration: 5000 });
 }
 ```
 
 **Add to `src/constants/text.ts`**:
+
 ```typescript
 exportProjectNoTasks: "این پروژه تسکی ندارد. آیا می‌خواهید فایل خالی صادر کنید؟",
 exportProjectSuccessWithCount: "صادرات {count} تسک با موفقیت انجام شد",
@@ -614,7 +633,7 @@ const workbook = XLSX.utils.book_new();
 // Add workbook properties
 workbook.Props = {
   Title: `گزارش پروژه - ${project.name}`,
-  Subject: `تسک‌های پروژه ${project.code || ''}`,
+  Subject: `تسک‌های پروژه ${project.code || ""}`,
   Author: "سیستم مدیریت تسک",
   CreatedDate: new Date(),
   Company: "Your Company Name",
@@ -623,9 +642,11 @@ workbook.Props = {
 
 // Set workbook views (RTL support)
 workbook.Workbook = {
-  Views: [{
-    RTL: true // Right-to-left for Persian
-  }]
+  Views: [
+    {
+      RTL: true, // Right-to-left for Persian
+    },
+  ],
 };
 ```
 
@@ -638,69 +659,69 @@ workbook.Workbook = {
 Create `src/lib/excel-export.test.ts`:
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import type { ProjectsResponse, UsersResponse } from './pocketbase-types';
-import type { TaskWithProject } from './pocketbase';
+import { describe, it, expect } from "vitest";
+import type { ProjectsResponse, UsersResponse } from "./pocketbase-types";
+import type { TaskWithProject } from "./pocketbase";
 
 // You'll need to refactor to export these helper functions
-describe('Excel Export Utils', () => {
-  describe('stripHtml', () => {
-    it('should remove HTML tags', () => {
-      const html = '<p>Hello <strong>World</strong></p>';
-      expect(stripHtml(html)).toBe('Hello World');
+describe("Excel Export Utils", () => {
+  describe("stripHtml", () => {
+    it("should remove HTML tags", () => {
+      const html = "<p>Hello <strong>World</strong></p>";
+      expect(stripHtml(html)).toBe("Hello World");
     });
 
-    it('should handle null and undefined', () => {
-      expect(stripHtml(null)).toBe('');
-      expect(stripHtml(undefined)).toBe('');
+    it("should handle null and undefined", () => {
+      expect(stripHtml(null)).toBe("");
+      expect(stripHtml(undefined)).toBe("");
     });
 
-    it('should handle XSS attempts', () => {
+    it("should handle XSS attempts", () => {
       const html = '<script>alert("xss")</script>Safe Text';
       const result = stripHtml(html);
-      expect(result).not.toContain('script');
-      expect(result).toContain('Safe Text');
+      expect(result).not.toContain("script");
+      expect(result).toContain("Safe Text");
     });
   });
 
-  describe('formatDate', () => {
-    it('should format valid dates', () => {
-      const date = '2025-01-15T10:30:00Z';
+  describe("formatDate", () => {
+    it("should format valid dates", () => {
+      const date = "2025-01-15T10:30:00Z";
       expect(formatDate(date)).toMatch(/\d{4}\/\d{2}\/\d{2}/);
     });
 
-    it('should handle null dates', () => {
-      expect(formatDate(null)).toBe('-');
-      expect(formatDate(undefined)).toBe('-');
+    it("should handle null dates", () => {
+      expect(formatDate(null)).toBe("-");
+      expect(formatDate(undefined)).toBe("-");
     });
 
-    it('should handle invalid dates', () => {
-      expect(formatDate('invalid')).toBe('-');
+    it("should handle invalid dates", () => {
+      expect(formatDate("invalid")).toBe("-");
     });
   });
 
-  describe('getUserName', () => {
-    it('should combine first and last name', () => {
+  describe("getUserName", () => {
+    it("should combine first and last name", () => {
       const user = {
-        first_name: 'John',
-        last_name: 'Doe',
-        username: 'johndoe'
+        first_name: "John",
+        last_name: "Doe",
+        username: "johndoe",
       } as UsersResponse;
-      expect(getUserName(user)).toBe('John Doe');
+      expect(getUserName(user)).toBe("John Doe");
     });
 
-    it('should fallback to username', () => {
+    it("should fallback to username", () => {
       const user = {
-        first_name: '',
-        last_name: '',
-        username: 'johndoe'
+        first_name: "",
+        last_name: "",
+        username: "johndoe",
       } as UsersResponse;
-      expect(getUserName(user)).toBe('johndoe');
+      expect(getUserName(user)).toBe("johndoe");
     });
 
-    it('should handle undefined user', () => {
-      expect(getUserName(undefined)).toBe('-');
-      expect(getUserName(undefined, 'N/A')).toBe('N/A');
+    it("should handle undefined user", () => {
+      expect(getUserName(undefined)).toBe("-");
+      expect(getUserName(undefined, "N/A")).toBe("N/A");
     });
   });
 });
@@ -711,38 +732,38 @@ describe('Excel Export Utils', () => {
 Create `src/lib/excel-export.integration.test.ts`:
 
 ```typescript
-import { describe, it, expect, vi } from 'vitest';
-import * as XLSX from 'xlsx';
-import { exportProjectToExcel } from './excel-export';
+import { describe, it, expect, vi } from "vitest";
+import * as XLSX from "xlsx";
+import { exportProjectToExcel } from "./excel-export";
 
 // Mock XLSX.writeFile
-vi.mock('xlsx', async () => {
-  const actual = await vi.importActual('xlsx');
+vi.mock("xlsx", async () => {
+  const actual = await vi.importActual("xlsx");
   return {
     ...actual,
     writeFile: vi.fn(),
   };
 });
 
-describe('exportProjectToExcel', () => {
-  it('should create workbook with two sheets', async () => {
+describe("exportProjectToExcel", () => {
+  it("should create workbook with two sheets", async () => {
     const project = {
-      id: 'proj1',
-      name: 'Test Project',
-      code: 'TP-001',
-      created: '2025-01-01T00:00:00Z',
-      updated: '2025-01-10T00:00:00Z',
+      id: "proj1",
+      name: "Test Project",
+      code: "TP-001",
+      created: "2025-01-01T00:00:00Z",
+      updated: "2025-01-10T00:00:00Z",
     };
 
     const tasks = [
       {
-        id: 'task1',
-        project: 'proj1',
-        title: 'Test Task',
-        status: 'done',
-        priority: 'high',
-        created: '2025-01-01T00:00:00Z',
-        updated: '2025-01-05T00:00:00Z',
+        id: "task1",
+        project: "proj1",
+        title: "Test Task",
+        status: "done",
+        priority: "high",
+        created: "2025-01-01T00:00:00Z",
+        updated: "2025-01-05T00:00:00Z",
       },
     ];
 
@@ -752,17 +773,19 @@ describe('exportProjectToExcel', () => {
 
     expect(XLSX.writeFile).toHaveBeenCalledWith(
       expect.any(Object),
-      expect.stringContaining('.xlsx')
+      expect.stringContaining(".xlsx"),
     );
   });
 
-  it('should handle empty tasks', async () => {
-    const project = { /* ... */ };
+  it("should handle empty tasks", async () => {
+    const project = {
+      /* ... */
+    };
     const tasks = [];
     const users = [];
 
     await expect(
-      exportProjectToExcel(project, tasks, users)
+      exportProjectToExcel(project, tasks, users),
     ).resolves.not.toThrow();
   });
 });
@@ -774,12 +797,14 @@ describe('exportProjectToExcel', () => {
 ## Manual Testing Checklist
 
 ### Basic Functionality
+
 - [ ] Export project with 0 tasks
 - [ ] Export project with 1 task
 - [ ] Export project with 100+ tasks
 - [ ] Export project with 1000+ tasks (performance test)
 
 ### Data Integrity
+
 - [ ] All project fields populated correctly
 - [ ] All task fields populated correctly
 - [ ] HTML stripped from descriptions
@@ -788,12 +813,14 @@ describe('exportProjectToExcel', () => {
 - [ ] Priority labels in Persian
 
 ### Special Characters
+
 - [ ] Project name with Persian characters
 - [ ] Project name with spaces and special chars
 - [ ] Task titles with emojis
 - [ ] HTML entities in descriptions (&nbsp;, &lt;, etc.)
 
 ### Edge Cases
+
 - [ ] Missing supervisor
 - [ ] Tasks without assignee
 - [ ] Tasks without deadline
@@ -802,6 +829,7 @@ describe('exportProjectToExcel', () => {
 - [ ] Very long descriptions (>5000 chars)
 
 ### File Output
+
 - [ ] File downloads successfully
 - [ ] Filename is valid and descriptive
 - [ ] No filename collisions on multiple exports
@@ -813,6 +841,7 @@ describe('exportProjectToExcel', () => {
 - [ ] Dates are formatted correctly
 
 ### UI/UX
+
 - [ ] Loading state shows during export
 - [ ] Success toast appears
 - [ ] Error toast appears on failure
@@ -825,22 +854,26 @@ describe('exportProjectToExcel', () => {
 ## 📋 Implementation Priority
 
 ### Phase 1: Security & Critical Fixes (Do Immediately)
+
 1. ✅ Fix XSS vulnerability in `stripHtml` (DOMParser solution)
 2. ✅ Add SSR compatibility check
 3. ✅ Add basic error handling improvements
 
 ### Phase 2: UX Improvements (Next Sprint)
+
 1. ✅ Add column width configuration
 2. ✅ Improve filename uniqueness
 3. ✅ Add workbook metadata
 4. ✅ Add RTL support for workbook
 
 ### Phase 3: Performance & Scale (As Needed)
+
 1. ⏳ Add task count warning (if users report issues)
 2. ⏳ Implement Web Worker (if >1000 tasks common)
 3. ⏳ Add progress indicator
 
 ### Phase 4: Testing & Documentation (Ongoing)
+
 1. ⏳ Add unit tests
 2. ⏳ Add integration tests
 3. ⏳ Complete manual testing checklist
@@ -853,12 +886,15 @@ describe('exportProjectToExcel', () => {
 If you only have time for quick improvements, do these:
 
 1. **Fix stripHtml security** (10 min)
+
    - Replace `innerHTML` with `DOMParser`
 
 2. **Add column widths** (5 min)
+
    - Add `sheet['!cols']` configuration
 
 3. **Improve filename** (5 min)
+
    - Add project code and timestamp
 
 4. **Add better error messages** (10 min)

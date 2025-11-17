@@ -27,12 +27,14 @@ All identified issues from the initial review have been successfully addressed. 
 **Status**: ✅ **RESOLVED**
 
 **Implementation Details**:
+
 - Replaced dangerous `innerHTML` with secure `DOMParser` API
 - Added comprehensive fallback for SSR environments
 - Added regex-based sanitization that removes `<script>` and `<style>` tags
 - Handles HTML entities (`&nbsp;`, etc.)
 
 **Code Review**:
+
 ```typescript
 // Lines 10-39
 function stripHtml(html: string | null | undefined): string {
@@ -68,6 +70,7 @@ function stripHtml(html: string | null | undefined): string {
 ```
 
 **Security Assessment**:
+
 - 🔒 **No XSS vulnerability**: DOMParser creates sandboxed document
 - 🔒 **Script tags removed**: Regex explicitly strips `<script>` tags
 - 🔒 **Style tags removed**: CSS injection prevented
@@ -84,6 +87,7 @@ function stripHtml(html: string | null | undefined): string {
 **Status**: ✅ **RESOLVED**
 
 **Implementation Details**:
+
 ```typescript
 // Line 14: Environment detection
 if (typeof document === "undefined" || typeof DOMParser === "undefined") {
@@ -92,6 +96,7 @@ if (typeof document === "undefined" || typeof DOMParser === "undefined") {
 ```
 
 **Verification**:
+
 - ✅ Works in browser environments (uses DOMParser)
 - ✅ Works in Node.js/SSR (uses regex fallback)
 - ✅ Works during build process
@@ -110,6 +115,7 @@ if (typeof document === "undefined" || typeof DOMParser === "undefined") {
 **Implementation Details**:
 
 **New Helper Function** (lines 104-126):
+
 ```typescript
 function configureSheetFormatting(
   sheet: XLSX.WorkSheet,
@@ -139,26 +145,31 @@ function configureSheetFormatting(
 **Applied to Sheets**:
 
 **Project Details Sheet** (line 185):
+
 ```typescript
 // [نام(25), کد(15), توضیحات(50), سرپرست(20), تاریخ ایجاد(15), آخرین به‌روزرسانی(15)]
 configureSheetFormatting(projectSheet, [25, 15, 50, 20, 15, 15], false);
 ```
+
 - ✅ No auto-filter (single row of data)
 - ✅ Appropriate widths for Persian text
 - ✅ Wide column for descriptions (50 chars)
 
 **Tasks Sheet** (line 223):
+
 ```typescript
 // [شماره(10), عنوان(30), وضعیت(15), اولویت(12), مسئول(20), مهلت(15),
 //  تاریخ ایجاد(15), آخرین به‌روزرسانی(15), زمان صرف شده(18), توضیحات(60)]
 configureSheetFormatting(tasksSheet, [10, 30, 15, 12, 20, 15, 15, 15, 18, 60]);
 ```
+
 - ✅ Auto-filter enabled for sorting/filtering
 - ✅ Frozen header row for scrolling
 - ✅ Wide column for task descriptions (60 chars)
 - ✅ Header row height set to 20pt
 
 **Features Added**:
+
 - ✅ Column widths optimized for Persian text
 - ✅ Auto-filter on tasks sheet (sortable columns)
 - ✅ Frozen header row (header stays visible when scrolling)
@@ -173,6 +184,7 @@ configureSheetFormatting(tasksSheet, [10, 30, 15, 12, 20, 15, 15, 15, 18, 60]);
 **Status**: ✅ **FULLY IMPLEMENTED**
 
 **New Function** (lines 131-141):
+
 ```typescript
 function generateFilename(
   project: ProjectsResponse<{ supervisor?: UsersResponse }>,
@@ -195,11 +207,13 @@ function generateFilename(
 ```
 
 **Example Filenames**:
+
 - `PRJ-001_Task_Manager_2025-11-10_143052.xlsx`
 - `a1b2c3d4_Dashboard_2025-11-10_143105.xlsx`
 - `WEB-2024_Website_Redesign_2025-11-10_150000.xlsx`
 
 **Uniqueness Factors**:
+
 1. ✅ **Project identifier**: Code or first 8 chars of ID
 2. ✅ **Project name**: Sanitized and truncated to 40 chars
 3. ✅ **Date**: Year-month-day
@@ -216,6 +230,7 @@ function generateFilename(
 **Status**: ✅ **FULLY IMPLEMENTED**
 
 **Workbook Properties** (lines 158-164):
+
 ```typescript
 workbook.Props = {
   Title: `گزارش پروژه - ${project.name || "بدون نام"}`,
@@ -227,6 +242,7 @@ workbook.Props = {
 ```
 
 **RTL Support** (lines 167-169):
+
 ```typescript
 workbook.Workbook = {
   Views: [{ RTL: true }],
@@ -234,6 +250,7 @@ workbook.Workbook = {
 ```
 
 **Benefits**:
+
 - ✅ File properties show in Excel's Document Info
 - ✅ Searchable metadata in file system
 - ✅ RTL reading order for Persian text
@@ -250,6 +267,7 @@ workbook.Workbook = {
 **Status**: ✅ **FULLY IMPLEMENTED**
 
 **Validation Before Export** (lines 30-40):
+
 ```typescript
 // ✅ Validate project exists
 if (!project) {
@@ -265,6 +283,7 @@ if (taskCount === 0) {
 ```
 
 **Enhanced Success Messages** (lines 46-55):
+
 ```typescript
 // ✅ Show task count in success message
 const successMessage =
@@ -279,23 +298,24 @@ toast.success(successMessage, { duration: 3000 });
 ```
 
 **Enhanced Error Messages** (lines 56-65):
+
 ```typescript
 // ✅ Show specific error message
 const errorMessage =
-  error instanceof Error
-    ? error.message
-    : fa.reports.exportProjectError;
+  error instanceof Error ? error.message : fa.reports.exportProjectError;
 
 toast.error(errorMessage, { duration: 5000 });
 ```
 
 **New Text Constants** (`src/constants/text.ts:659-660`):
+
 ```typescript
 exportProjectNoTasks: "این پروژه تسکی ندارد. آیا می‌خواهید فایل خالی صادر کنید؟",
 exportProjectSuccessWithCount: "صادرات {count} تسک با موفقیت انجام شد",
 ```
 
 **Improvements**:
+
 - ✅ Project existence validation
 - ✅ Empty project confirmation dialog
 - ✅ Task count in success message (e.g., "صادرات ۱۵ تسک با موفقیت انجام شد")
@@ -312,6 +332,7 @@ exportProjectSuccessWithCount: "صادرات {count} تسک با موفقیت ا
 **Status**: ✅ **REVIEWED AND APPROVED**
 
 **Current Implementation**:
+
 ```typescript
 if (tasksData.length === 0) {
   tasksData.push({
@@ -330,6 +351,7 @@ if (tasksData.length === 0) {
 ```
 
 **Decision**: Keep current approach
+
 - ✅ User-friendly: Immediately shows "no tasks" message in Excel
 - ✅ Consistent with UX: User already confirmed empty export
 - ✅ Easy to identify: Clear indicator vs blank sheet
@@ -340,12 +362,14 @@ if (tasksData.length === 0) {
 ## 📊 Code Quality Assessment
 
 ### TypeScript Compliance
+
 ```bash
 $ bun run type:check
 ✅ PASSED - No type errors
 ```
 
 ### ESLint Compliance
+
 ```bash
 $ bun run lint:check
 ✅ PASSED - No errors in Excel export files
@@ -353,12 +377,14 @@ $ bun run lint:check
 ```
 
 ### Code Formatting
+
 ```bash
 $ bun run fmt:check
 ✅ PASSED - All files properly formatted
 ```
 
 ### Build Success
+
 ```bash
 $ bun run build:client
 ✅ PASSED - Build completed successfully
@@ -369,18 +395,18 @@ $ bun run build:client
 
 ## 🔍 Implementation Quality Matrix
 
-| Feature | Status | Implementation Quality | Notes |
-|---------|--------|----------------------|-------|
-| **Security** | ✅ | ⭐⭐⭐⭐⭐ | XSS vulnerability completely eliminated |
-| **SSR Compatibility** | ✅ | ⭐⭐⭐⭐⭐ | Works in all environments |
-| **Column Formatting** | ✅ | ⭐⭐⭐⭐⭐ | Auto-filter, frozen headers, optimal widths |
-| **Filename Generation** | ✅ | ⭐⭐⭐⭐⭐ | Unique with timestamp, no collisions |
-| **Error Handling** | ✅ | ⭐⭐⭐⭐⭐ | Validation, specific messages, confirmations |
-| **Metadata** | ✅ | ⭐⭐⭐⭐⭐ | Professional properties, RTL support |
-| **Code Organization** | ✅ | ⭐⭐⭐⭐⭐ | Well-structured helper functions |
-| **Documentation** | ✅ | ⭐⭐⭐⭐☆ | JSDoc comments present |
-| **Type Safety** | ✅ | ⭐⭐⭐⭐⭐ | Full TypeScript typing |
-| **Maintainability** | ✅ | ⭐⭐⭐⭐⭐ | Clean, readable, modular |
+| Feature                 | Status | Implementation Quality | Notes                                        |
+| ----------------------- | ------ | ---------------------- | -------------------------------------------- |
+| **Security**            | ✅     | ⭐⭐⭐⭐⭐             | XSS vulnerability completely eliminated      |
+| **SSR Compatibility**   | ✅     | ⭐⭐⭐⭐⭐             | Works in all environments                    |
+| **Column Formatting**   | ✅     | ⭐⭐⭐⭐⭐             | Auto-filter, frozen headers, optimal widths  |
+| **Filename Generation** | ✅     | ⭐⭐⭐⭐⭐             | Unique with timestamp, no collisions         |
+| **Error Handling**      | ✅     | ⭐⭐⭐⭐⭐             | Validation, specific messages, confirmations |
+| **Metadata**            | ✅     | ⭐⭐⭐⭐⭐             | Professional properties, RTL support         |
+| **Code Organization**   | ✅     | ⭐⭐⭐⭐⭐             | Well-structured helper functions             |
+| **Documentation**       | ✅     | ⭐⭐⭐⭐☆              | JSDoc comments present                       |
+| **Type Safety**         | ✅     | ⭐⭐⭐⭐⭐             | Full TypeScript typing                       |
+| **Maintainability**     | ✅     | ⭐⭐⭐⭐⭐             | Clean, readable, modular                     |
 
 **Overall Grade**: **A+ (98/100)**
 
@@ -389,18 +415,21 @@ $ bun run build:client
 ## 🎯 Checklist - All Items Completed
 
 ### Security ✅
+
 - [x] XSS vulnerability fixed (DOMParser instead of innerHTML)
 - [x] Script tags explicitly removed in fallback
 - [x] Style tags explicitly removed in fallback
 - [x] No dangerous DOM manipulation
 
 ### Compatibility ✅
+
 - [x] SSR/Node.js environment detection
 - [x] Browser environment support
 - [x] Graceful fallbacks for all environments
 - [x] Build process compatibility
 
 ### UX Enhancements ✅
+
 - [x] Column widths configured for readability
 - [x] Auto-filter enabled on tasks sheet
 - [x] Frozen header rows
@@ -409,6 +438,7 @@ $ bun run build:client
 - [x] Professional workbook metadata
 
 ### Error Handling ✅
+
 - [x] Project existence validation
 - [x] Empty project confirmation
 - [x] Specific error messages
@@ -417,6 +447,7 @@ $ bun run build:client
 - [x] Proper async error handling
 
 ### File Management ✅
+
 - [x] Unique filename generation
 - [x] Project code/ID in filename
 - [x] Timestamp for uniqueness
@@ -424,6 +455,7 @@ $ bun run build:client
 - [x] Persian character support in filenames
 
 ### Code Quality ✅
+
 - [x] TypeScript types correct
 - [x] No type errors
 - [x] ESLint compliant
@@ -439,12 +471,14 @@ $ bun run build:client
 ### Manual Testing Checklist
 
 #### Basic Functionality
+
 - [ ] Export project with 0 tasks → Should confirm before exporting
 - [ ] Export project with 1 task → Should show "صادرات ۱ تسک با موفقیت انجام شد"
 - [ ] Export project with 100 tasks → Should complete within 2 seconds
 - [ ] Export same project twice → Filenames should be unique
 
 #### Data Integrity
+
 - [ ] Task with HTML description → HTML should be stripped
 - [ ] Task with `<script>` tag → Script should be removed
 - [ ] Task with Persian text → Should display correctly RTL
@@ -452,6 +486,7 @@ $ bun run build:client
 - [ ] Task without assignee → Should show "-"
 
 #### Excel File Verification
+
 - [ ] Open in Microsoft Excel → All features work
 - [ ] Open in Google Sheets → All features work
 - [ ] Open in LibreOffice Calc → All features work
@@ -462,6 +497,7 @@ $ bun run build:client
 - [ ] Check file properties → Should show metadata in Document Info
 
 #### Error Scenarios
+
 - [ ] Export with network failure → Should show error message
 - [ ] Export invalid project → Should show "پروژه یافت نشد"
 - [ ] Export during another export → Button should be disabled
@@ -472,15 +508,18 @@ $ bun run build:client
 ## 🚀 Performance Analysis
 
 ### Current Implementation
+
 - **Small exports (0-100 tasks)**: < 1 second
 - **Medium exports (100-500 tasks)**: 1-3 seconds
 - **Large exports (500-1000 tasks)**: 3-5 seconds
 
 ### Thresholds
+
 - ✅ **Current**: Synchronous processing (acceptable for most use cases)
 - ⏳ **Future**: Consider Web Worker if exports regularly exceed 1000 tasks
 
 ### Memory Usage
+
 - ✅ **Efficient**: Data processed once, then garbage collected
 - ✅ **No memory leaks**: Proper cleanup of DOM parser references
 
@@ -490,18 +529,18 @@ $ bun run build:client
 
 ### Before vs After
 
-| Aspect | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Security** | XSS vulnerable | XSS-proof | 🟥 → 🟢 |
-| **SSR Support** | Browser-only | Universal | ❌ → ✅ |
-| **Column Widths** | Default (narrow) | Optimized | 🟨 → 🟢 |
-| **Filename** | May collide | Unique | 🟨 → 🟢 |
-| **Error Messages** | Generic | Specific | 🟨 → 🟢 |
-| **Metadata** | None | Complete | ❌ → ✅ |
-| **RTL Support** | No | Yes | ❌ → ✅ |
-| **Auto-filter** | No | Yes | ❌ → ✅ |
-| **Frozen Headers** | No | Yes | ❌ → ✅ |
-| **Validation** | Basic | Comprehensive | 🟨 → 🟢 |
+| Aspect             | Before           | After         | Improvement |
+| ------------------ | ---------------- | ------------- | ----------- |
+| **Security**       | XSS vulnerable   | XSS-proof     | 🟥 → 🟢     |
+| **SSR Support**    | Browser-only     | Universal     | ❌ → ✅     |
+| **Column Widths**  | Default (narrow) | Optimized     | 🟨 → 🟢     |
+| **Filename**       | May collide      | Unique        | 🟨 → 🟢     |
+| **Error Messages** | Generic          | Specific      | 🟨 → 🟢     |
+| **Metadata**       | None             | Complete      | ❌ → ✅     |
+| **RTL Support**    | No               | Yes           | ❌ → ✅     |
+| **Auto-filter**    | No               | Yes           | ❌ → ✅     |
+| **Frozen Headers** | No               | Yes           | ❌ → ✅     |
+| **Validation**     | Basic            | Comprehensive | 🟨 → 🟢     |
 
 ---
 
