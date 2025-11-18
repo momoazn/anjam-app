@@ -111,10 +111,13 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 
 - [ ] **Add task dependencies and subtasks**
 
+  - ⚠️ **Requires manual schema changes** (see TASK_DEPENDENCIES_SPEC.md)
+  - Add `parent_task`, `blocked_by`, `checklist_items` fields to schema
   - Create parent-child task relationships
   - Add task dependencies (blocks/blocked by)
   - Checklist items within tasks
   - Progress calculation from subtasks
+  - Cycle detection for dependencies
 
 - [ ] **Add task attachments**
 
