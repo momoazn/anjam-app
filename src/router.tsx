@@ -77,6 +77,11 @@ const TaskCalendar = React.lazy(() =>
     default: () => <div>Error loading calendar</div>,
   })),
 );
+const MyTasks = React.lazy(() =>
+  import("@/pages/my-tasks").catch(() => ({
+    default: () => <div>Error loading my tasks</div>,
+  })),
+);
 const ProjectTasks = React.lazy(() =>
   import("@/pages/project-tasks").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.projectTasks}</div>,
@@ -271,6 +276,12 @@ const routes: RouteType[] = [
     element: <TaskCalendar />,
     protected: true,
     title: fa.tasks.calendar.title,
+  },
+  {
+    path: "/my-tasks",
+    element: <MyTasks />,
+    protected: true,
+    title: fa.myTasks.title,
   },
   {
     path: "/projects/:id/tasks",

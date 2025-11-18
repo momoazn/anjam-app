@@ -1335,6 +1335,32 @@ export const fa = {
     message: "صفحه‌ای که دنبالش می‌گردید پیدا نشد",
   },
 
+  // My Tasks page
+  myTasks: {
+    title: "تسک‌های من",
+    description: "همه تسک‌های اختصاص داده شده به شما",
+    tabs: {
+      active: "فعال",
+      completed: "انجام شده",
+      byProject: "بر اساس پروژه",
+    },
+    stats: {
+      active: "فعال",
+      completed: "انجام شده",
+      overdue: "گذشته‌موعد",
+      canceled: "لغو شده",
+    },
+    empty: {
+      noTasks: "تسکی ندارید",
+      noTasksDescription: "هیچ تسکی به شما اختصاص داده نشده است",
+      noActiveTasks: "تسک فعالی ندارید",
+      noActiveTasksDescription: "همه تسک‌های شما انجام شده یا لغو شده‌اند",
+      noCompletedTasks: "هنوز تسکی را تکمیل نکرده‌اید",
+      noCompletedTasksDescription:
+        "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
+    },
+  },
+
   // Tags Management
   tagsManagement: {
     title: "مدیریت برچسب‌ها",
