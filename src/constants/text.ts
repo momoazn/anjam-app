@@ -52,6 +52,18 @@ export const fa = {
       none: "هیچ‌کدام",
       yes: "بله",
       no: "خیر",
+      multiSelect: "انتخاب چندتایی",
+      cancelSelection: "لغو انتخاب",
+      backToList: "بازگشت به لیست",
+      back: "بازگشت",
+    },
+
+    // Common error/info messages
+    messages: {
+      notFound: "یافت نشد",
+      noData: "داده‌ای موجود نیست",
+      noName: "بدون نام",
+      quickActions: "عملیات سریع",
     },
 
     // Common state labels
@@ -330,6 +342,9 @@ export const fa = {
       description: "مطمئنید که می‌خواهید این کاربر را حذف کنید؟",
       button: "بله، حذف کن",
     },
+    errors: {
+      notFound: "کاربر یافت نشد",
+    },
   },
 
   // Projects module
@@ -456,6 +471,9 @@ export const fa = {
           "فرمت فایل «{fileName}» نامعتبر است و قابل بارگذاری نیست",
       },
     },
+    errors: {
+      notFound: "پروژه یافت نشد",
+    },
   },
 
   // Task management module
@@ -549,6 +567,25 @@ export const fa = {
       loadingTasks: "در حال بارگذاری تسک‌ها...",
     },
 
+    // Calendar view
+    calendar: {
+      title: "تقویم تسک‌ها",
+      description: "مشاهده تسک‌ها بر اساس تاریخ سررسید",
+      noTasks: "هیچ تسکی با تاریخ سررسید وجود ندارد",
+      noTasksDescription:
+        "تسک‌هایی که تاریخ سررسید دارند در این تقویم نمایش داده می‌شوند",
+      monthView: "نمای ماهانه",
+      weekView: "نمای هفتگی",
+      dayView: "نمای روزانه",
+      today: "امروز",
+      previousMonth: "ماه قبل",
+      nextMonth: "ماه بعد",
+      tasksThisMonth: "تسک‌های این ماه",
+      completedTasks: "انجام شده",
+      pendingTasks: "در انتظار",
+      overdueTasks: "گذشته‌موعد",
+    },
+
     // Header section
     header: {
       tasksFound: "{count} تسک پیدا شد",
@@ -632,6 +669,11 @@ export const fa = {
       cancel: "انصراف",
       success: "تسک حذف شد",
       error: "نتوانستیم تسک را حذف کنیم: {error}",
+    },
+
+    // Errors
+    errors: {
+      notFound: "وظیفه یافت نشد",
     },
   },
 
@@ -923,6 +965,17 @@ export const fa = {
     moreOptions: "گزینه‌های بیشتر",
     sortByDate: "مرتب‌سازی بر اساس تاریخ",
     showCompletedTasks: "نمایش تکمیل شده‌ها",
+    // Time tracking
+    logTime: "ثبت زمان",
+    timeSpent: "زمان صرف شده",
+    hours: "ساعت",
+    minutes: "دقیقه",
+    hour: "ساعت",
+    min: "دقیقه",
+    quickAdd: "افزودن سریع",
+    addTime: "افزودن زمان",
+    editTime: "ویرایش زمان",
+    noTimeLogged: "زمانی ثبت نشده",
   },
 
   // Comments module
@@ -1304,6 +1357,129 @@ export const fa = {
     title: "404",
     message: "صفحه‌ای که دنبالش می‌گردید پیدا نشد",
   },
+
+  // My Tasks page
+  myTasks: {
+    title: "تسک‌های من",
+    description: "همه تسک‌های اختصاص داده شده به شما",
+    tabs: {
+      active: "فعال",
+      completed: "انجام شده",
+      byProject: "بر اساس پروژه",
+    },
+    stats: {
+      active: "فعال",
+      completed: "انجام شده",
+      overdue: "گذشته‌موعد",
+      canceled: "لغو شده",
+    },
+    empty: {
+      noTasks: "تسکی ندارید",
+      noTasksDescription: "هیچ تسکی به شما اختصاص داده نشده است",
+      noActiveTasks: "تسک فعالی ندارید",
+      noActiveTasksDescription: "همه تسک‌های شما انجام شده یا لغو شده‌اند",
+      noCompletedTasks: "هنوز تسکی را تکمیل نکرده‌اید",
+      noCompletedTasksDescription:
+        "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
+    },
+  },
+
+  // Tags Management
+  tagsManagement: {
+    title: "مدیریت برچسب‌ها",
+    description: "مدیریت برچسب‌های تسک‌ها",
+    addTag: "افزودن برچسب",
+    createTag: "ایجاد برچسب",
+    editTag: "ویرایش برچسب",
+    deleteTag: "حذف برچسب",
+    tagName: "نام برچسب",
+    tagColor: "رنگ برچسب",
+    selectColor: "انتخاب رنگ",
+    noTags: "هیچ برچسبی وجود ندارد",
+    noTagsDescription: "برچسب ایجاد کنید تا بتوانید تسک‌ها را دسته‌بندی کنید",
+    createFirstTag: "ایجاد اولین برچسب",
+    namePlaceholder: "نام برچسب را وارد کنید...",
+    colorLabel: "رنگ",
+    nameLabel: "نام",
+    actionsLabel: "عملیات",
+    editButton: "ویرایش",
+    deleteButton: "حذف",
+    cancelButton: "انصراف",
+    saveButton: "ذخیره",
+    createButton: "ایجاد",
+    tagsList: "لیست برچسب‌ها",
+    tagsCount: "{count} برچسب",
+    deleteConfirm: {
+      title: "حذف برچسب؟",
+      description:
+        "آیا مطمئن هستید که می‌خواهید این برچسب را حذف کنید؟ این عمل قابل بازگشت نیست.",
+      cancel: "انصراف",
+      confirm: "حذف",
+    },
+    toast: {
+      created: "برچسب با موفقیت ایجاد شد",
+      updated: "برچسب با موفقیت به‌روزرسانی شد",
+      deleted: "برچسب با موفقیت حذف شد",
+      createError: "خطا در ایجاد برچسب",
+      updateError: "خطا در به‌روزرسانی برچسب",
+      deleteError: "خطا در حذف برچسب",
+    },
+    validation: {
+      nameRequired: "نام برچسب الزامی است",
+      colorRequired: "رنگ برچسب الزامی است",
+    },
+    colors: {
+      gray: "خاکستری",
+      red: "قرمز",
+      orange: "نارنجی",
+      yellow: "زرد",
+      green: "سبز",
+      blue: "آبی",
+      purple: "بنفش",
+      pink: "صورتی",
+    },
+  },
+
+  // Saved filters and custom views
+  savedFilters: {
+    title: "فیلترهای ذخیره شده",
+    saveCurrentFilter: "ذخیره فیلتر فعلی",
+    myFilters: "فیلترهای من",
+    noSavedFilters: "هیچ فیلتر ذخیره شده‌ای ندارید",
+    activeFilters: "فیلترهای فعال",
+    noActiveFilters: "بدون فیلتر",
+    manage: "مدیریت فیلترها",
+    default: "پیش‌فرض",
+    setAsDefault: "تنظیم به عنوان پیش‌فرض",
+    removeDefault: "حذف از پیش‌فرض",
+    createdAt: "ایجاد شده در",
+    saveDialog: {
+      title: "ذخیره فیلتر",
+      description: "فیلتر فعلی خود را با یک نام ذخیره کنید",
+      nameLabel: "نام فیلتر",
+      namePlaceholder: "مثلاً: تسک‌های اولویت بالا",
+      setAsDefault: "تنظیم به عنوان فیلتر پیش‌فرض",
+    },
+    deleteDialog: {
+      title: "حذف فیلتر؟",
+      description: "آیا مطمئن هستید که می‌خواهید فیلتر «{name}» را حذف کنید؟",
+    },
+    manageDialog: {
+      title: "مدیریت فیلترهای ذخیره شده",
+      description: "فیلترهای خود را مشاهده، ویرایش و حذف کنید",
+    },
+    toast: {
+      saved: "فیلتر با موفقیت ذخیره شد",
+      updated: "فیلتر با موفقیت به‌روزرسانی شد",
+      deleted: "فیلتر با موفقیت حذف شد",
+      defaultSet: "فیلتر پیش‌فرض تنظیم شد",
+      defaultRemoved: "فیلتر پیش‌فرض حذف شد",
+      applied: "فیلتر اعمال شد",
+      saveError: "خطا در ذخیره فیلتر",
+      updateError: "خطا در به‌روزرسانی فیلتر",
+      deleteError: "خطا در حذف فیلتر",
+    },
+  },
 } as const;
 
 // Type helper for better TypeScript support
@@ -1317,3 +1493,6 @@ export type FaNestedKey<T> = T extends object
   : never;
 
 export type FaPath = FaNestedKey<typeof fa>;
+
+// Alias for more intuitive usage
+export const text = fa;

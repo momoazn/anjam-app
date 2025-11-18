@@ -22,6 +22,7 @@ import {
 import { statusOrder } from "@/lib/tasks-utils";
 import { formatUserName } from "@/lib/utils";
 import { Search, X } from "lucide-react";
+import { useTags } from "@/hooks/tags";
 
 // Define priority order here or import from a central place if needed elsewhere
 const priorityOrder: TasksPriorityOptions[] = [
@@ -71,6 +72,8 @@ export function TaskFilters({
   users,
   isLoadingUsers,
 }: TaskFiltersProps) {
+  const { data: tags, isLoading: isLoadingTags } = useTags();
+
   const hasActiveFilters = !!(
     searchTerm ||
     selectedStatus !== ALL_FILTER_VALUE ||
@@ -136,8 +139,9 @@ export function TaskFilters({
     }
 
     if (selectedTag !== "all") {
+      const tag = tags?.find((t) => t.id === selectedTag);
       labels.push({
-        label: `${fa.tasks.filters.labels.tag} ${selectedTag}`,
+        label: `${fa.tasks.filters.labels.tag} ${tag?.name || selectedTag}`,
         onClear: () => setSelectedTag("all"),
       });
     }
@@ -256,15 +260,27 @@ export function TaskFilters({
           </SelectContent>
         </Select>
 
-        <Select value={selectedTag} onValueChange={setSelectedTag}>
+        <Select
+          value={selectedTag}
+          onValueChange={setSelectedTag}
+          disabled={isLoadingTags}
+        >
           <SelectTrigger className="h-9 w-full">
             <SelectValue placeholder={fa.tasks.filters.tag} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{fa.tasks.filters.allTags}</SelectItem>
-            <SelectItem value="اشکال">{fa.tasks.tags.bug}</SelectItem>
-            <SelectItem value="ویژگی">{fa.tasks.tags.feature}</SelectItem>
-            <SelectItem value="بهبود">{fa.tasks.tags.improvement}</SelectItem>
+            {tags?.map((tag) => (
+              <SelectItem key={tag.id} value={tag.id}>
+                <div className="flex items-center gap-2">
+                  <div
+                    className="h-3 w-3 rounded"
+                    style={{ backgroundColor: tag.color }}
+                  />
+                  <span>{tag.name}</span>
+                </div>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

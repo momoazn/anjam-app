@@ -102,14 +102,14 @@ export default function EditUser() {
       <PageTransition className="container mx-auto space-y-6 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">کاربر یافت نشد</p>
+            <p className="text-muted-foreground">{fa.users.errors.notFound}</p>
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => navigate("/users")}
             >
               <ArrowLeft className="ml-2 h-4 w-4" />
-              بازگشت
+              {fa.common.buttons.back}
             </Button>
           </CardContent>
         </Card>

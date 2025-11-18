@@ -1,17 +1,27 @@
-import { FilterX, ListTodo, Plus } from "lucide-react";
-import { useMemo } from "react";
+import { FilterX, ListTodo, Plus, CheckSquare } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
+import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
+import { SaveFilterDialog } from "@/components/task/save-filter-dialog";
+import { SavedFiltersDropdown } from "@/components/task/saved-filters-dropdown";
+import { ManageSavedFiltersDialog } from "@/components/task/manage-saved-filters-dialog";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import { fa } from "@/constants/text";
-import { useTaskFilters } from "@/hooks/use-task-filters";
+import { useTaskFilters, ALL_FILTER_VALUE } from "@/hooks/use-task-filters";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
+import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
+import { useSavedFilters } from "@/hooks/use-saved-filters";
 import type { TaskWithProject } from "@/lib/pocketbase";
-import type { TasksStatusOptions } from "@/lib/pocketbase-types";
+import type {
+  TasksStatusOptions,
+  TasksPriorityOptions,
+} from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
 
 // Loading skeleton component
@@ -103,6 +113,12 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
 
 export default function Tasks() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [saveFilterDialogOpen, setSaveFilterDialogOpen] = useState(false);
+  const [manageFiltersDialogOpen, setManageFiltersDialogOpen] = useState(false);
+
   const {
     tasks: userTasks,
     users,
@@ -125,6 +141,103 @@ export default function Tasks() {
     setSelectedTag,
     filteredTasks,
   } = useTaskFilters(userTasks);
+
+  const bulkUpdate = useBulkUpdateTasks();
+  const bulkDelete = useBulkDeleteTasks();
+
+  // Saved filters functionality
+  const {
+    savedFilters,
+    saveFilter,
+    updateFilter,
+    deleteFilter,
+    setAsDefault,
+    defaultFilterId,
+    getCurrentFilterMatch,
+    isDefaultFilters,
+  } = useSavedFilters();
+
+  const currentFilters = {
+    searchTerm,
+    selectedStatus,
+    selectedPriority,
+    selectedAssignee,
+    selectedDateRange,
+    selectedTag,
+  };
+
+  const currentFilterMatch = getCurrentFilterMatch(currentFilters);
+
+  // Handle save filter
+  const handleSaveFilter = (name: string, setAsDefaultFilter: boolean) => {
+    try {
+      const newFilter = saveFilter(name, currentFilters);
+      if (setAsDefaultFilter) {
+        setAsDefault(newFilter.id);
+      }
+      toast({
+        title: fa.savedFilters.toast.saved,
+      });
+    } catch {
+      toast({
+        title: fa.savedFilters.toast.saveError,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle apply filter
+  const handleApplyFilter = async (filter: (typeof savedFilters)[0]) => {
+    try {
+      await setSearchTerm(filter.filters.searchTerm || "");
+      await setSelectedStatus(
+        filter.filters.selectedStatus || ALL_FILTER_VALUE,
+      );
+      await setSelectedPriority(
+        filter.filters.selectedPriority || ALL_FILTER_VALUE,
+      );
+      await setSelectedAssignee(
+        filter.filters.selectedAssignee || ALL_FILTER_VALUE,
+      );
+      await setSelectedDateRange(filter.filters.selectedDateRange || "all");
+      await setSelectedTag(filter.filters.selectedTag || "all");
+
+      toast({
+        title: fa.savedFilters.toast.applied,
+      });
+    } catch (error) {
+      console.error("Error applying filter:", error);
+    }
+  };
+
+  // Handle delete filter
+  const handleDeleteFilter = (id: string) => {
+    try {
+      deleteFilter(id);
+      toast({
+        title: fa.savedFilters.toast.deleted,
+      });
+    } catch {
+      toast({
+        title: fa.savedFilters.toast.deleteError,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle set default
+  const handleSetDefault = (id: string | null) => {
+    try {
+      setAsDefault(id);
+      toast({
+        title: id
+          ? fa.savedFilters.toast.defaultSet
+          : fa.savedFilters.toast.defaultRemoved,
+      });
+    } catch (error) {
+      console.error("Error setting default:", error);
+    }
+  };
 
   // URL params are now handled automatically by useQueryState in the hook
 
@@ -156,6 +269,60 @@ export default function Tasks() {
 
   const totalTasks = filteredTasks?.length || 0;
 
+  // Bulk operation handlers
+  const handleBulkDelete = async () => {
+    await bulkDelete.mutateAsync(selectedTasks);
+    setSelectedTasks([]);
+    setSelectionMode(false);
+  };
+
+  const handleBulkAssign = async (assigneeId: string) => {
+    await bulkUpdate.mutateAsync({
+      taskIds: selectedTasks,
+      updates: { assignee: assigneeId },
+    });
+    setSelectedTasks([]);
+  };
+
+  const handleBulkStatus = async (status: TasksStatusOptions) => {
+    await bulkUpdate.mutateAsync({
+      taskIds: selectedTasks,
+      updates: { status },
+    });
+    setSelectedTasks([]);
+  };
+
+  const handleBulkPriority = async (priority: TasksPriorityOptions) => {
+    await bulkUpdate.mutateAsync({
+      taskIds: selectedTasks,
+      updates: { priority },
+    });
+    setSelectedTasks([]);
+  };
+
+  const toggleSelectionMode = () => {
+    setSelectionMode(!selectionMode);
+    setSelectedTasks([]);
+  };
+
+  const handleSelectionChange = (taskIds: string[]) => {
+    setSelectedTasks(taskIds);
+  };
+
+  const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
+    [
+      { value: "todo", label: fa.tasks.status.todo },
+      { value: "in_progress", label: fa.tasks.status.in_progress },
+      { value: "pending", label: fa.tasks.status.pending },
+      { value: "review", label: fa.tasks.status.review },
+      { value: "testing", label: fa.tasks.status.testing },
+      { value: "ready", label: fa.tasks.status.ready },
+      { value: "blocked", label: fa.tasks.status.blocked },
+      { value: "on_hold", label: fa.tasks.status.on_hold },
+      { value: "done", label: fa.tasks.status.done },
+      { value: "canceled", label: fa.tasks.status.canceled },
+    ];
+
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
       {/* Header Section */}
@@ -174,18 +341,47 @@ export default function Tasks() {
               : fa.tasks.header.manageTasks}
           </p>
         </div>
-        <Button
-          className="w-full gap-2 sm:w-auto"
-          size="lg"
-          onClick={() => navigate("/tasks/new")}
-        >
-          <Plus className="h-4 w-4" />
-          {fa.tasks.addTask.buttons.newTask}
-        </Button>
+        <div className="flex w-full gap-2 sm:w-auto">
+          <Button
+            variant={selectionMode ? "secondary" : "outline"}
+            size="lg"
+            onClick={toggleSelectionMode}
+            className="gap-2"
+          >
+            <CheckSquare className="h-4 w-4" />
+            {selectionMode
+              ? fa.common.buttons.cancelSelection
+              : fa.common.buttons.multiSelect}
+          </Button>
+          <Button
+            className="w-full gap-2 sm:w-auto"
+            size="lg"
+            onClick={() => navigate("/tasks/new")}
+          >
+            <Plus className="h-4 w-4" />
+            {fa.tasks.addTask.buttons.newTask}
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filter Controls */}
-      <div className="mb-8" data-animate-stagger>
+      <div className="mb-8 space-y-3" data-animate-stagger>
+        {/* Saved Filters Dropdown */}
+        <div className="flex justify-end">
+          <SavedFiltersDropdown
+            savedFilters={savedFilters}
+            currentFilterMatch={currentFilterMatch}
+            defaultFilterId={defaultFilterId}
+            onApplyFilter={handleApplyFilter}
+            onDeleteFilter={handleDeleteFilter}
+            onSetDefault={handleSetDefault}
+            onOpenSaveDialog={() => setSaveFilterDialogOpen(true)}
+            onOpenManageDialog={() => setManageFiltersDialogOpen(true)}
+            disabled={isDefaultFilters(currentFilters)}
+          />
+        </div>
+
+        {/* Filter Controls */}
         <TaskFilters
           searchTerm={searchTerm}
           selectedStatus={selectedStatus}
@@ -204,6 +400,25 @@ export default function Tasks() {
         />
       </div>
 
+      {/* Save Filter Dialog */}
+      <SaveFilterDialog
+        open={saveFilterDialogOpen}
+        onOpenChange={setSaveFilterDialogOpen}
+        currentFilters={currentFilters}
+        onSave={handleSaveFilter}
+      />
+
+      {/* Manage Saved Filters Dialog */}
+      <ManageSavedFiltersDialog
+        open={manageFiltersDialogOpen}
+        onOpenChange={setManageFiltersDialogOpen}
+        savedFilters={savedFilters}
+        defaultFilterId={defaultFilterId}
+        onUpdateFilter={updateFilter}
+        onDeleteFilter={handleDeleteFilter}
+        onSetDefault={handleSetDefault}
+      />
+
       {/* Task List */}
       <div className="space-y-6" data-animate-stagger>
         {isLoadingTasks ? (
@@ -220,11 +435,28 @@ export default function Tasks() {
                 status={status}
                 tasks={tasksInGroup}
                 showProject={true}
+                enableSelection={selectionMode}
+                selectedTasks={selectedTasks}
+                onSelectionChange={handleSelectionChange}
               />
             );
           })
         )}
       </div>
+
+      {/* Bulk Actions Bar */}
+      {selectionMode && selectedTasks.length > 0 && (
+        <BulkActionsBar
+          selectedCount={selectedTasks.length}
+          onClearSelection={() => setSelectedTasks([])}
+          onBulkDelete={handleBulkDelete}
+          onBulkAssign={handleBulkAssign}
+          onBulkStatus={handleBulkStatus}
+          onBulkPriority={handleBulkPriority}
+          users={users || []}
+          availableStatuses={availableStatuses}
+        />
+      )}
     </PageTransition>
   );
 }

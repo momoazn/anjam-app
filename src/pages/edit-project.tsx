@@ -174,7 +174,9 @@ export default function EditProject() {
       <PageTransition className="container mx-auto space-y-6 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">پروژه یافت نشد</p>
+            <p className="text-muted-foreground">
+              {fa.projects.errors.notFound}
+            </p>
             <Button
               variant="outline"
               className="mt-4"

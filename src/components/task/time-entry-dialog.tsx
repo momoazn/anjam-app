@@ -1,0 +1,194 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { parseTimeInput, minutesToHoursAndMinutes } from "@/lib/time-utils";
+import { text } from "@/constants/text";
+
+const timeEntrySchema = z.object({
+  hours: z.coerce.number().min(0).max(999),
+  minutes: z.coerce.number().min(0).max(59),
+});
+
+type TimeEntryForm = z.infer<typeof timeEntrySchema>;
+
+interface TimeEntryDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  currentMinutes: number;
+  onSave: (minutes: number) => Promise<void>;
+  taskTitle: string;
+}
+
+export function TimeEntryDialog({
+  open,
+  onOpenChange,
+  currentMinutes,
+  onSave,
+  taskTitle,
+}: TimeEntryDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { hours: currentHours, minutes: currentMins } =
+    minutesToHoursAndMinutes(currentMinutes);
+
+  const form = useForm<TimeEntryForm>({
+    resolver: zodResolver(timeEntrySchema),
+    defaultValues: {
+      hours: currentHours,
+      minutes: currentMins,
+    },
+  });
+
+  const handleSubmit = async (data: TimeEntryForm) => {
+    setIsSubmitting(true);
+    try {
+      const totalMinutes = parseTimeInput(data.hours, data.minutes);
+      await onSave(totalMinutes);
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to save time entry:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddQuickTime = (minutes: number) => {
+    const current = parseTimeInput(
+      form.getValues("hours"),
+      form.getValues("minutes"),
+    );
+    const newTotal = minutesToHoursAndMinutes(current + minutes);
+    form.setValue("hours", newTotal.hours);
+    form.setValue("minutes", newTotal.minutes);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{text.task.logTime}</DialogTitle>
+          <DialogDescription className="text-sm">{taskTitle}</DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="hours"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{text.task.hours}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="999"
+                        placeholder="0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="minutes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{text.task.minutes}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="59"
+                        placeholder="0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <FormLabel>{text.task.quickAdd}</FormLabel>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAddQuickTime(15)}
+                >
+                  +15{text.task.min}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAddQuickTime(30)}
+                >
+                  +30{text.task.min}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAddQuickTime(60)}
+                >
+                  +1{text.task.hour}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAddQuickTime(120)}
+                >
+                  +2{text.task.hour}
+                </Button>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                {text.common.cancel}
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? text.common.saving : text.common.save}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
