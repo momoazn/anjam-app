@@ -334,10 +334,17 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - WCAG 2.1 AA compliance
 
 - [ ] **Move hardcoded Persian text to constants**
-  - Audit all components for hardcoded text
-  - Add missing translations to `text.ts`
-  - Ensure consistency across app
-  - Prepare for multi-language support
+
+  - ✅ Added common messages (notFound, noData, noName, quickActions)
+  - ✅ Added common buttons (multiSelect, cancelSelection, backToList, back)
+  - ✅ Added error sections to users, projects, tasks
+  - ✅ Fixed hardcoded text in tasks.tsx, my-tasks.tsx
+  - ✅ Fixed hardcoded text in all edit pages (edit-user, edit-project, edit-task)
+  - ✅ Fixed hardcoded text in detail pages (project-details, task-details)
+  - ⏳ Audit remaining components for hardcoded text (~80 lines remaining)
+  - ⏳ Add missing translations to `text.ts`
+  - ⏳ Ensure consistency across app
+  - ⏳ Prepare for multi-language support
 
 ### Performance Optimization
 
