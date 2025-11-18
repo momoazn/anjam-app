@@ -1315,6 +1315,62 @@ export const fa = {
     title: "404",
     message: "صفحه‌ای که دنبالش می‌گردید پیدا نشد",
   },
+
+  // Tags Management
+  tagsManagement: {
+    title: "مدیریت برچسب‌ها",
+    description: "مدیریت برچسب‌های تسک‌ها",
+    addTag: "افزودن برچسب",
+    createTag: "ایجاد برچسب",
+    editTag: "ویرایش برچسب",
+    deleteTag: "حذف برچسب",
+    tagName: "نام برچسب",
+    tagColor: "رنگ برچسب",
+    selectColor: "انتخاب رنگ",
+    noTags: "هیچ برچسبی وجود ندارد",
+    noTagsDescription: "برچسب ایجاد کنید تا بتوانید تسک‌ها را دسته‌بندی کنید",
+    createFirstTag: "ایجاد اولین برچسب",
+    namePlaceholder: "نام برچسب را وارد کنید...",
+    colorLabel: "رنگ",
+    nameLabel: "نام",
+    actionsLabel: "عملیات",
+    editButton: "ویرایش",
+    deleteButton: "حذف",
+    cancelButton: "انصراف",
+    saveButton: "ذخیره",
+    createButton: "ایجاد",
+    tagsList: "لیست برچسب‌ها",
+    tagsCount: "{count} برچسب",
+    deleteConfirm: {
+      title: "حذف برچسب؟",
+      description:
+        "آیا مطمئن هستید که می‌خواهید این برچسب را حذف کنید؟ این عمل قابل بازگشت نیست.",
+      cancel: "انصراف",
+      confirm: "حذف",
+    },
+    toast: {
+      created: "برچسب با موفقیت ایجاد شد",
+      updated: "برچسب با موفقیت به‌روزرسانی شد",
+      deleted: "برچسب با موفقیت حذف شد",
+      createError: "خطا در ایجاد برچسب",
+      updateError: "خطا در به‌روزرسانی برچسب",
+      deleteError: "خطا در حذف برچسب",
+    },
+    validation: {
+      nameRequired: "نام برچسب الزامی است",
+      colorRequired: "رنگ برچسب الزامی است",
+    },
+    colors: {
+      gray: "خاکستری",
+      red: "قرمز",
+      orange: "نارنجی",
+      yellow: "زرد",
+      green: "سبز",
+      blue: "آبی",
+      purple: "بنفش",
+      pink: "صورتی",
+    },
+  },
 } as const;
 
 // Type helper for better TypeScript support

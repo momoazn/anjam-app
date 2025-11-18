@@ -67,6 +67,11 @@ const EditTask = React.lazy(() =>
     default: () => <div>{fa.errors.pageLoad.tasks}</div>,
   })),
 );
+const Tags = React.lazy(() =>
+  import("@/pages/tags").catch(() => ({
+    default: () => <div>Error loading tags</div>,
+  })),
+);
 const ProjectTasks = React.lazy(() =>
   import("@/pages/project-tasks").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.projectTasks}</div>,
@@ -249,6 +254,12 @@ const routes: RouteType[] = [
     element: <EditTask />,
     protected: true,
     title: fa.tasks.edit.title,
+  },
+  {
+    path: "/tags",
+    element: <Tags />,
+    protected: true,
+    title: fa.tagsManagement.title,
   },
   {
     path: "/projects/:id/tasks",
