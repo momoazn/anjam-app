@@ -147,12 +147,20 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - ⏳ WIP limits per column (future)
   - ⏳ Swimlanes by assignee/priority (future)
 
-- [ ] **Create calendar view**
+- [x] **Create calendar view**
 
-  - Monthly/weekly calendar display
-  - Tasks shown by deadline
-  - Drag to change dates
-  - Color coding by priority/status
+  - ✅ Monthly calendar display with Persian/Jalali dates
+  - ✅ Tasks shown by deadline date
+  - ✅ Color coding by priority (border) and status (dot)
+  - ✅ Navigate between months with prev/next/today buttons
+  - ✅ Month statistics (total, completed, pending tasks)
+  - ✅ Task cards with title, assignee, status
+  - ✅ Click on task to view details
+  - ✅ Shows up to 3 tasks per day, with count for more
+  - ✅ Responsive grid layout (7-column calendar)
+  - ✅ Empty state when no tasks with deadlines
+  - ⏳ Drag to change dates (future enhancement)
+  - ⏳ Week/day views (future enhancement)
 
 - [ ] **Implement saved filters and custom views**
 

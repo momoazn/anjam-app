@@ -549,6 +549,25 @@ export const fa = {
       loadingTasks: "در حال بارگذاری تسک‌ها...",
     },
 
+    // Calendar view
+    calendar: {
+      title: "تقویم تسک‌ها",
+      description: "مشاهده تسک‌ها بر اساس تاریخ سررسید",
+      noTasks: "هیچ تسکی با تاریخ سررسید وجود ندارد",
+      noTasksDescription:
+        "تسک‌هایی که تاریخ سررسید دارند در این تقویم نمایش داده می‌شوند",
+      monthView: "نمای ماهانه",
+      weekView: "نمای هفتگی",
+      dayView: "نمای روزانه",
+      today: "امروز",
+      previousMonth: "ماه قبل",
+      nextMonth: "ماه بعد",
+      tasksThisMonth: "تسک‌های این ماه",
+      completedTasks: "انجام شده",
+      pendingTasks: "در انتظار",
+      overdueTasks: "گذشته‌موعد",
+    },
+
     // Header section
     header: {
       tasksFound: "{count} تسک پیدا شد",

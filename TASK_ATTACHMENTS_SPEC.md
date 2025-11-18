@@ -42,6 +42,7 @@ Add the following field to the `tasks` collection in PocketBase:
 ```
 
 **Field Configuration:**
+
 - **maxSelect**: 99 (up to 99 attachments per task)
 - **maxSize**: 52428800 bytes (50 MB per file)
 - **mimeTypes**: Same as projects.assets field (PDF, images, Office documents, text files)
@@ -75,6 +76,7 @@ interface TasksResponse<Texpand = unknown> {
 The app already has a `FileUpload` component at `src/components/ui/file-upload.tsx` used for projects. This can be reused for tasks.
 
 **Features:**
+
 - Drag-and-drop upload
 - File type validation
 - Size validation
@@ -89,6 +91,7 @@ The app already has a `FileUpload` component at `src/components/ui/file-upload.t
 **Location**: `src/components/task/task-attachments.tsx`
 
 **Features**:
+
 - Display list of attached files
 - File type icons
 - File size display
@@ -114,6 +117,7 @@ interface TaskAttachmentsProps {
 **Location**: `src/components/task/attachment-item.tsx`
 
 **Features**:
+
 - File icon based on type
 - File name with truncation
 - File size display
@@ -139,6 +143,7 @@ interface AttachmentItemProps {
 **Location**: `src/components/task/attachment-preview-dialog.tsx`
 
 **Features**:
+
 - Image preview in dialog
 - PDF preview (iframe)
 - Download button in dialog
@@ -238,15 +243,17 @@ export function useUploadTaskAttachments(taskId: string) {
 
       // Append existing attachments
       task.attachments?.forEach((filename: string) => {
-        formData.append('attachments', filename);
+        formData.append("attachments", filename);
       });
 
       // Append new files
       files.forEach((file) => {
-        formData.append('attachments', file);
+        formData.append("attachments", file);
       });
 
-      return await pb.collection("tasks").update<TasksResponse>(taskId, formData);
+      return await pb
+        .collection("tasks")
+        .update<TasksResponse>(taskId, formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["task", taskId] });
@@ -263,16 +270,17 @@ export function useDeleteTaskAttachment(taskId: string) {
   return useMutation({
     mutationFn: async (filename: string) => {
       const task = await pb.collection("tasks").getOne(taskId);
-      const updatedAttachments = task.attachments?.filter(
-        (f: string) => f !== filename
-      ) || [];
+      const updatedAttachments =
+        task.attachments?.filter((f: string) => f !== filename) || [];
 
       const formData = new FormData();
       updatedAttachments.forEach((f: string) => {
-        formData.append('attachments', f);
+        formData.append("attachments", f);
       });
 
-      return await pb.collection("tasks").update<TasksResponse>(taskId, formData);
+      return await pb
+        .collection("tasks")
+        .update<TasksResponse>(taskId, formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["task", taskId] });
@@ -324,25 +332,29 @@ Update `src/pages/task-details.tsx`:
 2. Add attachments section after description:
 
 ```tsx
-{/* Attachments Section */}
-{task.attachments && task.attachments.length > 0 && (
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2">
-        <Paperclip className="h-5 w-5" />
-        {text.attachments.title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <TaskAttachments
-        taskId={task.id}
-        attachments={task.attachments}
-        onUpload={handleUploadAttachments}
-        onDelete={handleDeleteAttachment}
-      />
-    </CardContent>
-  </Card>
-)}
+{
+  /* Attachments Section */
+}
+{
+  task.attachments && task.attachments.length > 0 && (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Paperclip className="h-5 w-5" />
+          {text.attachments.title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <TaskAttachments
+          taskId={task.id}
+          attachments={task.attachments}
+          onUpload={handleUploadAttachments}
+          onDelete={handleDeleteAttachment}
+        />
+      </CardContent>
+    </Card>
+  );
+}
 ```
 
 ### Task Forms
@@ -358,12 +370,14 @@ Update task creation/edit forms to include file upload:
 Show attachment indicator icon on task cards:
 
 ```tsx
-{task.attachments && task.attachments.length > 0 && (
-  <Badge variant="outline" className="gap-1">
-    <Paperclip className="h-3 w-3" />
-    {task.attachments.length}
-  </Badge>
-)}
+{
+  task.attachments && task.attachments.length > 0 && (
+    <Badge variant="outline" className="gap-1">
+      <Paperclip className="h-3 w-3" />
+      {task.attachments.length}
+    </Badge>
+  );
+}
 ```
 
 ## Testing Requirements
@@ -395,35 +409,43 @@ Show attachment indicator icon on task cards:
 ## Implementation Steps
 
 1. **Schema Changes** (Manual in PocketBase Admin):
+
    - Add `attachments` file field to tasks collection
    - Configure maxSelect, maxSize, mimeTypes as specified
 
 2. **Type Generation**:
+
    ```bash
    bun run gen:type
    ```
 
 3. **Utility Functions**:
+
    - Create or enhance `file-utils.ts` with helper functions
 
 4. **Hooks**:
+
    - Add useUploadTaskAttachments hook
    - Add useDeleteTaskAttachment hook
 
 5. **UI Components**:
+
    - Create TaskAttachments component
    - Create AttachmentItem component
    - Create AttachmentPreviewDialog component
 
 6. **Integration**:
+
    - Update task detail page
    - Update task forms (create/edit)
    - Update task list items (show attachment count)
 
 7. **Text Constants**:
+
    - Add all attachment-related text
 
 8. **Testing**:
+
    - Write unit tests
    - Write integration tests
    - Write E2E tests
