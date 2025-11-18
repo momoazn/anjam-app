@@ -923,6 +923,17 @@ export const fa = {
     moreOptions: "گزینه‌های بیشتر",
     sortByDate: "مرتب‌سازی بر اساس تاریخ",
     showCompletedTasks: "نمایش تکمیل شده‌ها",
+    // Time tracking
+    logTime: "ثبت زمان",
+    timeSpent: "زمان صرف شده",
+    hours: "ساعت",
+    minutes: "دقیقه",
+    hour: "ساعت",
+    min: "دقیقه",
+    quickAdd: "افزودن سریع",
+    addTime: "افزودن زمان",
+    editTime: "ویرایش زمان",
+    noTimeLogged: "زمانی ثبت نشده",
   },
 
   // Comments module
