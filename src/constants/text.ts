@@ -501,8 +501,8 @@ export const fa = {
       defaultLabel: "پیش‌فرض",
       enabledLabel: "فعال",
       disabledLabel: "غیرفعال",
-      enabledSuccess: "وضعیت \"{name}\" فعال شد",
-      disabledSuccess: "وضعیت \"{name}\" غیرفعال شد",
+      enabledSuccess: 'وضعیت "{name}" فعال شد',
+      disabledSuccess: 'وضعیت "{name}" غیرفعال شد',
       toggleError: "خطا در تغییر وضعیت",
     },
     errors: {

@@ -88,7 +88,8 @@ export function ManageSavedFiltersDialog({
 
   const getFilterSummary = (filter: SavedFilter) => {
     const active: string[] = [];
-    if (filter.filters.searchTerm) active.push(text.savedFilters.criteria.search);
+    if (filter.filters.searchTerm)
+      active.push(text.savedFilters.criteria.search);
     if (filter.filters.selectedStatus !== "all")
       active.push(text.savedFilters.criteria.status);
     if (filter.filters.selectedPriority !== "all")

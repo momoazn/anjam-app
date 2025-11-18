@@ -162,7 +162,9 @@ export function BulkActionsBar({
         <Select onValueChange={handleBulkAssign} disabled={isLoading}>
           <SelectTrigger className="w-[180px]">
             <Users className="mr-2 h-4 w-4" />
-            <SelectValue placeholder={text.tasks.bulkActions.assignPlaceholder} />
+            <SelectValue
+              placeholder={text.tasks.bulkActions.assignPlaceholder}
+            />
           </SelectTrigger>
           <SelectContent>
             {users.map((user) => (

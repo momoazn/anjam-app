@@ -471,7 +471,10 @@ export default function Reports() {
                       )}
                       <p className="text-muted-foreground mt-1 text-xs">
                         {taskCount > 0
-                          ? fa.reports.taskCount.replace("{count}", String(taskCount))
+                          ? fa.reports.taskCount.replace(
+                              "{count}",
+                              String(taskCount),
+                            )
                           : fa.reports.noTasksInProject}
                       </p>
                     </div>
