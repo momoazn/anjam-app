@@ -169,11 +169,19 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Share views with team
   - Set default view per user
 
-- [ ] **Create 'My Tasks' unified view**
-  - See all user's tasks across projects
-  - Filter/group by project
-  - Quick access from sidebar
-  - Personal dashboard
+- [x] **Create 'My Tasks' unified view**
+
+  - ✅ Comprehensive /my-tasks page showing all user's assigned tasks
+  - ✅ Three-tab interface: Active, Completed, By Project
+  - ✅ Statistics dashboard (total, active, completed, overdue, canceled)
+  - ✅ Bulk operations integration for multi-task management
+  - ✅ Group tasks by status using TaskListGroup component
+  - ✅ By-project view with clickable task cards
+  - ✅ Empty states for each tab scenario
+  - ✅ Click-through navigation to task details
+  - ✅ Responsive design with Persian/Farsi localization
+  - ✅ Added /my-tasks route with lazy loading
+  - ⏳ Quick access from sidebar/navigation (future enhancement)
 
 ### Tags & Organization
 
