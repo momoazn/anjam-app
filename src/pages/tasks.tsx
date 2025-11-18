@@ -4,14 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
+import { SaveFilterDialog } from "@/components/task/save-filter-dialog";
+import { SavedFiltersDropdown } from "@/components/task/saved-filters-dropdown";
+import { ManageSavedFiltersDialog } from "@/components/task/manage-saved-filters-dialog";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import { fa } from "@/constants/text";
-import { useTaskFilters } from "@/hooks/use-task-filters";
+import { useTaskFilters, ALL_FILTER_VALUE } from "@/hooks/use-task-filters";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
+import { useSavedFilters } from "@/hooks/use-saved-filters";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type {
   TasksStatusOptions,
@@ -108,8 +113,11 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
 
 export default function Tasks() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [saveFilterDialogOpen, setSaveFilterDialogOpen] = useState(false);
+  const [manageFiltersDialogOpen, setManageFiltersDialogOpen] = useState(false);
 
   const {
     tasks: userTasks,
@@ -136,6 +144,100 @@ export default function Tasks() {
 
   const bulkUpdate = useBulkUpdateTasks();
   const bulkDelete = useBulkDeleteTasks();
+
+  // Saved filters functionality
+  const {
+    savedFilters,
+    saveFilter,
+    updateFilter,
+    deleteFilter,
+    setAsDefault,
+    defaultFilterId,
+    getCurrentFilterMatch,
+    isDefaultFilters,
+  } = useSavedFilters();
+
+  const currentFilters = {
+    searchTerm,
+    selectedStatus,
+    selectedPriority,
+    selectedAssignee,
+    selectedDateRange,
+    selectedTag,
+  };
+
+  const currentFilterMatch = getCurrentFilterMatch(currentFilters);
+
+  // Handle save filter
+  const handleSaveFilter = (name: string, setAsDefaultFilter: boolean) => {
+    try {
+      const newFilter = saveFilter(name, currentFilters);
+      if (setAsDefaultFilter) {
+        setAsDefault(newFilter.id);
+      }
+      toast({
+        title: fa.savedFilters.toast.saved,
+      });
+    } catch {
+      toast({
+        title: fa.savedFilters.toast.saveError,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle apply filter
+  const handleApplyFilter = async (filter: (typeof savedFilters)[0]) => {
+    try {
+      await setSearchTerm(filter.filters.searchTerm || "");
+      await setSelectedStatus(
+        filter.filters.selectedStatus || ALL_FILTER_VALUE,
+      );
+      await setSelectedPriority(
+        filter.filters.selectedPriority || ALL_FILTER_VALUE,
+      );
+      await setSelectedAssignee(
+        filter.filters.selectedAssignee || ALL_FILTER_VALUE,
+      );
+      await setSelectedDateRange(filter.filters.selectedDateRange || "all");
+      await setSelectedTag(filter.filters.selectedTag || "all");
+
+      toast({
+        title: fa.savedFilters.toast.applied,
+      });
+    } catch (error) {
+      console.error("Error applying filter:", error);
+    }
+  };
+
+  // Handle delete filter
+  const handleDeleteFilter = (id: string) => {
+    try {
+      deleteFilter(id);
+      toast({
+        title: fa.savedFilters.toast.deleted,
+      });
+    } catch {
+      toast({
+        title: fa.savedFilters.toast.deleteError,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle set default
+  const handleSetDefault = (id: string | null) => {
+    try {
+      setAsDefault(id);
+      toast({
+        title: id
+          ? fa.savedFilters.toast.defaultSet
+          : fa.savedFilters.toast.defaultRemoved,
+      });
+    } catch (error) {
+      console.error("Error setting default:", error);
+    }
+  };
 
   // URL params are now handled automatically by useQueryState in the hook
 
@@ -261,7 +363,23 @@ export default function Tasks() {
       </div>
 
       {/* Search and Filter Controls */}
-      <div className="mb-8" data-animate-stagger>
+      <div className="mb-8 space-y-3" data-animate-stagger>
+        {/* Saved Filters Dropdown */}
+        <div className="flex justify-end">
+          <SavedFiltersDropdown
+            savedFilters={savedFilters}
+            currentFilterMatch={currentFilterMatch}
+            defaultFilterId={defaultFilterId}
+            onApplyFilter={handleApplyFilter}
+            onDeleteFilter={handleDeleteFilter}
+            onSetDefault={handleSetDefault}
+            onOpenSaveDialog={() => setSaveFilterDialogOpen(true)}
+            onOpenManageDialog={() => setManageFiltersDialogOpen(true)}
+            disabled={isDefaultFilters(currentFilters)}
+          />
+        </div>
+
+        {/* Filter Controls */}
         <TaskFilters
           searchTerm={searchTerm}
           selectedStatus={selectedStatus}
@@ -279,6 +397,25 @@ export default function Tasks() {
           isLoadingUsers={isLoadingUsers}
         />
       </div>
+
+      {/* Save Filter Dialog */}
+      <SaveFilterDialog
+        open={saveFilterDialogOpen}
+        onOpenChange={setSaveFilterDialogOpen}
+        currentFilters={currentFilters}
+        onSave={handleSaveFilter}
+      />
+
+      {/* Manage Saved Filters Dialog */}
+      <ManageSavedFiltersDialog
+        open={manageFiltersDialogOpen}
+        onOpenChange={setManageFiltersDialogOpen}
+        savedFilters={savedFilters}
+        defaultFilterId={defaultFilterId}
+        onUpdateFilter={updateFilter}
+        onDeleteFilter={handleDeleteFilter}
+        onSetDefault={handleSetDefault}
+      />
 
       {/* Task List */}
       <div className="space-y-6" data-animate-stagger>
