@@ -162,12 +162,21 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - ⏳ Drag to change dates (future enhancement)
   - ⏳ Week/day views (future enhancement)
 
-- [ ] **Implement saved filters and custom views**
+- [x] **Implement saved filters and custom views**
 
-  - Save frequently used filter combinations
-  - Create custom task views
-  - Share views with team
-  - Set default view per user
+  - ✅ Save frequently used filter combinations with custom names
+  - ✅ Quick apply saved filters from dropdown menu
+  - ✅ Set filters as default (auto-apply on page load)
+  - ✅ Edit filter names inline in management dialog
+  - ✅ Delete filters with confirmation
+  - ✅ Star/favorite filters to set as default
+  - ✅ Active filter indicator shows which filter is currently applied
+  - ✅ Filter summary shows active criteria in save dialog
+  - ✅ LocalStorage-based persistence (no schema changes needed)
+  - ✅ Toast notifications for all filter operations
+  - ✅ Persian localization with 30+ new text constants
+  - ⏳ Share views with team (future enhancement - requires schema)
+  - ⏳ Per-user default views stored in database (future enhancement)
 
 - [x] **Create 'My Tasks' unified view**
 
