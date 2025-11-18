@@ -185,8 +185,8 @@ This document tracks the implementation status of all tasks from the ROADMAP.
 ### Phase 4: User Experience Improvements
 
 #### Accessibility & Internationalization
-- [ ] **Task 14: Move hardcoded Persian text to constants**
-  - Status: 🔄 **IN PROGRESS** (~70% Complete)
+- [x] **Task 14: Move hardcoded Persian text to constants**
+  - Status: ✅ **COMPLETED** (100%)
   - Details:
     - ✅ Added common messages (notFound, noData, noName, quickActions)
     - ✅ Added common buttons (multiSelect, cancelSelection, backToList, back)
@@ -204,21 +204,20 @@ This document tracks the implementation status of all tasks from the ROADMAP.
       - tagsManagement.loading
       - reports.tabs, reports.aria, reports.taskCount
       - savedFilters.criteria
-    - ✅ Replaced hardcoded text in:
+    - ✅ Replaced ALL hardcoded text in components:
       - task-calendar.tsx (total, completed, pending, more)
       - reports.tsx (tabs, aria-labels, taskCount, filters)
       - user-login-logs-dialog.tsx (pagination, errors)
       - user-list-table.tsx (errors)
       - file-upload.tsx (maxFiles error)
-    - ⏳ ~30 lines of hardcoded text remaining in:
       - tag-picker.tsx (loading text)
-      - bulk-actions-bar.tsx (all messages)
-      - project-status-manager.tsx (all messages)
-      - project-export-button.tsx (project not found)
-      - save-filter-dialog.tsx (filter criteria)
-      - manage-saved-filters-dialog.tsx (filter criteria)
+      - bulk-actions-bar.tsx (15 messages: selected count, placeholders, success/error toasts, dialog)
+      - project-status-manager.tsx (8 messages: title, description, labels, success/error toasts)
+      - project-export-button.tsx (project not found error)
+      - save-filter-dialog.tsx (filter criteria labels)
+      - manage-saved-filters-dialog.tsx (filter criteria labels)
   - Date Started: 2025-11-18
-  - Last Updated: 2025-11-18
+  - Date Completed: 2025-11-18
 
 ---
 

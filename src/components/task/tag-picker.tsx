@@ -74,7 +74,9 @@ export function TagPicker({
               className="h-9"
             />
             <CommandEmpty>
-              {isLoading ? "در حال بارگذاری..." : text.tagsManagement.noTags}
+              {isLoading
+                ? text.tagsManagement.loading
+                : text.tagsManagement.noTags}
             </CommandEmpty>
             <CommandGroup className="max-h-64 overflow-auto">
               {tags?.map((tag) => {

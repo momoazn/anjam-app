@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pb } from "@/lib/pocketbase";
 import { cn } from "@/lib/utils";
+import { fa } from "@/constants/text";
 
 interface ProjectStatusManagerProps {
   projectId: string;
@@ -34,8 +35,14 @@ export function ProjectStatusManager({ projectId }: ProjectStatusManagerProps) {
       if (response.enabled !== undefined) {
         toast.success(
           response.enabled
-            ? `وضعیت "${status.name}" فعال شد`
-            : `وضعیت "${status.name}" غیرفعال شد`,
+            ? fa.projects.statusManager.enabledSuccess.replace(
+                '"{name}"',
+                `"${status.name}"`,
+              )
+            : fa.projects.statusManager.disabledSuccess.replace(
+                '"{name}"',
+                `"${status.name}"`,
+              ),
         );
         refetch();
       }
@@ -48,7 +55,7 @@ export function ProjectStatusManager({ projectId }: ProjectStatusManagerProps) {
           ? (error as { data?: { error?: string } }).data?.error
           : undefined) ||
         (error instanceof Error ? error.message : undefined) ||
-        "خطا در تغییر وضعیت";
+        fa.projects.statusManager.toggleError;
 
       toast.error(errorMessage);
     } finally {
@@ -60,7 +67,7 @@ export function ProjectStatusManager({ projectId }: ProjectStatusManagerProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>مدیریت وضعیت‌های پروژه</CardTitle>
+          <CardTitle>{fa.projects.statusManager.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -79,10 +86,9 @@ export function ProjectStatusManager({ projectId }: ProjectStatusManagerProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>مدیریت وضعیت‌های پروژه</CardTitle>
+        <CardTitle>{fa.projects.statusManager.title}</CardTitle>
         <p className="text-muted-foreground text-sm">
-          می‌توانید وضعیت‌های مورد نیاز برای پروژه را فعال یا غیرفعال کنید. تنها
-          وضعیت‌هایی که تسکی در آن‌ها نباشد می‌توانند غیرفعال شوند.
+          {fa.projects.statusManager.description}
         </p>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -124,7 +130,7 @@ export function ProjectStatusManager({ projectId }: ProjectStatusManagerProps) {
                       </p>
                       {isDefault && (
                         <span className="bg-primary/10 text-primary rounded px-1.5 py-0.5 text-xs">
-                          پیش‌فرض
+                          {fa.projects.statusManager.defaultLabel}
                         </span>
                       )}
                     </div>
@@ -132,10 +138,12 @@ export function ProjectStatusManager({ projectId }: ProjectStatusManagerProps) {
                 </div>
                 <div className="flex items-center gap-3">
                   {status.enabled ? (
-                    <span className="text-muted-foreground text-sm">فعال</span>
+                    <span className="text-muted-foreground text-sm">
+                      {fa.projects.statusManager.enabledLabel}
+                    </span>
                   ) : (
                     <span className="text-muted-foreground text-sm">
-                      غیرفعال
+                      {fa.projects.statusManager.disabledLabel}
                     </span>
                   )}
                   <Switch

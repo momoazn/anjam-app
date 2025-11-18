@@ -29,7 +29,7 @@ export function ProjectExportButton({
 
     // Validate data before export
     if (!project) {
-      toast.error("پروژه یافت نشد");
+      toast.error(fa.projects.errors.projectNotFound);
       return;
     }
 

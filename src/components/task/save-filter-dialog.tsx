@@ -49,24 +49,28 @@ export function SaveFilterDialog({
   const getFilterSummary = () => {
     const active: string[] = [];
     if (currentFilters.searchTerm)
-      active.push(`جستجو: ${currentFilters.searchTerm}`);
+      active.push(
+        `${text.savedFilters.criteria.search}: ${currentFilters.searchTerm}`,
+      );
     if (
       currentFilters.selectedStatus &&
       currentFilters.selectedStatus !== "all"
     )
-      active.push(`وضعیت`);
+      active.push(text.savedFilters.criteria.status);
     if (
       currentFilters.selectedPriority &&
       currentFilters.selectedPriority !== "all"
     )
-      active.push(`اولویت`);
+      active.push(text.savedFilters.criteria.priority);
     if (
       currentFilters.selectedAssignee &&
       currentFilters.selectedAssignee !== "all"
     )
-      active.push(`مسئول`);
-    if (currentFilters.selectedDateRange !== "all") active.push(`تاریخ`);
-    if (currentFilters.selectedTag !== "all") active.push(`برچسب`);
+      active.push(text.savedFilters.criteria.assignee);
+    if (currentFilters.selectedDateRange !== "all")
+      active.push(text.savedFilters.criteria.date);
+    if (currentFilters.selectedTag !== "all")
+      active.push(text.savedFilters.criteria.tag);
 
     return active.length > 0
       ? active.join(" • ")
