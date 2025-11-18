@@ -130,10 +130,16 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Up to 99 files per task, 50MB max each
 
 - [ ] **Implement task history/audit log**
-  - Track all changes to tasks
+
+  - ⚠️ **Requires manual schema changes** (see TASK_HISTORY_SPEC.md)
+  - Add `task_history` collection to schema
+  - Track all changes to tasks (status, priority, assignee, etc.)
   - Show who changed what and when
-  - Display activity timeline
-  - Filter by change type
+  - Display activity timeline with user avatars
+  - Filter by action type and user
+  - Automatic change tracking integrated with hooks
+  - Immutable audit log (no updates/deletes)
+  - Export history functionality
 
 ### Views & Visualization
 
