@@ -198,7 +198,9 @@ export default function ProjectDetails() {
             data-animate-stagger
           >
             <Folder className="text-muted-foreground mb-4 h-12 w-12" />
-            <p className="text-muted-foreground">پروژه یافت نشد</p>
+            <p className="text-muted-foreground">
+              {fa.projects.errors.notFound}
+            </p>
             <Button
               variant="outline"
               className="mt-4"
@@ -537,7 +539,7 @@ export default function ProjectDetails() {
           {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle>عملیات سریع</CardTitle>
+              <CardTitle>{fa.common.messages.quickActions}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2" data-animate-stagger>
               <Button

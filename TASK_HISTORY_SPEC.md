@@ -148,10 +148,12 @@ Create a new `task_history` collection with the following fields:
 - **updated** (auto): Last update timestamp
 
 **Indexes:**
+
 - Index on `task` for fast lookups of task history
 - Index on `created` for chronological sorting
 
 **Access Rules:**
+
 - List/View: Any authenticated user can view history
 - Create: Any authenticated user can create history entries
 - Update/Delete: No one can modify history (immutable audit log)
@@ -220,6 +222,7 @@ type TaskHistoryAction =
 **Location**: `src/components/task/task-history.tsx`
 
 **Features**:
+
 - Timeline view of all task changes
 - User avatars and names
 - Timestamps (relative and absolute)
@@ -248,6 +251,7 @@ interface TaskHistoryProps {
 **Location**: `src/components/task/history-entry.tsx`
 
 **Features**:
+
 - Single history entry display
 - Icon based on action type
 - User avatar
@@ -270,6 +274,7 @@ interface HistoryEntryProps {
 **Location**: `src/components/task/history-filters.tsx`
 
 **Features**:
+
 - Filter by action type (dropdown multi-select)
 - Filter by user (dropdown multi-select)
 - Date range filter
@@ -281,6 +286,7 @@ interface HistoryEntryProps {
 **Location**: `src/components/task/history-diff-viewer.tsx`
 
 **Features**:
+
 - Side-by-side diff view for text changes
 - Highlighted differences
 - Support for various field types
@@ -293,7 +299,10 @@ interface HistoryEntryProps {
 ```typescript
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
-import type { TaskHistoryResponse, TaskHistoryAction } from "@/lib/pocketbase-types";
+import type {
+  TaskHistoryResponse,
+  TaskHistoryAction,
+} from "@/lib/pocketbase-types";
 
 interface UseTaskHistoryOptions {
   taskId: string;
@@ -382,7 +391,7 @@ export function useAutoTrackTaskChanges(taskId: string) {
     fieldName?: string,
     oldValue?: any,
     newValue?: any,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ) => {
     createHistory.mutate({
       task: taskId,
@@ -403,7 +412,11 @@ export function useAutoTrackTaskChanges(taskId: string) {
 **`src/lib/history-utils.ts`**:
 
 ```typescript
-import { differenceInDays, differenceInHours, differenceInMinutes } from "date-fns-jalali";
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+} from "date-fns-jalali";
 import type { TaskHistoryAction } from "@/lib/pocketbase-types";
 
 /**
@@ -465,7 +478,7 @@ export function formatHistoryDescription(
   action: TaskHistoryAction,
   fieldName?: string,
   oldValue?: string,
-  newValue?: string
+  newValue?: string,
 ): string {
   // Implementation depends on text constants
   // Return formatted Persian description
@@ -495,7 +508,7 @@ export function formatRelativeTime(timestamp: string): string {
  * Group history entries by date
  */
 export function groupHistoryByDate(
-  entries: TaskHistoryResponse[]
+  entries: TaskHistoryResponse[],
 ): Map<string, TaskHistoryResponse[]> {
   const grouped = new Map<string, TaskHistoryResponse[]>();
 
@@ -594,13 +607,9 @@ Update `src/pages/task-details.tsx`:
     </TabsTrigger>
   </TabsList>
 
-  <TabsContent value="details">
-    {/* Task details */}
-  </TabsContent>
+  <TabsContent value="details">{/* Task details */}</TabsContent>
 
-  <TabsContent value="comments">
-    {/* Comments list */}
-  </TabsContent>
+  <TabsContent value="comments">{/* Comments list */}</TabsContent>
 
   <TabsContent value="history">
     <TaskHistory taskId={task.id} />
@@ -677,37 +686,45 @@ export function useUpdateTask(taskId: string) {
 ## Implementation Steps
 
 1. **Schema Changes** (Manual in PocketBase Admin):
+
    - Create `task_history` collection
    - Configure fields, indexes, and access rules
    - Test with sample data
 
 2. **Type Generation**:
+
    ```bash
    bun run gen:type
    ```
 
 3. **Utility Functions**:
+
    - Create `history-utils.ts` with helper functions
 
 4. **Hooks**:
+
    - Implement `use-task-history.ts`
    - Add automatic tracking to existing task hooks
 
 5. **UI Components**:
+
    - Create HistoryEntry component
    - Create TaskHistory timeline component
    - Create HistoryFilters component
    - Create HistoryDiffViewer component (optional)
 
 6. **Integration**:
+
    - Add history tab to task detail page
    - Integrate automatic tracking
    - Add history count badges
 
 7. **Text Constants**:
+
    - Add all history-related text
 
 8. **Testing**:
+
    - Write unit tests
    - Write integration tests
    - Write E2E tests

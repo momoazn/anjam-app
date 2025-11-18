@@ -134,7 +134,8 @@ export default function MyTasks() {
       if (!task.expand?.project) return;
 
       const projectId = task.project;
-      const projectName = task.expand.project.title || "بدون نام";
+      const projectName =
+        task.expand.project.title || fa.common.messages.noName;
 
       if (!grouped.has(projectId)) {
         grouped.set(projectId, { projectName, tasks: [] });
@@ -240,7 +241,9 @@ export default function MyTasks() {
             className="gap-2"
           >
             <CheckSquare className="h-4 w-4" />
-            {selectionMode ? "لغو انتخاب" : "انتخاب چندتایی"}
+            {selectionMode
+              ? fa.common.buttons.cancelSelection
+              : fa.common.buttons.multiSelect}
           </Button>
           <Button
             className="gap-2"

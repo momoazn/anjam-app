@@ -52,6 +52,18 @@ export const fa = {
       none: "هیچ‌کدام",
       yes: "بله",
       no: "خیر",
+      multiSelect: "انتخاب چندتایی",
+      cancelSelection: "لغو انتخاب",
+      backToList: "بازگشت به لیست",
+      back: "بازگشت",
+    },
+
+    // Common error/info messages
+    messages: {
+      notFound: "یافت نشد",
+      noData: "داده‌ای موجود نیست",
+      noName: "بدون نام",
+      quickActions: "عملیات سریع",
     },
 
     // Common state labels
@@ -330,6 +342,9 @@ export const fa = {
       description: "مطمئنید که می‌خواهید این کاربر را حذف کنید؟",
       button: "بله، حذف کن",
     },
+    errors: {
+      notFound: "کاربر یافت نشد",
+    },
   },
 
   // Projects module
@@ -455,6 +470,9 @@ export const fa = {
         mimeTypeError:
           "فرمت فایل «{fileName}» نامعتبر است و قابل بارگذاری نیست",
       },
+    },
+    errors: {
+      notFound: "پروژه یافت نشد",
     },
   },
 
@@ -651,6 +669,11 @@ export const fa = {
       cancel: "انصراف",
       success: "تسک حذف شد",
       error: "نتوانستیم تسک را حذف کنیم: {error}",
+    },
+
+    // Errors
+    errors: {
+      notFound: "وظیفه یافت نشد",
     },
   },
 

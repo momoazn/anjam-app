@@ -349,7 +349,9 @@ export default function Tasks() {
             className="gap-2"
           >
             <CheckSquare className="h-4 w-4" />
-            {selectionMode ? "لغو انتخاب" : "انتخاب چندتایی"}
+            {selectionMode
+              ? fa.common.buttons.cancelSelection
+              : fa.common.buttons.multiSelect}
           </Button>
           <Button
             className="w-full gap-2 sm:w-auto"
