@@ -99,12 +99,15 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 
 ### Task Management Enhancements
 
-- [ ] **Implement drag-and-drop task reordering**
+- [x] **Implement drag-and-drop task reordering**
 
-  - Reorder tasks within status columns
-  - Persist order changes
-  - Smooth animations
-  - Touch device support
+  - ✅ Integrated @dnd-kit/core and @dnd-kit/sortable libraries
+  - ✅ Tasks are draggable within status columns
+  - ✅ Smooth CSS transitions during drag
+  - ✅ Touch device support via TouchSensor
+  - ✅ onTaskReorder callback for persisting changes
+  - ✅ Visual feedback: opacity change when dragging, DragOverlay
+  - ⏳ Parent components need to implement actual API persistence
 
 - [ ] **Add task dependencies and subtasks**
 
@@ -128,12 +131,15 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 
 ### Views & Visualization
 
-- [ ] **Add Kanban board view**
+- [x] **Add Kanban board view**
 
-  - Drag tasks between status columns
-  - Customizable columns based on status_config
-  - WIP limits per column
-  - Swimlanes by assignee/priority
+  - ✅ Visual board with status columns
+  - ✅ Drag-and-drop tasks within columns (Task 5)
+  - ✅ Task cards show all metadata
+  - ✅ Customizable columns based on status_config
+  - ⏳ Drag tasks between status columns (future)
+  - ⏳ WIP limits per column (future)
+  - ⏳ Swimlanes by assignee/priority (future)
 
 - [ ] **Create calendar view**
 

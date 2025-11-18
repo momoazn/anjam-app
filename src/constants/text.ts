@@ -1328,3 +1328,6 @@ export type FaNestedKey<T> = T extends object
   : never;
 
 export type FaPath = FaNestedKey<typeof fa>;
+
+// Alias for more intuitive usage
+export const text = fa;
