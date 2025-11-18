@@ -173,12 +173,16 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Tag picker in task forms
   - Tag-based filtering improvements
 
-- [ ] **Add bulk task operations**
-  - Multi-select tasks
-  - Bulk assign/reassign
-  - Bulk status change
-  - Bulk priority update
-  - Bulk delete
+- [x] **Add bulk task operations**
+  - ✅ Multi-select tasks with checkboxes
+  - ✅ Selection mode toggle button
+  - ✅ Bulk assign/reassign to users
+  - ✅ Bulk status change
+  - ✅ Bulk priority update
+  - ✅ Bulk delete with confirmation dialog
+  - ✅ Floating bulk actions bar
+  - ✅ Toast notifications for operations
+  - ✅ Hooks: useBulkUpdateTasks, useBulkDeleteTasks
 
 ---
 

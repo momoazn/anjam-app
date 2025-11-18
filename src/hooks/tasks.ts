@@ -346,3 +346,69 @@ export function useDeleteTask(
     },
   });
 }
+
+/**
+ * Bulk update multiple tasks at once
+ */
+export function useBulkUpdateTasks(
+  options?: UseMutationOptions<
+    TasksResponse[],
+    Error,
+    { taskIds: string[]; updates: Partial<TasksRecord> }
+  >,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      taskIds,
+      updates,
+    }: {
+      taskIds: string[];
+      updates: Partial<TasksRecord>;
+    }) => {
+      const updatePromises = taskIds.map((taskId) =>
+        pb.collection("tasks").update<TasksResponse>(taskId, updates),
+      );
+
+      return await Promise.all(updatePromises);
+    },
+    onSuccess: (data, variables, context) => {
+      // Invalidate all task-related queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+}
+
+/**
+ * Bulk delete multiple tasks at once
+ */
+export function useBulkDeleteTasks(
+  options?: UseMutationOptions<void, Error, string[]>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (taskIds: string[]) => {
+      const deletePromises = taskIds.map((taskId) =>
+        pb.collection("tasks").delete(taskId),
+      );
+
+      await Promise.all(deletePromises);
+    },
+    onSuccess: (data, variables, context) => {
+      // Invalidate all task-related queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+}

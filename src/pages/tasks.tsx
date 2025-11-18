@@ -1,8 +1,9 @@
-import { FilterX, ListTodo, Plus } from "lucide-react";
-import { useMemo } from "react";
+import { FilterX, ListTodo, Plus, CheckSquare } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
+import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,8 +11,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
+import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
 import type { TaskWithProject } from "@/lib/pocketbase";
-import type { TasksStatusOptions } from "@/lib/pocketbase-types";
+import type {
+  TasksStatusOptions,
+  TasksPriorityOptions,
+} from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
 
 // Loading skeleton component
@@ -103,6 +108,9 @@ const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
 
 export default function Tasks() {
   const navigate = useNavigate();
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+
   const {
     tasks: userTasks,
     users,
@@ -125,6 +133,9 @@ export default function Tasks() {
     setSelectedTag,
     filteredTasks,
   } = useTaskFilters(userTasks);
+
+  const bulkUpdate = useBulkUpdateTasks();
+  const bulkDelete = useBulkDeleteTasks();
 
   // URL params are now handled automatically by useQueryState in the hook
 
@@ -156,6 +167,60 @@ export default function Tasks() {
 
   const totalTasks = filteredTasks?.length || 0;
 
+  // Bulk operation handlers
+  const handleBulkDelete = async () => {
+    await bulkDelete.mutateAsync(selectedTasks);
+    setSelectedTasks([]);
+    setSelectionMode(false);
+  };
+
+  const handleBulkAssign = async (assigneeId: string) => {
+    await bulkUpdate.mutateAsync({
+      taskIds: selectedTasks,
+      updates: { assignee: assigneeId },
+    });
+    setSelectedTasks([]);
+  };
+
+  const handleBulkStatus = async (status: TasksStatusOptions) => {
+    await bulkUpdate.mutateAsync({
+      taskIds: selectedTasks,
+      updates: { status },
+    });
+    setSelectedTasks([]);
+  };
+
+  const handleBulkPriority = async (priority: TasksPriorityOptions) => {
+    await bulkUpdate.mutateAsync({
+      taskIds: selectedTasks,
+      updates: { priority },
+    });
+    setSelectedTasks([]);
+  };
+
+  const toggleSelectionMode = () => {
+    setSelectionMode(!selectionMode);
+    setSelectedTasks([]);
+  };
+
+  const handleSelectionChange = (taskIds: string[]) => {
+    setSelectedTasks(taskIds);
+  };
+
+  const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
+    [
+      { value: "todo", label: fa.tasks.status.todo },
+      { value: "in_progress", label: fa.tasks.status.in_progress },
+      { value: "pending", label: fa.tasks.status.pending },
+      { value: "review", label: fa.tasks.status.review },
+      { value: "testing", label: fa.tasks.status.testing },
+      { value: "ready", label: fa.tasks.status.ready },
+      { value: "blocked", label: fa.tasks.status.blocked },
+      { value: "on_hold", label: fa.tasks.status.on_hold },
+      { value: "done", label: fa.tasks.status.done },
+      { value: "canceled", label: fa.tasks.status.canceled },
+    ];
+
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
       {/* Header Section */}
@@ -174,14 +239,25 @@ export default function Tasks() {
               : fa.tasks.header.manageTasks}
           </p>
         </div>
-        <Button
-          className="w-full gap-2 sm:w-auto"
-          size="lg"
-          onClick={() => navigate("/tasks/new")}
-        >
-          <Plus className="h-4 w-4" />
-          {fa.tasks.addTask.buttons.newTask}
-        </Button>
+        <div className="flex w-full gap-2 sm:w-auto">
+          <Button
+            variant={selectionMode ? "secondary" : "outline"}
+            size="lg"
+            onClick={toggleSelectionMode}
+            className="gap-2"
+          >
+            <CheckSquare className="h-4 w-4" />
+            {selectionMode ? "لغو انتخاب" : "انتخاب چندتایی"}
+          </Button>
+          <Button
+            className="w-full gap-2 sm:w-auto"
+            size="lg"
+            onClick={() => navigate("/tasks/new")}
+          >
+            <Plus className="h-4 w-4" />
+            {fa.tasks.addTask.buttons.newTask}
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filter Controls */}
@@ -220,11 +296,28 @@ export default function Tasks() {
                 status={status}
                 tasks={tasksInGroup}
                 showProject={true}
+                enableSelection={selectionMode}
+                selectedTasks={selectedTasks}
+                onSelectionChange={handleSelectionChange}
               />
             );
           })
         )}
       </div>
+
+      {/* Bulk Actions Bar */}
+      {selectionMode && selectedTasks.length > 0 && (
+        <BulkActionsBar
+          selectedCount={selectedTasks.length}
+          onClearSelection={() => setSelectedTasks([])}
+          onBulkDelete={handleBulkDelete}
+          onBulkAssign={handleBulkAssign}
+          onBulkStatus={handleBulkStatus}
+          onBulkPriority={handleBulkPriority}
+          users={users || []}
+          availableStatuses={availableStatuses}
+        />
+      )}
     </PageTransition>
   );
 }
