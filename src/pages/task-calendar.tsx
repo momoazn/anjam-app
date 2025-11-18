@@ -177,19 +177,21 @@ export default function TaskCalendar() {
         <div className="flex gap-2">
           <Badge variant="outline" className="gap-1">
             <span className="font-semibold">{monthStats.total}</span>
-            <span className="text-muted-foreground">کل</span>
+            <span className="text-muted-foreground">{text.common.total}</span>
           </Badge>
           <Badge variant="outline" className="gap-1 border-green-500">
             <span className="font-semibold text-green-600">
               {monthStats.completed}
             </span>
-            <span className="text-muted-foreground">انجام شده</span>
+            <span className="text-muted-foreground">
+              {text.common.completed}
+            </span>
           </Badge>
           <Badge variant="outline" className="gap-1 border-orange-500">
             <span className="font-semibold text-orange-600">
               {monthStats.pending}
             </span>
-            <span className="text-muted-foreground">در انتظار</span>
+            <span className="text-muted-foreground">{text.common.pending}</span>
           </Badge>
         </div>
       </div>
@@ -294,7 +296,7 @@ export default function TaskCalendar() {
                       ))}
                       {dayTasks.length > 3 && (
                         <div className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-center text-[10px]">
-                          +{dayTasks.length - 3} {text.common.more || "بیشتر"}
+                          +{dayTasks.length - 3} {text.common.more}
                         </div>
                       )}
                     </div>

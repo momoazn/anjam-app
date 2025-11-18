@@ -70,7 +70,7 @@ export function UserListTable({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "خطا در تغییر وضعیت کاربر");
+        throw new Error(error.error || fa.users.actions.toggleStatusError);
       }
 
       const data = await response.json();
@@ -102,7 +102,7 @@ export function UserListTable({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "خطا در رفع مسدودی کاربر");
+        throw new Error(error.error || fa.users.actions.unblockError);
       }
 
       const data = await response.json();

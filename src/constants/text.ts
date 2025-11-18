@@ -84,6 +84,26 @@ export const fa = {
       done: "انجام شده",
       canceled: "لغو شده",
     },
+
+    // Pagination
+    pagination: {
+      page: "صفحه",
+      of: "از",
+      previous: "قبلی",
+      next: "بعدی",
+      loginAttemptsLabel: "تلاش‌های ورود به سیستم",
+    },
+
+    // Calendar and date-related
+    today: "امروز",
+    previous: "قبلی",
+    next: "بعدی",
+    more: "بیشتر",
+
+    // Status labels
+    total: "کل",
+    completed: "انجام شده",
+    pending: "در انتظار",
   },
 
   // Navigation menu items
@@ -297,6 +317,8 @@ export const fa = {
       deactivateError: "خطا در غیرفعال‌سازی حساب کاربری",
       unblockError: "خطا در رفع مسدودی کاربر",
       cannotDeactivateAdmin: "نمی‌توان حساب ادمین را غیرفعال کرد",
+      toggleStatusError: "خطا در تغییر وضعیت کاربر",
+      fetchLogsError: "خطا در دریافت سوابق ورود",
     },
     pendingActivation: {
       title: "حساب شما در انتظار تأیید است",
@@ -469,10 +491,23 @@ export const fa = {
         uploadFailed: "بارگذاری فایل ناموفق بود. دوباره تلاش کنید",
         mimeTypeError:
           "فرمت فایل «{fileName}» نامعتبر است و قابل بارگذاری نیست",
+        maxFiles: "حداکثر {maxFiles} فایل قابل بارگذاری است",
       },
+    },
+    statusManager: {
+      title: "مدیریت وضعیت‌های پروژه",
+      description:
+        "می‌توانید وضعیت‌های مورد نیاز برای پروژه را فعال یا غیرفعال کنید. تنها وضعیت‌هایی که تسکی در آن‌ها نباشد می‌توانند غیرفعال شوند.",
+      defaultLabel: "پیش‌فرض",
+      enabledLabel: "فعال",
+      disabledLabel: "غیرفعال",
+      enabledSuccess: "وضعیت \"{name}\" فعال شد",
+      disabledSuccess: "وضعیت \"{name}\" غیرفعال شد",
+      toggleError: "خطا در تغییر وضعیت",
     },
     errors: {
       notFound: "پروژه یافت نشد",
+      projectNotFound: "پروژه یافت نشد",
     },
   },
 
@@ -586,6 +621,28 @@ export const fa = {
       overdueTasks: "گذشته‌موعد",
     },
 
+    // Bulk actions
+    bulkActions: {
+      selectedCount: "{count} تسک انتخاب شده",
+      assignPlaceholder: "اختصاص دادن",
+      statusPlaceholder: "تغییر وضعیت",
+      priorityPlaceholder: "تغییر اولویت",
+      deleteButton: "حذف",
+      deleteDialogTitle: "حذف {count} تسک؟",
+      deleteDialogDescription:
+        "این عملیات قابل بازگشت نیست. آیا مطمئن هستید که می‌خواهید این تسک‌ها را حذف کنید?",
+      cancelButton: "انصراف",
+      deletingButton: "در حال حذف...",
+      assignSuccess: "{count} تسک با موفقیت اختصاص داده شد",
+      assignError: "خطا در اختصاص تسک‌ها",
+      statusSuccess: "وضعیت {count} تسک تغییر کرد",
+      statusError: "خطا در تغییر وضعیت",
+      prioritySuccess: "اولویت {count} تسک تغییر کرد",
+      priorityError: "خطا در تغییر اولویت",
+      deleteSuccess: "{count} تسک حذف شد",
+      deleteError: "خطا در حذف تسک‌ها",
+    },
+
     // Header section
     header: {
       tasksFound: "{count} تسک پیدا شد",
@@ -681,6 +738,18 @@ export const fa = {
   reports: {
     title: "گزارش‌ها",
     dashboardTitle: "گزارش‌ها",
+    tabs: {
+      overview: "مرور",
+      team: "تیم",
+      individuals: "افراد",
+      insights: "بینش‌ها",
+    },
+    aria: {
+      filters: "فیلترها",
+      timelinessChart: "راهنمای نمودار زمان‌بندی",
+      prioritiesChart: "راهنمای نمودار اولویت‌ها",
+    },
+    taskCount: "{count} تسک",
     completed: "تکمیل شده",
     inProgress: "در حال انجام",
     canceled: "لغو شده",
@@ -1395,6 +1464,7 @@ export const fa = {
     tagName: "نام برچسب",
     tagColor: "رنگ برچسب",
     selectColor: "انتخاب رنگ",
+    loading: "در حال بارگذاری...",
     noTags: "هیچ برچسبی وجود ندارد",
     noTagsDescription: "برچسب ایجاد کنید تا بتوانید تسک‌ها را دسته‌بندی کنید",
     createFirstTag: "ایجاد اولین برچسب",
@@ -1467,6 +1537,15 @@ export const fa = {
     manageDialog: {
       title: "مدیریت فیلترهای ذخیره شده",
       description: "فیلترهای خود را مشاهده، ویرایش و حذف کنید",
+    },
+    criteria: {
+      search: "جستجو",
+      status: "وضعیت",
+      priority: "اولویت",
+      assignee: "مسئول",
+      date: "تاریخ",
+      tag: "برچسب",
+      noFilter: "بدون فیلتر",
     },
     toast: {
       saved: "فیلتر با موفقیت ذخیره شد",

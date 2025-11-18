@@ -186,7 +186,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
 
 #### Accessibility & Internationalization
 - [ ] **Task 14: Move hardcoded Persian text to constants**
-  - Status: 🔄 **IN PROGRESS** (~20% Complete)
+  - Status: 🔄 **IN PROGRESS** (~70% Complete)
   - Details:
     - ✅ Added common messages (notFound, noData, noName, quickActions)
     - ✅ Added common buttons (multiSelect, cancelSelection, backToList, back)
@@ -194,11 +194,31 @@ This document tracks the implementation status of all tasks from the ROADMAP.
     - ✅ Fixed hardcoded text in tasks.tsx, my-tasks.tsx
     - ✅ Fixed hardcoded text in all edit pages (edit-user, edit-project, edit-task)
     - ✅ Fixed hardcoded text in detail pages (project-details, task-details)
-    - ⏳ ~80 lines of hardcoded text remaining
-    - ⏳ Need to audit remaining components
-    - ⏳ Add missing translations to `text.ts`
-    - ⏳ Ensure consistency across app
+    - ✅ Added comprehensive translations to text.ts:
+      - common.pagination (page, of, previous, next, loginAttemptsLabel)
+      - common calendar/date labels (today, previous, next, more, total, completed, pending)
+      - users.actions errors (toggleStatusError, fetchLogsError)
+      - projects.files.validation.maxFiles
+      - projects.statusManager (full section)
+      - tasks.bulkActions (full section)
+      - tagsManagement.loading
+      - reports.tabs, reports.aria, reports.taskCount
+      - savedFilters.criteria
+    - ✅ Replaced hardcoded text in:
+      - task-calendar.tsx (total, completed, pending, more)
+      - reports.tsx (tabs, aria-labels, taskCount, filters)
+      - user-login-logs-dialog.tsx (pagination, errors)
+      - user-list-table.tsx (errors)
+      - file-upload.tsx (maxFiles error)
+    - ⏳ ~30 lines of hardcoded text remaining in:
+      - tag-picker.tsx (loading text)
+      - bulk-actions-bar.tsx (all messages)
+      - project-status-manager.tsx (all messages)
+      - project-export-button.tsx (project not found)
+      - save-filter-dialog.tsx (filter criteria)
+      - manage-saved-filters-dialog.tsx (filter criteria)
   - Date Started: 2025-11-18
+  - Last Updated: 2025-11-18
 
 ---
 
