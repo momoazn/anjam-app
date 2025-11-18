@@ -3,6 +3,7 @@
 This roadmap outlines the tasks needed to make the task manager app feature-complete and production-ready.
 
 ## Priority Legend
+
 - 🔴 **Critical** - Must have for production
 - 🟡 **High** - Important for complete functionality
 - 🟢 **Medium** - Nice to have, improves user experience
@@ -13,15 +14,19 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 ## Phase 1: Critical Production Requirements 🔴
 
 ### Testing & Quality Assurance
-- [ ] **Add comprehensive test coverage** (unit, integration, E2E)
-  - Set up Vitest + React Testing Library
-  - Test business logic in `src/lib/*`
-  - Test critical components (task creation, user management)
-  - Add E2E tests with Playwright
-  - Target: >80% coverage for core features
+
+- [x] **Add comprehensive test coverage** (unit, integration, E2E)
+  - ✅ Set up Vitest + React Testing Library
+  - ✅ Test business logic in `src/lib/*` (97 tests)
+  - ✅ Test critical components (8 tests)
+  - ✅ Add E2E tests with Playwright (auth flow)
+  - ✅ Total: 105 tests passing
+  - ⏳ Target: Continue to >80% coverage for all features
 
 ### Technical Debt Resolution
+
 - [ ] **Complete status system migration**
+
   - Consolidate `status` field and `status_config` relation
   - Create migration script for existing data
   - Update all components to use unified system
@@ -34,7 +39,9 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Improve component maintainability
 
 ### Security Hardening
+
 - [ ] **Create security hardening guide**
+
   - Document how to change default credentials
   - Add environment variable configuration guide
   - Implement production security checklist
@@ -47,7 +54,9 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Configure sensible limits per endpoint
 
 ### Documentation
+
 - [ ] **Create comprehensive API documentation**
+
   - Document all REST endpoints
   - Add request/response examples
   - Include authentication requirements
@@ -64,13 +73,16 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 ## Phase 2: Core Feature Completion 🟡
 
 ### Time Tracking
+
 - [ ] **Implement time tracking UI**
+
   - Start/stop timer widget for tasks
   - Manual time entry dialog
   - Display time spent on task cards
   - Time tracking in task detail view
 
 - [ ] **Add time estimates vs actual tracking**
+
   - Estimate field in task creation
   - Compare estimated vs actual time
   - Warning when exceeding estimates
@@ -83,19 +95,23 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Approval workflow for time entries
 
 ### Task Management Enhancements
+
 - [ ] **Implement drag-and-drop task reordering**
+
   - Reorder tasks within status columns
   - Persist order changes
   - Smooth animations
   - Touch device support
 
 - [ ] **Add task dependencies and subtasks**
+
   - Create parent-child task relationships
   - Add task dependencies (blocks/blocked by)
   - Checklist items within tasks
   - Progress calculation from subtasks
 
 - [ ] **Add task attachments**
+
   - File upload on tasks (similar to projects)
   - Support images, PDFs, documents
   - Preview attachments inline
@@ -108,19 +124,23 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Filter by change type
 
 ### Views & Visualization
+
 - [ ] **Add Kanban board view**
+
   - Drag tasks between status columns
   - Customizable columns based on status_config
   - WIP limits per column
   - Swimlanes by assignee/priority
 
 - [ ] **Create calendar view**
+
   - Monthly/weekly calendar display
   - Tasks shown by deadline
   - Drag to change dates
   - Color coding by priority/status
 
 - [ ] **Implement saved filters and custom views**
+
   - Save frequently used filter combinations
   - Create custom task views
   - Share views with team
@@ -133,7 +153,9 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Personal dashboard
 
 ### Tags & Organization
+
 - [ ] **Create tags management UI**
+
   - Add/edit/delete tags
   - Color coding for tags
   - Tag picker in task forms
@@ -151,19 +173,23 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 ## Phase 3: Collaboration Features 🟢
 
 ### Communication
+
 - [ ] **Add email notifications system**
+
   - Configure email server (SMTP)
   - Send notifications for assignments
   - Digest emails (daily/weekly)
   - User email preferences
 
 - [ ] **Create @mentions in comments**
+
   - Autocomplete user mentions
   - Notify mentioned users
   - Link to user profiles
   - Show mentions in notifications
 
 - [ ] **Implement task activity feed**
+
   - Real-time updates on task changes
   - Comment threads
   - Activity filtering
@@ -176,31 +202,37 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Auto-watch assigned/created tasks
 
 ### Project Management
+
 - [ ] **Add project milestones**
+
   - Create milestone structure
   - Link tasks to milestones
   - Milestone progress tracking
   - Deadline management
 
 - [ ] **Implement project timeline/Gantt chart**
+
   - Visual project timeline
   - Task dependencies shown
   - Critical path highlighting
   - Adjust dates via drag
 
 - [ ] **Create project templates**
+
   - Save projects as templates
   - Include tasks and structure
   - Apply template to new projects
   - Template library
 
 - [ ] **Add project duplication**
+
   - Clone entire project structure
   - Copy or link tasks
   - Duplicate settings and members
   - Bulk project creation
 
 - [ ] **Implement project archiving**
+
   - Archive completed projects
   - Hide from active list
   - Restore archived projects
@@ -213,13 +245,16 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Budget vs actual reports
 
 ### Templates & Automation
+
 - [ ] **Add task templates**
+
   - Create reusable task templates
   - Include checklist items
   - Pre-fill descriptions
   - Template categories
 
 - [ ] **Implement recurring tasks**
+
   - Define recurrence patterns
   - Auto-create new instances
   - Skip/complete occurrences
@@ -236,7 +271,9 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 ## Phase 4: User Experience Improvements 🟢
 
 ### Accessibility & Internationalization
+
 - [ ] **Improve accessibility**
+
   - Add comprehensive ARIA labels
   - Keyboard navigation improvements
   - Screen reader testing
@@ -249,13 +286,16 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Prepare for multi-language support
 
 ### Performance Optimization
+
 - [ ] **Add virtual scrolling for long lists**
+
   - Implement for task lists
   - Use for user/project lists
   - Improve rendering performance
   - Handle thousands of items
 
 - [ ] **Implement offline support**
+
   - Service worker for offline access
   - Background sync when reconnecting
   - Optimistic UI updates
@@ -268,13 +308,16 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Progressive Web App (PWA) features
 
 ### User Interface
+
 - [ ] **Implement application settings page**
+
   - Global app settings
   - Default values configuration
   - Feature toggles
   - System maintenance
 
 - [ ] **Add user notification preferences**
+
   - Choose notification types
   - Email vs in-app preferences
   - Quiet hours configuration
@@ -291,13 +334,16 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 ## Phase 5: Integration & Advanced Features 🔵
 
 ### Data Management
+
 - [ ] **Add CSV and JSON export**
+
   - Export tasks to CSV
   - Export projects to JSON
   - Batch export multiple projects
   - Custom export templates
 
 - [ ] **Implement import functionality**
+
   - Import from CSV
   - Import from Trello
   - Import from Jira
@@ -310,7 +356,9 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Schema documentation
 
 ### Integration & Extensibility
+
 - [ ] **Add webhook support**
+
   - Configure webhooks per project
   - Event triggers (task created, updated, etc.)
   - Webhook testing interface
@@ -323,6 +371,7 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
   - Search/filter by custom fields
 
 ### Monitoring & Operations
+
 - [ ] **Add performance monitoring**
   - Application performance monitoring
   - Error tracking (Sentry-like)
@@ -334,6 +383,7 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 ## Implementation Guidelines
 
 ### Before Starting Any Task:
+
 1. Write tests first (TDD approach)
 2. Update TypeScript types if schema changes
 3. Run `bun run gen:type` after schema updates
@@ -341,6 +391,7 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 5. Update documentation
 
 ### Testing Checklist:
+
 - [ ] Unit tests for business logic
 - [ ] Integration tests for API interactions
 - [ ] Component tests for UI
@@ -348,6 +399,7 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 - [ ] Performance tests for data-heavy operations
 
 ### Before Marking Complete:
+
 - [ ] All tests passing
 - [ ] Code reviewed
 - [ ] Documentation updated
@@ -373,6 +425,7 @@ These tasks can be completed quickly and provide immediate value:
 ## Estimated Timeline
 
 ### Aggressive (3-4 months)
+
 - Phase 1: 4 weeks
 - Phase 2: 6 weeks
 - Phase 3: 3 weeks
@@ -380,6 +433,7 @@ These tasks can be completed quickly and provide immediate value:
 - Phase 5: 2 weeks
 
 ### Realistic (6-8 months)
+
 - Phase 1: 8 weeks (with thorough testing)
 - Phase 2: 10 weeks
 - Phase 3: 6 weeks
@@ -387,6 +441,7 @@ These tasks can be completed quickly and provide immediate value:
 - Phase 5: 4 weeks
 
 ### Conservative (10-12 months)
+
 - All phases with extensive testing
 - Including user feedback iterations
 - Production deployment and stabilization
@@ -397,13 +452,15 @@ These tasks can be completed quickly and provide immediate value:
 ## Success Metrics
 
 ### Quality Metrics
-- [ ] >80% test coverage
+
+- [ ] > 80% test coverage
 - [ ] Zero critical security vulnerabilities
 - [ ] <200ms average page load time
 - [ ] <2s time to interactive
 - [ ] 100% WCAG 2.1 AA compliance
 
 ### Feature Completeness
+
 - [ ] All Phase 1 tasks completed
 - [ ] All Phase 2 tasks completed
 - [ ] At least 70% of Phase 3 completed
@@ -411,6 +468,7 @@ These tasks can be completed quickly and provide immediate value:
 - [ ] User documentation complete
 
 ### Production Readiness
+
 - [ ] Deployed to staging environment
 - [ ] Load testing completed (1000+ concurrent users)
 - [ ] Disaster recovery plan documented
