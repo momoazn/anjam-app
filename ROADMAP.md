@@ -121,10 +121,13 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 
 - [ ] **Add task attachments**
 
+  - ⚠️ **Requires manual schema changes** (see TASK_ATTACHMENTS_SPEC.md)
+  - Add `attachments` file field to tasks collection schema
   - File upload on tasks (similar to projects)
   - Support images, PDFs, documents
   - Preview attachments inline
   - Download/delete attachments
+  - Up to 99 files per task, 50MB max each
 
 - [ ] **Implement task history/audit log**
   - Track all changes to tasks
