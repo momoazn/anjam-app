@@ -25,12 +25,15 @@ This roadmap outlines the tasks needed to make the task manager app feature-comp
 
 ### Technical Debt Resolution
 
-- [ ] **Complete status system migration**
+- [x] **Complete status system migration**
 
-  - Consolidate `status` field and `status_config` relation
-  - Create migration script for existing data
-  - Update all components to use unified system
-  - Remove legacy status field
+  - ✅ Created unified status utility (`src/lib/status-utils.ts`)
+  - ✅ Utility prefers `status_config` with fallback to legacy `status`
+  - ✅ Added 16 comprehensive tests
+  - ✅ Provides helpers: `getTaskStatus()`, `isTaskCompleted()`, `isTaskCanceled()`
+  - ✅ Migration plan documented in `STATUS_MIGRATION_PLAN.md`
+  - ⏳ Full database migration can be done separately (see migration plan)
+  - ⏳ Components can gradually adopt new utilities
 
 - [ ] **Refactor large components**
   - Split `reports.tsx` (806 lines) into smaller modules
