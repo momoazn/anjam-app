@@ -425,7 +425,11 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="mb-8" aria-label="فیلترها" data-animate-stagger>
+      <div
+        className="mb-8"
+        aria-label={fa.reports.aria.filters}
+        data-animate-stagger
+      >
         <FiltersBar
           value={filtersState}
           onChange={setFiltersState}
@@ -467,7 +471,10 @@ export default function Reports() {
                       )}
                       <p className="text-muted-foreground mt-1 text-xs">
                         {taskCount > 0
-                          ? `${taskCount} تسک`
+                          ? fa.reports.taskCount.replace(
+                              "{count}",
+                              String(taskCount),
+                            )
                           : fa.reports.noTasksInProject}
                       </p>
                     </div>
@@ -498,10 +505,12 @@ export default function Reports() {
           className="mb-4 w-full justify-start overflow-x-auto"
           dir="rtl"
         >
-          <TabsTrigger value="overview">مرور</TabsTrigger>
-          <TabsTrigger value="team">تیم</TabsTrigger>
-          <TabsTrigger value="individuals">افراد</TabsTrigger>
-          <TabsTrigger value="insights">بینش‌ها</TabsTrigger>
+          <TabsTrigger value="overview">{fa.reports.tabs.overview}</TabsTrigger>
+          <TabsTrigger value="team">{fa.reports.tabs.team}</TabsTrigger>
+          <TabsTrigger value="individuals">
+            {fa.reports.tabs.individuals}
+          </TabsTrigger>
+          <TabsTrigger value="insights">{fa.reports.tabs.insights}</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -524,7 +533,7 @@ export default function Reports() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          aria-label={"راهنمای نمودار زمان‌بندی"}
+                          aria-label={fa.reports.aria.timelinessChart}
                           className="text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                           <Info className="h-4 w-4" />
@@ -581,7 +590,7 @@ export default function Reports() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          aria-label={"راهنمای نمودار اولویت‌ها"}
+                          aria-label={fa.reports.aria.prioritiesChart}
                           className="text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                           <Info className="h-4 w-4" />

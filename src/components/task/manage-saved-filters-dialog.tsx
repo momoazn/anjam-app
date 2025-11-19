@@ -88,14 +88,22 @@ export function ManageSavedFiltersDialog({
 
   const getFilterSummary = (filter: SavedFilter) => {
     const active: string[] = [];
-    if (filter.filters.searchTerm) active.push("جستجو");
-    if (filter.filters.selectedStatus !== "all") active.push("وضعیت");
-    if (filter.filters.selectedPriority !== "all") active.push("اولویت");
-    if (filter.filters.selectedAssignee !== "all") active.push("مسئول");
-    if (filter.filters.selectedDateRange !== "all") active.push("تاریخ");
-    if (filter.filters.selectedTag !== "all") active.push("برچسب");
+    if (filter.filters.searchTerm)
+      active.push(text.savedFilters.criteria.search);
+    if (filter.filters.selectedStatus !== "all")
+      active.push(text.savedFilters.criteria.status);
+    if (filter.filters.selectedPriority !== "all")
+      active.push(text.savedFilters.criteria.priority);
+    if (filter.filters.selectedAssignee !== "all")
+      active.push(text.savedFilters.criteria.assignee);
+    if (filter.filters.selectedDateRange !== "all")
+      active.push(text.savedFilters.criteria.date);
+    if (filter.filters.selectedTag !== "all")
+      active.push(text.savedFilters.criteria.tag);
 
-    return active.length > 0 ? active.join(" • ") : "بدون فیلتر";
+    return active.length > 0
+      ? active.join(" • ")
+      : text.savedFilters.criteria.noFilter;
   };
 
   return (

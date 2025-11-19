@@ -70,7 +70,7 @@ export function UserLoginLogsDialog({
       );
 
       if (!response.ok) {
-        throw new Error("خطا در دریافت سوابق ورود");
+        throw new Error(fa.users.actions.fetchLogsError);
       }
 
       const data = await response.json();
@@ -113,7 +113,8 @@ export function UserLoginLogsDialog({
           </DialogTitle>
           <DialogDescription>
             {fa.users.loginLogs.columns.ip} و{" "}
-            {fa.users.loginLogs.columns.status} تلاش‌های ورود به سیستم
+            {fa.users.loginLogs.columns.status}{" "}
+            {fa.common.pagination.loginAttemptsLabel}
           </DialogDescription>
         </DialogHeader>
 
@@ -191,7 +192,8 @@ export function UserLoginLogsDialog({
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t pt-4">
             <div className="text-muted-foreground text-sm">
-              صفحه {digitsEnToFa(page)} از {digitsEnToFa(totalPages)}
+              {fa.common.pagination.page} {digitsEnToFa(page)}{" "}
+              {fa.common.pagination.of} {digitsEnToFa(totalPages)}
             </div>
             <div className="flex gap-2">
               <Button
@@ -200,7 +202,7 @@ export function UserLoginLogsDialog({
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1 || loading}
               >
-                قبلی
+                {fa.common.pagination.previous}
               </Button>
               <Button
                 variant="outline"
@@ -208,7 +210,7 @@ export function UserLoginLogsDialog({
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === totalPages || loading}
               >
-                بعدی
+                {fa.common.pagination.next}
               </Button>
             </div>
           </div>

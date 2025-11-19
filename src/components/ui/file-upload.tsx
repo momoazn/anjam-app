@@ -34,7 +34,12 @@ export function FileUpload({
 
       // Check max files limit
       if (maxFiles && value.length + fileArray.length > maxFiles) {
-        toast.error(`حداکثر ${maxFiles} فایل قابل بارگذاری است`);
+        toast.error(
+          fa.projects.files.validation.maxFiles.replace(
+            "{maxFiles}",
+            String(maxFiles),
+          ),
+        );
         return;
       }
 

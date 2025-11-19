@@ -59,9 +59,14 @@ export function BulkActionsBar({
     try {
       setIsLoading(true);
       await onBulkAssign(userId);
-      toast.success(`${selectedCount} تسک با موفقیت اختصاص داده شد`);
+      toast.success(
+        text.tasks.bulkActions.assignSuccess.replace(
+          "{count}",
+          String(selectedCount),
+        ),
+      );
     } catch (error) {
-      toast.error("خطا در اختصاص تسک‌ها");
+      toast.error(text.tasks.bulkActions.assignError);
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -72,9 +77,14 @@ export function BulkActionsBar({
     try {
       setIsLoading(true);
       await onBulkStatus(status);
-      toast.success(`وضعیت ${selectedCount} تسک تغییر کرد`);
+      toast.success(
+        text.tasks.bulkActions.statusSuccess.replace(
+          "{count}",
+          String(selectedCount),
+        ),
+      );
     } catch (error) {
-      toast.error("خطا در تغییر وضعیت");
+      toast.error(text.tasks.bulkActions.statusError);
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -85,9 +95,14 @@ export function BulkActionsBar({
     try {
       setIsLoading(true);
       await onBulkPriority(priority);
-      toast.success(`اولویت ${selectedCount} تسک تغییر کرد`);
+      toast.success(
+        text.tasks.bulkActions.prioritySuccess.replace(
+          "{count}",
+          String(selectedCount),
+        ),
+      );
     } catch (error) {
-      toast.error("خطا در تغییر اولویت");
+      toast.error(text.tasks.bulkActions.priorityError);
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -98,10 +113,15 @@ export function BulkActionsBar({
     try {
       setIsLoading(true);
       await onBulkDelete();
-      toast.success(`${selectedCount} تسک حذف شد`);
+      toast.success(
+        text.tasks.bulkActions.deleteSuccess.replace(
+          "{count}",
+          String(selectedCount),
+        ),
+      );
       setShowDeleteDialog(false);
     } catch (error) {
-      toast.error("خطا در حذف تسک‌ها");
+      toast.error(text.tasks.bulkActions.deleteError);
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -121,7 +141,10 @@ export function BulkActionsBar({
       <div className="border-border bg-card fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-lg border px-4 py-3 shadow-lg">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">
-            {selectedCount} تسک انتخاب شده
+            {text.tasks.bulkActions.selectedCount.replace(
+              "{count}",
+              String(selectedCount),
+            )}
           </span>
           <Button
             variant="ghost"
@@ -139,7 +162,9 @@ export function BulkActionsBar({
         <Select onValueChange={handleBulkAssign} disabled={isLoading}>
           <SelectTrigger className="w-[180px]">
             <Users className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="اختصاص دادن" />
+            <SelectValue
+              placeholder={text.tasks.bulkActions.assignPlaceholder}
+            />
           </SelectTrigger>
           <SelectContent>
             {users.map((user) => (
@@ -156,7 +181,9 @@ export function BulkActionsBar({
         <Select onValueChange={handleBulkStatus} disabled={isLoading}>
           <SelectTrigger className="w-[160px]">
             <RefreshCw className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="تغییر وضعیت" />
+            <SelectValue
+              placeholder={text.tasks.bulkActions.statusPlaceholder}
+            />
           </SelectTrigger>
           <SelectContent>
             {availableStatuses.map((status) => (
@@ -171,7 +198,9 @@ export function BulkActionsBar({
         <Select onValueChange={handleBulkPriority} disabled={isLoading}>
           <SelectTrigger className="w-[150px]">
             <Flag className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="تغییر اولویت" />
+            <SelectValue
+              placeholder={text.tasks.bulkActions.priorityPlaceholder}
+            />
           </SelectTrigger>
           <SelectContent>
             {priorityOptions.map((priority) => (
@@ -192,27 +221,35 @@ export function BulkActionsBar({
           disabled={isLoading}
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          حذف
+          {text.tasks.bulkActions.deleteButton}
         </Button>
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>حذف {selectedCount} تسک؟</AlertDialogTitle>
+            <AlertDialogTitle>
+              {text.tasks.bulkActions.deleteDialogTitle.replace(
+                "{count}",
+                String(selectedCount),
+              )}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              این عملیات قابل بازگشت نیست. آیا مطمئن هستید که می‌خواهید این
-              تسک‌ها را حذف کنید?
+              {text.tasks.bulkActions.deleteDialogDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoading}>انصراف</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLoading}>
+              {text.tasks.bulkActions.cancelButton}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isLoading}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {isLoading ? "در حال حذف..." : "حذف"}
+              {isLoading
+                ? text.tasks.bulkActions.deletingButton
+                : text.tasks.bulkActions.deleteButton}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

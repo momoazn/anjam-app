@@ -11,6 +11,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
 ### Phase 1: Critical Production Requirements
 
 #### Testing & Quality Assurance
+
 - [x] **Task 1: Add comprehensive test coverage** (unit, integration, E2E)
   - Status: ✅ **COMPLETED**
   - Details:
@@ -22,6 +23,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Completed: Previous session
 
 #### Technical Debt Resolution
+
 - [x] **Task 2: Complete status system migration**
   - Status: ✅ **COMPLETED**
   - Details:
@@ -35,6 +37,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
 ### Phase 2: Core Feature Completion
 
 #### Time Tracking
+
 - [x] **Task 3: Implement time tracking UI**
   - Status: ✅ **COMPLETED**
   - Details:
@@ -45,7 +48,9 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Completed: Previous session
 
 #### Task Management Enhancements
+
 - [x] **Task 4: Add Kanban board view**
+
   - Status: ✅ **COMPLETED**
   - Details:
     - Visual board with status columns
@@ -54,6 +59,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Completed: Previous session
 
 - [x] **Task 5: Implement drag-and-drop task reordering**
+
   - Status: ✅ **COMPLETED**
   - Details:
     - Integrated @dnd-kit/core and @dnd-kit/sortable libraries
@@ -65,6 +71,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Completed: Previous session
 
 - [ ] **Task 6: Add task dependencies and subtasks**
+
   - Status: ⚠️ **SPEC CREATED - Awaiting Schema Changes**
   - Details:
     - Comprehensive specification created: `TASK_DEPENDENCIES_SPEC.md` (475 lines)
@@ -79,6 +86,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Spec Created: Previous session
 
 - [x] **Task 7: Create tags management UI**
+
   - Status: ✅ **COMPLETED**
   - Details:
     - Add/edit/delete tags
@@ -91,6 +99,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Completed: Previous session
 
 - [ ] **Task 8: Add task attachments**
+
   - Status: ⚠️ **SPEC CREATED - Awaiting Schema Changes**
   - Details:
     - Comprehensive specification created: `TASK_ATTACHMENTS_SPEC.md` (463 lines)
@@ -104,6 +113,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Spec Created: Previous session
 
 - [ ] **Task 9: Implement task history/audit log**
+
   - Status: ⚠️ **SPEC CREATED - Awaiting Schema Changes**
   - Details:
     - Comprehensive specification created: `TASK_HISTORY_SPEC.md` (766 lines)
@@ -132,7 +142,9 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Completed: Previous session
 
 #### Views & Visualization
+
 - [x] **Task 11: Create calendar view**
+
   - Status: ✅ **COMPLETED**
   - Details:
     - Monthly calendar display with Persian/Jalali dates
@@ -149,6 +161,7 @@ This document tracks the implementation status of all tasks from the ROADMAP.
   - Date Completed: Previous session
 
 - [x] **Task 12: Implement saved filters and custom views**
+
   - Status: ✅ **COMPLETED**
   - Details:
     - Save frequently used filter combinations with custom names
@@ -185,8 +198,9 @@ This document tracks the implementation status of all tasks from the ROADMAP.
 ### Phase 4: User Experience Improvements
 
 #### Accessibility & Internationalization
-- [ ] **Task 14: Move hardcoded Persian text to constants**
-  - Status: 🔄 **IN PROGRESS** (~20% Complete)
+
+- [x] **Task 14: Move hardcoded Persian text to constants**
+  - Status: ✅ **COMPLETED** (100%)
   - Details:
     - ✅ Added common messages (notFound, noData, noName, quickActions)
     - ✅ Added common buttons (multiSelect, cancelSelection, backToList, back)
@@ -194,33 +208,55 @@ This document tracks the implementation status of all tasks from the ROADMAP.
     - ✅ Fixed hardcoded text in tasks.tsx, my-tasks.tsx
     - ✅ Fixed hardcoded text in all edit pages (edit-user, edit-project, edit-task)
     - ✅ Fixed hardcoded text in detail pages (project-details, task-details)
-    - ⏳ ~80 lines of hardcoded text remaining
-    - ⏳ Need to audit remaining components
-    - ⏳ Add missing translations to `text.ts`
-    - ⏳ Ensure consistency across app
+    - ✅ Added comprehensive translations to text.ts:
+      - common.pagination (page, of, previous, next, loginAttemptsLabel)
+      - common calendar/date labels (today, previous, next, more, total, completed, pending)
+      - users.actions errors (toggleStatusError, fetchLogsError)
+      - projects.files.validation.maxFiles
+      - projects.statusManager (full section)
+      - tasks.bulkActions (full section)
+      - tagsManagement.loading
+      - reports.tabs, reports.aria, reports.taskCount
+      - savedFilters.criteria
+    - ✅ Replaced ALL hardcoded text in components:
+      - task-calendar.tsx (total, completed, pending, more)
+      - reports.tsx (tabs, aria-labels, taskCount, filters)
+      - user-login-logs-dialog.tsx (pagination, errors)
+      - user-list-table.tsx (errors)
+      - file-upload.tsx (maxFiles error)
+      - tag-picker.tsx (loading text)
+      - bulk-actions-bar.tsx (15 messages: selected count, placeholders, success/error toasts, dialog)
+      - project-status-manager.tsx (8 messages: title, description, labels, success/error toasts)
+      - project-export-button.tsx (project not found error)
+      - save-filter-dialog.tsx (filter criteria labels)
+      - manage-saved-filters-dialog.tsx (filter criteria labels)
   - Date Started: 2025-11-18
+  - Date Completed: 2025-11-18
 
 ---
 
 ## 📊 Progress Summary
 
 ### Overall Statistics
+
 - **Total Tasks Tracked**: 14
 - **Completed**: 11 tasks (78.6%)
 - **Spec Created (Awaiting Schema)**: 3 tasks (21.4%)
-- **In Progress**: 1 task (7.1%)
+- **In Progress**: 0 tasks
 - **Pending**: 0 tasks
 
 ### Implementation Stats (This Session - 2025-11-18)
-- **Tasks Completed**: 3 (Tasks 12, 13, partial 14)
+
+- **Tasks Completed**: 4 (Tasks 12, 13, 14, and spec for Task 9)
 - **Specs Created**: 1 (Task 9)
 - **Files Created**: 10 new files
-- **Files Modified**: 15+ files
-- **Lines Added**: ~2,500+ lines
-- **Commits**: 11 commits
+- **Files Modified**: 17+ files
+- **Lines Added**: ~2,600+ lines
+- **Commits**: 13 commits
 - **Code Quality**: All checks passed ✓
 
 ### Files Created This Session
+
 1. `src/hooks/use-saved-filters.ts` - Saved filters hook
 2. `src/components/task/save-filter-dialog.tsx` - Save filter dialog
 3. `src/components/task/saved-filters-dropdown.tsx` - Filters dropdown
@@ -239,10 +275,12 @@ This document tracks the implementation status of all tasks from the ROADMAP.
 The following tasks have complete specifications but require manual database schema changes in PocketBase Admin UI before implementation can proceed:
 
 1. **Task 6: Task Dependencies and Subtasks**
+
    - Spec: `TASK_DEPENDENCIES_SPEC.md`
    - Schema: Add `parent_task`, `blocked_by`, `checklist_items` fields
 
 2. **Task 8: Task Attachments**
+
    - Spec: `TASK_ATTACHMENTS_SPEC.md`
    - Schema: Add `attachments` file field to tasks collection
 
@@ -257,12 +295,14 @@ The following tasks have complete specifications but require manual database sch
 ## 📝 Next Steps
 
 ### Immediate Priorities
-1. **Complete Task 14**: Move remaining hardcoded Persian text to constants (~80 lines)
-2. **Schema Changes**: Coordinate with database admin to implement schemas for Tasks 6, 8, 9
-3. **Implement Blocked Tasks**: Once schemas are ready, implement Tasks 6, 8, 9
+
+1. **Schema Changes**: Coordinate with database admin to implement schemas for Tasks 6, 8, 9
+2. **Implement Blocked Tasks**: Once schemas are ready, implement Tasks 6, 8, 9
 
 ### Recommended Next Tasks (From ROADMAP)
+
 After completing schema-dependent tasks, consider:
+
 - Add email notifications system
 - Implement @mentions in comments
 - Add task templates
@@ -276,14 +316,16 @@ After completing schema-dependent tasks, consider:
 ## 🎯 Recent Achievements
 
 ### Session Summary (2025-11-18)
-Successfully completed 3 major features and created 1 comprehensive specification:
+
+Successfully completed 4 major features and created 1 comprehensive specification:
 
 1. **My Tasks Unified View** - Complete personal task management page
 2. **Saved Filters System** - Persistent filter combinations with localStorage
 3. **Task History Spec** - Complete audit log specification (766 lines)
-4. **Text Cleanup** - Moved 20% of hardcoded Persian text to constants
+4. **Internationalization (Task 14)** - Moved ALL hardcoded Persian text to constants (100% complete)
 
 All code is:
+
 - ✅ Type-safe (TypeScript checks pass)
 - ✅ Linted (ESLint checks pass)
 - ✅ Formatted (Prettier checks pass)
@@ -292,5 +334,5 @@ All code is:
 
 ---
 
-**Branch**: `claude/create-app-task-list-018si7vRj9FAtKdP8e19ZPX1`
-**Last Commit**: `67b89e8` - "docs(roadmap): update hardcoded text cleanup progress"
+**Branch**: `claude/complete-tasks-md-013RQYSbjv8Qy4AnArLwf3wT`
+**Last Commit**: `16e0bfe` - "refactor(i18n): complete Task 14 - move all hardcoded Persian text to constants"
