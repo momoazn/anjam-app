@@ -1,4 +1,4 @@
-import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
+import { type Icon, IconCirclePlusFilled } from "@tabler/icons-react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import {
@@ -14,21 +14,19 @@ import { cn } from "@/lib/utils";
 import { ProjectsSubmenu } from "./sidebar/projects-submenu";
 import { TaskViews } from "./sidebar/task-views";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: Icon;
-    badge?: React.ReactNode;
-    children?: {
-      title: string;
-      url: string;
-      badge?: React.ReactNode;
-    }[];
-  }[];
-}) {
+type NavMainItem = {
+  title: string;
+  url: string;
+  icon?: Icon;
+  badge?: React.ReactNode;
+  children?: NavMainItem[];
+};
+
+type NavMainProps = {
+  items: NavMainItem[];
+};
+
+export function NavMain({ items }: NavMainProps) {
   const location = useLocation();
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -56,6 +54,7 @@ export function NavMain({
           <SidebarMenuItem className="flex items-center gap-2">
             <NavLink
               to="/tasks/new"
+              className="w-full"
               onClick={() => {
                 if (isMobile) {
                   setOpenMobile(false);
