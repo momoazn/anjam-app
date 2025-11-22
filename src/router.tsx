@@ -292,7 +292,7 @@ const routes: RouteType[] = [
     path: "/timesheet",
     element: <Timesheet />,
     protected: true,
-    title: "Timesheet",
+    title: fa.navigationLabels.timesheet,
   },
   {
     path: "/projects/:id/tasks",

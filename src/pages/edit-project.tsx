@@ -47,7 +47,7 @@ export default function EditProject() {
   const { data: project, isLoading } = useQuery({
     queryKey: queryKeys.projects.detail(id ?? ""),
     queryFn: async () => {
-      if (!id) throw new Error("Project ID is required");
+      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
       return pb.collection("projects").getOne<ProjectsResponse>(id);
     },
     enabled: !!id,
@@ -79,7 +79,7 @@ export default function EditProject() {
 
   const { mutate: updateProject, isPending } = useMutation({
     mutationFn: async (data: z.infer<typeof projectFormSchema>) => {
-      if (!project) throw new Error("Project not found");
+      if (!project) throw new Error(fa.errors.notFound.projectNotFound);
 
       const formData = new FormData();
       formData.append("name", data.name);

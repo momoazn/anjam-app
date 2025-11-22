@@ -18,7 +18,6 @@ import { toast } from "sonner";
 
 import { PageTransition } from "@/components/page-transition";
 import { ProjectAssets } from "@/components/project/project-assets";
-import { ProjectStatusManager } from "@/components/project/project-status-manager";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpload } from "@/components/ui/file-upload";
@@ -28,10 +27,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks";
-import { FileWithPreview } from "@/hooks/use-file-upload";
+import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { stripHtml } from "@/lib/excel-export";
-import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
-import { TasksResponse } from "@/lib/pocketbase-types";
+import { type ProjectWithSupervisor, pb } from "@/lib/pocketbase";
+import type { TasksResponse } from "@/lib/pocketbase-types";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
@@ -52,7 +51,7 @@ export default function ProjectDetails() {
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: queryKeys.projects.detail(id ?? ""),
     queryFn: async () => {
-      if (!id) throw new Error("Project ID is required");
+      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
       return pb.collection("projects").getOne<ProjectWithSupervisor>(id, {
         expand: "supervisor",
       });
@@ -63,7 +62,7 @@ export default function ProjectDetails() {
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ["tasks", "project", id],
     queryFn: async () => {
-      if (!id) throw new Error("Project ID is required");
+      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
       return pb
         .collection("tasks")
         .getFullList<TasksResponse>({ filter: `project="${id}"` });
@@ -85,8 +84,8 @@ export default function ProjectDetails() {
       newFiles: FileWithPreview[];
       filesToDelete: string[];
     }) => {
-      if (!id) throw new Error("Project ID is required");
-      if (!project) throw new Error("Project not found");
+      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
+      if (!project) throw new Error(fa.errors.notFound.projectNotFound);
 
       const formData = new FormData();
       formData.append("name", data.name);
@@ -426,9 +425,9 @@ export default function ProjectDetails() {
                           .filter(
                             (filename) => !filesToDelete.includes(filename),
                           )
-                          .map((filename, index) => (
+                          .map((filename) => (
                             <div
-                              key={`${filename}-${index}`}
+                              key={filename}
                               className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
                               data-interactive-item
                             >
@@ -468,9 +467,6 @@ export default function ProjectDetails() {
               )}
             </CardContent>
           </Card>
-
-          {/* Status Management - Only visible to admins and project supervisors */}
-          {canEdit && id && <ProjectStatusManager projectId={id} />}
         </div>
 
         {/* Sidebar */}

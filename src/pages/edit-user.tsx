@@ -22,9 +22,9 @@ import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useUpdateUser, useUser } from "@/hooks";
 
 const formSchema = z.object({
-  username: z.string().min(1, { message: "Username is required" }),
-  first_name: z.string().min(1, { message: "First name is required" }),
-  last_name: z.string().min(1, { message: "Last name is required" }),
+  username: z.string().min(1, { message: fa.auth.errors.usernameRequired }),
+  first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
+  last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
 });
 

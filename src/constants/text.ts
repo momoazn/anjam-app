@@ -363,6 +363,8 @@ export const fa = {
       title: "حذف کاربر",
       description: "مطمئنید که می‌خواهید این کاربر را حذف کنید؟",
       button: "بله، حذف کن",
+      success: "کاربر با موفقیت حذف شد",
+      error: "نتوانستیم کاربر را حذف کنیم: {error}",
     },
     errors: {
       notFound: "کاربر یافت نشد",
@@ -493,17 +495,6 @@ export const fa = {
           "فرمت فایل «{fileName}» نامعتبر است و قابل بارگذاری نیست",
         maxFiles: "حداکثر {maxFiles} فایل قابل بارگذاری است",
       },
-    },
-    statusManager: {
-      title: "مدیریت وضعیت‌های پروژه",
-      description:
-        "می‌توانید وضعیت‌های مورد نیاز برای پروژه را فعال یا غیرفعال کنید. تنها وضعیت‌هایی که تسکی در آن‌ها نباشد می‌توانند غیرفعال شوند.",
-      defaultLabel: "پیش‌فرض",
-      enabledLabel: "فعال",
-      disabledLabel: "غیرفعال",
-      enabledSuccess: 'وضعیت "{name}" فعال شد',
-      disabledSuccess: 'وضعیت "{name}" غیرفعال شد',
-      toggleError: "خطا در تغییر وضعیت",
     },
     errors: {
       notFound: "پروژه یافت نشد",
@@ -732,6 +723,15 @@ export const fa = {
     errors: {
       notFound: "وظیفه یافت نشد",
     },
+
+    // Task-specific
+    addNewTask: "افزودن تسک جدید",
+    moreOptions: "گزینه‌های بیشتر",
+    sortByPriority: "مرتب‌سازی براساس اولویت",
+    sortByDate: "مرتب‌سازی براساس تاریخ",
+    showCompletedTasks: "نمایش تسک‌های انجام شده",
+    editTask: "ویرایش '{title}'",
+    timeSpent: "زمان صرف شده",
   },
 
   // Reports module
@@ -1391,6 +1391,28 @@ export const fa = {
   // Loading states
   loading: {
     application: "در حال بارگذاری...",
+    notifications: "در حال بارگذاری اعلان‌ها...",
+  },
+
+  // UI Navigation
+  navigationLabels: {
+    timesheet: "تایم‌شیت",
+  },
+
+  // Timesheet
+  timesheet: {
+    headers: {
+      date: "تاریخ",
+      taskTitle: "عنوان تسک",
+      project: "پروژه",
+      minutesSpent: "دقیقه‌های صرف شده",
+    },
+  },
+
+  // UI Elements & Accessibility
+  ui: {
+    toggleSidebar: "بازکردن/بستن منوی کناری",
+    breadcrumb: "راه‌نمای صفحه",
   },
 
   // Date picker
@@ -1413,6 +1435,26 @@ export const fa = {
       helps: "نتوانستیم راهنما را بارگذاری کنیم",
       notifications: "نتوانستیم اعلان‌ها را بارگذاری کنیم",
       notFound: "صفحه پیدا نشد",
+    },
+    validation: {
+      titleRequired: "عنوان الزامی است",
+      projectIdRequired: "شناسه پروژه الزامی است",
+    },
+    notFound: {
+      projectNotFound: "پروژه یافت نشد",
+      taskNotFound: "تسک یافت نشد",
+    },
+    operationFailed: {
+      addUserToProject: "خطا در افزودن کاربر به پروژه",
+      removeUserFromProject: "خطا در حذف کاربر از پروژه",
+      saveTimeEntry: "خطا در ذخیره ورود زمانی",
+      exportProject: "خطا در خروجی پروژه",
+      fetchLoginLogs: "خطا در دریافت سوابق ورود",
+      applyFilter: "خطا در اعمال فیلتر",
+      loadSavedFilters: "خطا در بارگذاری فیلترهای ذخیره شده",
+      saveFilters: "خطا در ذخیره فیلترها",
+      subscribeNotifications: "خطا در اشتراک در اعلان‌ها",
+      loadNotifications: "نتوانستیم اعلان‌ها را بارگذاری کنیم",
     },
     boundary: {
       title: "اوه! مشکلی پیش آمده",

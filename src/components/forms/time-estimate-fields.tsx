@@ -33,7 +33,11 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                 placeholder="0"
                 {...field}
                 value={field.value || ""}
-                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value ? Number(e.target.value) : undefined,
+                  )
+                }
               />
             </FormControl>
             <FormMessage />
@@ -55,7 +59,11 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                 placeholder="0"
                 {...field}
                 value={field.value || ""}
-                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value ? Number(e.target.value) : undefined,
+                  )
+                }
               />
             </FormControl>
             <FormMessage />

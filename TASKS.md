@@ -213,7 +213,6 @@ This document tracks the implementation status of all tasks from the ROADMAP.
       - common calendar/date labels (today, previous, next, more, total, completed, pending)
       - users.actions errors (toggleStatusError, fetchLogsError)
       - projects.files.validation.maxFiles
-      - projects.statusManager (full section)
       - tasks.bulkActions (full section)
       - tagsManagement.loading
       - reports.tabs, reports.aria, reports.taskCount
@@ -226,7 +225,6 @@ This document tracks the implementation status of all tasks from the ROADMAP.
       - file-upload.tsx (maxFiles error)
       - tag-picker.tsx (loading text)
       - bulk-actions-bar.tsx (15 messages: selected count, placeholders, success/error toasts, dialog)
-      - project-status-manager.tsx (8 messages: title, description, labels, success/error toasts)
       - project-export-button.tsx (project not found error)
       - save-filter-dialog.tsx (filter criteria labels)
       - manage-saved-filters-dialog.tsx (filter criteria labels)

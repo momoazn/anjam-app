@@ -151,17 +151,32 @@ export function TaskListItem({
         )}
 
         {/* Date and Time */}
-        <div className="flex flex-col items-end gap-1 w-[70px] shrink-0">
+        <div className="flex w-[70px] shrink-0 flex-col items-end gap-1">
           <span className="text-muted-foreground group-hover:text-foreground text-right text-xs transition-colors duration-200">
             {formatDateShort(task.deadline)}
           </span>
-          {(task.estimated_hours || task.estimated_minutes || task.time_spent_minutes) && (
+          {(task.estimated_hours ||
+            task.estimated_minutes ||
+            task.time_spent_minutes) && (
             <div className="flex items-center gap-1 text-xs">
-              <Clock className="h-3 w-3 text-muted-foreground" />
+              <Clock className="text-muted-foreground h-3 w-3" />
               <span className="text-muted-foreground">
-                {task.time_spent_minutes ? minutesToHoursAndMinutes(task.time_spent_minutes).hours + 'h' + minutesToHoursAndMinutes(task.time_spent_minutes).minutes + 'm' : ''}
-                {(task.time_spent_minutes && (task.estimated_hours || task.estimated_minutes)) ? '/' : ''}
-                {(task.estimated_hours || task.estimated_minutes) ? (task.estimated_hours || 0) + 'h' + (task.estimated_minutes || 0) + 'm' : ''}
+                {task.time_spent_minutes
+                  ? minutesToHoursAndMinutes(task.time_spent_minutes).hours +
+                    "h" +
+                    minutesToHoursAndMinutes(task.time_spent_minutes).minutes +
+                    "m"
+                  : ""}
+                {task.time_spent_minutes &&
+                (task.estimated_hours || task.estimated_minutes)
+                  ? "/"
+                  : ""}
+                {task.estimated_hours || task.estimated_minutes
+                  ? (task.estimated_hours || 0) +
+                    "h" +
+                    (task.estimated_minutes || 0) +
+                    "m"
+                  : ""}
               </span>
             </div>
           )}

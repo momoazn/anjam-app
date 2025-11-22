@@ -54,7 +54,7 @@ const data = {
       icon: IconChartBar,
     },
     {
-      title: "Timesheet",
+      title: fa.navigationLabels.timesheet,
       url: "/timesheet",
       icon: IconClock,
     },

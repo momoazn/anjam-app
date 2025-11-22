@@ -20,14 +20,16 @@ export function TimeComparison({
   const estimated = minutesToHoursAndMinutes(estimatedMinutes || 0);
   const actual = minutesToHoursAndMinutes(actualMinutes || 0);
 
-  const isOverBudget = actualMinutes && estimatedMinutes && actualMinutes > estimatedMinutes;
-  const variance = actualMinutes && estimatedMinutes ? actualMinutes - estimatedMinutes : 0;
+  const isOverBudget =
+    actualMinutes && estimatedMinutes && actualMinutes > estimatedMinutes;
+  const variance =
+    actualMinutes && estimatedMinutes ? actualMinutes - estimatedMinutes : 0;
   const varianceHours = minutesToHoursAndMinutes(Math.abs(variance));
 
   return (
     <div className={`flex items-center gap-3 text-sm ${className}`}>
       {/* Estimated Time */}
-      <div className="flex items-center gap-1 text-muted-foreground">
+      <div className="text-muted-foreground flex items-center gap-1">
         <Clock className="h-3 w-3" />
         <span>
           {estimated.hours > 0 && `${estimated.hours}h `}
@@ -41,7 +43,9 @@ export function TimeComparison({
       {actualMinutes && (
         <>
           <div className="text-muted-foreground">→</div>
-          <div className={`flex items-center gap-1 ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+          <div
+            className={`flex items-center gap-1 ${isOverBudget ? "text-red-600" : "text-green-600"}`}
+          >
             <Clock className="h-3 w-3" />
             <span>
               {actual.hours > 0 && `${actual.hours}h `}
@@ -53,14 +57,16 @@ export function TimeComparison({
 
           {/* Variance Indicator */}
           {variance !== 0 && (
-            <div className={`flex items-center gap-1 text-xs ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+            <div
+              className={`flex items-center gap-1 text-xs ${isOverBudget ? "text-red-600" : "text-green-600"}`}
+            >
               {isOverBudget ? (
                 <AlertTriangle className="h-3 w-3" />
               ) : (
                 <Clock className="h-3 w-3" />
               )}
               <span>
-                {isOverBudget ? '+' : ''}
+                {isOverBudget ? "+" : ""}
                 {varianceHours.hours > 0 && `${varianceHours.hours}h `}
                 {varianceHours.minutes > 0 && `${varianceHours.minutes}m`}
               </span>

@@ -16,12 +16,15 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
-import { TasksPriorityOptions, TasksStatusOptions } from "@/lib/pocketbase-types";
+import {
+  TasksPriorityOptions,
+  TasksStatusOptions,
+} from "@/lib/pocketbase-types";
 import { useCreateTask } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 
 const taskFormSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  title: z.string().min(1, { message: fa.errors.validation.titleRequired }),
   description: z.string(),
   assignee: z.string(),
   priority: z.nativeEnum(TasksPriorityOptions),

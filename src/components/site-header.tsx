@@ -77,6 +77,11 @@ export function SiteHeader() {
             { label: fa.navigation.dashboard, to: "/" as const },
             { label: fa.navigation.notifications },
           ];
+        case "timesheet":
+          return [
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigationLabels.timesheet },
+          ];
         default:
           return [
             { label: fa.navigation.dashboard, to: "/" as const },
