@@ -5,12 +5,11 @@ import {
   isTaskCanceled,
   getStatusColorClass,
 } from "./status-utils";
-import type { TasksResponse, StatusConfigsResponse } from "./pocketbase-types";
+import type { TasksResponse } from "./pocketbase-types";
 
 const createMockTask = (
   overrides: Partial<TasksResponse> = {},
-  statusConfig?: StatusConfigsResponse,
-): TasksResponse<{ status_config?: StatusConfigsResponse }> => ({
+): TasksResponse => ({
   id: "task1",
   collectionId: "tasks",
   collectionName: "tasks",
@@ -22,73 +21,19 @@ const createMockTask = (
   assignee: "user1",
   creator: "user1",
   project: "proj1",
-  status: null,
+  status: "todo",
   priority: "medium",
   deadline: null,
   tags: [],
   order: 0,
   time_spent_minutes: 0,
   deleted_at: null,
-  status_config: null,
-  expand: statusConfig ? { status_config: statusConfig } : undefined,
-  ...overrides,
-});
-
-const createMockStatusConfig = (
-  overrides: Partial<StatusConfigsResponse> = {},
-): StatusConfigsResponse => ({
-  id: "status1",
-  collectionId: "status_configs",
-  collectionName: "status_configs",
-  created: "2024-01-01",
-  updated: "2024-01-01",
-  project: "proj1",
-  name: "In Progress",
-  key: "in_progress",
-  color: "blue",
-  icon: "progress",
-  order: 1,
-  is_completed: false,
-  is_canceled: false,
-  enabled: true,
   ...overrides,
 });
 
 describe("getTaskStatus", () => {
-  it("should prefer status_config over legacy status", () => {
-    const statusConfig = createMockStatusConfig({
-      name: "Custom Status",
-      key: "custom",
-      color: "purple",
-    });
-
-    const task = createMockTask(
-      {
-        status: "todo",
-        status_config: "status1",
-      },
-      statusConfig,
-    );
-
-    const result = getTaskStatus(task);
-    expect(result.name).toBe("Custom Status");
-    expect(result.key).toBe("custom");
-    expect(result.color).toBe("purple");
-  });
-
-  it("should fall back to legacy status when status_config is not expanded", () => {
-    const task = createMockTask({
-      status: "in_progress",
-    });
-
-    const result = getTaskStatus(task);
-    expect(result.name).toBe("In Progress");
-    expect(result.key).toBe("in_progress");
-    expect(result.color).toBe("blue");
-  });
-
-  it("should return default status when both are null", () => {
-    const task = createMockTask();
+  it("should return correct status for todo", () => {
+    const task = createMockTask({ status: "todo" });
 
     const result = getTaskStatus(task);
     expect(result.name).toBe("To Do");
@@ -96,7 +41,16 @@ describe("getTaskStatus", () => {
     expect(result.color).toBe("gray");
   });
 
-  it("should correctly map legacy done status", () => {
+  it("should return correct status for in_progress", () => {
+    const task = createMockTask({ status: "in_progress" });
+
+    const result = getTaskStatus(task);
+    expect(result.name).toBe("In Progress");
+    expect(result.key).toBe("in_progress");
+    expect(result.color).toBe("blue");
+  });
+
+  it("should correctly map done status", () => {
     const task = createMockTask({ status: "done" });
 
     const result = getTaskStatus(task);
@@ -105,7 +59,7 @@ describe("getTaskStatus", () => {
     expect(result.isCanceled).toBe(false);
   });
 
-  it("should correctly map legacy canceled status", () => {
+  it("should correctly map canceled status", () => {
     const task = createMockTask({ status: "canceled" });
 
     const result = getTaskStatus(task);
@@ -114,7 +68,7 @@ describe("getTaskStatus", () => {
     expect(result.isCanceled).toBe(true);
   });
 
-  it("should handle all legacy status values", () => {
+  it("should handle all status values", () => {
     const statuses: Array<TasksResponse["status"]> = [
       "todo",
       "in_progress",
@@ -140,14 +94,7 @@ describe("getTaskStatus", () => {
 });
 
 describe("isTaskCompleted", () => {
-  it("should return true for completed status_config", () => {
-    const statusConfig = createMockStatusConfig({ is_completed: true });
-    const task = createMockTask({ status_config: "status1" }, statusConfig);
-
-    expect(isTaskCompleted(task)).toBe(true);
-  });
-
-  it("should return true for legacy done status", () => {
+  it("should return true for done status", () => {
     const task = createMockTask({ status: "done" });
     expect(isTaskCompleted(task)).toBe(true);
   });
@@ -159,14 +106,7 @@ describe("isTaskCompleted", () => {
 });
 
 describe("isTaskCanceled", () => {
-  it("should return true for canceled status_config", () => {
-    const statusConfig = createMockStatusConfig({ is_canceled: true });
-    const task = createMockTask({ status_config: "status1" }, statusConfig);
-
-    expect(isTaskCanceled(task)).toBe(true);
-  });
-
-  it("should return true for legacy canceled status", () => {
+  it("should return true for canceled status", () => {
     const task = createMockTask({ status: "canceled" });
     expect(isTaskCanceled(task)).toBe(true);
   });
@@ -192,20 +132,10 @@ describe("getStatusColorClass", () => {
     expect(result).toContain("text-green");
   });
 
-  it("should return gray as fallback for unknown color", () => {
-    const statusConfig = createMockStatusConfig({ color: "unknown-color" });
-    const task = createMockTask({ status_config: "status1" }, statusConfig);
-
+  it("should return correct color class for red status", () => {
+    const task = createMockTask({ status: "canceled" });
     const result = getStatusColorClass(task);
-    expect(result).toContain("bg-gray");
-  });
-
-  it("should handle custom colors from status_config", () => {
-    const statusConfig = createMockStatusConfig({ color: "purple" });
-    const task = createMockTask({ status_config: "status1" }, statusConfig);
-
-    const result = getStatusColorClass(task);
-    expect(result).toContain("bg-purple");
-    expect(result).toContain("text-purple");
+    expect(result).toContain("bg-red");
+    expect(result).toContain("text-red");
   });
 });

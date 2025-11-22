@@ -1,6 +1,7 @@
 import {
   IconBell,
   IconChartBar,
+  IconClock,
   IconDashboard,
   IconFolder,
   IconHelp,
@@ -51,6 +52,11 @@ const data = {
       title: fa.navigation.reports,
       url: "/reports",
       icon: IconChartBar,
+    },
+    {
+      title: "Timesheet",
+      url: "/timesheet",
+      icon: IconClock,
     },
     {
       title: fa.navigation.users,

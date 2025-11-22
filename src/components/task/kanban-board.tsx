@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react";
-import type {
-  TasksResponse,
-  StatusConfigsResponse,
-} from "@/lib/pocketbase-types";
+import type { TasksResponse } from "@/lib/pocketbase-types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -31,7 +28,6 @@ import { CSS } from "@dnd-kit/utilities";
 
 interface KanbanBoardProps {
   tasks: TasksResponse<{
-    status_config?: StatusConfigsResponse;
     assignee?: {
       first_name: string;
       last_name: string;
@@ -51,7 +47,6 @@ interface KanbanColumn {
   name: string;
   color: string;
   tasks: TasksResponse<{
-    status_config?: StatusConfigsResponse;
     assignee?: {
       first_name: string;
       last_name: string;
@@ -211,7 +206,6 @@ export function KanbanBoard({
 
 interface SortableKanbanCardProps {
   task: TasksResponse<{
-    status_config?: StatusConfigsResponse;
     assignee?: {
       first_name: string;
       last_name: string;
@@ -246,7 +240,6 @@ function SortableKanbanCard({ task, projectId }: SortableKanbanCardProps) {
 
 interface KanbanCardProps {
   task: TasksResponse<{
-    status_config?: StatusConfigsResponse;
     assignee?: {
       first_name: string;
       last_name: string;

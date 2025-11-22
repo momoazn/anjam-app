@@ -63,7 +63,6 @@ export const createMockTask = (
   order: 0,
   time_spent_minutes: 0,
   deleted_at: null,
-  status_config: null,
   ...overrides,
 });
 

@@ -112,17 +112,13 @@ func staticHandler(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error
 	}
 
 	filePath := strings.TrimPrefix(r.URL.Path, "/")
-	f, err := staticFS.Open(filePath)
-	if err != nil {
-		// If file doesn't exist and it's a route (no extension), serve index.html
-		if os.IsNotExist(err) && path.Ext(filePath) == "" {
-			return serveIndexHTML(staticFS, w, r)
-		}
-		// For other errors or files with extensions that don't exist, let FileServer handle it
-	} else {
-		f.Close()
+
+	// If the path has no extension (i.e., it's a route), serve index.html
+	if path.Ext(filePath) == "" {
+		return serveIndexHTML(staticFS, w, r)
 	}
 
+	// Otherwise, serve the static file
 	http.FileServer(http.FS(staticFS)).ServeHTTP(w, r)
 	return nil
 }
@@ -320,10 +316,19 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 }
 
 func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
-	staticFS, err := fs.Sub(staticFiles, "dist")
-	if err != nil {
-		log.Fatalf("Failed to create sub FS for static files: %v", err)
-		return err
+	var staticFS fs.FS
+	var err error
+
+	if e.App.IsDev() {
+		// In dev mode, serve from the dist directory on disk
+		staticFS = os.DirFS("dist")
+	} else {
+		// In production, use embedded files
+		staticFS, err = fs.Sub(staticFiles, "dist")
+		if err != nil {
+			log.Fatalf("Failed to create sub FS for static files: %v", err)
+			return err
+		}
 	}
 
 	e.Router.GET("/{path...}", func(e *core.RequestEvent) error {

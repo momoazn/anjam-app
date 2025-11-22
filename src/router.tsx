@@ -82,6 +82,11 @@ const MyTasks = React.lazy(() =>
     default: () => <div>Error loading my tasks</div>,
   })),
 );
+const Timesheet = React.lazy(() =>
+  import("@/pages/timesheet").catch(() => ({
+    default: () => <div>Error loading timesheet</div>,
+  })),
+);
 const ProjectTasks = React.lazy(() =>
   import("@/pages/project-tasks").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.projectTasks}</div>,
@@ -282,6 +287,12 @@ const routes: RouteType[] = [
     element: <MyTasks />,
     protected: true,
     title: fa.myTasks.title,
+  },
+  {
+    path: "/timesheet",
+    element: <Timesheet />,
+    protected: true,
+    title: "Timesheet",
   },
   {
     path: "/projects/:id/tasks",

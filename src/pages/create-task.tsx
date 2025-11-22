@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { TaskFields } from "@/components/forms/task-fields";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
-import { TasksPriorityOptions } from "@/lib/pocketbase-types";
+import { TasksPriorityOptions, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { useCreateTask } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 
@@ -25,17 +25,17 @@ const taskFormSchema = z.object({
   description: z.string(),
   assignee: z.string(),
   priority: z.nativeEnum(TasksPriorityOptions),
-  status_config: z.string().optional(),
-  project: z.string().min(1, { message: "Project is required" }),
+  status: z.nativeEnum(TasksStatusOptions),
+  project: z.string().optional(),
   deadline: z.date().optional(),
+  estimated_hours: z.coerce.number().min(0).max(999).optional(),
+  estimated_minutes: z.coerce.number().min(0).max(59).optional(),
 });
 
 export default function CreateTask() {
   const navigate = useNavigate();
   const user = useAuthUser();
   const { id: projectId } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
-  const statusConfig = searchParams.get("status_config") || undefined;
 
   // Check if we're in a project context
   const isInProject = Boolean(projectId);
@@ -48,9 +48,11 @@ export default function CreateTask() {
       description: "",
       assignee: fa.tasks.addTask.unassigned,
       priority: TasksPriorityOptions.medium,
-      status_config: statusConfig,
+      status: TasksStatusOptions.todo,
       project: initialProject,
       deadline: undefined,
+      estimated_hours: undefined,
+      estimated_minutes: undefined,
     },
   });
 
@@ -70,6 +72,7 @@ export default function CreateTask() {
     createTask({
       ...values,
       creator: user.id,
+      project: values.project || initialProject,
       assignee:
         values.assignee !== fa.tasks.addTask.unassigned
           ? values.assignee

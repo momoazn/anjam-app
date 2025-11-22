@@ -1037,6 +1037,8 @@ export const fa = {
     // Time tracking
     logTime: "ثبت زمان",
     timeSpent: "زمان صرف شده",
+    estimatedHours: "ساعت برآورد",
+    estimatedMinutes: "دقیقه برآورد",
     hours: "ساعت",
     minutes: "دقیقه",
     hour: "ساعت",

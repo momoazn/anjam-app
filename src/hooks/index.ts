@@ -45,16 +45,6 @@ export {
   useSoftDeleteComment,
 } from "./comments";
 
-// Status Config hooks
-export {
-  useProjectStatusConfigs,
-  useStatusConfig,
-  useCreateStatusConfig,
-  useUpdateStatusConfig,
-  useDeleteStatusConfig,
-  type StatusConfigsResponse,
-} from "./status-configs";
-
 // Page-specific optimized hooks
 export { useTasksPageData } from "./use-tasks-page-data";
 export { useProjectTasksPageData } from "./use-project-tasks-page-data";

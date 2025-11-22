@@ -32,6 +32,8 @@ const taskFormSchema = z.object({
   status: z.nativeEnum(TasksStatusOptions),
   project: z.string().min(1).optional(),
   deadline: z.date().optional(),
+  estimated_hours: z.coerce.number().min(0).max(999).optional(),
+  estimated_minutes: z.coerce.number().min(0).max(59).optional(),
 });
 
 export default function EditTask() {
@@ -53,6 +55,8 @@ export default function EditTask() {
       status: TasksStatusOptions.todo,
       project: "",
       deadline: undefined,
+      estimated_hours: undefined,
+      estimated_minutes: undefined,
     },
   });
 
@@ -66,6 +70,8 @@ export default function EditTask() {
         status: task.status,
         project: task.project,
         deadline: task.deadline ? new Date(task.deadline) : undefined,
+        estimated_hours: task.estimated_hours,
+        estimated_minutes: task.estimated_minutes,
       });
     }
   }, [form, task]);

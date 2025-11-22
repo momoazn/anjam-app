@@ -18,6 +18,7 @@ import { PageTransition } from "@/components/page-transition";
 // Remove the UserAvatar import since it's no longer used
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
+import { TimeComparison } from "@/components/task/time-comparison";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -380,11 +381,15 @@ export default function TaskDetails() {
                   </div>
                 </div>
               ) : (
-                <div className="mt-2">
+                <div className="mt-2 space-y-2">
                   <p className="text-primary text-2xl font-semibold">
                     {formatTimeSpent(task.time_spent_minutes) ||
                       fa.tasks.details.timeTracking.noTimeTracked}
                   </p>
+                  <TimeComparison
+                    estimatedMinutes={(task.estimated_hours || 0) * 60 + (task.estimated_minutes || 0)}
+                    actualMinutes={task.time_spent_minutes}
+                  />
                 </div>
               )}
             </CardContent>

@@ -22,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { parseTimeInput, minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { text } from "@/constants/text";
+import { AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const timeEntrySchema = z.object({
   hours: z.coerce.number().min(0).max(999),
@@ -34,6 +36,7 @@ interface TimeEntryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentMinutes: number;
+  estimatedMinutes?: number;
   onSave: (minutes: number) => Promise<void>;
   taskTitle: string;
 }
@@ -42,6 +45,7 @@ export function TimeEntryDialog({
   open,
   onOpenChange,
   currentMinutes,
+  estimatedMinutes,
   onSave,
   taskTitle,
 }: TimeEntryDialogProps) {
@@ -69,6 +73,13 @@ export function TimeEntryDialog({
       setIsSubmitting(false);
     }
   };
+
+  // Calculate if current input exceeds estimate
+  const currentInputMinutes = parseTimeInput(
+    Number(form.watch("hours") || 0),
+    Number(form.watch("minutes") || 0)
+  );
+  const willExceedEstimate = estimatedMinutes && currentInputMinutes > estimatedMinutes;
 
   const handleAddQuickTime = (minutes: number) => {
     const current = parseTimeInput(
@@ -172,6 +183,15 @@ export function TimeEntryDialog({
                 </Button>
               </div>
             </div>
+
+            {willExceedEstimate && (
+              <Alert className="border-orange-200 bg-orange-50">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <AlertDescription className="text-orange-800">
+                  زمان وارد شده از برآورد زمانی ({Math.floor(estimatedMinutes / 60)}h {estimatedMinutes % 60}m}) بیشتر است
+                </AlertDescription>
+              </Alert>
+            )}
 
             <DialogFooter>
               <Button

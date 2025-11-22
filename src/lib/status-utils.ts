@@ -1,17 +1,9 @@
-import type {
-  TasksResponse,
-  StatusConfigsResponse,
-  TasksStatusOptions,
-} from "./pocketbase-types";
+import type { TasksResponse, TasksStatusOptions } from "./pocketbase-types";
 
 /**
- * Get the effective status for a task, preferring status_config over legacy status
+ * Get the status for a task
  */
-export function getTaskStatus(
-  task: TasksResponse<{
-    status_config?: StatusConfigsResponse;
-  }>,
-): {
+export function getTaskStatus(task: TasksResponse): {
   key: string;
   name: string;
   color: string;
@@ -19,22 +11,8 @@ export function getTaskStatus(
   isCompleted: boolean;
   isCanceled: boolean;
 } {
-  // Prefer status_config if available (new system)
-  if (task.expand?.status_config) {
-    const config = task.expand.status_config;
-    return {
-      key: config.key,
-      name: config.name,
-      color: config.color,
-      icon: config.icon,
-      isCompleted: config.is_completed || false,
-      isCanceled: config.is_canceled || false,
-    };
-  }
-
-  // Fallback to legacy status field
   if (task.status) {
-    return legacyStatusToConfig(task.status);
+    return statusToConfig(task.status);
   }
 
   // Default fallback
@@ -49,9 +27,9 @@ export function getTaskStatus(
 }
 
 /**
- * Convert legacy status values to status config format
+ * Convert status values to config format
  */
-function legacyStatusToConfig(status: TasksStatusOptions): {
+function statusToConfig(status: TasksStatusOptions): {
   key: string;
   name: string;
   color: string;
@@ -158,11 +136,7 @@ function legacyStatusToConfig(status: TasksStatusOptions): {
 /**
  * Check if a task is completed (based on status)
  */
-export function isTaskCompleted(
-  task: TasksResponse<{
-    status_config?: StatusConfigsResponse;
-  }>,
-): boolean {
+export function isTaskCompleted(task: TasksResponse): boolean {
   const status = getTaskStatus(task);
   return status.isCompleted;
 }
@@ -170,11 +144,7 @@ export function isTaskCompleted(
 /**
  * Check if a task is canceled
  */
-export function isTaskCanceled(
-  task: TasksResponse<{
-    status_config?: StatusConfigsResponse;
-  }>,
-): boolean {
+export function isTaskCanceled(task: TasksResponse): boolean {
   const status = getTaskStatus(task);
   return status.isCanceled;
 }
@@ -182,11 +152,7 @@ export function isTaskCanceled(
 /**
  * Get status color class for Tailwind
  */
-export function getStatusColorClass(
-  task: TasksResponse<{
-    status_config?: StatusConfigsResponse;
-  }>,
-): string {
+export function getStatusColorClass(task: TasksResponse): string {
   const status = getTaskStatus(task);
   const colorMap: Record<string, string> = {
     gray: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",

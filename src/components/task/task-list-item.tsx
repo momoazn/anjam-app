@@ -1,14 +1,13 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { Icon } from "@tabler/icons-react";
-import * as TablerIcons from "@tabler/icons-react";
+import { Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { fa } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
-import { UsersResponse, StatusConfigsRecord } from "@/lib/pocketbase-types";
+import { UsersResponse } from "@/lib/pocketbase-types";
 import {
   priorityColors,
   priorityIcons,
@@ -16,6 +15,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
+import { minutesToHoursAndMinutes } from "@/lib/time-utils";
 
 const formatDateShort = (dateString?: string | null) => {
   if (!dateString) {
@@ -26,32 +26,6 @@ const formatDateShort = (dateString?: string | null) => {
     return "-";
   }
   return digitsEnToFa(format(date, "dd MMMM"));
-};
-
-// Helper function to get icon component by name
-const getIconComponent = (iconName: string | undefined): Icon => {
-  if (!iconName) return TablerIcons.IconCircle;
-  // Type guard to check if the property exists and is an Icon component
-  const iconKey = iconName as keyof typeof TablerIcons;
-  if (iconKey in TablerIcons && typeof TablerIcons[iconKey] === "function") {
-    return TablerIcons[iconKey] as Icon;
-  }
-  return TablerIcons.IconCircle;
-};
-
-// Helper function to get color class by color name
-const getColorClass = (color: string | undefined): string => {
-  if (!color) return "text-gray-500 dark:text-gray-400";
-  const colorMap: Record<string, string> = {
-    gray: "text-gray-500 dark:text-gray-400",
-    yellow: "text-yellow-500 dark:text-yellow-400",
-    purple: "text-purple-600 dark:text-purple-400",
-    blue: "text-blue-500 dark:text-blue-400",
-    green: "text-green-500 dark:text-green-400",
-    red: "text-red-500 dark:text-red-400",
-    orange: "text-orange-500 dark:text-orange-400",
-  };
-  return colorMap[color] || "text-gray-500 dark:text-gray-400";
 };
 
 type TaskListItemProps = {
@@ -73,16 +47,8 @@ export function TaskListItem({
 }: TaskListItemProps) {
   const navigate = useNavigate();
 
-  // Get custom status config if available, otherwise fall back to default
-  const statusConfig = task.expand?.status_config as
-    | StatusConfigsRecord
-    | undefined;
-  const StatusIcon = statusConfig
-    ? getIconComponent(statusConfig.icon)
-    : taskStatusIcons[task.status];
-  const statusIconColor = statusConfig
-    ? getColorClass(statusConfig.color)
-    : taskStatusColors[task.status];
+  const StatusIcon = taskStatusIcons[task.status];
+  const statusIconColor = taskStatusColors[task.status];
 
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
@@ -184,10 +150,22 @@ export function TaskListItem({
           </div>
         )}
 
-        {/* Date */}
-        <span className="text-muted-foreground group-hover:text-foreground w-[70px] shrink-0 text-right text-xs transition-colors duration-200">
-          {formatDateShort(task.deadline)}
-        </span>
+        {/* Date and Time */}
+        <div className="flex flex-col items-end gap-1 w-[70px] shrink-0">
+          <span className="text-muted-foreground group-hover:text-foreground text-right text-xs transition-colors duration-200">
+            {formatDateShort(task.deadline)}
+          </span>
+          {(task.estimated_hours || task.estimated_minutes || task.time_spent_minutes) && (
+            <div className="flex items-center gap-1 text-xs">
+              <Clock className="h-3 w-3 text-muted-foreground" />
+              <span className="text-muted-foreground">
+                {task.time_spent_minutes ? minutesToHoursAndMinutes(task.time_spent_minutes).hours + 'h' + minutesToHoursAndMinutes(task.time_spent_minutes).minutes + 'm' : ''}
+                {(task.time_spent_minutes && (task.estimated_hours || task.estimated_minutes)) ? '/' : ''}
+                {(task.estimated_hours || task.estimated_minutes) ? (task.estimated_hours || 0) + 'h' + (task.estimated_minutes || 0) + 'm' : ''}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Assignee Name */}
         <div className="text-xs">
