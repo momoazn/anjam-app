@@ -11,11 +11,10 @@ import {
 import { format, isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useMemo } from "react";
-
+import { PageTransition } from "@/components/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PageTransition } from "@/components/page-transition";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -266,7 +265,7 @@ export default function Notifications() {
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-right">
-          <h1 className="text-foreground flex items-center justify-end gap-2 text-xl font-bold md:text-2xl">
+          <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
             <IconBell className="h-5 w-5 md:h-6 md:w-6" />
             {fa.notifications.pageTitle}
           </h1>
@@ -325,7 +324,7 @@ export default function Notifications() {
                     onClick={() => user?.id && clearAll.mutate(user.id)}
                     disabled={notifications.length === 0}
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
-                    aria-label={fa.notifications.actions.clearAll}
+                    aria-label={fa.notifications.clearAll}
                   >
                     <IconTrash className="h-4 w-4" />
                   </Button>
