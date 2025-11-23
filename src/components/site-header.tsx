@@ -90,6 +90,11 @@ export function SiteHeader() {
             { label: fa.navigation.dashboard, to: "/" as const },
             { label: fa.navigation.tags },
           ];
+        case "settings":
+          return [
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.settings },
+          ];
         default:
           return [
             { label: fa.navigation.dashboard, to: "/" as const },

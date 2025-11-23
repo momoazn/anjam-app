@@ -568,9 +568,6 @@ function AboutSection() {
           <Separator />
           <div className="space-y-2 text-sm">
             <p>این برنامه جهت مدیریت پروژه‌ها و تسک‌های تیمی طراحی شده است.</p>
-            <p className="text-muted-foreground">
-              توسعه داده شده با ❤️ و React + Go
-            </p>
           </div>
         </CardContent>
       </Card>
