@@ -10,6 +10,7 @@ type AuthState = {
   isLoggedIn: boolean;
   role: UsersRoleOptions | null;
   login: (user: UsersRecord, token: string) => void;
+  updateUser: (user: UsersRecord) => void;
   logout: () => void;
 };
 
@@ -27,6 +28,9 @@ export const useAuthStore = create<AuthState>()(
           isLoggedIn: true,
           role: user.role,
         });
+      },
+      updateUser(user: UsersRecord) {
+        set({ user: user });
       },
       logout() {
         set({ user: null, token: null, isLoggedIn: false, role: null });
@@ -46,10 +50,13 @@ export const useAuthIsLoggedIn = () =>
   useAuthStore((state) => state.isLoggedIn);
 export const useAuthRole = () => useAuthStore((state) => state.role);
 export const useAuthLogin = () => useAuthStore((state) => state.login);
+export const useAuthUpdateUser = () =>
+  useAuthStore((state) => state.updateUser);
 export const useAuthLogout = () => useAuthStore((state) => state.logout);
 export const useAuthActions = () => {
   const login = useAuthLogin();
   const logout = useAuthLogout();
+  const updateUser = useAuthUpdateUser();
 
-  return { login, logout };
+  return { login, logout, updateUser };
 };
