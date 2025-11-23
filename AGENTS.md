@@ -36,7 +36,12 @@ This is a **task and project management application** with a Go backend (PocketB
 
 ## Build, Test, and Development Commands
 
-### Development
+### Development Workflow
+
+**DO NOT run the app after each change.** Instead:
+
+1. Make your code changes
+2. Run quality checks when changes are complete: `bun run check`
 
 - `bun run dev` - Start both frontend (Vite port 5173) and backend (Go port 8090)
 - `bun run dev:client` - Frontend only (Vite dev server with HMR)
@@ -51,9 +56,9 @@ This is a **task and project management application** with a Go backend (PocketB
 - `bun run build:server` - Build Go binary (`task-manager`)
 - `bun run build:win` - Cross-compile for Windows
 
-### Quality Checks
+### Quality Checks (Run After Changes Complete)
 
-- `bun run check` - Run all checks (type + lint + format)
+- `bun run check` - Run all checks (type + lint + format) - **PRIMARY COMMAND**
 - `bun run type:check` - TypeScript type checking (no emit)
 - `bun run lint` / `lint:check` - ESLint (fix / check only)
 - `bun run fmt` / `fmt:check` - Prettier (format / check only)
