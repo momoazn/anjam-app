@@ -123,6 +123,9 @@ export const fa = {
     helps: "راهنما",
     settings: "تنظیمات",
     notifications: "اعلان‌ها",
+    tags: "تگ‌ها",
+    taskCalendar: "تقویم تسک‌ها",
+    myTasks: "تسک‌های من",
     quickCreate: {
       button: "ایجاد سریع",
       tooltip: "ایجاد سریع تسک یا پروژه",
@@ -132,7 +135,6 @@ export const fa = {
     recentProjects: "پروژه‌های اخیر",
     starredProjects: "پروژه‌های نشان‌شده",
     taskViews: "نماهای تسک",
-    myTasks: "تسک‌های من",
     dueToday: "سررسید امروز",
     overdue: "گذشته‌موعد",
     inProgress: "در حال انجام",
@@ -1493,6 +1495,10 @@ export const fa = {
       saveFilters: "خطا در ذخیره فیلترها",
       subscribeNotifications: "خطا در اشتراک در اعلان‌ها",
       loadNotifications: "نتوانستیم اعلان‌ها را بارگذاری کنیم",
+    },
+    permission: {
+      onlySuperusers:
+        "تنها کاربران ارشد (superuser) می‌توانند این عملیات را انجام دهند",
     },
     boundary: {
       title: "اوه! مشکلی پیش آمده",

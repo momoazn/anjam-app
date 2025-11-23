@@ -113,6 +113,10 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
         message.includes("حساب کاربری")
       ) {
         toast.error(fa.auth.errors.userBlocked);
+      }
+      // Check if this is a superuser permission error
+      else if (message.includes("only superusers can perform this action")) {
+        toast.error(fa.errors.permission.onlySuperusers);
       } else {
         // Display the specific error message from the backend
         toast.error(errorMessage);

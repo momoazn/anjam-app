@@ -85,6 +85,11 @@ export function SiteHeader() {
             { label: fa.navigation.dashboard, to: "/" as const },
             { label: fa.navigation.myTasks },
           ];
+        case "tags":
+          return [
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.tags },
+          ];
         default:
           return [
             { label: fa.navigation.dashboard, to: "/" as const },

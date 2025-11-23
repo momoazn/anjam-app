@@ -97,7 +97,8 @@ export default function TimesheetPage() {
 
       dayTasks.forEach((task) => {
         const projectName = (
-          task.expand?.project?.name || fa.fallbacks.projectName
+          (task.expand as { project?: { name?: string } })?.project?.name ||
+          fa.reports.fallbacks.projectName
         ).replace(/"/g, '""');
         const title = (task.title || "").replace(/"/g, '""');
         const minutes = task.time_spent_minutes || 0;
@@ -174,7 +175,7 @@ export default function TimesheetPage() {
 
           <Button onClick={handleExport} variant="outline" size="sm">
             <Download className="mr-2 h-4 w-4" />
-            {fa.common.export}
+            {fa.common.buttons.export}
           </Button>
         </div>
       </div>
@@ -215,13 +216,14 @@ export default function TimesheetPage() {
                           {task.title}
                         </div>
                         <div className="text-muted-foreground">
-                          {task.expand?.project?.name ||
-                            fa.fallbacks.projectName}
+                          {(task.expand as { project?: { name?: string } })
+                            ?.project?.name || fa.reports.fallbacks.projectName}
                         </div>
                         <div className="mt-1 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           <span>
-                            {taskTime.hours > 0 && `${digitsEnToFa(taskTime.hours)}h `}
+                            {taskTime.hours > 0 &&
+                              `${digitsEnToFa(taskTime.hours)}h `}
                             {digitsEnToFa(taskTime.minutes)}m
                           </span>
                         </div>
@@ -232,7 +234,7 @@ export default function TimesheetPage() {
                 </div>
               ) : (
                 <div className="text-muted-foreground py-4 text-center text-xs">
-                  {fa.common.states.no} {fa.task.timeSpent}
+                  هیچ {fa.task.timeSpent}
                 </div>
               )}
             </CardContent>

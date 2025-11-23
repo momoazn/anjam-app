@@ -46,6 +46,7 @@ import { pb } from "@/lib/pocketbase";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
+import { handlePocketBaseError } from "@/lib/error-handler";
 
 export default function ProjectUsers() {
   const { id } = useParams<{ id: string }>();
@@ -91,8 +92,7 @@ export default function ProjectUsers() {
       toast.success(fa.projects.users.addSuccess);
     },
     onError: (error) => {
-      toast.error(fa.projects.users.addError);
-      console.error("Error adding user to project:", error);
+      handlePocketBaseError(error);
     },
   });
 
@@ -135,8 +135,7 @@ export default function ProjectUsers() {
         toast.success(fa.projects.users.removeSuccess);
       },
       onError: (error) => {
-        toast.error(fa.projects.users.removeError);
-        console.error("Error removing user from project:", error);
+        handlePocketBaseError(error);
       },
     });
 

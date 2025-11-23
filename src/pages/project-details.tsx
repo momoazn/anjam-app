@@ -11,7 +11,6 @@ import {
   User,
   X,
 } from "lucide-react";
-import { ClientResponseError } from "pocketbase";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -34,6 +33,7 @@ import type { TasksResponse } from "@/lib/pocketbase-types";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
+import { handlePocketBaseError } from "@/lib/error-handler";
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
@@ -118,30 +118,8 @@ export default function ProjectDetails() {
       setNewFiles([]);
       setFilesToDelete([]);
     },
-    onError: (error: Error) => {
-      // Parse PocketBase validation errors
-      let errorMessage = error.message;
-
-      if (error instanceof ClientResponseError && error.data?.data) {
-        const validationErrors = error.data.data as Record<
-          string,
-          { code: string; message: string }
-        >;
-        const errorMessages: string[] = [];
-
-        Object.keys(validationErrors).forEach((field) => {
-          const fieldError = validationErrors[field];
-          if (fieldError.message) {
-            errorMessages.push(fieldError.message);
-          }
-        });
-
-        if (errorMessages.length > 0) {
-          errorMessage = errorMessages.join(" | ");
-        }
-      }
-
-      toast.error(fa.projects.edit.error.replace("{error}", errorMessage));
+    onError: (error) => {
+      handlePocketBaseError(error);
     },
   });
 

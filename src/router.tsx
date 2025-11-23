@@ -122,6 +122,11 @@ const Helps = React.lazy(() =>
     default: () => <div>{fa.errors.pageLoad.helps}</div>,
   })),
 );
+const Settings = React.lazy(() =>
+  import("@/pages/settings").catch(() => ({
+    default: () => <div>Error loading settings</div>,
+  })),
+);
 const Notifications = React.lazy(() =>
   import("@/pages/notifications").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.notifications}</div>,
@@ -357,6 +362,12 @@ const routes: RouteType[] = [
     element: <Helps />,
     protected: true,
     title: fa.navigation.helps,
+  },
+  {
+    path: "/settings",
+    element: <Settings />,
+    protected: true,
+    title: fa.navigation.settings,
   },
   {
     path: "/notifications",

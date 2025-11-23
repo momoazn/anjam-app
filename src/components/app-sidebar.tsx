@@ -1,5 +1,6 @@
 import {
   IconBell,
+  IconCalendar,
   IconChartBar,
   IconClock,
   IconDashboard,
@@ -7,6 +8,9 @@ import {
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
+  IconSettings,
+  IconTag,
+  IconUser,
   IconUsers,
 } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
@@ -39,6 +43,21 @@ const data = {
       icon: IconListDetails,
     },
     {
+      title: fa.navigation.tags,
+      url: "/tags",
+      icon: IconTag,
+    },
+    {
+      title: fa.navigation.taskCalendar,
+      url: "/tasks/calendar",
+      icon: IconCalendar,
+    },
+    {
+      title: fa.navigation.myTasks,
+      url: "/my-tasks",
+      icon: IconUser,
+    },
+    {
       title: fa.navigation.projects,
       url: "/projects",
       icon: IconFolder,
@@ -64,6 +83,11 @@ const data = {
       icon: IconUsers,
       adminOnly: true,
       supervisorOnly: true,
+    },
+    {
+      title: fa.navigation.settings,
+      url: "/settings",
+      icon: IconSettings,
     },
     {
       title: fa.navigation.helps,

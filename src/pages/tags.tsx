@@ -34,6 +34,7 @@ import {
 } from "@/hooks/tags";
 import type { TagsResponse } from "@/lib/pocketbase-types";
 import { useToast } from "@/hooks/use-toast";
+import { handlePocketBaseError } from "@/lib/error-handler";
 
 // Predefined color palette for tags
 const TAG_COLORS = [
@@ -110,11 +111,8 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
       onOpenChange(false);
       resetForm();
     },
-    onError: () => {
-      toast({
-        title: text.tagsManagement.toast.createError,
-        variant: "destructive",
-      });
+    onError: (error) => {
+      handlePocketBaseError(error);
     },
   });
 
@@ -124,11 +122,8 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
       onOpenChange(false);
       resetForm();
     },
-    onError: () => {
-      toast({
-        title: text.tagsManagement.toast.updateError,
-        variant: "destructive",
-      });
+    onError: (error) => {
+      handlePocketBaseError(error);
     },
   });
 
@@ -275,11 +270,8 @@ export default function TagsManagement() {
       setDeleteDialogOpen(false);
       setSelectedTag(null);
     },
-    onError: () => {
-      toast({
-        title: text.tagsManagement.toast.deleteError,
-        variant: "destructive",
-      });
+    onError: (error) => {
+      handlePocketBaseError(error);
     },
   });
 

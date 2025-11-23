@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { ClientResponseError } from "pocketbase";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -19,9 +18,10 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
-import { FileWithPreview } from "@/hooks/use-file-upload";
-import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks";
+import { FileWithPreview } from "@/hooks/use-file-upload";
+import { handlePocketBaseError } from "@/lib/error-handler";
+import { pb } from "@/lib/pocketbase";
 import { useAuthUser } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
@@ -77,30 +77,8 @@ export default function CreateProject() {
       toast.success(fa.projects.create.success);
       navigate("/projects");
     },
-    onError: (error: Error) => {
-      // Parse PocketBase validation errors
-      let errorMessage = error.message;
-
-      if (error instanceof ClientResponseError && error.data?.data) {
-        const validationErrors = error.data.data as Record<
-          string,
-          { code: string; message: string }
-        >;
-        const errorMessages: string[] = [];
-
-        Object.keys(validationErrors).forEach((field) => {
-          const fieldError = validationErrors[field];
-          if (fieldError.message) {
-            errorMessages.push(fieldError.message);
-          }
-        });
-
-        if (errorMessages.length > 0) {
-          errorMessage = errorMessages.join(" | ");
-        }
-      }
-
-      toast.error(fa.projects.create.error.replace("{error}", errorMessage));
+    onError: (error) => {
+      handlePocketBaseError(error);
     },
   });
 

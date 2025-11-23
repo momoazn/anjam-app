@@ -51,6 +51,7 @@ import {
 } from "@/lib/time-utils";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
+import { handlePocketBaseError } from "@/lib/error-handler";
 
 const formatTaskDate = (dateString?: string | null) => {
   if (!dateString) {
@@ -86,7 +87,7 @@ export default function TaskDetails() {
       navigate("/tasks");
     },
     onError: (error) => {
-      toast.error(fa.tasks.delete.error.replace("{error}", error.message));
+      handlePocketBaseError(error);
     },
   });
 

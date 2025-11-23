@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { ClientResponseError } from "pocketbase";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -21,11 +20,12 @@ import {
 import { Form } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
-import { FileWithPreview } from "@/hooks/use-file-upload";
-import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks";
-import { useAuthUser } from "@/store/auth-store";
+import { FileWithPreview } from "@/hooks/use-file-upload";
+import { handlePocketBaseError } from "@/lib/error-handler";
+import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
+import { useAuthUser } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
@@ -114,30 +114,8 @@ export default function EditProject() {
       toast.success(fa.projects.edit.success);
       navigate("/projects");
     },
-    onError: (error: Error) => {
-      // Parse PocketBase validation errors
-      let errorMessage = error.message;
-
-      if (error instanceof ClientResponseError && error.data?.data) {
-        const validationErrors = error.data.data as Record<
-          string,
-          { code: string; message: string }
-        >;
-        const errorMessages: string[] = [];
-
-        Object.keys(validationErrors).forEach((field) => {
-          const fieldError = validationErrors[field];
-          if (fieldError.message) {
-            errorMessages.push(fieldError.message);
-          }
-        });
-
-        if (errorMessages.length > 0) {
-          errorMessage = errorMessages.join(" | ");
-        }
-      }
-
-      toast.error(fa.projects.edit.error.replace("{error}", errorMessage));
+    onError: (error) => {
+      handlePocketBaseError(error);
     },
   });
 
