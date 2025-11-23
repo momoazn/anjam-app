@@ -8,7 +8,6 @@ import {
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
-  IconSettings,
   IconTag,
   IconUser,
   IconUsers,
@@ -83,11 +82,6 @@ const data = {
       icon: IconUsers,
       adminOnly: true,
       supervisorOnly: true,
-    },
-    {
-      title: fa.navigation.settings,
-      url: "/settings",
-      icon: IconSettings,
     },
     {
       title: fa.navigation.helps,
