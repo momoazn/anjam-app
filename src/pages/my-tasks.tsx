@@ -9,12 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
-import { text } from "@/constants/text";
+import { fa, text } from "@/constants/text";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
 import { useAuthUser } from "@/store/auth-store";
 import type { TaskWithProject } from "@/lib/pocketbase";
-import type {
+import {
   TasksStatusOptions,
   TasksPriorityOptions,
 } from "@/lib/pocketbase-types";
@@ -134,8 +134,7 @@ export default function MyTasks() {
       if (!task.expand?.project) return;
 
       const projectId = task.project;
-      const projectName =
-        task.expand.project.title || fa.common.messages.noName;
+      const projectName = task.expand.project.name || fa.common.messages.noName;
 
       if (!grouped.has(projectId)) {
         grouped.set(projectId, { projectName, tasks: [] });
@@ -207,16 +206,19 @@ export default function MyTasks() {
 
   const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
     [
-      { value: "todo", label: text.tasks.status.todo },
-      { value: "in_progress", label: text.tasks.status.in_progress },
-      { value: "pending", label: text.tasks.status.pending },
-      { value: "review", label: text.tasks.status.review },
-      { value: "testing", label: text.tasks.status.testing },
-      { value: "ready", label: text.tasks.status.ready },
-      { value: "blocked", label: text.tasks.status.blocked },
-      { value: "on_hold", label: text.tasks.status.on_hold },
-      { value: "done", label: text.tasks.status.done },
-      { value: "canceled", label: text.tasks.status.canceled },
+      { value: TasksStatusOptions.todo, label: text.tasks.status.todo },
+      {
+        value: TasksStatusOptions.in_progress,
+        label: text.tasks.status.in_progress,
+      },
+      { value: TasksStatusOptions.pending, label: text.tasks.status.pending },
+      { value: TasksStatusOptions.review, label: text.tasks.status.review },
+      { value: TasksStatusOptions.testing, label: text.tasks.status.testing },
+      { value: TasksStatusOptions.ready, label: text.tasks.status.ready },
+      { value: TasksStatusOptions.blocked, label: text.tasks.status.blocked },
+      { value: TasksStatusOptions.on_hold, label: text.tasks.status.on_hold },
+      { value: TasksStatusOptions.done, label: text.tasks.status.done },
+      { value: TasksStatusOptions.canceled, label: text.tasks.status.canceled },
     ];
 
   return (
@@ -435,7 +437,7 @@ export default function MyTasks() {
                             <h4 className="font-medium">{task.title}</h4>
                             {task.deadline && (
                               <p className="text-muted-foreground mt-1 text-sm">
-                                {text.common.deadline}:{" "}
+                                {fa.tasks.addTask.deadline}:{" "}
                                 {new Date(task.deadline).toLocaleDateString(
                                   "fa-IR",
                                 )}

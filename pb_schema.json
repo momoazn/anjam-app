@@ -171,7 +171,7 @@
   },
   {
     "id": "_pb_users_auth_",
-    "listRule": "@request.auth.role = \"admin\" || @request.auth.role = \"supervisor\" || @request.auth.id = id",
+    "listRule": "@request.auth.role = \"admin\" || @request.auth.role = \"supervisor\"",
     "viewRule": "@request.auth.role = \"admin\" || @request.auth.role = \"supervisor\" || @request.auth.id = id",
     "createRule": "",
     "updateRule": "@request.auth.role = \"admin\" || @request.auth.id = id",

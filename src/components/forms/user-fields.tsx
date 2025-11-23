@@ -29,10 +29,16 @@ type UserFieldsProps = {
     role: UsersRoleOptions;
   }>;
   isEdit?: boolean;
+  editingUserId?: string;
 };
 
-export function UserFields({ control, isEdit = false }: UserFieldsProps) {
+export function UserFields({
+  control,
+  isEdit = false,
+  editingUserId,
+}: UserFieldsProps) {
   const user = useAuthUser();
+  const isEditingSelf = editingUserId === user?.id;
 
   // Get available roles based on current user's role
   const availableRoles = useMemo(() => {
@@ -113,30 +119,33 @@ export function UserFields({ control, isEdit = false }: UserFieldsProps) {
         )}
       />
 
-      <FormField
-        control={control}
-        name="role"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{fa.users.table.columns.role}</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl>
-                <SelectTrigger aria-label={fa.users.table.columns.role}>
-                  <SelectValue placeholder={fa.users.form.selectRole} />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {availableRoles.map((role) => (
-                  <SelectItem key={role} value={role}>
-                    {fa.users.table.roles[role]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Only show role field if user has permission to change roles or if not editing self */}
+      {(!isEditingSelf || user?.role === UsersRoleOptions.admin) && (
+        <FormField
+          control={control}
+          name="role"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{fa.users.table.columns.role}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger aria-label={fa.users.table.columns.role}>
+                    <SelectValue placeholder={fa.users.form.selectRole} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {availableRoles.map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {fa.users.table.roles[role]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
     </>
   );
 }

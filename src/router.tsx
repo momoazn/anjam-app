@@ -157,6 +157,19 @@ const PermissionProtectedRoute = ({
     return <Navigate to="/login" replace />;
   }
 
+  // Special case: allow users to edit their own profile
+  if (
+    permission === "users.manage" &&
+    window.location.pathname.match(/^\/users\/[^/]+\/edit$/)
+  ) {
+    const urlParts = window.location.pathname.split("/");
+    const userIdInUrl = urlParts[2];
+    if (user?.id === userIdInUrl) {
+      // User is editing their own profile, allow access
+      return <>{children}</>;
+    }
+  }
+
   if (!can(user?.role as UsersRoleOptions | null, permission)) {
     return <Navigate to="/" replace />;
   }

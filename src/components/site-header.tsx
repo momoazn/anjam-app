@@ -19,7 +19,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks/query-keys";
 import { useTheme } from "@/hooks/use-theme";
-import type { ProjectsResponse } from "@/lib/pocketbase-types";
+import type { ProjectsResponse, TasksResponse } from "@/lib/pocketbase-types";
+import type { TaskWithProject } from "@/lib/pocketbase";
 import { useQueryClient } from "@tanstack/react-query";
 import { Moon, Plus, Sun } from "lucide-react";
 import { Fragment, useEffect, useMemo } from "react";
@@ -79,6 +80,11 @@ export function SiteHeader() {
             { label: fa.navigation.dashboard, to: "/" as const },
             { label: fa.navigationLabels.timesheet },
           ];
+        case "my-tasks":
+          return [
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.myTasks },
+          ];
         default:
           return [
             { label: fa.navigation.dashboard, to: "/" as const },
@@ -110,6 +116,13 @@ export function SiteHeader() {
           { label: fa.navigation.dashboard, to: "/" as const },
           { label: fa.navigation.users, to: "/users" as const },
           { label: fa.users.create.title },
+        ];
+      }
+      if (first === "tasks" && second === "calendar") {
+        return [
+          { label: fa.navigation.dashboard, to: "/" as const },
+          { label: fa.navigation.tasks, to: "/tasks" as const },
+          { label: fa.tasks.calendar.title },
         ];
       }
     }
@@ -167,6 +180,80 @@ export function SiteHeader() {
         { label: fa.navigation.users, to: "/users" as const },
         { label: userId },
         { label: fa.users.edit.title },
+      ];
+    }
+
+    // Task detail routes: /tasks/:id
+    if (
+      first === "tasks" &&
+      parts.length === 2 &&
+      parts[1] !== "new" &&
+      parts[1] !== "calendar"
+    ) {
+      const taskId = parts[1];
+
+      // Try to read the task's title from cache only
+      let taskTitle: string | undefined;
+      const single = queryClient.getQueryData<TasksResponse>(
+        queryKeys.tasks.detail(taskId),
+      );
+      if (single?.title) taskTitle = single.title as string;
+
+      // If not found in detail cache, search through task list caches
+      if (!taskTitle) {
+        const listQueries = queryClient.getQueriesData<TaskWithProject[]>({
+          queryKey: queryKeys.tasks.all,
+        });
+        for (const [, data] of listQueries) {
+          if (data) {
+            const task = data.find((t) => t.id === taskId);
+            if (task?.title) {
+              taskTitle = task.title as string;
+              break;
+            }
+          }
+        }
+      }
+
+      return [
+        { label: fa.navigation.dashboard, to: "/" as const },
+        { label: fa.navigation.tasks, to: "/tasks" as const },
+        { label: taskTitle ?? taskId },
+      ];
+    }
+
+    // Task edit routes: /tasks/:id/edit
+    if (first === "tasks" && parts.length === 3 && parts[2] === "edit") {
+      const taskId = parts[1];
+
+      // Try to read the task's title from cache only
+      let taskTitle: string | undefined;
+      const single = queryClient.getQueryData<TasksResponse>(
+        queryKeys.tasks.detail(taskId),
+      );
+      if (single?.title) taskTitle = single.title as string;
+
+      // If not found in detail cache, search through task list caches
+      if (!taskTitle) {
+        const listQueries = queryClient.getQueriesData<TaskWithProject[]>({
+          queryKey: queryKeys.tasks.all,
+        });
+        for (const [, data] of listQueries) {
+          if (data) {
+            const task = data.find((t) => t.id === taskId);
+            if (task?.title) {
+              taskTitle = task.title as string;
+              break;
+            }
+          }
+        }
+      }
+
+      return [
+        { label: fa.navigation.dashboard, to: "/" as const },
+        { label: fa.navigation.tasks, to: "/tasks" as const },
+        { label: taskTitle ?? taskId, to: `/tasks/${taskId}` as const },
+        { label: fa.tasks.editTask.replace("{title}", taskTitle ?? taskId) },
       ];
     }
 

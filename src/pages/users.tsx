@@ -32,7 +32,8 @@ export default function Users() {
   const canViewPage = isAdmin || isSupervisor;
 
   const handleEdit = (user: UsersResponse) => {
-    if (!isAdmin) return;
+    // Allow admins to edit any user, and users to edit themselves
+    if (!isAdmin && user.id !== user?.id) return;
     navigate(`/users/${user.id}/edit`);
   };
 
