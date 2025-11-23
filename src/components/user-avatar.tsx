@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fa } from "@/constants/text";
+import { pb } from "@/lib/pocketbase";
 import { cn } from "@/lib/utils";
 
 function getUserInitials({
@@ -27,10 +28,43 @@ type UserAvatarProps = {
     last_name?: string;
     username?: string;
     avatar?: string;
+    id?: string;
+    collectionId?: string;
+    collectionName?: string;
   };
   showUnassigned?: boolean;
   className?: string;
 };
+
+function getAvatarUrl(user: UserAvatarProps["user"]) {
+  if (!user || !user.avatar) return undefined;
+
+  const avatar = user.avatar;
+
+  // If avatar already looks like a full URL or blob/data URL, use it as-is
+  if (
+    avatar.startsWith("http://") ||
+    avatar.startsWith("https://") ||
+    avatar.startsWith("blob:") ||
+    avatar.startsWith("data:")
+  ) {
+    return avatar;
+  }
+
+  // If we have a PocketBase record shape, build the file URL
+  if (user.id && (user.collectionId || user.collectionName)) {
+    try {
+      // We only need id/collection and avatar here; pb will handle the rest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return pb.files.getUrl(user as any, avatar);
+    } catch {
+      // Fall through to returning the raw value if something goes wrong
+    }
+  }
+
+  // Fallback: return the raw avatar value (may still work if it's a relative path)
+  return avatar;
+}
 
 export function UserAvatar({
   user,
@@ -45,9 +79,11 @@ export function UserAvatar({
 
   // If we have a user object, use it
   if (user) {
+    const avatarUrl = getAvatarUrl(user);
+
     return (
       <Avatar className={avatarClassName}>
-        <AvatarImage src={user.avatar} className="object-cover" />
+        <AvatarImage src={avatarUrl} className="object-cover" />
         <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground text-sm font-semibold">
           {getUserInitials({
             first_name: user.first_name,
