@@ -70,10 +70,13 @@ export function ProjectListGroup({
               onClick={() => navigate(`/projects/${project.id}/details`)}
             >
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center justify-between">
-                  <span className="truncate">{project.name}</span>
+                <CardTitle className="flex items-center justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <span className="truncate block">{project.name}</span>
+                    <p className="text-muted-foreground text-sm mt-1">{project.code}</p>
+                  </div>
                   {canEditDelete && (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -99,14 +102,13 @@ export function ProjectListGroup({
                     </div>
                   )}
                 </CardTitle>
-                <p className="text-muted-foreground text-sm">{project.code}</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Progress indicator with real data */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>{fa.project.progress}</span>
-                    <span>{digitsEnToFa(progress.progress)}%</span>
+                    <span className="font-medium">{digitsEnToFa(progress.progress)}%</span>
                   </div>
                   <div className="bg-muted/60 h-2 w-full rounded-full">
                     <div
@@ -114,51 +116,49 @@ export function ProjectListGroup({
                       style={{ width: `${progress.progress}%` }}
                     />
                   </div>
-                  <div className="text-muted-foreground flex justify-between text-xs">
-                    <span>
-                      {digitsEnToFa(progress.completed)} {fa.project.of}{" "}
-                      {digitsEnToFa(progress.total)} {fa.project.completedTasks}
-                    </span>
+                  <div className="text-muted-foreground text-xs">
+                    {digitsEnToFa(progress.completed)} {fa.project.of}{" "}
+                    {digitsEnToFa(progress.total)} {fa.project.completedTasks}
                   </div>
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 min-w-0"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/projects/${project.id}/details`);
                     }}
                   >
-                    <FileText className="mr-2 h-3 w-3" />
-                    {fa.projects.details.viewDetails}
+                    <FileText className="mr-2 h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{fa.projects.details.viewDetails}</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 min-w-0"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/projects/${project.id}/tasks`);
                     }}
                   >
-                    <Target className="mr-2 h-3 w-3" />
-                    {fa.project.tasks}
+                    <Target className="mr-2 h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{fa.project.tasks}</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 min-w-0"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/projects/${project.id}/users`);
                     }}
                   >
-                    <Users className="mr-2 h-3 w-3" />
-                    {fa.project.users}
+                    <Users className="mr-2 h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{fa.project.users}</span>
                   </Button>
                 </div>
               </CardContent>
