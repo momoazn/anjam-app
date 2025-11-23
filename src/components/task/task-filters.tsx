@@ -19,7 +19,7 @@ import {
   TasksStatusOptions,
   UsersResponse,
 } from "@/lib/pocketbase-types";
-import { statusOrder } from "@/lib/tasks-utils";
+import { statusOrder } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
 import { Search, X } from "lucide-react";
 import { useTags } from "@/hooks/tags";

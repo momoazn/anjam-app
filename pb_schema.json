@@ -1412,7 +1412,6 @@
           "blocked",
           "review",
           "testing",
-          "ready",
           "on_hold"
         ]
       },

@@ -9,7 +9,7 @@ import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import { statusOrder } from "@/lib/tasks-utils";
+import { statusOrder } from "@/lib/status-utils";
 import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { FilterX, FolderOpen, Plus } from "lucide-react";

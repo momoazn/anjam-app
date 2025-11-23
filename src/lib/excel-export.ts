@@ -76,7 +76,6 @@ function getStatusLabel(status: string | undefined): string {
     pending: "در انتظار",
     review: "در حال بررسی",
     testing: "در حال تست",
-    ready: "آماده",
     blocked: "مسدود شده",
     on_hold: "متوقف شده",
     done: "انجام‌شده",

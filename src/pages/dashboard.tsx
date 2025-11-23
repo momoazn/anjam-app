@@ -47,7 +47,7 @@ import { fa } from "@/constants/text";
 import { useNotifications, useProjects, useTasks } from "@/hooks";
 import { useAuthRole, useAuthUser } from "@/store/auth-store";
 import { TasksStatusOptions, UsersRoleOptions } from "@/lib/pocketbase-types";
-import { taskStatusBgColors } from "@/lib/tasks-utils";
+import { taskStatusBgColors } from "@/lib/status-utils";
 
 export default function Dashboard() {
   const navigate = useNavigate();

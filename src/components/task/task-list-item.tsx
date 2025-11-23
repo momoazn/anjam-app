@@ -13,7 +13,7 @@ import {
   priorityIcons,
   taskStatusColors,
   taskStatusIcons,
-} from "@/lib/tasks-utils";
+} from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
 

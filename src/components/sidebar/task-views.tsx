@@ -58,7 +58,7 @@ const taskViews = [
 
 export function TaskViews() {
   const counts = useTaskCounts();
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
 
   return (
     <SidebarGroup>

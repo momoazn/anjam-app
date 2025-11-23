@@ -20,10 +20,10 @@ import {
 import {
   priorityColors,
   priorityIcons,
-  statusLabels,
   taskStatusColors,
   taskStatusIcons,
-} from "@/lib/tasks-utils";
+  TASK_STATUS_CONFIG,
+} from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
 import {
   Select,
@@ -207,7 +207,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     <SelectTrigger>
                       <div className="flex items-center gap-2">
                         <StatusIcon className={`size-4 ${statusColor}`} />
-                        <span>{statusLabels[field.value]}</span>
+                        <span>{TASK_STATUS_CONFIG[field.value].name}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
@@ -220,7 +220,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                           <SelectItem key={status} value={status}>
                             <div className="flex items-center gap-2">
                               <ItemIcon className={`size-4 ${itemColor}`} />
-                              <span>{statusLabels[status]}</span>
+                              <span>{TASK_STATUS_CONFIG[status].name}</span>
                             </div>
                           </SelectItem>
                         );

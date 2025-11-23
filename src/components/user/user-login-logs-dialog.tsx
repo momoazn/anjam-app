@@ -1,7 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,38 +51,41 @@ export function UserLoginLogsDialog({
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const fetchLogs = useCallback(
+    async (pageNum: number) => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${pb.baseUrl}api/tm/users/${user.id}/login-logs?page=${pageNum}&perPage=20`,
+          {
+            headers: {
+              Authorization: pb.authStore.token,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(fa.users.actions.fetchLogsError);
+        }
+
+        const data = await response.json();
+        setLogs(data.items || []);
+        setPage(data.page);
+        setTotalPages(data.totalPages);
+      } catch (error) {
+        console.error("Error fetching login logs:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user.id],
+  );
+
   useEffect(() => {
     if (open && user) {
       fetchLogs(1);
     }
-  }, [open, user]);
-
-  const fetchLogs = async (pageNum: number) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${pb.baseUrl}api/tm/users/${user.id}/login-logs?page=${pageNum}&perPage=20`,
-        {
-          headers: {
-            Authorization: pb.authStore.token,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(fa.users.actions.fetchLogsError);
-      }
-
-      const data = await response.json();
-      setLogs(data.items || []);
-      setPage(data.page);
-      setTotalPages(data.totalPages);
-    } catch (error) {
-      console.error("Error fetching login logs:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [open, user, fetchLogs]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {

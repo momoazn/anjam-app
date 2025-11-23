@@ -43,7 +43,7 @@ import {
   priorityIcons,
   taskStatusBadgeSolids,
   taskStatusIcons,
-} from "@/lib/tasks-utils";
+} from "@/lib/status-utils";
 import {
   formatTimeSpent,
   minutesToHoursAndMinutes,

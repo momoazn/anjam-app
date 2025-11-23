@@ -51,18 +51,8 @@ export type TaskStatsData = {
 };
 
 // Status labels mapping
-const STATUS_LABELS: Record<TasksStatusOptions, string> = {
-  [TasksStatusOptions.todo]: fa.tasks.status.todo,
-  [TasksStatusOptions.in_progress]: fa.tasks.status.in_progress,
-  [TasksStatusOptions.pending]: fa.tasks.status.pending,
-  [TasksStatusOptions.done]: fa.tasks.status.done,
-  [TasksStatusOptions.canceled]: fa.tasks.status.canceled,
-  [TasksStatusOptions.blocked]: fa.tasks.status.blocked,
-  [TasksStatusOptions.review]: fa.tasks.status.review,
-  [TasksStatusOptions.testing]: fa.tasks.status.testing,
-  [TasksStatusOptions.ready]: fa.tasks.status.ready,
-  [TasksStatusOptions.on_hold]: fa.tasks.status.on_hold,
-};
+// Import centralized status config
+import { TASK_STATUS_CONFIG } from "./status-utils";
 
 // Priority labels mapping
 const PRIORITY_LABELS = {
@@ -82,7 +72,7 @@ export function calculateStatusDistribution(
   tasks: TaskWithProject[],
 ): StatusDistributionData[] {
   return Object.values(TasksStatusOptions).map((status) => ({
-    name: STATUS_LABELS[status],
+    name: TASK_STATUS_CONFIG[status].name,
     value: tasks.filter((task) => task.status === status).length,
     status,
   }));

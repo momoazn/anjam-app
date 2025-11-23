@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import DatePicker from "@/components/ui/date-picker";
+import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
 import {
   Popover,
   PopoverContent,
@@ -60,21 +61,11 @@ const TIME_PRESETS = {
   CUSTOM: { label: fa.reports.timePresets.custom, value: "CUSTOM" as const },
 } as const;
 
-const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] = [
-  { label: fa.tasks.status.todo, value: "todo" as TasksStatusOptions },
-  {
-    label: fa.tasks.status.in_progress,
-    value: "in_progress" as TasksStatusOptions,
-  },
-  { label: fa.tasks.status.pending, value: "pending" as TasksStatusOptions },
-  { label: fa.tasks.status.done, value: "done" as TasksStatusOptions },
-  { label: fa.tasks.status.canceled, value: "canceled" as TasksStatusOptions },
-  { label: fa.tasks.status.blocked, value: "blocked" as TasksStatusOptions },
-  { label: fa.tasks.status.review, value: "review" as TasksStatusOptions },
-  { label: fa.tasks.status.testing, value: "testing" as TasksStatusOptions },
-  { label: fa.tasks.status.ready, value: "ready" as TasksStatusOptions },
-  { label: fa.tasks.status.on_hold, value: "on_hold" as TasksStatusOptions },
-];
+// Generate status options from centralized configuration
+const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] = Object.values(TASK_STATUS_CONFIG).map((config) => ({
+  label: config.name,
+  value: config.key,
+}));
 
 const PRIORITY_OPTIONS: { label: string; value: TasksPriorityOptions }[] = [
   {

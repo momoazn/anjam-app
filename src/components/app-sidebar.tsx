@@ -1,3 +1,16 @@
+import { NavMain } from "@/components/nav-main";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { fa } from "@/constants/text";
+import { can } from "@/lib/permissions";
+import { useAuthUser } from "@/store/auth-store";
 import {
   IconBell,
   IconCalendar,
@@ -13,21 +26,6 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
-
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { fa } from "@/constants/text";
-import { can } from "@/lib/permissions";
-import { useAuthUser } from "@/store/auth-store";
 
 const data = {
   navMain: [
@@ -89,8 +87,6 @@ const data = {
       icon: IconHelp,
     },
   ],
-
-  navSecondary: [],
 };
 
 function AppSidebarHeader() {
@@ -149,9 +145,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             return true;
           })}
         />
-        {data.navSecondary.length > 0 && (
-          <NavSecondary items={data.navSecondary} className="mt-auto" />
-        )}
       </SidebarContent>
     </Sidebar>
   );

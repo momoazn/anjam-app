@@ -20,7 +20,7 @@ import {
   taskStatusBgColors,
   taskStatusColors,
   taskStatusIcons,
-} from "@/lib/tasks-utils";
+} from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
@@ -59,15 +59,20 @@ export function TaskListHeader({
   return (
     <header
       className={cn(
-        "flex items-center justify-between rounded-md border px-3 py-2 shadow-sm",
+        "flex items-center justify-between rounded-md border px-3 py-2 shadow-sm cursor-pointer hover:bg-background/50 transition-colors",
         taskStatusBgColors[status],
       )}
+      onClick={onToggleCollapse}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onToggleCollapse?.();
+        }
+      }}
     >
-      <button
-        type="button"
-        onClick={onToggleCollapse}
-        className="flex items-center gap-1"
-      >
+      <div className="flex items-center gap-1">
         <div className="bg-background/60 flex items-center justify-center rounded-full p-0.5">
           {isCollapsed ? (
             <ChevronDown className="text-muted-foreground size-3" />
@@ -85,9 +90,9 @@ export function TaskListHeader({
         <span className="text-muted-foreground text-sm">
           {digitsEnToFa(taskCount)}
         </span>
-      </button>
+      </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
         <Button
           id="add-task-button"
           variant="ghost"
@@ -109,7 +114,7 @@ export function TaskListHeader({
               <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem
               onClick={() =>
                 onSortChange?.(sortMode === "priority" ? "default" : "priority")

@@ -19,7 +19,8 @@ import {
   TasksStatusOptions,
   TasksPriorityOptions,
 } from "@/lib/pocketbase-types";
-import { statusOrder } from "@/lib/tasks-utils";
+import { statusOrder } from "@/lib/status-utils";
+import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
 import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
 
 // Loading skeleton
@@ -205,22 +206,12 @@ export default function MyTasks() {
     setSelectedTasks(taskIds);
   };
 
+  // Generate available statuses from centralized configuration
   const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
-    [
-      { value: TasksStatusOptions.todo, label: text.tasks.status.todo },
-      {
-        value: TasksStatusOptions.in_progress,
-        label: text.tasks.status.in_progress,
-      },
-      { value: TasksStatusOptions.pending, label: text.tasks.status.pending },
-      { value: TasksStatusOptions.review, label: text.tasks.status.review },
-      { value: TasksStatusOptions.testing, label: text.tasks.status.testing },
-      { value: TasksStatusOptions.ready, label: text.tasks.status.ready },
-      { value: TasksStatusOptions.blocked, label: text.tasks.status.blocked },
-      { value: TasksStatusOptions.on_hold, label: text.tasks.status.on_hold },
-      { value: TasksStatusOptions.done, label: text.tasks.status.done },
-      { value: TasksStatusOptions.canceled, label: text.tasks.status.canceled },
-    ];
+    Object.values(TASK_STATUS_CONFIG).map((config) => ({
+      value: config.key,
+      label: config.name,
+    }));
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
