@@ -64,8 +64,7 @@ export function HeaderUserMenu() {
   };
 
   const handleEditProfile = () => {
-    if (!user) return;
-    navigate(`/users/${user.id}/edit`);
+    navigate("/settings");
   };
 
   if (!user) return null;
@@ -95,7 +94,7 @@ export function HeaderUserMenu() {
             onClick={handleEditProfile}
           >
             <IconUserCircle className="size-4" />
-            <span className="flex-1">{fa.user.dropdown.account}</span>
+            <span className="flex-1">{fa.navigation.settings}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="my-1" />
