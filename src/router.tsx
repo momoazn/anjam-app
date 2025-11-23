@@ -317,14 +317,14 @@ const routes: RouteType[] = [
     path: "/users/new",
     element: <CreateUser />,
     protected: true,
-    permission: "users.create",
+    permission: "users.manage",
     title: fa.users.create.title,
   },
   {
     path: "/users/:id/edit",
     element: <EditUser />,
     protected: true,
-    permission: "users.update",
+    permission: "users.manage",
     title: fa.users.edit.title,
   },
   {

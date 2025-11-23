@@ -1,26 +1,88 @@
-# Repository Guidelines
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Architecture Overview
+
+This is a **task and project management application** with a Go backend (PocketBase) and React frontend:
+
+- **Backend**: `main.go` runs a PocketBase server on port 8090, serving both API and embedded frontend
+
+  - Embeds `dist/` folder (Vite build output) via `//go:embed` directive
+  - Imports database schema from `pb_schema.json` on startup
+  - Custom API endpoints at `/api/tm/*` for status configs, user management, and login logs
+  - Event handlers for record creation/updates (auto-generates project codes, task display IDs)
+  - Authentication tracking with login logs and failed attempt blocking
+  - Notification system for task assignments, updates, and comments
+
+- **Frontend**: React + TypeScript SPA with Vite bundler
+
+  - `src/components/`: UI components (Radix UI + Tailwind CSS)
+  - `src/pages/`: Route-level page components
+  - `src/lib/`: Business logic, utilities, PocketBase client (`pb`), and auto-generated types
+  - `src/store/`: Zustand stores (auth, sidebar) with persistence
+  - Path alias `@/` maps to `src/`
+  - TanStack Query for data fetching; PocketBase SDK for API calls
+
+- **Database**: SQLite (`data/data.db`) managed by PocketBase; schema in `pb_schema.json`
 
 ## Project Structure & Module Organization
 
-- `main.go`: Go backend (PocketBase) serving API and embedded frontend.
-- `src/`: React + TypeScript app; `components/`, `pages/`, `lib/`, `store/`.
-- `public/` → static assets; `dist/` → Vite build output (embedded by Go).
-- `data/`: SQLite DB files (`data.db`) for PocketBase.
-- `scripts/`: Bun scripts for seed/reset; `docs/` and `mock-data/` for examples.
-- `pb_schema.json`: Collection schema imported on server start.
+- `main.go`: Go backend serving API and embedded frontend
+- `pb_schema.json`: Collection schema imported on server start
+- `src/lib/pocketbase.ts`: PocketBase client instance; switches base URL between dev and prod
+- `src/lib/pocketbase-types.ts`: Auto-generated TypeScript types from schema (via `pocketbase-typegen`)
+- `data/`: SQLite DB files (`data.db`)
+- `scripts/`: Bun scripts for seed/reset
+- `dist/`: Vite build output (embedded by Go in production)
 
 ## Build, Test, and Development Commands
 
-- Local dev (web+api): `bun run dev` (Vite on 5173; Go server via Air).
-- Frontend only: `bun run dev:client` | Preview: `bun run serve:client`.
-- Backend only: `bun run dev:server` (Air) | Serve once: `bun run serve:server`.
-- Build: `bun run build` (or `build:client`, `build:server`, `build:win`).
-- Quality: `bun run check` (typecheck+lint+format check), `fix`, `fmt`, `fmt:check`, `lint`, `lint:check`, `type:check`.
-- Data utilities: `bun run seed:generate`, `seed:truncate`, `seed:insert`, `seed`.
-- Typegen: `bun run gen:type`.
-- Clean: `bun run clean`.
+### Development
 
-Prereqs: Bun 1.x, Go 1.24+, Node tooling installed (via Bun).
+- `bun run dev` - Start both frontend (Vite port 5173) and backend (Go port 8090)
+- `bun run dev:client` - Frontend only (Vite dev server with HMR)
+- `bun run dev:server` - Backend only (Air live-reload)
+- `bun run serve:client` - Preview frontend production build
+- `bun run serve:server` - Run backend without live-reload
+
+### Building
+
+- `bun run build` - Build both client and server (production)
+- `bun run build:client` - Build frontend to `dist/`
+- `bun run build:server` - Build Go binary (`task-manager`)
+- `bun run build:win` - Cross-compile for Windows
+
+### Quality Checks
+
+- `bun run check` - Run all checks (type + lint + format)
+- `bun run type:check` - TypeScript type checking (no emit)
+- `bun run lint` / `lint:check` - ESLint (fix / check only)
+- `bun run fmt` / `fmt:check` - Prettier (format / check only)
+- `bun run fix` - Auto-fix linting and formatting issues
+
+### Testing
+
+- `bun run test` - Run Vitest unit tests (watch mode)
+- `bun run test:run` - Run unit tests once
+- `bun run test:ui` - Open Vitest UI
+- `bun run test:coverage` - Generate coverage report
+- `bun run test:e2e` - Run Playwright E2E tests
+- `bun run test:e2e:ui` - Playwright UI mode
+- `bun run test:e2e:debug` - Debug E2E tests
+- `bun run test:all` - Run both unit and E2E tests
+
+### Data & Schema
+
+- `bun run gen:type` - Regenerate `src/lib/pocketbase-types.ts` from `pb_schema.json`
+- `bun run seed` - Full seed (truncate + generate + insert)
+- `bun run seed:generate` - Generate mock data files
+- `bun run seed:truncate` - Clear all data
+- `bun run seed:insert` - Insert seed data
+
+### Utilities
+
+- `bun run clean` - Remove build artifacts and dependencies
+
+**Prerequisites**: Bun 1.x, Go 1.24+, Node tooling installed (via Bun).
 
 ## Coding Style & Naming Conventions
 
@@ -32,25 +94,86 @@ Prereqs: Bun 1.x, Go 1.24+, Node tooling installed (via Bun).
 
 ## Testing Guidelines
 
-- No test runner configured yet. Use `bun run web:check` and manual smoke tests.
-- If adding tests: prefer Vitest + React Testing Library; co-locate as `*.test.ts(x)`.
-- Aim to cover business logic in `src/lib/*` and critical components.
+- **Unit tests**: Vitest + React Testing Library
+
+  - Co-locate test files as `*.test.ts(x)` next to source files
+  - Test setup at `src/test/setup.ts`
+  - Coverage thresholds: 60% (lines, functions, branches, statements)
+  - Focus on business logic in `src/lib/*` and critical components
+
+- **E2E tests**: Playwright
+
+  - Test directory: `e2e/`
+  - Runs against `http://localhost:5173` (dev client)
+  - Auto-starts dev server via `webServer` config
+
+- Run `bun run check` before committing; run `bun run test:all` before opening PRs
 
 ## Schema and Type Generation
 
-- When you change `pb_schema.json`, always regenerate PocketBase types:
-  - Run: `bun run gen:type`
-  - This updates `src/lib/pocketbase-types.ts` used across the app.
+**CRITICAL**: When modifying `pb_schema.json`, always regenerate TypeScript types:
+
+1. Edit `pb_schema.json` (PocketBase collection schema)
+2. Run `bun run gen:type` to regenerate `src/lib/pocketbase-types.ts`
+3. This file provides type-safe interfaces for all collections, records, and responses
+4. The Go backend imports this schema on startup via `importSchema()` in `main.go`
+
+**Note**: Never manually edit `src/lib/pocketbase-types.ts` - it's auto-generated.
 
 ## Commit & Pull Request Guidelines
 
-- Use Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`.
-  Example: `feat(tasks): add drag-and-drop reordering`.
-- PRs: clear description, linked issues, test/QA steps, and screenshots/GIFs for UI.
-- Run `bun run web:check` and `bun run build:all` before opening a PR.
+- **Conventional Commits**: Use `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`
 
-## Security & Configuration Tips
+  - Example: `feat(tasks): add drag-and-drop reordering`
+  - Scope is optional but recommended: `(tasks)`, `(auth)`, `(ui)`, etc.
 
-- Development seeds create default admin users; change credentials before production.
-- Do not commit real production data. Keep secrets out of VCS.
-- Frontend proxies `/api` to `http://localhost:8090` (see `vite.config.ts`).
+- **Pull Requests**:
+  - Clear description with context and motivation
+  - Link related issues
+  - Include test/QA steps for reviewers
+  - Add screenshots or GIFs for UI changes
+  - Ensure `bun run check` passes (type + lint + format checks)
+  - Ensure `bun run build` succeeds
+
+## Key Implementation Patterns
+
+### PocketBase Integration
+
+- **Client instance**: `src/lib/pocketbase.ts` exports singleton `pb` (TypedPocketBase)
+- **Base URL switching**: Dev uses `http://127.0.0.1:8090/`, production uses `/` (same origin)
+- **Authentication**: Zustand store (`src/store/auth-store.ts`) persists auth state; syncs with `pb.authStore`
+- **Data fetching**: Use TanStack Query hooks; call PocketBase SDK methods via `pb.collection('...')`
+
+### Auto-Generated IDs
+
+- **Project codes**: 3-letter uppercase codes (e.g., "ABC") generated in `handleProjectCreation()` in Go
+- **Task display IDs**: Format `{PROJECT_CODE}-{NUMBER}` (e.g., "ABC-001") generated in `setTaskDisplayID()` in Go
+- Both use collision detection and retry logic
+
+### Event Handlers (Go Backend)
+
+- `OnRecordCreateExecute`: Runs before record creation (can modify record)
+- `OnRecordAfterCreateSuccess`: Runs after successful creation (for side effects like notifications)
+- `OnRecordAfterUpdateSuccess`: Runs after updates (e.g., status change notifications)
+- See `main.go` lines 72-80 for all registered handlers
+
+### Custom API Endpoints
+
+- `/api/tm/status-configs/{id}/toggle` - PATCH: Toggle status config enabled/disabled
+- `/api/tm/users/{id}/toggle-active` - PATCH: Activate/deactivate user (admin only)
+- `/api/tm/users/{id}/unblock` - PATCH: Unblock user after failed logins (admin only)
+- `/api/tm/users/{id}/login-logs` - GET: Retrieve user's login history
+- These are registered in `main.go` lines 86-93
+
+## Security & Configuration
+
+- **Default credentials**: Dev mode creates admin accounts (`admin@example.com` / `admin12345` and `admin` / `admin12345`)
+
+  - Change before production deployment
+  - Controlled by `allowDefaultCredentials()` and env var `TM_ALLOW_DEFAULT_ACCOUNTS`
+
+- **Authentication blocking**: After 5 failed login attempts, user is auto-blocked (see `maxFailedLoginAttempts`)
+
+- **Frontend proxy**: In dev, Vite proxies `/api` to `http://localhost:8090` (see `vite.config.ts`)
+
+- **Never commit**: Production data, secrets, API keys, or real credentials

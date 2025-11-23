@@ -1,4 +1,4 @@
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
 import { Component, ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -82,14 +82,15 @@ export class ErrorBoundary extends Component<
               <div className="flex gap-2">
                 <Button onClick={this.handleRetry} className="flex-1">
                   <RefreshCw className="mr-2 size-4" />
-                  {fa.errors.boundary.tryAgain}
+                  {fa.common.buttons.retry}
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => window.location.reload()}
+                  onClick={() => window.history.back()}
                   className="flex-1"
                 >
-                  {fa.errors.boundary.reloadPage}
+                  <ArrowLeft className="mr-2 size-4" />
+                  {fa.common.buttons.back}
                 </Button>
               </div>
             </CardContent>

@@ -45,6 +45,18 @@ export {
   useSoftDeleteComment,
 } from "./comments";
 
+// Notification hooks
+export {
+  useNotifications,
+  useUnreadCount,
+  useMarkAsRead,
+  useMarkAllAsRead,
+  useDeleteNotification,
+  useClearAll,
+  useClearRead,
+} from "./notifications";
+
 // Page-specific optimized hooks
 export { useTasksPageData } from "./use-tasks-page-data";
 export { useProjectTasksPageData } from "./use-project-tasks-page-data";
+export { useTaskCounts } from "./use-task-counts";

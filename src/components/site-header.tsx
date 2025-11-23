@@ -1,7 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { Moon, Plus, Sun } from "lucide-react";
-import { Fragment, useEffect, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HeaderUserMenu } from "@/components/header-user-menu";
 import { NotificationDropdown } from "@/components/notification-dropdown";
 import {
@@ -17,7 +13,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -25,6 +20,10 @@ import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks/query-keys";
 import { useTheme } from "@/hooks/use-theme";
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
+import { useQueryClient } from "@tanstack/react-query";
+import { Moon, Plus, Sun } from "lucide-react";
+import { Fragment, useEffect, useMemo } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export function SiteHeader() {
   const { resolvedTheme, toggleTheme } = useTheme();
@@ -106,6 +105,13 @@ export function SiteHeader() {
           { label: fa.tasks.addTask.title },
         ];
       }
+      if (first === "users" && second === "new") {
+        return [
+          { label: fa.navigation.dashboard, to: "/" as const },
+          { label: fa.navigation.users, to: "/users" as const },
+          { label: fa.users.create.title },
+        ];
+      }
     }
     // Projects sub-routes: /projects/:id/(tasks|users)
     if (first === "projects" && parts.length >= 3) {
@@ -151,6 +157,17 @@ export function SiteHeader() {
       }
 
       return baseCrumbs;
+    }
+
+    // User edit routes: /users/:id/edit
+    if (first === "users" && parts.length === 3 && parts[2] === "edit") {
+      const userId = parts[1];
+      return [
+        { label: fa.navigation.dashboard, to: "/" as const },
+        { label: fa.navigation.users, to: "/users" as const },
+        { label: userId },
+        { label: fa.users.edit.title },
+      ];
     }
 
     // Fallback
@@ -227,16 +244,6 @@ export function SiteHeader() {
       <div className="ml-auto flex shrink-0 items-center gap-1 px-2 sm:gap-2 sm:px-3">
         {/* Quick Create Menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 flex-shrink-0"
-              title={fa.navigation.quickCreate.tooltip}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigate("/tasks")}>
               <Plus className="mr-2 h-4 w-4" />
