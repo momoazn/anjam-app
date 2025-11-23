@@ -10,6 +10,8 @@ import { useTaskFilters } from "@/hooks/use-task-filters";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
+import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { FilterX, FolderOpen, Plus } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -166,6 +168,45 @@ export default function ProjectTasks() {
 
   const totalTasks = filteredTasks?.length || 0;
 
+  const taskStats = useMemo(() => {
+    if (!filteredTasks || filteredTasks.length === 0) {
+      return {
+        active: 0,
+        completed: 0,
+        overdue: 0,
+      };
+    }
+
+    const now = new Date();
+    let active = 0;
+    let completed = 0;
+    let overdue = 0;
+
+    filteredTasks.forEach((task) => {
+      if (isTaskCompleted(task)) {
+        completed += 1;
+        return;
+      }
+
+      if (!isTaskCanceled(task)) {
+        active += 1;
+      }
+
+      if (task.deadline) {
+        const deadlineDate = new Date(task.deadline);
+        if (
+          deadlineDate < now &&
+          !isTaskCompleted(task) &&
+          !isTaskCanceled(task)
+        ) {
+          overdue += 1;
+        }
+      }
+    });
+
+    return { active, completed, overdue };
+  }, [filteredTasks]);
+
   return (
     <PageTransition className="container mx-auto px-4 py-6">
       {/* Header Section */}
@@ -198,6 +239,58 @@ export default function ProjectTasks() {
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Project task stats */}
+      <div className="mb-6 grid gap-3 text-sm sm:grid-cols-4">
+        <Card>
+          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
+            <div className="flex flex-col">
+              <span className="text-muted-foreground text-xs">
+                {fa.projects.details.totalTasks}
+              </span>
+              <span className="text-foreground text-xl font-semibold">
+                {digitsEnToFa(totalTasks)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
+            <div className="flex flex-col">
+              <span className="text-muted-foreground text-xs">
+                {"تسک‌های فعال"}
+              </span>
+              <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
+                {digitsEnToFa(taskStats.active)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
+            <div className="flex flex-col">
+              <span className="text-muted-foreground text-xs">
+                {fa.projects.details.completedTasks}
+              </span>
+              <span className="text-xl font-semibold text-emerald-600 dark:text-emerald-400">
+                {digitsEnToFa(taskStats.completed)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
+            <div className="flex flex-col">
+              <span className="text-muted-foreground text-xs">
+                {fa.reports.overdue}
+              </span>
+              <span className="text-xl font-semibold text-red-600 dark:text-red-400">
+                {digitsEnToFa(taskStats.overdue)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Search and Filter Controls */}

@@ -1,10 +1,10 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { format } from "date-fns-jalali";
-import { Clock } from "lucide-react";
+import { format, isToday } from "date-fns-jalali";
 import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { UserAvatar } from "@/components/user-avatar";
 import { fa } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { UsersResponse } from "@/lib/pocketbase-types";
@@ -15,7 +15,7 @@ import {
   taskStatusIcons,
 } from "@/lib/tasks-utils";
 import { cn } from "@/lib/utils";
-import { minutesToHoursAndMinutes } from "@/lib/time-utils";
+import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
 
 const formatDateShort = (dateString?: string | null) => {
   if (!dateString) {
@@ -54,6 +54,14 @@ export function TaskListItem({
   const priorityIconColor = priorityColors[task.priority];
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
 
+  const deadlineDate = task.deadline ? new Date(task.deadline) : null;
+  const isDeadlineToday = deadlineDate ? isToday(deadlineDate) : false;
+  const isOverdue =
+    deadlineDate &&
+    deadlineDate.getTime() < Date.now() &&
+    !isTaskCompleted(task) &&
+    !isTaskCanceled(task);
+
   const handleClick = () => {
     navigate(`/tasks/${task.id}`);
   };
@@ -61,9 +69,8 @@ export function TaskListItem({
   return (
     <div
       className={cn(
-        "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-center justify-between rounded-md px-3 py-2 transition-all duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2 hover:scale-[1.01] hover:shadow-sm active:scale-[0.99]",
-        isSelected &&
-          "border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-400/10",
+        "group hover:bg-muted/30 focus-within:ring-ring border-border/50 flex cursor-pointer items-center justify-between border-b px-3 py-2 text-sm transition-colors duration-150 ease-in-out focus-within:ring-1 focus-within:ring-offset-0",
+        isSelected && "bg-blue-50/50 dark:bg-blue-400/5",
         className,
       )}
       data-interactive-item
@@ -78,35 +85,27 @@ export function TaskListItem({
       }}
       aria-label={fa.task.editTask.replace("{title}", task.title)}
     >
-      {/* Left side: Checkbox, Icon, ID, Title */}
-      <div className="flex min-w-0 grow items-center gap-2">
+      {/* Left side: Checkbox, Icon, ID, Title (fixed layout) */}
+      <div className="flex min-w-0 grow items-center gap-1">
         {isSelectable && (
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={(checked) =>
-              onSelectionChange?.(checked as boolean)
-            }
-            className="shrink-0 transition-transform hover:scale-110"
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div className="flex items-center justify-center">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked) =>
+                onSelectionChange?.(checked as boolean)
+              }
+              className="shrink-0 transition-transform hover:scale-110"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
         )}
-        <PriorityIcon
-          className={cn(
-            `size-5 shrink-0 transition-transform group-hover:scale-110`,
-            priorityIconColor,
-          )}
-        />
-        <span className="text-muted-foreground group-hover:text-foreground w-16 shrink-0 font-mono text-xs transition-all duration-200 ease-in-out">
+        <PriorityIcon className={cn(`h-4 w-4 shrink-0`, priorityIconColor)} />
+        <span className="text-muted-foreground group-hover:text-foreground w-16 shrink-0 text-center font-mono text-xs transition-all duration-200 ease-in-out">
           {task.display_id}
         </span>
-        <StatusIcon
-          className={cn(
-            `size-4 shrink-0 transition-transform group-hover:scale-110`,
-            statusIconColor,
-          )}
-        />
+        <StatusIcon className={cn(`h-3.5 w-3.5 shrink-0`, statusIconColor)} />
         <span
-          className="text-foreground truncate text-sm font-medium transition-colors duration-200"
+          className="text-foreground truncate text-[13px] leading-snug font-medium transition-colors duration-200"
           title={task.title}
         >
           {task.title}
@@ -141,7 +140,7 @@ export function TaskListItem({
                 <Badge
                   key={tag}
                   variant="outline"
-                  className={`rounded px-1.5 py-0.5 text-xs font-medium transition-all duration-200 hover:scale-105 ${tagColor}`}
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-all duration-200 hover:scale-105 ${tagColor}`}
                 >
                   {tag}
                 </Badge>
@@ -150,56 +149,49 @@ export function TaskListItem({
           </div>
         )}
 
-        {/* Date and Time */}
-        <div className="flex w-[70px] shrink-0 flex-col items-end gap-1">
-          <span className="text-muted-foreground group-hover:text-foreground text-right text-xs transition-colors duration-200">
+        {/* Date */}
+        <div className="flex w-[70px] shrink-0 items-end">
+          <span
+            className={cn(
+              "inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium",
+              !task.deadline &&
+                "border-muted-foreground/15 text-muted-foreground/80",
+              task.deadline &&
+                !isOverdue &&
+                !isDeadlineToday &&
+                "border-muted-foreground/20 text-muted-foreground/80",
+              isDeadlineToday &&
+                "border-amber-500/20 bg-amber-500/3 text-amber-600/70 dark:border-amber-400/20 dark:bg-amber-400/3 dark:text-amber-300/70",
+              isOverdue &&
+                "border-destructive/20 bg-destructive/3 text-destructive/70 dark:border-destructive/20 dark:bg-destructive/5 dark:text-destructive/70",
+            )}
+          >
             {formatDateShort(task.deadline)}
           </span>
-          {(task.estimated_hours ||
-            task.estimated_minutes ||
-            task.time_spent_minutes) && (
-            <div className="flex items-center gap-1 text-xs">
-              <Clock className="text-muted-foreground h-3 w-3" />
-              <span className="text-muted-foreground">
-                {task.time_spent_minutes
-                  ? minutesToHoursAndMinutes(task.time_spent_minutes).hours +
-                    "h" +
-                    minutesToHoursAndMinutes(task.time_spent_minutes).minutes +
-                    "m"
-                  : ""}
-                {task.time_spent_minutes &&
-                (task.estimated_hours || task.estimated_minutes)
-                  ? "/"
-                  : ""}
-                {task.estimated_hours || task.estimated_minutes
-                  ? (task.estimated_hours || 0) +
-                    "h" +
-                    (task.estimated_minutes || 0) +
-                    "m"
-                  : ""}
-              </span>
-            </div>
-          )}
         </div>
 
-        {/* Assignee Name */}
-        <div className="text-xs">
-          {assigneeRecord ? (
-            assigneeRecord.first_name || assigneeRecord.last_name ? (
-              <span>
-                {assigneeRecord.first_name} {assigneeRecord.last_name} -{" "}
-                {assigneeRecord.username}
-              </span>
-            ) : (
-              <span>{assigneeRecord.username}</span>
-            )
-          ) : task.assignee ? (
-            <span className="text-muted-foreground">{task.assignee}</span>
-          ) : (
-            <span className="text-muted-foreground">
-              {fa.tasks.addTask.unassigned}
-            </span>
-          )}
+        {/* Assignee Avatar */}
+        <div className="flex items-center gap-1.5">
+          <UserAvatar
+            user={
+              assigneeRecord
+                ? {
+                    first_name: assigneeRecord.first_name,
+                    last_name: assigneeRecord.last_name,
+                    username: assigneeRecord.username,
+                    avatar: assigneeRecord.avatar,
+                    id: assigneeRecord.id,
+                    collectionId: assigneeRecord.collectionId,
+                    collectionName: assigneeRecord.collectionName,
+                  }
+                : undefined
+            }
+            username={
+              !assigneeRecord && task.assignee ? task.assignee : undefined
+            }
+            showUnassigned={!assigneeRecord && !task.assignee}
+            className="h-7 w-7"
+          />
         </div>
       </div>
     </div>

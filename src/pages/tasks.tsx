@@ -18,7 +18,7 @@ import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
 import { useSavedFilters } from "@/hooks/use-saved-filters";
 import type { TaskWithProject } from "@/lib/pocketbase";
-import type {
+import {
   TasksStatusOptions,
   TasksPriorityOptions,
 } from "@/lib/pocketbase-types";
@@ -311,16 +311,19 @@ export default function Tasks() {
 
   const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
     [
-      { value: "todo", label: fa.tasks.status.todo },
-      { value: "in_progress", label: fa.tasks.status.in_progress },
-      { value: "pending", label: fa.tasks.status.pending },
-      { value: "review", label: fa.tasks.status.review },
-      { value: "testing", label: fa.tasks.status.testing },
-      { value: "ready", label: fa.tasks.status.ready },
-      { value: "blocked", label: fa.tasks.status.blocked },
-      { value: "on_hold", label: fa.tasks.status.on_hold },
-      { value: "done", label: fa.tasks.status.done },
-      { value: "canceled", label: fa.tasks.status.canceled },
+      { value: TasksStatusOptions.todo, label: fa.tasks.status.todo },
+      {
+        value: TasksStatusOptions.in_progress,
+        label: fa.tasks.status.in_progress,
+      },
+      { value: TasksStatusOptions.pending, label: fa.tasks.status.pending },
+      { value: TasksStatusOptions.review, label: fa.tasks.status.review },
+      { value: TasksStatusOptions.testing, label: fa.tasks.status.testing },
+      { value: TasksStatusOptions.ready, label: fa.tasks.status.ready },
+      { value: TasksStatusOptions.blocked, label: fa.tasks.status.blocked },
+      { value: TasksStatusOptions.on_hold, label: fa.tasks.status.on_hold },
+      { value: TasksStatusOptions.done, label: fa.tasks.status.done },
+      { value: TasksStatusOptions.canceled, label: fa.tasks.status.canceled },
     ];
 
   return (

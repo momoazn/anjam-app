@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { fa } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
-import { TasksStatusOptions } from "@/lib/pocketbase-types";
+import {
+  TasksPriorityOptions,
+  TasksStatusOptions,
+} from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
-import { TaskListHeader } from "./task-list-header";
+import { TaskListHeader, type TaskSortMode } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
 type TaskListGroupProps = {
@@ -28,6 +31,8 @@ export function TaskListGroup({
 }: TaskListGroupProps) {
   const [localSelectedTasks, setLocalSelectedTasks] =
     useState<string[]>(selectedTasks);
+  const [sortMode, setSortMode] = useState<TaskSortMode>("default");
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleTaskSelection = (taskId: string, selected: boolean) => {
     const newSelected = selected
@@ -38,33 +43,68 @@ export function TaskListGroup({
     onSelectionChange?.(newSelected);
   };
 
+  const sortedTasks = useMemo(() => {
+    if (!tasks || tasks.length === 0) return [];
+
+    const cloned = [...tasks];
+
+    if (sortMode === "priority") {
+      const priorityRank: Record<TasksPriorityOptions, number> = {
+        low: 0,
+        medium: 1,
+        high: 2,
+        urgent: 3,
+      };
+      cloned.sort(
+        (a, b) => priorityRank[b.priority] - priorityRank[a.priority],
+      );
+    } else if (sortMode === "date") {
+      cloned.sort((a, b) => {
+        const aTime = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+        const bTime = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+        return aTime - bTime;
+      });
+    }
+
+    return cloned;
+  }, [tasks, sortMode]);
+
   return (
     <section className="transition-colors duration-200" data-animate-stagger>
-      <TaskListHeader taskCount={taskCount} status={status} />
-      <div
-        className={cn("mt-2 min-h-[30px] space-y-1 rounded-md pe-1")}
-        data-animate-stagger
-        role="list"
-      >
-        {tasks?.length > 0 ? (
-          tasks?.map((task) => (
-            <TaskListItem
-              key={task.id}
-              task={task}
-              showProject={showProject}
-              isSelectable={enableSelection}
-              isSelected={localSelectedTasks.includes(task.id)}
-              onSelectionChange={(selected) =>
-                handleTaskSelection(task.id, selected)
-              }
-            />
-          ))
-        ) : (
-          <div className="text-muted-foreground text-center text-sm">
-            {fa.tasks.list.noTasks}
-          </div>
-        )}
-      </div>
+      <TaskListHeader
+        taskCount={taskCount}
+        status={status}
+        sortMode={sortMode}
+        onSortChange={setSortMode}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={() => setIsCollapsed((prev) => !prev)}
+      />
+      {!isCollapsed && (
+        <div
+          className={cn("mt-2 min-h-[30px] space-y-1 rounded-md pe-1")}
+          data-animate-stagger
+          role="list"
+        >
+          {sortedTasks?.length > 0 ? (
+            sortedTasks.map((task) => (
+              <TaskListItem
+                key={task.id}
+                task={task}
+                showProject={showProject}
+                isSelectable={enableSelection}
+                isSelected={localSelectedTasks.includes(task.id)}
+                onSelectionChange={(selected) =>
+                  handleTaskSelection(task.id, selected)
+                }
+              />
+            ))
+          ) : (
+            <div className="text-muted-foreground text-center text-sm">
+              {fa.tasks.list.noTasks}
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }

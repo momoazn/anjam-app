@@ -12,12 +12,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { text } from "@/constants/text";
-import type { TaskFiltersState } from "@/hooks/use-task-filters";
-
 interface SaveFilterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  currentFilters: TaskFiltersState;
+  currentFilters: {
+    searchTerm: string;
+    selectedStatus: string;
+    selectedPriority: string;
+    selectedAssignee: string;
+    selectedDateRange: string;
+    selectedTag: string;
+  };
   onSave: (name: string, setAsDefault: boolean) => void;
 }
 

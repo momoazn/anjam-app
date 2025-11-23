@@ -1,4 +1,10 @@
-import { MoreHorizontal, Plus } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  MoreHorizontal,
+  Plus,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -18,12 +24,25 @@ import {
 import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
+export type TaskSortMode = "default" | "priority" | "date";
+
 type TaskListHeaderProps = {
   taskCount: number;
   status: TasksStatusOptions;
+  sortMode?: TaskSortMode;
+  onSortChange?: (mode: TaskSortMode) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 };
 
-export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
+export function TaskListHeader({
+  taskCount,
+  status,
+  sortMode = "default",
+  onSortChange,
+  isCollapsed = false,
+  onToggleCollapse,
+}: TaskListHeaderProps) {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
 
@@ -40,11 +59,22 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
   return (
     <header
       className={cn(
-        "flex items-center justify-between border-t border-b px-4 py-2",
+        "flex items-center justify-between rounded-md border px-3 py-2 shadow-sm",
         taskStatusBgColors[status],
       )}
     >
-      <div className="flex items-center">
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        className="flex items-center gap-1"
+      >
+        <div className="bg-background/60 flex items-center justify-center rounded-full p-0.5">
+          {isCollapsed ? (
+            <ChevronDown className="text-muted-foreground size-3" />
+          ) : (
+            <ChevronUp className="text-muted-foreground size-3" />
+          )}
+        </div>
         <IconComponent
           className={cn("me-2 h-3.5 w-3.5", taskStatusColors[status])}
           strokeWidth={status === "todo" ? 1.5 : 2}
@@ -55,7 +85,7 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
         <span className="text-muted-foreground text-sm">
           {digitsEnToFa(taskCount)}
         </span>
-      </div>
+      </button>
 
       <div className="flex items-center gap-1">
         <Button
@@ -68,7 +98,6 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
         >
           <Plus className="size-4" />
         </Button>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -81,9 +110,29 @@ export function TaskListHeader({ taskCount, status }: TaskListHeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>{fa.task.sortByPriority}</DropdownMenuItem>
-            <DropdownMenuItem>{fa.task.sortByDate}</DropdownMenuItem>
-            <DropdownMenuItem>{fa.task.showCompletedTasks}</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                onSortChange?.(sortMode === "priority" ? "default" : "priority")
+              }
+            >
+              {sortMode === "priority" && (
+                <Check className="text-primary me-1.5 size-3" />
+              )}
+              {fa.task.sortByPriority}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                onSortChange?.(sortMode === "date" ? "default" : "date")
+              }
+            >
+              {sortMode === "date" && (
+                <Check className="text-primary me-1.5 size-3" />
+              )}
+              {fa.task.sortByDate}
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled>
+              {fa.task.showCompletedTasks}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
