@@ -100,6 +100,11 @@ export const fa = {
     next: "بعدی",
     more: "بیشتر",
 
+    time: {
+      hoursShort: "ساعت",
+      minutesShort: "دقیقه",
+    },
+
     // Status labels
     total: "کل",
     completed: "انجام شده",
@@ -653,6 +658,7 @@ export const fa = {
       assignee: "مسئول",
       unassigned: "بدون مسئول",
       selectProject: "انتخاب پروژه",
+      deadline: "مهلت انجام",
       success: "عالی! تسک جدیدتان آماده است",
       error: "نتوانستیم تسک را بسازیم: {error}",
       buttons: {
@@ -732,6 +738,7 @@ export const fa = {
     showCompletedTasks: "نمایش تسک‌های انجام شده",
     editTask: "ویرایش '{title}'",
     timeSpent: "زمان صرف شده",
+    timeEstimate: "برآورد زمان",
   },
 
   // Reports module

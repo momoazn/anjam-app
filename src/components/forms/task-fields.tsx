@@ -1,13 +1,12 @@
-import * as TablerIcons from "@tabler/icons-react";
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 import { useParams } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-picker";
 import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -18,7 +17,13 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { priorityColors, priorityIcons } from "@/lib/tasks-utils";
+import {
+  priorityColors,
+  priorityIcons,
+  statusLabels,
+  taskStatusColors,
+  taskStatusIcons,
+} from "@/lib/tasks-utils";
 import { formatUserName } from "@/lib/utils";
 import {
   Select,
@@ -63,45 +68,76 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   const assignees = projectId ? projectUsers : users;
 
   return (
-    <>
-      <FormField
-        control={control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Input
-                {...field}
-                className="h-auto border-none !bg-transparent p-0 text-xl font-semibold shadow-none focus-visible:ring-0 dark:!bg-transparent"
-                placeholder={fa.tasks.addTask.issueTitle}
-                autoFocus
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <FormField
+          control={control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{fa.tasks.addTask.issueTitle}</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder={fa.tasks.addTask.issueTitle}
+                  autoFocus
+                  className="text-lg font-medium"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{fa.tasks.addTask.description}</FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  className="min-h-[120px] resize-y"
+                  placeholder={fa.tasks.addTask.description}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {!actualIsInProject && (
+          <FormField
+            control={control}
+            name="project"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{fa.tasks.addTask.selectProject}</FormLabel>
+                <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={fa.tasks.addTask.selectProject}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects?.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          <span>{p.name}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         )}
-      />
 
-      <FormField
-        control={control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Textarea
-                {...field}
-                className="min-h-[60px] w-full resize-none border-none !bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0 dark:!bg-transparent"
-                placeholder={fa.tasks.addTask.description}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <TimeEstimateFields control={control} />
-
-      <div className="flex items-center gap-2">
         <FormField
           control={control}
           name="assignee"
@@ -110,25 +146,25 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
             return (
               <FormItem>
+                <FormLabel>{fa.tasks.addTask.assignee}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger
-                      size="default"
-                      className="!bg-transparent dark:!bg-transparent"
-                    >
-                      {field.value &&
-                      field.value !== fa.tasks.addTask.unassigned &&
-                      selectedUser ? (
-                        <span>
-                          {formatUserName(
-                            selectedUser.first_name,
-                            selectedUser.last_name,
-                            selectedUser.username,
-                          )}
-                        </span>
-                      ) : (
-                        <span>{fa.tasks.addTask.unassigned}</span>
-                      )}
+                    <SelectTrigger>
+                      <SelectValue placeholder={fa.tasks.addTask.unassigned}>
+                        {field.value &&
+                        field.value !== fa.tasks.addTask.unassigned &&
+                        selectedUser ? (
+                          <span>
+                            {formatUserName(
+                              selectedUser.first_name,
+                              selectedUser.last_name,
+                              selectedUser.username,
+                            )}
+                          </span>
+                        ) : (
+                          <span>{fa.tasks.addTask.unassigned}</span>
+                        )}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value={fa.tasks.addTask.unassigned}>
@@ -148,6 +184,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             );
           }}
@@ -155,58 +192,45 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
         <FormField
           control={control}
-          name="deadline"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <DatePicker
-                  date={field.value}
-                  setDate={field.onChange}
-                  buttonProps={{
-                    className: "w-38",
-                    size: "sm",
-                  }}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
           name="status"
           render={({ field }) => {
-            const StatusIcon = TablerIcons.IconCircle; // Default icon for now
-            const statusIconColor = "text-gray-500"; // Default color for now
+            const StatusIcon =
+              taskStatusIcons[field.value] || taskStatusIcons.todo;
+            const statusColor =
+              taskStatusColors[field.value] || "text-gray-500";
 
             return (
               <FormItem>
+                <FormLabel>{fa.tasks.addTask.status}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger
-                      size="sm"
-                      className="gap-2 !bg-transparent dark:!bg-transparent"
-                      aria-label={fa.tasks.addTask.status}
-                    >
-                      <StatusIcon className={`size-3 ${statusIconColor}`} />
-                      <SelectValue placeholder={fa.tasks.addTask.status}>
-                        {field.value || fa.tasks.addTask.status}
-                      </SelectValue>
+                    <SelectTrigger>
+                      <div className="flex items-center gap-2">
+                        <StatusIcon className={`size-4 ${statusColor}`} />
+                        <SelectValue placeholder={fa.tasks.addTask.status}>
+                          {statusLabels[field.value]}
+                        </SelectValue>
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(TasksStatusOptions).map((status) => (
-                        <SelectItem key={status} value={status}>
-                          <div className="flex items-center gap-2">
-                            <StatusIcon
-                              className={`size-3 ${statusIconColor}`}
-                            />
-                            <span>{status}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
+                      {Object.values(TasksStatusOptions).map((status) => {
+                        const ItemIcon =
+                          taskStatusIcons[status] || taskStatusIcons.todo;
+                        const itemColor =
+                          taskStatusColors[status] || "text-gray-500";
+                        return (
+                          <SelectItem key={status} value={status}>
+                            <div className="flex items-center gap-2">
+                              <ItemIcon className={`size-4 ${itemColor}`} />
+                              <span>{statusLabels[status]}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             );
           }}
@@ -217,69 +241,63 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           name="priority"
           render={({ field }) => {
             const PriorityIcon = priorityIcons[field.value];
-            const priorityIconColor = priorityColors[field.value];
+            const priorityColor = priorityColors[field.value];
 
             return (
               <FormItem>
-                <FormControl>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                    onClick={() => {
-                      // Toggle through priorities
-                      const currentIndex = Object.values(
-                        TasksPriorityOptions,
-                      ).indexOf(field.value);
-                      const nextIndex =
-                        (currentIndex + 1) %
-                        Object.values(TasksPriorityOptions).length;
-                      field.onChange(
-                        Object.values(TasksPriorityOptions)[nextIndex],
-                      );
-                    }}
-                  >
-                    <PriorityIcon className={`size-3 ${priorityIconColor}`} />
-                    {fa.tasks.priority[field.value]}
-                  </Button>
-                </FormControl>
-              </FormItem>
-            );
-          }}
-        />
-
-        {!actualIsInProject && (
-          <FormField
-            control={control}
-            name="project"
-            render={({ field }) => (
-              <FormItem>
+                <FormLabel>{fa.tasks.addTask.priority}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger
-                      size="default"
-                      className="!bg-transparent dark:!bg-transparent"
-                    >
-                      <SelectValue
-                        placeholder={fa.tasks.addTask.selectProject}
-                      />
+                    <SelectTrigger showChevron={false}>
+                      <div className="flex items-center gap-2">
+                        <PriorityIcon className={`size-4 ${priorityColor}`} />
+                        <SelectValue placeholder={fa.tasks.addTask.priority} />
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
-                      {projects?.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          <span>{p.name}</span>
-                        </SelectItem>
-                      ))}
+                      {Object.values(TasksPriorityOptions).map((priority) => {
+                        const ItemIcon = priorityIcons[priority];
+                        const itemColor = priorityColors[priority];
+                        return (
+                          <SelectItem key={priority} value={priority}>
+                            <div className="flex items-center gap-2">
+                              <ItemIcon className={`size-4 ${itemColor}`} />
+                              <span>{fa.tasks.priority[priority]}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
-        )}
+            );
+          }}
+        />
+
+        <FormField
+          control={control}
+          name="deadline"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>{fa.tasks.addTask.deadline}</FormLabel>
+              <FormControl>
+                <DatePicker
+                  date={field.value}
+                  setDate={field.onChange}
+                  buttonProps={{
+                    className: "w-full",
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <TimeEstimateFields control={control} />
       </div>
-    </>
+    </div>
   );
 }

@@ -1,12 +1,13 @@
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { ChevronLeft, MoreHorizontal } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import type * as React from "react";
 import { fa } from "@/constants/text";
+import { cn } from "@/lib/utils";
 
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-  return <nav aria-label={fa.ui.breadcrumb} data-slot="breadcrumb" {...props} />;
+  return (
+    <nav aria-label={fa.ui.breadcrumb} data-slot="breadcrumb" {...props} />
+  );
 }
 
 function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
@@ -60,7 +61,6 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       data-slot="breadcrumb-page"
-      role="link"
       aria-disabled="true"
       aria-current="page"
       className={cn("text-foreground min-w-0 truncate font-normal", className)}
@@ -107,10 +107,10 @@ function BreadcrumbEllipsis({
 
 export {
   Breadcrumb,
-  BreadcrumbList,
+  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbEllipsis,
 };

@@ -7,20 +7,14 @@ import { z } from "zod";
 import { TaskFields } from "@/components/forms/task-fields";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
+import { useCreateTask } from "@/hooks";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { useCreateTask } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 
 const taskFormSchema = z.object({
@@ -46,6 +40,7 @@ export default function CreateTask() {
 
   const form = useForm<z.infer<typeof taskFormSchema>>({
     resolver: zodResolver(taskFormSchema),
+    mode: "onChange",
     defaultValues: {
       title: "",
       description: "",
@@ -109,15 +104,7 @@ export default function CreateTask() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>{fa.tasks.addTask.title}</CardTitle>
-          <CardDescription>
-            {isInProject
-              ? fa.tasks.addTask.descriptionProject
-              : fa.tasks.addTask.description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <TaskFields control={form.control} isInProject={isInProject} />

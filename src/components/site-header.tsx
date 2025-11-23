@@ -1,5 +1,9 @@
-import { NotificationDropdown } from "@/components/notification-dropdown";
+import { useQueryClient } from "@tanstack/react-query";
+import { Moon, Plus, Sun } from "lucide-react";
+import { Fragment, useEffect, useMemo } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HeaderUserMenu } from "@/components/header-user-menu";
+import { NotificationDropdown } from "@/components/notification-dropdown";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,24 +19,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks/query-keys";
 import { useTheme } from "@/hooks/use-theme";
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
-import { useQueryClient } from "@tanstack/react-query";
-import { Moon, Plus, Search, Sun } from "lucide-react";
-import { Fragment, useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export function SiteHeader() {
   const { resolvedTheme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState("");
 
   const crumbs = useMemo(() => {
     const path = location.pathname;
@@ -101,11 +99,19 @@ export function SiteHeader() {
           { label: fa.projects.create.title },
         ];
       }
+      if (first === "tasks" && second === "new") {
+        return [
+          { label: fa.navigation.dashboard, to: "/" as const },
+          { label: fa.navigation.tasks, to: "/tasks" as const },
+          { label: fa.tasks.addTask.title },
+        ];
+      }
     }
     // Projects sub-routes: /projects/:id/(tasks|users)
     if (first === "projects" && parts.length >= 3) {
       const projectId = parts[1];
       const sub = parts[2];
+      const isCreateTask = sub === "tasks" && parts[3] === "new";
       const subLabel =
         sub === "tasks"
           ? fa.projects.projectTasks
@@ -128,12 +134,23 @@ export function SiteHeader() {
           | undefined;
       }
 
-      return [
+      const baseCrumbs = [
         { label: fa.navigation.dashboard, to: "/" as const },
         { label: fa.navigation.projects, to: "/projects" as const },
         { label: projectName ?? projectId },
-        { label: subLabel },
+        {
+          label: subLabel,
+          to: isCreateTask
+            ? (`/projects/${projectId}/tasks` as const)
+            : undefined,
+        },
       ];
+
+      if (isCreateTask) {
+        return [...baseCrumbs, { label: fa.tasks.addTask.title }];
+      }
+
+      return baseCrumbs;
     }
 
     // Fallback
@@ -142,14 +159,6 @@ export function SiteHeader() {
       { label: path },
     ];
   }, [location.pathname, queryClient]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      // Navigate to tasks page with search query
-      navigate(`/tasks?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -197,7 +206,7 @@ export function SiteHeader() {
         <Breadcrumb className="min-w-0 flex-1">
           <BreadcrumbList>
             {crumbs.map((c, idx) => (
-              <Fragment key={`c-${idx}`}>
+              <Fragment key={c.label}>
                 <BreadcrumbItem>
                   {c.to ? (
                     <BreadcrumbLink asChild>
@@ -239,20 +248,6 @@ export function SiteHeader() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {/* Search Input */}
-        <form onSubmit={handleSearch} className="hidden md:block">
-          <div className="relative">
-            <Search className="text-muted-foreground absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2" />
-            <Input
-              type="search"
-              placeholder={fa.search.placeholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 w-48 pr-4 pl-8 text-sm"
-            />
-          </div>
-        </form>
 
         <div className="flex items-center gap-2">
           <NotificationDropdown />

@@ -1,4 +1,5 @@
-import {
+import PocketBase from "pocketbase";
+import type {
   CommentsRecord,
   NotificationsRecord,
   ProjectsRecord,
@@ -7,7 +8,6 @@ import {
   UsersProjectsRecord,
   UsersRecord,
 } from "@/lib/pocketbase-types";
-import PocketBase from "pocketbase";
 
 // --- Mock Data Imports ---
 import mockComments from "../mock-data/comments.json";
@@ -44,12 +44,9 @@ function isPocketBaseError(error: unknown): error is PocketBaseError {
     typeof error === "object" &&
     error !== null &&
     "originalError" in error &&
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    typeof (error as any).originalError === "object" &&
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (error as any).originalError !== null &&
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    "data" in (error as any).originalError
+    typeof (error as PocketBaseError).originalError === "object" &&
+    (error as PocketBaseError).originalError !== null &&
+    "data" in (error as PocketBaseError).originalError
   );
 }
 
