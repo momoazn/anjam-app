@@ -1,3 +1,4 @@
+import { fa } from "@/constants/text";
 import type { TasksResponse, TasksStatusOptions } from "./pocketbase-types";
 
 /**
@@ -18,7 +19,7 @@ export function getTaskStatus(task: TasksResponse): {
   // Default fallback
   return {
     key: "todo",
-    name: "To Do",
+    name: fa.tasks.status.todo,
     color: "gray",
     icon: "circle",
     isCompleted: false,
@@ -29,7 +30,7 @@ export function getTaskStatus(task: TasksResponse): {
 /**
  * Convert status values to config format
  */
-function statusToConfig(status: TasksStatusOptions): {
+export function statusToConfig(status: TasksStatusOptions): {
   key: string;
   name: string;
   color: string;
@@ -50,7 +51,7 @@ function statusToConfig(status: TasksStatusOptions): {
   > = {
     todo: {
       key: "todo",
-      name: "To Do",
+      name: fa.tasks.status.todo,
       color: "gray",
       icon: "circle",
       isCompleted: false,
@@ -58,7 +59,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     in_progress: {
       key: "in_progress",
-      name: "In Progress",
+      name: fa.tasks.status.in_progress,
       color: "blue",
       icon: "progress",
       isCompleted: false,
@@ -66,7 +67,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     pending: {
       key: "pending",
-      name: "Pending",
+      name: fa.tasks.status.pending,
       color: "yellow",
       icon: "clock",
       isCompleted: false,
@@ -74,7 +75,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     done: {
       key: "done",
-      name: "Done",
+      name: fa.tasks.status.done,
       color: "green",
       icon: "check",
       isCompleted: true,
@@ -82,7 +83,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     canceled: {
       key: "canceled",
-      name: "Canceled",
+      name: fa.tasks.status.canceled,
       color: "red",
       icon: "x",
       isCompleted: false,
@@ -90,7 +91,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     blocked: {
       key: "blocked",
-      name: "Blocked",
+      name: fa.tasks.status.blocked,
       color: "orange",
       icon: "alert-circle",
       isCompleted: false,
@@ -98,7 +99,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     review: {
       key: "review",
-      name: "In Review",
+      name: fa.tasks.status.review,
       color: "purple",
       icon: "eye",
       isCompleted: false,
@@ -106,7 +107,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     testing: {
       key: "testing",
-      name: "Testing",
+      name: fa.tasks.status.testing,
       color: "indigo",
       icon: "flask",
       isCompleted: false,
@@ -114,7 +115,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     ready: {
       key: "ready",
-      name: "Ready",
+      name: fa.tasks.status.ready,
       color: "teal",
       icon: "rocket",
       isCompleted: false,
@@ -122,7 +123,7 @@ function statusToConfig(status: TasksStatusOptions): {
     },
     on_hold: {
       key: "on_hold",
-      name: "On Hold",
+      name: fa.tasks.status.on_hold,
       color: "gray",
       icon: "pause",
       isCompleted: false,
