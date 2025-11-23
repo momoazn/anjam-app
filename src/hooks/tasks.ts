@@ -412,3 +412,32 @@ export function useBulkDeleteTasks(
     ...options,
   });
 }
+
+/**
+ * Hook to reorder a task within a status column
+ */
+export function useReorderTask() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      taskId,
+      newOrder,
+      statusKey,
+    }: {
+      taskId: string;
+      newOrder: number;
+      statusKey: string;
+    }) => {
+      return pb.collection("tasks").update<TasksResponse>(taskId, {
+        order: newOrder,
+        status: statusKey as TasksRecord["status"],
+      });
+    },
+    onSuccess: () => {
+      // Invalidate all task-related queries to reflect changes
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    },
+  });
+}
