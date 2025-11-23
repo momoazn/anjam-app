@@ -27,9 +27,10 @@ import { UserAvatar } from "@/components/user-avatar";
 import { fa } from "@/constants/text";
 import { useTheme } from "@/hooks/use-theme";
 import { useUser } from "@/hooks/users";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthActions, useAuthUser } from "@/store/auth-store";
 import { useToast } from "@/hooks/use-toast";
 import { pb } from "@/lib/pocketbase";
+import { UsersRecord } from "@/lib/pocketbase-types";
 import {
   Loader2,
   User,
@@ -108,6 +109,7 @@ function SettingsSidebar({
 
 function ProfileSection() {
   const user = useAuthUser();
+  const { updateUser } = useAuthActions();
   const { data: fullUser, refetch } = useUser({ id: user?.id ?? "" });
   const { toast } = useToast();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -155,7 +157,9 @@ function ProfileSection() {
       }
 
       // We need to cast formData to any because update expects Partial<Record> but SDK supports FormData
-      await pb.collection("users").update(user.id, formData);
+      const updatedRecord = await pb
+        .collection("users")
+        .update<UsersRecord>(user.id, formData);
 
       // Invalidate queries handled by useUpdateUser if we used it directly,
       // but here we used pb directly for FormData support.
@@ -165,6 +169,7 @@ function ProfileSection() {
       // To be safe and clean, let's just refetch manually.
 
       refetch();
+      updateUser(updatedRecord);
       toast({
         title: "پروفایل بروزرسانی شد",
         description: "اطلاعات شما با موفقیت ذخیره گردید.",
