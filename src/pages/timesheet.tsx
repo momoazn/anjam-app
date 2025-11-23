@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { fa } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { useAuthStore } from "@/store/auth-store";
 
 export default function TimesheetPage() {
@@ -220,8 +221,8 @@ export default function TimesheetPage() {
                         <div className="mt-1 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           <span>
-                            {taskTime.hours > 0 && `${taskTime.hours}h `}
-                            {taskTime.minutes}m
+                            {taskTime.hours > 0 && `${digitsEnToFa(taskTime.hours)}h `}
+                            {digitsEnToFa(taskTime.minutes)}m
                           </span>
                         </div>
                         <Separator className="my-2" />

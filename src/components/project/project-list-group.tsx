@@ -71,12 +71,14 @@ export function ProjectListGroup({
             >
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <span className="truncate block">{project.name}</span>
-                    <p className="text-muted-foreground text-sm mt-1">{project.code}</p>
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate">{project.name}</span>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      {project.code}
+                    </p>
                   </div>
                   {canEditDelete && (
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex flex-shrink-0 items-center gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -108,7 +110,9 @@ export function ProjectListGroup({
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>{fa.project.progress}</span>
-                    <span className="font-medium">{digitsEnToFa(progress.progress)}%</span>
+                    <span className="font-medium">
+                      {digitsEnToFa(progress.progress)}%
+                    </span>
                   </div>
                   <div className="bg-muted/60 h-2 w-full rounded-full">
                     <div
@@ -127,19 +131,21 @@ export function ProjectListGroup({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 min-w-0"
+                    className="min-w-0 flex-1"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/projects/${project.id}/details`);
                     }}
                   >
                     <FileText className="mr-2 h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{fa.projects.details.viewDetails}</span>
+                    <span className="truncate">
+                      {fa.projects.details.viewDetails}
+                    </span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 min-w-0"
+                    className="min-w-0 flex-1"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/projects/${project.id}/tasks`);
@@ -151,7 +157,7 @@ export function ProjectListGroup({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 min-w-0"
+                    className="min-w-0 flex-1"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/projects/${project.id}/users`);

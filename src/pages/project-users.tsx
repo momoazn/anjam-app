@@ -4,6 +4,7 @@ import { Loader2, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 import { PageTransition } from "@/components/page-transition";
 import {
@@ -151,7 +152,7 @@ export default function ProjectUsers() {
           <h1 className="text-2xl font-bold">{fa.projects.users.title}</h1>
           {projectUsers && (
             <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
-              {projectUsers.length} {fa.projects.users.count}
+              {digitsEnToFa(projectUsers.length)} {fa.projects.users.count}
             </span>
           )}
         </div>

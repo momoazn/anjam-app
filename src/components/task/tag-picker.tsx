@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useTags } from "@/hooks/tags";
 import type { TagsResponse } from "@/lib/pocketbase-types";
 import { text } from "@/constants/text";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface TagPickerProps {
   selectedTagIds: string[];
@@ -61,7 +62,7 @@ export function TagPicker({
           >
             <span className="truncate">
               {selectedTags.length > 0
-                ? `${selectedTags.length} ${text.tasks.filters.tag}`
+                ? `${digitsEnToFa(selectedTags.length)} ${text.tasks.filters.tag}`
                 : placeholder}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

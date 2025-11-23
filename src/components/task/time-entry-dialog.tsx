@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { parseTimeInput, minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { text } from "@/constants/text";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -190,8 +191,8 @@ export function TimeEntryDialog({
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
                   زمان وارد شده از برآورد زمانی (
-                  {Math.floor(estimatedMinutes / 60)}h {estimatedMinutes % 60}m)
-                  بیشتر است
+                  {digitsEnToFa(Math.floor(estimatedMinutes / 60))}h{" "}
+                  {digitsEnToFa(estimatedMinutes % 60)}m) بیشتر است
                 </AlertDescription>
               </Alert>
             )}

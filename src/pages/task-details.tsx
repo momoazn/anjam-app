@@ -421,7 +421,7 @@ export default function TaskDetails() {
                 <MessageSquare className="h-5 w-5" />
                 <CardTitle>{fa.comments.title}</CardTitle>
                 <Badge variant="secondary" className="text-xs">
-                  {comments.length}
+                  {digitsEnToFa(comments.length)}
                 </Badge>
               </div>
             </CardHeader>

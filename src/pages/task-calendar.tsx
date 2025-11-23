@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { text } from "@/constants/text";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { getTaskStatus, isTaskCompleted } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
@@ -296,7 +297,8 @@ export default function TaskCalendar() {
                       ))}
                       {dayTasks.length > 3 && (
                         <div className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-center text-[10px]">
-                          +{dayTasks.length - 3} {text.common.more}
+                          +{digitsEnToFa(dayTasks.length - 3)}{" "}
+                          {text.common.more}
                         </div>
                       )}
                     </div>

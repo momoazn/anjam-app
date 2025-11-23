@@ -7,6 +7,7 @@ import { getTaskStatus } from "@/lib/status-utils";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { formatUserName } from "@/lib/utils";
 import { text } from "@/constants/text";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Link } from "react-router-dom";
 import {
   DndContext,
@@ -169,7 +170,7 @@ export function KanbanBoard({
                     {column.name}
                   </CardTitle>
                   <Badge variant="secondary" className="ml-2">
-                    {column.tasks.length}
+                    {digitsEnToFa(column.tasks.length)}
                   </Badge>
                 </div>
               </CardHeader>

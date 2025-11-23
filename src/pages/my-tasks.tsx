@@ -13,6 +13,7 @@ import { fa, text } from "@/constants/text";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
 import { useAuthUser } from "@/store/auth-store";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   TasksStatusOptions,
@@ -265,7 +266,9 @@ export default function MyTasks() {
             <div className="text-muted-foreground text-sm">
               {text.common.total || "کل"}
             </div>
-            <div className="text-2xl font-bold">{stats.total}</div>
+            <div className="text-2xl font-bold">
+              {digitsEnToFa(stats.total)}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -274,7 +277,7 @@ export default function MyTasks() {
               {text.myTasks.stats.active || "فعال"}
             </div>
             <div className="text-2xl font-bold text-blue-600">
-              {stats.active}
+              {digitsEnToFa(stats.active)}
             </div>
           </CardContent>
         </Card>
@@ -284,7 +287,7 @@ export default function MyTasks() {
               {text.myTasks.stats.completed || "انجام شده"}
             </div>
             <div className="text-2xl font-bold text-green-600">
-              {stats.completed}
+              {digitsEnToFa(stats.completed)}
             </div>
           </CardContent>
         </Card>
@@ -294,7 +297,7 @@ export default function MyTasks() {
               {text.myTasks.stats.overdue || "گذشته‌موعد"}
             </div>
             <div className="text-2xl font-bold text-red-600">
-              {stats.overdue}
+              {digitsEnToFa(stats.overdue)}
             </div>
           </CardContent>
         </Card>
@@ -304,7 +307,7 @@ export default function MyTasks() {
               {text.myTasks.stats.canceled || "لغو شده"}
             </div>
             <div className="text-muted-foreground text-2xl font-bold">
-              {stats.canceled}
+              {digitsEnToFa(stats.canceled)}
             </div>
           </CardContent>
         </Card>
@@ -316,13 +319,13 @@ export default function MyTasks() {
           <TabsTrigger value="active">
             {text.myTasks.tabs.active || "فعال"}
             <Badge variant="secondary" className="ml-2">
-              {stats.active}
+              {digitsEnToFa(stats.active)}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="completed">
             {text.myTasks.tabs.completed || "انجام شده"}
             <Badge variant="secondary" className="ml-2">
-              {stats.completed}
+              {digitsEnToFa(stats.completed)}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="by-project">
@@ -417,7 +420,9 @@ export default function MyTasks() {
                 <div className="bg-muted/30 border-b px-4 py-3">
                   <h3 className="flex items-center gap-2 font-semibold">
                     <span>{project.projectName}</span>
-                    <Badge variant="secondary">{project.tasks.length}</Badge>
+                    <Badge variant="secondary">
+                      {digitsEnToFa(project.tasks.length)}
+                    </Badge>
                   </h3>
                 </div>
                 <CardContent className="p-0">

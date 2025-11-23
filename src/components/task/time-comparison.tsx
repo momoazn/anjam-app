@@ -1,6 +1,7 @@
 import { Clock, AlertTriangle } from "lucide-react";
 import { fa } from "@/constants/text";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface TimeComparisonProps {
   estimatedMinutes?: number;
@@ -32,9 +33,9 @@ export function TimeComparison({
       <div className="text-muted-foreground flex items-center gap-1">
         <Clock className="h-3 w-3" />
         <span>
-          {estimated.hours > 0 && `${estimated.hours}h `}
-          {estimated.minutes > 0 && `${estimated.minutes}m`}
-          {!estimated.hours && !estimated.minutes && "0m"}
+          {estimated.hours > 0 && `${digitsEnToFa(estimated.hours)}h `}
+          {estimated.minutes > 0 && `${digitsEnToFa(estimated.minutes)}m`}
+          {!estimated.hours && !estimated.minutes && "۰m"}
         </span>
         <span className="text-xs">({fa.task.timeSpent})</span>
       </div>
@@ -48,9 +49,9 @@ export function TimeComparison({
           >
             <Clock className="h-3 w-3" />
             <span>
-              {actual.hours > 0 && `${actual.hours}h `}
-              {actual.minutes > 0 && `${actual.minutes}m`}
-              {!actual.hours && !actual.minutes && "0m"}
+              {actual.hours > 0 && `${digitsEnToFa(actual.hours)}h `}
+              {actual.minutes > 0 && `${digitsEnToFa(actual.minutes)}m`}
+              {!actual.hours && !actual.minutes && "۰m"}
             </span>
             <span className="text-xs">({fa.task.timeSpent})</span>
           </div>
@@ -67,8 +68,10 @@ export function TimeComparison({
               )}
               <span>
                 {isOverBudget ? "+" : ""}
-                {varianceHours.hours > 0 && `${varianceHours.hours}h `}
-                {varianceHours.minutes > 0 && `${varianceHours.minutes}m`}
+                {varianceHours.hours > 0 &&
+                  `${digitsEnToFa(varianceHours.hours)}h `}
+                {varianceHours.minutes > 0 &&
+                  `${digitsEnToFa(varianceHours.minutes)}m`}
               </span>
             </div>
           )}

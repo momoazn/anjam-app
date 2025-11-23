@@ -18,6 +18,7 @@ import {
   Save,
 } from "lucide-react";
 import { text } from "@/constants/text";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { SavedFilter } from "@/hooks/use-saved-filters";
 import {
   AlertDialog,
@@ -96,7 +97,7 @@ export function SavedFiltersDropdown({
                 {text.savedFilters.title}
                 {savedFilters.length > 0 && (
                   <Badge variant="secondary" className="ml-1 h-5 px-1.5">
-                    {savedFilters.length}
+                    {digitsEnToFa(savedFilters.length)}
                   </Badge>
                 )}
               </>

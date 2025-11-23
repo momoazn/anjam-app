@@ -662,7 +662,7 @@ export default function Dashboard() {
                     outerRadius={80}
                     dataKey="value"
                     label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
+                      `${name}: ${digitsEnToFa((percent * 100).toFixed(0))}%`
                     }
                     labelLine={false}
                   >
