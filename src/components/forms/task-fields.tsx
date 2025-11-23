@@ -207,9 +207,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     <SelectTrigger>
                       <div className="flex items-center gap-2">
                         <StatusIcon className={`size-4 ${statusColor}`} />
-                        <SelectValue placeholder={fa.tasks.addTask.status}>
-                          {statusLabels[field.value]}
-                        </SelectValue>
+                        <span>{statusLabels[field.value]}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
@@ -248,10 +246,10 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                 <FormLabel>{fa.tasks.addTask.priority}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger showChevron={false}>
+                    <SelectTrigger>
                       <div className="flex items-center gap-2">
                         <PriorityIcon className={`size-4 ${priorityColor}`} />
-                        <SelectValue placeholder={fa.tasks.addTask.priority} />
+                        <span>{fa.tasks.priority[field.value]}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>

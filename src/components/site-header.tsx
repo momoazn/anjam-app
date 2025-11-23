@@ -9,11 +9,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
@@ -22,7 +17,7 @@ import { useTheme } from "@/hooks/use-theme";
 import type { ProjectsResponse, TasksResponse } from "@/lib/pocketbase-types";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { useQueryClient } from "@tanstack/react-query";
-import { Moon, Plus, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { Fragment, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -310,7 +305,7 @@ export function SiteHeader() {
   }, [navigate]);
 
   return (
-    <header className="flex h-10 shrink-0 items-center gap-2 border-b transition-[width] ease-linear">
+    <header className="flex h-12 shrink-0 items-center gap-2 border-b transition-[width] ease-linear">
       <div className="flex min-w-0 flex-1 items-center gap-1 px-2 sm:gap-1 sm:px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ms-1 shrink-0" />
         <Separator
@@ -338,21 +333,7 @@ export function SiteHeader() {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1 px-2 sm:gap-2 sm:px-3">
-        {/* Quick Create Menu */}
-        <DropdownMenu>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => navigate("/tasks")}>
-              <Plus className="mr-2 h-4 w-4" />
-              {fa.create.newTask}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/projects")}>
-              <Plus className="mr-2 h-4 w-4" />
-              {fa.create.newProject}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
+      <div className="ml-auto flex shrink-0 items-center gap-2 px-2 sm:gap-3 sm:px-3">
         <div className="flex items-center gap-2">
           <NotificationDropdown />
 
