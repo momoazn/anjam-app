@@ -1,20 +1,18 @@
-import { useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-
+import { PageTransition } from "@/components/page-transition";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
-import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
-
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/tasks-utils";
 import { FilterX, FolderOpen, Plus } from "lucide-react";
+import { useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 // Loading skeleton component for project tasks
 const ProjectTaskListSkeleton = () => (
@@ -189,14 +187,16 @@ export default function ProjectTasks() {
                 : fa.tasks.header.manageProjectTasks}
             </p>
           </div>
-          <Button
-            className="gap-2"
-            size="lg"
-            onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
-          >
-            <Plus className="h-4 w-4" />
-            {fa.tasks.addTask.buttons.newTaskForProject}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              className="gap-2"
+              size="lg"
+              onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
+            >
+              <Plus className="h-4 w-4" />
+              {fa.tasks.addTask.buttons.newTaskForProject}
+            </Button>
+          </div>
         </div>
       </div>
 
