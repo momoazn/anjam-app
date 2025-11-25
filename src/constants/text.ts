@@ -116,6 +116,7 @@ export const fa = {
   navigation: {
     allTasks: "همه تسک‌ها",
     dashboard: "داشبورد",
+    groups: "گروه‌ها",
     projects: "پروژه‌ها",
     tasks: "تسک‌ها",
     users: "کاربران",
@@ -297,6 +298,7 @@ export const fa = {
       },
       roles: {
         admin: "مدیر",
+        manager: "مدیر گروه",
         supervisor: "سرپرست",
         employee: "کارمند",
       },
@@ -312,6 +314,8 @@ export const fa = {
       lastName: "نام خانوادگی",
       selectRole: "انتخاب نقش",
       password: "رمز عبور",
+      group: "گروه",
+      selectGroup: "انتخاب گروه",
     },
     actions: {
       activate: "فعال‌سازی",
@@ -379,6 +383,47 @@ export const fa = {
     },
   },
 
+  // Groups module
+  groups: {
+    title: "گروه‌ها",
+    code: "کد گروه",
+    create: {
+      title: "ایجاد گروه جدید",
+      button: "ایجاد گروه",
+    },
+    edit: {
+      title: "ویرایش گروه",
+      button: "ذخیره تغییرات",
+    },
+    delete: {
+      title: "حذف گروه",
+      description: "آیا از حذف گروه {name} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
+    },
+    list: {
+      count: "{count} گروه",
+      empty: "هیچ گروهی یافت نشد",
+    },
+    form: {
+      name: "نام گروه",
+      description: "توضیحات",
+      manager: "مدیر گروه",
+      selectManager: "انتخاب مدیر",
+    },
+    status: {
+      active: "فعال",
+      inactive: "غیرفعال",
+    },
+    actions: {
+      activate: "فعال‌سازی",
+      deactivate: "غیرفعال‌سازی",
+    },
+    stats: {
+      users: "کاربر",
+      projects: "پروژه",
+      tasks: "وظیفه",
+    },
+  },
+
   // Projects module
   projects: {
     title: "پروژه‌ها",
@@ -430,6 +475,8 @@ export const fa = {
         descriptionPlaceholder: "درباره این پروژه بنویسید...",
         assets: "فایل‌های پیوست",
         assetsPlaceholder: "فایل‌های مرتبط را اینجا بکشید یا کلیک کنید",
+        group: "گروه",
+        selectGroup: "انتخاب گروه",
         supervisor: "سرپرست",
         selectSupervisor: "سرپرست را انتخاب کنید",
       },
