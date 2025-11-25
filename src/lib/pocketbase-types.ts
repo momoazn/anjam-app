@@ -12,6 +12,7 @@ export enum Collections {
 	Otps = "_otps",
 	Superusers = "_superusers",
 	Comments = "comments",
+	Groups = "groups",
 	Notifications = "notifications",
 	Projects = "projects",
 	Tags = "tags",
@@ -107,6 +108,17 @@ export type CommentsRecord = {
 	user?: RecordIdString
 }
 
+export type GroupsRecord = {
+	active?: boolean
+	code: string
+	created?: IsoDateString
+	description?: HTMLString
+	id: string
+	manager: RecordIdString
+	name: string
+	updated?: IsoDateString
+}
+
 export enum NotificationsTypeOptions {
 	"task_assigned" = "task_assigned",
 	"project_updated" = "project_updated",
@@ -130,6 +142,7 @@ export type ProjectsRecord = {
 	code?: string
 	created?: IsoDateString
 	description?: HTMLString
+	group: RecordIdString
 	id: string
 	name?: string
 	supervisor?: RecordIdString
@@ -196,6 +209,7 @@ export type UserLoginLogsRecord = {
 
 export enum UsersRoleOptions {
 	"admin" = "admin",
+	"manager" = "manager",
 	"supervisor" = "supervisor",
 	"employee" = "employee",
 }
@@ -210,6 +224,7 @@ export type UsersRecord = {
 	emailVisibility?: boolean
 	failed_login_attempts?: number
 	first_name?: string
+	group?: RecordIdString
 	id: string
 	last_name?: string
 	password: string
@@ -235,6 +250,7 @@ export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemF
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
 export type CommentsResponse<Texpand = unknown> = Required<CommentsRecord> & BaseSystemFields<Texpand>
+export type GroupsResponse<Texpand = unknown> = Required<GroupsRecord> & BaseSystemFields<Texpand>
 export type NotificationsResponse<Tdata = unknown, Texpand = unknown> = Required<NotificationsRecord<Tdata>> & BaseSystemFields<Texpand>
 export type ProjectsResponse<Texpand = unknown> = Required<ProjectsRecord> & BaseSystemFields<Texpand>
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> & BaseSystemFields<Texpand>
@@ -252,6 +268,7 @@ export type CollectionRecords = {
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
 	comments: CommentsRecord
+	groups: GroupsRecord
 	notifications: NotificationsRecord
 	projects: ProjectsRecord
 	tags: TagsRecord
@@ -268,6 +285,7 @@ export type CollectionResponses = {
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
 	comments: CommentsResponse
+	groups: GroupsResponse
 	notifications: NotificationsResponse
 	projects: ProjectsResponse
 	tags: TagsResponse
@@ -287,6 +305,7 @@ export type TypedPocketBase = PocketBase & {
 	collection(idOrName: '_otps'): RecordService<OtpsResponse>
 	collection(idOrName: '_superusers'): RecordService<SuperusersResponse>
 	collection(idOrName: 'comments'): RecordService<CommentsResponse>
+	collection(idOrName: 'groups'): RecordService<GroupsResponse>
 	collection(idOrName: 'notifications'): RecordService<NotificationsResponse>
 	collection(idOrName: 'projects'): RecordService<ProjectsResponse>
 	collection(idOrName: 'tags'): RecordService<TagsResponse>
