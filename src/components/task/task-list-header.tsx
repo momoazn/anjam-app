@@ -59,14 +59,14 @@ export function TaskListHeader({
   return (
     <header
       className={cn(
-        "flex items-center justify-between rounded-md border px-3 py-2 shadow-sm cursor-pointer hover:bg-background/50 transition-colors",
+        "hover:bg-background/50 flex cursor-pointer items-center justify-between rounded-md border px-3 py-2 shadow-sm transition-colors",
         taskStatusBgColors[status],
       )}
       onClick={onToggleCollapse}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onToggleCollapse?.();
         }
@@ -92,7 +92,10 @@ export function TaskListHeader({
         </span>
       </div>
 
-      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="flex items-center gap-1"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Button
           id="add-task-button"
           variant="ghost"

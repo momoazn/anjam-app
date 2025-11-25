@@ -56,6 +56,18 @@ export {
   useClearRead,
 } from "./notifications";
 
+// Group hooks
+export {
+  useGroups,
+  useGroup,
+  useGroupUsers,
+  useGroupProjects,
+  useCreateGroup,
+  useUpdateGroup,
+  useDeleteGroup,
+  useToggleGroupActive,
+} from "./groups";
+
 // Page-specific optimized hooks
 export { useTasksPageData } from "./use-tasks-page-data";
 export { useProjectTasksPageData } from "./use-project-tasks-page-data";

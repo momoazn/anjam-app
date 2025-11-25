@@ -62,10 +62,11 @@ const TIME_PRESETS = {
 } as const;
 
 // Generate status options from centralized configuration
-const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] = Object.values(TASK_STATUS_CONFIG).map((config) => ({
-  label: config.name,
-  value: config.key,
-}));
+const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] =
+  Object.values(TASK_STATUS_CONFIG).map((config) => ({
+    label: config.name,
+    value: config.key,
+  }));
 
 const PRIORITY_OPTIONS: { label: string; value: TasksPriorityOptions }[] = [
   {

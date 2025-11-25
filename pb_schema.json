@@ -108,9 +108,7 @@
         "type": "autodate"
       }
     ],
-    "indexes": [
-      "CREATE UNIQUE INDEX `idx_group_code` ON `groups` (`code`)"
-    ],
+    "indexes": ["CREATE UNIQUE INDEX `idx_group_code` ON `groups` (`code`)"],
     "system": false
   },
   {

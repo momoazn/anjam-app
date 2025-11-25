@@ -83,4 +83,29 @@ export const queryKeys = {
     byTask: (taskId: string) =>
       [...queryKeys.comments.lists(), "task", taskId] as const,
   },
+
+  /**
+   * Group-related query keys
+   * - all: Base key for all group queries
+   * - lists: For group list queries
+   * - list: For group list queries
+   * - details: For individual group detail queries
+   * - detail: For individual group queries
+   * - users: For users associated with a specific group
+   * - projects: For projects associated with a specific group
+   * - stats: For group statistics
+   */
+  groups: {
+    all: ["groups"] as const,
+    lists: () => [...queryKeys.groups.all, "list"] as const,
+    list: () => [...queryKeys.groups.lists()] as const,
+    details: () => [...queryKeys.groups.all, "detail"] as const,
+    detail: (id: string) => [...queryKeys.groups.details(), id] as const,
+    users: (groupId: string) =>
+      [...queryKeys.groups.detail(groupId), "users"] as const,
+    projects: (groupId: string) =>
+      [...queryKeys.groups.detail(groupId), "projects"] as const,
+    stats: (groupId: string) =>
+      [...queryKeys.groups.detail(groupId), "stats"] as const,
+  },
 } as const;

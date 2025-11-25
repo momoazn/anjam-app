@@ -397,7 +397,8 @@ export const fa = {
     },
     delete: {
       title: "حذف گروه",
-      description: "آیا از حذف گروه {name} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
+      description:
+        "آیا از حذف گروه {name} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
     },
     list: {
       count: "{count} گروه",
