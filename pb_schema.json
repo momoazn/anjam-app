@@ -82,7 +82,10 @@
         "presentable": false,
         "required": false,
         "system": false,
-        "type": "bool"
+        "type": "bool",
+        "options": {
+          "default": true
+        }
       },
       {
         "hidden": false,
