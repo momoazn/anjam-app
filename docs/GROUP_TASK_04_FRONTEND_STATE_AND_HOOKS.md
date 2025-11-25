@@ -67,18 +67,22 @@ Create `src/hooks/groups.ts` and follow the same patterns used in `src/hooks/pro
 Implement the following hooks using PocketBase collection queries and updates:
 
 1. `useGroups(options?: { enabled?: boolean })`
+
    - Use `queryKeys.groups.list()`.
    - `pb.collection("groups").getFullList<GroupsResponse>({ sort: "-created", expand: "manager" })`.
 
 2. `useGroup({ id, enabled }: { id: string; enabled?: boolean })`
+
    - Use `queryKeys.groups.detail(id)`.
    - `pb.collection("groups").getOne<GroupsResponse>(id, { expand: "manager" })`.
 
 3. `useGroupUsers({ groupId, enabled }: { groupId: string; enabled?: boolean })`
+
    - Use `queryKeys.groups.users(groupId)`.
    - `pb.collection("users").getFullList<UsersResponse>({ filter: 'group.id = "{groupId}"' })`.
 
 4. `useGroupProjects({ groupId, enabled }: { groupId: string; enabled?: boolean })`
+
    - Use `queryKeys.groups.projects(groupId)`.
    - `pb.collection("projects").getFullList<ProjectsResponse>({ filter: 'group.id = "{groupId}"' })`.
 
@@ -125,4 +129,3 @@ Task is complete when:
 
 - All new hooks compile.
 - There are no TypeScript errors in the hooks or store.
-

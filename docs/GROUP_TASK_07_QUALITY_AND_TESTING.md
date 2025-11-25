@@ -121,4 +121,3 @@ Test cross-group isolation:
 - No unexpected cross-group access is possible.
 
 If any issues are found, create a focused follow-up task document describing the bug and the required fix.
-

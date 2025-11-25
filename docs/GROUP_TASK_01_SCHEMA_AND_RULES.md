@@ -55,6 +55,7 @@ You can take the exact JSON snippet from the main `GROUP_ORGANIZATION_IMPLEMENTA
 In the `users` collection definition:
 
 1. **Add `group` relation field**
+
    - `name`: `"group"`
    - `type`: `"relation"`
    - `collectionId`: `"groups"` (the new collection)
@@ -62,6 +63,7 @@ In the `users` collection definition:
    - `required`: `false` (PocketBase-level; logical requirement will be enforced later)
 
 2. **Add `"manager"` to role values**
+
    - Extend the `role` select field values to:
      - `"admin"`, `"manager"`, `"supervisor"`, `"employee"`.
 
@@ -78,6 +80,7 @@ Use the concrete rules from `GROUP_ORGANIZATION_IMPLEMENTATION.md` as the source
 In the `projects` collection definition:
 
 1. **Add `group` relation field**
+
    - `name`: `"group"`
    - `type`: `"relation"`
    - `collectionId`: `"groups"`
@@ -132,4 +135,3 @@ bun run gen:type
 - Users, projects, tasks, and users_projects collections all save correctly with the new relations.
 
 Once this task is complete and types are regenerated, the next tasks (backend handlers and frontend changes) can safely assume the new schema is in place.
-

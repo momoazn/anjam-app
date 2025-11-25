@@ -124,4 +124,3 @@ The task is complete when:
 
 - `go build` succeeds with no errors.
 - No unused imports remain.
-

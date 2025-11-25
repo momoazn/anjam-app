@@ -203,7 +203,11 @@ Make similar changes:
 ```ts
 const availableRoles = isManager
   ? [UsersRoleOptions.supervisor, UsersRoleOptions.employee]
-  : [UsersRoleOptions.manager, UsersRoleOptions.supervisor, UsersRoleOptions.employee];
+  : [
+      UsersRoleOptions.manager,
+      UsersRoleOptions.supervisor,
+      UsersRoleOptions.employee,
+    ];
 ```
 
 Managers must **not** be able to create admins or other managers.
@@ -226,4 +230,3 @@ This task is complete when:
 
 - The group components and pages compile.
 - `CreateProject` and `CreateUser` use group selection correctly.
-
