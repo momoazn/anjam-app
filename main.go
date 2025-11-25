@@ -71,13 +71,22 @@ func main() {
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
-	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
 	app.OnRecordAfterCreateSuccess("users_projects").BindFunc(handleUsersProjectsCreatedNotify)
+
+	// Group management handlers
+	app.OnRecordCreateExecute("groups").BindFunc(handleGroupCreation)
+	app.OnRecordAfterCreateSuccess("groups").BindFunc(handleGroupCreatedNotification)
+
+	// Group-aware project creation validation
+	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreationWithGroup)
+
+	// Group-aware user-project assignment validation
+	app.OnRecordCreateExecute("users_projects").BindFunc(handleUsersProjectsValidation)
 
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
@@ -146,6 +155,151 @@ func serveIndexHTML(staticFS fs.FS, w http.ResponseWriter, r *http.Request) erro
 
 func generateRandomCode() string {
 	return security.RandomStringWithAlphabet(3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+}
+
+// handleGroupCreation auto-generates unique 3-letter group codes
+// Similar to project code generation
+func handleGroupCreation(e *core.RecordEvent) error {
+	record := e.Record
+
+	// Generate unique group code (3 uppercase letters)
+	code := generateRandomCode()
+	maxAttempts := 100
+	attempts := 0
+
+	// Check for collisions and retry if needed
+	for attempts < maxAttempts {
+		exists, err := e.App.FindFirstRecordByData("groups", "code", code)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
+
+		// No collision found, use this code
+		if exists == nil {
+			break
+		}
+
+		// Collision found, generate new code
+		code = generateRandomCode()
+		attempts++
+	}
+
+	// Failed to find unique code after max attempts
+	if attempts >= maxAttempts {
+		return errors.New("failed to generate unique group code after 100 attempts")
+	}
+
+	// Set the generated code and default active status
+	record.Set("code", code)
+	record.Set("active", true)
+
+	return e.Next()
+}
+
+// handleProjectCreationWithGroup validates that the project's supervisor
+// belongs to the same group as the project
+func handleProjectCreationWithGroup(e *core.RecordEvent) error {
+	record := e.Record
+
+	// FIRST: Run the existing project creation logic (generates project code)
+	if err := handleProjectCreation(e); err != nil {
+		return err
+	}
+
+	// Get the group and supervisor IDs from the new project
+	groupId := record.GetString("group")
+	supervisorId := record.GetString("supervisor")
+
+	// Skip validation if either is missing (will be caught by required field validation)
+	if groupId == "" || supervisorId == "" {
+		return e.Next()
+	}
+
+	// Fetch the supervisor user record
+	supervisor, err := e.App.FindRecordById("users", supervisorId)
+	if err != nil {
+		return fmt.Errorf("supervisor not found: %w", err)
+	}
+
+	// Check if supervisor belongs to the same group
+	supervisorGroupId := supervisor.GetString("group")
+	if supervisorGroupId != groupId {
+		return errors.New("منتور (supervisor) باید عضو همان گروه پروژه باشد")
+	}
+
+	return e.Next()
+}
+
+// handleUsersProjectsValidation ensures that when adding a user to a project,
+// both the user and project belong to the same group
+func handleUsersProjectsValidation(e *core.RecordEvent) error {
+	record := e.Record
+
+	userId := record.GetString("user")
+	projectId := record.GetString("project")
+
+	// Skip if either field is missing
+	if userId == "" || projectId == "" {
+		return e.Next()
+	}
+
+	// Fetch user record
+	user, err := e.App.FindRecordById("users", userId)
+	if err != nil {
+		return fmt.Errorf("user not found: %w", err)
+	}
+
+	// Fetch project record
+	project, err := e.App.FindRecordById("projects", projectId)
+	if err != nil {
+		return fmt.Errorf("project not found: %w", err)
+	}
+
+	// Validate both belong to the same group
+	userGroupId := user.GetString("group")
+	projectGroupId := project.GetString("group")
+
+	if userGroupId != projectGroupId {
+		return errors.New("کاربر و پروژه باید در یک گروه باشند")
+	}
+
+	return e.Next()
+}
+
+// handleGroupCreatedNotification sends a notification to the manager
+// when they are assigned to manage a new group
+func handleGroupCreatedNotification(e *core.RecordEvent) error {
+	record := e.Record
+	managerId := record.GetString("manager")
+
+	if managerId == "" {
+		return e.Next()
+	}
+
+	// Create notification record
+	notificationsCollection, err := e.App.FindCollectionByNameOrId("notifications")
+	if err != nil {
+		log.Printf("Error finding notifications collection: %v", err)
+		return e.Next()
+	}
+
+	notification := core.NewRecord(notificationsCollection)
+	notification.Set("user", managerId)
+	notification.Set("type", "system")
+	notification.Set("title", "گروه جدید ایجاد شد")
+	notification.Set("message", fmt.Sprintf("شما به عنوان مدیر گروه %s منصوب شدید", record.GetString("name")))
+	notification.Set("read", false)
+	notification.Set("data", map[string]interface{}{
+		"group_id":   record.Id,
+		"group_name": record.GetString("name"),
+	})
+
+	// Save notification (log error but don't fail the operation)
+	if err := e.App.Save(notification); err != nil {
+		log.Printf("Failed to create group notification: %v", err)
+	}
+
+	return e.Next()
 }
 
 func startApp(app *pocketbase.PocketBase) {
