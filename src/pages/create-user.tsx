@@ -12,6 +12,7 @@ import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useCreateUser } from "@/hooks";
+import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: fa.auth.errors.usernameRequired }),
@@ -19,10 +20,14 @@ const formSchema = z.object({
   first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
   last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
+  group: z.string().optional(),
 });
 
 export default function CreateUser() {
   const navigate = useNavigate();
+  const user = useAuthUser();
+  const isAdmin = user?.role === UsersRoleOptions.admin;
+  const isManager = user?.role === UsersRoleOptions.manager;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,6 +39,7 @@ export default function CreateUser() {
       first_name: "",
       last_name: "",
       role: UsersRoleOptions.employee,
+      group: "",
     },
   });
 
@@ -76,7 +82,10 @@ export default function CreateUser() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <UserFields control={form.control} />
+              <UserFields
+                control={form.control}
+                showGroup={isAdmin || isManager}
+              />
               <div className="flex items-center justify-end gap-2 pt-4">
                 <Button
                   type="button"

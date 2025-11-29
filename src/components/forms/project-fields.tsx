@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
-import { useUsers } from "@/hooks";
+import { useUsers, useGroups } from "@/hooks";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
@@ -30,11 +30,14 @@ type ProjectFieldsProps = {
     description?: string;
     assets?: FileWithPreview[];
     supervisor?: string;
+    group?: string;
   }>;
   showDescription?: boolean;
   showAssets?: boolean;
   showSupervisor?: boolean;
+  showGroup?: boolean;
   isAdmin?: boolean;
+  isManager?: boolean;
 };
 
 export function ProjectFields({
@@ -42,10 +45,16 @@ export function ProjectFields({
   showDescription = true,
   showAssets = true,
   showSupervisor = false,
+  showGroup = false,
   isAdmin = false,
+  isManager = false,
 }: ProjectFieldsProps) {
   const { data: allUsers } = useUsers({
     enabled: showSupervisor && isAdmin,
+  });
+
+  const { data: groups } = useGroups({
+    enabled: showGroup,
   });
 
   const supervisors = allUsers?.filter(
@@ -109,6 +118,39 @@ export function ProjectFields({
                           user.username,
                         )}
                       </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {showGroup && (
+        <FormField
+          control={control}
+          name="group"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{fa.projects.create.form.group}</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                disabled={isManager}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={fa.projects.create.form.selectGroup}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {groups?.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

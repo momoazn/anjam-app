@@ -19,26 +19,35 @@ import {
 import { fa } from "@/constants/text";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
+import { useGroups } from "@/hooks";
 
 type UserFieldsProps = {
   control: Control<{
     username: string;
-    password?: string;
+    password: string;
     first_name: string;
     last_name: string;
     role: UsersRoleOptions;
+    group?: string;
   }>;
   isEdit?: boolean;
   editingUserId?: string;
+  showGroup?: boolean;
 };
 
 export function UserFields({
   control,
   isEdit = false,
   editingUserId,
+  showGroup = false,
 }: UserFieldsProps) {
   const user = useAuthUser();
   const isEditingSelf = editingUserId === user?.id;
+
+  // Fetch groups for dropdown
+  const { data: groups } = useGroups({
+    enabled: showGroup,
+  });
 
   // Get available roles based on current user's role
   const availableRoles = useMemo(() => {
@@ -47,9 +56,14 @@ export function UserFields({
     if (user.role === UsersRoleOptions.admin) {
       return [
         UsersRoleOptions.admin,
+        UsersRoleOptions.manager,
         UsersRoleOptions.supervisor,
         UsersRoleOptions.employee,
       ];
+    }
+
+    if (user.role === UsersRoleOptions.manager) {
+      return [UsersRoleOptions.supervisor, UsersRoleOptions.employee];
     }
 
     if (user.role === UsersRoleOptions.supervisor) {
@@ -137,6 +151,33 @@ export function UserFields({
                   {availableRoles.map((role) => (
                     <SelectItem key={role} value={role}>
                       {fa.users.table.roles[role]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {showGroup && (
+        <FormField
+          control={control}
+          name="group"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{fa.users.form.group}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={fa.users.form.selectGroup} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {groups?.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
