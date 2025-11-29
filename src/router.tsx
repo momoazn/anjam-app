@@ -27,6 +27,16 @@ const Dashboard = React.lazy(() =>
     default: () => <div>{fa.errors.pageLoad.dashboard}</div>,
   })),
 );
+const Groups = React.lazy(() =>
+  import("@/pages/groups").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.notFound}</div>,
+  })),
+);
+const CreateGroup = React.lazy(() =>
+  import("@/pages/create-group").catch(() => ({
+    default: () => <div>{fa.errors.pageLoad.notFound}</div>,
+  })),
+);
 const Projects = React.lazy(() =>
   import("@/pages/projects").catch(() => ({
     default: () => <div>{fa.errors.pageLoad.projects}</div>,
@@ -216,6 +226,20 @@ const routes: RouteType[] = [
     element: <Dashboard />,
     protected: true,
     title: fa.navigation.dashboard,
+  },
+  {
+    path: "/groups",
+    element: <Groups />,
+    protected: true,
+    permission: "groups.view",
+    title: fa.groups.title,
+  },
+  {
+    path: "/groups/new",
+    element: <CreateGroup />,
+    protected: true,
+    permission: "groups.manage",
+    title: fa.groups.create.title,
   },
   {
     path: "/projects",

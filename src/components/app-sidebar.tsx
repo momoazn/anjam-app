@@ -13,6 +13,7 @@ import { can } from "@/lib/permissions";
 import { useAuthUser } from "@/store/auth-store";
 import {
   IconBell,
+  IconBuildingCommunity,
   IconCalendar,
   IconChartBar,
   IconClock,
@@ -33,6 +34,12 @@ const data = {
       title: fa.navigation.dashboard,
       url: "/",
       icon: IconDashboard,
+    },
+    {
+      title: fa.navigation.groups,
+      url: "/groups",
+      icon: IconBuildingCommunity,
+      adminOnly: true,
     },
     {
       title: fa.navigation.tasks,
