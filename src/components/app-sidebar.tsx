@@ -140,6 +140,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           items={data.navMain.filter((item) => {
             // Use new permission system
             if (
+              item.title === fa.navigation.groups &&
+              !can(user.role, "groups.view")
+            )
+              return false;
+            if (
               item.title === fa.navigation.users &&
               !can(user.role, "users.view")
             )

@@ -41,7 +41,7 @@ export function can(
   permission: Permission,
 ): boolean {
   if (!userRole) return false;
-  return PERMISSIONS[permission].includes(userRole as any);
+  return (PERMISSIONS[permission] as readonly string[]).includes(userRole);
 }
 
 export function hasAnyRole(

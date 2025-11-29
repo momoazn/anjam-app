@@ -61,6 +61,10 @@ export default function CreateProject() {
       formData.append("code", data.code.toUpperCase());
       formData.append("supervisor", data.supervisor || user?.id || "");
 
+      if (data.group) {
+        formData.append("group", data.group);
+      }
+
       if (data.description) {
         // Convert line breaks to HTML
         const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
