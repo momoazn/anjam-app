@@ -41,7 +41,7 @@ export function can(
   permission: Permission,
 ): boolean {
   if (!userRole) return false;
-  return PERMISSIONS[permission].includes(userRole);
+  return PERMISSIONS[permission].includes(userRole as any);
 }
 
 export function hasAnyRole(

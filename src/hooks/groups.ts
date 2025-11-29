@@ -31,10 +31,12 @@ export function useGroups(options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: queryKeys.groups.list(),
     queryFn: () =>
-      pb.collection("groups").getFullList<GroupsResponse>({
-        sort: "-created",
-        expand: "manager",
-      }),
+      pb
+        .collection("groups")
+        .getFullList<GroupsResponse<{ manager: UsersResponse }>>({
+          sort: "-created",
+          expand: "manager",
+        }),
     enabled,
   });
 }

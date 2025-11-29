@@ -59,6 +59,11 @@ export const fa = {
       retry: "تلاش مجدد",
     },
 
+    // Validation messages
+    validation: {
+      required: "این فیلد الزامی است",
+    },
+
     // Common error/info messages
     messages: {
       notFound: "یافت نشد",

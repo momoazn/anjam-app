@@ -29,9 +29,10 @@ export function useUsers(
     enabled?: boolean;
     batch?: number;
     sort?: string;
+    filter?: string;
   } = {},
 ) {
-  const { enabled = true, batch = 100, sort = "-created" } = options;
+  const { enabled = true, batch = 100, sort = "-created", filter } = options;
 
   return useQuery({
     queryKey: queryKeys.users.lists(),
@@ -39,6 +40,7 @@ export function useUsers(
       pb.collection("users").getFullList<UsersResponse>({
         batch,
         sort,
+        filter,
       }),
     enabled,
   });
