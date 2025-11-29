@@ -21,9 +21,6 @@ export function DeleteProjectDialog({
       title={fa.projects.delete.title}
       description={fa.projects.delete.confirm}
       collection="projects"
-      successMessage={fa.projects.delete.success}
-      errorMessage={fa.projects.delete.error}
-      invalidateQueries={["projects"]}
     />
   );
 }
