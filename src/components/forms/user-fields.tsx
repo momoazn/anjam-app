@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Control } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 import {
   FormControl,
@@ -17,9 +17,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { fa } from "@/constants/text";
+import { useGroups } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
-import { useGroups } from "@/hooks";
 
 type UserFieldsProps = {
   control: Control<{
@@ -43,6 +43,7 @@ export function UserFields({
 }: UserFieldsProps) {
   const user = useAuthUser();
   const isEditingSelf = editingUserId === user?.id;
+  const isManager = user?.role === UsersRoleOptions.manager;
 
   // Fetch groups for dropdown
   const { data: groups } = useGroups({
@@ -168,7 +169,11 @@ export function UserFields({
           render={({ field }) => (
             <FormItem>
               <FormLabel>{fa.users.form.group}</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                disabled={isManager} // Managers can only create users in their group
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder={fa.users.form.selectGroup} />

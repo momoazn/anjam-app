@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { fa } from "@/constants/text";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useCreateUser } from "@/hooks";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({
@@ -39,7 +39,8 @@ export default function CreateUser() {
       first_name: "",
       last_name: "",
       role: UsersRoleOptions.employee,
-      group: "",
+      // Pre-fill group for managers so they can only create users in their group
+      group: isManager && user?.group ? user.group : "",
     },
   });
 
