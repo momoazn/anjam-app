@@ -6,141 +6,136 @@ import { can, Permission } from "./lib/permissions";
 import { UsersRoleOptions } from "./lib/pocketbase-types";
 import { useAuthIsLoggedIn, useAuthUser } from "./store/auth-store";
 
-// Lazy load pages with better error handling and preloading
-const Login = React.lazy(() =>
-  import("@/pages/login").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.login}</div>,
-  })),
+// Standardized error fallback component for lazy-loaded routes
+const PageLoadError = ({ message }: { message: string }) => (
+  <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="text-center">
+      <p className="text-destructive text-lg font-medium">{message}</p>
+      <p className="text-muted-foreground mt-2 text-sm">
+        {fa.ui.pageLoadError.refreshMessage}
+      </p>
+    </div>
+  </div>
 );
-const Register = React.lazy(() =>
-  import("@/pages/register").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.register}</div>,
-  })),
+
+// Lazy load pages with standardized error handling
+const createLazyPage = (
+  importFn: () => Promise<{ default: React.ComponentType }>,
+  errorMessage: string,
+) =>
+  React.lazy(() =>
+    importFn().catch(() => ({
+      default: () => <PageLoadError message={errorMessage} />,
+    })),
+  );
+
+const Login = createLazyPage(
+  () => import("@/pages/login"),
+  fa.errors.pageLoad.login,
 );
-const PendingActivation = React.lazy(() =>
-  import("@/pages/pending-activation").catch(() => ({
-    default: () => <div>Error loading page</div>,
-  })),
+const Register = createLazyPage(
+  () => import("@/pages/register"),
+  fa.errors.pageLoad.register,
 );
-const Dashboard = React.lazy(() =>
-  import("@/pages/dashboard").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.dashboard}</div>,
-  })),
+const PendingActivation = createLazyPage(
+  () => import("@/pages/pending-activation"),
+  fa.errors.pageLoad.notFound,
 );
-const Groups = React.lazy(() =>
-  import("@/pages/groups").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.notFound}</div>,
-  })),
+const Dashboard = createLazyPage(
+  () => import("@/pages/dashboard"),
+  fa.errors.pageLoad.dashboard,
 );
-const CreateGroup = React.lazy(() =>
-  import("@/pages/create-group").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.notFound}</div>,
-  })),
+const Groups = createLazyPage(
+  () => import("@/pages/groups"),
+  fa.errors.pageLoad.notFound,
 );
-const Projects = React.lazy(() =>
-  import("@/pages/projects").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.projects}</div>,
-  })),
+const CreateGroup = createLazyPage(
+  () => import("@/pages/create-group"),
+  fa.errors.pageLoad.notFound,
 );
-const ProjectDetails = React.lazy(() =>
-  import("@/pages/project-details").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.projects}</div>,
-  })),
+const Projects = createLazyPage(
+  () => import("@/pages/projects"),
+  fa.errors.pageLoad.projects,
 );
-const CreateProject = React.lazy(() =>
-  import("@/pages/create-project").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.projects}</div>,
-  })),
+const ProjectDetails = createLazyPage(
+  () => import("@/pages/project-details"),
+  fa.errors.pageLoad.projects,
 );
-const EditProject = React.lazy(() =>
-  import("@/pages/edit-project").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.projects}</div>,
-  })),
+const CreateProject = createLazyPage(
+  () => import("@/pages/create-project"),
+  fa.errors.pageLoad.projects,
 );
-const Tasks = React.lazy(() =>
-  import("@/pages/tasks").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
-  })),
+const EditProject = createLazyPage(
+  () => import("@/pages/edit-project"),
+  fa.errors.pageLoad.projects,
 );
-const CreateTask = React.lazy(() =>
-  import("@/pages/create-task").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
-  })),
+const Tasks = createLazyPage(
+  () => import("@/pages/tasks"),
+  fa.errors.pageLoad.tasks,
 );
-const TaskDetails = React.lazy(() =>
-  import("@/pages/task-details").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
-  })),
+const CreateTask = createLazyPage(
+  () => import("@/pages/create-task"),
+  fa.errors.pageLoad.tasks,
 );
-const EditTask = React.lazy(() =>
-  import("@/pages/edit-task").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.tasks}</div>,
-  })),
+const TaskDetails = createLazyPage(
+  () => import("@/pages/task-details"),
+  fa.errors.pageLoad.tasks,
 );
-const Tags = React.lazy(() =>
-  import("@/pages/tags").catch(() => ({
-    default: () => <div>Error loading tags</div>,
-  })),
+const EditTask = createLazyPage(
+  () => import("@/pages/edit-task"),
+  fa.errors.pageLoad.tasks,
 );
-const TaskCalendar = React.lazy(() =>
-  import("@/pages/task-calendar").catch(() => ({
-    default: () => <div>Error loading calendar</div>,
-  })),
+const Tags = createLazyPage(
+  () => import("@/pages/tags"),
+  fa.errors.pageLoad.notFound,
 );
-const MyTasks = React.lazy(() =>
-  import("@/pages/my-tasks").catch(() => ({
-    default: () => <div>Error loading my tasks</div>,
-  })),
+const TaskCalendar = createLazyPage(
+  () => import("@/pages/task-calendar"),
+  fa.errors.pageLoad.notFound,
 );
-const Timesheet = React.lazy(() =>
-  import("@/pages/timesheet").catch(() => ({
-    default: () => <div>Error loading timesheet</div>,
-  })),
+const MyTasks = createLazyPage(
+  () => import("@/pages/my-tasks"),
+  fa.errors.pageLoad.notFound,
 );
-const ProjectTasks = React.lazy(() =>
-  import("@/pages/project-tasks").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.projectTasks}</div>,
-  })),
+const Timesheet = createLazyPage(
+  () => import("@/pages/timesheet"),
+  fa.errors.pageLoad.notFound,
 );
-const Users = React.lazy(() =>
-  import("@/pages/users").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.users}</div>,
-  })),
+const ProjectTasks = createLazyPage(
+  () => import("@/pages/project-tasks"),
+  fa.errors.pageLoad.projectTasks,
 );
-const CreateUser = React.lazy(() =>
-  import("@/pages/create-user").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.users}</div>,
-  })),
+const Users = createLazyPage(
+  () => import("@/pages/users"),
+  fa.errors.pageLoad.users,
 );
-const ProjectUsers = React.lazy(() =>
-  import("@/pages/project-users").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.projectUsers}</div>,
-  })),
+const CreateUser = createLazyPage(
+  () => import("@/pages/create-user"),
+  fa.errors.pageLoad.users,
 );
-const Reports = React.lazy(() =>
-  import("@/pages/reports").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.reports}</div>,
-  })),
+const ProjectUsers = createLazyPage(
+  () => import("@/pages/project-users"),
+  fa.errors.pageLoad.projectUsers,
 );
-const Helps = React.lazy(() =>
-  import("@/pages/helps").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.helps}</div>,
-  })),
+const Reports = createLazyPage(
+  () => import("@/pages/reports"),
+  fa.errors.pageLoad.reports,
 );
-const Settings = React.lazy(() =>
-  import("@/pages/settings").catch(() => ({
-    default: () => <div>Error loading settings</div>,
-  })),
+const Helps = createLazyPage(
+  () => import("@/pages/helps"),
+  fa.errors.pageLoad.helps,
 );
-const Notifications = React.lazy(() =>
-  import("@/pages/notifications").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.notifications}</div>,
-  })),
+const Settings = createLazyPage(
+  () => import("@/pages/settings"),
+  fa.errors.pageLoad.notFound,
 );
-const NotFound = React.lazy(() =>
-  import("@/pages/not-found").catch(() => ({
-    default: () => <div>{fa.errors.pageLoad.notFound}</div>,
-  })),
+const Notifications = createLazyPage(
+  () => import("@/pages/notifications"),
+  fa.errors.pageLoad.notifications,
+);
+const NotFound = createLazyPage(
+  () => import("@/pages/not-found"),
+  fa.errors.pageLoad.notFound,
 );
 
 // ProtectedRoute component
