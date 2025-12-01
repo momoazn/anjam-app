@@ -54,7 +54,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
 
   const handleExportCsv = () => {
     // CSV export functionality (deferred per user request)
-    toast.info("این ویژگی به زودی اضافه خواهد شد");
+    toast.info(fa.reports.charts.employee.performanceTable.exportCsvComingSoon);
   };
 
   if (summaries.length === 0) {

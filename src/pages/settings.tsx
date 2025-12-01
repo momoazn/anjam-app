@@ -59,7 +59,9 @@ const profileSchema = z.object({
 
 const passwordSchema = z
   .object({
-    oldPassword: z.string().min(1, "رمز عبور فعلی الزامی است"),
+    oldPassword: z
+      .string()
+      .min(1, fa.settings.security.validation.oldPasswordRequired),
     password: z.string().min(8, fa.auth.errors.passwordMinLength),
     passwordConfirm: z.string().min(1, fa.auth.errors.passwordConfirmRequired),
   })
@@ -78,10 +80,10 @@ function SettingsSidebar({
   setActiveTab: (tab: string) => void;
 }) {
   const menuItems = [
-    { id: "profile", label: "پروفایل کاربری", icon: User },
-    { id: "appearance", label: "ظاهر و تم", icon: Palette },
-    { id: "security", label: "امنیت و ورود", icon: Shield },
-    { id: "about", label: "درباره برنامه", icon: Info },
+    { id: "profile", label: fa.settings.tabs.profile, icon: User },
+    { id: "appearance", label: fa.settings.tabs.appearance, icon: Palette },
+    { id: "security", label: fa.settings.tabs.security, icon: Shield },
+    { id: "about", label: fa.settings.tabs.about, icon: Info },
   ];
 
   return (
@@ -171,14 +173,14 @@ function ProfileSection() {
       refetch();
       updateUser(updatedRecord);
       toast({
-        title: "پروفایل بروزرسانی شد",
-        description: "اطلاعات شما با موفقیت ذخیره گردید.",
+        title: fa.settings.profile.toast.updateSuccess,
+        description: fa.settings.profile.toast.updateSuccessDescription,
       });
       setAvatarFile(null);
     } catch {
       toast({
-        title: "خطا",
-        description: "خطایی در ذخیره اطلاعات رخ داد.",
+        title: fa.settings.profile.toast.updateError,
+        description: fa.settings.profile.toast.updateErrorDescription,
         variant: "destructive",
       });
     }
@@ -196,10 +198,8 @@ function ProfileSection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>اطلاعات شناسایی</CardTitle>
-          <CardDescription>
-            تصویر پروفایل و نام نمایشی خود را مدیریت کنید.
-          </CardDescription>
+          <CardTitle>{fa.settings.profile.title}</CardTitle>
+          <CardDescription>{fa.settings.profile.description}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -215,7 +215,9 @@ function ProfileSection() {
                     className="bg-primary text-primary-foreground hover:bg-primary/90 absolute right-0 bottom-0 cursor-pointer rounded-full p-2 shadow-lg transition-colors"
                   >
                     <Camera className="h-4 w-4" />
-                    <span className="sr-only">تغییر تصویر</span>
+                    <span className="sr-only">
+                      {fa.settings.profile.changeImage}
+                    </span>
                   </label>
                   <input
                     id="avatar-upload"
@@ -233,7 +235,7 @@ function ProfileSection() {
                       name="first_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>نام</FormLabel>
+                          <FormLabel>{fa.settings.profile.firstName}</FormLabel>
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
@@ -246,7 +248,7 @@ function ProfileSection() {
                       name="last_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>نام خانوادگی</FormLabel>
+                          <FormLabel>{fa.settings.profile.lastName}</FormLabel>
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
@@ -260,12 +262,12 @@ function ProfileSection() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>نام کاربری</FormLabel>
+                        <FormLabel>{fa.settings.profile.username}</FormLabel>
                         <FormControl>
                           <Input {...field} dir="ltr" className="text-left" />
                         </FormControl>
                         <FormDescription>
-                          نام کاربری منحصر به فرد شما در سیستم.
+                          {fa.settings.profile.usernameDescription}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -279,7 +281,7 @@ function ProfileSection() {
                   {form.formState.isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  ذخیره تغییرات
+                  {fa.settings.profile.saveChanges}
                 </Button>
               </div>
             </form>
@@ -289,14 +291,14 @@ function ProfileSection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>اطلاعات تماس</CardTitle>
+          <CardTitle>{fa.settings.profile.contactTitle}</CardTitle>
           <CardDescription>
-            ایمیل شما جهت بازیابی رمز عبور و دریافت اعلان‌ها استفاده می‌شود.
+            {fa.settings.profile.contactDescription}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-2">
-            <Label>آدرس ایمیل</Label>
+            <Label>{fa.settings.profile.email}</Label>
             <Input
               value={fullUser.email}
               disabled
@@ -304,7 +306,7 @@ function ProfileSection() {
               dir="ltr"
             />
             <p className="text-muted-foreground text-[0.8rem]">
-              برای تغییر ایمیل با پشتیبانی تماس بگیرید.
+              {fa.settings.profile.emailChangeNote}
             </p>
           </div>
         </CardContent>
@@ -320,9 +322,9 @@ function AppearanceSection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>تم برنامه</CardTitle>
+          <CardTitle>{fa.settings.appearance.title}</CardTitle>
           <CardDescription>
-            ظاهر برنامه را متناسب با سلیقه خود شخصی‌سازی کنید.
+            {fa.settings.appearance.description}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -336,7 +338,9 @@ function AppearanceSection() {
               onClick={() => setTheme("light")}
             >
               <Sun className="h-6 w-6" />
-              <span className="font-medium">روشن</span>
+              <span className="font-medium">
+                {fa.settings.appearance.light}
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -347,7 +351,7 @@ function AppearanceSection() {
               onClick={() => setTheme("dark")}
             >
               <Moon className="h-6 w-6" />
-              <span className="font-medium">تاریک</span>
+              <span className="font-medium">{fa.settings.appearance.dark}</span>
             </Button>
             <Button
               variant="outline"
@@ -358,7 +362,9 @@ function AppearanceSection() {
               onClick={() => setTheme("system")}
             >
               <Laptop className="h-6 w-6" />
-              <span className="font-medium">سیستم</span>
+              <span className="font-medium">
+                {fa.settings.appearance.system}
+              </span>
             </Button>
           </div>
         </CardContent>
@@ -409,14 +415,14 @@ function SecuritySection() {
         passwordConfirm: values.passwordConfirm,
       });
       toast({
-        title: "رمز عبور تغییر کرد",
-        description: "رمز عبور شما با موفقیت تغییر یافت.",
+        title: fa.settings.security.toast.passwordChanged,
+        description: fa.settings.security.toast.passwordChangedDescription,
       });
       form.reset();
     } catch {
       toast({
-        title: "خطا",
-        description: "رمز عبور فعلی اشتباه است یا خطایی رخ داده.",
+        title: fa.settings.security.toast.passwordError,
+        description: fa.settings.security.toast.passwordErrorDescription,
         variant: "destructive",
       });
     }
@@ -426,9 +432,9 @@ function SecuritySection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>تغییر رمز عبور</CardTitle>
+          <CardTitle>{fa.settings.security.changePasswordTitle}</CardTitle>
           <CardDescription>
-            برای امنیت بیشتر، رمز عبور قوی انتخاب کنید.
+            {fa.settings.security.changePasswordDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -442,7 +448,7 @@ function SecuritySection() {
                 name="oldPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>رمز عبور فعلی</FormLabel>
+                    <FormLabel>{fa.settings.security.oldPassword}</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
@@ -455,7 +461,7 @@ function SecuritySection() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>رمز عبور جدید</FormLabel>
+                    <FormLabel>{fa.settings.security.newPassword}</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
@@ -468,7 +474,9 @@ function SecuritySection() {
                 name="passwordConfirm"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>تکرار رمز عبور جدید</FormLabel>
+                    <FormLabel>
+                      {fa.settings.security.confirmPassword}
+                    </FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
@@ -481,7 +489,7 @@ function SecuritySection() {
                   {form.formState.isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  بروزرسانی رمز عبور
+                  {fa.settings.security.updatePassword}
                 </Button>
               </div>
             </form>
@@ -491,9 +499,9 @@ function SecuritySection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>نشست‌های فعال</CardTitle>
+          <CardTitle>{fa.settings.security.activeSessionsTitle}</CardTitle>
           <CardDescription>
-            تاریخچه ورودهای اخیر به حساب کاربری شما.
+            {fa.settings.security.activeSessionsDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -540,7 +548,7 @@ function SecuritySection() {
                 </div>
               ) : (
                 <div className="text-muted-foreground p-8 text-center">
-                  هیچ سابقه ورودی یافت نشد.
+                  {fa.settings.security.noLoginHistory}
                 </div>
               )}
             </div>
@@ -556,7 +564,7 @@ function AboutSection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>درباره برنامه</CardTitle>
+          <CardTitle>{fa.settings.about.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
@@ -565,12 +573,14 @@ function AboutSection() {
             </div>
             <div>
               <h3 className="text-lg font-bold">{fa.app.name}</h3>
-              <p className="text-muted-foreground">نسخه ۱.۰.۰</p>
+              <p className="text-muted-foreground">
+                {fa.settings.about.version}
+              </p>
             </div>
           </div>
           <Separator />
           <div className="space-y-2 text-sm">
-            <p>این برنامه جهت مدیریت پروژه‌ها و تسک‌های تیمی طراحی شده است.</p>
+            <p>{fa.settings.about.description}</p>
           </div>
         </CardContent>
       </Card>
@@ -587,9 +597,11 @@ export default function SettingsPage() {
     <div dir="rtl" className="min-h-screen pb-10">
       <PageTransition className="container mx-auto max-w-5xl p-4 md:p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">تنظیمات</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {fa.settings.title}
+          </h1>
           <p className="text-muted-foreground mt-2">
-            مدیریت حساب کاربری و تنظیمات برنامه
+            {fa.settings.description}
           </p>
         </div>
 

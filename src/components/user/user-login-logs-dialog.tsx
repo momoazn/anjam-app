@@ -74,7 +74,7 @@ export function UserLoginLogsDialog({
         setPage(data.page);
         setTotalPages(data.totalPages);
       } catch {
-        toast.error("خطا در دریافت سوابق ورود");
+        toast.error(fa.settings.security.toast.fetchLogsError);
       } finally {
         setLoading(false);
       }

@@ -208,7 +208,7 @@ export default function Tasks() {
       });
     } catch {
       toast({
-        title: "خطا در اعمال فیلتر",
+        title: fa.savedFilters.toast.applyError,
         variant: "destructive",
       });
     }
@@ -240,7 +240,7 @@ export default function Tasks() {
       });
     } catch {
       toast({
-        title: "خطا در تنظیم فیلتر پیش‌فرض",
+        title: fa.savedFilters.toast.setDefaultError,
         variant: "destructive",
       });
     }

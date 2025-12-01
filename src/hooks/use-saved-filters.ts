@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { fa } from "@/constants/text";
 import { ALL_FILTER_VALUE } from "./use-task-filters";
 
 export interface SavedFilter {
@@ -48,7 +49,7 @@ export function useSavedFilters() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
       setSavedFilters(filters);
     } catch {
-      throw new Error("فشل في حفظ الفلتر");
+      throw new Error(fa.savedFilters.toast.saveError);
     }
   }, []);
 
