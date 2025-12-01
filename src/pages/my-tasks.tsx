@@ -330,11 +330,8 @@ export default function MyTasks() {
             <MyTasksSkeleton />
           ) : categorizedTasks.active.length === 0 ? (
             <EmptyState
-              message={text.myTasks.empty.noActiveTasks || "تسک فعالی ندارید"}
-              description={
-                text.myTasks.empty.noActiveTasksDescription ||
-                "همه تسک‌های شما انجام شده یا لغو شده‌اند"
-              }
+              message={text.myTasks.empty.noActiveTasks}
+              description={text.myTasks.empty.noActiveTasksDescription}
             />
           ) : (
             statusOrder.map((status) => {
@@ -363,14 +360,8 @@ export default function MyTasks() {
             <MyTasksSkeleton />
           ) : categorizedTasks.completed.length === 0 ? (
             <EmptyState
-              message={
-                text.myTasks.empty.noCompletedTasks ||
-                "هنوز تسکی را تکمیل نکرده‌اید"
-              }
-              description={
-                text.myTasks.empty.noCompletedTasksDescription ||
-                "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند"
-              }
+              message={text.myTasks.empty.noCompletedTasks}
+              description={text.myTasks.empty.noCompletedTasksDescription}
             />
           ) : (
             statusOrder.map((status) => {
@@ -399,11 +390,8 @@ export default function MyTasks() {
             <MyTasksSkeleton />
           ) : tasksByProject.length === 0 ? (
             <EmptyState
-              message={text.myTasks.empty.noTasks || "تسکی ندارید"}
-              description={
-                text.myTasks.empty.noTasksDescription ||
-                "هیچ تسکی به شما اختصاص داده نشده است"
-              }
+              message={text.myTasks.empty.noTasks}
+              description={text.myTasks.empty.noTasksDescription}
             />
           ) : (
             tasksByProject.map((project) => (

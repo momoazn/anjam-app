@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
+import { formatDateLocale } from "@/lib/date-utils";
 import { stripHtml } from "@/lib/excel-export";
 import { type ProjectWithSupervisor, pb } from "@/lib/pocketbase";
 import type { TasksResponse } from "@/lib/pocketbase-types";
@@ -223,15 +224,6 @@ export default function ProjectDetails() {
   const totalTimeSpent =
     tasks?.reduce((sum, task) => sum + (task.time_spent_minutes || 0), 0) || 0;
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("fa-IR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <PageTransition className="container mx-auto space-y-6 p-6">
       {/* Header */}
@@ -348,7 +340,7 @@ export default function ProjectDetails() {
                       {fa.projects.details.createdAt}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      {formatDate(project.created)}
+                      {formatDateLocale(project.created)}
                     </p>
                   </div>
                 </div>
@@ -359,7 +351,7 @@ export default function ProjectDetails() {
                       {fa.projects.details.updatedAt}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      {formatDate(project.updated)}
+                      {formatDateLocale(project.updated)}
                     </p>
                   </div>
                 </div>

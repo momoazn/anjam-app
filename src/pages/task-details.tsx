@@ -1,5 +1,3 @@
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { format } from "date-fns-jalali";
 import {
   ArrowLeft,
   Clock,
@@ -37,6 +35,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
 import { useDeleteTask, useTask, useUpdateTask } from "@/hooks";
 import { useComments } from "@/hooks/comments";
+import { formatTaskDate } from "@/lib/date-utils";
 import {
   priorityColors,
   priorityIcons,
@@ -51,17 +50,7 @@ import {
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 import { handlePocketBaseError } from "@/lib/error-handler";
-
-const formatTaskDate = (dateString?: string | null) => {
-  if (!dateString) {
-    return "-";
-  }
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-  return digitsEnToFa(format(date, "dd MMMM yyyy"));
-};
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
@@ -183,7 +172,7 @@ export default function TaskDetails() {
               onClick={() => navigate("/tasks")}
             >
               <ArrowLeft className="ml-2 h-4 w-4" />
-              بازگشت به لیست وظایف
+              {fa.tasks.details.backToList}
             </Button>
           </CardContent>
         </Card>
@@ -247,7 +236,7 @@ export default function TaskDetails() {
             variant="outline"
             onClick={() => navigate(`/tasks/${id}/edit`)}
           >
-            ویرایش
+            {fa.tasks.details.editButton}
           </Button>
           <Button
             size="sm"
@@ -271,11 +260,13 @@ export default function TaskDetails() {
           {/* Task Meta */}
           <Card>
             <CardHeader>
-              <CardTitle>جزئیات</CardTitle>
+              <CardTitle>{fa.tasks.details.detailsCardTitle}</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-muted-foreground">مسئول:</span>{" "}
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.assigneeLabel}
+                </span>{" "}
                 {task.expand?.assignee ? (
                   <span>
                     {formatUserName(
@@ -291,15 +282,21 @@ export default function TaskDetails() {
                 )}
               </div>
               <div>
-                <span className="text-muted-foreground">پروژه:</span>{" "}
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.projectLabel}
+                </span>{" "}
                 {task.expand?.project?.name || fa.tasks.details.unknownProject}
               </div>
               <div>
-                <span className="text-muted-foreground">مهلت:</span>{" "}
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.deadlineLabel}
+                </span>{" "}
                 {formatTaskDate(task.deadline)}
               </div>
               <div>
-                <span className="text-muted-foreground">شناسه نمایش:</span>{" "}
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.displayIdLabel}
+                </span>{" "}
                 {task.display_id || task.id}
               </div>
             </CardContent>
@@ -402,7 +399,7 @@ export default function TaskDetails() {
           {task.description && (
             <Card>
               <CardHeader>
-                <CardTitle>توضیحات</CardTitle>
+                <CardTitle>{fa.tasks.details.descriptionCardTitle}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="prose prose-sm max-w-none">
@@ -444,11 +441,13 @@ export default function TaskDetails() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>اطلاعات سریع</CardTitle>
+              <CardTitle>{fa.tasks.details.quickInfoCardTitle}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">وضعیت:</span>
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.statusLabel}
+                </span>
                 <Badge
                   variant="default"
                   className={`${taskStatusBadgeSolids[task.status]}`}
@@ -458,7 +457,9 @@ export default function TaskDetails() {
                 </Badge>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">اولویت:</span>
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.priorityLabel}
+                </span>
                 <Badge
                   variant="outline"
                   className={`${priorityColors[task.priority]} border-current`}
@@ -469,11 +470,15 @@ export default function TaskDetails() {
               </div>
               <Separator />
               <div className="flex justify-between">
-                <span className="text-muted-foreground">ایجاد شده:</span>
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.createdLabel}
+                </span>
                 <span>{formatTaskDate(task.created)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">بروزرسانی:</span>
+                <span className="text-muted-foreground">
+                  {fa.tasks.details.updatedLabel}
+                </span>
                 <span>{formatTaskDate(task.updated)}</span>
               </div>
             </CardContent>
@@ -481,7 +486,7 @@ export default function TaskDetails() {
 
           <Card>
             <CardHeader>
-              <CardTitle>عملیات</CardTitle>
+              <CardTitle>{fa.tasks.details.actionsCardTitle}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button
@@ -490,7 +495,7 @@ export default function TaskDetails() {
                 onClick={() => navigate(`/tasks/${id}/edit`)}
               >
                 <Pencil className="ml-2 h-4 w-4" />
-                ویرایش وظیفه
+                {fa.tasks.details.editTaskButton}
               </Button>
               <Button
                 variant="outline"
@@ -499,7 +504,7 @@ export default function TaskDetails() {
                 disabled={deleteTask.isPending}
               >
                 <Trash2 className="ml-2 h-4 w-4" />
-                حذف وظیفه
+                {fa.tasks.details.deleteTaskButton}
               </Button>
             </CardContent>
           </Card>

@@ -259,7 +259,7 @@ export default function ProjectTasks() {
           <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
             <div className="flex flex-col">
               <span className="text-muted-foreground text-xs">
-                {"تسک‌های فعال"}
+                {fa.projects.activeTasks}
               </span>
               <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
                 {digitsEnToFa(taskStats.active)}

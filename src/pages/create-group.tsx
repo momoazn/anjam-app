@@ -63,7 +63,7 @@ export default function CreateGroup() {
 
   const { mutate: createGroup, isPending } = useCreateGroup({
     onSuccess: () => {
-      toast.success("گروه با موفقیت ایجاد شد");
+      toast.success(fa.groups.create.success);
       navigate("/groups");
     },
   });
@@ -91,7 +91,7 @@ export default function CreateGroup() {
         <div>
           <h1 className="text-3xl font-bold">{fa.groups.create.title}</h1>
           <p className="text-muted-foreground">
-            گروه جدیدی را برای مدیریت پروژه‌ها و کاربران ایجاد کنید
+            {fa.groups.create.description}
           </p>
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function CreateGroup() {
       <Card>
         <CardHeader>
           <CardTitle>{fa.groups.create.title}</CardTitle>
-          <CardDescription>اطلاعات گروه را وارد کنید</CardDescription>
+          <CardDescription>{fa.groups.create.formDescription}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -111,7 +111,10 @@ export default function CreateGroup() {
                   <FormItem>
                     <FormLabel>{fa.groups.form.name}</FormLabel>
                     <FormControl>
-                      <Input placeholder="نام گروه را وارد کنید" {...field} />
+                      <Input
+                        placeholder={fa.groups.form.namePlaceholder}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,7 +129,7 @@ export default function CreateGroup() {
                     <FormLabel>{fa.groups.form.description}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="توضیحات گروه (اختیاری)"
+                        placeholder={fa.groups.form.descriptionPlaceholder}
                         className="min-h-[100px]"
                         {...field}
                       />

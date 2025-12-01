@@ -234,7 +234,7 @@ export default function TimesheetPage() {
                 </div>
               ) : (
                 <div className="text-muted-foreground py-4 text-center text-xs">
-                  هیچ {fa.task.timeSpent}
+                  {fa.timesheet.noTimeSpent} {fa.task.timeSpent}
                 </div>
               )}
             </CardContent>
