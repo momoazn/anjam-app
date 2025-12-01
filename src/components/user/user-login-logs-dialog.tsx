@@ -1,5 +1,3 @@
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { format } from "date-fns-jalali";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -23,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fa } from "@/constants/text";
+import { formatDateTime } from "@/lib/date-utils";
 import { UsersResponse } from "@/lib/pocketbase-types";
 import { pb } from "@/lib/pocketbase";
 
@@ -91,17 +90,6 @@ export function UserLoginLogsDialog({
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       fetchLogs(newPage);
-    }
-  };
-
-  const formatDateTime = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      const dateStr = format(date, "yyyy/MM/dd");
-      const timeStr = format(date, "HH:mm:ss");
-      return { date: digitsEnToFa(dateStr), time: digitsEnToFa(timeStr) };
-    } catch {
-      return { date: "-", time: "-" };
     }
   };
 

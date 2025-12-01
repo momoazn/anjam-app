@@ -1,11 +1,11 @@
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { format, isToday } from "date-fns-jalali";
+import { isToday } from "date-fns-jalali";
 import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserAvatar } from "@/components/user-avatar";
 import { fa } from "@/constants/text";
+import { formatDateShort } from "@/lib/date-utils";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { UsersResponse } from "@/lib/pocketbase-types";
 import {
@@ -16,17 +16,6 @@ import {
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
-
-const formatDateShort = (dateString?: string | null) => {
-  if (!dateString) {
-    return "-";
-  }
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-  return digitsEnToFa(format(date, "dd MMMM"));
-};
 
 type TaskListItemProps = {
   task: TaskWithProject;

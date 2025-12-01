@@ -190,9 +190,12 @@ export function TimeEntryDialog({
               <Alert className="border-orange-200 bg-orange-50">
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
-                  زمان وارد شده از برآورد زمانی (
-                  {digitsEnToFa(Math.floor(estimatedMinutes / 60))}h{" "}
-                  {digitsEnToFa(estimatedMinutes % 60)}m) بیشتر است
+                  {text.tasks.details.timeTracking.exceedsEstimate
+                    .replace(
+                      "{hours}",
+                      digitsEnToFa(Math.floor(estimatedMinutes / 60)),
+                    )
+                    .replace("{minutes}", digitsEnToFa(estimatedMinutes % 60))}
                 </AlertDescription>
               </Alert>
             )}
