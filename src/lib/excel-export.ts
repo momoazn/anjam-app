@@ -1,5 +1,7 @@
 import { format } from "date-fns-jalali";
 import * as XLSX from "xlsx";
+import { fa } from "@/constants/text";
+import { formatDateISO } from "./date-utils";
 import type { ProjectsResponse, UsersResponse } from "./pocketbase-types";
 import type { TaskWithProject } from "./pocketbase";
 
@@ -39,20 +41,6 @@ export function stripHtml(html: string | null | undefined): string {
 }
 
 /**
- * Formats a date string to Persian/Jalali format
- */
-function formatDate(dateString: string | null | undefined): string {
-  if (!dateString) return "-";
-  try {
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "-";
-    return format(date, "yyyy/MM/dd");
-  } catch {
-    return "-";
-  }
-}
-
-/**
  * Gets the full name of a user
  */
 function getUserName(
@@ -70,31 +58,22 @@ function getUserName(
  * Gets the status label in Persian
  */
 function getStatusLabel(status: string | undefined): string {
-  const statusMap: Record<string, string> = {
-    todo: "برای انجام",
-    in_progress: "در حال انجام",
-    pending: "در انتظار",
-    review: "در حال بررسی",
-    testing: "در حال تست",
-    blocked: "مسدود شده",
-    on_hold: "متوقف شده",
-    done: "انجام‌شده",
-    canceled: "لغوشده",
-  };
-  return statusMap[status || ""] || status || "-";
+  if (!status) return "-";
+  return (
+    fa.tasks.status[status as keyof typeof fa.tasks.status] || status || "-"
+  );
 }
 
 /**
  * Gets the priority label in Persian
  */
 function getPriorityLabel(priority: string | undefined): string {
-  const priorityMap: Record<string, string> = {
-    urgent: "فوری",
-    high: "بالا",
-    medium: "متوسط",
-    low: "پایین",
-  };
-  return priorityMap[priority || ""] || priority || "-";
+  if (!priority) return "-";
+  return (
+    fa.tasks.priority[priority as keyof typeof fa.tasks.priority] ||
+    priority ||
+    "-"
+  );
 }
 
 /**
@@ -154,12 +133,19 @@ export async function exportProjectToExcel(
   const workbook = XLSX.utils.book_new();
 
   // Add workbook properties
+  const currentDate = format(new Date(), "yyyy/MM/dd HH:mm");
   workbook.Props = {
-    Title: `گزارش پروژه - ${project.name || "بدون نام"}`,
-    Subject: `تسک‌های پروژه ${project.code || ""}`,
-    Author: "سیستم مدیریت تسک",
+    Title: fa.reports.excel.workbookTitle.replace(
+      "{projectName}",
+      project.name || fa.reports.excel.fallbackProjectName,
+    ),
+    Subject: fa.reports.excel.workbookSubject.replace(
+      "{projectCode}",
+      project.code || "",
+    ),
+    Author: fa.reports.excel.workbookAuthor,
     CreatedDate: new Date(),
-    Comments: `صادر شده در تاریخ ${format(new Date(), "yyyy/MM/dd HH:mm")}`,
+    Comments: fa.reports.excel.workbookComments.replace("{date}", currentDate),
   };
 
   // Set workbook views (RTL support for Persian)
@@ -170,60 +156,71 @@ export async function exportProjectToExcel(
   // Sheet 1: Project Details
   const projectData = [
     {
-      نام: project.name || "-",
-      کد: project.code || "-",
-      توضیحات: stripHtml(project.description),
-      سرپرست: getUserName(project.expand?.supervisor, "-"),
-      "تاریخ ایجاد": formatDate(project.created),
-      "آخرین به‌روزرسانی": formatDate(project.updated),
+      [fa.reports.excel.columns.name]: project.name || "-",
+      [fa.reports.excel.columns.code]: project.code || "-",
+      [fa.reports.excel.columns.description]: stripHtml(project.description),
+      [fa.reports.excel.columns.supervisor]: getUserName(
+        project.expand?.supervisor,
+        "-",
+      ),
+      [fa.reports.excel.columns.createdAt]: formatDateISO(project.created),
+      [fa.reports.excel.columns.updatedAt]: formatDateISO(project.updated),
     },
   ];
 
   const projectSheet = XLSX.utils.json_to_sheet(projectData);
-  // Configure column widths: نام, کد, توضیحات, سرپرست, تاریخ ایجاد, آخرین به‌روزرسانی
+  // Configure column widths
   configureSheetFormatting(projectSheet, [25, 15, 50, 20, 15, 15], false);
-  XLSX.utils.book_append_sheet(workbook, projectSheet, "جزئیات پروژه");
+  XLSX.utils.book_append_sheet(
+    workbook,
+    projectSheet,
+    fa.reports.excel.sheetProjectDetails,
+  );
 
   // Sheet 2: Tasks
   const tasksData = projectTasks.map((task) => {
     const assignee = users.find((u) => u.id === task.assignee);
     return {
-      شماره: task.display_id || "-",
-      عنوان: task.title || "-",
-      وضعیت: getStatusLabel(task.status),
-      اولویت: getPriorityLabel(task.priority),
-      مسئول: getUserName(assignee, "-"),
-      مهلت: formatDate(task.deadline),
-      "تاریخ ایجاد": formatDate(task.created),
-      "آخرین به‌روزرسانی": formatDate(task.updated),
-      "زمان صرف شده (دقیقه)": task.time_spent_minutes || 0,
-      توضیحات: stripHtml(task.description),
+      [fa.reports.excel.columns.taskNumber]: task.display_id || "-",
+      [fa.reports.excel.columns.taskTitle]: task.title || "-",
+      [fa.reports.excel.columns.taskStatus]: getStatusLabel(task.status),
+      [fa.reports.excel.columns.taskPriority]: getPriorityLabel(task.priority),
+      [fa.reports.excel.columns.taskAssignee]: getUserName(assignee, "-"),
+      [fa.reports.excel.columns.taskDeadline]: formatDateISO(task.deadline),
+      [fa.reports.excel.columns.createdAt]: formatDateISO(task.created),
+      [fa.reports.excel.columns.updatedAt]: formatDateISO(task.updated),
+      [fa.reports.excel.columns.taskTimeSpent]: task.time_spent_minutes || 0,
+      [fa.reports.excel.columns.taskDescription]: stripHtml(task.description),
     };
   });
 
   // If no tasks, add a single row indicating no tasks
   if (tasksData.length === 0) {
     tasksData.push({
-      شماره: "-",
-      عنوان: "این پروژه تسکی ندارد",
-      وضعیت: "-",
-      اولویت: "-",
-      مسئول: "-",
-      مهلت: "-",
-      "تاریخ ایجاد": "-",
-      "آخرین به‌روزرسانی": "-",
-      "زمان صرف شده (دقیقه)": 0,
-      توضیحات: "-",
+      [fa.reports.excel.columns.taskNumber]: "-",
+      [fa.reports.excel.columns.taskTitle]: fa.reports.excel.noTasksMessage,
+      [fa.reports.excel.columns.taskStatus]: "-",
+      [fa.reports.excel.columns.taskPriority]: "-",
+      [fa.reports.excel.columns.taskAssignee]: "-",
+      [fa.reports.excel.columns.taskDeadline]: "-",
+      [fa.reports.excel.columns.createdAt]: "-",
+      [fa.reports.excel.columns.updatedAt]: "-",
+      [fa.reports.excel.columns.taskTimeSpent]: 0,
+      [fa.reports.excel.columns.taskDescription]: "-",
     });
   }
 
   const tasksSheet = XLSX.utils.json_to_sheet(tasksData);
-  // Configure column widths: شماره, عنوان, وضعیت, اولویت, مسئول, مهلت, تاریخ ایجاد, آخرین به‌روزرسانی, زمان صرف شده, توضیحات
+  // Configure column widths
   configureSheetFormatting(
     tasksSheet,
     [10, 30, 15, 12, 20, 15, 15, 15, 18, 60],
   );
-  XLSX.utils.book_append_sheet(workbook, tasksSheet, "تسک‌های پروژه");
+  XLSX.utils.book_append_sheet(
+    workbook,
+    tasksSheet,
+    fa.reports.excel.sheetProjectTasks,
+  );
 
   // Generate unique filename
   const filename = generateFilename(project);
