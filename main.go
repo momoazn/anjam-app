@@ -224,7 +224,7 @@ func handleProjectCreationWithGroup(e *core.RecordEvent) error {
 	// Check if supervisor belongs to the same group
 	supervisorGroupId := supervisor.GetString("group")
 	if supervisorGroupId != groupId {
-		return errors.New("منتور (supervisor) باید عضو همان گروه پروژه باشد")
+		return errors.New(ErrSupervisorMustBeInSameGroup)
 	}
 
 	return e.Next()
@@ -260,7 +260,7 @@ func handleUsersProjectsValidation(e *core.RecordEvent) error {
 	projectGroupId := project.GetString("group")
 
 	if userGroupId != projectGroupId {
-		return errors.New("کاربر و پروژه باید در یک گروه باشند")
+		return errors.New(ErrUserAndProjectMustBeInSameGroup)
 	}
 
 	return e.Next()
@@ -276,30 +276,14 @@ func handleGroupCreatedNotification(e *core.RecordEvent) error {
 		return e.Next()
 	}
 
-	// Create notification record
-	notificationsCollection, err := e.App.FindCollectionByNameOrId("notifications")
-	if err != nil {
-		log.Printf("Error finding notifications collection: %v", err)
-		return e.Next()
-	}
-
-	notification := core.NewRecord(notificationsCollection)
-	notification.Set("user", managerId)
-	notification.Set("type", "system")
-	notification.Set("title", "گروه جدید ایجاد شد")
-	notification.Set("message", fmt.Sprintf("شما به عنوان مدیر گروه %s منصوب شدید", record.GetString("name")))
-	notification.Set("read", false)
-	notification.Set("data", map[string]interface{}{
-		"group_id":   record.Id,
-		"group_name": record.GetString("name"),
-	})
-
-	// Save notification (log error but don't fail the operation)
-	if err := e.App.Save(notification); err != nil {
-		log.Printf("Failed to create group notification: %v", err)
-	}
-
-	return e.Next()
+	groupName := record.GetString("name")
+	return createNotification(e.App, managerId, "system",
+		MsgGroupCreated,
+		fmt.Sprintf(MsgAssignedToGroup, groupName),
+		map[string]interface{}{
+			"group_id":   record.Id,
+			"group_name": groupName,
+		})
 }
 
 func startApp(app *pocketbase.PocketBase) {
@@ -332,19 +316,25 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 		return e.Next()
 	}
 
-	projectName := "project"
-	if project, err := e.App.FindRecordById("projects", projectId); err == nil {
-		if n := project.GetString("name"); n != "" {
-			projectName = n
-		}
-	}
-
+	projectName := getProjectName(e.App, projectId)
 	return createNotification(e.App, userId, "system",
-		fmt.Sprintf("افزوده شدن به پروژه: %s", projectName),
-		fmt.Sprintf("شما به پروژه '%s' اضافه شدید", projectName),
+		fmt.Sprintf(MsgAddedToProject, projectName),
+		fmt.Sprintf(MsgAddedToProjectDesc, projectName),
 		map[string]interface{}{
 			"projectId": projectId,
 		})
+}
+
+// getProjectName retrieves project name by ID, returns fallback if not found
+func getProjectName(app core.App, projectId string) string {
+	project, err := app.FindRecordById("projects", projectId)
+	if err != nil {
+		return "project"
+	}
+	if name := project.GetString("name"); name != "" {
+		return name
+	}
+	return "project"
 }
 
 // --- Serve Event Handlers ---
@@ -638,12 +628,12 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 	}
 	authRecord := requestInfo.Auth
 	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
 	}
 
 	role := authRecord.GetString("role")
 	if role != "admin" && role != "supervisor" {
-		return e.JSON(403, map[string]string{"error": "مجوز تغییر وضعیت را ندارید"})
+		return e.JSON(403, map[string]string{"error": ErrNoPermissionToChangeStatus})
 	}
 
 	// Fetch the status config
@@ -658,11 +648,11 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 		projectRecord, err := e.App.FindRecordById("projects", projectId)
 		if err != nil {
 			log.Printf("Error verifying supervisor for project %q: %v", projectId, err)
-			return e.JSON(403, map[string]string{"error": "دسترسی لازم برای این پروژه را ندارید"})
+			return e.JSON(403, map[string]string{"error": ErrNoAccessToProject})
 		}
 
 		if projectRecord.GetString("supervisor") != authRecord.Id {
-			return e.JSON(403, map[string]string{"error": "فقط سرپرست پروژه می‌تواند وضعیت‌ها را تغییر دهد"})
+			return e.JSON(403, map[string]string{"error": ErrOnlySupervisorCanChangeStatus})
 		}
 	}
 
@@ -698,7 +688,7 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 		totalUsage := taskCount + legacyCount
 		if totalUsage > 0 {
 			return e.JSON(400, map[string]interface{}{
-				"error":      "امکان غیرفعال‌سازی وضعیتی که در حال استفاده است وجود ندارد",
+				"error":      ErrCannotDisableStatusInUse,
 				"task_count": totalUsage,
 			})
 		}
@@ -739,8 +729,8 @@ func handleTaskAssignmentNotification(e *core.RecordEvent) error {
 	projectName := project.GetString("name")
 
 	return createNotification(e.App, assigneeId, "task_assigned",
-		fmt.Sprintf("تخصیص تسک: %s", taskTitle),
-		fmt.Sprintf("تسک '%s' در پروژه '%s' به شما اختصاص داده شد", taskTitle, projectName),
+		fmt.Sprintf(MsgTaskAssigned, taskTitle),
+		fmt.Sprintf(MsgTaskAssignedDesc, taskTitle, projectName),
 		map[string]interface{}{
 			"taskId":    e.Record.Id,
 			"projectId": projectId,
@@ -764,8 +754,8 @@ func handleTaskUpdateNotification(e *core.RecordEvent) error {
 	taskTitle := e.Record.GetString("title")
 
 	return createNotification(e.App, assigneeId, "task_assigned",
-		fmt.Sprintf("به‌روزرسانی تسک: %s", taskTitle),
-		fmt.Sprintf("وضعیت تسک '%s' از %s به %s تغییر یافت", taskTitle, translateStatus(oldStatus), translateStatus(newStatus)),
+		fmt.Sprintf(MsgTaskUpdated, taskTitle),
+		fmt.Sprintf(MsgTaskStatusChanged, taskTitle, translateStatus(oldStatus), translateStatus(newStatus)),
 		map[string]interface{}{
 			"taskId": e.Record.Id,
 		})
@@ -794,8 +784,8 @@ func handleProjectUpdateNotification(e *core.RecordEvent) error {
 		}
 
 		err := createNotification(e.App, pu.UserId, "project_updated",
-			fmt.Sprintf("به‌روزرسانی پروژه: %s", projectName),
-			fmt.Sprintf("پروژه '%s' به‌روزرسانی شد", projectName),
+			fmt.Sprintf(MsgProjectUpdated, projectName),
+			fmt.Sprintf(MsgProjectUpdatedDesc, projectName),
 			map[string]interface{}{
 				"projectId": e.Record.Id,
 			})
@@ -833,8 +823,8 @@ func handleCommentNotification(e *core.RecordEvent) error {
 	}
 
 	return createNotification(e.App, assigneeId, "comment",
-		fmt.Sprintf("نظر جدید روی: %s", taskTitle),
-		fmt.Sprintf("نظر جدید روی تسک '%s': %s", taskTitle, truncateString(commentText, 100)),
+		fmt.Sprintf(MsgNewComment, taskTitle),
+		fmt.Sprintf(MsgNewCommentDesc, taskTitle, truncateString(commentText, 100)),
 		map[string]interface{}{
 			"taskId":    taskId,
 			"commentId": e.Record.Id,
@@ -889,13 +879,13 @@ func truncateString(s string, maxLen int) string {
 func translateStatus(status string) string {
 	switch status {
 	case "todo":
-		return "برای انجام"
+		return StatusTodo
 	case "in_progress":
-		return "در حال انجام"
+		return StatusInProgress
 	case "done":
-		return "انجام‌شده"
+		return StatusDone
 	case "canceled":
-		return "لغوشده"
+		return StatusCanceled
 	default:
 		return status
 	}
@@ -913,14 +903,14 @@ func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 
 	// Check if user is active
 	if !user.GetBool("active") {
-		return apis.NewBadRequestError("حساب کاربری غیرفعال است", nil)
+		return apis.NewBadRequestError(ErrUserInactive, nil)
 	}
 
 	// Check if user is blocked
 	if user.GetBool("blocked") {
 		blockedReason := user.GetString("blocked_reason")
 		if blockedReason == "" {
-			blockedReason = "حساب کاربری مسدود شده است"
+			blockedReason = ErrUserBlocked
 		}
 		return apis.NewBadRequestError(blockedReason, nil)
 	}
@@ -1026,7 +1016,7 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 
 	if err != nil {
 		// User not found - still log the attempt
-		logUserLogin(app, "", req, false, "کاربر یافت نشد")
+		logUserLogin(app, "", req, false, ErrUserNotFoundForLogin)
 		return
 	}
 
@@ -1039,7 +1029,7 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 	if failedAttempts >= maxFailedLoginAttempts {
 		user.Set("blocked", true)
 		user.Set("blocked_at", time.Now().Format(time.RFC3339))
-		user.Set("blocked_reason", fmt.Sprintf("حساب به دلیل %d تلاش ناموفق برای ورود مسدود شد", maxFailedLoginAttempts))
+		user.Set("blocked_reason", fmt.Sprintf(MsgBlockedReason, maxFailedLoginAttempts))
 		log.Printf("User %s blocked after %d failed login attempts", user.Id, failedAttempts)
 	}
 
@@ -1048,7 +1038,7 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 	}
 
 	// Log failed login
-	logUserLogin(app, user.Id, req, false, "رمز عبور اشتباه")
+	logUserLogin(app, user.Id, req, false, ErrWrongPassword)
 }
 
 func logUserLogin(app core.App, userId string, req *http.Request, success bool, failureReason string) {
@@ -1098,29 +1088,29 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 	}
 	authRecord := requestInfo.Auth
 	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
 	}
 
 	role := authRecord.GetString("role")
 	if role != "admin" {
-		return e.JSON(403, map[string]string{"error": "فقط ادمین می‌تواند وضعیت فعال/غیرفعال کاربران را تغییر دهد"})
+		return e.JSON(403, map[string]string{"error": ErrOnlyAdminCanToggleUserStatus})
 	}
 
 	// Prevent admin from deactivating themselves
 	if authRecord.Id == userId {
-		return e.JSON(400, map[string]string{"error": "نمی‌توانید حساب کاربری خود را غیرفعال کنید"})
+		return e.JSON(400, map[string]string{"error": ErrCannotDeactivateSelf})
 	}
 
 	// Fetch the user
 	user, err := e.App.FindRecordById("users", userId)
 	if err != nil {
 		log.Printf("Error finding user %q: %v", userId, err)
-		return e.JSON(404, map[string]string{"error": "کاربر یافت نشد"})
+		return e.JSON(404, map[string]string{"error": ErrUserNotFound})
 	}
 
 	// Prevent deactivating admin users
 	if user.GetString("role") == "admin" {
-		return e.JSON(400, map[string]string{"error": "نمی‌توان حساب کاربری ادمین را غیرفعال کرد"})
+		return e.JSON(400, map[string]string{"error": ErrCannotDeactivateAdmin})
 	}
 
 	// Toggle active status
@@ -1130,16 +1120,16 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 
 	if err := e.App.Save(user); err != nil {
 		log.Printf("Error toggling user active status %q: %v", userId, err)
-		return e.JSON(500, map[string]string{"error": "خطا در به‌روزرسانی وضعیت کاربر"})
+		return e.JSON(500, map[string]string{"error": ErrFailedToUpdateUserStatus})
 	}
 
 	return e.JSON(200, map[string]interface{}{
 		"active": newActive,
 		"message": func() string {
 			if newActive {
-				return "حساب کاربری فعال شد"
+				return MsgUserActivated
 			}
-			return "حساب کاربری غیرفعال شد"
+			return MsgUserDeactivated
 		}(),
 	})
 }
@@ -1154,19 +1144,19 @@ func handleUnblockUser(e *core.RequestEvent) error {
 	}
 	authRecord := requestInfo.Auth
 	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
 	}
 
 	role := authRecord.GetString("role")
 	if role != "admin" {
-		return e.JSON(403, map[string]string{"error": "فقط ادمین می‌تواند کاربران را رفع مسدودی کند"})
+		return e.JSON(403, map[string]string{"error": ErrOnlyAdminCanUnblock})
 	}
 
 	// Fetch the user
 	user, err := e.App.FindRecordById("users", userId)
 	if err != nil {
 		log.Printf("Error finding user %q: %v", userId, err)
-		return e.JSON(404, map[string]string{"error": "کاربر یافت نشد"})
+		return e.JSON(404, map[string]string{"error": ErrUserNotFound})
 	}
 
 	// Unblock the user
@@ -1177,11 +1167,11 @@ func handleUnblockUser(e *core.RequestEvent) error {
 
 	if err := e.App.Save(user); err != nil {
 		log.Printf("Error unblocking user %q: %v", userId, err)
-		return e.JSON(500, map[string]string{"error": "خطا در رفع مسدودی کاربر"})
+		return e.JSON(500, map[string]string{"error": ErrFailedToUnblockUser})
 	}
 
 	return e.JSON(200, map[string]string{
-		"message": "مسدودی کاربر با موفقیت برداشته شد",
+		"message": MsgUserUnblocked,
 	})
 }
 
@@ -1195,13 +1185,13 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 	}
 	authRecord := requestInfo.Auth
 	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": "احراز هویت انجام نشده است"})
+		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
 	}
 
 	// Check permissions: admin can view any user's logs, users can only view their own
 	role := authRecord.GetString("role")
 	if role != "admin" && authRecord.Id != userId {
-		return e.JSON(403, map[string]string{"error": "شما مجاز به مشاهده سوابق ورود این کاربر نیستید"})
+		return e.JSON(403, map[string]string{"error": ErrCannotViewOtherUserLogs})
 	}
 
 	// Get pagination parameters
@@ -1244,7 +1234,7 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 
 	if err != nil {
 		log.Printf("Error fetching login logs for user %q: %v", userId, err)
-		return e.JSON(500, map[string]string{"error": "خطا در دریافت سوابق ورود"})
+		return e.JSON(500, map[string]string{"error": ErrFailedToGetLoginLogs})
 	}
 
 	// Get total count
