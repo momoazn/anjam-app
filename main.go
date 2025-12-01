@@ -349,28 +349,6 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 
 // --- Serve Event Handlers ---
 
-// cleanServeArgs removes the literal subcommand token "serve" so the
-// ServeCommand doesn't treat it as a positional domain argument.
-func cleanServeArgs(args []string) []string {
-	cleaned := make([]string, 0, len(args))
-	for _, a := range args {
-		if a == "serve" {
-			continue
-		}
-		cleaned = append(cleaned, a)
-	}
-	return cleaned
-}
-
-func hasFlag(args []string, name string) bool {
-	for _, a := range args {
-		if strings.HasPrefix(a, name) { // matches --https or --https=
-			return true
-		}
-	}
-	return false
-}
-
 func importSchema(e *core.ServeEvent) error {
 	if len(schemaJSON) == 0 {
 		log.Println("Warning: schema is empty. Skipping schema import.")
@@ -488,10 +466,6 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 	e.Router.GET("/{path...}", func(e *core.RequestEvent) error {
 		return staticHandler(staticFS, e.Response, e.Request)
 	})
-
-	// if !e.App.IsDev() {
-	// 	openBrowser(e.App.Settings().Meta.AppURL)
-	// }
 
 	return e.Next()
 }

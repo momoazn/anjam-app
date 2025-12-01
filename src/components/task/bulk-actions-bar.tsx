@@ -21,9 +21,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { text } from "@/constants/text";
-import type {
+import {
   TasksPriorityOptions,
-  TasksStatusOptions,
+  type TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 
 interface BulkActionsBarProps {
@@ -65,9 +65,8 @@ export function BulkActionsBar({
           String(selectedCount),
         ),
       );
-    } catch (error) {
+    } catch {
       toast.error(text.tasks.bulkActions.assignError);
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -83,9 +82,8 @@ export function BulkActionsBar({
           String(selectedCount),
         ),
       );
-    } catch (error) {
+    } catch {
       toast.error(text.tasks.bulkActions.statusError);
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -101,9 +99,8 @@ export function BulkActionsBar({
           String(selectedCount),
         ),
       );
-    } catch (error) {
+    } catch {
       toast.error(text.tasks.bulkActions.priorityError);
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -120,9 +117,8 @@ export function BulkActionsBar({
         ),
       );
       setShowDeleteDialog(false);
-    } catch (error) {
+    } catch {
       toast.error(text.tasks.bulkActions.deleteError);
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -130,10 +126,16 @@ export function BulkActionsBar({
 
   const priorityOptions: Array<{ value: TasksPriorityOptions; label: string }> =
     [
-      { value: "low", label: text.tasks.priority.low },
-      { value: "medium", label: text.tasks.priority.medium },
-      { value: "high", label: text.tasks.priority.high },
-      { value: "urgent", label: text.tasks.priority.urgent },
+      { value: TasksPriorityOptions.low, label: text.tasks.priority.low },
+      {
+        value: TasksPriorityOptions.medium,
+        label: text.tasks.priority.medium,
+      },
+      { value: TasksPriorityOptions.high, label: text.tasks.priority.high },
+      {
+        value: TasksPriorityOptions.urgent,
+        label: text.tasks.priority.urgent,
+      },
     ];
 
   return (

@@ -175,8 +175,7 @@ function ProfileSection() {
         description: "اطلاعات شما با موفقیت ذخیره گردید.",
       });
       setAvatarFile(null);
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast({
         title: "خطا",
         description: "خطایی در ذخیره اطلاعات رخ داد.",
@@ -393,8 +392,8 @@ function SecuritySection() {
             method: "GET",
           },
         );
-      } catch (err) {
-        console.error("Error fetching logs:", err);
+      } catch {
+        // Silently fail - return empty array
         return [];
       }
     },
@@ -414,8 +413,7 @@ function SecuritySection() {
         description: "رمز عبور شما با موفقیت تغییر یافت.",
       });
       form.reset();
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast({
         title: "خطا",
         description: "رمز عبور فعلی اشتباه است یا خطایی رخ داده.",

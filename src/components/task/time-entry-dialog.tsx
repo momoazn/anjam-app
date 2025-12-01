@@ -68,8 +68,8 @@ export function TimeEntryDialog({
       const totalMinutes = parseTimeInput(data.hours, data.minutes);
       await onSave(totalMinutes);
       onOpenChange(false);
-    } catch (error) {
-      console.error("Failed to save time entry:", error);
+    } catch {
+      // Error handling is done by the parent component via onSave callback
     } finally {
       setIsSubmitting(false);
     }

@@ -54,8 +54,6 @@ export function ProjectExportButton({
 
       toast.success(successMessage, { duration: 3000 });
     } catch (error) {
-      console.error("Error exporting project:", error);
-
       // Show specific error message if available
       const errorMessage =
         error instanceof Error ? error.message : fa.reports.exportProjectError;

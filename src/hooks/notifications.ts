@@ -38,10 +38,7 @@ export function useNotifications() {
         },
         { filter: `user = "${userId}"` },
       );
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error("Failed to subscribe to notifications:", error);
-      }
+    } catch {
       // Silently fail - notifications will still work via polling
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

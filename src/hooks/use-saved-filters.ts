@@ -37,8 +37,8 @@ export function useSavedFilters() {
 
       const defaultId = localStorage.getItem(DEFAULT_FILTER_KEY);
       setDefaultFilterId(defaultId);
-    } catch (error) {
-      console.error("Failed to load saved filters:", error);
+    } catch {
+      // Silently fail - filters will just be empty
     }
   }, []);
 
@@ -47,8 +47,7 @@ export function useSavedFilters() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
       setSavedFilters(filters);
-    } catch (error) {
-      console.error("Failed to save filters:", error);
+    } catch {
       throw new Error("فشل في حفظ الفلتر");
     }
   }, []);

@@ -15,7 +15,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { PageTransition } from "@/components/page-transition";
-// Remove the UserAvatar import since it's no longer used
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
 import { TimeComparison } from "@/components/task/time-comparison";

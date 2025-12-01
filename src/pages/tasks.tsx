@@ -206,8 +206,11 @@ export default function Tasks() {
       toast({
         title: fa.savedFilters.toast.applied,
       });
-    } catch (error) {
-      console.error("Error applying filter:", error);
+    } catch {
+      toast({
+        title: "خطا در اعمال فیلتر",
+        variant: "destructive",
+      });
     }
   };
 
@@ -235,8 +238,11 @@ export default function Tasks() {
           ? fa.savedFilters.toast.defaultSet
           : fa.savedFilters.toast.defaultRemoved,
       });
-    } catch (error) {
-      console.error("Error setting default:", error);
+    } catch {
+      toast({
+        title: "خطا در تنظیم فیلتر پیش‌فرض",
+        variant: "destructive",
+      });
     }
   };
 

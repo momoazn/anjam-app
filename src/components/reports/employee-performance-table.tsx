@@ -1,6 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { ArrowUpDown, Download } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -53,8 +54,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
 
   const handleExportCsv = () => {
     // CSV export functionality (deferred per user request)
-    // This would export the current sorted/filtered data
-    console.log("CSV export clicked - functionality deferred");
+    toast.info("این ویژگی به زودی اضافه خواهد شد");
   };
 
   if (summaries.length === 0) {

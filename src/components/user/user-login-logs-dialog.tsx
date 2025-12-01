@@ -2,6 +2,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -72,8 +73,8 @@ export function UserLoginLogsDialog({
         setLogs(data.items || []);
         setPage(data.page);
         setTotalPages(data.totalPages);
-      } catch (error) {
-        console.error("Error fetching login logs:", error);
+      } catch {
+        toast.error("خطا در دریافت سوابق ورود");
       } finally {
         setLoading(false);
       }
