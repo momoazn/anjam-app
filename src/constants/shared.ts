@@ -1,0 +1,107 @@
+// Shared constants used across multiple modules
+// These constants are consolidated to avoid duplication
+
+export const shared = {
+  // Common action buttons
+  cancel: "انصراف",
+  save: "ذخیره",
+  delete: "حذف",
+  edit: "ویرایش",
+  create: "ایجاد",
+  update: "به‌روزرسانی",
+  close: "بستن",
+  ok: "باشه",
+  submit: "تایید",
+  back: "بازگشت",
+  retry: "تلاش مجدد",
+  view: "مشاهده",
+  add: "افزودن",
+  remove: "حذف",
+  select: "انتخاب",
+  clear: "پاک کردن",
+  search: "جستجو",
+  filter: "فیلتر",
+  export: "خروجی",
+  import: "ورودی",
+  download: "دانلود",
+  upload: "آپلود",
+
+  // Loading states
+  saving: "در حال ذخیره...",
+  creating: "در حال ایجاد...",
+  updating: "در حال به‌روزرسانی...",
+  deleting: "در حال حذف...",
+  loading: "در حال بارگذاری...",
+
+  // Common states
+  active: "فعال",
+  inactive: "غیرفعال",
+  enabled: "فعال",
+  disabled: "غیرفعال",
+  success: "موفق",
+  error: "خطا",
+  warning: "هشدار",
+  info: "اطلاعات",
+  pending: "در انتظار",
+  completed: "تکمیل شده",
+  done: "انجام شده",
+  canceled: "لغو شده",
+  inProgress: "در حال انجام",
+
+  // Common labels
+  name: "نام",
+  code: "کد",
+  description: "توضیحات",
+  status: "وضعیت",
+  priority: "اولویت",
+  assignee: "مسئول",
+  project: "پروژه",
+  task: "تسک",
+  user: "کاربر",
+  group: "گروه",
+  date: "تاریخ",
+  time: "زمان",
+  deadline: "مهلت",
+  created: "ایجاد شده",
+  updated: "به‌روزرسانی",
+  createdAt: "تاریخ ایجاد",
+  updatedAt: "آخرین به‌روزرسانی",
+  actions: "عملیات",
+  all: "همه",
+  none: "هیچ‌کدام",
+  yes: "بله",
+  no: "خیر",
+  total: "کل",
+  today: "امروز",
+  previous: "قبلی",
+  next: "بعدی",
+  more: "بیشتر",
+
+  // Common messages
+  notFound: "یافت نشد",
+  noData: "داده‌ای موجود نیست",
+  noName: "بدون نام",
+  required: "این فیلد الزامی است",
+  confirm: "بله، حذف کن",
+  cancelConfirm: "انصراف",
+
+  // Common placeholders
+  selectPlaceholder: "انتخاب کنید",
+  searchPlaceholder: "جستجو...",
+  namePlaceholder: "نام را وارد کنید",
+  descriptionPlaceholder: "توضیحات را وارد کنید",
+
+  // Common success messages
+  createSuccess: "با موفقیت ایجاد شد",
+  updateSuccess: "تغییرات با موفقیت ذخیره شد",
+  deleteSuccess: "با موفقیت حذف شد",
+  saveSuccess: "با موفقیت ذخیره شد",
+
+  // Common error messages
+  createError: "نتوانستیم ایجاد کنیم",
+  updateError: "نتوانستیم تغییرات را ذخیره کنیم",
+  deleteError: "نتوانستیم حذف کنیم",
+  saveError: "نتوانستیم ذخیره کنیم",
+  loadError: "نتوانستیم بارگذاری کنیم",
+  operationFailed: "خطا در انجام عملیات",
+} as const;
