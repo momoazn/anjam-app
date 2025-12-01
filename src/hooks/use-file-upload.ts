@@ -91,7 +91,10 @@ export function useFileUpload(options?: FileUploadOptions) {
 
       // Check max files limit
       if (maxFiles && files.length + fileArray.length > maxFiles) {
-        const error = `حداکثر ${maxFiles} فایل قابل بارگذاری است`;
+        const error = fa.projects.files.validation.maxFiles.replace(
+          "{maxFiles}",
+          maxFiles.toString(),
+        );
         toast.error(error);
         onError?.(error);
         return;
