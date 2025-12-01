@@ -20,15 +20,6 @@ test.describe("Authentication", () => {
     await expect(page.locator("text=نام کاربری یا ایمیل")).toBeVisible();
   });
 
-  test("should allow user to navigate to register page", async ({ page }) => {
-    // Click on register link if it exists
-    const registerLink = page.getByRole("link", { name: /ثبت نام/i });
-    if (await registerLink.isVisible()) {
-      await registerLink.click();
-      await expect(page).toHaveURL(/\/register/);
-    }
-  });
-
   test("should handle invalid credentials", async ({ page }) => {
     // Fill in invalid credentials
     await page.getByLabel(/نام کاربری/i).fill("invaliduser");

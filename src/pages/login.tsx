@@ -137,16 +137,6 @@ export default function Login() {
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting ? fa.auth.login.loggingIn : fa.auth.login.loginButton}
           </Button>
-
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => navigate("/register")}
-            type="button"
-            disabled={submitting}
-          >
-            {fa.auth.login.registerButton}
-          </Button>
         </form>
       </PageTransition>
     </div>

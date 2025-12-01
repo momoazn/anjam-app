@@ -33,10 +33,6 @@ const Login = createLazyPage(
   () => import("@/pages/login"),
   fa.errors.pageLoad.login,
 );
-const Register = createLazyPage(
-  () => import("@/pages/register"),
-  fa.errors.pageLoad.register,
-);
 const PendingActivation = createLazyPage(
   () => import("@/pages/pending-activation"),
   fa.errors.pageLoad.notFound,
@@ -267,12 +263,6 @@ const routes: RouteType[] = [
     title: fa.auth.login.title,
   },
   {
-    path: "/register",
-    element: <Register />,
-    protected: false,
-    title: fa.auth.register.title,
-  },
-  {
     path: "/pending-activation",
     element: <PendingActivation />,
     protected: false,
@@ -412,7 +402,6 @@ export const AppRoutes = () => {
           }
         } else if (
           route.path === "/login" ||
-          route.path === "/register" ||
           route.path === "/pending-activation"
         ) {
           element = <PublicRoute>{content}</PublicRoute>;
