@@ -1,6 +1,9 @@
 // Optimized localization constants for Persian (Farsi)
 // This file contains all text labels used throughout the task management application
 // All text has been rewritten to be natural, concise, motivating, and user-friendly
+//
+// NOTE: This file is being modularized. New code should import from @/constants/index.ts
+// This file is kept for backward compatibility and will be gradually phased out.
 
 export const fa = {
   // Application-level configuration
@@ -395,6 +398,9 @@ export const fa = {
     create: {
       title: "ایجاد گروه جدید",
       button: "ایجاد گروه",
+      description: "گروه جدیدی را برای مدیریت پروژه‌ها و کاربران ایجاد کنید",
+      success: "گروه با موفقیت ایجاد شد",
+      formDescription: "اطلاعات گروه را وارد کنید",
     },
     edit: {
       title: "ویرایش گروه",
@@ -411,7 +417,9 @@ export const fa = {
     },
     form: {
       name: "نام گروه",
+      namePlaceholder: "نام گروه را وارد کنید",
       description: "توضیحات",
+      descriptionPlaceholder: "توضیحات گروه (اختیاری)",
       manager: "مدیر گروه",
       selectManager: "انتخاب مدیر",
     },
@@ -434,6 +442,7 @@ export const fa = {
   projects: {
     title: "پروژه‌ها",
     projectTasks: "تسک‌های پروژه",
+    activeTasks: "تسک‌های فعال",
     project: "پروژه",
     fallbacks: {
       name: "پروژه",
@@ -737,6 +746,22 @@ export const fa = {
       title: "جزئیات تسک",
       unknownUser: "بدون مسئول",
       unknownProject: "بدون پروژه",
+      backToList: "بازگشت به لیست وظایف",
+      detailsCardTitle: "جزئیات",
+      assigneeLabel: "مسئول:",
+      projectLabel: "پروژه:",
+      deadlineLabel: "مهلت:",
+      displayIdLabel: "شناسه نمایش:",
+      descriptionCardTitle: "توضیحات",
+      quickInfoCardTitle: "اطلاعات سریع",
+      statusLabel: "وضعیت:",
+      priorityLabel: "اولویت:",
+      createdLabel: "ایجاد شده:",
+      updatedLabel: "بروزرسانی:",
+      actionsCardTitle: "عملیات",
+      editTaskButton: "ویرایش وظیفه",
+      deleteTaskButton: "حذف وظیفه",
+      editButton: "ویرایش",
       timeTracking: {
         title: "زمان صرف شده",
         hours: "ساعت",
@@ -748,6 +773,8 @@ export const fa = {
         updateSuccess: "زمان به‌روزرسانی شد",
         updateError: "نتوانستیم زمان را به‌روزرسانی کنیم",
         invalidInput: "لطفاً ساعت و دقیقه را به درستی وارد کنید",
+        exceedsEstimate:
+          "زمان وارد شده از برآورد زمانی ({hours}h {minutes}m) بیشتر است",
       },
       buttons: {
         save: "ذخیره",
@@ -892,6 +919,32 @@ export const fa = {
     exportProjectNoTasks:
       "این پروژه تسکی ندارد. آیا می‌خواهید فایل خالی خروجی بگیرید؟",
     exportProjectSuccessWithCount: "خروجی {count} تسک با موفقیت آماده شد",
+    excel: {
+      workbookTitle: "گزارش پروژه - {projectName}",
+      workbookSubject: "تسک‌های پروژه {projectCode}",
+      workbookAuthor: "سیستم مدیریت تسک",
+      workbookComments: "صادر شده در تاریخ {date}",
+      sheetProjectDetails: "جزئیات پروژه",
+      sheetProjectTasks: "تسک‌های پروژه",
+      columns: {
+        name: "نام",
+        code: "کد",
+        description: "توضیحات",
+        supervisor: "سرپرست",
+        createdAt: "تاریخ ایجاد",
+        updatedAt: "آخرین به‌روزرسانی",
+        taskNumber: "شماره",
+        taskTitle: "عنوان",
+        taskStatus: "وضعیت",
+        taskPriority: "اولویت",
+        taskAssignee: "مسئول",
+        taskDeadline: "مهلت",
+        taskTimeSpent: "زمان صرف شده (دقیقه)",
+        taskDescription: "توضیحات",
+      },
+      noTasksMessage: "این پروژه تسکی ندارد",
+      fallbackProjectName: "بدون نام",
+    },
     projectsExportSection: "خروجی پروژه‌ها",
     projectDetails: "جزئیات پروژه",
     projectTasks: "تسک‌های پروژه",
@@ -1501,6 +1554,7 @@ export const fa = {
       project: "پروژه",
       minutesSpent: "دقیقه‌های صرف شده",
     },
+    noTimeSpent: "هیچ",
   },
 
   // UI Elements & Accessibility
@@ -1591,6 +1645,14 @@ export const fa = {
       noActiveTasksDescription: "همه تسک‌های شما انجام شده یا لغو شده‌اند",
       noCompletedTasks: "هنوز تسکی را تکمیل نکرده‌اید",
       noCompletedTasksDescription:
+        "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
+      noTasksFallback: "تسکی ندارید",
+      noTasksDescriptionFallback: "هیچ تسکی به شما اختصاص داده نشده است",
+      noActiveTasksFallback: "تسک فعالی ندارید",
+      noActiveTasksDescriptionFallback:
+        "همه تسک‌های شما انجام شده یا لغو شده‌اند",
+      noCompletedTasksFallback: "هنوز تسکی را تکمیل نکرده‌اید",
+      noCompletedTasksDescriptionFallback:
         "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
     },
   },
