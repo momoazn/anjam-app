@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { fa } from "@/constants/text";
+import { logError, logDebug } from "./logger";
 
 type ValidationError = {
   code: string;
@@ -30,14 +31,7 @@ function isPocketBaseError(
 }
 
 export function handlePocketBaseError(error: Error | PocketBaseError): void {
-  if (import.meta.env.DEV) {
-    console.error("PocketBase error:", error);
-    try {
-      console.error("Error structure:", JSON.stringify(error, null, 2));
-    } catch {
-      console.error("Could not stringify error");
-    }
-  }
+  logError("PocketBase error", error);
 
   if (!isPocketBaseError(error)) {
     toast.error(fa.auth.errors.serverError);
@@ -91,9 +85,7 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     const errorMessage =
       pbError?.message || pbError?.data?.message || pbError?.response?.message;
 
-    if (import.meta.env.DEV) {
-      console.log("Extracted error message:", errorMessage);
-    }
+    logDebug("Extracted error message", errorMessage);
 
     if (errorMessage) {
       // Check if this is an inactive user error
@@ -123,14 +115,10 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
       }
     } else if (pbError?.status === 400) {
       // Fallback for authentication failures without a message
-      if (import.meta.env.DEV) {
-        console.log("No error message found, using generic invalidCredentials");
-      }
+      logDebug("No error message found, using generic invalidCredentials");
       toast.error(fa.auth.errors.invalidCredentials);
     } else {
-      if (import.meta.env.DEV) {
-        console.log("No error message found, using generic serverError");
-      }
+      logDebug("No error message found, using generic serverError");
       toast.error(fa.auth.errors.serverError);
     }
   }

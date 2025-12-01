@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { fa } from "@/constants/text";
+import { logError } from "@/lib/logger";
 
 type ErrorBoundaryState = {
   hasError: boolean;
@@ -36,9 +37,9 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    if (import.meta.env.DEV) {
-      console.error("ErrorBoundary caught an error:", error, errorInfo);
-    }
+    logError("ErrorBoundary caught an error", error, {
+      componentStack: errorInfo.componentStack,
+    });
 
     // Call the onError callback if provided
     this.props.onError?.(error, errorInfo);
@@ -106,9 +107,7 @@ export class ErrorBoundary extends Component<
 // Hook-based error boundary for functional components
 export function useErrorHandler() {
   return (error: Error, errorInfo?: React.ErrorInfo) => {
-    if (import.meta.env.DEV) {
-      console.error("Error caught by useErrorHandler:", error, errorInfo);
-    }
+    logError("Error caught by useErrorHandler", error, errorInfo);
     // You can add error reporting logic here
   };
 }
