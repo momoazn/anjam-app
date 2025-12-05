@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { UserFields } from "@/components/forms/user-fields";
@@ -64,6 +64,12 @@ export default function CreateUser() {
   const handleCancel = () => {
     navigate("/users");
   };
+
+  // Only admin and managers can create users (supervisors cannot)
+  const canCreateUsers = isAdmin || isManager;
+  if (!canCreateUsers) {
+    return <Navigate to="/users" replace />;
+  }
 
   return (
     <PageTransition className="container mx-auto space-y-6 p-6">

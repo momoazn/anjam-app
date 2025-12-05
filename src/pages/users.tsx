@@ -28,8 +28,10 @@ export default function Users() {
   });
 
   const isAdmin = user?.role === UsersRoleOptions.admin;
+  const isManager = user?.role === UsersRoleOptions.manager;
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
-  const canViewPage = isAdmin || isSupervisor;
+  const canViewPage = isAdmin || isSupervisor || isManager;
+  const canCreateUsers = isAdmin || isManager; // Only admin and managers can create users
 
   const handleEdit = (user: UsersResponse) => {
     // Allow admins to edit any user, and users to edit themselves
@@ -64,7 +66,7 @@ export default function Users() {
               )}
             </span>
           </div>
-          {isAdmin && (
+          {canCreateUsers && (
             <Button
               onClick={() => navigate("/users/new")}
               className="w-full gap-2 sm:w-auto"

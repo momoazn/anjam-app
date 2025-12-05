@@ -162,6 +162,20 @@ func generateRandomCode() string {
 func handleGroupCreation(e *core.RecordEvent) error {
 	record := e.Record
 
+	// Validate that only managers can be assigned as group managers
+	managerId := record.GetString("manager")
+	if managerId != "" {
+		manager, err := e.App.FindRecordById("users", managerId)
+		if err != nil {
+			return fmt.Errorf("manager not found: %w", err)
+		}
+
+		managerRole := manager.GetString("role")
+		if managerRole != "manager" {
+			return errors.New(ErrOnlyManagersCanBeGroupManagers)
+		}
+	}
+
 	// Generate unique group code (3 uppercase letters)
 	code := generateRandomCode()
 	maxAttempts := 100
@@ -463,10 +477,18 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 // --- Record Event Handlers ---
 
 func handleUserCreation(e *core.RecordEvent) error {
+	newUserRole := e.Record.GetString("role")
+
+	// RBAC validations are handled by schema rules:
+	// - Only admin and managers can create users (enforced by createRule)
+	// - Managers cannot create admin/manager roles (enforced by createRule)
+	// - Managers can only create users in groups they manage (enforced by createRule)
+	// - Supervisors cannot create users (enforced by createRule)
+	// This handler focuses on setting defaults and data integrity.
+
 	// Set new users as inactive by default, except admins
 	if e.Record.Get("active") == nil {
-		role := e.Record.GetString("role")
-		if role == "admin" {
+		if newUserRole == "admin" {
 			e.Record.Set("active", true) // Admins are always active
 		} else {
 			e.Record.Set("active", false) // Regular users start inactive

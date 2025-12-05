@@ -283,8 +283,8 @@
   },
   {
     "id": "_pb_users_auth_",
-    "listRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && group.id = @request.auth.group.id) || @request.auth.id = id",
-    "viewRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && group.id = @request.auth.group.id) || @request.auth.id = id",
+    "listRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && group.id = @request.auth.group.id) || (@request.auth.role = \"employee\" && group.id = @request.auth.group.id) || @request.auth.id = id",
+    "viewRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && group.id = @request.auth.group.id) || (@request.auth.role = \"employee\" && group.id = @request.auth.group.id) || @request.auth.id = id",
     "createRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && @request.body.role != \"admin\" && @request.body.role != \"manager\")",
     "updateRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && group.manager.id = @request.auth.id && id != @request.auth.id) || @request.auth.id = id",
     "deleteRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && group.manager.id = @request.auth.id)",

@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -37,9 +38,9 @@ import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: fa.validation.required }),
+  name: z.string().min(2, { message: fa.common.validation.required }),
   description: z.string().optional(),
-  manager: z.string().min(1, { message: fa.validation.required }),
+  manager: z.string().min(1, { message: fa.common.validation.required }),
 });
 
 export default function CreateGroup() {
@@ -47,10 +48,20 @@ export default function CreateGroup() {
   const user = useAuthUser();
   const isAdmin = user?.role === UsersRoleOptions.admin;
 
-  // Fetch users without groups for manager selection
-  const { data: users } = useUsers({
-    filter: 'group = null || group = ""',
+  // Fetch only active managers for manager selection (only managers can be group managers)
+  const { data: allUsers } = useUsers({
+    filter: 'role = "manager" && active = true',
+    sort: "-created",
   });
+
+  // Client-side safety filter: ensure only managers are shown
+  const managers = useMemo(() => {
+    return (
+      allUsers?.filter(
+        (user) => user.role === UsersRoleOptions.manager && user.active,
+      ) ?? []
+    );
+  }, [allUsers]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -154,7 +165,7 @@ export default function CreateGroup() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {users?.map((user) => (
+                        {managers.map((user) => (
                           <SelectItem key={user.id} value={user.id}>
                             {user.first_name && user.last_name
                               ? `${user.first_name} ${user.last_name}`

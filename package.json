@@ -7,8 +7,8 @@
     "build": "bun run build:client && bun run build:server",
     "build:win": "bun run build:client && bun run build:server:win",
     "build:client": "bun x --bun vite build",
-    "build:server": "go build -o task-manager main.go",
-    "build:server:win": "GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags=\"-s -w\" -o task-manager.exe main.go",
+    "build:server": "go build -o task-manager .",
+    "build:server:win": "GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags=\"-s -w\" -o task-manager.exe .",
     "dev": "concurrently \"bun run serve:server\" \"bun run dev:client\" -n \"SERVER,CLIENT\"",
     "dev:all": "concurrently \"bun run dev:server\" \"bun run dev:client\" -n \"SERVER, CLIENT\"",
     "dev:client": "bun x --bun vite",
@@ -35,7 +35,7 @@
     "seed": "bun run seed:truncate && bun run seed:insert",
     "gen:type": "pocketbase-typegen --json ./pb_schema.json --out src/lib/pocketbase-types.ts",
     "serve:client": "bun x --bun vite preview",
-    "serve:server": "go run main.go",
+    "serve:server": "go run .",
     "deploy": "bun run build && liara deploy --detach"
   },
   "dependencies": {

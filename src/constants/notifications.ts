@@ -54,3 +54,4 @@ export const notifications = {
   deleteSelected: "حذف انتخاب‌شده‌ها",
   cancel: shared.cancel,
 } as const;
+

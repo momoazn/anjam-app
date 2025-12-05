@@ -25,3 +25,4 @@ export const comments = {
     edited: "· ویرایش شده",
   },
 } as const;
+

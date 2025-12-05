@@ -7,6 +7,10 @@ const (
 	// Validation errors
 	ErrSupervisorMustBeInSameGroup = "منتور (supervisor) باید عضو همان گروه پروژه باشد"
 	ErrUserAndProjectMustBeInSameGroup = "کاربر و پروژه باید در یک گروه باشند"
+	ErrOnlyAdminCanCreateManagers = "فقط ادمین می‌تواند مدیر (manager) ایجاد کند"
+	ErrOnlyManagersCanBeGroupManagers = "فقط کاربران با نقش مدیر (manager) می‌توانند مدیر گروه باشند"
+	ErrManagerCanOnlyCreateInOwnGroup = "مدیران فقط می‌توانند کاربران را در گروه خود ایجاد کنند"
+	ErrSupervisorsCannotCreateUsers = "سرپرستان نمی‌توانند کاربر ایجاد کنند"
 
 	// Authentication errors
 	ErrAuthRequired = "احراز هویت انجام نشده است"
