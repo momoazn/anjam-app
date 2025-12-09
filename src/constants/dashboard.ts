@@ -60,4 +60,3 @@ export const dashboard = {
     overdueTasks: "وظایف سررسید گذشته",
   },
 } as const;
-

@@ -48,4 +48,3 @@ export const errors = {
     reloadPage: "بارگذاری مجدد",
   },
 } as const;
-

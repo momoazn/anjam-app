@@ -56,4 +56,3 @@ export const tagsManagement = {
     pink: "صورتی",
   },
 } as const;
-
