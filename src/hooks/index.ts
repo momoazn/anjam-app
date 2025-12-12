@@ -72,3 +72,20 @@ export {
 export { useTasksPageData } from "./use-tasks-page-data";
 export { useProjectTasksPageData } from "./use-project-tasks-page-data";
 export { useTaskCounts } from "./use-task-counts";
+
+// Tag hooks
+export { useTags, useCreateTag, useUpdateTag, useDeleteTag } from "./tags";
+
+// Utility hooks
+export { useFileUpload, type FileWithPreview } from "./use-file-upload";
+export { useTheme } from "./use-theme";
+export { useIsMobile } from "./use-mobile";
+export { useToast } from "./use-toast";
+
+// Filter hooks
+export {
+  useTaskFilters,
+  ALL_FILTER_VALUE,
+  type TaskFiltersState,
+} from "./use-task-filters";
+export { useSavedFilters, type SavedFilter } from "./use-saved-filters";

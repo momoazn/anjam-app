@@ -119,13 +119,22 @@ bun run build:win
 
 ## 🧪 Testing
 
-No test runner configured yet. Use `bun run check` and manual smoke tests.
+### Unit Tests (Vitest + React Testing Library)
 
-When adding tests:
+- `bun run test` - Run Vitest in watch mode
+- `bun run test:run` - Run once
+- `bun run test:ui` - Open Vitest UI
+- `bun run test:coverage` - Generate coverage report
 
-- Prefer [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/react)
-- Co-locate test files as `*.test.ts(x)`
-- Aim to cover business logic in `src/lib/*` and critical components
+Test files are co-located as `*.test.ts(x)`. Coverage thresholds: 60% (lines, functions, branches, statements).
+
+### E2E Tests (Playwright)
+
+- `bun run test:e2e` - Run Playwright tests
+- `bun run test:e2e:ui` - Playwright UI mode
+- `bun run test:e2e:debug` - Debug E2E tests
+
+E2E tests run against `http://localhost:5173`. Test directory: `e2e/`
 
 ## 🗄️ Schema & Type Generation
 

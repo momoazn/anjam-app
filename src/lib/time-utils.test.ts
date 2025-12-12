@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import {
   formatTimeSpent,
-  formatTimeSpentCompact,
   parseTimeInput,
   minutesToHoursAndMinutes,
 } from "./time-utils";
@@ -46,44 +45,6 @@ describe("formatTimeSpent", () => {
 
   it("should handle large values", () => {
     expect(formatTimeSpent(1500)).toBe("25 ساعت");
-  });
-});
-
-describe("formatTimeSpentCompact", () => {
-  it('should return "-" for null minutes', () => {
-    expect(formatTimeSpentCompact(null)).toBe("-");
-  });
-
-  it('should return "-" for undefined minutes', () => {
-    expect(formatTimeSpentCompact(undefined)).toBe("-");
-  });
-
-  it('should return "-" for 0 minutes', () => {
-    expect(formatTimeSpentCompact(0)).toBe("-");
-  });
-
-  it("should format only minutes when less than 60", () => {
-    expect(formatTimeSpentCompact(30)).toBe("30m");
-  });
-
-  it("should format only hours when minutes are exactly divisible by 60", () => {
-    expect(formatTimeSpentCompact(120)).toBe("2h");
-  });
-
-  it("should format hours and minutes compactly", () => {
-    expect(formatTimeSpentCompact(150)).toBe("2h 30m");
-  });
-
-  it("should handle single minute", () => {
-    expect(formatTimeSpentCompact(1)).toBe("1m");
-  });
-
-  it("should handle single hour", () => {
-    expect(formatTimeSpentCompact(60)).toBe("1h");
-  });
-
-  it("should handle large values", () => {
-    expect(formatTimeSpentCompact(1500)).toBe("25h");
   });
 });
 

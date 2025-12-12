@@ -132,4 +132,3 @@ export const projects = {
     projectNotFound: "پروژه یافت نشد",
   },
 } as const;
-

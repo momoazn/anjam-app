@@ -251,4 +251,3 @@ export const tasks = {
   timeSpent: "زمان صرف شده",
   timeEstimate: "برآورد زمان",
 } as const;
-

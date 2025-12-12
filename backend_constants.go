@@ -3,6 +3,29 @@ package main
 // Backend error and message constants in Persian
 // All user-facing Persian text used in the backend API
 
+// Collection name constants
+const (
+	CollectionUsers         = "users"
+	CollectionGroups        = "groups"
+	CollectionProjects      = "projects"
+	CollectionTasks         = "tasks"
+	CollectionNotifications = "notifications"
+	CollectionUserLoginLogs = "user_login_logs"
+	CollectionSuperusers    = "_superusers"
+	CollectionStatusConfigs = "status_configs"
+	CollectionUsersProjects = "users_projects"
+	CollectionComments      = "comments"
+)
+
+// Configuration constants
+const (
+	CodeLength               = 3
+	MaxCodeGenerationAttempts = 100
+	DefaultPageSize          = 50
+	MaxPageSize              = 100
+	MaxFailedLoginAttempts   = 5
+)
+
 const (
 	// Validation errors
 	ErrSupervisorMustBeInSameGroup = "منتور (supervisor) باید عضو همان گروه پروژه باشد"

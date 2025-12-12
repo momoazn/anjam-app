@@ -25,32 +25,6 @@ export function formatTimeSpent(minutes: number | null | undefined): string {
 }
 
 /**
- * Formats minutes into a compact "Xh Ym" format (English)
- * @param minutes - Total minutes to format
- * @returns Formatted string like "2h 30m" or "30m"
- */
-export function formatTimeSpentCompact(
-  minutes: number | null | undefined,
-): string {
-  if (minutes == null || minutes === 0) {
-    return "-";
-  }
-
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-
-  if (hours === 0) {
-    return `${digitsEnToFa(remainingMinutes)}m`;
-  }
-
-  if (remainingMinutes === 0) {
-    return `${digitsEnToFa(hours)}h`;
-  }
-
-  return `${digitsEnToFa(hours)}h ${digitsEnToFa(remainingMinutes)}m`;
-}
-
-/**
  * Converts hours and minutes to total minutes
  * @param hours - Number of hours
  * @param minutes - Number of minutes

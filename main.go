@@ -38,7 +38,7 @@ func allowDefaultCredentials(app core.App) bool {
 	}
 
 	// On initial run, always allow default credentials to be created
-	usersCollection, err := app.FindCollectionByNameOrId("users")
+	usersCollection, err := app.FindCollectionByNameOrId(CollectionUsers)
 	if err != nil {
 		// If collection doesn't exist yet, allow defaults
 		return true
@@ -154,7 +154,7 @@ func serveIndexHTML(staticFS fs.FS, w http.ResponseWriter, r *http.Request) erro
 }
 
 func generateRandomCode() string {
-	return security.RandomStringWithAlphabet(3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	return security.RandomStringWithAlphabet(CodeLength, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 }
 
 // handleGroupCreation auto-generates unique 3-letter group codes
@@ -165,7 +165,7 @@ func handleGroupCreation(e *core.RecordEvent) error {
 	// Validate that only managers can be assigned as group managers
 	managerId := record.GetString("manager")
 	if managerId != "" {
-		manager, err := e.App.FindRecordById("users", managerId)
+		manager, err := e.App.FindRecordById(CollectionUsers, managerId)
 		if err != nil {
 			return fmt.Errorf("manager not found: %w", err)
 		}
@@ -178,12 +178,12 @@ func handleGroupCreation(e *core.RecordEvent) error {
 
 	// Generate unique group code (3 uppercase letters)
 	code := generateRandomCode()
-	maxAttempts := 100
+	maxAttempts := MaxCodeGenerationAttempts
 	attempts := 0
 
 	// Check for collisions and retry if needed
 	for attempts < maxAttempts {
-		exists, err := e.App.FindFirstRecordByData("groups", "code", code)
+		exists, err := e.App.FindFirstRecordByData(CollectionGroups, "code", code)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
@@ -200,7 +200,7 @@ func handleGroupCreation(e *core.RecordEvent) error {
 
 	// Failed to find unique code after max attempts
 	if attempts >= maxAttempts {
-		return errors.New("failed to generate unique group code after 100 attempts")
+		return fmt.Errorf("failed to generate unique group code after %d attempts", MaxCodeGenerationAttempts)
 	}
 
 	// Set the generated code and default active status
@@ -230,7 +230,7 @@ func handleProjectCreationWithGroup(e *core.RecordEvent) error {
 	}
 
 	// Fetch the supervisor user record
-	supervisor, err := e.App.FindRecordById("users", supervisorId)
+	supervisor, err := e.App.FindRecordById(CollectionUsers, supervisorId)
 	if err != nil {
 		return fmt.Errorf("supervisor not found: %w", err)
 	}
@@ -258,13 +258,13 @@ func handleUsersProjectsValidation(e *core.RecordEvent) error {
 	}
 
 	// Fetch user record
-	user, err := e.App.FindRecordById("users", userId)
+	user, err := e.App.FindRecordById(CollectionUsers, userId)
 	if err != nil {
 		return fmt.Errorf("user not found: %w", err)
 	}
 
 	// Fetch project record
-	project, err := e.App.FindRecordById("projects", projectId)
+	project, err := e.App.FindRecordById(CollectionProjects, projectId)
 	if err != nil {
 		return fmt.Errorf("project not found: %w", err)
 	}
@@ -341,7 +341,7 @@ func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
 
 // getProjectName retrieves project name by ID, returns fallback if not found
 func getProjectName(app core.App, projectId string) string {
-	project, err := app.FindRecordById("projects", projectId)
+	project, err := app.FindRecordById(CollectionProjects, projectId)
 	if err != nil {
 		return "project"
 	}
@@ -378,7 +378,7 @@ func ensureSuperuserExists(e *core.ServeEvent) error {
 }
 
 func ensurePocketBaseSuperuser(e *core.ServeEvent) error {
-	adminCollection, err := e.App.FindCollectionByNameOrId("_superusers")
+	adminCollection, err := e.App.FindCollectionByNameOrId(CollectionSuperusers)
 	if err != nil {
 		log.Printf("Error finding _superusers collection: %v", err)
 		return err
@@ -523,19 +523,18 @@ func handleProjectCreation(e *core.RecordEvent) error {
 }
 
 func generateUniqueProjectCode(app core.App) (string, error) {
-	const maxAttempts = 100
-	for attempt := 0; attempt < maxAttempts; attempt++ {
+	for attempt := 0; attempt < MaxCodeGenerationAttempts; attempt++ {
 		projectCode := generateRandomCode()
-		exists, err := app.FindFirstRecordByData("projects", "code", projectCode)
+		exists, err := app.FindFirstRecordByData(CollectionProjects, "code", projectCode)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return "", err
 		}
 		if exists == nil {
 			return projectCode, nil
 		}
-		log.Printf("Project code collision for %q, generating a new one (attempt %d/%d).", projectCode, attempt+1, maxAttempts)
+		log.Printf("Project code collision for %q, generating a new one (attempt %d/%d).", projectCode, attempt+1, MaxCodeGenerationAttempts)
 	}
-	return "", fmt.Errorf("failed to generate unique project code after %d attempts", maxAttempts)
+	return "", fmt.Errorf("failed to generate unique project code after %d attempts", MaxCodeGenerationAttempts)
 }
 
 func handleTaskCreation(e *core.RecordEvent) error {
@@ -555,7 +554,7 @@ func setTaskDisplayID(e *core.RecordEvent) error {
 	}
 
 	projectId := e.Record.GetString("project")
-	project, err := e.App.FindRecordById("projects", projectId)
+	project, err := e.App.FindRecordById(CollectionProjects, projectId)
 	if err != nil {
 		log.Printf("Error fetching project %q for task creation: %v", projectId, err)
 		return err
@@ -643,14 +642,10 @@ func setTaskDefaults(e *core.RecordEvent) {
 func handleToggleStatusConfig(e *core.RequestEvent) error {
 	statusConfigId := e.Request.PathValue("id")
 
-	// Ensure the requester is authenticated and authorized
-	requestInfo, err := e.RequestInfo()
+	// Validate authentication
+	authRecord, err := validateAuth(e)
 	if err != nil {
-		return e.BadRequestError("Invalid request", err)
-	}
-	authRecord := requestInfo.Auth
-	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
+		return err
 	}
 
 	role := authRecord.GetString("role")
@@ -659,7 +654,7 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 	}
 
 	// Fetch the status config
-	statusConfig, err := e.App.FindRecordById("status_configs", statusConfigId)
+	statusConfig, err := e.App.FindRecordById(CollectionStatusConfigs, statusConfigId)
 	if err != nil {
 		log.Printf("Error finding status config %q: %v", statusConfigId, err)
 		return e.JSON(404, map[string]string{"error": "Status config not found"})
@@ -667,7 +662,7 @@ func handleToggleStatusConfig(e *core.RequestEvent) error {
 
 	projectId := statusConfig.GetString("project")
 	if role == "supervisor" {
-		projectRecord, err := e.App.FindRecordById("projects", projectId)
+		projectRecord, err := e.App.FindRecordById(CollectionProjects, projectId)
 		if err != nil {
 			log.Printf("Error verifying supervisor for project %q: %v", projectId, err)
 			return e.JSON(403, map[string]string{"error": ErrNoAccessToProject})
@@ -742,7 +737,7 @@ func handleTaskAssignmentNotification(e *core.RecordEvent) error {
 	taskTitle := e.Record.GetString("title")
 	projectId := e.Record.GetString("project")
 
-	project, err := e.App.FindRecordById("projects", projectId)
+	project, err := e.App.FindRecordById(CollectionProjects, projectId)
 	if err != nil {
 		log.Printf("Error fetching project for notification: %v", err)
 		return e.Next()
@@ -831,7 +826,7 @@ func handleCommentNotification(e *core.RecordEvent) error {
 	}
 
 	// Get task details
-	task, err := e.App.FindRecordById("tasks", taskId)
+	task, err := e.App.FindRecordById(CollectionTasks, taskId)
 	if err != nil {
 		log.Printf("Error fetching task for comment notification: %v", err)
 		return e.Next()
@@ -861,13 +856,13 @@ func createNotification(app core.App, userId, notificationType, title, message s
 	}
 
 	// Check if user exists
-	_, err := app.FindRecordById("users", userId)
+	_, err := app.FindRecordById(CollectionUsers, userId)
 	if err != nil {
 		log.Printf("Warning: User %s not found, skipping notification creation: %v", userId, err)
 		return nil // Don't fail the parent operation
 	}
 
-	notificationsCollection, err := app.FindCollectionByNameOrId("notifications")
+	notificationsCollection, err := app.FindCollectionByNameOrId(CollectionNotifications)
 	if err != nil {
 		log.Printf("Error finding notifications collection: %v", err)
 		return nil // Don't fail the parent operation
@@ -897,6 +892,20 @@ func truncateString(s string, maxLen int) string {
 	return s[:maxLen-3] + "..."
 }
 
+// validateAuth is a helper that validates authentication for API handlers.
+// Returns the authenticated user record or an error response.
+func validateAuth(e *core.RequestEvent) (*core.Record, error) {
+	requestInfo, err := e.RequestInfo()
+	if err != nil {
+		return nil, e.BadRequestError("Invalid request", err)
+	}
+	authRecord := requestInfo.Auth
+	if authRecord == nil {
+		return nil, e.JSON(401, map[string]string{"error": ErrAuthRequired})
+	}
+	return authRecord, nil
+}
+
 // translateStatus translates English status to Persian
 func translateStatus(status string) string {
 	switch status {
@@ -914,8 +923,6 @@ func translateStatus(status string) string {
 }
 
 // --- Authentication Handlers ---
-
-const maxFailedLoginAttempts = 5
 
 func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 	user := e.Record
@@ -1008,7 +1015,7 @@ func (r *responseRecorder) WriteHeader(code int) {
 func handleSuccessfulAuth(app core.App, identity string, req *http.Request) {
 	// Find user by identity (username or email)
 	user, err := app.FindFirstRecordByFilter(
-		"users",
+		CollectionUsers,
 		"username = {:identity} || email = {:identity}",
 		dbx.Params{"identity": identity},
 	)
@@ -1031,7 +1038,7 @@ func handleSuccessfulAuth(app core.App, identity string, req *http.Request) {
 func handleFailedAuth(app core.App, identity string, req *http.Request) {
 	// Try to find user by identity
 	user, err := app.FindFirstRecordByFilter(
-		"users",
+		CollectionUsers,
 		"username = {:identity} || email = {:identity}",
 		dbx.Params{"identity": identity},
 	)
@@ -1048,10 +1055,10 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 	user.Set("failed_login_attempts", failedAttempts)
 
 	// Check if we should block the user
-	if failedAttempts >= maxFailedLoginAttempts {
+	if failedAttempts >= MaxFailedLoginAttempts {
 		user.Set("blocked", true)
 		user.Set("blocked_at", time.Now().Format(time.RFC3339))
-		user.Set("blocked_reason", fmt.Sprintf(MsgBlockedReason, maxFailedLoginAttempts))
+		user.Set("blocked_reason", fmt.Sprintf(MsgBlockedReason, MaxFailedLoginAttempts))
 		log.Printf("User %s blocked after %d failed login attempts", user.Id, failedAttempts)
 	}
 
@@ -1064,7 +1071,7 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 }
 
 func logUserLogin(app core.App, userId string, req *http.Request, success bool, failureReason string) {
-	collection, err := app.FindCollectionByNameOrId("user_login_logs")
+	collection, err := app.FindCollectionByNameOrId(CollectionUserLoginLogs)
 	if err != nil {
 		log.Printf("Error finding user_login_logs collection: %v", err)
 		return
@@ -1103,14 +1110,10 @@ func logUserLogin(app core.App, userId string, req *http.Request, success bool, 
 func handleToggleUserActive(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
-	// Ensure the requester is authenticated and is an admin
-	requestInfo, err := e.RequestInfo()
+	// Validate authentication
+	authRecord, err := validateAuth(e)
 	if err != nil {
-		return e.BadRequestError("Invalid request", err)
-	}
-	authRecord := requestInfo.Auth
-	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
+		return err
 	}
 
 	role := authRecord.GetString("role")
@@ -1124,7 +1127,7 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 	}
 
 	// Fetch the user
-	user, err := e.App.FindRecordById("users", userId)
+	user, err := e.App.FindRecordById(CollectionUsers, userId)
 	if err != nil {
 		log.Printf("Error finding user %q: %v", userId, err)
 		return e.JSON(404, map[string]string{"error": ErrUserNotFound})
@@ -1159,14 +1162,10 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 func handleUnblockUser(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
-	// Ensure the requester is authenticated and is an admin
-	requestInfo, err := e.RequestInfo()
+	// Validate authentication
+	authRecord, err := validateAuth(e)
 	if err != nil {
-		return e.BadRequestError("Invalid request", err)
-	}
-	authRecord := requestInfo.Auth
-	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
+		return err
 	}
 
 	role := authRecord.GetString("role")
@@ -1175,7 +1174,7 @@ func handleUnblockUser(e *core.RequestEvent) error {
 	}
 
 	// Fetch the user
-	user, err := e.App.FindRecordById("users", userId)
+	user, err := e.App.FindRecordById(CollectionUsers, userId)
 	if err != nil {
 		log.Printf("Error finding user %q: %v", userId, err)
 		return e.JSON(404, map[string]string{"error": ErrUserNotFound})
@@ -1200,14 +1199,10 @@ func handleUnblockUser(e *core.RequestEvent) error {
 func handleGetUserLoginLogs(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
-	// Ensure the requester is authenticated
-	requestInfo, err := e.RequestInfo()
+	// Validate authentication
+	authRecord, err := validateAuth(e)
 	if err != nil {
-		return e.BadRequestError("Invalid request", err)
-	}
-	authRecord := requestInfo.Auth
-	if authRecord == nil {
-		return e.JSON(401, map[string]string{"error": ErrAuthRequired})
+		return err
 	}
 
 	// Check permissions: admin can view any user's logs, users can only view their own
@@ -1218,14 +1213,14 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 
 	// Get pagination parameters
 	page := 1
-	perPage := 50
+	perPage := DefaultPageSize
 	if pageStr := e.Request.URL.Query().Get("page"); pageStr != "" {
 		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
 			page = p
 		}
 	}
 	if perPageStr := e.Request.URL.Query().Get("perPage"); perPageStr != "" {
-		if pp, err := strconv.Atoi(perPageStr); err == nil && pp > 0 && pp <= 100 {
+		if pp, err := strconv.Atoi(perPageStr); err == nil && pp > 0 && pp <= MaxPageSize {
 			perPage = pp
 		}
 	}

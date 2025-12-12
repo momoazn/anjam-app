@@ -1,25 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fa } from "@/constants/text";
 import { pb } from "@/lib/pocketbase";
-import { cn } from "@/lib/utils";
-
-function getUserInitials({
-  first_name,
-  last_name,
-  username,
-}: {
-  first_name?: string;
-  last_name?: string;
-  username?: string;
-}) {
-  if (first_name && last_name) {
-    return `${first_name.substring(0, 1)}${last_name.substring(0, 1)}`.toUpperCase();
-  }
-  if (username) {
-    return username.substring(0, 2).toUpperCase();
-  }
-  return "?";
-}
+import { cn, getUserInitials } from "@/lib/utils";
 
 type UserAvatarProps = {
   username?: string;
@@ -90,11 +72,7 @@ export function UserAvatar({
       <Avatar className={avatarClassName}>
         <AvatarImage src={avatarUrl} className="object-cover" />
         <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground text-sm font-semibold">
-          {getUserInitials({
-            first_name: user.first_name,
-            last_name: user.last_name,
-            username: user.username,
-          })}
+          {getUserInitials(user.first_name, user.last_name, user.username)}
         </AvatarFallback>
       </Avatar>
     );
@@ -105,7 +83,7 @@ export function UserAvatar({
     return (
       <Avatar className={avatarClassName}>
         <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
-          {getUserInitials({ username })}
+          {getUserInitials(undefined, undefined, username)}
         </AvatarFallback>
       </Avatar>
     );

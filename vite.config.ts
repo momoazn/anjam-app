@@ -16,7 +16,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: "esnext",
+    target: "es2020",
     minify: "terser",
     rollupOptions: {
       output: {
@@ -33,12 +33,15 @@ export default defineConfig({
           ],
           charts: ["recharts"],
           ui: [
+            "@radix-ui/react-accordion",
             "@radix-ui/react-alert-dialog",
             "@radix-ui/react-avatar",
             "@radix-ui/react-checkbox",
             "@radix-ui/react-dialog",
             "@radix-ui/react-dropdown-menu",
             "@radix-ui/react-label",
+            "@radix-ui/react-popover",
+            "@radix-ui/react-scroll-area",
             "@radix-ui/react-select",
             "@radix-ui/react-separator",
             "@radix-ui/react-slot",
