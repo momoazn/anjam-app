@@ -22,8 +22,9 @@ import {
 } from "@/components/ui/table";
 import { fa } from "@/constants/text";
 import { formatDateTime } from "@/lib/date-utils";
-import { UsersResponse } from "@/lib/pocketbase-types";
 import { pb } from "@/lib/pocketbase";
+import { UsersResponse } from "@/lib/pocketbase-types";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type LoginLog = {
   id: string;
@@ -56,7 +57,7 @@ export function UserLoginLogsDialog({
       setLoading(true);
       try {
         const response = await fetch(
-          `${pb.baseUrl}api/tm/users/${user.id}/login-logs?page=${pageNum}&perPage=20`,
+          `${pb.baseURL}api/tm/users/${user.id}/login-logs?page=${pageNum}&perPage=20`,
           {
             headers: {
               Authorization: pb.authStore.token

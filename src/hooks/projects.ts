@@ -89,68 +89,33 @@ export function useCreateProject(
   >,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ??
+    ({} as UseMutationOptions<
+      ProjectsResponse,
+      Error,
+      Omit<ProjectsRecord, "id" | "created" | "updated">
+    >);
 
   return useMutation({
     mutationFn: (
       projectData: Omit<ProjectsRecord, "id" | "created" | "updated">,
     ) => pb.collection("projects").create(projectData),
-    onMutate: async (newProject) => {
-      // Cancel outgoing refetches for all project-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.projects.all });
-
-      // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<ProjectsResponse[]>({
-        queryKey: queryKeys.projects.all,
-      });
-
-      // Optimistically update cache with new project
-      const optimisticProject = {
-        ...newProject,
-        id: `temp-${Date.now()}`, // Temporary ID for optimistic update
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-      } as ProjectsResponse;
-
-      queryClient.setQueriesData<ProjectsResponse[]>(
-        { queryKey: queryKeys.projects.all },
-        (old: ProjectsResponse[] | undefined) => {
-          if (!old) return [optimisticProject];
-          return [optimisticProject, ...old];
-        },
-      );
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful creation
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-
-      // Invalidate tasks as new project might affect task filtering
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -167,6 +132,13 @@ export function useUpdateProject(
   >,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ??
+    ({} as UseMutationOptions<
+      ProjectsResponse,
+      Error,
+      { id: string; updates: Partial<ProjectsRecord> }
+    >);
 
   return useMutation({
     mutationFn: ({
@@ -176,68 +148,13 @@ export function useUpdateProject(
       id: string;
       updates: Partial<ProjectsRecord>;
     }) => pb.collection("projects").update(id, updates),
-    onMutate: async ({ id, updates }) => {
-      // Cancel outgoing refetches for all project-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.projects.all });
-
-      // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<ProjectsResponse[]>({
-        queryKey: queryKeys.projects.all,
-      });
-
-      // Optimistically update cache
-      queryClient.setQueriesData<ProjectsResponse[]>(
-        { queryKey: queryKeys.projects.all },
-        (old: ProjectsResponse[] | undefined) => {
-          if (!old) return old;
-          return old.map((project: ProjectsResponse) => {
-            if (project.id === id) {
-              return { ...project, ...updates } as ProjectsResponse;
-            }
-            return project;
-          });
-        },
-      );
-
-      // Also update specific project detail queries
-      queryClient.setQueryData<ProjectsResponse>(
-        queryKeys.projects.detail(id),
-        (old) => {
-          if (!old) return old;
-          return { ...old, ...updates } as ProjectsResponse;
-        },
-      );
-
-      // Update project with supervisor query
-      queryClient.setQueryData<ProjectWithSupervisor>(
-        [...queryKeys.projects.detail(id), "supervisor"],
-        (old) => {
-          if (!old) return old;
-          return { ...old, ...updates } as ProjectWithSupervisor;
-        },
-      );
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful update
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
 
-      // Invalidate specific project detail
       if (variables?.id) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.projects.detail(variables.id),
@@ -247,20 +164,18 @@ export function useUpdateProject(
         });
       }
 
-      // Invalidate tasks if project status or other relevant fields changed
       if (variables?.updates) {
         queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
         queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
       }
 
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -273,66 +188,38 @@ export function useDeleteProject(
   options?: UseMutationOptions<void, Error, string>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ?? ({} as UseMutationOptions<void, Error, string>);
 
   return useMutation({
     mutationFn: async (id: string) => {
       await pb.collection("projects").delete(id);
     },
-    onMutate: async (id: string) => {
-      // Cancel outgoing refetches for all project-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.projects.all });
-
-      // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<ProjectsResponse[]>({
-        queryKey: queryKeys.projects.all,
-      });
-
-      // Optimistically remove project from cache
-      queryClient.setQueriesData<ProjectsResponse[]>(
-        { queryKey: queryKeys.projects.all },
-        (old: ProjectsResponse[] | undefined) => {
-          if (!old) return old;
-          return old.filter((project) => project.id !== id);
-        },
-      );
-
-      // Remove from project detail caches
-      queryClient.removeQueries({ queryKey: queryKeys.projects.detail(id) });
-      queryClient.removeQueries({
-        queryKey: [...queryKeys.projects.detail(id), "supervisor"],
-      });
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful deletion
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
 
-      // Invalidate tasks as project deletion affects task filtering
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
 
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
 
-      options?.onSuccess?.(data, variables, context);
+      if (variables) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.projects.detail(variables),
+        });
+        queryClient.invalidateQueries({
+          queryKey: [...queryKeys.projects.detail(variables), "supervisor"],
+        });
+      }
+
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }

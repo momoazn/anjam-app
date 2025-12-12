@@ -10,7 +10,6 @@ import {
   useQuery,
   useQueryClient,
   UseMutationOptions,
-  QueryKey,
 } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import {
@@ -20,14 +19,15 @@ import {
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 
-type UsersQuerySnapshot = [QueryKey, UsersResponse[] | undefined][];
-
 type UsersListOptions = {
   enabled?: boolean;
   batch?: number;
   sort?: string;
   filter?: string;
 };
+
+type CreateUserVariables = Omit<UsersRecord, "id" | "created" | "updated">;
+type UpdateUserVariables = { id: string; updates: Partial<UsersRecord> };
 
 /**
  * Hook to fetch all users
@@ -123,82 +123,32 @@ export function useProjectUsers({
  * @returns Mutation function for creating users
  */
 export function useCreateUser(
-  options?: UseMutationOptions<
-    UsersResponse,
-    Error,
-    Omit<UsersRecord, "id" | "created" | "updated">,
-    { previousQueries: UsersQuerySnapshot }
-  >,
+  options?: UseMutationOptions<UsersResponse, Error, CreateUserVariables>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ??
+    ({} as UseMutationOptions<UsersResponse, Error, CreateUserVariables>);
 
-  return useMutation<
-    UsersResponse,
-    Error,
-    Omit<UsersRecord, "id" | "created" | "updated">,
-    { previousQueries: UsersQuerySnapshot }
-  >({
-    mutationFn: (userData: Omit<UsersRecord, "id" | "created" | "updated">) =>
+  return useMutation<UsersResponse, Error, CreateUserVariables>({
+    mutationFn: (userData: CreateUserVariables) =>
       pb.collection("users").create(userData),
-    onMutate: async (newUser) => {
-      // Cancel outgoing refetches for all user-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
-
-      // Snapshot previous values
-      const previousQueries: UsersQuerySnapshot = queryClient.getQueriesData<
-        UsersResponse[]
-      >({
-        queryKey: queryKeys.users.all,
-      });
-
-      // Optimistically update cache with new user
-      const optimisticUser = {
-        ...newUser,
-        id: `temp-${Date.now()}`, // Temporary ID for optimistic update
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-      } as UsersResponse;
-
-      queryClient.setQueriesData<UsersResponse[]>(
-        { queryKey: queryKeys.users.all },
-        (old: UsersResponse[] | undefined) => {
-          if (!old) return [optimisticUser];
-          return [optimisticUser, ...old];
-        },
-      );
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful creation
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
+      // Always refetch after mutation settles
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
-
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
-
-      // Invalidate tasks as new user might affect assignee options
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -208,95 +158,34 @@ export function useCreateUser(
  * @returns Mutation function for updating users
  */
 export function useUpdateUser(
-  options?: UseMutationOptions<
-    UsersResponse,
-    Error,
-    { id: string; updates: Partial<UsersRecord> },
-    { previousQueries: UsersQuerySnapshot }
-  >,
+  options?: UseMutationOptions<UsersResponse, Error, UpdateUserVariables>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ??
+    ({} as UseMutationOptions<UsersResponse, Error, UpdateUserVariables>);
 
-  return useMutation<
-    UsersResponse,
-    Error,
-    { id: string; updates: Partial<UsersRecord> },
-    { previousQueries: UsersQuerySnapshot }
-  >({
-    mutationFn: ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: Partial<UsersRecord>;
-    }) => pb.collection("users").update(id, updates),
-    onMutate: async ({ id, updates }) => {
-      // Cancel outgoing refetches for all user-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
-
-      // Snapshot previous values
-      const previousQueries: UsersQuerySnapshot = queryClient.getQueriesData<
-        UsersResponse[]
-      >({
-        queryKey: queryKeys.users.all,
-      });
-
-      // Optimistically update cache
-      queryClient.setQueriesData<UsersResponse[]>(
-        { queryKey: queryKeys.users.all },
-        (old: UsersResponse[] | undefined) => {
-          if (!old) return old;
-          return old.map((user: UsersResponse) => {
-            if (user.id === id) {
-              return { ...user, ...updates } as UsersResponse;
-            }
-            return user;
-          });
-        },
-      );
-
-      // Also update specific user detail query
-      queryClient.setQueryData<UsersResponse>(
-        queryKeys.users.detail(id),
-        (old) => {
-          if (!old) return old;
-          return { ...old, ...updates } as UsersResponse;
-        },
-      );
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
+  return useMutation<UsersResponse, Error, UpdateUserVariables>({
+    mutationFn: ({ id, updates }: UpdateUserVariables) =>
+      pb.collection("users").update(id, updates),
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful update
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
+      // Always refetch after mutation settles
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
 
-      // Invalidate specific user detail
       if (variables?.id) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.users.detail(variables.id),
         });
       }
 
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
 
-      // Invalidate tasks if user role or name changed (affects assignee display)
       if (
         variables?.updates &&
         (variables.updates.role ||
@@ -307,9 +196,9 @@ export function useUpdateUser(
         queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
       }
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -322,64 +211,37 @@ export function useDeleteUser(
   options?: UseMutationOptions<void, Error, string>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ?? ({} as UseMutationOptions<void, Error, string>);
 
   return useMutation({
     mutationFn: async (id: string) => {
       await pb.collection("users").delete(id);
     },
-    onMutate: async (id: string) => {
-      // Cancel outgoing refetches for all user-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
-
-      // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
-        queryKey: queryKeys.users.all,
-      });
-
-      // Optimistically remove user from cache
-      queryClient.setQueriesData<UsersResponse[]>(
-        { queryKey: queryKeys.users.all },
-        (old: UsersResponse[] | undefined) => {
-          if (!old) return old;
-          return old.filter((user) => user.id !== id);
-        },
-      );
-
-      // Remove from user detail cache
-      queryClient.removeQueries({ queryKey: queryKeys.users.detail(id) });
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful deletion
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
+      // Always refetch after mutation settles
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
 
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
 
-      // Invalidate tasks as user deletion affects assignee filtering
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
 
-      options?.onSuccess?.(data, variables, context);
+      if (variables) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.users.detail(variables),
+        });
+      }
+
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -392,11 +254,13 @@ export function useToggleUserActive(
   options?: UseMutationOptions<{ message: string }, Error, string>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ?? ({} as UseMutationOptions<{ message: string }, Error, string>);
 
   return useMutation({
     mutationFn: async (userId: string) => {
       const response = await fetch(
-        `${pb.baseUrl}api/tm/users/${userId}/toggle-active`,
+        `${pb.baseURL}api/tm/users/${userId}/toggle-active`,
         {
           method: "PATCH",
           headers: {
@@ -414,73 +278,27 @@ export function useToggleUserActive(
 
       return response.json();
     },
-    onMutate: async (userId: string) => {
-      // Cancel outgoing refetches for all user-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
-
-      // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
-        queryKey: queryKeys.users.all,
-      });
-
-      // Optimistically update user active status in cache
-      queryClient.setQueriesData<UsersResponse[]>(
-        { queryKey: queryKeys.users.all },
-        (old: UsersResponse[] | undefined) => {
-          if (!old) return old;
-          return old.map((user: UsersResponse) => {
-            if (user.id === userId) {
-              return { ...user, active: !user.active } as UsersResponse;
-            }
-            return user;
-          });
-        },
-      );
-
-      // Also update specific user detail query
-      queryClient.setQueryData<UsersResponse>(
-        queryKeys.users.detail(userId),
-        (old) => {
-          if (!old) return old;
-          return { ...old, active: !old.active } as UsersResponse;
-        },
-      );
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful toggle
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
+      // Always refetch after mutation settles
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
 
-      // Invalidate specific user detail
       if (variables) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.users.detail(variables),
         });
       }
 
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -493,11 +311,13 @@ export function useUnblockUser(
   options?: UseMutationOptions<{ message: string }, Error, string>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ?? ({} as UseMutationOptions<{ message: string }, Error, string>);
 
   return useMutation({
     mutationFn: async (userId: string) => {
       const response = await fetch(
-        `${pb.baseUrl}api/tm/users/${userId}/unblock`,
+        `${pb.baseURL}api/tm/users/${userId}/unblock`,
         {
           method: "PATCH",
           headers: {
@@ -515,80 +335,26 @@ export function useUnblockUser(
 
       return response.json();
     },
-    onMutate: async (userId: string) => {
-      // Cancel outgoing refetches for all user-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
-
-      // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
-        queryKey: queryKeys.users.all,
-      });
-
-      // Optimistically update user blocked status in cache
-      queryClient.setQueriesData<UsersResponse[]>(
-        { queryKey: queryKeys.users.all },
-        (old: UsersResponse[] | undefined) => {
-          if (!old) return old;
-          return old.map((user: UsersResponse) => {
-            if (user.id === userId) {
-              return {
-                ...user,
-                blocked: false,
-                failed_login_attempts: 0,
-              } as UsersResponse;
-            }
-            return user;
-          });
-        },
-      );
-
-      // Also update specific user detail query
-      queryClient.setQueryData<UsersResponse>(
-        queryKeys.users.detail(userId),
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            blocked: false,
-            failed_login_attempts: 0,
-          } as UsersResponse;
-        },
-      );
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful unblock
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
+      // Always refetch after mutation settles
       queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
 
-      // Invalidate specific user detail
       if (variables) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.users.detail(variables),
         });
       }
 
-      // Invalidate project-user relationships
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.allProjectUsers(),
       });
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }

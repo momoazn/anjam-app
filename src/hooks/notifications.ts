@@ -73,30 +73,11 @@ export function useMarkAsRead() {
   return useMutation({
     mutationFn: (id: string) =>
       pb.collection("notifications").update(id, { read: true }),
-    onMutate: async (id: string) => {
-      // Optimistically update cache to mark as read
-      if (!user?.id) return;
-      const key = getNotificationsQueryKey(user.id);
-      await queryClient.cancelQueries({ queryKey: key });
-      const previous = queryClient.getQueryData<NotificationsRecord[]>(key);
-      queryClient.setQueryData<NotificationsRecord[]>(key, (old = []) =>
-        old.map((n) => (n.id === id ? { ...n, read: true } : n)),
-      );
-      return { previous };
-    },
-    onSuccess: () => {
+    onSettled: () => {
       if (user?.id) {
         queryClient.invalidateQueries({
           queryKey: getNotificationsQueryKey(user.id),
         });
-      }
-    },
-    onError: (_err, _id, ctx) => {
-      if (user?.id && ctx?.previous) {
-        queryClient.setQueryData(
-          getNotificationsQueryKey(user.id),
-          ctx.previous,
-        );
       }
     },
   });
@@ -120,28 +101,11 @@ export function useMarkAllAsRead() {
 
       await Promise.all(updatePromises);
     },
-    onMutate: async (userId: string) => {
-      // Optimistically mark all as read
-      const key = getNotificationsQueryKey(userId);
-      await queryClient.cancelQueries({ queryKey: key });
-      const previous = queryClient.getQueryData<NotificationsRecord[]>(key);
-      queryClient.setQueryData<NotificationsRecord[]>(key, (old = []) =>
-        old.map((n) => ({ ...n, read: true })),
-      );
-      return { previous };
-    },
-    onError: (_err, userId, ctx) => {
-      if (ctx?.previous) {
-        queryClient.setQueryData(
-          getNotificationsQueryKey(userId),
-          ctx.previous,
-        );
-      }
-    },
-    onSuccess: () => {
-      if (user?.id) {
+    onSettled: (_data, _error, userId) => {
+      const targetUserId = userId || user?.id;
+      if (targetUserId) {
         queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(user.id),
+          queryKey: getNotificationsQueryKey(targetUserId),
         });
       }
     },
@@ -154,7 +118,7 @@ export function useDeleteNotification() {
 
   return useMutation({
     mutationFn: (id: string) => pb.collection("notifications").delete(id),
-    onSuccess: () => {
+    onSettled: () => {
       if (user?.id) {
         queryClient.invalidateQueries({
           queryKey: getNotificationsQueryKey(user.id),
@@ -182,10 +146,11 @@ export function useClearAll() {
 
       await Promise.all(deletePromises);
     },
-    onSuccess: () => {
-      if (user?.id) {
+    onSettled: (_data, _error, userId) => {
+      const targetUserId = userId || user?.id;
+      if (targetUserId) {
         queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(user.id),
+          queryKey: getNotificationsQueryKey(targetUserId),
         });
       }
     },
@@ -210,10 +175,11 @@ export function useClearRead() {
 
       await Promise.all(deletePromises);
     },
-    onSuccess: () => {
-      if (user?.id) {
+    onSettled: (_data, _error, userId) => {
+      const targetUserId = userId || user?.id;
+      if (targetUserId) {
         queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(user.id),
+          queryKey: getNotificationsQueryKey(targetUserId),
         });
       }
     },

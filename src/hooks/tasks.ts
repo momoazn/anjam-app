@@ -10,7 +10,6 @@ import {
   useQuery,
   useQueryClient,
   UseMutationOptions,
-  QueryKey,
 } from "@tanstack/react-query";
 import { pb, TaskWithProject } from "../lib/pocketbase";
 import {
@@ -24,7 +23,7 @@ import { queryKeys } from "./query-keys";
 /**
  * Fetches tasks with optional project filtering and field expansion
  */
-function getTasks(
+async function getTasks(
   projectId?: string,
   expandFields?: string,
   mode: "paged" | "full" = "paged",
@@ -43,7 +42,7 @@ function getTasks(
   }
 
   if (mode === "full") {
-    return pb.collection("tasks").getFullList<TaskWithProject>({
+    return await pb.collection("tasks").getFullList<TaskWithProject>({
       filter: filters.length > 0 ? filters.join(" && ") : undefined,
       sort: "order",
       expand: expandFields,
@@ -52,14 +51,13 @@ function getTasks(
   }
 
   // Use paginated list to avoid multiple sequential HTTP requests from getFullList
-  return pb
-    .collection("tasks")
-    .getList<TaskWithProject>(1, 200, {
-      filter: filters.length > 0 ? filters.join(" && ") : undefined,
-      sort: "order",
-      expand: expandFields,
-    })
-    .then((res) => res.items);
+  const res = await pb.collection("tasks").getList<TaskWithProject>(1, 200, {
+    filter: filters.length > 0 ? filters.join(" && ") : undefined,
+    sort: "order",
+    expand: expandFields,
+  });
+
+  return res.items;
 }
 
 /**
@@ -121,60 +119,33 @@ export function useCreateTask(
   options?: UseMutationOptions<
     TasksResponse,
     Error,
-    Omit<TasksRecord, "id" | "created" | "updated">,
-    { previousQueries: [QueryKey, TaskWithProject[] | undefined][] }
+    Omit<TasksRecord, "id" | "created" | "updated">
   >,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ??
+    ({} as UseMutationOptions<
+      TasksResponse,
+      Error,
+      Omit<TasksRecord, "id" | "created" | "updated">
+    >);
 
   return useMutation({
     mutationFn: (taskData: Omit<TasksRecord, "id" | "created" | "updated">) =>
       pb.collection("tasks").create(taskData),
-    onMutate: async (newTask) => {
-      // Cancel any outgoing refetches for all task-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
-
-      // Snapshot previous values for all task queries
-      const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
-        queryKey: queryKeys.tasks.all,
-      });
-
-      // Optimistically update cache with new task
-      const optimisticTask = {
-        ...newTask,
-        id: `temp-${Date.now()}`, // Temporary ID for optimistic update
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-        expand: {},
-      } as TaskWithProject;
-
-      // Update all task list queries
-      queryClient.setQueriesData<TaskWithProject[]>(
-        { queryKey: queryKeys.tasks.all },
-        (old: TaskWithProject[] | undefined) => {
-          if (!old) return [optimisticTask];
-          return [optimisticTask, ...old];
-        },
-      );
-
-      return { previousQueries };
+    onSuccess: (data, variables, context) => {
+      onSuccess?.(data, variables, context);
     },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (context?.previousQueries) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
-    onSettled: () => {
-      // Comprehensive refetch after error or success
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-      // Also invalidate projects as task count might change
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -191,6 +162,13 @@ export function useUpdateTask(
   >,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ??
+    ({} as UseMutationOptions<
+      TasksResponse,
+      Error,
+      { id: string; updates: Partial<TasksRecord> }
+    >);
 
   return useMutation({
     mutationFn: async ({
@@ -202,81 +180,27 @@ export function useUpdateTask(
     }) => {
       return pb.collection("tasks").update(id, updates);
     },
-    onMutate: async ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: Partial<TasksRecord>;
-    }) => {
-      // Cancel outgoing refetches for all task-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
-
-      // Snapshot previous values for all task queries
-      const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
-        queryKey: queryKeys.tasks.all,
-      });
-
-      // Optimistically update cache
-      queryClient.setQueriesData<TaskWithProject[]>(
-        { queryKey: queryKeys.tasks.all },
-        (old: TaskWithProject[] | undefined) => {
-          if (!old) return old;
-          return old.map((task: TaskWithProject) => {
-            if (task.id === id) {
-              // Create a new object with proper type validation
-              const updatedTask = { ...task, ...updates };
-              // Ensure the result maintains the TaskWithProject structure
-              return updatedTask as TaskWithProject;
-            }
-            return task;
-          });
-        },
-      );
-
-      // Also update the specific task detail query
-      queryClient.setQueryData<TaskWithProject>(
-        queryKeys.tasks.detail(id),
-        (old) => {
-          if (!old) return old;
-          return { ...old, ...updates } as TaskWithProject;
-        },
-      );
-
-      return { previousQueries };
+    onSuccess: (data, variables, context) => {
+      onSuccess?.(data, variables, context);
     },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
-    onSettled: (_data, _error, variables) => {
-      // Comprehensive refetch after error or success
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
 
-      // Invalidate specific task detail
       if (variables?.id) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.tasks.detail(variables.id),
         });
       }
 
-      // Invalidate projects if task project changed
       if (variables?.updates?.project) {
         queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
         queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
       }
+
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -289,61 +213,34 @@ export function useDeleteTask(
   options?: UseMutationOptions<TasksResponse, Error, string>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ?? ({} as UseMutationOptions<TasksResponse, Error, string>);
 
   return useMutation({
-    ...(options ?? {}),
     mutationFn: async (id: string) => {
       return pb.collection("tasks").update<TasksResponse>(id, {
         deleted_at: new Date().toISOString(),
       });
     },
-    onMutate: async (id: string) => {
-      // Cancel outgoing refetches for all task-related queries
-      await queryClient.cancelQueries({ queryKey: queryKeys.tasks.all });
-
-      // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<TaskWithProject[]>({
-        queryKey: queryKeys.tasks.all,
-      });
-
-      // Optimistically remove task from cache
-      queryClient.setQueriesData<TaskWithProject[]>(
-        { queryKey: queryKeys.tasks.all },
-        (old: TaskWithProject[] | undefined) => {
-          if (!old) return old;
-          return old.filter((task) => task.id !== id);
-        },
-      );
-
-      // Remove from task detail cache
-      queryClient.removeQueries({ queryKey: queryKeys.tasks.detail(id) });
-
-      return { previousQueries };
-    },
-    onError: (_error, _variables, context) => {
-      // Rollback on error
-      if (
-        context &&
-        typeof context === "object" &&
-        "previousQueries" in context &&
-        Array.isArray(context.previousQueries)
-      ) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
     onSuccess: (data, variables, context) => {
-      // Comprehensive refetch after successful deletion
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
 
-      // Invalidate projects as task count changes
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
 
-      options?.onSuccess?.(data, variables, context);
+      if (variables) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tasks.detail(variables),
+        });
+      }
+
+      onSettled?.(data, error, variables, context);
     },
+    ...restOptions,
   });
 }
 
@@ -358,6 +255,13 @@ export function useBulkUpdateTasks(
   >,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ??
+    ({} as UseMutationOptions<
+      TasksResponse[],
+      Error,
+      { taskIds: string[]; updates: Partial<TasksRecord> }
+    >);
 
   return useMutation({
     mutationFn: async ({
@@ -374,14 +278,16 @@ export function useBulkUpdateTasks(
       return await Promise.all(updatePromises);
     },
     onSuccess: (data, variables, context) => {
-      // Invalidate all task-related queries
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -392,6 +298,8 @@ export function useBulkDeleteTasks(
   options?: UseMutationOptions<void, Error, string[]>,
 ) {
   const queryClient = useQueryClient();
+  const { onSuccess, onSettled, ...restOptions } =
+    options ?? ({} as UseMutationOptions<void, Error, string[]>);
 
   return useMutation({
     mutationFn: async (taskIds: string[]) => {
@@ -402,14 +310,16 @@ export function useBulkDeleteTasks(
       await Promise.all(deletePromises);
     },
     onSuccess: (data, variables, context) => {
-      // Invalidate all task-related queries
+      onSuccess?.(data, variables, context);
+    },
+    onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
 
-      options?.onSuccess?.(data, variables, context);
+      onSettled?.(data, error, variables, context);
     },
-    ...options,
+    ...restOptions,
   });
 }
 
@@ -434,8 +344,7 @@ export function useReorderTask() {
         status: statusKey as TasksRecord["status"],
       });
     },
-    onSuccess: () => {
-      // Invalidate all task-related queries to reflect changes
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
     },
