@@ -38,7 +38,7 @@ export function useProjectTasksPageData(projectId: string) {
 
   // Get all users for the filter dropdown
   const usersQuery = useQuery({
-    queryKey: queryKeys.users.lists(),
+    queryKey: queryKeys.users.list({ batch: 100, sort: "-created" }),
     queryFn: () =>
       pb.collection("users").getFullList<UsersResponse>({
         batch: 100,

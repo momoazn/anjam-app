@@ -10,6 +10,7 @@ import {
   useQuery,
   useQueryClient,
   UseMutationOptions,
+  QueryKey,
 } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import {
@@ -19,31 +20,36 @@ import {
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 
-type UsersQuerySnapshot = [readonly unknown[], UsersResponse[] | undefined][];
+type UsersQuerySnapshot = [QueryKey, UsersResponse[] | undefined][];
+
+type UsersListOptions = {
+  enabled?: boolean;
+  batch?: number;
+  sort?: string;
+  filter?: string;
+};
 
 /**
  * Hook to fetch all users
  * @param options - Configuration options for the query
  * @returns React Query result with users data
  */
-export function useUsers(
-  options: {
-    enabled?: boolean;
-    batch?: number;
-    sort?: string;
-    filter?: string;
-  } = {},
-) {
+export function useUsers(options: UsersListOptions = {}) {
   const { enabled = true, batch = 100, sort = "-created", filter } = options;
+  const queryParams = {
+    batch,
+    sort,
+    ...(filter ? { filter } : {}),
+  };
 
   return useQuery({
-    queryKey: queryKeys.users.lists(),
+    queryKey: queryKeys.users.list({
+      batch,
+      sort,
+      filter: filter ?? null,
+    }),
     queryFn: () =>
-      pb.collection("users").getFullList<UsersResponse>({
-        batch,
-        sort,
-        filter,
-      }),
+      pb.collection("users").getFullList<UsersResponse>(queryParams),
     enabled,
   });
 }
