@@ -1294,6 +1294,8 @@ export const fa = {
       estimatedHoursRange: "ساعت برآورد باید بین ۰ تا ۹۹۹ باشد",
       estimatedMinutesRange: "دقیقه برآورد باید بین ۰ تا ۵۹ باشد",
       numberInvalid: "لطفاً مقدار عددی معتبر وارد کنید",
+      invalidOption: "گزینه انتخاب شده معتبر نیست",
+      invalidDate: "تاریخ نامعتبر است",
     },
     notFound: {
       projectNotFound: "پروژه یافت نشد",

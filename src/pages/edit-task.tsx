@@ -25,22 +25,35 @@ import {
 } from "@/lib/pocketbase-types";
 
 const taskFormSchema = z.object({
-  title: z.string().min(1, { message: fa.tasks.addTask.issueTitle }),
-  description: z.string(),
-  assignee: z.string(),
-  priority: z.nativeEnum(TasksPriorityOptions),
-  status: z.nativeEnum(TasksStatusOptions),
-  project: z.string().min(1).optional(),
-  deadline: z.date().optional(),
-  estimated_hours: z
-    .coerce.number({
+  title: z
+    .string({ required_error: fa.common.validation.required })
+    .min(1, { message: fa.tasks.addTask.issueTitle }),
+  description: z.string({ required_error: fa.common.validation.required }),
+  assignee: z.string({ required_error: fa.common.validation.required }),
+  priority: z.nativeEnum(TasksPriorityOptions, {
+    required_error: fa.errors.validation.invalidOption,
+    invalid_type_error: fa.errors.validation.invalidOption,
+  }),
+  status: z.nativeEnum(TasksStatusOptions, {
+    required_error: fa.errors.validation.invalidOption,
+    invalid_type_error: fa.errors.validation.invalidOption,
+  }),
+  project: z
+    .string()
+    .min(1, { message: fa.errors.validation.projectIdRequired })
+    .optional(),
+  deadline: z
+    .date({ invalid_type_error: fa.errors.validation.invalidDate })
+    .optional(),
+  estimated_hours: z.coerce
+    .number({
       invalid_type_error: fa.errors.validation.numberInvalid,
     })
     .min(0, { message: fa.errors.validation.estimatedHoursRange })
     .max(999, { message: fa.errors.validation.estimatedHoursRange })
     .optional(),
-  estimated_minutes: z
-    .coerce.number({
+  estimated_minutes: z.coerce
+    .number({
       invalid_type_error: fa.errors.validation.numberInvalid,
     })
     .min(0, { message: fa.errors.validation.estimatedMinutesRange })
