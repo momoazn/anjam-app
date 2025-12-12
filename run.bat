@@ -1,7 +1,7 @@
 @echo off
 REM ================================================================
 REM Task Manager App - Windows Launcher
-REM This batch file runs the task-manager-app.exe with configurable
+REM This batch file runs the task-manager.exe with configurable
 REM host and port settings
 REM ================================================================
 
