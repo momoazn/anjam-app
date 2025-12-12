@@ -32,8 +32,20 @@ const taskFormSchema = z.object({
   status: z.nativeEnum(TasksStatusOptions),
   project: z.string().min(1).optional(),
   deadline: z.date().optional(),
-  estimated_hours: z.coerce.number().min(0).max(999).optional(),
-  estimated_minutes: z.coerce.number().min(0).max(59).optional(),
+  estimated_hours: z
+    .coerce.number({
+      invalid_type_error: fa.errors.validation.numberInvalid,
+    })
+    .min(0, { message: fa.errors.validation.estimatedHoursRange })
+    .max(999, { message: fa.errors.validation.estimatedHoursRange })
+    .optional(),
+  estimated_minutes: z
+    .coerce.number({
+      invalid_type_error: fa.errors.validation.numberInvalid,
+    })
+    .min(0, { message: fa.errors.validation.estimatedMinutesRange })
+    .max(59, { message: fa.errors.validation.estimatedMinutesRange })
+    .optional(),
 });
 
 export default function EditTask() {

@@ -1291,6 +1291,9 @@ export const fa = {
     validation: {
       titleRequired: "عنوان الزامی است",
       projectIdRequired: "شناسه پروژه الزامی است",
+      estimatedHoursRange: "ساعت برآورد باید بین ۰ تا ۹۹۹ باشد",
+      estimatedMinutesRange: "دقیقه برآورد باید بین ۰ تا ۵۹ باشد",
+      numberInvalid: "لطفاً مقدار عددی معتبر وارد کنید",
     },
     notFound: {
       projectNotFound: "پروژه یافت نشد",
