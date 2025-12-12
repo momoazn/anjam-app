@@ -32,7 +32,7 @@ export const dashboard = {
   welcome: {
     employee: "خوش آمدید {firstName} {lastName} عزیز!",
     supervisor: "خوش آمدید سرپرست {firstName} {lastName}!",
-    admin: "خوش آمدید مدیر {firstName} {lastName}!",
+    admin: "خوش آمدید ادمین {firstName} {lastName}!",
     employeeSubtitle: "وضعیت وظایف و پروژه‌های شما را مشاهده کنید",
     supervisorSubtitle: "وضعیت تیم و پروژه‌ها را نظارت کنید",
     adminSubtitle: "نمای کلی سیستم و گزارش‌ها را مشاهده کنید",

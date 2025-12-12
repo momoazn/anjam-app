@@ -18,7 +18,7 @@ export const users = {
       actions: shared.actions,
     },
     roles: {
-      admin: "مدیر",
+      admin: "ادمین",
       manager: "مدیر گروه",
       supervisor: "سرپرست",
       employee: "کارمند",
@@ -56,8 +56,8 @@ export const users = {
   pendingActivation: {
     title: "حساب شما در انتظار تأیید است",
     message:
-      "حساب کاربری شما با موفقیت ایجاد شد، اما هنوز توسط مدیر فعال نشده است.",
-    instruction: "لطفاً با مدیر سیستم تماس بگیرید تا حساب شما را فعال کنند.",
+      "حساب کاربری شما با موفقیت ایجاد شد، اما هنوز توسط ادمین فعال نشده است.",
+    instruction: "لطفاً با ادمین سیستم تماس بگیرید تا حساب شما را فعال کنند.",
     backToLogin: "بازگشت به صفحه ورود",
   },
   loginLogs: {
