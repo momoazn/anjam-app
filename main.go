@@ -37,7 +37,8 @@ func allowDefaultCredentials(app core.App) bool {
 		return true
 	}
 
-	// On initial run, always allow default credentials to be created
+	// In production, allow defaults on initial bootstrap (no admins exist).
+	// If admins already exist, respect TM_ALLOW_DEFAULT_ACCOUNTS for any further defaults.
 	usersCollection, err := app.FindCollectionByNameOrId(CollectionUsers)
 	if err != nil {
 		// If collection doesn't exist yet, allow defaults
@@ -55,7 +56,7 @@ func allowDefaultCredentials(app core.App) bool {
 		return true
 	}
 
-	// If admins exist and not in dev mode, check environment variable
+	// If admins exist, only allow when explicitly enabled
 	return strings.EqualFold(os.Getenv("TM_ALLOW_DEFAULT_ACCOUNTS"), "true")
 }
 
@@ -63,6 +64,8 @@ func main() {
 	app := pocketbase.NewWithConfig(pocketbase.Config{
 		DefaultDataDir: "./data",
 	})
+
+	logDefaultCredentialWarning(app)
 
 	// --- Bind Serve Event Handlers ---
 	app.OnServe().BindFunc(importSchema)
@@ -110,6 +113,21 @@ func main() {
 
 	// --- Start Application ---
 	startApp(app)
+}
+
+// logDefaultCredentialWarning surfaces an early warning about default account creation behavior in production.
+func logDefaultCredentialWarning(app core.App) {
+	if app.IsDev() {
+		return
+	}
+
+	allowEnv := strings.EqualFold(os.Getenv("TM_ALLOW_DEFAULT_ACCOUNTS"), "true")
+	if allowEnv {
+		log.Println("Default account creation is explicitly enabled (TM_ALLOW_DEFAULT_ACCOUNTS=true).")
+		return
+	}
+
+	log.Println("Default accounts will be created only when no admins exist. Set TM_ALLOW_DEFAULT_ACCOUNTS=true to permit creating additional defaults after admins exist.")
 }
 
 // --- Helper Functions ---

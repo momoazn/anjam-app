@@ -48,7 +48,7 @@ export function useProjectTasksPageData(projectId: string) {
 
   return {
     project: projectQuery.data,
-    tasks: tasksQuery.data || [],
+    tasks: tasksQuery.data?.items || [],
     users: usersQuery.data || [],
     isLoadingProject: projectQuery.isPending,
     isLoadingTasks: tasksQuery.isPending,

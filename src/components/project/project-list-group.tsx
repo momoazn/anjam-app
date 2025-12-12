@@ -27,9 +27,11 @@ export function ProjectListGroup({
     useState<ProjectsResponse | null>(null);
 
   // Fetch all tasks to calculate progress
-  const { data: allTasks } = useTasks({
+  const { data: allTasksResult } = useTasks({
     expandFields: "project,assignee",
+    mode: "full",
   });
+  const allTasks = allTasksResult?.items ?? [];
 
   const handleDelete = (project: ProjectsResponse) => {
     setSelectedProject(project);

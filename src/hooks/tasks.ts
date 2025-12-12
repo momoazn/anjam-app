@@ -23,11 +23,22 @@ import { queryKeys } from "./query-keys";
 /**
  * Fetches tasks with optional project filtering and field expansion
  */
+export type TasksListResult = {
+  items: TaskWithProject[];
+  page: number;
+  perPage: number;
+  totalItems: number;
+  totalPages: number;
+};
+
 async function getTasks(
   projectId?: string,
   expandFields?: string,
   mode: "paged" | "full" = "paged",
-): Promise<TaskWithProject[]> {
+  page = 1,
+  perPage = 50,
+  filter?: string,
+): Promise<TasksListResult> {
   const currentUser = pb.authStore.record as UsersResponse | null;
   const filters: string[] = ['(deleted_at = "" || deleted_at = null)'];
 
@@ -41,23 +52,43 @@ async function getTasks(
     filters.push(`project = "${projectId}"`);
   }
 
+  if (filter) {
+    filters.push(`(${filter})`);
+  }
+
   if (mode === "full") {
-    return await pb.collection("tasks").getFullList<TaskWithProject>({
+    const batchSize = 500;
+    const items = await pb.collection("tasks").getFullList<TaskWithProject>({
       filter: filters.length > 0 ? filters.join(" && ") : undefined,
       sort: "order",
       expand: expandFields,
-      batch: 500,
+      batch: batchSize,
     });
+    return {
+      items,
+      page: 1,
+      perPage: items.length || batchSize,
+      totalItems: items.length,
+      totalPages: 1,
+    };
   }
 
   // Use paginated list to avoid multiple sequential HTTP requests from getFullList
-  const res = await pb.collection("tasks").getList<TaskWithProject>(1, 200, {
-    filter: filters.length > 0 ? filters.join(" && ") : undefined,
-    sort: "order",
-    expand: expandFields,
-  });
+  const res = await pb
+    .collection("tasks")
+    .getList<TaskWithProject>(page, perPage, {
+      filter: filters.length > 0 ? filters.join(" && ") : undefined,
+      sort: "order",
+      expand: expandFields,
+    });
 
-  return res.items;
+  return {
+    items: res.items,
+    page: res.page,
+    perPage: res.perPage,
+    totalItems: res.totalItems,
+    totalPages: res.totalPages,
+  };
 }
 
 /**
@@ -70,19 +101,33 @@ export function useTasks(
     projectId?: string;
     expandFields?: string;
     mode?: "paged" | "full";
+    page?: number;
+    perPage?: number;
     enabled?: boolean;
+    filter?: string;
   } = {},
 ) {
   const {
     projectId,
     expandFields = "project,assignee",
     mode = "paged",
+    page = 1,
+    perPage = 50,
     enabled = true,
+    filter,
   } = options;
 
   return useQuery({
-    queryKey: queryKeys.tasks.list(projectId, expandFields, mode),
-    queryFn: () => getTasks(projectId, expandFields, mode),
+    queryKey: queryKeys.tasks.list(
+      projectId,
+      expandFields,
+      mode,
+      page,
+      perPage,
+      filter,
+    ),
+    queryFn: () =>
+      getTasks(projectId, expandFields, mode, page, perPage, filter),
     enabled,
   });
 }
@@ -303,8 +348,11 @@ export function useBulkDeleteTasks(
 
   return useMutation({
     mutationFn: async (taskIds: string[]) => {
+      const timestamp = new Date().toISOString();
       const deletePromises = taskIds.map((taskId) =>
-        pb.collection("tasks").delete(taskId),
+        pb.collection("tasks").update<TasksResponse>(taskId, {
+          deleted_at: timestamp,
+        }),
       );
 
       await Promise.all(deletePromises);

@@ -41,9 +41,10 @@ This is a **task and project management application** with a Go backend (PocketB
 **DO NOT run the app after each change.** Instead:
 
 1. Make your code changes
-2. Run quality checks when changes are complete: `bun run check`
+2. Run quality checks when changes are complete: `bun run quality:check`
 
-- `bun run dev` - Start both frontend (Vite port 5173) and backend (Go port 8090)
+- `bun run dev:start` - Start backend serve + frontend dev server
+- `bun run dev:full` - Backend (Air) + frontend dev server
 - `bun run dev:client` - Frontend only (Vite dev server with HMR)
 - `bun run dev:server` - Backend only (Air live-reload)
 - `bun run serve:client` - Preview frontend production build
@@ -51,41 +52,42 @@ This is a **task and project management application** with a Go backend (PocketB
 
 ### Building
 
-- `bun run build` - Build both client and server (production)
+- `bun run build:production` - Build frontend and backend
 - `bun run build:client` - Build frontend to `dist/`
 - `bun run build:server` - Build Go binary (`task-manager`)
-- `bun run build:win` - Cross-compile for Windows
+- `bun run build:windows` - Build and package Windows executable
+- `bun run build:all-platforms` - Build all server targets + Windows package
 
 ### Quality Checks (Run After Changes Complete)
 
-- `bun run check` - Run all checks (type + lint + format) - **PRIMARY COMMAND**
+- `bun run quality:check` - Typecheck + lint + format checks (**primary**)
 - `bun run type:check` - TypeScript type checking (no emit)
-- `bun run lint` / `lint:check` - ESLint (fix / check only)
-- `bun run fmt` / `fmt:check` - Prettier (format / check only)
-- `bun run fix` - Auto-fix linting and formatting issues
+- `bun run lint:check` / `lint:fix` - ESLint check / fix
+- `bun run format:check` / `format:fix` - Prettier check / write
+- `bun run quality:fix` - Lint + format fixes
 
 ### Testing
 
-- `bun run test` - Run Vitest unit tests (watch mode)
-- `bun run test:run` - Run unit tests once
-- `bun run test:ui` - Open Vitest UI
-- `bun run test:coverage` - Generate coverage report
+- `bun run test:unit` - Vitest unit tests (watch mode)
+- `bun run test:unit:run` - Run unit tests once
+- `bun run test:unit:ui` - Open Vitest UI
+- `bun run test:unit:coverage` - Generate coverage report
 - `bun run test:e2e` - Run Playwright E2E tests
 - `bun run test:e2e:ui` - Playwright UI mode
 - `bun run test:e2e:debug` - Debug E2E tests
-- `bun run test:all` - Run both unit and E2E tests
+- `bun run test:all` - Run unit (once) + E2E tests
 
 ### Data & Schema
 
-- `bun run gen:type` - Regenerate `src/lib/pocketbase-types.ts` from `pb_schema.json`
-- `bun run seed` - Full seed (truncate + generate + insert)
-- `bun run seed:generate` - Generate mock data files
-- `bun run seed:truncate` - Clear all data
-- `bun run seed:insert` - Insert seed data
+- `bun run types:generate` - Regenerate `src/lib/pocketbase-types.ts` from `pb_schema.json`
+- `bun run data:reset` - Full seed (truncate + insert)
+- `bun run data:generate` - Generate mock data files
+- `bun run data:truncate` - Clear all data
+- `bun run data:seed` - Insert seed data
 
 ### Utilities
 
-- `bun run clean` - Remove build artifacts and dependencies
+- `bun run clean` - Remove build artifacts, dependencies, release
 
 **Prerequisites**: Bun 1.x, Go 1.24+, Node tooling installed (via Bun).
 
@@ -112,14 +114,14 @@ This is a **task and project management application** with a Go backend (PocketB
   - Runs against `http://localhost:5173` (dev client)
   - Auto-starts dev server via `webServer` config
 
-- Run `bun run check` before committing; run `bun run test:all` before opening PRs
+- Run `bun run quality:check` before committing; run `bun run test:all` before opening PRs
 
 ## Schema and Type Generation
 
 **CRITICAL**: When modifying `pb_schema.json`, always regenerate TypeScript types:
 
 1. Edit `pb_schema.json` (PocketBase collection schema)
-2. Run `bun run gen:type` to regenerate `src/lib/pocketbase-types.ts`
+2. Run `bun run types:generate` to regenerate `src/lib/pocketbase-types.ts`
 3. This file provides type-safe interfaces for all collections, records, and responses
 4. The Go backend imports this schema on startup via `importSchema()` in `main.go`
 
@@ -137,8 +139,8 @@ This is a **task and project management application** with a Go backend (PocketB
   - Link related issues
   - Include test/QA steps for reviewers
   - Add screenshots or GIFs for UI changes
-  - Ensure `bun run check` passes (type + lint + format checks)
-  - Ensure `bun run build` succeeds
+  - Ensure `bun run quality:check` passes (type + lint + format checks)
+  - Ensure `bun run build:production` succeeds
 
 ## Key Implementation Patterns
 

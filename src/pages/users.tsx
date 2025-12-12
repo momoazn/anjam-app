@@ -14,7 +14,7 @@ import { useAuthUser } from "@/store/auth-store";
 
 export default function Users() {
   const navigate = useNavigate();
-  const user = useAuthUser();
+  const authUser = useAuthUser();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UsersResponse | null>(null);
 
@@ -27,16 +27,16 @@ export default function Users() {
     sort: "-created",
   });
 
-  const isAdmin = user?.role === UsersRoleOptions.admin;
-  const isManager = user?.role === UsersRoleOptions.manager;
-  const isSupervisor = user?.role === UsersRoleOptions.supervisor;
+  const isAdmin = authUser?.role === UsersRoleOptions.admin;
+  const isManager = authUser?.role === UsersRoleOptions.manager;
+  const isSupervisor = authUser?.role === UsersRoleOptions.supervisor;
   const canViewPage = isAdmin || isSupervisor || isManager;
   const canCreateUsers = isAdmin || isManager; // Only admin and managers can create users
 
-  const handleEdit = (user: UsersResponse) => {
+  const handleEdit = (userToEdit: UsersResponse) => {
     // Allow admins to edit any user, and users to edit themselves
-    if (!isAdmin && user.id !== user?.id) return;
-    navigate(`/users/${user.id}/edit`);
+    if (!isAdmin && userToEdit.id !== authUser?.id) return;
+    navigate(`/users/${userToEdit.id}/edit`);
   };
 
   const handleDelete = (user: UsersResponse) => {

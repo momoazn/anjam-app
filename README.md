@@ -17,7 +17,7 @@ A comprehensive task and project management application built with React, TypeSc
 bun install
 
 # Start development server (frontend + backend)
-bun run dev
+bun run dev:start
 
 # Or run separately:
 bun run dev:client  # Frontend only (Vite on 5173)
@@ -28,49 +28,55 @@ bun run dev:server  # Backend only (Air)
 
 ```bash
 # Build everything
-bun run build
+bun run build:production
 
 # Build individually
 bun run build:client
 bun run build:server
-bun run build:win
+bun run build:windows
 ```
 
 ## 📋 Available Scripts
 
 ### Development
 
-- `bun run dev` - Start both frontend and backend in development mode
+- `bun run dev:start` - Start backend serve + frontend dev server
+- `bun run dev:full` - Start backend (Air) + frontend dev server
 - `bun run dev:client` - Start frontend only (Vite dev server)
 - `bun run dev:server` - Start backend only (Air live reload)
 
 ### Building
 
-- `bun run build` - Build both frontend and backend
+- `bun run build:production` - Build frontend and backend
 - `bun run build:client` - Build frontend for production
 - `bun run build:server` - Build backend for production
+- `bun run build:windows` - Build and package Windows executable
+- `bun run build:all-platforms` - Build for all platforms + Windows package
+- `bun run package:windows` - Zip Windows artifacts into `release/`
 - `bun run serve:client` - Preview built frontend
 - `bun run serve:server` - Serve built backend
 
 ### Quality Checks
 
-- `bun run check` - Run typecheck, lint, and format checks
-- `bun run fix` - Fix lint and formatting issues
-- `bun run fmt` - Format code with Prettier
-- `bun run lint` - Run ESLint
+- `bun run quality:check` - Typecheck + lint + format checks
+- `bun run quality:fix` - Fix lint and formatting issues
+- `bun run format:check` - Prettier check
+- `bun run format:fix` - Prettier write
+- `bun run lint:check` - Run ESLint
+- `bun run lint:fix` - Run ESLint with fixes
 - `bun run type:check` - Run TypeScript type checking
 
 ### Database
 
-- `bun run seed:generate` - Generate seed data
-- `bun run seed:insert` - Insert seed data into database
-- `bun run seed:truncate` - Clear all data from database
-- `bun run seed` - Full seed process (truncate + generate + insert)
+- `bun run data:generate` - Generate seed data
+- `bun run data:seed` - Insert seed data into database
+- `bun run data:truncate` - Clear all data from database
+- `bun run data:reset` - Truncate then seed database
 
 ### Utilities
 
-- `bun run gen:type` - Regenerate PocketBase TypeScript types
-- `bun run clean` - Clean build artifacts and dependencies
+- `bun run types:generate` - Regenerate PocketBase TypeScript types
+- `bun run clean` - Clean build artifacts and dependencies (incl. release)
 
 ## 🏗️ Project Structure
 
@@ -141,7 +147,7 @@ E2E tests run against `http://localhost:5173`. Test directory: `e2e/`
 When changing `pb_schema.json`:
 
 1. Update the schema file
-2. Run `bun run gen:type` to regenerate types
+2. Run `bun run types:generate` to regenerate types
 3. This updates `src/lib/pocketbase-types.ts` used across the app
 
 ## 🚀 Deployment
@@ -153,13 +159,14 @@ The application serves both API and frontend from a single Go binary. The fronte
 - [ ] Change default admin credentials
 - [ ] Configure production database
 - [ ] Set environment variables
-- [ ] Run `bun run check` - all checks must pass
-- [ ] Run `bun run build` - build must succeed
+- [ ] Run `bun run quality:check` - all checks must pass
+- [ ] Run `bun run build:production` - build must succeed
 - [ ] Test the application in production mode
 
 ## 🔒 Security
 
 - Development seeds create default admin users - **change credentials before production**
+- Default account creation is allowed on first bootstrap when no admins exist; set `TM_ALLOW_DEFAULT_ACCOUNTS=true` if you also want to permit creating additional defaults after admins already exist.
 - Do not commit real production data
 - Keep secrets out of version control
 - Frontend proxies `/api` to `http://localhost:8090` (see `vite.config.ts`)
@@ -190,8 +197,8 @@ Example: `feat(tasks): add drag-and-drop reordering`
 
 ### Pull Requests
 
-1. Run `bun run check` - all checks must pass
-2. Run `bun run build` - build must succeed
+1. Run `bun run quality:check` - all checks must pass
+2. Run `bun run build:production` - build must succeed
 3. Include clear description
 4. Link related issues
 5. Provide test/QA steps

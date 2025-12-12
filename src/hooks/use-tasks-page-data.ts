@@ -23,6 +23,7 @@ export function useTasksPageData() {
   // Get tasks with expanded project and assignee data
   const tasksQuery = useTasks({
     expandFields: "project,assignee",
+    mode: "full",
   });
 
   // Get all users for the filter dropdown
@@ -36,7 +37,7 @@ export function useTasksPageData() {
   });
 
   return {
-    tasks: tasksQuery.data || [],
+    tasks: tasksQuery.data?.items || [],
     users: usersQuery.data || [],
     isLoadingTasks: tasksQuery.isPending,
     isLoadingUsers: usersQuery.isPending,

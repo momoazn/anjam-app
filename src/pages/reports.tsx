@@ -135,10 +135,11 @@ export default function Reports() {
 
   const [debouncedFilters] = useDebounce(filtersState, 200);
 
-  const { data: tasks, isPending: tasksPending } = useTasks({
+  const { data: tasksResult, isPending: tasksPending } = useTasks({
     expandFields: "project,assignee",
     mode: "full",
   });
+  const tasks = useMemo(() => tasksResult?.items ?? [], [tasksResult]);
   const { data: users, isPending: usersPending } = useUsers();
   const { data: projects, isPending: projectsPending } = useProjects();
 

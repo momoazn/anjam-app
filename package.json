@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev": "bun run dev:start",
     "dev:start": "concurrently \"bun run serve:server\" \"bun run dev:client\" -n \"SERVER,CLIENT\"",
     "dev:full": "concurrently \"bun run dev:server\" \"bun run dev:client\" -n \"SERVER, CLIENT\"",
     "dev:client": "bun x --bun vite",

@@ -1,5 +1,5 @@
 import { FilterX, ListTodo, Plus, CheckSquare } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
@@ -10,12 +10,24 @@ import { ManageSavedFiltersDialog } from "@/components/task/manage-saved-filters
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { fa } from "@/constants/text";
 import { useTaskFilters, ALL_FILTER_VALUE } from "@/hooks/use-task-filters";
-import { useTasksPageData } from "@/hooks/use-tasks-page-data";
-import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
+import {
+  useTasks,
+  useBulkUpdateTasks,
+  useBulkDeleteTasks,
+} from "@/hooks/tasks";
+import { useUsers } from "@/hooks/users";
+import { useAuthUser } from "@/store/auth-store";
 import { useSavedFilters } from "@/hooks/use-saved-filters";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
@@ -24,6 +36,15 @@ import {
 } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
+import {
+  formatISO,
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
 
 // Loading skeleton component
 const TaskListSkeleton = () => (
@@ -119,13 +140,9 @@ export default function Tasks() {
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [saveFilterDialogOpen, setSaveFilterDialogOpen] = useState(false);
   const [manageFiltersDialogOpen, setManageFiltersDialogOpen] = useState(false);
-
-  const {
-    tasks: userTasks,
-    users,
-    isLoadingTasks,
-    isLoadingUsers,
-  } = useTasksPageData();
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(50);
+  const authUser = useAuthUser();
 
   const {
     searchTerm,
@@ -140,8 +157,7 @@ export default function Tasks() {
     setSelectedAssignee,
     setSelectedDateRange,
     setSelectedTag,
-    filteredTasks,
-  } = useTaskFilters(userTasks);
+  } = useTaskFilters(undefined, { skipFiltering: true });
 
   const bulkUpdate = useBulkUpdateTasks();
   const bulkDelete = useBulkDeleteTasks();
@@ -248,12 +264,144 @@ export default function Tasks() {
 
   // URL params are now handled automatically by useQueryState in the hook
 
+  const filterExpression = useMemo(() => {
+    const parts: string[] = [];
+
+    if (searchTerm) {
+      const term = searchTerm.replace(/"/g, '\\"').toLowerCase();
+      parts.push(
+        `(lower(title)~"${term}" || lower(assignee.username)~"${term}")`,
+      );
+    }
+
+    if (selectedStatus !== "all") {
+      if (selectedStatus.includes(",")) {
+        const statuses = selectedStatus
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        if (statuses.length > 0) {
+          const orExpression = statuses
+            .map((status) => `status = "${status}"`)
+            .join(" || ");
+          parts.push(`(${orExpression})`);
+        }
+      } else {
+        parts.push(`status = "${selectedStatus}"`);
+      }
+    }
+
+    if (selectedPriority !== "all") {
+      parts.push(`priority = "${selectedPriority}"`);
+    }
+
+    if (selectedAssignee !== "all") {
+      if (selectedAssignee === "me" && authUser?.id) {
+        parts.push(`assignee = "${authUser.id}"`);
+      } else if (selectedAssignee !== "me") {
+        parts.push(`assignee = "${selectedAssignee}"`);
+      }
+    }
+
+    if (selectedDateRange !== "all") {
+      const now = new Date();
+      if (selectedDateRange === "overdue") {
+        parts.push(
+          `(deadline != null && deadline < "${formatISO(
+            now,
+          )}" && status != "${TasksStatusOptions.done}")`,
+        );
+      } else {
+        let start: Date;
+        let end: Date;
+        switch (selectedDateRange) {
+          case "today":
+            start = startOfDay(now);
+            end = endOfDay(now);
+            break;
+          case "week":
+            start = startOfWeek(now, { weekStartsOn: 6 });
+            end = endOfWeek(now, { weekStartsOn: 6 });
+            break;
+          case "month":
+            start = startOfMonth(now);
+            end = endOfMonth(now);
+            break;
+          default:
+            start = startOfDay(now);
+            end = endOfDay(now);
+        }
+        parts.push(
+          `(deadline >= "${formatISO(start)}" && deadline <= "${formatISO(
+            end,
+          )}")`,
+        );
+      }
+    }
+
+    if (selectedTag !== "all") {
+      parts.push(`tags ?= "${selectedTag}"`);
+    }
+
+    return parts.join(" && ");
+  }, [
+    authUser?.id,
+    searchTerm,
+    selectedAssignee,
+    selectedDateRange,
+    selectedPriority,
+    selectedStatus,
+    selectedTag,
+  ]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [filterExpression]);
+
+  // Fetch users for dropdowns
+  const { data: users, isPending: isLoadingUsers } = useUsers({
+    batch: 100,
+    sort: "-created",
+  });
+
+  // Fetch tasks with server-side filtering and pagination
+  const taskQuery = useTasks({
+    expandFields: "project,assignee",
+    mode: "paged",
+    page,
+    perPage,
+    filter: filterExpression || undefined,
+  });
+
+  const userTasks = useMemo(
+    () => taskQuery.data?.items ?? [],
+    [taskQuery.data?.items],
+  );
+  const totalTasks = taskQuery.data?.totalItems ?? 0;
+  const totalPages = taskQuery.data?.totalPages ?? 1;
+  const currentPage = taskQuery.data?.page ?? page;
+  const currentPerPage = taskQuery.data?.perPage ?? perPage;
+
+  // Keep local pagination in sync with server response
+  useEffect(() => {
+    if (currentPage !== page) {
+      setPage(currentPage);
+    }
+  }, [currentPage, page]);
+
+  useEffect(() => {
+    if (currentPerPage !== perPage) {
+      setPerPage(currentPerPage);
+    }
+  }, [currentPerPage, perPage]);
+
   const groupedTasks = useMemo(() => {
     // Prevent grouping during load state to avoid brief flash of unfiltered/empty groups
-    if (isLoadingTasks || !filteredTasks) {
+    if (taskQuery.isPending || !userTasks) {
       return {} as Record<TasksStatusOptions, TaskWithProject[]>;
     }
-    return filteredTasks.reduce(
+    return userTasks.reduce(
       (acc, task) => {
         if (!acc[task.status]) {
           acc[task.status] = [];
@@ -263,7 +411,7 @@ export default function Tasks() {
       },
       {} as Record<TasksStatusOptions, TaskWithProject[]>,
     );
-  }, [filteredTasks, isLoadingTasks]);
+  }, [userTasks, taskQuery.isPending]);
 
   const hasActiveFilters = !!(
     searchTerm ||
@@ -273,8 +421,6 @@ export default function Tasks() {
     selectedDateRange !== "all" ||
     selectedTag !== "all"
   );
-
-  const totalTasks = filteredTasks?.length || 0;
 
   // Bulk operation handlers
   const handleBulkDelete = async () => {
@@ -315,6 +461,24 @@ export default function Tasks() {
   const handleSelectionChange = (taskIds: string[]) => {
     setSelectedTasks(taskIds);
   };
+
+  const handlePerPageChange = (value: string) => {
+    const next = Number(value);
+    if (Number.isFinite(next) && next > 0) {
+      setPerPage(next);
+      setPage(1);
+    }
+  };
+
+  const handlePageChange = (nextPage: number) => {
+    const clamped = Math.max(1, Math.min(nextPage, totalPages || 1));
+    setPage(clamped);
+  };
+
+  const pageStart =
+    totalTasks === 0 ? 0 : (currentPage - 1) * currentPerPage + 1;
+  const pageEnd =
+    totalTasks === 0 ? 0 : Math.min(currentPage * currentPerPage, totalTasks);
 
   // Generate available statuses from centralized configuration
   const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
@@ -421,9 +585,9 @@ export default function Tasks() {
 
       {/* Task List */}
       <div className="space-y-6" data-animate-stagger>
-        {isLoadingTasks ? (
+        {taskQuery.isPending ? (
           <TaskListSkeleton />
-        ) : !filteredTasks || filteredTasks.length === 0 ? (
+        ) : totalTasks === 0 ? (
           <EmptyState hasFilters={hasActiveFilters} />
         ) : (
           statusOrder?.map((status) => {
@@ -443,6 +607,63 @@ export default function Tasks() {
           })
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {!taskQuery.isPending && totalTasks > 0 && (
+        <Card className="mt-6">
+          <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-muted-foreground text-sm">
+              {fa.tasks.pagination.range
+                .replace("{start}", pageStart.toString())
+                .replace("{end}", pageEnd.toString())
+                .replace("{total}", totalTasks.toString())}
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Select
+                value={currentPerPage.toString()}
+                onValueChange={handlePerPageChange}
+              >
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[25, 50, 100, 200, 500].map((size) => (
+                    <SelectItem key={size} value={size.toString()}>
+                      {fa.tasks.pagination.perPage.replace(
+                        "{count}",
+                        size.toString(),
+                      )}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                >
+                  {fa.tasks.pagination.prev}
+                </Button>
+                <span className="text-muted-foreground text-sm">
+                  {fa.tasks.pagination.page
+                    .replace("{page}", currentPage.toString())
+                    .replace("{total}", totalPages.toString())}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= totalPages}
+                >
+                  {fa.tasks.pagination.next}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Bulk Actions Bar */}
       {selectionMode && selectedTasks.length > 0 && (

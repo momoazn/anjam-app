@@ -42,6 +42,14 @@ test.describe("Protected Routes", () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
+  test("should redirect unauthenticated users from users page to login", async ({
+    page,
+  }) => {
+    await page.goto("/users");
+
+    await expect(page).toHaveURL(/\/login/);
+  });
+
   test("should redirect from login to dashboard when authenticated", async () => {
     // This test requires setting up authentication state
     // For now, we'll skip the implementation details

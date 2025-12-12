@@ -33,6 +33,9 @@ export const queryKeys = {
       projectId?: string,
       expandFields?: string,
       mode?: "paged" | "full",
+      page?: number,
+      perPage?: number,
+      filter?: string,
     ) =>
       [
         ...queryKeys.tasks.lists(),
@@ -41,8 +44,11 @@ export const queryKeys = {
             projectId: "all",
             expandFields: "project,assignee",
             mode: "paged" as "paged" | "full",
+            page: 1,
+            perPage: 50,
+            filter: "",
           },
-          { projectId, expandFields, mode },
+          { projectId, expandFields, mode, page, perPage, filter },
         ),
       ] as const,
     detail: (id: string) => [...queryKeys.tasks.all, "detail", id] as const,

@@ -665,6 +665,15 @@ export const fa = {
       loadingTasks: "در حال بارگذاری تسک‌ها...",
     },
 
+    // Pagination
+    pagination: {
+      range: "{start} تا {end} از {total} تسک",
+      perPage: "{count} مورد در هر صفحه",
+      page: "صفحه {page} از {total}",
+      prev: "قبلی",
+      next: "بعدی",
+    },
+
     // Calendar view
     calendar: {
       title: "تقویم تسک‌ها",

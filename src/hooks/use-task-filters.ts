@@ -52,6 +52,7 @@ export type UseTaskFiltersReturn = {
 // The custom hook
 export function useTaskFilters(
   tasks: TaskWithProject[] | undefined, // Accept the raw task list
+  options?: { skipFiltering?: boolean },
 ): UseTaskFiltersReturn {
   const [searchTerm, setSearchTerm] = useQueryState(
     "search",
@@ -80,6 +81,10 @@ export function useTaskFilters(
 
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];
+
+    // Allow caller to manage filtering server-side while still reusing state.
+    if (options?.skipFiltering) return tasks;
+
     return tasks.filter((task) => {
       if (task.deleted_at) {
         return false;
@@ -166,6 +171,7 @@ export function useTaskFilters(
     selectedAssignee,
     selectedDateRange,
     selectedTag,
+    options?.skipFiltering,
   ]);
 
   return {

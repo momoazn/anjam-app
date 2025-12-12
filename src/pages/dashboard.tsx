@@ -51,9 +51,14 @@ import { taskStatusBgColors } from "@/lib/status-utils";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: userTasks, isPending: isLoadingTasks } = useTasks({
+  const { data: userTasksResult, isPending: isLoadingTasks } = useTasks({
     expandFields: "project,assignee",
+    mode: "full",
   });
+  const userTasks = useMemo(
+    () => userTasksResult?.items ?? [],
+    [userTasksResult],
+  );
   const { data: projects, isPending: isLoadingProjects } = useProjects({});
   const { data: notifications } = useNotifications();
   const userRole = useAuthRole();
