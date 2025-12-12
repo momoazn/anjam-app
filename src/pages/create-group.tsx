@@ -78,7 +78,9 @@ export default function CreateGroup() {
       navigate("/groups");
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "خطایی رخ داد");
+      toast.error(
+        error instanceof Error ? error.message : fa.groups.create.error,
+      );
     },
   });
 

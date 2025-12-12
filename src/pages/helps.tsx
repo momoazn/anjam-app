@@ -57,7 +57,7 @@ export default function Helps() {
           <AccordionContent className="space-y-4 p-4" data-animate-stagger>
             <div>
               <h3 className="mb-2 text-base font-semibold md:text-lg">
-                مراحل شروع
+                {gettingStarted.title}
               </h3>
               <ol className="list-inside list-decimal space-y-2">
                 {gettingStarted.steps.map((step, index) => (

@@ -116,6 +116,10 @@ export const fa = {
       minutesShort: "دقیقه",
     },
 
+    connectors: {
+      and: "و",
+    },
+
     // Status labels
     total: "کل",
     completed: "انجام شده",
@@ -351,6 +355,7 @@ export const fa = {
     },
     loginLogs: {
       title: "سوابق ورود {name}",
+      description: "جزئیات تلاش‌های ورود",
       columns: {
         date: "تاریخ",
         time: "زمان",
@@ -402,6 +407,7 @@ export const fa = {
       button: "ایجاد گروه",
       description: "گروه جدیدی را برای مدیریت پروژه‌ها و کاربران ایجاد کنید",
       success: "گروه با موفقیت ایجاد شد",
+      error: "خطایی رخ داد. دوباره تلاش کنید",
       formDescription: "اطلاعات گروه را وارد کنید",
     },
     edit: {
@@ -681,6 +687,7 @@ export const fa = {
       noTasks: "هیچ تسکی با تاریخ سررسید وجود ندارد",
       noTasksDescription:
         "تسک‌هایی که تاریخ سررسید دارند در این تقویم نمایش داده می‌شوند",
+      weekdayShort: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
       monthView: "نمای ماهانه",
       weekView: "نمای هفتگی",
       dayView: "نمای روزانه",
@@ -1296,6 +1303,10 @@ export const fa = {
       numberInvalid: "لطفاً مقدار عددی معتبر وارد کنید",
       invalidOption: "گزینه انتخاب شده معتبر نیست",
       invalidDate: "تاریخ نامعتبر است",
+      keywords: {
+        inactive: ["غیرفعال", "غيرفعال"],
+        blocked: ["مسدود", "حساب کاربری"],
+      },
     },
     notFound: {
       projectNotFound: "پروژه یافت نشد",

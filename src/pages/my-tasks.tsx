@@ -220,10 +220,10 @@ export default function MyTasks() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <User className="h-5 w-5 md:h-6 md:w-6" />
-            {text.myTasks.title || "تسک‌های من"}
+            {text.myTasks.title}
           </h1>
           <p className="text-muted-foreground mt-2">
-            {text.myTasks.description || "همه تسک‌های اختصاص داده شده به شما"}
+            {text.myTasks.description}
           </p>
         </div>
 
@@ -255,7 +255,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.common.total || "کل"}
+              {text.common.total}
             </div>
             <div className="text-2xl font-bold">
               {digitsEnToFa(stats.total)}
@@ -265,7 +265,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.active || "فعال"}
+              {text.myTasks.stats.active}
             </div>
             <div className="text-2xl font-bold text-blue-600">
               {digitsEnToFa(stats.active)}
@@ -275,7 +275,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.completed || "انجام شده"}
+              {text.myTasks.stats.completed}
             </div>
             <div className="text-2xl font-bold text-green-600">
               {digitsEnToFa(stats.completed)}
@@ -285,7 +285,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.overdue || "گذشته‌موعد"}
+              {text.myTasks.stats.overdue}
             </div>
             <div className="text-2xl font-bold text-red-600">
               {digitsEnToFa(stats.overdue)}
@@ -295,7 +295,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.canceled || "لغو شده"}
+              {text.myTasks.stats.canceled}
             </div>
             <div className="text-muted-foreground text-2xl font-bold">
               {digitsEnToFa(stats.canceled)}
@@ -308,19 +308,19 @@ export default function MyTasks() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="active">
-            {text.myTasks.tabs.active || "فعال"}
+            {text.myTasks.tabs.active}
             <Badge variant="secondary" className="ml-2">
               {digitsEnToFa(stats.active)}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="completed">
-            {text.myTasks.tabs.completed || "انجام شده"}
+            {text.myTasks.tabs.completed}
             <Badge variant="secondary" className="ml-2">
               {digitsEnToFa(stats.completed)}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="by-project">
-            {text.myTasks.tabs.byProject || "بر اساس پروژه"}
+            {text.myTasks.tabs.byProject}
           </TabsTrigger>
         </TabsList>
 

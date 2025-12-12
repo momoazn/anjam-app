@@ -107,7 +107,7 @@ export function UserLoginLogsDialog({
             )}
           </DialogTitle>
           <DialogDescription>
-            {fa.users.loginLogs.columns.ip} و{" "}
+            {fa.users.loginLogs.columns.ip} {fa.common.connectors.and}{" "}
             {fa.users.loginLogs.columns.status}{" "}
             {fa.common.pagination.loginAttemptsLabel}
           </DialogDescription>

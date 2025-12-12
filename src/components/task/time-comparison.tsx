@@ -27,16 +27,32 @@ export function TimeComparison({
     actualMinutes && estimatedMinutes ? actualMinutes - estimatedMinutes : 0;
   const varianceHours = minutesToHoursAndMinutes(Math.abs(variance));
 
+  const formatDisplay = (value: { hours: number; minutes: number }) => {
+    const parts: string[] = [];
+
+    if (value.hours > 0) {
+      parts.push(`${digitsEnToFa(value.hours)} ${fa.common.time.hoursShort}`);
+    }
+
+    if (value.minutes > 0) {
+      parts.push(
+        `${digitsEnToFa(value.minutes)} ${fa.common.time.minutesShort}`,
+      );
+    }
+
+    if (parts.length === 0) {
+      parts.push(`0 ${fa.common.time.minutesShort}`);
+    }
+
+    return parts.join(" ");
+  };
+
   return (
     <div className={`flex items-center gap-3 text-sm ${className}`}>
       {/* Estimated Time */}
       <div className="text-muted-foreground flex items-center gap-1">
         <Clock className="h-3 w-3" />
-        <span>
-          {estimated.hours > 0 && `${digitsEnToFa(estimated.hours)}h `}
-          {estimated.minutes > 0 && `${digitsEnToFa(estimated.minutes)}m`}
-          {!estimated.hours && !estimated.minutes && "۰m"}
-        </span>
+        <span>{formatDisplay(estimated)}</span>
         <span className="text-xs">({fa.task.timeSpent})</span>
       </div>
 
@@ -48,11 +64,7 @@ export function TimeComparison({
             className={`flex items-center gap-1 ${isOverBudget ? "text-red-600" : "text-green-600"}`}
           >
             <Clock className="h-3 w-3" />
-            <span>
-              {actual.hours > 0 && `${digitsEnToFa(actual.hours)}h `}
-              {actual.minutes > 0 && `${digitsEnToFa(actual.minutes)}m`}
-              {!actual.hours && !actual.minutes && "۰m"}
-            </span>
+            <span>{formatDisplay(actual)}</span>
             <span className="text-xs">({fa.task.timeSpent})</span>
           </div>
 
@@ -68,10 +80,7 @@ export function TimeComparison({
               )}
               <span>
                 {isOverBudget ? "+" : ""}
-                {varianceHours.hours > 0 &&
-                  `${digitsEnToFa(varianceHours.hours)}h `}
-                {varianceHours.minutes > 0 &&
-                  `${digitsEnToFa(varianceHours.minutes)}m`}
+                {formatDisplay(varianceHours)}
               </span>
             </div>
           )}

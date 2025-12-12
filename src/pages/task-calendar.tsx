@@ -138,8 +138,8 @@ export default function TaskCalendar() {
     return tasksByDate.get(dateKey) || [];
   };
 
-  // Persian weekday names (short)
-  const weekdayNames = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+  // Persian weekday names (short) from centralized constants
+  const weekdayNames = text.tasks.calendar.weekdayShort;
 
   // Count tasks by status for current month
   const monthStats = useMemo(() => {
@@ -166,11 +166,10 @@ export default function TaskCalendar() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <CalendarIcon className="h-5 w-5 md:h-6 md:w-6" />
-            {text.tasks.calendar.title || "تقویم تسک‌ها"}
+            {text.tasks.calendar.title}
           </h1>
           <p className="text-muted-foreground mt-2">
-            {text.tasks.calendar.description ||
-              "مشاهده تسک‌ها بر اساس تاریخ سررسید"}
+            {text.tasks.calendar.description}
           </p>
         </div>
 
@@ -205,7 +204,7 @@ export default function TaskCalendar() {
               variant="outline"
               size="icon"
               onClick={goToPreviousMonth}
-              title={text.common.previous || "قبلی"}
+              title={text.common.previous}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -215,7 +214,7 @@ export default function TaskCalendar() {
                 {format(currentMonth, "MMMM yyyy", { locale: undefined })}
               </h2>
               <Button variant="ghost" size="sm" onClick={goToToday}>
-                {text.common.today || "امروز"}
+                {text.common.today}
               </Button>
             </div>
 
@@ -223,7 +222,7 @@ export default function TaskCalendar() {
               variant="outline"
               size="icon"
               onClick={goToNextMonth}
-              title={text.common.next || "بعدی"}
+              title={text.common.next}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -316,12 +315,10 @@ export default function TaskCalendar() {
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <CalendarIcon className="text-muted-foreground mb-4 h-12 w-12" />
             <h3 className="mb-2 text-lg font-semibold">
-              {text.tasks.calendar.noTasks ||
-                "هیچ تسکی با تاریخ سررسید وجود ندارد"}
+              {text.tasks.calendar.noTasks}
             </h3>
             <p className="text-muted-foreground max-w-md">
-              {text.tasks.calendar.noTasksDescription ||
-                "تسک‌هایی که تاریخ سررسید دارند در این تقویم نمایش داده می‌شوند"}
+              {text.tasks.calendar.noTasksDescription}
             </p>
           </CardContent>
         </Card>

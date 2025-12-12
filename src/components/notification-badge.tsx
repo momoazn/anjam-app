@@ -53,7 +53,9 @@ export function NotificationBadge({
           className="absolute -top-1 -right-1 flex size-5 items-center justify-center p-0 text-xs font-medium shadow-sm"
           aria-label={`${unreadCount} ${fa.notification.unreadCount}`}
         >
-          {unreadCount > 99 ? "۹۹+" : digitsEnToFa(unreadCount)}
+          {unreadCount > 99
+            ? `${digitsEnToFa(99)}+`
+            : digitsEnToFa(unreadCount)}
         </Badge>
       )}
     </Button>

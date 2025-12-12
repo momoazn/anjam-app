@@ -30,7 +30,7 @@ export function SidebarBadge({
         className,
       )}
     >
-      {count > 99 ? "۹۹+" : digitsEnToFa(count)}
+      {count > 99 ? `${digitsEnToFa(99)}+` : digitsEnToFa(count)}
     </Badge>
   );
 }

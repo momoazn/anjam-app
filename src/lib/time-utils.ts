@@ -1,9 +1,10 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { fa } from "@/constants/text";
 
 /**
- * Formats minutes into a compact "Xh Ym" format with Persian digits
+ * Formats minutes into a compact "Xh Ym" format with localized labels
  * @param minutes - Total minutes to format
- * @returns Formatted string like "۲ ساعت ۳۰ دقیقه" or "۳۰ دقیقه"
+ * @returns Formatted string such as "2 hours 30 minutes" with Persian digits
  */
 export function formatTimeSpent(minutes: number | null | undefined): string {
   if (minutes == null || minutes === 0) {
@@ -14,14 +15,14 @@ export function formatTimeSpent(minutes: number | null | undefined): string {
   const remainingMinutes = minutes % 60;
 
   if (hours === 0) {
-    return `${digitsEnToFa(remainingMinutes)} دقیقه`;
+    return `${digitsEnToFa(remainingMinutes)} ${fa.task.minutes}`;
   }
 
   if (remainingMinutes === 0) {
-    return `${digitsEnToFa(hours)} ساعت`;
+    return `${digitsEnToFa(hours)} ${fa.task.hours}`;
   }
 
-  return `${digitsEnToFa(hours)} ساعت ${digitsEnToFa(remainingMinutes)} دقیقه`;
+  return `${digitsEnToFa(hours)} ${fa.task.hours} ${digitsEnToFa(remainingMinutes)} ${fa.task.minutes}`;
 }
 
 /**
