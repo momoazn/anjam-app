@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/table";
 import { fa } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
-import { pb } from "@/lib/pocketbase";
+import { useToggleUserActive, useUnblockUser } from "@/hooks";
 import { UserAvatar } from "../user-avatar";
 import { UserLoginLogsDialog } from "./user-login-logs-dialog";
 
@@ -51,74 +51,41 @@ export function UserListTable({
 }: UserListTableProps) {
   const [selectedUserForLogs, setSelectedUserForLogs] =
     useState<UsersResponse | null>(null);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const handleToggleActive = async (user: UsersResponse) => {
-    if (!isAdmin) return;
-
-    setActionLoading(user.id);
-    try {
-      const response = await fetch(
-        `${pb.baseUrl}api/tm/users/${user.id}/toggle-active`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: pb.authStore.token
-              ? `Bearer ${pb.authStore.token}`
-              : "",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || fa.users.actions.toggleStatusError);
-      }
-
-      const data = await response.json();
+  const toggleActiveMutation = useToggleUserActive({
+    onSuccess: (data) => {
       toast.success(data.message);
       onUpdate?.();
-    } catch (error) {
+    },
+    onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : fa.users.actions.activateError,
+        error instanceof Error
+          ? error.message
+          : fa.users.actions.toggleStatusError,
       );
-    } finally {
-      setActionLoading(null);
-    }
-  };
+    },
+  });
 
-  const handleUnblock = async (user: UsersResponse) => {
-    if (!isAdmin) return;
-
-    setActionLoading(user.id);
-    try {
-      const response = await fetch(
-        `${pb.baseUrl}api/tm/users/${user.id}/unblock`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: pb.authStore.token
-              ? `Bearer ${pb.authStore.token}`
-              : "",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || fa.users.actions.unblockError);
-      }
-
-      const data = await response.json();
+  const unblockUserMutation = useUnblockUser({
+    onSuccess: (data) => {
       toast.success(data.message);
       onUpdate?.();
-    } catch (error) {
+    },
+    onError: (error) => {
       toast.error(
         error instanceof Error ? error.message : fa.users.actions.unblockError,
       );
-    } finally {
-      setActionLoading(null);
-    }
+    },
+  });
+
+  const handleToggleActive = (user: UsersResponse) => {
+    if (!isAdmin) return;
+    toggleActiveMutation.mutate(user.id);
+  };
+
+  const handleUnblock = (user: UsersResponse) => {
+    if (!isAdmin) return;
+    unblockUserMutation.mutate(user.id);
   };
 
   return (
@@ -229,7 +196,8 @@ export function UserListTable({
                           <DropdownMenuItem
                             onClick={() => handleToggleActive(user)}
                             disabled={
-                              actionLoading === user.id || user.role === "admin"
+                              toggleActiveMutation.isPending ||
+                              user.role === "admin"
                             }
                           >
                             <Power className="ml-2 size-4" />
@@ -240,7 +208,7 @@ export function UserListTable({
                           {user.blocked && (
                             <DropdownMenuItem
                               onClick={() => handleUnblock(user)}
-                              disabled={actionLoading === user.id}
+                              disabled={unblockUserMutation.isPending}
                             >
                               <Unlock className="ml-2 size-4" />
                               {fa.users.actions.unblock}

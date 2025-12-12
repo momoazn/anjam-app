@@ -9,7 +9,7 @@
     "build:client": "bun x --bun vite build",
     "build:server": "go build -o task-manager .",
     "build:server:win": "GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags=\"-s -w\" -o task-manager.exe .",
-    "dev": "concurrently \"bun run dev:server\" \"bun run dev:client\" -n \"SERVER,CLIENT\"",
+    "dev": "concurrently \"bun run serve:server\" \"bun run dev:client\" -n \"SERVER,CLIENT\"",
     "dev:all": "concurrently \"bun run dev:server\" \"bun run dev:client\" -n \"SERVER, CLIENT\"",
     "dev:client": "bun x --bun vite",
     "dev:server": "air",

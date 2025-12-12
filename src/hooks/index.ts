@@ -35,6 +35,8 @@ export {
   useCreateUser,
   useUpdateUser,
   useDeleteUser,
+  useToggleUserActive,
+  useUnblockUser,
 } from "./users";
 
 // Comment hooks

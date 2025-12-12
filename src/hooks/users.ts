@@ -19,6 +19,8 @@ import {
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 
+type UsersQuerySnapshot = [readonly unknown[], UsersResponse[] | undefined][];
+
 /**
  * Hook to fetch all users
  * @param options - Configuration options for the query
@@ -118,12 +120,18 @@ export function useCreateUser(
   options?: UseMutationOptions<
     UsersResponse,
     Error,
-    Omit<UsersRecord, "id" | "created" | "updated">
+    Omit<UsersRecord, "id" | "created" | "updated">,
+    { previousQueries: UsersQuerySnapshot }
   >,
 ) {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<
+    UsersResponse,
+    Error,
+    Omit<UsersRecord, "id" | "created" | "updated">,
+    { previousQueries: UsersQuerySnapshot }
+  >({
     mutationFn: (userData: Omit<UsersRecord, "id" | "created" | "updated">) =>
       pb.collection("users").create(userData),
     onMutate: async (newUser) => {
@@ -131,7 +139,9 @@ export function useCreateUser(
       await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
 
       // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
+      const previousQueries: UsersQuerySnapshot = queryClient.getQueriesData<
+        UsersResponse[]
+      >({
         queryKey: queryKeys.users.all,
       });
 
@@ -195,12 +205,18 @@ export function useUpdateUser(
   options?: UseMutationOptions<
     UsersResponse,
     Error,
-    { id: string; updates: Partial<UsersRecord> }
+    { id: string; updates: Partial<UsersRecord> },
+    { previousQueries: UsersQuerySnapshot }
   >,
 ) {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<
+    UsersResponse,
+    Error,
+    { id: string; updates: Partial<UsersRecord> },
+    { previousQueries: UsersQuerySnapshot }
+  >({
     mutationFn: ({
       id,
       updates,
@@ -213,7 +229,9 @@ export function useUpdateUser(
       await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
 
       // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
+      const previousQueries: UsersQuerySnapshot = queryClient.getQueriesData<
+        UsersResponse[]
+      >({
         queryKey: queryKeys.users.all,
       });
 
@@ -352,6 +370,216 @@ export function useDeleteUser(
       // Invalidate tasks as user deletion affects assignee filtering
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to toggle user active status
+ * @param options - Mutation options
+ * @returns Mutation function for toggling user active status
+ */
+export function useToggleUserActive(
+  options?: UseMutationOptions<{ message: string }, Error, string>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await fetch(
+        `${pb.baseUrl}api/tm/users/${userId}/toggle-active`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: pb.authStore.token
+              ? `Bearer ${pb.authStore.token}`
+              : "",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to toggle user status");
+      }
+
+      return response.json();
+    },
+    onMutate: async (userId: string) => {
+      // Cancel outgoing refetches for all user-related queries
+      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
+
+      // Snapshot previous values
+      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
+        queryKey: queryKeys.users.all,
+      });
+
+      // Optimistically update user active status in cache
+      queryClient.setQueriesData<UsersResponse[]>(
+        { queryKey: queryKeys.users.all },
+        (old: UsersResponse[] | undefined) => {
+          if (!old) return old;
+          return old.map((user: UsersResponse) => {
+            if (user.id === userId) {
+              return { ...user, active: !user.active } as UsersResponse;
+            }
+            return user;
+          });
+        },
+      );
+
+      // Also update specific user detail query
+      queryClient.setQueryData<UsersResponse>(
+        queryKeys.users.detail(userId),
+        (old) => {
+          if (!old) return old;
+          return { ...old, active: !old.active } as UsersResponse;
+        },
+      );
+
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (
+        context &&
+        typeof context === "object" &&
+        "previousQueries" in context &&
+        Array.isArray(context.previousQueries)
+      ) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSuccess: (data, variables, context) => {
+      // Comprehensive refetch after successful toggle
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
+
+      // Invalidate specific user detail
+      if (variables) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.users.detail(variables),
+        });
+      }
+
+      // Invalidate project-user relationships
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.allProjectUsers(),
+      });
+
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to unblock a user
+ * @param options - Mutation options
+ * @returns Mutation function for unblocking users
+ */
+export function useUnblockUser(
+  options?: UseMutationOptions<{ message: string }, Error, string>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await fetch(
+        `${pb.baseUrl}api/tm/users/${userId}/unblock`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: pb.authStore.token
+              ? `Bearer ${pb.authStore.token}`
+              : "",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to unblock user");
+      }
+
+      return response.json();
+    },
+    onMutate: async (userId: string) => {
+      // Cancel outgoing refetches for all user-related queries
+      await queryClient.cancelQueries({ queryKey: queryKeys.users.all });
+
+      // Snapshot previous values
+      const previousQueries = queryClient.getQueriesData<UsersResponse[]>({
+        queryKey: queryKeys.users.all,
+      });
+
+      // Optimistically update user blocked status in cache
+      queryClient.setQueriesData<UsersResponse[]>(
+        { queryKey: queryKeys.users.all },
+        (old: UsersResponse[] | undefined) => {
+          if (!old) return old;
+          return old.map((user: UsersResponse) => {
+            if (user.id === userId) {
+              return {
+                ...user,
+                blocked: false,
+                failed_login_attempts: 0,
+              } as UsersResponse;
+            }
+            return user;
+          });
+        },
+      );
+
+      // Also update specific user detail query
+      queryClient.setQueryData<UsersResponse>(
+        queryKeys.users.detail(userId),
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            blocked: false,
+            failed_login_attempts: 0,
+          } as UsersResponse;
+        },
+      );
+
+      return { previousQueries };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (
+        context &&
+        typeof context === "object" &&
+        "previousQueries" in context &&
+        Array.isArray(context.previousQueries)
+      ) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSuccess: (data, variables, context) => {
+      // Comprehensive refetch after successful unblock
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
+
+      // Invalidate specific user detail
+      if (variables) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.users.detail(variables),
+        });
+      }
+
+      // Invalidate project-user relationships
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.allProjectUsers(),
+      });
 
       options?.onSuccess?.(data, variables, context);
     },
