@@ -13,6 +13,11 @@
 /**
  * Centralized query key factory functions
  */
+const normalizeListOptions = <T extends Record<string, unknown>>(
+  defaults: T,
+  options?: Partial<T>,
+) => ({ ...defaults, ...options });
+
 export const queryKeys = {
   /**
    * Task-related query keys
@@ -31,11 +36,14 @@ export const queryKeys = {
     ) =>
       [
         ...queryKeys.tasks.lists(),
-        {
-          projectId: projectId ?? "all",
-          expandFields: expandFields ?? "none",
-          mode: mode ?? "paged",
-        },
+        normalizeListOptions(
+          {
+            projectId: "all",
+            expandFields: "project,assignee",
+            mode: "paged" as "paged" | "full",
+          },
+          { projectId, expandFields, mode },
+        ),
       ] as const,
     detail: (id: string) => [...queryKeys.tasks.all, "detail", id] as const,
   },
@@ -50,7 +58,16 @@ export const queryKeys = {
     all: ["projects"] as const,
     lists: () => [...queryKeys.projects.all, "list"] as const,
     list: (options?: { sort?: string; batch?: number }) =>
-      [...queryKeys.projects.lists(), options ?? {}] as const,
+      [
+        ...queryKeys.projects.lists(),
+        normalizeListOptions(
+          {
+            sort: "-created",
+            batch: 100,
+          },
+          options,
+        ),
+      ] as const,
     detail: (id: string) => [...queryKeys.projects.all, "detail", id] as const,
   },
 
@@ -65,14 +82,22 @@ export const queryKeys = {
   users: {
     all: ["users"] as const,
     lists: () => [...queryKeys.users.all, "list"] as const,
-    list: (options?: { sort?: string; batch?: number; filter?: string | null }) => {
-      const normalizedOptions = {
-        batch: options?.batch ?? 100,
-        sort: options?.sort ?? "-created",
-        filter: options?.filter ?? null,
-      };
-
-      return [...queryKeys.users.lists(), normalizedOptions] as const;
+    list: (options?: {
+      sort?: string;
+      batch?: number;
+      filter?: string | null;
+    }) => {
+      return [
+        ...queryKeys.users.lists(),
+        normalizeListOptions(
+          {
+            batch: 100,
+            sort: "-created",
+            filter: null as string | null,
+          },
+          options,
+        ),
+      ] as const;
     },
     detail: (id: string) => [...queryKeys.users.all, "detail", id] as const,
     projectUsers: (projectId: string) =>
