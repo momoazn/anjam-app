@@ -110,7 +110,6 @@ export type CommentsRecord = {
 
 export type GroupsRecord = {
 	active?: boolean
-	code: string
 	created?: IsoDateString
 	description?: HTMLString
 	id: string

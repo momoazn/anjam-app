@@ -38,20 +38,6 @@
         "type": "text"
       },
       {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text_group_code",
-        "max": 10,
-        "min": 0,
-        "name": "code",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": true,
-        "system": false,
-        "type": "text"
-      },
-      {
         "convertURLs": false,
         "hidden": false,
         "id": "editor_group_description",
@@ -108,7 +94,7 @@
         "type": "autodate"
       }
     ],
-    "indexes": ["CREATE UNIQUE INDEX `idx_group_code` ON `groups` (`code`)"],
+    "indexes": [],
     "system": false
   },
   {

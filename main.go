@@ -176,35 +176,7 @@ func handleGroupCreation(e *core.RecordEvent) error {
 		}
 	}
 
-	// Generate unique group code (3 uppercase letters)
-	code := generateRandomCode()
-	maxAttempts := MaxCodeGenerationAttempts
-	attempts := 0
-
-	// Check for collisions and retry if needed
-	for attempts < maxAttempts {
-		exists, err := e.App.FindFirstRecordByData(CollectionGroups, "code", code)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-
-		// No collision found, use this code
-		if exists == nil {
-			break
-		}
-
-		// Collision found, generate new code
-		code = generateRandomCode()
-		attempts++
-	}
-
-	// Failed to find unique code after max attempts
-	if attempts >= maxAttempts {
-		return fmt.Errorf("failed to generate unique group code after %d attempts", MaxCodeGenerationAttempts)
-	}
-
-	// Set the generated code and default active status
-	record.Set("code", code)
+	// Set default active status
 	record.Set("active", true)
 
 	return e.Next()

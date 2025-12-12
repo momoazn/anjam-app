@@ -117,12 +117,6 @@ export function useCreateGroup(
 ) {
   const queryClient = useQueryClient();
 
-  const getPlaceholderCode = (value?: string) => {
-    if (value && value.trim().length > 0) return value;
-    // Simple placeholder to satisfy required validation; backend overwrites.
-    return `AUTO-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-  };
-
   return useMutation<
     GroupsResponse,
     Error,
@@ -133,16 +127,8 @@ export function useCreateGroup(
       >;
     }
   >({
-    mutationFn: (
-      groupData: Omit<GroupsRecord, "id" | "created" | "updated">,
-    ) => {
-      const { code, ...rest } = groupData;
-      return pb.collection("groups").create({
-        // Provide a placeholder code when none is supplied; backend overwrites it.
-        code: getPlaceholderCode(code),
-        ...rest,
-      });
-    },
+    mutationFn: (groupData: Omit<GroupsRecord, "id" | "created" | "updated">) =>
+      pb.collection("groups").create(groupData),
     onMutate: async (newGroup) => {
       // Cancel outgoing refetches for group list queries
       await queryClient.cancelQueries({ queryKey: queryKeys.groups.list() });
