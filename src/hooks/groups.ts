@@ -107,14 +107,36 @@ export function useCreateGroup(
   options?: UseMutationOptions<
     GroupsResponse,
     Error,
-    Omit<GroupsRecord, "id" | "created" | "updated">
+    Omit<GroupsRecord, "id" | "created" | "updated">,
+    {
+      previousQueries: Array<
+        [readonly unknown[], GroupsResponse[] | undefined]
+      >;
+    }
   >,
 ) {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (groupData: Omit<GroupsRecord, "id" | "created" | "updated">) =>
-      pb.collection("groups").create(groupData),
+  return useMutation<
+    GroupsResponse,
+    Error,
+    Omit<GroupsRecord, "id" | "created" | "updated">,
+    {
+      previousQueries: Array<
+        [readonly unknown[], GroupsResponse[] | undefined]
+      >;
+    }
+  >({
+    mutationFn: (
+      groupData: Omit<GroupsRecord, "id" | "created" | "updated">,
+    ) => {
+      const { code, ...rest } = groupData;
+      return pb.collection("groups").create({
+        // Provide a placeholder code when none is supplied; backend overwrites it.
+        code: code ?? "AUTO",
+        ...rest,
+      });
+    },
     onMutate: async (newGroup) => {
       // Cancel outgoing refetches for group list queries
       await queryClient.cancelQueries({ queryKey: queryKeys.groups.list() });
@@ -179,12 +201,26 @@ export function useUpdateGroup(
   options?: UseMutationOptions<
     GroupsResponse,
     Error,
-    { id: string; updates: Partial<GroupsRecord> }
+    { id: string; updates: Partial<GroupsRecord> },
+    {
+      previousQueries: Array<
+        [readonly unknown[], GroupsResponse[] | undefined]
+      >;
+    }
   >,
 ) {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<
+    GroupsResponse,
+    Error,
+    { id: string; updates: Partial<GroupsRecord> },
+    {
+      previousQueries: Array<
+        [readonly unknown[], GroupsResponse[] | undefined]
+      >;
+    }
+  >({
     mutationFn: ({
       id,
       updates,
