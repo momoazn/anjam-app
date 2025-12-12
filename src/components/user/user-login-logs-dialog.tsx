@@ -59,7 +59,9 @@ export function UserLoginLogsDialog({
           `${pb.baseUrl}api/tm/users/${user.id}/login-logs?page=${pageNum}&perPage=20`,
           {
             headers: {
-              Authorization: pb.authStore.token,
+              Authorization: pb.authStore.token
+                ? `Bearer ${pb.authStore.token}`
+                : "",
             },
           },
         );

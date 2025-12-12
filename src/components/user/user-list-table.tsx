@@ -63,7 +63,9 @@ export function UserListTable({
         {
           method: "PATCH",
           headers: {
-            Authorization: pb.authStore.token,
+            Authorization: pb.authStore.token
+              ? `Bearer ${pb.authStore.token}`
+              : "",
           },
         },
       );
@@ -95,7 +97,9 @@ export function UserListTable({
         {
           method: "PATCH",
           headers: {
-            Authorization: pb.authStore.token,
+            Authorization: pb.authStore.token
+              ? `Bearer ${pb.authStore.token}`
+              : "",
           },
         },
       );
