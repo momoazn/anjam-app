@@ -5,15 +5,22 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { useBulkDeleteTasks, useTasks } from "./tasks";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const getListMock = vi.fn();
-const getFullListMock = vi.fn();
-const updateMock = vi.fn();
-const collectionMock = vi.fn(() => ({
-  getList: getListMock,
-  getFullList: getFullListMock,
-  update: updateMock,
-  delete: vi.fn(),
-}));
+// Hoisted mocks to avoid initialization errors with vi.mock
+const { getListMock, getFullListMock, updateMock, collectionMock } = vi.hoisted(
+  () => {
+    const getListMock = vi.fn();
+    const getFullListMock = vi.fn();
+    const updateMock = vi.fn();
+    const collectionMock = vi.fn(() => ({
+      getList: getListMock,
+      getFullList: getFullListMock,
+      update: updateMock,
+      delete: vi.fn(),
+    }));
+
+    return { getListMock, getFullListMock, updateMock, collectionMock };
+  },
+);
 
 vi.mock("../lib/pocketbase", () => ({
   pb: {
