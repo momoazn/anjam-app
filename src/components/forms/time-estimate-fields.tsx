@@ -46,17 +46,18 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                     min="0"
                     max="999"
                     placeholder="0"
+                    inputMode="numeric"
                     {...field}
-                    value={field.value || ""}
+                    value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
                         e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
-                    className="pr-8"
+                    className="pl-12 text-right"
                   />
                 </FormControl>
-                <div className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm">
+                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">
                   {fa.common.time.hoursShort}
                 </div>
               </div>
@@ -77,17 +78,18 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                     min="0"
                     max="59"
                     placeholder="0"
+                    inputMode="numeric"
                     {...field}
-                    value={field.value || ""}
+                    value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(
                         e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
-                    className="pr-8"
+                    className="pl-12 text-right"
                   />
                 </FormControl>
-                <div className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm">
+                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">
                   {fa.common.time.minutesShort}
                 </div>
               </div>
