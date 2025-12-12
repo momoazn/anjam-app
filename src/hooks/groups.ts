@@ -29,7 +29,7 @@ export function useGroups(options: { enabled?: boolean } = {}) {
   const { enabled = true } = options;
 
   return useQuery({
-    queryKey: queryKeys.groups.list(),
+    queryKey: queryKeys.groups.lists(),
     queryFn: () =>
       pb
         .collection("groups")

@@ -39,7 +39,7 @@ export function useUsers(options: UsersListOptions = {}) {
   const queryParams = {
     batch,
     sort,
-    ...(filter ? { filter } : {}),
+    filter: filter ?? undefined,
   };
 
   return useQuery({
