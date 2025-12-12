@@ -13,8 +13,6 @@ export const tagQueryKeys = {
   all: ["tags"] as const,
   lists: () => [...tagQueryKeys.all, "list"] as const,
   list: (filters?: string) => [...tagQueryKeys.lists(), { filters }] as const,
-  details: () => [...tagQueryKeys.all, "detail"] as const,
-  detail: (id: string) => [...tagQueryKeys.details(), id] as const,
 };
 
 /**
@@ -34,24 +32,6 @@ export function useTags(
       });
       return records;
     },
-    ...options,
-  });
-}
-
-/**
- * Fetch a single tag by ID
- */
-export function useTag(
-  id: string,
-  options?: Omit<UseQueryOptions<TagsResponse, Error>, "queryKey" | "queryFn">,
-) {
-  return useQuery({
-    queryKey: tagQueryKeys.detail(id),
-    queryFn: async () => {
-      const record = await pb.collection("tags").getOne<TagsResponse>(id);
-      return record;
-    },
-    enabled: !!id,
     ...options,
   });
 }
@@ -100,9 +80,6 @@ export function useUpdateTag(
     },
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: tagQueryKeys.all });
-      queryClient.invalidateQueries({
-        queryKey: tagQueryKeys.detail(variables.id),
-      });
       options?.onSuccess?.(data, variables, context);
     },
     ...options,

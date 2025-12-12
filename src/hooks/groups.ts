@@ -117,6 +117,12 @@ export function useCreateGroup(
 ) {
   const queryClient = useQueryClient();
 
+  const getPlaceholderCode = (value?: string) => {
+    if (value && value.trim().length > 0) return value;
+    // Simple placeholder to satisfy required validation; backend overwrites.
+    return `AUTO-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+  };
+
   return useMutation<
     GroupsResponse,
     Error,
@@ -133,7 +139,7 @@ export function useCreateGroup(
       const { code, ...rest } = groupData;
       return pb.collection("groups").create({
         // Provide a placeholder code when none is supplied; backend overwrites it.
-        code: code ?? "AUTO",
+        code: getPlaceholderCode(code),
         ...rest,
       });
     },

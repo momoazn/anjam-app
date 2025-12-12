@@ -77,6 +77,9 @@ export default function CreateGroup() {
       toast.success(fa.groups.create.success);
       navigate("/groups");
     },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "خطایی رخ داد");
+    },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -84,6 +87,8 @@ export default function CreateGroup() {
       name: values.name,
       description: values.description || "",
       manager: values.manager,
+      // placeholder code to satisfy required field; backend overwrites
+      code: "",
       active: true,
     });
   }

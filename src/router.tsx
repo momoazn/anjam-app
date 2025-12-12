@@ -113,6 +113,10 @@ const ProjectUsers = createLazyPage(
   () => import("@/pages/project-users"),
   fa.errors.pageLoad.projectUsers,
 );
+const EditUser = createLazyPage(
+  () => import("@/pages/edit-user"),
+  fa.errors.pageLoad.users,
+);
 const Reports = createLazyPage(
   () => import("@/pages/reports"),
   fa.errors.pageLoad.reports,
@@ -341,6 +345,13 @@ const routes: RouteType[] = [
     protected: true,
     permission: "users.manage",
     title: fa.users.create.title,
+  },
+  {
+    path: "/users/:id/edit",
+    element: <EditUser />,
+    protected: true,
+    permission: "users.manage",
+    title: fa.users.edit.title,
   },
   {
     path: "/projects/:id/users",
