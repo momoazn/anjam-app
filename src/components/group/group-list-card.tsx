@@ -41,10 +41,7 @@ export function GroupListCard({
               <Building2 className="text-muted-foreground h-4 w-4 flex-shrink-0" />
               <span className="block truncate">{group.name}</span>
             </div>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="text-muted-foreground text-sm">
-                {group.code}
-              </span>
+            <div className="mt-1">
               <Badge
                 variant={isActive ? "default" : "secondary"}
                 className="flex items-center gap-1"
