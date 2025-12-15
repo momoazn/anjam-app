@@ -16,6 +16,7 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: "backend/dist",
     target: "es2020",
     minify: "terser",
     rollupOptions: {
