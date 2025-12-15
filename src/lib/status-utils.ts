@@ -164,19 +164,7 @@ export const TASK_STATUS_ORDER: TasksStatusOptions[] = [
  * Get the status configuration for a task
  */
 export function getTaskStatus(task: TasksResponse): TaskStatusConfig {
-  if (task.status) {
-    return TASK_STATUS_CONFIG[task.status];
-  }
-
-  // Default fallback
-  return TASK_STATUS_CONFIG.todo;
-}
-
-/**
- * Convert status values to config format (legacy compatibility)
- */
-export function statusToConfig(status: TasksStatusOptions): TaskStatusConfig {
-  return TASK_STATUS_CONFIG[status];
+  return TASK_STATUS_CONFIG[task.status];
 }
 
 /**
@@ -382,6 +370,7 @@ export const statusOrder = TASK_STATUS_ORDER;
 
 /**
  * Utility function to get status config (for backward compatibility)
+ * @deprecated Use getStatusByKey instead
  */
 export function getStatusConfig(status: TasksStatusOptions) {
   return TASK_STATUS_CONFIG[status];

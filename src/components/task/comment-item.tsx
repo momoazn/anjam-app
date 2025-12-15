@@ -83,17 +83,12 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
     });
   };
 
-  // Autofocus and place caret at end when editing
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       const el = textareaRef.current;
       el.focus();
       const len = el.value.length;
-      try {
-        el.setSelectionRange(len, len);
-      } catch {
-        // ignore
-      }
+      el.setSelectionRange(len, len);
     }
   }, [isEditing]);
 

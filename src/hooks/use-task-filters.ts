@@ -2,7 +2,6 @@ import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   type TasksPriorityOptions,
   TasksStatusOptions,
-  type UsersResponse,
 } from "@/lib/pocketbase-types";
 import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
 import { parseAsString, useQueryState } from "nuqs";
@@ -92,7 +91,7 @@ export function useTaskFilters(
       // Search logic
       const matchesSearch =
         task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (task.expand?.assignee as UsersResponse)?.username
+        task.expand?.assignee?.username
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase());
 

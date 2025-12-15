@@ -41,8 +41,7 @@ export function useNotifications() {
     } catch {
       // Silently fail - notifications will still work via polling
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, refetch]);
 
   const unsubscribeFromNotifications = useCallback(() => {
     pb.collection("notifications").unsubscribe("*");

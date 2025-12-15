@@ -40,7 +40,7 @@ export function useFileUpload(options?: FileUploadOptions) {
     maxFiles,
     onUploadComplete,
     onError,
-  } = options || {};
+  } = options ?? {};
 
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [uploading, setUploading] = useState(false);

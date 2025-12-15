@@ -65,13 +65,7 @@ export function useCreateComment(
   >,
 ) {
   const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      CommentsResponse,
-      Error,
-      Omit<CommentsRecord, "id" | "created" | "updated">
-    >);
+  const { onSuccess, onSettled, ...restOptions } = options ?? {};
 
   return useMutation({
     mutationFn: (
@@ -109,13 +103,7 @@ export function useUpdateComment(
   >,
 ) {
   const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      CommentsResponse,
-      Error,
-      { id: string; updates: Partial<CommentsRecord> }
-    >);
+  const { onSuccess, onSettled, ...restOptions } = options ?? {};
 
   return useMutation({
     mutationFn: ({
@@ -153,8 +141,7 @@ export function useSoftDeleteComment(
   options?: UseMutationOptions<CommentsResponse, Error, string>,
 ) {
   const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<CommentsResponse, Error, string>);
+  const { onSuccess, onSettled, ...restOptions } = options ?? {};
 
   return useMutation({
     mutationFn: async (id: string) => {

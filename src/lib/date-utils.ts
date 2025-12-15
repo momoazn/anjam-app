@@ -45,15 +45,11 @@ export function formatDateISO(dateString?: string | null): string {
   if (!dateString) {
     return "-";
   }
-  try {
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) {
-      return "-";
-    }
-    return digitsEnToFa(format(date, "yyyy/MM/dd"));
-  } catch {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
     return "-";
   }
+  return digitsEnToFa(format(date, "yyyy/MM/dd"));
 }
 
 /**
@@ -66,17 +62,13 @@ export function formatDateTime(dateString: string): {
   date: string;
   time: string;
 } {
-  try {
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) {
-      return { date: "-", time: "-" };
-    }
-    const dateStr = format(date, "yyyy/MM/dd");
-    const timeStr = format(date, "HH:mm:ss");
-    return { date: digitsEnToFa(dateStr), time: digitsEnToFa(timeStr) };
-  } catch {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
     return { date: "-", time: "-" };
   }
+  const dateStr = format(date, "yyyy/MM/dd");
+  const timeStr = format(date, "HH:mm:ss");
+  return { date: digitsEnToFa(dateStr), time: digitsEnToFa(timeStr) };
 }
 
 /**
@@ -89,13 +81,13 @@ export function formatDateLocale(dateString?: string | null): string {
   if (!dateString) {
     return "-";
   }
-  try {
-    return new Date(dateString).toLocaleDateString("fa-IR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
     return "-";
   }
+  return date.toLocaleDateString("fa-IR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }

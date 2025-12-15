@@ -120,7 +120,7 @@ export function useSavedFilters() {
   // Get the default filter
   const getDefaultFilter = useCallback((): SavedFilter | null => {
     if (!defaultFilterId) return null;
-    return savedFilters.find((f) => f.id === defaultFilterId) || null;
+    return savedFilters.find((f) => f.id === defaultFilterId) ?? null;
   }, [defaultFilterId, savedFilters]);
 
   // Check if current filters match any saved filter
@@ -146,7 +146,7 @@ export function useSavedFilters() {
               currentFilters.selectedDateRange &&
             saved.filters.selectedTag === currentFilters.selectedTag
           );
-        }) || null
+        }) ?? null
       );
     },
     [savedFilters],
