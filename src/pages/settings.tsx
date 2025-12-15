@@ -391,7 +391,7 @@ function SecuritySection() {
     queryFn: async () => {
       if (!user?.id) return [];
       try {
-        // Using the custom endpoint defined in main.go
+        // Using the custom endpoint defined in backend/main.go
         return await pb.send<UserLoginLogsResponse[]>(
           `/api/tm/users/${user.id}/login-logs`,
           {
