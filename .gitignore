@@ -35,3 +35,7 @@ task-manager
 task-manager.exe
 
 testing/
+
+# Test artifacts
+playwright-report/
+test-results/
