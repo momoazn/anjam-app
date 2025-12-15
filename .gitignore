@@ -27,7 +27,9 @@ release/
 *.out
 
 pb_data/
-data/
+data/*
+!data/mock/
+!data/mock/**
 
 tmp/
 

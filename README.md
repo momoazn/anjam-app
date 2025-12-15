@@ -100,7 +100,7 @@ bun run build:windows
 
 - `docs/` - Project documentation
 - `scripts/` - Utility scripts
-- `mock-data/` - Example data files
+- `data/mock/` - Example data files
 
 ## 📝 Coding Style & Conventions
 

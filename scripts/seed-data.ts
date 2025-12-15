@@ -10,12 +10,12 @@ import type {
 } from "@/lib/pocketbase-types";
 
 // --- Mock Data Imports ---
-import mockComments from "../mock-data/comments.json";
-import mockNotifications from "../mock-data/notifications.json";
-import mockProjects from "../mock-data/projects.json";
-import mockTasks from "../mock-data/tasks.json";
-import mockUserProjects from "../mock-data/userProjects.json";
-import mockUsers from "../mock-data/users.json";
+import mockComments from "../data/mock/comments.json";
+import mockNotifications from "../data/mock/notifications.json";
+import mockProjects from "../data/mock/projects.json";
+import mockTasks from "../data/mock/tasks.json";
+import mockUserProjects from "../data/mock/userProjects.json";
+import mockUsers from "../data/mock/users.json";
 
 // --- Constants ---
 const PB_URL = process.env.POCKETBASE_URL || "http://127.0.0.1:8090/";

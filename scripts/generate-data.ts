@@ -19,7 +19,7 @@ const EMPLOYEE_COUNT = 10;
 const PROJECT_COUNT = 10;
 const TASKS_COUNT = 30;
 const COMMENTS_COUNT = 100;
-const MOCK_DATA_DIR = join(import.meta.dirname, "..", "mock-data");
+const MOCK_DATA_DIR = join(import.meta.dirname, "..", "data", "mock");
 const DEFAULT_USER: GeneratedUser = {
   username: "gyw_myrzadh90",
   first_name: "پیمان",
