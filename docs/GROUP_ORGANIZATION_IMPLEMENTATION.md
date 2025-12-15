@@ -706,7 +706,7 @@ For `useGroupUsers` and `useGroupProjects`, follow the same pattern as existing 
 - Use `pb.collection("users").getFullList<UsersResponse>({ filter: 'group.id = "{groupId}"' })` for users
 - Use `pb.collection("projects").getFullList<ProjectsResponse>({ filter: 'group.id = "{groupId}"' })` for projects
 
-For `useToggleGroupActive`, follow the mutation pattern from an existing “toggle active” hook (for example, status configs), but call:
+For `useToggleGroupActive`, follow the mutation pattern from an existing “toggle active” hook (for example, `useToggleUserActive`), but call:
 
 ```ts
 pb.collection("groups").update(id, { active: !group.active });

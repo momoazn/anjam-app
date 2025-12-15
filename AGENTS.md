@@ -8,7 +8,7 @@ This is a **task and project management application** with a Go backend (PocketB
 
   - Embeds `dist/` folder (Vite build output) via `//go:embed` directive
   - Imports database schema from `pb_schema.json` on startup
-  - Custom API endpoints at `/api/tm/*` for status configs, user management, and login logs
+  - Custom API endpoints at `/api/tm/*` for user management and login logs
   - Event handlers for record creation/updates (auto-generates project codes, task display IDs)
   - Authentication tracking with login logs and failed attempt blocking
   - Notification system for task assignments, updates, and comments
@@ -166,7 +166,6 @@ This is a **task and project management application** with a Go backend (PocketB
 
 ### Custom API Endpoints
 
-- `/api/tm/status-configs/{id}/toggle` - PATCH: Toggle status config enabled/disabled
 - `/api/tm/users/{id}/toggle-active` - PATCH: Activate/deactivate user (admin only)
 - `/api/tm/users/{id}/unblock` - PATCH: Unblock user after failed logins (admin only)
 - `/api/tm/users/{id}/login-logs` - GET: Retrieve user's login history

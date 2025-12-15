@@ -10,10 +10,8 @@ This document is a **delegation-ready cleanup plan** for this repo. It is intent
    - Running a real app typecheck shows many errors:
      - `bun x tsc -p tsconfig.app.json --noEmit`
 2. **Schema / code drift between Go backend and `pb_schema.json`**
-   - Backend uses `status_configs` and `tasks.status_config` (SQL + API endpoints), but:
-     - `pb_schema.json` has **no `status_configs` collection**
-     - `pb_schema.json` `tasks` fields do **not** include `status_config`
-   - Frontend expects `groups.code` but `pb_schema.json` `groups` has **no `code` field**.
+   - Task status values are a predefined static list (see `TASK_STATUS_CONFIG`), so no dynamic schema entries exist.
+   - Frontend expected `groups.code`, but `pb_schema.json` `groups` has **no `code` field**.
 3. **Repo hygiene issues (tracked build artifacts)**
    - `playwright-report/index.html` is tracked.
    - `test-results/.last-run.json` is tracked.
@@ -96,27 +94,18 @@ Notes:
   - `src/components/user/delete-user-dialog.tsx`: passing unsupported props to `DeleteDialog`
   - Several test/mocks using raw strings instead of generated enums (e.g. `Collections`, `UsersRoleOptions`, `TasksStatusOptions`)
 
-### Phase 2 — Schema/code alignment (PocketBase + types)
+### Phase 2 — Schema / status alignment (PocketBase + types)
 
 **Owner:** Backend + Frontend (paired)  
-**Goal:** Align `pb_schema.json`, backend logic, and generated TS types.
+**Goal:** Ensure the schema reflects the now-hardcoded status list.
 
-Decisions to make (pick one path per item):
+Decisions already taken:
 
-1. **Status config system**
-   - Backend expects:
-     - `status_configs` table/collection
-     - `tasks.status_config` field
-     - API: `/api/tm/status-configs/{id}/toggle`
-   - `pb_schema.json` currently has neither.
-   - Choose:
-     - (A) Re-introduce `status_configs` + `tasks.status_config` into schema and regenerate types; ensure UI uses it, OR
-     - (B) Remove/disable the backend status-config feature (handlers, endpoint, SQL) and simplify tasks to use only `tasks.status`.
+1. **Task statuses are static**
+   - Statuses are defined by the `TasksStatusOptions` enum and the `TASK_STATUS_CONFIG` map; there are no dynamic config tables or HTTP endpoints.
 2. **Group codes**
-   - Frontend displays `group.code`, backend comments imply codes, but schema has no `groups.code`.
-   - Choose:
-     - (A) Add `groups.code` field + generate/populate it (backend handler + schema), OR
-     - (B) Remove `group.code` from UI and any backend mentions.
+3. **Group codes**
+   - Schema does not include `groups.code`, and the UI no longer assumes the field exists.
 
 Required process when schema changes:
 
@@ -167,7 +156,7 @@ Required process when schema changes:
 
 1. PR-1: Repo hygiene (remove tracked artifacts + ignore rules)
 2. PR-2: Fix `type:check` script + fix Prettier failures
-3. PR-3: Schema alignment decision (status configs + group codes)
+3. PR-3: Schema alignment decision (group codes)
 4. PR-4: Fix compile errors after schema alignment + regenerate types
 5. PR-5: Consolidation refactors (constants migration + invalidation helper)
 6. PR-6: Tests/e2e stabilization
