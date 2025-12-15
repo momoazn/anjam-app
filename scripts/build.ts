@@ -10,6 +10,22 @@ const runBat = path.join(devScriptsPath, "run.bat");
 const runWithEnvBat = path.join(devScriptsPath, "run-with-env.bat");
 
 const args = new Set(process.argv.slice(2));
+const currentPlatform = args.has("--current-platform");
+
+// Auto-detect current platform if flag is set
+if (currentPlatform) {
+  if (process.platform === "linux") {
+    args.add("--skip-windows");
+    args.add("--skip-mac");
+  } else if (process.platform === "win32") {
+    args.add("--skip-linux");
+    args.add("--skip-mac");
+  } else if (process.platform === "darwin") {
+    args.add("--skip-linux");
+    args.add("--skip-windows");
+  }
+}
+
 const skipClient = args.has("--skip-client");
 const skipLinux = args.has("--skip-linux");
 const skipWindows = args.has("--skip-windows");
@@ -92,8 +108,9 @@ function shouldBuild(targetName: Target["name"]) {
 function buildTarget(target: Target) {
   console.log(`Building ${target.name} backend...`);
   const outputPath = path.join(releaseDir, target.dir, target.output);
-  run("go", ["-ldflags=-s -w", "-o", outputPath, "./backend"], {
+  run("go", ["build", "-ldflags=-s -w", "-o", outputPath, "."], {
     env: target.env,
+    cwd: path.join(process.cwd(), "backend"),
   });
 }
 
