@@ -27,7 +27,7 @@ const createMockTask = (
   assignee: "user1",
   creator: "user1",
   project: "proj1",
-  status: "todo",
+  status: TasksStatusOptions.todo,
   priority: "medium",
   deadline: null,
   tags: [],
@@ -39,7 +39,7 @@ const createMockTask = (
 
 describe("getTaskStatus", () => {
   it("should return correct status configuration for todo", () => {
-    const task = createMockTask({ status: "todo" });
+    const task = createMockTask({ status: TasksStatusOptions.todo });
 
     const result = getTaskStatus(task);
     expect(result.key).toBe("todo");
@@ -51,7 +51,7 @@ describe("getTaskStatus", () => {
   });
 
   it("should return correct status configuration for in_progress", () => {
-    const task = createMockTask({ status: "in_progress" });
+    const task = createMockTask({ status: TasksStatusOptions.in_progress });
 
     const result = getTaskStatus(task);
     expect(result.key).toBe("in_progress");
@@ -62,7 +62,7 @@ describe("getTaskStatus", () => {
   });
 
   it("should correctly identify completed status", () => {
-    const task = createMockTask({ status: "done" });
+    const task = createMockTask({ status: TasksStatusOptions.done });
 
     const result = getTaskStatus(task);
     expect(result.isCompleted).toBe(true);
@@ -71,7 +71,7 @@ describe("getTaskStatus", () => {
   });
 
   it("should correctly identify canceled status", () => {
-    const task = createMockTask({ status: "canceled" });
+    const task = createMockTask({ status: TasksStatusOptions.canceled });
 
     const result = getTaskStatus(task);
     expect(result.isCompleted).toBe(false);
@@ -117,45 +117,45 @@ describe("getTaskStatus", () => {
 
 describe("isTaskCompleted", () => {
   it("should return true for done status", () => {
-    const task = createMockTask({ status: "done" });
+    const task = createMockTask({ status: TasksStatusOptions.done });
     expect(isTaskCompleted(task)).toBe(true);
   });
 
   it("should return false for non-completed status", () => {
-    const task = createMockTask({ status: "in_progress" });
+    const task = createMockTask({ status: TasksStatusOptions.in_progress });
     expect(isTaskCompleted(task)).toBe(false);
   });
 });
 
 describe("isTaskCanceled", () => {
   it("should return true for canceled status", () => {
-    const task = createMockTask({ status: "canceled" });
+    const task = createMockTask({ status: TasksStatusOptions.canceled });
     expect(isTaskCanceled(task)).toBe(true);
   });
 
   it("should return false for non-canceled status", () => {
-    const task = createMockTask({ status: "in_progress" });
+    const task = createMockTask({ status: TasksStatusOptions.in_progress });
     expect(isTaskCanceled(task)).toBe(false);
   });
 });
 
 describe("getStatusColorClass", () => {
   it("should return correct color class for blueSubtle status", () => {
-    const task = createMockTask({ status: "in_progress" });
+    const task = createMockTask({ status: TasksStatusOptions.in_progress });
     const result = getStatusColorClass(task);
     expect(result).toContain("bg-blue");
     expect(result).toContain("text-blue");
   });
 
   it("should return correct color class for greenSubtle status", () => {
-    const task = createMockTask({ status: "done" });
+    const task = createMockTask({ status: TasksStatusOptions.done });
     const result = getStatusColorClass(task);
     expect(result).toContain("bg-green");
     expect(result).toContain("text-green");
   });
 
   it("should return correct color class for gray status", () => {
-    const task = createMockTask({ status: "canceled" });
+    const task = createMockTask({ status: TasksStatusOptions.canceled });
     const result = getStatusColorClass(task);
     expect(result).toContain("bg-gray");
     expect(result).toContain("text-gray");

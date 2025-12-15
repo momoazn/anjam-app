@@ -1,6 +1,7 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import {
   useGroups,
   useGroup,
@@ -196,7 +197,7 @@ describe("useGroupUsers", () => {
         username: "employee1",
         first_name: "John",
         last_name: "Doe",
-        role: "employee",
+        role: UsersRoleOptions.employee,
         group: "grp-1",
         active: true,
         email: "john@example.com",

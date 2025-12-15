@@ -1,6 +1,7 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
+import { TasksStatusOptions } from "@/lib/pocketbase-types";
 
 import { useBulkDeleteTasks, useTasks } from "./tasks";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -58,7 +59,7 @@ describe("useTasks pagination", () => {
         {
           id: "task-1",
           title: "Task 1",
-          status: "todo",
+          status: TasksStatusOptions.todo,
           project: "project-1",
           deleted_at: "",
         },

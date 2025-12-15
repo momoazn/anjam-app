@@ -1,6 +1,7 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
+import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import {
   useUsers,
   useUser,
@@ -12,7 +13,6 @@ import {
   useUnblockUser,
 } from "./users";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { UsersResponse, UsersRoleOptions } from "../lib/pocketbase-types";
 
 // Mock data
 const getFullListMock = vi.fn();
@@ -70,7 +70,7 @@ describe("useUsers", () => {
         username: "john",
         first_name: "John",
         last_name: "Doe",
-        role: "employee",
+        role: UsersRoleOptions.employee,
         group: "grp-1",
         active: true,
         email: "john@example.com",
@@ -167,7 +167,7 @@ describe("useUser", () => {
       username: "john",
       first_name: "John",
       last_name: "Doe",
-      role: "employee",
+      role: UsersRoleOptions.employee,
       group: "grp-1",
       active: true,
       email: "john@example.com",
@@ -238,7 +238,7 @@ describe("useProjectUsers", () => {
         username: "john",
         first_name: "John",
         last_name: "Doe",
-        role: "employee",
+        role: UsersRoleOptions.employee,
         group: "grp-1",
         active: true,
         email: "john@example.com",
@@ -380,7 +380,7 @@ describe("useUpdateUser", () => {
       username: "john",
       first_name: "Updated",
       last_name: "Doe",
-      role: "employee",
+      role: UsersRoleOptions.employee,
       group: "grp-1",
       active: true,
       email: "john@example.com",
