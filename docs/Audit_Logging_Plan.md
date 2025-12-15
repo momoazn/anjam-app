@@ -88,10 +88,13 @@ All audit inserts go through a dedicated helper `logAudit(ctx, app, entry)` that
 
 ### 3.2 Entity "History" Tabs
 
-- **Task & Project Views**: New tab uses `AuditLogService.list({ resource: 'tasks', resourceId })` sorted descending.
-- **Empty State**: Show "No history yet" message; never show spinner forever.
-- **Row Rendering**: Sentence template like `{{actor}} {{action}} {{field}} from {{old}} to {{new}}` with relative timestamps.
-- **Permissions**: Reuse admin predicate or extend to project members once requirements finalized; component takes `canViewHistory` prop to guard fetch.
+- **Entry Point**: Tab label "History" with badge showing count of entries for quick discoverability; tab only rendered when user has access.
+- **Task & Project Views**: Tab uses `AuditLogService.list({ resource: 'tasks', resourceId })` sorted descending and supports infinite scroll so users can scan long timelines.
+- **Timeline UI**: Left-aligned vertical timeline with icons per action (`create`, `update`, `delete`). Each card surfaces actor avatar, clear summary sentence, relative time, and expands inline to show field-level diffs.
+- **Empty State**: Friendly illustration + text "No history yet" plus hint about what triggers entries; never show spinner forever.
+- **Row Rendering**: Natural-language template (`{{actor}} changed {{field}} from {{old}} to {{new}}`) with tooltip for exact timestamp; old/new values truncated with tooltip for long text.
+- **Filters**: Local filters (e.g., action type dropdown, actor pill filters) scoped to the current resource so users can hone in on relevant changes without leaving the tab.
+- **Permissions**: Reuse admin predicate or extend to project members once requirements finalized; component takes `canViewHistory` prop to guard fetch and conditionally render redacted values when viewer lacks full access.
 
 ## 4. Implementation Steps
 
