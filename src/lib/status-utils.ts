@@ -162,9 +162,15 @@ export const TASK_STATUS_ORDER: TasksStatusOptions[] = [
 
 /**
  * Get the status configuration for a task
+ * Falls back to 'todo' status if the task status is undefined or invalid
  */
 export function getTaskStatus(task: TasksResponse): TaskStatusConfig {
-  return TASK_STATUS_CONFIG[task.status];
+  const status = task.status;
+  if (status && status in TASK_STATUS_CONFIG) {
+    return TASK_STATUS_CONFIG[status];
+  }
+  // Fallback to todo status for missing or invalid status values
+  return TASK_STATUS_CONFIG[TasksStatusOptions.todo];
 }
 
 /**
