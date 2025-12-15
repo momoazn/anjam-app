@@ -10,12 +10,12 @@ import type {
 } from "@/lib/pocketbase-types";
 
 // --- Mock Data Imports ---
-import mockComments from "../data/mock/comments.json";
-import mockNotifications from "../data/mock/notifications.json";
-import mockProjects from "../data/mock/projects.json";
-import mockTasks from "../data/mock/tasks.json";
-import mockUserProjects from "../data/mock/userProjects.json";
-import mockUsers from "../data/mock/users.json";
+import mockComments from "./mock-data/comments.json";
+import mockNotifications from "./mock-data/notifications.json";
+import mockProjects from "./mock-data/projects.json";
+import mockTasks from "./mock-data/tasks.json";
+import mockUserProjects from "./mock-data/userProjects.json";
+import mockUsers from "./mock-data/users.json";
 
 // --- Constants ---
 const PB_URL = process.env.POCKETBASE_URL || "http://127.0.0.1:8090/";
@@ -71,6 +71,7 @@ async function truncateCollections(pb: TypedPocketBase) {
     "tasks",
     "users_projects",
     "projects",
+    "groups", // Must come before users since groups have required manager reference
     "users",
   ] as const;
 
@@ -109,9 +110,9 @@ async function seedDatabase() {
     // 4. Insert Users
     console.log(`Inserting ${mockUsers.length} users...`);
     let batch = pb.createBatch();
-    mockUsers.forEach((user: MockUser) =>
-      batch.collection("users").create(user),
-    );
+    mockUsers.forEach((user: MockUser) => {
+      batch.collection("users").create(user);
+    });
     let result = await batch.send();
     console.log(`Insert users result: ${result[0].status}`);
     const createdUsers = await pb
@@ -122,15 +123,84 @@ async function seedDatabase() {
     );
     console.log(`${createdUsers.length} users inserted.`);
 
-    // 5. Insert Projects
+    // 5. Create a manager user first for group assignment
+    console.log("Creating a manager user for group assignment...");
+    const managerResult = await pb.collection("users").create({
+      username: "manager.main",
+      first_name: "مدیر",
+      last_name: "اصلی",
+      password: "manager123",
+      passwordConfirm: "manager123",
+      role: "manager",
+      active: true,
+    });
+    const managerId = managerResult.id;
+    userIdMap.set("manager.main", managerId);
+    console.log("Manager user created.");
+
+    // 6. Create Groups (after users exist)
+    console.log("Inserting 1 default group...");
+    let defaultGroupId = "";
+    if (managerId) {
+      console.log(`Manager user ID: ${managerId}`);
+      try {
+        const groupResult = await pb.collection("groups").create({
+          name: "Default Group",
+          description: "Default group for projects",
+          manager: managerId,
+          active: true,
+        });
+        defaultGroupId = groupResult.id;
+        console.log("Default group created.");
+      } catch (groupError: unknown) {
+        if (isPocketBaseError(groupError)) {
+          console.error(
+            "Group creation error:",
+            JSON.stringify(groupError.originalError, null, 2),
+          );
+        } else {
+          console.error("Group creation error:", groupError);
+        }
+        throw groupError;
+      }
+    }
+
+    // 6.5 Assign supervisors and employees to the group
+    console.log("Assigning supervisors and employees to the default group...");
+    const usernamesToAssignGroup = [
+      "supervisor.hassan",
+      "supervisor.zahra",
+      "supervisor.mahmoud",
+      "dev.mohammad",
+      "dev.sara",
+      "dev.amir",
+      "dev.narges",
+      "dev.hooman",
+    ];
+    for (const username of usernamesToAssignGroup) {
+      const userId = userIdMap.get(username);
+      if (userId && defaultGroupId) {
+        try {
+          await pb.collection("users").update(userId, {
+            group: defaultGroupId,
+          });
+          console.log(`User ${username} assigned to group`);
+        } catch (err) {
+          console.warn(`Failed to assign user ${username} to group:`, err);
+        }
+      }
+    }
+
+    // 7. Insert Projects
     console.log(`Inserting ${mockProjects.length} projects...`);
     batch = pb.createBatch();
     mockProjects.forEach((project: MockProject) => {
       const supervisorId = userIdMap.get(project.supervisor);
-      if (supervisorId) {
+      if (supervisorId && defaultGroupId) {
         batch.collection("projects").create({
           ...project,
           supervisor: supervisorId,
+          group: defaultGroupId,
         });
       }
     });
@@ -146,7 +216,7 @@ async function seedDatabase() {
     );
     console.log(`${createdProjects.length} projects inserted.`);
 
-    // 6. Insert User-Project Links
+    // 8. Insert User-Project Links
     console.log(`Inserting ${mockUserProjects.length} user-project links...`);
     batch = pb.createBatch();
     mockUserProjects.forEach((userProject: MockUserProject) => {
@@ -172,7 +242,7 @@ async function seedDatabase() {
       .getFullList<UsersProjectsRecord>();
     console.log(`${createdUserProjects.length} user-project links inserted.`);
 
-    // 7. Insert Tasks
+    // 9. Insert Tasks
     console.log(`Inserting ${mockTasks.length} tasks...`);
     batch = pb.createBatch();
     mockTasks.forEach((task: MockTask) => {
@@ -206,7 +276,7 @@ async function seedDatabase() {
     );
     console.log(`${createdTasks.length} tasks inserted.`);
 
-    // 8. Insert Comments
+    // 10. Insert Comments
     console.log(`Inserting ${mockComments.length} comments...`);
     batch = pb.createBatch();
     mockComments.forEach((comment: MockComment) => {
@@ -231,7 +301,7 @@ async function seedDatabase() {
       .getFullList<CommentsRecord>();
     console.log(`${createdComments.length} comments inserted.`);
 
-    // 9. Insert Notifications
+    // 11. Insert Notifications
     console.log(`Inserting ${mockNotifications.length} notifications...`);
     batch = pb.createBatch();
     mockNotifications.forEach((notification: MockNotification) => {
@@ -254,7 +324,7 @@ async function seedDatabase() {
       .getFullList<NotificationsRecord>();
     console.log(`${createdNotifications.length} notifications inserted.`);
 
-    // 10. Final Summary
+    // 12. Final Summary
     console.log(
       "\n✅ Successfully Seeded Database with mock data",
       `\n- ${createdUsers.length} users created`,

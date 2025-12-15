@@ -120,7 +120,7 @@ bun run build:mac
 
 - `docs/` - Project documentation
 - `scripts/` - Utility scripts
-- `data/mock/` - Example data files
+- `scripts/mock-data/` - Example data files
 
 ## 📝 Coding Style & Conventions
 
