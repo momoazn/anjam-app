@@ -99,6 +99,7 @@ func main() {
 		se.Router.PATCH("/api/tm/users/{id}/toggle-active", handleToggleUserActive)
 		se.Router.PATCH("/api/tm/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/tm/users/{id}/login-logs", handleGetUserLoginLogs)
+		se.Router.GET("/api/tm/search", handleGlobalSearch)
 
 		return se.Next()
 	})
@@ -603,7 +604,6 @@ func setTaskDefaults(e *core.RecordEvent) {
 		e.Record.Set("priority", "medium")
 	}
 }
-
 
 // --- Notification Handlers ---
 
