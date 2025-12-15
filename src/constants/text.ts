@@ -583,6 +583,10 @@ export const fa = {
 
   // Task management module
   tasks: {
+    // ...
+    board: {
+      title: "برد تسک‌ها",
+    },
     title: "تسک‌ها",
     allTasks: "همه تسک‌ها",
 

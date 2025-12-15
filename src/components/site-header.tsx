@@ -272,14 +272,7 @@ export function SiteHeader() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl/Cmd + K to focus search
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-        e.preventDefault();
-        const searchInput = document.querySelector(
-          'input[type="search"]',
-        ) as HTMLInputElement;
-        searchInput?.focus();
-      }
+      // Ctrl/Cmd + K handled by GlobalSearch component now
 
       // Ctrl/Cmd + N to create new task
       if ((e.ctrlKey || e.metaKey) && e.key === "n") {
