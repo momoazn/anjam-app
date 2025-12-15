@@ -17,7 +17,7 @@ This guide provides technical guidance for developers working on the task manage
 bun install
 
 # Start both backend and frontend in development mode
-bun run dev:start
+bun run dev
 
 # Or run separately:
 bun run dev:client  # Frontend only (Vite on port 5173)
@@ -26,12 +26,10 @@ bun run dev:server  # Backend only (Air with live reload)
 
 ### Development Commands
 
-- `bun run dev:start` - Start backend serve + frontend dev server
+- `bun run dev` - Start backend + frontend dev server
 - `bun run dev:full` - Backend (Air) + frontend dev server
 - `bun run dev:client` - Frontend only (Vite dev server with HMR)
 - `bun run dev:server` - Backend only (Air live-reload)
-- `bun run serve:client` - Preview frontend production build
-- `bun run serve:server` - Run backend without live-reload
 
 ## Code Quality
 
@@ -41,15 +39,15 @@ After making changes, always run quality checks before committing:
 
 ```bash
 # Run all quality checks (typecheck + lint + format)
-bun run quality:check
+bun run check
 
 # Individual checks
 bun run type:check    # TypeScript type checking
-bun run lint:check    # ESLint check
-bun run format:check  # Prettier check
+bun run lint          # ESLint check
+bun run format        # Prettier check
 
 # Auto-fix issues
-bun run quality:fix   # Fix linting and formatting
+bun run fix           # Fix linting and formatting
 bun run lint:fix      # Fix linting only
 bun run format:fix    # Fix formatting only
 ```
@@ -69,10 +67,9 @@ bun run format:fix    # Fix formatting only
 Unit tests use Vitest + React Testing Library:
 
 ```bash
-bun run test:unit         # Watch mode
-bun run test:unit:run     # Run once
-bun run test:unit:ui      # Open Vitest UI
-bun run test:unit:coverage # Generate coverage report
+bun run test         # Watch mode
+bun run test:run     # Run once
+bun run test:coverage # Generate coverage report
 ```
 
 - Test files are co-located as `*.test.ts(x)` next to source files

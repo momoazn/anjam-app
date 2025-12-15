@@ -9,13 +9,13 @@ A concise guide for testing the task manager application locally and validating 
 bun run test:all
 
 # Unit tests only
-bun run test:unit:run
+bun run test:run
 
 # E2E tests only
 bun run test:e2e
 
 # Quality checks (typecheck + lint + format)
-bun run quality:check
+bun run check
 ```
 
 ## Unit Testing
@@ -23,10 +23,9 @@ bun run quality:check
 ### Running Tests
 
 ```bash
-bun run test:unit         # Watch mode (recommended during development)
-bun run test:unit:run     # Single run (for CI/verification)
-bun run test:unit:ui      # Open Vitest UI for interactive testing
-bun run test:unit:coverage # Generate coverage report
+bun run test         # Watch mode (recommended during development)
+bun run test:run     # Single run (for CI/verification)
+bun run test:coverage # Generate coverage report
 ```
 
 ### Test Structure
@@ -185,14 +184,14 @@ Current E2E tests cover:
 Before committing code, always run:
 
 ```bash
-bun run quality:check
+bun run check
 ```
 
 This runs:
 
 1. TypeScript type checking (`type:check`)
-2. ESLint (`lint:check`)
-3. Prettier format check (`format:check`)
+2. ESLint (`lint`)
+3. Prettier format check (`format`)
 
 All checks must pass before committing.
 
@@ -227,10 +226,10 @@ bun run data:truncate
 
 ```bash
 # Run specific test file
-bun run test:unit:run src/lib/status-utils.test.ts
+bun run test:run src/lib/status-utils.test.ts
 
 # Run tests matching pattern
-bun run test:unit:run -- -t "getTaskStatus"
+bun run test:run -- -t "getTaskStatus"
 
 # Debug in VS Code: Set breakpoints and use debugger
 ```
@@ -257,10 +256,10 @@ For CI/CD pipelines, use:
 bun run test:all
 
 # Quality checks (must pass)
-bun run quality:check
+bun run check
 
 # Build verification
-bun run build:production
+bun run build
 ```
 
 ## Common Issues
@@ -272,7 +271,7 @@ bun run build:production
 bun run types:generate
 
 # Re-run tests
-bun run test:unit:run
+bun run test:run
 ```
 
 ### Port Conflicts

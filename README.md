@@ -17,7 +17,7 @@ A comprehensive task and project management application built with React, TypeSc
 bun install
 
 # Start development server (frontend + backend)
-bun run dev:start
+bun run dev
 
 # Or run separately:
 bun run dev:client  # Frontend only (Vite on 5173)
@@ -47,7 +47,7 @@ bun run build:mac
 
 ### Development
 
-- `bun run dev:start` - Start backend serve + frontend dev server
+- `bun run dev` - Start backend + frontend dev server
 - `bun run dev:full` - Start backend (Air) + frontend dev server
 - `bun run dev:client` - Start frontend only (Vite dev server)
 - `bun run dev:server` - Start backend only (Air live reload)
@@ -55,23 +55,18 @@ bun run build:mac
 ### Building
 
 - `bun run build` - Run `scripts/build.ts` to orchestrate the frontend build, Linux backend, Windows backend, macOS backend, and release packaging.
-- `bun run build:production` - Alias for `bun run build`.
 - `bun run build:client` - Build frontend for production.
 - `bun run build:server` - Build the Linux backend binary into `release/`.
-- `bun run build:windows` - Build the Windows backend, keep it under `release/`, and zip the package alongside the Windows helpers.
+- `bun run build:windows` - Build the Windows backend and zip package.
 - `bun run build:mac` - Build the macOS backend binary into `release/`.
-- `bun run build:all-platforms` - Alias for `bun run build`.
-- `bun run package:windows` - Alias for `bun run build:windows`.
-- `bun run serve:client` - Preview built frontend
-- `bun run serve:server` - Serve built backend
 
 ### Quality Checks
 
-- `bun run quality:check` - Typecheck + lint + format checks
-- `bun run quality:fix` - Fix lint and formatting issues
-- `bun run format:check` - Prettier check
+- `bun run check` - Typecheck + lint + format checks
+- `bun run fix` - Fix lint and formatting issues
+- `bun run format` - Prettier check
 - `bun run format:fix` - Prettier write
-- `bun run lint:check` - Run ESLint
+- `bun run lint` - Run ESLint
 - `bun run lint:fix` - Run ESLint with fixes
 - `bun run type:check` - Run TypeScript type checking
 
@@ -82,12 +77,19 @@ bun run build:mac
 - `bun run data:truncate` - Clear all data from database
 - `bun run data:reset` - Truncate then seed database
 
+### Testing
+
+- `bun run test` - Run unit tests (watch mode)
+- `bun run test:run` - Run unit tests once
+- `bun run test:coverage` - Generate coverage report
+- `bun run test:e2e` - Run E2E tests
+- `bun run test:e2e:ui` - E2E tests with UI
+- `bun run test:all` - Run unit + E2E tests
+
 ### Utilities
 
 - `bun run types:generate` - Regenerate PocketBase TypeScript types
-- `bun run clean` - Clean build artifacts and dependencies (incl. release)
-- `scripts/build.ts` - TypeScript build orchestrator (Bun runs this via `bun run build`) that handles the frontend, backend, Windows binary, and ZIP packaging.
-- `scripts/dev/run.sh`, `scripts/dev/run.bat`, `scripts/dev/run-with-env.bat` - Quick helpers for starting the stack with sensible defaults
+- `bun run clean` - Clean build artifacts, dependencies, and release
 
 ## 🏗️ Project Structure
 
@@ -145,10 +147,9 @@ bun run build:mac
 
 ### Unit Tests (Vitest + React Testing Library)
 
-- `bun run test:unit` - Run Vitest in watch mode
-- `bun run test:unit:run` - Run once
-- `bun run test:unit:ui` - Open Vitest UI
-- `bun run test:unit:coverage` - Generate coverage report
+- `bun run test` - Run Vitest in watch mode
+- `bun run test:run` - Run once
+- `bun run test:coverage` - Generate coverage report
 
 Test files are co-located as `*.test.ts(x)`. Coverage thresholds: 60% (lines, functions, branches, statements).
 
@@ -178,8 +179,8 @@ The application serves both API and frontend from a single Go binary. The fronte
 - [ ] Change default admin credentials
 - [ ] Configure production database
 - [ ] Set environment variables
-- [ ] Run `bun run quality:check` - all checks must pass
-- [ ] Run `bun run build:production` - build must succeed
+- [ ] Run `bun run check` - all checks must pass
+- [ ] Run `bun run build` - build must succeed
 - [ ] Test the application in production mode
 
 ## 🔒 Security
@@ -224,8 +225,8 @@ Example: `feat(tasks): add drag-and-drop reordering`
 
 ### Pull Requests
 
-1. Run `bun run quality:check` - all checks must pass
-2. Run `bun run build:production` - build must succeed
+1. Run `bun run check` - all checks must pass
+2. Run `bun run build` - build must succeed
 3. Include clear description
 4. Link related issues
 5. Provide test/QA steps

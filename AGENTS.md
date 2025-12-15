@@ -42,39 +42,34 @@ This is a **task and project management application** with a Go backend (PocketB
 **DO NOT run the app after each change.** Instead:
 
 1. Make your code changes
-2. Run quality checks when changes are complete: `bun run quality:check`
+2. Run quality checks when changes are complete: `bun run check`
 
-- `bun run dev:start` - Start backend serve + frontend dev server
+- `bun run dev` - Start backend serve + frontend dev server
 - `bun run dev:full` - Backend (Air) + frontend dev server
 - `bun run dev:client` - Frontend only (Vite dev server with HMR)
 - `bun run dev:server` - Backend only (Air live-reload)
-- `bun run serve:client` - Preview frontend production build
-- `bun run serve:server` - Run backend without live-reload
 
 ### Building
 
 - `bun run build` - Runs `scripts/build.ts` to produce the frontend, Linux backend, Windows backend, and release ZIP/binaries in `release/`.
-- `bun run build:production` - Alias for `bun run build`.
 - `bun run build:client` - Build frontend only.
 - `bun run build:server` - Build only the Linux backend binary into `release/`.
 - `bun run build:windows` - Build the Windows backend binary and package `release/task-manager-windows.zip`.
-- `bun run build:all-platforms` - Alias for `bun run build`.
-- `bun run package:windows` - Alias for `bun run build:windows`.
+- `bun run build:mac` - Build the macOS backend binary into `release/`.
 
 ### Quality Checks (Run After Changes Complete)
 
-- `bun run quality:check` - Typecheck + lint + format checks (**primary**)
+- `bun run check` - Typecheck + lint + format checks (**primary**)
 - `bun run type:check` - TypeScript type checking (no emit)
-- `bun run lint:check` / `lint:fix` - ESLint check / fix
-- `bun run format:check` / `format:fix` - Prettier check / write
-- `bun run quality:fix` - Lint + format fixes
+- `bun run lint` / `lint:fix` - ESLint check / fix
+- `bun run format` / `format:fix` - Prettier check / write
+- `bun run fix` - Lint + format fixes
 
 ### Testing
 
-- `bun run test:unit` - Vitest unit tests (watch mode)
-- `bun run test:unit:run` - Run unit tests once
-- `bun run test:unit:ui` - Open Vitest UI
-- `bun run test:unit:coverage` - Generate coverage report
+- `bun run test` - Vitest unit tests (watch mode)
+- `bun run test:run` - Run unit tests once
+- `bun run test:coverage` - Generate coverage report
 - `bun run test:e2e` - Run Playwright E2E tests
 - `bun run test:e2e:ui` - Playwright UI mode
 - `bun run test:e2e:debug` - Debug E2E tests
@@ -117,7 +112,7 @@ This is a **task and project management application** with a Go backend (PocketB
   - Runs against `http://localhost:5173` (dev client)
   - Auto-starts dev server via `webServer` config
 
-- Run `bun run quality:check` before committing; run `bun run test:all` before opening PRs
+- Run `bun run check` before committing; run `bun run test:all` before opening PRs
 
 ## Schema and Type Generation
 
@@ -142,8 +137,8 @@ This is a **task and project management application** with a Go backend (PocketB
   - Link related issues
   - Include test/QA steps for reviewers
   - Add screenshots or GIFs for UI changes
-  - Ensure `bun run quality:check` passes (type + lint + format checks)
-  - Ensure `bun run build:production` succeeds
+  - Ensure `bun run check` passes (type + lint + format checks)
+  - Ensure `bun run build` succeeds
 
 ## Key Implementation Patterns
 
