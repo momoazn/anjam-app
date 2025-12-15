@@ -96,7 +96,6 @@ func main() {
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.PATCH("/api/tm/status-configs/{id}/toggle", handleToggleStatusConfig)
 		se.Router.PATCH("/api/tm/users/{id}/toggle-active", handleToggleUserActive)
 		se.Router.PATCH("/api/tm/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/tm/users/{id}/login-logs", handleGetUserLoginLogs)
@@ -597,30 +596,7 @@ func getNextTaskNumber(app core.App, projectId string) (int, error) {
 }
 
 func setTaskDefaults(e *core.RecordEvent) {
-	// Set default status_config if not provided
-	if e.Record.GetString("status_config") == "" {
-		projectId := e.Record.GetString("project")
-		if projectId != "" {
-			// Get the default "todo" status config for this project
-			var statusConfig struct {
-				ID string `db:"id"`
-			}
-			err := e.App.DB().NewQuery(`
-				SELECT id FROM status_configs
-				WHERE project = {:projectId} AND key = 'todo'
-				LIMIT 1
-			`).Bind(dbx.Params{"projectId": projectId}).One(&statusConfig)
-
-			if err == nil && statusConfig.ID != "" {
-				e.Record.Set("status_config", statusConfig.ID)
-				log.Printf("Set default status_config for task: %s", statusConfig.ID)
-			} else {
-				log.Printf("Warning: Could not find default 'todo' status config for project %s: %v", projectId, err)
-			}
-		}
-	}
-
-	// Keep the old status field for backward compatibility
+	// Set default status
 	if e.Record.GetString("status") == "" {
 		e.Record.Set("status", "todo")
 	}
@@ -629,87 +605,6 @@ func setTaskDefaults(e *core.RecordEvent) {
 	}
 }
 
-func handleToggleStatusConfig(e *core.RequestEvent) error {
-	statusConfigId := e.Request.PathValue("id")
-
-	// Validate authentication
-	authRecord, err := validateAuth(e)
-	if err != nil {
-		return err
-	}
-
-	role := authRecord.GetString("role")
-	if role != "admin" && role != "supervisor" {
-		return e.JSON(403, map[string]string{"error": ErrNoPermissionToChangeStatus})
-	}
-
-	// Fetch the status config
-	statusConfig, err := e.App.FindRecordById(CollectionStatusConfigs, statusConfigId)
-	if err != nil {
-		log.Printf("Error finding status config %q: %v", statusConfigId, err)
-		return e.JSON(404, map[string]string{"error": "Status config not found"})
-	}
-
-	projectId := statusConfig.GetString("project")
-	if role == "supervisor" {
-		projectRecord, err := e.App.FindRecordById(CollectionProjects, projectId)
-		if err != nil {
-			log.Printf("Error verifying supervisor for project %q: %v", projectId, err)
-			return e.JSON(403, map[string]string{"error": ErrNoAccessToProject})
-		}
-
-		if projectRecord.GetString("supervisor") != authRecord.Id {
-			return e.JSON(403, map[string]string{"error": ErrOnlySupervisorCanChangeStatus})
-		}
-	}
-
-	currentEnabled := statusConfig.GetBool("enabled")
-	newEnabled := !currentEnabled
-
-	// If disabling, check if any tasks are using this status
-	if !newEnabled {
-		var taskCount int
-		err := e.App.DB().NewQuery(`
-			SELECT COUNT(*) FROM tasks WHERE status_config = {:statusConfigId}
-		`).Bind(dbx.Params{"statusConfigId": statusConfigId}).Row(&taskCount)
-
-		if err != nil {
-			log.Printf("Error checking tasks for status config %q: %v", statusConfigId, err)
-			return e.JSON(500, map[string]string{"error": "Failed to check task usage"})
-		}
-
-		var legacyCount int
-		statusKey := statusConfig.GetString("key")
-		if projectId != "" && statusKey != "" {
-			legacyErr := e.App.DB().NewQuery(`
-				SELECT COUNT(*) FROM tasks
-				WHERE project = {:projectId} AND status = {:statusKey}
-			`).Bind(dbx.Params{"projectId": projectId, "statusKey": statusKey}).Row(&legacyCount)
-
-			if legacyErr != nil {
-				log.Printf("Error checking legacy status usage for %q: %v", statusConfigId, legacyErr)
-				return e.JSON(500, map[string]string{"error": "Failed to check legacy task usage"})
-			}
-		}
-
-		totalUsage := taskCount + legacyCount
-		if totalUsage > 0 {
-			return e.JSON(400, map[string]interface{}{
-				"error":      ErrCannotDisableStatusInUse,
-				"task_count": totalUsage,
-			})
-		}
-	}
-
-	// Toggle the enabled field
-	statusConfig.Set("enabled", newEnabled)
-	if err := e.App.Save(statusConfig); err != nil {
-		log.Printf("Error toggling status config %q: %v", statusConfigId, err)
-		return e.JSON(500, map[string]string{"error": "Failed to update status"})
-	}
-
-	return e.JSON(200, map[string]bool{"enabled": newEnabled})
-}
 
 // --- Notification Handlers ---
 

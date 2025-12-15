@@ -12,7 +12,6 @@ const (
 	CollectionNotifications = "notifications"
 	CollectionUserLoginLogs = "user_login_logs"
 	CollectionSuperusers    = "_superusers"
-	CollectionStatusConfigs = "status_configs"
 	CollectionUsersProjects = "users_projects"
 	CollectionComments      = "comments"
 )
