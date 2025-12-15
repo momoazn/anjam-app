@@ -145,10 +145,10 @@ bun run build:mac
 
 ### Unit Tests (Vitest + React Testing Library)
 
-- `bun run test` - Run Vitest in watch mode
-- `bun run test:run` - Run once
-- `bun run test:ui` - Open Vitest UI
-- `bun run test:coverage` - Generate coverage report
+- `bun run test:unit` - Run Vitest in watch mode
+- `bun run test:unit:run` - Run once
+- `bun run test:unit:ui` - Open Vitest UI
+- `bun run test:unit:coverage` - Generate coverage report
 
 Test files are co-located as `*.test.ts(x)`. Coverage thresholds: 60% (lines, functions, branches, statements).
 
@@ -157,6 +157,7 @@ Test files are co-located as `*.test.ts(x)`. Coverage thresholds: 60% (lines, fu
 - `bun run test:e2e` - Run Playwright tests
 - `bun run test:e2e:ui` - Playwright UI mode
 - `bun run test:e2e:debug` - Debug E2E tests
+- `bun run test:all` - Run unit tests (once) + E2E tests
 
 E2E tests run against `http://localhost:5173`. Test directory: `e2e/`
 
