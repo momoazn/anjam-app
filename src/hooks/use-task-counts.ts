@@ -15,7 +15,7 @@ export function useTaskCounts() {
     const tasksData = queryClient.getQueryData<TaskWithProject[]>(
       queryKeys.tasks.list(undefined, "project,assignee", "full"),
     );
-    return (tasksData || []).filter((task) => !task.deleted_at);
+    return (tasksData ?? []).filter((task) => !task.deleted_at);
   }, [queryClient]);
 
   const counts = useMemo(() => {
@@ -28,13 +28,19 @@ export function useTaskCounts() {
     ).length;
 
     const dueToday = tasks.filter((task) => {
-      const dl = task.deadline as string | undefined;
-      return dl && isToday(new Date(dl)) && task.status !== "done";
+      return (
+        task.deadline &&
+        isToday(new Date(task.deadline)) &&
+        task.status !== "done"
+      );
     }).length;
 
     const overdue = tasks.filter((task) => {
-      const dl = task.deadline as string | undefined;
-      return dl && isPast(new Date(dl)) && task.status !== "done";
+      return (
+        task.deadline &&
+        isPast(new Date(task.deadline)) &&
+        task.status !== "done"
+      );
     }).length;
 
     const inProgress = tasks.filter(
@@ -47,18 +53,16 @@ export function useTaskCounts() {
         return;
       }
 
-      const projectValue = task.project as
-        | ProjectsResponse
-        | string
-        | undefined;
       const projectId =
-        typeof projectValue === "string" ? projectValue : projectValue?.id;
+        typeof task.project === "string"
+          ? task.project
+          : (task.project as ProjectsResponse)?.id;
 
       if (!projectId) {
         return;
       }
 
-      byProject.set(projectId, (byProject.get(projectId) || 0) + 1);
+      byProject.set(projectId, (byProject.get(projectId) ?? 0) + 1);
     });
 
     return {
