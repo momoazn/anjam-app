@@ -45,10 +45,15 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	var taskDTOs []map[string]interface{}
 	for _, t := range tasks {
 		if canViewTask(e.App, t, authRecord) {
-			project, _ := e.App.FindRecordById("projects", t.GetString("project"))
 			projectName := ""
-			if project != nil {
-				projectName = project.GetString("name")
+			projectId := t.GetString("project")
+			if projectId != "" {
+				project, err := e.App.FindRecordById("projects", projectId)
+				if err != nil {
+					log.Printf("Warning: failed to fetch project %s for task %s: %v", projectId, t.Id, err)
+				} else if project != nil {
+					projectName = project.GetString("name")
+				}
 			}
 
 			taskDTOs = append(taskDTOs, map[string]interface{}{
@@ -100,14 +105,33 @@ func canViewTask(app core.App, task *core.Record, user *core.Record) bool {
 	if user.GetString("role") == "admin" {
 		return true
 	}
-	// For MVP, we trust the internal nature of the app.
-	// In a full implementation, we would check if user is in project group, etc.
-	return true
+	
+	// Fetch the task's project to check group membership
+	projectId := task.GetString("project")
+	if projectId == "" {
+		return false
+	}
+	
+	project, err := app.FindRecordById("projects", projectId)
+	if err != nil {
+		return false
+	}
+	
+	// Both user and project must be in the same group
+	userGroupId := user.GetString("group")
+	projectGroupId := project.GetString("group")
+	
+	return userGroupId != "" && userGroupId == projectGroupId
 }
 
 func canViewProject(app core.App, project *core.Record, user *core.Record) bool {
 	if user.GetString("role") == "admin" {
 		return true
 	}
-	return true
+	
+	// Both user and project must be in the same group
+	userGroupId := user.GetString("group")
+	projectGroupId := project.GetString("group")
+	
+	return userGroupId != "" && userGroupId == projectGroupId
 }

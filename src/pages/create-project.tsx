@@ -26,9 +26,18 @@ import { useAuthUser } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
-  code: z.string().min(1, {
-    message: fa.projects.create.form.codeRequired,
-  }),
+  code: z
+    .string()
+    .min(1, {
+      message: fa.projects.create.form.codeRequired,
+    })
+    .length(3, {
+      message: "Code must be exactly 3 characters",
+    })
+    .regex(/^[A-Za-z]+$/, {
+      message: "Code must contain only letters (no numbers or special characters)",
+    })
+    .transform((val) => val.toUpperCase()),
   description: z.string().optional(),
   assets: z.array(z.instanceof(File)).optional(),
   supervisor: z.string().optional(),

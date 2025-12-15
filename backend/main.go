@@ -179,7 +179,7 @@ func generateRandomCode() string {
 func handleGroupCreation(e *core.RecordEvent) error {
 	record := e.Record
 
-	// Validate that only managers can be assigned as group managers
+	// Validate that only managers or admins can be assigned as group managers
 	managerId := record.GetString("manager")
 	if managerId != "" {
 		manager, err := e.App.FindRecordById(CollectionUsers, managerId)
@@ -188,7 +188,7 @@ func handleGroupCreation(e *core.RecordEvent) error {
 		}
 
 		managerRole := manager.GetString("role")
-		if managerRole != "manager" {
+		if managerRole != "manager" && managerRole != "admin" {
 			return errors.New(ErrOnlyManagersCanBeGroupManagers)
 		}
 	}
@@ -514,16 +514,22 @@ func handleProjectCreation(e *core.RecordEvent) error {
 func generateUniqueProjectCode(app core.App) (string, error) {
 	for attempt := 0; attempt < MaxCodeGenerationAttempts; attempt++ {
 		projectCode := generateRandomCode()
+		
+		// Validate format before checking collision
+		if len(projectCode) != CodeLength {
+			return "", fmt.Errorf("generated code has invalid length %d (expected %d)", len(projectCode), CodeLength)
+		}
+		
 		exists, err := app.FindFirstRecordByData(CollectionProjects, "code", projectCode)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return "", err
+			return "", fmt.Errorf("database error checking code collision for %q: %w", projectCode, err)
 		}
 		if exists == nil {
 			return projectCode, nil
 		}
 		log.Printf("Project code collision for %q, generating a new one (attempt %d/%d).", projectCode, attempt+1, MaxCodeGenerationAttempts)
 	}
-	return "", fmt.Errorf("failed to generate unique project code after %d attempts", MaxCodeGenerationAttempts)
+	return "", fmt.Errorf("failed to generate unique project code after %d attempts (possible collision rate too high)", MaxCodeGenerationAttempts)
 }
 
 func handleTaskCreation(e *core.RecordEvent) error {
@@ -582,14 +588,12 @@ func getNextTaskNumber(app core.App, projectId string) (int, error) {
 
 	parts := strings.Split(lastTask.DisplayID, "-")
 	if len(parts) != 2 {
-		log.Printf("Warning: Unexpected display_id format %q. Defaulting to 1.", lastTask.DisplayID)
-		return 1, nil
+		return 0, fmt.Errorf("invalid display_id format %q: expected format 'CODE-NUMBER'", lastTask.DisplayID)
 	}
 
 	lastNum, parseErr := strconv.Atoi(parts[1])
 	if parseErr != nil {
-		log.Printf("Warning: Could not parse task number from display_id %q: %v. Defaulting to 1.", lastTask.DisplayID, parseErr)
-		return 1, nil
+		return 0, fmt.Errorf("invalid task number in display_id %q: %w", lastTask.DisplayID, parseErr)
 	}
 
 	return lastNum + 1, nil
@@ -691,7 +695,8 @@ func handleProjectUpdateNotification(e *core.RecordEvent) error {
 				"projectId": e.Record.Id,
 			})
 		if err != nil {
-			log.Printf("Error creating project update notification: %v", err)
+			// Log the error but don't fail the parent operation
+			log.Printf("Warning: failed to create project update notification for user %s: %v", pu.UserId, err)
 		}
 	}
 
@@ -735,21 +740,18 @@ func handleCommentNotification(e *core.RecordEvent) error {
 func createNotification(app core.App, userId, notificationType, title, message string, data map[string]interface{}) error {
 	// Validate that the user exists before creating notification
 	if userId == "" {
-		log.Printf("Warning: Attempted to create notification with empty user ID")
-		return nil
+		return fmt.Errorf("cannot create notification: empty user ID")
 	}
 
 	// Check if user exists
 	_, err := app.FindRecordById(CollectionUsers, userId)
 	if err != nil {
-		log.Printf("Warning: User %s not found, skipping notification creation: %v", userId, err)
-		return nil // Don't fail the parent operation
+		return fmt.Errorf("cannot create notification: user %s not found: %w", userId, err)
 	}
 
 	notificationsCollection, err := app.FindCollectionByNameOrId(CollectionNotifications)
 	if err != nil {
-		log.Printf("Error finding notifications collection: %v", err)
-		return nil // Don't fail the parent operation
+		return fmt.Errorf("cannot create notification: notifications collection not found: %w", err)
 	}
 
 	record := core.NewRecord(notificationsCollection)
@@ -762,8 +764,7 @@ func createNotification(app core.App, userId, notificationType, title, message s
 	}
 
 	if err := app.Save(record); err != nil {
-		log.Printf("Error creating notification for user %s: %v", userId, err)
-		return nil // Don't fail the parent operation
+		return fmt.Errorf("cannot create notification for user %s: %w", userId, err)
 	}
 
 	return nil
