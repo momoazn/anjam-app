@@ -65,6 +65,13 @@ const EditProject = createLazyPage(
   () => import("@/pages/edit-project"),
   fa.errors.pageLoad.projects,
 );
+const TaskBoardPage = createLazyPage(
+  () =>
+    import("@/pages/task-board").then((module) => ({
+      default: module.TaskBoardPage,
+    })),
+  fa.errors.pageLoad.tasks,
+);
 const Tasks = createLazyPage(
   () => import("@/pages/tasks"),
   fa.errors.pageLoad.tasks,
@@ -277,6 +284,18 @@ const routes: RouteType[] = [
     element: <Tasks />,
     protected: true,
     title: fa.tasks.title,
+  },
+  {
+    path: "/tasks/board",
+    element: (
+      <PermissionProtectedRoute
+        permission="tasks.view" // Assuming a permission for task board
+      >
+        <TaskBoardPage />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    title: fa.tasks.board.title, // Assuming a title for task board
   },
   {
     path: "/tasks/new",

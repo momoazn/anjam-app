@@ -1,4 +1,4 @@
-import { FilterX, ListTodo, Plus, CheckSquare } from "lucide-react";
+import { FilterX, ListTodo, Plus, CheckSquare, LayoutGrid } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TaskFilters } from "@/components/task/task-filters";
@@ -506,6 +506,15 @@ export default function Tasks() {
           </p>
         </div>
         <div className="flex w-full gap-2 sm:w-auto">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => navigate("/tasks/board")}
+            className="gap-2"
+          >
+            <LayoutGrid className="h-4 w-4" />
+            {fa.tasks.board.title}
+          </Button>
           <Button
             variant={selectionMode ? "secondary" : "outline"}
             size="lg"
