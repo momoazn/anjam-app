@@ -110,6 +110,7 @@ export const fa = {
     previous: "قبلی",
     next: "بعدی",
     more: "بیشتر",
+    preview: "پیش‌نمایش",
 
     time: {
       hoursShort: "ساعت",

@@ -21,15 +21,17 @@ import { useGroups } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
+export type UserFieldsFormValues = {
+  username: string;
+  password?: string;
+  first_name: string;
+  last_name: string;
+  role: UsersRoleOptions;
+  group?: string;
+};
+
 type UserFieldsProps = {
-  control: Control<{
-    username: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    role: UsersRoleOptions;
-    group?: string;
-  }>;
+  control: Control<UserFieldsFormValues>;
   isEdit?: boolean;
   editingUserId?: string;
   showGroup?: boolean;
@@ -76,7 +78,7 @@ export function UserFields({
 
   return (
     <>
-      <FormField
+      <FormField<UserFieldsFormValues>
         control={control}
         name="username"
         render={({ field }) => (
@@ -91,7 +93,7 @@ export function UserFields({
       />
 
       {!isEdit && (
-        <FormField
+        <FormField<UserFieldsFormValues>
           control={control}
           name="password"
           render={({ field }) => (
@@ -106,7 +108,7 @@ export function UserFields({
         />
       )}
 
-      <FormField
+      <FormField<UserFieldsFormValues>
         control={control}
         name="first_name"
         render={({ field }) => (
@@ -120,7 +122,7 @@ export function UserFields({
         )}
       />
 
-      <FormField
+      <FormField<UserFieldsFormValues>
         control={control}
         name="last_name"
         render={({ field }) => (
@@ -136,7 +138,7 @@ export function UserFields({
 
       {/* Only show role field if user has permission to change roles or if not editing self */}
       {(!isEditingSelf || user?.role === UsersRoleOptions.admin) && (
-        <FormField
+        <FormField<UserFieldsFormValues>
           control={control}
           name="role"
           render={({ field }) => (
@@ -163,7 +165,7 @@ export function UserFields({
       )}
 
       {showGroup && (
-        <FormField
+        <FormField<UserFieldsFormValues>
           control={control}
           name="group"
           render={({ field }) => (

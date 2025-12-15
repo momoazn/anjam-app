@@ -41,6 +41,7 @@ type GeneratedUser = Omit<UsersRecord, "id" | "tokenKey"> & {
 
 type GeneratedProject = Omit<ProjectsRecord, "id"> & {
   supervisor: string; // Required, using username
+  group: string; // Required group identifier
 };
 
 type GeneratedTask = Omit<TasksRecord, "id" | "expand"> & {
@@ -157,6 +158,7 @@ function generateProjects(
     name: faker.company.name(),
     code: faker.string.alpha({ length: 3, casing: "upper" }),
     supervisor: faker.helpers.arrayElement(supervisors).username,
+    group: faker.string.uuid(),
     created: faker.date.recent().toISOString(),
   }));
 }

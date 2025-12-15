@@ -10,6 +10,8 @@ import {
   useDeleteProject,
 } from "./projects";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ProjectsResponse } from "@/lib/pocketbase-types";
+import { Collections } from "@/lib/pocketbase-types";
 
 // Mock data
 const getFullListMock = vi.fn();
@@ -53,13 +55,17 @@ describe("useProjects", () => {
   });
 
   it("fetches all projects with default options", async () => {
-    const mockProjects = [
+    const mockProjects: ProjectsResponse[] = [
       {
         id: "proj-1",
         name: "Project 1",
         code: "PRJ",
         supervisor: "sup-1",
         group: "grp-1",
+        assets: [],
+        description: "Test project",
+        collectionId: Collections.Projects,
+        collectionName: Collections.Projects,
         created: "2024-01-01T00:00:00Z",
         updated: "2024-01-01T00:00:00Z",
       },
@@ -81,7 +87,7 @@ describe("useProjects", () => {
   });
 
   it("respects custom batch and sort options", async () => {
-    const mockProjects = [];
+    const mockProjects: ProjectsResponse[] = [];
     getFullListMock.mockResolvedValue(mockProjects);
 
     const { result } = renderHook(

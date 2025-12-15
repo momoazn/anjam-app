@@ -99,6 +99,7 @@ export const common = {
   previous: shared.previous,
   next: shared.next,
   more: shared.more,
+  preview: shared.preview,
 
   time: {
     hoursShort: "ساعت",

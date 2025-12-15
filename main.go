@@ -174,8 +174,7 @@ func generateRandomCode() string {
 	return security.RandomStringWithAlphabet(CodeLength, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 }
 
-// handleGroupCreation auto-generates unique 3-letter group codes
-// Similar to project code generation
+// handleGroupCreation validates manager assignment and ensures status defaults.
 func handleGroupCreation(e *core.RecordEvent) error {
 	record := e.Record
 

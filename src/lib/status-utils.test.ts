@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { TasksResponse, TasksStatusOptions } from "./pocketbase-types";
+import type { TasksResponse } from "./pocketbase-types";
+import {
+  Collections,
+  TasksPriorityOptions,
+  TasksStatusOptions,
+} from "./pocketbase-types";
 import {
   getAllTaskStatuses,
   getStatusByKey,
@@ -17,8 +22,8 @@ const createMockTask = (
   overrides: Partial<TasksResponse> = {},
 ): TasksResponse => ({
   id: "task1",
-  collectionId: "tasks",
-  collectionName: "tasks",
+  collectionId: Collections.Tasks,
+  collectionName: Collections.Tasks,
   created: "2024-01-01",
   updated: "2024-01-01",
   display_id: "TST-001",
@@ -28,14 +33,28 @@ const createMockTask = (
   creator: "user1",
   project: "proj1",
   status: TasksStatusOptions.todo,
-  priority: "medium",
-  deadline: null,
+  priority: TasksPriorityOptions.medium,
+  deadline: "2024-01-01T00:00:00.000Z",
+  estimated_hours: 0,
+  estimated_minutes: 0,
   tags: [],
   order: 0,
   time_spent_minutes: 0,
-  deleted_at: null,
+  deleted_at: "",
   ...overrides,
 });
+
+const ALL_STATUSES: TasksStatusOptions[] = [
+  TasksStatusOptions.todo,
+  TasksStatusOptions.in_progress,
+  TasksStatusOptions.pending,
+  TasksStatusOptions.review,
+  TasksStatusOptions.testing,
+  TasksStatusOptions.blocked,
+  TasksStatusOptions.on_hold,
+  TasksStatusOptions.done,
+  TasksStatusOptions.canceled,
+];
 
 describe("getTaskStatus", () => {
   it("should return correct status configuration for todo", () => {
@@ -80,28 +99,16 @@ describe("getTaskStatus", () => {
   });
 
   it("should handle all status values", () => {
-    const statuses: Array<TasksResponse["status"]> = [
-      "todo",
-      "in_progress",
-      "pending",
-      "done",
-      "canceled",
-      "blocked",
-      "review",
-      "testing",
-      "on_hold",
-    ];
+    const statuses = ALL_STATUSES;
 
     statuses.forEach((status) => {
-      if (status) {
-        const task = createMockTask({ status });
-        const result = getTaskStatus(task);
-        expect(result.key).toBe(status);
-        expect(result.name).toBeTruthy();
-        expect(typeof result.color).toBe("string");
-        expect(typeof result.icon).toBe("string");
-        expect(typeof result.order).toBe("number");
-      }
+      const task = createMockTask({ status });
+      const result = getTaskStatus(task);
+      expect(result.key).toBe(status);
+      expect(result.name).toBeTruthy();
+      expect(typeof result.color).toBe("string");
+      expect(typeof result.icon).toBe("string");
+      expect(typeof result.order).toBe("number");
     });
   });
 
@@ -164,17 +171,7 @@ describe("getStatusColorClass", () => {
 
 describe("TASK_STATUS_CONFIG", () => {
   it("should contain all status options", () => {
-    const statuses: TasksStatusOptions[] = [
-      "todo",
-      "in_progress",
-      "review",
-      "testing",
-      "pending",
-      "blocked",
-      "on_hold",
-      "done",
-      "canceled",
-    ];
+    const statuses = ALL_STATUSES;
 
     statuses.forEach((status) => {
       expect(TASK_STATUS_CONFIG[status]).toBeDefined();
@@ -194,8 +191,10 @@ describe("TASK_STATUS_CONFIG", () => {
 describe("TASK_STATUS_ORDER", () => {
   it("should contain all status options in workflow order", () => {
     expect(TASK_STATUS_ORDER).toHaveLength(9);
-    expect(TASK_STATUS_ORDER[0]).toBe("todo");
-    expect(TASK_STATUS_ORDER[TASK_STATUS_ORDER.length - 1]).toBe("canceled");
+    expect(TASK_STATUS_ORDER[0]).toBe(TasksStatusOptions.todo);
+    expect(TASK_STATUS_ORDER[TASK_STATUS_ORDER.length - 1]).toBe(
+      TasksStatusOptions.canceled,
+    );
   });
 });
 
@@ -203,46 +202,46 @@ describe("getAllTaskStatuses", () => {
   it("should return all status configurations in order", () => {
     const statuses = getAllTaskStatuses();
     expect(statuses).toHaveLength(9);
-    expect(statuses[0].key).toBe("todo");
-    expect(statuses[statuses.length - 1].key).toBe("canceled");
+    expect(statuses[0].key).toBe(TasksStatusOptions.todo);
+    expect(statuses[statuses.length - 1].key).toBe(TasksStatusOptions.canceled);
   });
 });
 
 describe("getStatusByKey", () => {
   it("should return correct status configuration", () => {
-    const status = getStatusByKey("done");
-    expect(status.key).toBe("done");
+    const status = getStatusByKey(TasksStatusOptions.done);
+    expect(status.key).toBe(TasksStatusOptions.done);
     expect(status.isCompleted).toBe(true);
   });
 });
 
 describe("isActiveStatus", () => {
   it("should return true for active working statuses", () => {
-    expect(isActiveStatus("in_progress")).toBe(true);
-    expect(isActiveStatus("review")).toBe(true);
-    expect(isActiveStatus("testing")).toBe(true);
+    expect(isActiveStatus(TasksStatusOptions.in_progress)).toBe(true);
+    expect(isActiveStatus(TasksStatusOptions.review)).toBe(true);
+    expect(isActiveStatus(TasksStatusOptions.testing)).toBe(true);
   });
 
   it("should return false for terminal statuses", () => {
-    expect(isActiveStatus("done")).toBe(false);
-    expect(isActiveStatus("canceled")).toBe(false);
+    expect(isActiveStatus(TasksStatusOptions.done)).toBe(false);
+    expect(isActiveStatus(TasksStatusOptions.canceled)).toBe(false);
   });
 
   it("should return false for inactive statuses", () => {
-    expect(isActiveStatus("on_hold")).toBe(false);
-    expect(isActiveStatus("pending")).toBe(true); // pending can be active
+    expect(isActiveStatus(TasksStatusOptions.on_hold)).toBe(false);
+    expect(isActiveStatus(TasksStatusOptions.pending)).toBe(true); // pending can be active
   });
 });
 
 describe("isTerminalStatus", () => {
   it("should return true for completed or canceled statuses", () => {
-    expect(isTerminalStatus("done")).toBe(true);
-    expect(isTerminalStatus("canceled")).toBe(true);
+    expect(isTerminalStatus(TasksStatusOptions.done)).toBe(true);
+    expect(isTerminalStatus(TasksStatusOptions.canceled)).toBe(true);
   });
 
   it("should return false for active statuses", () => {
-    expect(isTerminalStatus("in_progress")).toBe(false);
-    expect(isTerminalStatus("review")).toBe(false);
-    expect(isTerminalStatus("on_hold")).toBe(false);
+    expect(isTerminalStatus(TasksStatusOptions.in_progress)).toBe(false);
+    expect(isTerminalStatus(TasksStatusOptions.review)).toBe(false);
+    expect(isTerminalStatus(TasksStatusOptions.on_hold)).toBe(false);
   });
 });

@@ -107,7 +107,9 @@ export class ErrorBoundary extends Component<
 // Hook-based error boundary for functional components
 export function useErrorHandler() {
   return (error: Error, errorInfo?: React.ErrorInfo) => {
-    logError("Error caught by useErrorHandler", error, errorInfo);
+    logError("Error caught by useErrorHandler", error, {
+      componentStack: errorInfo?.componentStack,
+    });
     // You can add error reporting logic here
   };
 }

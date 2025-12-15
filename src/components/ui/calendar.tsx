@@ -11,6 +11,9 @@ import {
 } from "react-day-picker";
 import { DayPicker, faIR } from "react-day-picker/persian";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const localeOverride = faIR as any;
+
 export type CalendarProps = DayPickerProps & {
   /**
    * In the year view, the number of years to display at once.
@@ -166,7 +169,7 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
-      locale={faIR}
+      locale={localeOverride}
       style={{
         width: 248.8 * (columnsDisplayed ?? 1) + "px",
       }}

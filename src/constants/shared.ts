@@ -76,6 +76,7 @@ export const shared = {
   previous: "قبلی",
   next: "بعدی",
   more: "بیشتر",
+  preview: "پیش‌نمایش",
 
   // Common messages
   notFound: "یافت نشد",

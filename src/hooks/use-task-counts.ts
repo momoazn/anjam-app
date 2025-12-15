@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuthUser } from "@/store/auth-store";
 import { queryKeys } from "./query-keys";
 import type { TaskWithProject } from "@/lib/pocketbase";
+import type { ProjectsResponse } from "@/lib/pocketbase-types";
 import { isToday, isPast } from "date-fns";
 
 export function useTaskCounts() {
@@ -42,11 +43,22 @@ export function useTaskCounts() {
 
     const byProject = new Map<string, number>();
     tasks.forEach((task) => {
-      if (task.project && task.status !== "done") {
-        const projectId =
-          typeof task.project === "string" ? task.project : task.project.id;
-        byProject.set(projectId, (byProject.get(projectId) || 0) + 1);
+      if (task.status === "done") {
+        return;
       }
+
+      const projectValue = task.project as
+        | ProjectsResponse
+        | string
+        | undefined;
+      const projectId =
+        typeof projectValue === "string" ? projectValue : projectValue?.id;
+
+      if (!projectId) {
+        return;
+      }
+
+      byProject.set(projectId, (byProject.get(projectId) || 0) + 1);
     });
 
     return {

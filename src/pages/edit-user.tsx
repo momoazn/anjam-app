@@ -1,11 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Control } from "react-hook-form";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
-import { UserFields } from "@/components/forms/user-fields";
+import {
+  UserFields,
+  type UserFieldsFormValues,
+} from "@/components/forms/user-fields";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +23,7 @@ const formSchema = z.object({
   first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
   last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
+  password: z.string().optional(),
   group: z.string().optional(),
 });
 
@@ -44,9 +48,12 @@ export default function EditUser() {
       first_name: "",
       last_name: "",
       role: UsersRoleOptions.employee,
+      password: "",
       group: "",
     },
   });
+
+  const userFieldsControl = form.control as Control<UserFieldsFormValues>;
 
   useEffect(() => {
     if (user) {
@@ -56,6 +63,7 @@ export default function EditUser() {
         last_name: user.last_name || "",
         role: user.role as UsersRoleOptions,
         group: user.group || "",
+        password: "",
       });
     }
   }, [user, form]);
@@ -108,7 +116,7 @@ export default function EditUser() {
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <UserFields
-              control={form.control}
+              control={userFieldsControl}
               isEdit
               editingUserId={id}
               showGroup={isAdmin || isManager}

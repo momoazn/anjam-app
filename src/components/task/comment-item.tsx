@@ -77,16 +77,10 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
   const handleSoftDelete = () => {
     if (softDeleteComment.isPending) return;
     setLocallyDeleted(true);
-    softDeleteComment.mutate(
-      {
-        id: comment.id,
-        updates: { deleted_at: new Date().toISOString() },
-      },
-      {
-        onSuccess: () => onDeleted?.(comment.id),
-        onError: () => setLocallyDeleted(false),
-      },
-    );
+    softDeleteComment.mutate(comment.id, {
+      onSuccess: () => onDeleted?.(comment.id),
+      onError: () => setLocallyDeleted(false),
+    });
   };
 
   // Autofocus and place caret at end when editing

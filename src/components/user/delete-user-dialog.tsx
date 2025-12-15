@@ -21,9 +21,6 @@ export function DeleteUserDialog({
       title={fa.users.delete.title}
       description={fa.users.delete.description}
       collection="users"
-      successMessage={fa.users.delete.success}
-      errorMessage={fa.users.delete.error}
-      invalidateQueries={["users"]}
     />
   );
 }

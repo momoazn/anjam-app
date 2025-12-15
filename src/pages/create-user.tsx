@@ -1,10 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, type Control } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-import { UserFields } from "@/components/forms/user-fields";
+import {
+  UserFields,
+  type UserFieldsFormValues,
+} from "@/components/forms/user-fields";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +46,8 @@ export default function CreateUser() {
       group: isManager && user?.group ? user.group : "",
     },
   });
+
+  const userFieldsControl = form.control as Control<UserFieldsFormValues>;
 
   const { mutate: createUser, isPending } = useCreateUser({
     onSuccess: () => {
@@ -90,7 +95,7 @@ export default function CreateUser() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <UserFields
-                control={form.control}
+                control={userFieldsControl}
                 showGroup={isAdmin || isManager}
               />
               <div className="flex items-center justify-end gap-2 pt-4">

@@ -16,6 +16,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { fa } from "./constants/text";
 import { AppRoutes } from "./router";
+import { TaskWithProject } from "@/lib/pocketbase";
 
 // Optimized QueryClient configuration
 const queryClient = new QueryClient({
@@ -25,7 +26,8 @@ const queryClient = new QueryClient({
       refetchOnMount: true, // Refetch only if data is stale
       retry: 1, // Simple retry logic
       // placeholderData keeps showing cached data while fetching new data
-      placeholderData: (previousData) => previousData,
+      placeholderData: (previousData: TaskWithProject[] | undefined) =>
+        previousData,
     },
   },
 });
