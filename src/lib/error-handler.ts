@@ -90,20 +90,20 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     if (errorMessage) {
       // Check if this is an inactive user error
       const message = errorMessage.toLowerCase();
-    const inactiveKeywords = fa.errors.validation.keywords.inactive;
-    const blockedKeywords = fa.errors.validation.keywords.blocked;
+      const inactiveKeywords = fa.errors.validation.keywords.inactive;
+      const blockedKeywords = fa.errors.validation.keywords.blocked;
 
       if (
-      inactiveKeywords.some((kw) => message.includes(kw)) ||
-      message.includes("inactive")
+        inactiveKeywords.some((kw) => message.includes(kw)) ||
+        message.includes("inactive")
       ) {
         toast.error(fa.auth.errors.userInactive);
       }
       // Check if this is a blocked user error
       else if (
-      blockedKeywords.some((kw) => message.includes(kw)) ||
-      message.includes("blocked") ||
-      message.includes("user account")
+        blockedKeywords.some((kw) => message.includes(kw)) ||
+        message.includes("blocked") ||
+        message.includes("user account")
       ) {
         toast.error(fa.auth.errors.userBlocked);
       }

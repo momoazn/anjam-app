@@ -32,9 +32,9 @@ test.describe("Authentication", () => {
     await page.getByRole("button", { name: fa.auth.login.loginButton }).click();
 
     // Should show error message
-    await expect(
-      page.getByText(fa.auth.errors.invalidCredentials),
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(fa.auth.errors.invalidCredentials)).toBeVisible(
+      { timeout: 5000 },
+    );
   });
 });
 
