@@ -4,13 +4,13 @@ This document outlines the plan for integrating GitHub into the Task Manager App
 
 ## 1. Objectives
 
-- **Authentication**: Allow users to sign in via GitHub.
-- **Project Linking**: Link identifying GitHub repositories to Projects.
+- **Dual Identity**: Keep existing email/password auth while adding GitHub SSO. GitHub-linked accounts are preferred, but local logins remain supported. First GitHub login provisions a new user if no matching email exists; otherwise the signed-in PocketBase user must explicitly link via "Connect GitHub" to prevent duplicates.
+- **Project Linking**: Associate PocketBase projects with GitHub repositories plus installation IDs from a GitHub App installation.
 - **Task Synchronization**:
-  - Import GitHub Issues as Tasks (Manual Sync).
-  - Sync status changes (closed issue -> done task) via Webhooks.
-  - Bi-directional comment syncing (optional/future).
-- **Automation**: Automatically update tasks based on Pull Requests.
+  - Manual “Import Issues” that runs with the GitHub App installation token.
+  - Real-time webhook syncing (issues opened/closed/reopened) with idempotent upsert rules.
+  - Bi-directional comments and PR automation reserved for a later phase.
+- **Automation**: Allow tasks to reflect PR references (“Fixes #123”) once phase 4 is implemented.
 
 ## 2. Technical Architecture
 
@@ -18,16 +18,16 @@ This document outlines the plan for integrating GitHub into the Task Manager App
 
 #### Database Schema Updates
 
-We need to extend the schema and add a secure way to store tokens.
+We need to extend the schema and add a secure way to store linkage metadata.
 
-1.  **`integrations` Collection (New - Secure)**:
+1.  **`integrations` Collection (New - Server-only)**:
 
-    - Purpose: Store sensitive tokens securely, not accessible via public API.
+    - Purpose: Store GitHub SSO linkage metadata; PocketBase never stores long-lived OAuth tokens.
     - `user` (relation): Link to `users` collection.
-    - `provider` (text): e.g., "github".
-    - `access_token` (text): Encrypted GitHub Access Token (captured during login).
-    - `token_type` (text): e.g., "Bearer".
-    - `expiry` (date): Token expiration time.
+    - `provider` (text): always `github` for now.
+    - `github_user_id` (text): Stable GitHub user identifier.
+    - `installation_id` (number): GitHub App installation ID granted by the user/org.
+    - `github_username` (text) and `github_avatar_url` (url) for UI display.
     - **ACL Rules**: `null` (Admin/Server-side only) to prevent API exposure.
 
 2.  **`projects` Collection**:
@@ -35,80 +35,91 @@ We need to extend the schema and add a secure way to store tokens.
     - `github_repo_owner` (text): Owner of the linked repository.
     - `github_repo_name` (text): Name of the linked repository.
     - `github_repo_id` (text): Unique GitHub Repository ID (stable identifier).
+    - `github_installation_id` (number): Installation token used for automation.
 
 3.  **`tasks` Collection**:
     - `github_issue_id` (text): Unique GitHub Issue ID.
     - `github_issue_number` (number): The issue number (e.g., #42).
     - `github_html_url` (url): Link to the issue on GitHub.
     - `github_last_synced` (date): Timestamp of last sync.
+    - `github_updated_at` (date): Last `updated_at` from GitHub for conflict detection.
 
 #### API Endpoints & Hooks
 
 1.  **OAuth Hook (`OnRecordAuthWithOAuth2Request`)**:
 
-    - Intercept GitHub login.
-    - Extract `accessToken` from `meta`.
-    - Upsert record in `integrations` collection.
+    - Handle GitHub SSO (first login creates user, subsequent logins attach metadata).
+    - Validate GitHub primary email matches PocketBase user email to avoid duplicates.
+    - Store `github_user_id`, `installation_id`, and profile metadata in `integrations`.
+    - Never persist raw OAuth tokens; backend mints GitHub App JWTs on demand using the app private key stored in environment variables/secret manager.
 
 2.  **`POST /api/tm/github/webhook`**:
-    - **Security**: Verify `X-Hub-Signature-256` using `github.com/google/go-github/v68/github` library utilities.
-    - Events: `issues` (opened, closed, reopened, assigned), `pull_request` (optional).
+    - **Security**: Verify `X-Hub-Signature-256` using `github.com/google/go-github/v68/github` utilities.
+    - Events: `issues` (opened, closed, reopened, assigned), `pull_request` (optional future).
+    - Route payloads by matching `repository.id` to `projects.github_repo_id` and confirm the GitHub installation ID matches `projects.github_installation_id`.
+    - Upsert tasks idempotently by `github_issue_id`, comparing `github_updated_at` to avoid overwriting newer local edits.
 3.  **`POST /api/tm/projects/:id/github/sync`**:
-    - Manual trigger.
-    - Retreives user's token from `integrations`.
-    - Initialize `github.Client` with OAuth2 token.
-    - Fetch open issues using `client.Issues.ListByRepo`.
-    - Creates/Updates tasks.
+    - Manual trigger for users with project access; no dependency on their personal GitHub credentials.
+    - Uses the project’s `github_installation_id` to mint a short-lived installation token via the GitHub App private key.
+    - Initialize `github.Client` with that token and fetch open issues using `client.Issues.ListByRepo`.
+    - Creates/Updates tasks with idempotent matching on `github_issue_id` and updates `github_updated_at`.
 
 ### 2.2 Frontend Changes (React/Vite)
 
 1.  **Project Settings**:
-    - UI to input/select GitHub repository (Owner/Repo name).
-    - "Sync Issues" button (triggers backend endpoint).
+     - UI to input/select GitHub repository (Owner/Repo name).
+     - Show GitHub App installation status; block sync button if app isn’t installed on that repo.
+     - "Sync Issues" button (triggers backend endpoint).
 2.  **Task Detail View**:
 
-    - Display GitHub Issue badge/link (e.g., `#123 Open`).
-    - Show "Create Branch" button (copy branch name format like `feature/task-id-title`).
+     - Display GitHub Issue badge/link (e.g., `#123 Open`).
+     - Show "Create Branch" button (copy branch name format like `feature/task-id-title`).
 
 3.  **User Profile**:
-    - "Connect GitHub" button (initiates OAuth flow if not logged in via GitHub).
+     - "Connect GitHub" button reuses the OAuth handler but enforces matching emails to avoid duplicate PocketBase users.
+     - Display linked GitHub username + avatar sourced from `integrations` metadata.
 
 ## 3. Implementation Steps
 
 ### Phase 1: Foundation & Authentication
 
-- [ ] Configure GitHub OAuth2 provider in PocketBase settings.
-- [ ] Create `integrations` collection (API Rule: null).
-- [ ] Implement `OnRecordAuthWithOAuth2Request` hook in `main.go` to store tokens.
-- [ ] Add `github_repo_*` fields to `projects`.
-- [ ] Add `github_issue_*` fields to `tasks`.
+- [ ] Configure a GitHub App + OAuth provider in PocketBase (store app ID + private key via env/secrets).
+- [ ] Create `integrations` collection (API Rule: null) with the fields above.
+- [ ] Implement `OnRecordAuthWithOAuth2Request` hook in `main.go` to provision PocketBase users, record GitHub IDs/installation IDs, and refuse mismatched emails.
+- [ ] Add `github_repo_*` + `github_installation_id` fields to `projects` via `backend/pb_schema.json`.
+- [ ] Add `github_issue_*` + `github_updated_at` fields to `tasks` via `backend/pb_schema.json`.
+- [ ] After schema changes run `bun run types:generate` and commit the updated `src/lib/pocketbase-types.ts`.
+- [ ] Run `bun run check` to ensure backend/frontend compile with the refreshed types.
 
 ### Phase 2: Manual Synchronization
 
-- [ ] Install `github.com/google/go-github/v68` and `golang.org/x/oauth2`.
-- [ ] Implement Go function to init GitHub client from stored user token.
-- [ ] Create `sync` endpoint (`/api/tm/projects/:id/github/sync`).
-- [ ] Implement UI in Project Settings to configure Repo (Owner/Name).
-- [ ] Implement "Import Issues" feature in frontend.
+- [ ] Install/update `github.com/google/go-github/v68` and `golang.org/x/oauth2`.
+- [ ] Add helper to mint GitHub App JWTs and exchange them for installation tokens using the project’s `github_installation_id`.
+- [ ] Create `sync` endpoint (`/api/tm/projects/:id/github/sync`) that validates project permissions then runs imports with installation tokens.
+- [ ] Implement UI in Project Settings to configure Repo (Owner/Name) and surface installation status/errors.
+- [ ] Implement "Import Issues" feature in frontend, showing progress + conflicts (based on `github_updated_at`).
 
 ### Phase 3: Webhooks (Real-time)
 
 - [ ] Define Webhook Secret in environment variables (`GITHUB_WEBHOOK_SECRET`).
-- [ ] Implement `/webhook` endpoint with `github.ValidatePayload` verification.
-- [ ] Handle `issue.opened` -> Create Task.
-- [ ] Handle `issue.closed` -> Move Task to Done.
-- [ ] Handle `issue.reopened` -> Move Task to Todo.
+- [ ] Implement `/api/tm/github/webhook` endpoint with `github.ValidatePayload` verification and installation ID checks.
+- [ ] Route events by matching `repository.id` + `installation.id` to a project; ignore mismatches.
+- [ ] Handle `issues.opened` -> Create Task (idempotent on `github_issue_id`).
+- [ ] Handle `issues.closed` -> Move Task to Done if local `github_updated_at` <= payload timestamp; otherwise log conflict.
+- [ ] Handle `issues.reopened` -> Move Task to Todo following the same conflict guard.
 
 ### Phase 4: Advanced (Optional)
 
-- [ ] PR Linking ("Fixes #123" automation).
-- [ ] Comment syncing.
+- [ ] PR Linking ("Fixes #123" automation) using pull_request events + cross references.
+- [ ] Comment syncing (bi-directional) with explicit ownership rules to prevent loops.
 
 ## 4. Security Considerations
 
-- **Token Security**: Store tokens in server-side only collection (`integrations`).
-- **Webhook Verification**: Strictly enforce HMAC SHA-256 signature checks using library functions.
-- **Scope**: Request minimum necessary scopes (`repo` or `public_repo`).
+- **Credential Model**: No long-lived user tokens are stored. GitHub App private key is loaded from environment or secret manager, and installation tokens are minted in-memory per request. If the key must be persisted locally (dev), encrypt it at rest using PocketBase’s `security.Encrypt` utilities.
+- **Token Storage**: `integrations` only holds linkage metadata (user ID, installation ID). Access is server-only to avoid metadata leakage.
+- **Webhook Verification**: Strictly enforce HMAC SHA-256 signature checks using `github.ValidatePayload`, compare constant time, and reject requests where `repository.id` or `installation.id` do not match a stored project.
+- **Scope**: GitHub App requests the minimum scopes (`metadata:read`, `issues:write`, `pull_requests:read`). No code/scm scopes are granted, reducing blast radius.
+- **Schema Discipline**: Every schema change must be followed by `bun run types:generate` and `bun run check` to keep backend, generated types, and frontend aligned.
 
 ## 5. Dependencies
 

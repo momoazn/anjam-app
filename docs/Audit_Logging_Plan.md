@@ -10,87 +10,116 @@ We will store audit logs directly in a new PocketBase collection named `audit_lo
   - **Simplicity**: Keeps the "Single Binary" architecture intact. No external logging service required.
   - **Queryability**: Allows the Admin UI (and future user-facing activity logs) to easily filter and search history using standard PocketBase APIs.
   - **Performance**: SQLite WAL mode in PocketBase handles append-heavy workloads efficiently.
+  - **Durability controls**: Collection-level rule blocking user writes plus a `BeforeUpdate` guard in Go ensures immutability even for DAO access.
 
 ## 2. Technical Implementation (Go Backend)
 
 ### 2.1 Database Schema (`audit_logs`)
 
-New collection `audit_logs`:
+New collection `audit_logs` (system-managed, history-only):
 
 - `id` (text, PK)
 - `created` (date)
 - `actor` (relation -> `users`): Who performed the action (nullable for system actions).
-- `ip_address` (text): IP address of the actor.
+- `actor_role` (text): Cached role at action time.
+- `actor_type` (text enum: `user`, `system`, `api_token`).
+- `request_id` (text): Correlates to incoming HTTP request (UUID generated per request; reused when multiple hooks fire).
+- `ip_address` (text): IP address of the actor when available; `null` if not request-bound.
+- `client` (text enum: `web`, `cli`, `automation`, etc.) for additional provenance.
 - `resource` (text): Collection name (e.g., "tasks", "projects").
 - `resource_id` (text): ID of the affected record.
-- `action` (text): "create", "update", "delete".
-- `changes` (json): Detailed diff of what changed from `old` to `new`.
-  - Format: `{"field_name": {"old": "val", "new": "val"}}`
+- `action` (text enum): `create`, `update`, `delete`.
+- `result` (text enum): `success`, `failure` (future-proof if we log denied writes).
+- `message` (text): Optional free-form summary (e.g., "Status changed").
+- `changes` (json): Detailed diff `{ "field_name": { "old": any, "new": any } }` storing typed values only for modified fields.
 
-_ACL Rules_:
+_ACL & Immutability Rules_:
 
-- **List/View**: Admin only (initially).
-- **Create/Update/Delete**: System only (`null`). Immutable by design.
+- **List/View**: Admin-only rule now; future scopes can loosen per requirement.
+- **Create**: Blocked at rule level; only trusted Go service account uses DAO to insert.
+- **Update/Delete**: Deny at rule level **and** register `OnRecordBeforeUpdateRequest("audit_logs")` and `OnRecordBeforeDeleteRequest("audit_logs")` handlers to abort with `apis.NewForbiddenError` to catch DAO misuse.
 
 ### 2.2 Go Hook Logic
 
-We will implement a reusable Go function `registerAuditHooks(app, collectionName)` that binds to:
+We will implement a reusable helper `registerAuditHooks(app *pocketbase.PocketBase, collectionName string)` that binds to exact PocketBase events:
 
-1.  **`OnRecordAfterCreateSuccess`**: Logs the initial state.
-2.  **`OnRecordBeforeUpdate` & `OnRecordAfterUpdateSuccess`**:
-    - _Before_: Capture the `Original()` record state.
-    - _After_: Compare `Original()` vs `New` state to generate a diff.
-    - Only log if there are actual changes.
-3.  **`OnRecordAfterDeleteSuccess`**: Logs the final state before deletion.
+1. **`OnRecordAfterCreateSuccess(collection)`**: Capture the persisted record and write a log entry.
+2. **`OnRecordBeforeUpdateRequest(collection)` / `OnRecordAfterUpdateSuccess(collection)`**:
+   - _Before_: Clone `e.Record.Original()` so we have a snapshot even if multiple hooks mutate state.
+   - _After_: Compare original vs new; skip log when diff is empty.
+3. **`OnRecordBeforeDeleteRequest(collection)` / `OnRecordAfterDeleteSuccess(collection)`**:
+   - _Before_: Copy the record for final-state logging since PocketBase empties record data after delete.
+   - _After_: Persist the captured state with action `delete`.
 
-**Diff Calculation logic**:
+`registerAuditHooks` will enrich each log entry with:
 
-- Iterate over defined fields.
-- Ignore specific system fields (e.g., `updated`, `tokenKey`).
-- Store strictly typed values in the JSON blob.
+- `actor` and `actor_role` extracted from `apis.RequestContext(e.HttpContext)` if available; otherwise fall back to `e.Record.GetString("updated_by")` or a `system` actor id.
+- `ip_address` from `e.HttpContext.RealIP()` when non-empty; `null` otherwise.
+- `request_id` from context value set by middleware (`contextKeyRequestID`), generating one per HTTP request and defaulting to a synthetic UUID when hooks fire outside HTTP.
+- `client` derived from `User-Agent` heuristics.
+
+All audit inserts go through a dedicated helper `logAudit(ctx, app, entry)` that catches write errors, logs them, and never blocks the main mutation (fail-open) while emitting structured warnings for observability. A future enhancement may enqueue entries to a buffered channel so writes cannot slow user requests; helper is designed with that swap in mind.
+
+**Diff Calculation** (`calculateChanges(oldRec, newRec core.Record) map[string]FieldDiff`):
+
+- Iterate only over whitelisted, typed field definitions from PocketBase schema metadata to avoid logging transient or internal columns.
+- Maintain a denylist for sensitive fields (`password`, `token`, `accessKey`, `oauth_secret`, attachments flagged `sensitive` in schema).
+- Detect equality using type-aware comparisons for numbers, booleans, relations (serialize as IDs), and arrays (use deep-equal with ordering preserved).
+- Truncate large strings (>2 KB) and file names to avoid bloating records.
 
 ### 2.3 Integration Points
 
-- **Entities to Track**: `tasks`, `projects`, `users`, `groups`.
-- **Location**: `backend/audit.go` (new file) called from `main.go`.
+- **Tracked Collections (Phase 1)**: `tasks`, `projects`.
+- **Phase 2 Additions**: `users`, `groups`, `comments`, `users_projects` once performance validated.
+- **Location & Wiring**: `backend/audit.go` defines helpers; `main.go` calls `registerAuditHooks` during `OnServe()` after schema import so collection names exist.
+- **Context Middleware**: In `main.go`, add `app.OnServe().BindFunc(addRequestMetadataMiddleware)` that injects request ID, actor info, and client data into context for downstream hooks.
 
 ## 3. Frontend Implementation (React Admin UI)
 
-### 3.1 Audit Log View (Admin Settings)
+### 3.1 Admin Audit Console
 
+- **Permissions**: Restrict route to `role === 'admin'` for now; design component to accept an authorization predicate so we can later expose limited history to project managers.
 - **Table**:
-  - Columns: Timestamp, Actor, Action, Resource (Type + ID), Changes (Expandable).
-  - Filters: Date Range, Actor, Resource Type.
+  - Columns: Timestamp, Actor (name + role), Action, Resource (type + ID), Client, Message.
+  - Changes column collapsed by default with an accordion showing field-level diffs.
+  - Built-in pagination (cursor-based) and TanStack Query caching; default page size 50.
+- **Filters**: Date range picker, actor multi-select, resource type select, free-text search on message/request ID.
+- **Redaction**: The API will already filter sensitive fields, but UI must also replace masked values with `••••` to avoid accidental exposure during rendering.
 
-### 3.2 "History" Tab (Task/Project Details)
+### 3.2 Entity "History" Tabs
 
-- **Task Detail Modal**: Add a "History" tab.
-- **Fetch Logic**: Query `audit_logs` where `resource="tasks"` AND `resource_id={currentTaskId}`.
-- **Display**: Activity stream UI (e.g., "Mohammad changed Status from 'Todo' to 'In Progress' - 2 hours ago").
+- **Task & Project Views**: New tab uses `AuditLogService.list({ resource: 'tasks', resourceId })` sorted descending.
+- **Empty State**: Show "No history yet" message; never show spinner forever.
+- **Row Rendering**: Sentence template like `{{actor}} {{action}} {{field}} from {{old}} to {{new}}` with relative timestamps.
+- **Permissions**: Reuse admin predicate or extend to project members once requirements finalized; component takes `canViewHistory` prop to guard fetch.
 
 ## 4. Implementation Steps
 
 ### Phase 1: Backend Foundation
 
-- [ ] Create `audit_logs` collection definition in `pb_schema.json`.
-- [ ] Create `backend/audit.go`.
-- [ ] Implement `calculateChanges(old, new)` helper.
-- [ ] Implement `logAudit(app, event)` helper.
-- [ ] Register hooks in `main.go` for `tasks` and `projects`.
+- [ ] Add `audit_logs` collection to `pb_schema.json` with new fields/ACL described above.
+- [ ] Add immutability guards (`BeforeUpdate`/`BeforeDelete`) for `audit_logs` in Go.
+- [ ] Create `backend/audit.go` housing diff helpers, request-metadata structs, and `logAudit`.
+- [ ] Add middleware for request IDs + context metadata.
+- [ ] Register hooks for `tasks` and `projects` inside `main.go` after schema import.
 
 ### Phase 2: Frontend Visualization
 
-- [ ] Create `AuditLogService` in frontend API client.
-- [ ] Add `AuditLogTable` component for Admin Dashboard.
-- [ ] Add `ActivityStream` component for Task/Project views.
+- [ ] Create `AuditLogService` with typed responses, pagination helpers, and sensitive-field masks.
+- [ ] Build `AuditLogTable` admin component with filters, pagination, and redaction UI.
+- [ ] Add `ActivityStream` tab to Task/Project detail modules guarded by `canViewHistory` prop.
 
 ### Phase 3: Refinement
 
-- [ ] Track `users` and `groups` collections.
-- [ ] Add "System" actor for automatic actions (e.g., GitHub Sync).
-- [ ] Optimize JSON storage (store only changed fields).
+- [ ] Expand hooks to `users`, `groups`, `comments`, and `users_projects` after monitoring DB growth.
+- [ ] Add explicit `system` actor records for automation jobs (GitHub sync, cron cleanup).
+- [ ] Switch `logAudit` to buffered channel + worker for async writes if latency measurements warrant it.
+- [ ] Implement configurable retention (see §5) with archive export.
 
-## 5. Security & Performance
+## 5. Security, Retention & Privacy
 
-- **Retention**: Implement a cron job (future) to archive/delete logs older than 1 year to keep SQLite size manageable.
-- **Privacy**: Ensure sensitive fields (like `password` hash) are **never** logged in the `changes` JSON. Explicitly exclude them in the diff logic.
+- **Retention & Archival**: Introduce `audit_retention_days` setting (default 365). Nightly scheduled job (Go cron) dumps logs older than retention to compressed NDJSON in `data/audit_archive/{year}/{month}.ndjson` and then deletes them. Deletions run via DAO with service account credentials to bypass UI rules but still respect immutability hooks (temporarily disable guards inside the job by flag).
+- **Tamper Detection**: Because logs live next to mutable data, enable SQLite `auto_vacuum` and ship weekly signed exports to object storage (future). Document manual verification steps.
+- **Sensitive Field Policy**: Maintain central denylist plus per-collection overrides (e.g., task `private_notes`). Unit tests in `backend/audit_test.go` ensure diffs never include banned keys.
+- **Error Handling**: `logAudit` errors are logged with `request_id` correlation. Prometheus counter `audit_log_failures_total` exposes health signal.
+- **Performance**: WAL mode already enabled; monitor `audit_logs` table size and add indexes on `(resource, resource_id, created)` and `(actor, created)`.
