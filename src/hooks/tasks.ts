@@ -13,6 +13,10 @@ import {
 } from "@tanstack/react-query";
 import { pb, TaskWithProject } from "../lib/pocketbase";
 import {
+  compositeInvalidators,
+  detailInvalidators,
+} from "../lib/query-invalidators";
+import {
   UsersResponse,
   UsersRoleOptions,
   TasksRecord,
@@ -183,10 +187,8 @@ export function useCreateTask(
       onSuccess?.(data, variables, context);
     },
     onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+      // Use the composite validator for task changes
+      compositeInvalidators.taskChange(queryClient);
 
       onSettled?.(data, error, variables, context);
     },
@@ -229,18 +231,19 @@ export function useUpdateTask(
       onSuccess?.(data, variables, context);
     },
     onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-
+      // Use detail validator for specific task invalidation
       if (variables?.id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tasks.detail(variables.id),
-        });
+        detailInvalidators.task(queryClient, variables.id);
+      } else {
+        compositeInvalidators.taskChange(queryClient);
       }
 
+      // If project changed, also invalidate projects
       if (variables?.updates?.project) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-        queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+        compositeInvalidators.projectChange(
+          queryClient,
+          variables.updates.project,
+        );
       }
 
       onSettled?.(data, error, variables, context);
@@ -271,16 +274,11 @@ export function useDeleteTask(
       onSuccess?.(data, variables, context);
     },
     onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-
+      // Use detail validator for specific task and projects
       if (variables) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tasks.detail(variables),
-        });
+        detailInvalidators.task(queryClient, variables);
+      } else {
+        compositeInvalidators.taskChange(queryClient);
       }
 
       onSettled?.(data, error, variables, context);
