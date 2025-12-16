@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"encoding/json"
@@ -19,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
@@ -71,6 +73,7 @@ func main() {
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
+	app.OnServe().BindFunc(registerAuditHooksHandler)
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
@@ -101,6 +104,13 @@ func main() {
 		se.Router.GET("/api/tm/users/{id}/login-logs", handleGetUserLoginLogs)
 		se.Router.GET("/api/tm/search", handleGlobalSearch)
 
+		return se.Next()
+	})
+
+	// --- Add Request Metadata Middleware ---
+	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		// Add request metadata middleware before other handlers
+		se.Server.Handler = addRequestMetadataMiddleware(se.Server.Handler)
 		return se.Next()
 	})
 
@@ -832,6 +842,65 @@ func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 	return e.Next()
 }
 
+// Context keys for request metadata
+type contextKey string
+
+const (
+	contextKeyRequestID contextKey = "request_id"
+	contextKeyIPAddress contextKey = "ip_address"
+	contextKeyClient    contextKey = "client"
+)
+
+// addRequestMetadataMiddleware injects request metadata (ID, IP, client) into context
+func addRequestMetadataMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Generate unique request ID
+		requestID := uuid.New().String()
+
+		// Extract IP address
+		ipAddress := r.Header.Get("X-Forwarded-For")
+		if ipAddress == "" {
+			ipAddress = r.Header.Get("X-Real-IP")
+		}
+		if ipAddress == "" {
+			// Remove port if present
+			ipAddress = strings.Split(r.RemoteAddr, ":")[0]
+		}
+		// Take first IP if X-Forwarded-For contains multiple
+		if strings.Contains(ipAddress, ",") {
+			ipAddress = strings.TrimSpace(strings.Split(ipAddress, ",")[0])
+		}
+
+		// Derive client type from User-Agent
+		userAgent := r.Header.Get("User-Agent")
+		client := deriveClientType(userAgent)
+
+		// Inject into context
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, contextKeyRequestID, requestID)
+		ctx = context.WithValue(ctx, contextKeyIPAddress, ipAddress)
+		ctx = context.WithValue(ctx, contextKeyClient, client)
+
+		// Continue with updated context
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// deriveClientType determines client type from User-Agent string
+func deriveClientType(userAgent string) string {
+	ua := strings.ToLower(userAgent)
+	if strings.Contains(ua, "curl") || strings.Contains(ua, "wget") {
+		return "cli"
+	}
+	if strings.Contains(ua, "mozilla") || strings.Contains(ua, "chrome") || strings.Contains(ua, "safari") || strings.Contains(ua, "firefox") || strings.Contains(ua, "edge") {
+		return "web"
+	}
+	if strings.Contains(ua, "postman") || strings.Contains(ua, "insomnia") || strings.Contains(ua, "httpie") {
+		return "automation"
+	}
+	return "unknown"
+}
+
 func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept auth endpoints
@@ -1157,4 +1226,19 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 		"totalItems": totalCount,
 		"totalPages": (totalCount + perPage - 1) / perPage,
 	})
+}
+
+// registerAuditHooksHandler registers audit hooks for Phase 1 collections (tasks, projects).
+// Called during OnServe() after schema import so collection names are available.
+func registerAuditHooksHandler(e *core.ServeEvent) error {
+	// Register immutability guards for audit_logs collection
+	registerAuditLogsImmutabilityGuards(e.App)
+
+	// Register audit hooks for Phase 1 collections
+	registerAuditHooks(e.App, CollectionTasks)
+	registerAuditHooks(e.App, CollectionProjects)
+
+	log.Println("Audit logging enabled for tasks and projects")
+
+	return e.Next()
 }

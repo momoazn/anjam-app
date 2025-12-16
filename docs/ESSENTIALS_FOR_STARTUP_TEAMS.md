@@ -220,14 +220,14 @@ These aspects matter to maintainability and team confidence.
 **How to implement / validate**
 
 1. **Local usage**
-    - Encourage developers to run `bun run check` before every commit.
+   - Encourage developers to run `bun run check` before every commit.
 2. **CI integration**
-    - Add a CI pipeline (GitHub Actions, GitLab CI, etc.) that runs:
-      - `bun run check`
-      - `bun run test:run`
-      - Optionally `bun run test:e2e` on main or release branches.
+   - Add a CI pipeline (GitHub Actions, GitLab CI, etc.) that runs:
+     - `bun run check`
+     - `bun run test:run`
+     - Optionally `bun run test:e2e` on main or release branches.
 3. **Test coverage**
-    - Periodically run `bun run test:coverage` and keep coverage thresholds reasonable (you already target ~60%). Adjust as the codebase grows.
+   - Periodically run `bun run test:coverage` and keep coverage thresholds reasonable (you already target ~60%). Adjust as the codebase grows.
 
 - **Clear documentation for developers**
   - Accurate README instructions that match actual scripts (`test`, `test:e2e`, etc.).
@@ -251,7 +251,7 @@ These aspects matter to maintainability and team confidence.
 **How to implement / validate**
 
 1. **Build and serve**
-    - Ensure `bun run build` works end‑to‑end on a clean machine.
+   - Ensure `bun run build` works end‑to‑end on a clean machine.
 2. **Docker**
    - Test `docker compose -f infra/docker-compose.yml up` in a clean environment and verify:
      - The app starts successfully.

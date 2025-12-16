@@ -1848,5 +1848,197 @@
       "CREATE INDEX idx_user_login_logs_created ON user_login_logs (created DESC)"
     ],
     "system": false
+  },
+  {
+    "id": "pbc_audit_logs",
+    "listRule": "@request.auth.role = \"admin\"",
+    "viewRule": "@request.auth.role = \"admin\"",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "audit_logs",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation_audit_actor",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "actor",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_actor_role",
+        "max": 50,
+        "min": 0,
+        "name": "actor_role",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "select_actor_type",
+        "maxSelect": 1,
+        "name": "actor_type",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": ["user", "system", "api_token"]
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_request_id",
+        "max": 100,
+        "min": 0,
+        "name": "request_id",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_ip_address",
+        "max": 100,
+        "min": 0,
+        "name": "ip_address",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "select_client",
+        "maxSelect": 1,
+        "name": "client",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": ["web", "cli", "automation", "unknown"]
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_resource",
+        "max": 100,
+        "min": 0,
+        "name": "resource",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_resource_id",
+        "max": 100,
+        "min": 0,
+        "name": "resource_id",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "select_action",
+        "maxSelect": 1,
+        "name": "action",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": ["create", "update", "delete"]
+      },
+      {
+        "hidden": false,
+        "id": "select_result",
+        "maxSelect": 1,
+        "name": "result",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": ["success", "failure"]
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_message",
+        "max": 1000,
+        "min": 0,
+        "name": "message",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "json_changes",
+        "name": "changes",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "json"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_audit_logs_resource ON audit_logs (resource, resource_id)",
+      "CREATE INDEX idx_audit_logs_actor ON audit_logs (actor, created DESC)",
+      "CREATE INDEX idx_audit_logs_created ON audit_logs (created DESC)"
+    ],
+    "system": false
   }
 ]

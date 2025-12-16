@@ -11,6 +11,7 @@ const (
 	CollectionTasks         = "tasks"
 	CollectionNotifications = "notifications"
 	CollectionUserLoginLogs = "user_login_logs"
+	CollectionAuditLogs     = "audit_logs"
 	CollectionSuperusers    = "_superusers"
 	CollectionUsersProjects = "users_projects"
 	CollectionComments      = "comments"

@@ -35,7 +35,8 @@ const projectFormSchema = z.object({
       message: "Code must be exactly 3 characters",
     })
     .regex(/^[A-Za-z]+$/, {
-      message: "Code must contain only letters (no numbers or special characters)",
+      message:
+        "Code must contain only letters (no numbers or special characters)",
     })
     .transform((val) => val.toUpperCase()),
   description: z.string().optional(),

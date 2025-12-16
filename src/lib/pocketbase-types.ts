@@ -11,6 +11,7 @@ export enum Collections {
   Mfas = "_mfas",
   Otps = "_otps",
   Superusers = "_superusers",
+  AuditLogs = "audit_logs",
   Comments = "comments",
   Groups = "groups",
   Notifications = "notifications",
@@ -96,6 +97,46 @@ export type SuperusersRecord = {
   tokenKey: string;
   updated?: IsoDateString;
   verified?: boolean;
+};
+
+export enum AuditLogsActorTypeOptions {
+  "user" = "user",
+  "system" = "system",
+  "api_token" = "api_token",
+}
+
+export enum AuditLogsClientOptions {
+  "web" = "web",
+  "cli" = "cli",
+  "automation" = "automation",
+  "unknown" = "unknown",
+}
+
+export enum AuditLogsActionOptions {
+  "create" = "create",
+  "update" = "update",
+  "delete" = "delete",
+}
+
+export enum AuditLogsResultOptions {
+  "success" = "success",
+  "failure" = "failure",
+}
+export type AuditLogsRecord<Tchanges = unknown> = {
+  action: AuditLogsActionOptions;
+  actor?: RecordIdString;
+  actor_role?: string;
+  actor_type: AuditLogsActorTypeOptions;
+  changes?: null | Tchanges;
+  client?: AuditLogsClientOptions;
+  created?: IsoDateString;
+  id: string;
+  ip_address?: string;
+  message?: string;
+  request_id?: string;
+  resource: string;
+  resource_id: string;
+  result: AuditLogsResultOptions;
 };
 
 export type CommentsRecord = {
@@ -253,6 +294,10 @@ export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> &
   BaseSystemFields<Texpand>;
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> &
   AuthSystemFields<Texpand>;
+export type AuditLogsResponse<Tchanges = unknown, Texpand = unknown> = Required<
+  AuditLogsRecord<Tchanges>
+> &
+  BaseSystemFields<Texpand>;
 export type CommentsResponse<Texpand = unknown> = Required<CommentsRecord> &
   BaseSystemFields<Texpand>;
 export type GroupsResponse<Texpand = unknown> = Required<GroupsRecord> &
@@ -282,6 +327,7 @@ export type CollectionRecords = {
   _mfas: MfasRecord;
   _otps: OtpsRecord;
   _superusers: SuperusersRecord;
+  audit_logs: AuditLogsRecord;
   comments: CommentsRecord;
   groups: GroupsRecord;
   notifications: NotificationsRecord;
@@ -299,6 +345,7 @@ export type CollectionResponses = {
   _mfas: MfasResponse;
   _otps: OtpsResponse;
   _superusers: SuperusersResponse;
+  audit_logs: AuditLogsResponse;
   comments: CommentsResponse;
   groups: GroupsResponse;
   notifications: NotificationsResponse;
@@ -319,6 +366,7 @@ export type TypedPocketBase = PocketBase & {
   collection(idOrName: "_mfas"): RecordService<MfasResponse>;
   collection(idOrName: "_otps"): RecordService<OtpsResponse>;
   collection(idOrName: "_superusers"): RecordService<SuperusersResponse>;
+  collection(idOrName: "audit_logs"): RecordService<AuditLogsResponse>;
   collection(idOrName: "comments"): RecordService<CommentsResponse>;
   collection(idOrName: "groups"): RecordService<GroupsResponse>;
   collection(idOrName: "notifications"): RecordService<NotificationsResponse>;

@@ -67,17 +67,17 @@ We need to extend the schema and add a secure way to store linkage metadata.
 ### 2.2 Frontend Changes (React/Vite)
 
 1.  **Project Settings**:
-     - UI to input/select GitHub repository (Owner/Repo name).
-     - Show GitHub App installation status; block sync button if app isn’t installed on that repo.
-     - "Sync Issues" button (triggers backend endpoint).
+    - UI to input/select GitHub repository (Owner/Repo name).
+    - Show GitHub App installation status; block sync button if app isn’t installed on that repo.
+    - "Sync Issues" button (triggers backend endpoint).
 2.  **Task Detail View**:
 
-     - Display GitHub Issue badge/link (e.g., `#123 Open`).
-     - Show "Create Branch" button (copy branch name format like `feature/task-id-title`).
+    - Display GitHub Issue badge/link (e.g., `#123 Open`).
+    - Show "Create Branch" button (copy branch name format like `feature/task-id-title`).
 
 3.  **User Profile**:
-     - "Connect GitHub" button reuses the OAuth handler but enforces matching emails to avoid duplicate PocketBase users.
-     - Display linked GitHub username + avatar sourced from `integrations` metadata.
+    - "Connect GitHub" button reuses the OAuth handler but enforces matching emails to avoid duplicate PocketBase users.
+    - Display linked GitHub username + avatar sourced from `integrations` metadata.
 
 ## 3. Implementation Steps
 
