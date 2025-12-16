@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   Clock,
+  History,
   Loader2,
   MessageSquare,
   Pencil,
@@ -16,6 +17,8 @@ import { PageTransition } from "@/components/page-transition";
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
 import { TimeComparison } from "@/components/task/time-comparison";
+import { ActivityStream } from "@/components/audit/activity-stream";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -411,29 +414,42 @@ export default function TaskDetails() {
 
           <Separator />
 
-          {/* Comments Section */}
+          {/* Comments and History Tabs */}
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5" />
-                <CardTitle>{fa.comments.title}</CardTitle>
-                <Badge variant="secondary" className="text-xs">
-                  {digitsEnToFa(comments.length)}
-                </Badge>
-              </div>
+              <Tabs defaultValue="comments" className="w-full">
+                <TabsList>
+                  <TabsTrigger value="comments" className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    {fa.comments.title}
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {digitsEnToFa(comments.length)}
+                    </Badge>
+                  </TabsTrigger>
+                  <TabsTrigger value="history" className="flex items-center gap-2">
+                    <History className="h-4 w-4" />
+                    {fa.auditLogs.activityStream.title}
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="comments" className="mt-4">
+                  <div className="space-y-4">
+                    {commentsLoading ? (
+                      <div className="flex justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                      </div>
+                    ) : (
+                      <>
+                        <CommentsList comments={comments} />
+                        <CommentComposer taskId={task.id} />
+                      </>
+                    )}
+                  </div>
+                </TabsContent>
+                <TabsContent value="history" className="mt-4">
+                  <ActivityStream resource="tasks" resourceId={task.id} />
+                </TabsContent>
+              </Tabs>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {commentsLoading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                </div>
-              ) : (
-                <>
-                  <CommentsList comments={comments} />
-                  <CommentComposer taskId={task.id} />
-                </>
-              )}
-            </CardContent>
           </Card>
         </div>
 

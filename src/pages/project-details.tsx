@@ -1,6 +1,8 @@
 import { PageTransition } from "@/components/page-transition";
 import { ProjectAssets } from "@/components/project/project-assets";
+import { ActivityStream } from "@/components/audit/activity-stream";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Input } from "@/components/ui/input";
@@ -24,6 +26,7 @@ import {
   Edit,
   FileText,
   Folder,
+  History,
   Save,
   Trash2,
   Upload,
@@ -456,6 +459,19 @@ export default function ProjectDetails() {
               ) : (
                 <ProjectAssets project={project} />
               )}
+            </CardContent>
+          </Card>
+
+          {/* History */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                {fa.auditLogs.activityStream.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ActivityStream resource="projects" resourceId={project.id} />
             </CardContent>
           </Card>
         </div>
