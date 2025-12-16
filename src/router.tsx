@@ -140,6 +140,10 @@ const Notifications = createLazyPage(
   () => import("@/pages/notifications"),
   fa.errors.pageLoad.notifications,
 );
+const AuditLogs = createLazyPage(
+  () => import("@/pages/audit-logs"),
+  fa.errors.pageLoad.notFound,
+);
 const NotFound = createLazyPage(
   () => import("@/pages/not-found"),
   fa.errors.pageLoad.notFound,
@@ -401,6 +405,16 @@ const routes: RouteType[] = [
     element: <Notifications />,
     protected: true,
     title: fa.navigation.notifications,
+  },
+  {
+    path: "/audit-logs",
+    element: (
+      <PermissionProtectedRoute permission="users.manage">
+        <AuditLogs />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    title: fa.navigation.auditLogs,
   },
   {
     path: "*",
