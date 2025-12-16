@@ -5,7 +5,17 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+)
+
+// Context keys for request metadata (must match main.go)
+type contextKey string
+
+const (
+	contextKeyRequestID contextKey = "request_id"
+	contextKeyIPAddress contextKey = "ip_address"
+	contextKeyClient    contextKey = "client"
 )
 
 // FieldDiff represents a change to a single field
@@ -175,14 +185,25 @@ func truncateValue(val interface{}) interface{} {
 }
 
 // extractActorInfo extracts actor information from the event.
-// Falls back to system actor if no user is authenticated.
-// Note: RecordEvent does not have direct access to HTTP request/auth,
-// so we infer from record fields created_by/updated_by which PocketBase may populate.
+// First tries to get from HTTP request context, then falls back to record fields.
 func extractActorInfo(e *core.RecordEvent) (actorID, actorRole, actorType string) {
 	actorType = "system"
 	actorRole = "system"
 
-	// Try to get from created_by field (PocketBase may auto-populate this)
+	// Try to get from HTTP request context first
+	if httpContext := apis.RequestContext(e.HttpContext); httpContext != nil {
+		if authRecord := httpContext.Auth; authRecord != nil {
+			actorID = authRecord.Id
+			actorType = "user"
+			actorRole = authRecord.GetString("role")
+			if actorRole == "" {
+				actorRole = "system"
+			}
+			return
+		}
+	}
+
+	// Fallback: Try to get from created_by field (PocketBase may auto-populate this)
 	if createdBy := e.Record.GetString("created_by"); createdBy != "" {
 		actorID = createdBy
 		actorType = "user"
@@ -194,7 +215,7 @@ func extractActorInfo(e *core.RecordEvent) (actorID, actorRole, actorType string
 		return
 	}
 
-	// Try to get from updated_by field
+	// Fallback: Try to get from updated_by field
 	if updatedBy := e.Record.GetString("updated_by"); updatedBy != "" {
 		actorID = updatedBy
 		actorType = "user"
@@ -208,29 +229,63 @@ func extractActorInfo(e *core.RecordEvent) (actorID, actorRole, actorType string
 	return
 }
 
-// getClientFromUserAgent derives the client type from the User-Agent header.
-// RecordEvent does not have direct HTTP request access, so this always returns "unknown".
-// TODO: Implement via middleware context (see Phase 1 implementation notes).
+// getClientFromUserAgent derives the client type from the request context.
 func getClientFromUserAgent(e *core.RecordEvent) string {
+	if e.HttpContext == nil {
+		return "unknown"
+	}
+	ctx := e.HttpContext.Request().Context()
+	if client, ok := ctx.Value(contextKeyClient).(string); ok && client != "" {
+		return client
+	}
 	return "unknown"
 }
 
 // getIPAddress extracts the IP address from the request context.
-// RecordEvent does not have direct HTTP request access, so this always returns "".
-// TODO: Implement via middleware context (see Phase 1 implementation notes).
 func getIPAddress(e *core.RecordEvent) string {
+	if e.HttpContext == nil {
+		return ""
+	}
+	ctx := e.HttpContext.Request().Context()
+	if ip, ok := ctx.Value(contextKeyIPAddress).(string); ok && ip != "" {
+		return ip
+	}
+	return ""
+}
+
+// getRequestID extracts the request ID from the request context.
+func getRequestID(e *core.RecordEvent) string {
+	if e.HttpContext == nil {
+		return ""
+	}
+	ctx := e.HttpContext.Request().Context()
+	if requestID, ok := ctx.Value(contextKeyRequestID).(string); ok && requestID != "" {
+		return requestID
+	}
 	return ""
 }
 
 // registerAuditLogsImmutabilityGuards ensures that audit_logs records cannot be modified or deleted.
-// Immutability is enforced at the database schema level (ACL rules prevent updates/deletes).
-// This function is a placeholder for future GoLang-level guards if needed.
+// Immutability is enforced at both the database schema level (ACL rules) and Go-level handlers
+// to prevent even DAO access from modifying audit logs.
 func registerAuditLogsImmutabilityGuards(pbApp interface{}) {
-	// Immutability is already enforced by the schema ACL rules:
-	// - updateRule: null (no one can update)
-	// - deleteRule: null (no one can delete)
-	// This prevents both UI and direct API access.
-	log.Println("Audit logs immutability enforced via schema ACL rules")
+	app, ok := pbApp.(core.App)
+	if !ok {
+		log.Printf("Warning: Cannot cast app to core.App for audit logs immutability guards")
+		return
+	}
+
+	// Block all update attempts to audit_logs
+	app.OnRecordBeforeUpdateRequest(CollectionAuditLogs).BindFunc(func(e *core.RecordEvent) error {
+		return apis.NewForbiddenError("Audit logs are immutable and cannot be modified", nil)
+	})
+
+	// Block all delete attempts to audit_logs
+	app.OnRecordBeforeDeleteRequest(CollectionAuditLogs).BindFunc(func(e *core.RecordEvent) error {
+		return apis.NewForbiddenError("Audit logs are immutable and cannot be deleted", nil)
+	})
+
+	log.Println("Audit logs immutability enforced via schema ACL rules and Go-level guards")
 }
 
 // registerAuditHooks registers audit log hooks for a specific collection.
@@ -250,6 +305,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			Actor:      actorID,
 			ActorRole:  actorRole,
 			ActorType:  actorType,
+			RequestID:   getRequestID(e),
 			Resource:   collectionName,
 			ResourceID: e.Record.Id,
 			Action:     "create",
@@ -262,9 +318,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		return e.Next()
 	})
 
-	// Track successful update with diff
-	// Note: We capture changes by comparing the record state before and after the update.
-	// Since RecordEvent doesn't expose the original state directly, we log updates with action="update".
+	// Track successful update with proper diff calculation
 	app.OnRecordAfterUpdateSuccess(collectionName).BindFunc(func(e *core.RecordEvent) error {
 		collection, err := app.FindCollectionByNameOrId(collectionName)
 		if err != nil {
@@ -272,19 +326,33 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			return e.Next()
 		}
 
-		// Get all field values as changes (full snapshot on update)
-		// TODO: In Phase 2, implement proper diff by storing original state in context middleware
-		changes := make(map[string]FieldDiff)
-		for _, field := range collection.Fields {
-			fieldName := field.GetName()
-			if field.GetSystem() || sensitiveFields[fieldName] {
-				continue
+		// Get original record state for diff calculation
+		// Original() should be available in AfterUpdateSuccess
+		originalRec := e.Record.Original()
+		var changes map[string]FieldDiff
+
+		if originalRec != nil {
+			// Calculate proper diff between original and new state
+			changes = calculateChanges(originalRec, e.Record, collection)
+		} else {
+			// Fallback: if original is not available, log all fields as new
+			changes = make(map[string]FieldDiff)
+			for _, field := range collection.Fields {
+				fieldName := field.GetName()
+				if field.GetSystem() || sensitiveFields[fieldName] {
+					continue
+				}
+				val := e.Record.Get(fieldName)
+				changes[fieldName] = FieldDiff{
+					Old: nil,
+					New: truncateValue(val),
+				}
 			}
-			val := e.Record.Get(fieldName)
-			changes[fieldName] = FieldDiff{
-				Old: nil,
-				New: truncateValue(val),
-			}
+		}
+
+		// Skip logging if no changes detected
+		if len(changes) == 0 {
+			return e.Next()
 		}
 
 		actorID, actorRole, actorType := extractActorInfo(e)
@@ -293,6 +361,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			Actor:      actorID,
 			ActorRole:  actorRole,
 			ActorType:  actorType,
+			RequestID:   getRequestID(e),
 			Resource:   collectionName,
 			ResourceID: e.Record.Id,
 			Action:     "update",
@@ -314,6 +383,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			Actor:      actorID,
 			ActorRole:  actorRole,
 			ActorType:  actorType,
+			RequestID:   getRequestID(e),
 			Resource:   collectionName,
 			ResourceID: e.Record.Id,
 			Action:     "delete",
