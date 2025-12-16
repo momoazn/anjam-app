@@ -91,3 +91,6 @@ export {
   type TaskFiltersState,
 } from "./use-task-filters";
 export { useSavedFilters, type SavedFilter } from "./use-saved-filters";
+
+// Audit log hooks
+export { useAuditLogs, useResourceAuditLogs } from "./audit-logs";

@@ -10,6 +10,8 @@
  * - Additional collection-specific keys as needed
  */
 
+import type { AuditLogsListParams } from "@/lib/audit-log-service";
+
 /**
  * Centralized query key factory functions
  */
@@ -146,5 +148,45 @@ export const queryKeys = {
       [...queryKeys.groups.detail(groupId), "projects"] as const,
     stats: (groupId: string) =>
       [...queryKeys.groups.detail(groupId), "stats"] as const,
+  },
+
+  /**
+   * Audit log-related query keys
+   * - all: Base key for all audit log queries
+   * - lists: For audit log list queries
+   * - list: For filtered audit log lists (with params)
+   * - resource: For audit logs filtered by resource and resourceId
+   */
+  auditLogs: {
+    all: ["audit_logs"] as const,
+    lists: () => [...queryKeys.auditLogs.all, "list"] as const,
+    list: (params?: AuditLogsListParams) =>
+      [
+        ...queryKeys.auditLogs.lists(),
+        normalizeListOptions(
+          {
+            page: 1,
+            perPage: 50,
+            resource: undefined,
+            resourceId: undefined,
+            actor: undefined,
+            action: undefined,
+            client: undefined,
+            dateFrom: undefined,
+            dateTo: undefined,
+            search: undefined,
+          },
+          params,
+        ),
+      ] as const,
+    resource: (resource: string, resourceId: string, page = 1, perPage = 50) =>
+      [
+        ...queryKeys.auditLogs.lists(),
+        "resource",
+        resource,
+        resourceId,
+        page,
+        perPage,
+      ] as const,
   },
 } as const;
