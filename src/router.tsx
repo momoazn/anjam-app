@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { PageErrorBoundary } from "@/components/error/page-error-boundary";
 import { fa } from "@/constants/text";
 import { can, Permission } from "./lib/permissions";
 import { UsersRoleOptions } from "./lib/pocketbase-types";
@@ -427,32 +428,34 @@ const routes: RouteType[] = [
 // AppRoutes component
 export const AppRoutes = () => {
   return (
-    <Routes>
-      {routes.map((route) => {
-        const content = <Title title={route.title}>{route.element}</Title>;
-        let element = content;
+    <PageErrorBoundary onRetry={() => window.location.reload()}>
+      <Routes>
+        {routes.map((route) => {
+          const content = <Title title={route.title}>{route.element}</Title>;
+          let element = content;
 
-        if (route.protected) {
-          if (route.permission) {
-            element = (
-              <PermissionProtectedRoute
-                permission={route.permission as Permission}
-              >
-                {content}
-              </PermissionProtectedRoute>
-            );
-          } else {
-            element = <ProtectedRoute>{content}</ProtectedRoute>;
+          if (route.protected) {
+            if (route.permission) {
+              element = (
+                <PermissionProtectedRoute
+                  permission={route.permission as Permission}
+                >
+                  {content}
+                </PermissionProtectedRoute>
+              );
+            } else {
+              element = <ProtectedRoute>{content}</ProtectedRoute>;
+            }
+          } else if (
+            route.path === "/login" ||
+            route.path === "/pending-activation"
+          ) {
+            element = <PublicRoute>{content}</PublicRoute>;
           }
-        } else if (
-          route.path === "/login" ||
-          route.path === "/pending-activation"
-        ) {
-          element = <PublicRoute>{content}</PublicRoute>;
-        }
 
-        return <Route key={route.path} path={route.path} element={element} />;
-      })}
-    </Routes>
+          return <Route key={route.path} path={route.path} element={element} />;
+        })}
+      </Routes>
+    </PageErrorBoundary>
   );
 };

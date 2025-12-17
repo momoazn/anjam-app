@@ -1,6 +1,6 @@
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
-  type TasksPriorityOptions,
+  TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
@@ -8,6 +8,16 @@ import { parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
+
+export function isValidStatus(value: string): value is TasksStatusOptions {
+  return Object.values(TasksStatusOptions).includes(value as TasksStatusOptions);
+}
+
+export function isValidPriority(value: string): value is TasksPriorityOptions {
+  return Object.values(TasksPriorityOptions).includes(
+    value as TasksPriorityOptions,
+  );
+}
 
 // Define the shape of the filters state
 export type TaskFiltersState = {
@@ -96,15 +106,17 @@ export function useTaskFilters(
           .includes(searchTerm.toLowerCase());
 
       // Filter logic
-      let matchesStatus =
-        selectedStatus === ALL_FILTER_VALUE
-          ? true
-          : task.status === selectedStatus;
+      let matchesStatus = true;
+      if (selectedStatus !== ALL_FILTER_VALUE && isValidStatus(selectedStatus)) {
+        matchesStatus = task.status === selectedStatus;
+      }
 
       // Handle comma-separated status values (e.g., "todo,in_progress")
       if (selectedStatus !== ALL_FILTER_VALUE && selectedStatus.includes(",")) {
-        const statusArray = selectedStatus.split(",");
-        matchesStatus = statusArray.includes(task.status);
+        const statusArray = selectedStatus
+          .split(",")
+          .filter((s): s is TasksStatusOptions => isValidStatus(s));
+        matchesStatus = statusArray.length > 0 && statusArray.includes(task.status);
       }
 
       // Special handling for "My Tasks" which should show both todo and in_progress
@@ -114,10 +126,10 @@ export function useTaskFilters(
           task.status === TasksStatusOptions.in_progress ||
           task.status === TasksStatusOptions.pending;
       }
-      const matchesPriority =
-        selectedPriority === ALL_FILTER_VALUE
-          ? true
-          : task.priority === selectedPriority;
+      let matchesPriority = true;
+      if (selectedPriority !== ALL_FILTER_VALUE && isValidPriority(selectedPriority)) {
+        matchesPriority = task.priority === selectedPriority;
+      }
       const matchesAssignee =
         selectedAssignee === ALL_FILTER_VALUE
           ? true
