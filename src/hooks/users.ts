@@ -6,18 +6,17 @@
  */
 
 import {
-  useMutation,
   useQuery,
-  useQueryClient,
   UseMutationOptions,
 } from "@tanstack/react-query";
-import { pb } from "../lib/pocketbase";
+import { customApiCall, pb } from "../lib/pocketbase";
 import {
   UsersResponse,
   UsersRecord,
   UsersProjectsResponse,
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
+import { createMutation } from "./use-mutation-factory";
 
 type UsersListOptions = {
   enabled?: boolean;
@@ -28,6 +27,89 @@ type UsersListOptions = {
 
 type CreateUserVariables = Omit<UsersRecord, "id" | "created" | "updated">;
 type UpdateUserVariables = { id: string; updates: Partial<UsersRecord> };
+
+const useCreateUserMutation = createMutation<UsersResponse, Error, CreateUserVariables>(
+  (userData) => pb.collection("users").create(userData),
+  (client) => {
+    client.invalidateQueries({ queryKey: queryKeys.users.all });
+    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+  },
+);
+
+const useUpdateUserMutation = createMutation<UsersResponse, Error, UpdateUserVariables>(
+  ({ id, updates }) => pb.collection("users").update(id, updates),
+  (client, _data, variables) => {
+    client.invalidateQueries({ queryKey: queryKeys.users.all });
+    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+
+    if (variables?.id) {
+      client.invalidateQueries({ queryKey: queryKeys.users.detail(variables.id) });
+    }
+
+    if (
+      variables?.updates &&
+      (variables.updates.role ||
+        variables.updates.first_name ||
+        variables.updates.last_name)
+    ) {
+      client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    }
+  },
+);
+
+const useDeleteUserMutation = createMutation<void, Error, string>(
+  async (id) => {
+    await pb.collection("users").delete(id);
+  },
+  (client, _data, userId) => {
+    client.invalidateQueries({ queryKey: queryKeys.users.all });
+    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
+  },
+);
+
+type ToggleUserActiveResponse = { message: string; active: boolean };
+
+const useToggleUserActiveMutation = createMutation<
+  ToggleUserActiveResponse,
+  Error,
+  string
+>(
+  (userId) =>
+    customApiCall<ToggleUserActiveResponse>(
+      `/api/tm/users/${userId}/toggle-active`,
+      { method: "PATCH" },
+    ),
+  (client, _data, userId) => {
+    client.invalidateQueries({ queryKey: queryKeys.users.all });
+    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
+    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+  },
+);
+
+type UnblockUserResponse = { message: string };
+
+const useUnblockUserMutation = createMutation<UnblockUserResponse, Error, string>(
+  (userId) =>
+    customApiCall<UnblockUserResponse>(`/api/tm/users/${userId}/unblock`, {
+      method: "PATCH",
+    }),
+  (client, _data, userId) => {
+    client.invalidateQueries({ queryKey: queryKeys.users.all });
+    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
+    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+  },
+);
 
 /**
  * Hook to fetch all users
@@ -125,31 +207,7 @@ export function useProjectUsers({
 export function useCreateUser(
   options?: UseMutationOptions<UsersResponse, Error, CreateUserVariables>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<UsersResponse, Error, CreateUserVariables>);
-
-  return useMutation<UsersResponse, Error, CreateUserVariables>({
-    mutationFn: (userData: CreateUserVariables) =>
-      pb.collection("users").create(userData),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Always refetch after mutation settles
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useCreateUserMutation(options);
 }
 
 /**
@@ -160,46 +218,7 @@ export function useCreateUser(
 export function useUpdateUser(
   options?: UseMutationOptions<UsersResponse, Error, UpdateUserVariables>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<UsersResponse, Error, UpdateUserVariables>);
-
-  return useMutation<UsersResponse, Error, UpdateUserVariables>({
-    mutationFn: ({ id, updates }: UpdateUserVariables) =>
-      pb.collection("users").update(id, updates),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Always refetch after mutation settles
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
-
-      if (variables?.id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.users.detail(variables.id),
-        });
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-
-      if (
-        variables?.updates &&
-        (variables.updates.role ||
-          variables.updates.first_name ||
-          variables.updates.last_name)
-      ) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useUpdateUserMutation(options);
 }
 
 /**
@@ -210,39 +229,7 @@ export function useUpdateUser(
 export function useDeleteUser(
   options?: UseMutationOptions<void, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<void, Error, string>);
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await pb.collection("users").delete(id);
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Always refetch after mutation settles
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-
-      if (variables) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.users.detail(variables),
-        });
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useDeleteUserMutation(options);
 }
 
 /**
@@ -251,55 +238,9 @@ export function useDeleteUser(
  * @returns Mutation function for toggling user active status
  */
 export function useToggleUserActive(
-  options?: UseMutationOptions<{ message: string }, Error, string>,
+  options?: UseMutationOptions<ToggleUserActiveResponse, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<{ message: string }, Error, string>);
-
-  return useMutation({
-    mutationFn: async (userId: string) => {
-      const response = await fetch(
-        `${pb.baseURL}api/tm/users/${userId}/toggle-active`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: pb.authStore.token
-              ? `Bearer ${pb.authStore.token}`
-              : "",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to toggle user status");
-      }
-
-      return response.json();
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Always refetch after mutation settles
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
-
-      if (variables) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.users.detail(variables),
-        });
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useToggleUserActiveMutation(options);
 }
 
 /**
@@ -308,53 +249,7 @@ export function useToggleUserActive(
  * @returns Mutation function for unblocking users
  */
 export function useUnblockUser(
-  options?: UseMutationOptions<{ message: string }, Error, string>,
+  options?: UseMutationOptions<UnblockUserResponse, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<{ message: string }, Error, string>);
-
-  return useMutation({
-    mutationFn: async (userId: string) => {
-      const response = await fetch(
-        `${pb.baseURL}api/tm/users/${userId}/unblock`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: pb.authStore.token
-              ? `Bearer ${pb.authStore.token}`
-              : "",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to unblock user");
-      }
-
-      return response.json();
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Always refetch after mutation settles
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
-
-      if (variables) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.users.detail(variables),
-        });
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useUnblockUserMutation(options);
 }

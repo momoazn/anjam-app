@@ -6,14 +6,67 @@
  */
 
 import {
-  useMutation,
   useQuery,
-  useQueryClient,
   UseMutationOptions,
 } from "@tanstack/react-query";
 import { pb, ProjectWithSupervisor } from "../lib/pocketbase";
 import { ProjectsResponse, ProjectsRecord } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
+import { createMutation } from "./use-mutation-factory";
+
+type CreateProjectVariables = Omit<ProjectsRecord, "id" | "created" | "updated">;
+type UpdateProjectVariables = { id: string; updates: Partial<ProjectsRecord> };
+
+const useCreateProjectMutation = createMutation<
+  ProjectsResponse,
+  Error,
+  CreateProjectVariables
+>((projectData) => pb.collection("projects").create(projectData), (client) => {
+  client.invalidateQueries({ queryKey: queryKeys.projects.all });
+  client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+  client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+  client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+  client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+});
+
+const useUpdateProjectMutation = createMutation<
+  ProjectsResponse,
+  Error,
+  UpdateProjectVariables
+>(({ id, updates }) => pb.collection("projects").update(id, updates), (client, _data, variables) => {
+  client.invalidateQueries({ queryKey: queryKeys.projects.all });
+  client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+
+  if (variables?.id) {
+    client.invalidateQueries({ queryKey: queryKeys.projects.detail(variables.id) });
+    client.invalidateQueries({
+      queryKey: [...queryKeys.projects.detail(variables.id), "supervisor"],
+    });
+  }
+
+  client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+  client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+
+  client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+});
+
+const useDeleteProjectMutation = createMutation<void, Error, string>(
+  async (id) => {
+    await pb.collection("projects").delete(id);
+  },
+  (client, _data, projectId) => {
+    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) });
+    client.invalidateQueries({
+      queryKey: [...queryKeys.projects.detail(projectId), "supervisor"],
+    });
+
+    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+  },
+);
 
 /**
  * Hook to fetch all projects
@@ -85,38 +138,10 @@ export function useCreateProject(
   options?: UseMutationOptions<
     ProjectsResponse,
     Error,
-    Omit<ProjectsRecord, "id" | "created" | "updated">
+    CreateProjectVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      ProjectsResponse,
-      Error,
-      Omit<ProjectsRecord, "id" | "created" | "updated">
-    >);
-
-  return useMutation({
-    mutationFn: (
-      projectData: Omit<ProjectsRecord, "id" | "created" | "updated">,
-    ) => pb.collection("projects").create(projectData),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useCreateProjectMutation(options);
 }
 
 /**
@@ -128,55 +153,10 @@ export function useUpdateProject(
   options?: UseMutationOptions<
     ProjectsResponse,
     Error,
-    { id: string; updates: Partial<ProjectsRecord> }
+    UpdateProjectVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      ProjectsResponse,
-      Error,
-      { id: string; updates: Partial<ProjectsRecord> }
-    >);
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: Partial<ProjectsRecord>;
-    }) => pb.collection("projects").update(id, updates),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-
-      if (variables?.id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.projects.detail(variables.id),
-        });
-        queryClient.invalidateQueries({
-          queryKey: [...queryKeys.projects.detail(variables.id), "supervisor"],
-        });
-      }
-
-      if (variables?.updates) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useUpdateProjectMutation(options);
 }
 
 /**
@@ -187,39 +167,5 @@ export function useUpdateProject(
 export function useDeleteProject(
   options?: UseMutationOptions<void, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<void, Error, string>);
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await pb.collection("projects").delete(id);
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-
-      if (variables) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.projects.detail(variables),
-        });
-        queryClient.invalidateQueries({
-          queryKey: [...queryKeys.projects.detail(variables), "supervisor"],
-        });
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useDeleteProjectMutation(options);
 }

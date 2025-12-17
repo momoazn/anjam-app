@@ -6,9 +6,7 @@
  */
 
 import {
-  useMutation,
   useQuery,
-  useQueryClient,
   UseMutationOptions,
 } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
@@ -19,6 +17,54 @@ import {
   ProjectsResponse,
 } from "@/lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
+import { createMutation } from "./use-mutation-factory";
+
+type CreateGroupVariables = Omit<GroupsRecord, "id" | "created" | "updated">;
+type UpdateGroupVariables = { id: string; updates: Partial<GroupsRecord> };
+
+const useCreateGroupMutation = createMutation<GroupsResponse, Error, CreateGroupVariables>(
+  (groupData) => pb.collection("groups").create(groupData),
+  (client) => {
+    client.invalidateQueries({ queryKey: queryKeys.groups.all });
+    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+  },
+);
+
+const useUpdateGroupMutation = createMutation<GroupsResponse, Error, UpdateGroupVariables>(
+  ({ id, updates }) => pb.collection("groups").update(id, updates),
+  (client, _data, variables) => {
+    client.invalidateQueries({ queryKey: queryKeys.groups.all });
+    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.groups.detail(variables.id) });
+    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+  },
+);
+
+const useDeleteGroupMutation = createMutation<void, Error, string>(
+  (id) => pb.collection("groups").delete(id),
+  (client, _data, groupId) => {
+    client.invalidateQueries({ queryKey: queryKeys.groups.all });
+    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.groups.detail(groupId) });
+    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+  },
+);
+
+const useToggleGroupActiveMutation = createMutation<GroupsResponse, Error, string>(
+  async (id) => {
+    const group = await pb.collection("groups").getOne<GroupsResponse>(id);
+    return pb.collection("groups").update(id, { active: !group.active });
+  },
+  (client, _data, groupId) => {
+    client.invalidateQueries({ queryKey: queryKeys.groups.all });
+    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.groups.detail(groupId) });
+  },
+);
 
 /**
  * Hook to fetch all groups
@@ -107,38 +153,10 @@ export function useCreateGroup(
   options?: UseMutationOptions<
     GroupsResponse,
     Error,
-    Omit<GroupsRecord, "id" | "created" | "updated">
+    CreateGroupVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      GroupsResponse,
-      Error,
-      Omit<GroupsRecord, "id" | "created" | "updated">
-    >);
-
-  return useMutation<
-    GroupsResponse,
-    Error,
-    Omit<GroupsRecord, "id" | "created" | "updated">
-  >({
-    mutationFn: (groupData: Omit<GroupsRecord, "id" | "created" | "updated">) =>
-      pb.collection("groups").create(groupData),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useCreateGroupMutation(options);
 }
 
 /**
@@ -150,52 +168,10 @@ export function useUpdateGroup(
   options?: UseMutationOptions<
     GroupsResponse,
     Error,
-    { id: string; updates: Partial<GroupsRecord> }
+    UpdateGroupVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      GroupsResponse,
-      Error,
-      { id: string; updates: Partial<GroupsRecord> }
-    >);
-
-  return useMutation<
-    GroupsResponse,
-    Error,
-    { id: string; updates: Partial<GroupsRecord> }
-  >({
-    mutationFn: ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: Partial<GroupsRecord>;
-    }) => pb.collection("groups").update(id, updates),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-
-      if (variables?.id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.groups.detail(variables.id),
-        });
-      }
-
-      if (variables?.updates) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-        queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useUpdateGroupMutation(options);
 }
 
 /**
@@ -206,34 +182,7 @@ export function useUpdateGroup(
 export function useDeleteGroup(
   options?: UseMutationOptions<void, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<void, Error, string>);
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await pb.collection("groups").delete(id);
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-
-      if (variables) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.groups.detail(variables),
-        });
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useDeleteGroupMutation(options);
 }
 
 /**
@@ -244,28 +193,5 @@ export function useDeleteGroup(
 export function useToggleGroupActive(
   options?: UseMutationOptions<GroupsResponse, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<GroupsResponse, Error, string>);
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const group = await pb.collection("groups").getOne<GroupsResponse>(id);
-      return pb.collection("groups").update(id, { active: !group.active });
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.groups.detail(variables),
-      });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useToggleGroupActiveMutation(options);
 }

@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 
 import { pb } from "@/lib/pocketbase";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
+import { createMutation } from "./use-mutation-factory";
 
 const getNotificationsQueryKey = (userId?: string) => [
   "notifications",
@@ -66,28 +67,25 @@ export function useUnreadCount() {
 
 // Mutations
 export function useMarkAsRead() {
-  const queryClient = useQueryClient();
   const user = useAuthUser();
 
-  return useMutation({
-    mutationFn: (id: string) =>
-      pb.collection("notifications").update(id, { read: true }),
-    onSettled: () => {
+  const mutation = createMutation<unknown, Error, string>(
+    (id) => pb.collection("notifications").update(id, { read: true }),
+    (client) => {
       if (user?.id) {
-        queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(user.id),
-        });
+        client.invalidateQueries({ queryKey: getNotificationsQueryKey(user.id) });
       }
     },
-  });
+  );
+
+  return mutation();
 }
 
 export function useMarkAllAsRead() {
-  const queryClient = useQueryClient();
   const user = useAuthUser();
 
-  return useMutation({
-    mutationFn: async (userId: string) => {
+  const mutation = createMutation<void, Error, string>(
+    async (userId: string) => {
       const notifications = await pb
         .collection("notifications")
         .getFullList<NotificationsRecord>({
@@ -100,39 +98,37 @@ export function useMarkAllAsRead() {
 
       await Promise.all(updatePromises);
     },
-    onSettled: (_data, _error, userId) => {
+    (client, _data, userId) => {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
-        queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(targetUserId),
-        });
+        client.invalidateQueries({ queryKey: getNotificationsQueryKey(targetUserId) });
       }
     },
-  });
+  );
+
+  return mutation();
 }
 
 export function useDeleteNotification() {
-  const queryClient = useQueryClient();
   const user = useAuthUser();
 
-  return useMutation({
-    mutationFn: (id: string) => pb.collection("notifications").delete(id),
-    onSettled: () => {
+  const mutation = createMutation<void, Error, string>(
+    (id) => pb.collection("notifications").delete(id),
+    (client) => {
       if (user?.id) {
-        queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(user.id),
-        });
+        client.invalidateQueries({ queryKey: getNotificationsQueryKey(user.id) });
       }
     },
-  });
+  );
+
+  return mutation();
 }
 
 export function useClearAll() {
-  const queryClient = useQueryClient();
   const user = useAuthUser();
 
-  return useMutation({
-    mutationFn: async (userId: string) => {
+  const mutation = createMutation<void, Error, string>(
+    async (userId: string) => {
       const notifications = await pb
         .collection("notifications")
         .getFullList<NotificationsRecord>({
@@ -145,23 +141,22 @@ export function useClearAll() {
 
       await Promise.all(deletePromises);
     },
-    onSettled: (_data, _error, userId) => {
+    (client, _data, userId) => {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
-        queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(targetUserId),
-        });
+        client.invalidateQueries({ queryKey: getNotificationsQueryKey(targetUserId) });
       }
     },
-  });
+  );
+
+  return mutation();
 }
 
 export function useClearRead() {
-  const queryClient = useQueryClient();
   const user = useAuthUser();
 
-  return useMutation({
-    mutationFn: async (userId: string) => {
+  const mutation = createMutation<void, Error, string>(
+    async (userId: string) => {
       const notifications = await pb
         .collection("notifications")
         .getFullList<NotificationsRecord>({
@@ -174,13 +169,13 @@ export function useClearRead() {
 
       await Promise.all(deletePromises);
     },
-    onSettled: (_data, _error, userId) => {
+    (client, _data, userId) => {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
-        queryClient.invalidateQueries({
-          queryKey: getNotificationsQueryKey(targetUserId),
-        });
+        client.invalidateQueries({ queryKey: getNotificationsQueryKey(targetUserId) });
       }
     },
-  });
+  );
+
+  return mutation();
 }

@@ -17,6 +17,13 @@ const baseUrl = import.meta.env.PROD ? "/" : "http://127.0.0.1:8090/";
 
 export const pb = new PocketBase(baseUrl) as TypedPocketBase;
 
+export async function customApiCall<TResponse>(
+  path: string,
+  options?: Parameters<typeof pb.send>[1],
+) {
+  return pb.send<TResponse>(path, options);
+}
+
 export type TaskWithProject = TasksResponse<{
   project: ProjectsResponse;
   assignee?: UsersResponse; // Make assignee optional in expand

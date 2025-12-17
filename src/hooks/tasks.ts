@@ -6,9 +6,7 @@
  */
 
 import {
-  useMutation,
   useQuery,
-  useQueryClient,
   UseMutationOptions,
 } from "@tanstack/react-query";
 import { pb, TaskWithProject } from "../lib/pocketbase";
@@ -23,6 +21,105 @@ import {
   TasksResponse,
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
+import { createMutation } from "./use-mutation-factory";
+
+type CreateTaskVariables = Omit<TasksRecord, "id" | "created" | "updated">;
+type UpdateTaskVariables = { id: string; updates: Partial<TasksRecord> };
+
+const useCreateTaskMutation = createMutation<TasksResponse, Error, CreateTaskVariables>(
+  (taskData) => pb.collection("tasks").create(taskData),
+  (client) => {
+    compositeInvalidators.taskChange(client);
+  },
+);
+
+const useUpdateTaskMutation = createMutation<
+  TasksResponse,
+  Error,
+  UpdateTaskVariables
+>(
+  ({ id, updates }) => pb.collection("tasks").update(id, updates),
+  (client, _data, variables) => {
+    if (variables?.id) {
+      detailInvalidators.task(client, variables.id);
+    } else {
+      compositeInvalidators.taskChange(client);
+    }
+
+    if (variables?.updates?.project) {
+      compositeInvalidators.projectChange(client, variables.updates.project);
+    }
+  },
+);
+
+const useDeleteTaskMutation = createMutation<TasksResponse, Error, string>(
+  (id) =>
+    pb.collection("tasks").update<TasksResponse>(id, {
+      deleted_at: new Date().toISOString(),
+    }),
+  (client, _data, taskId) => {
+    detailInvalidators.task(client, taskId);
+  },
+);
+
+type BulkUpdateVariables = { taskIds: string[]; updates: Partial<TasksRecord> };
+
+const useBulkUpdateTasksMutation = createMutation<
+  TasksResponse[],
+  Error,
+  BulkUpdateVariables
+>(
+  async ({ taskIds, updates }) => {
+    const updatePromises = taskIds.map((taskId) =>
+      pb.collection("tasks").update<TasksResponse>(taskId, updates),
+    );
+    return await Promise.all(updatePromises);
+  },
+  (client) => {
+    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+  },
+);
+
+const useBulkDeleteTasksMutation = createMutation<void, Error, string[]>(
+  async (taskIds) => {
+    const timestamp = new Date().toISOString();
+    const deletePromises = taskIds.map((taskId) =>
+      pb.collection("tasks").update<TasksResponse>(taskId, {
+        deleted_at: timestamp,
+      }),
+    );
+    await Promise.all(deletePromises);
+  },
+  (client) => {
+    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+  },
+);
+
+type ReorderTaskVariables = {
+  taskId: string;
+  newOrder: number;
+  statusKey: string;
+};
+
+const useReorderTaskMutation = createMutation<
+  TasksResponse,
+  Error,
+  ReorderTaskVariables
+>(
+  ({ taskId, newOrder, statusKey }) =>
+    pb.collection("tasks").update<TasksResponse>(taskId, {
+      order: newOrder,
+      status: statusKey as TasksRecord["status"],
+    }),
+  (client) => {
+    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
+    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+  },
+);
 
 /**
  * Fetches tasks with optional project filtering and field expansion
@@ -168,32 +265,10 @@ export function useCreateTask(
   options?: UseMutationOptions<
     TasksResponse,
     Error,
-    Omit<TasksRecord, "id" | "created" | "updated">
+    CreateTaskVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      TasksResponse,
-      Error,
-      Omit<TasksRecord, "id" | "created" | "updated">
-    >);
-
-  return useMutation({
-    mutationFn: (taskData: Omit<TasksRecord, "id" | "created" | "updated">) =>
-      pb.collection("tasks").create(taskData),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Use the composite validator for task changes
-      compositeInvalidators.taskChange(queryClient);
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useCreateTaskMutation(options);
 }
 
 /**
@@ -205,51 +280,10 @@ export function useUpdateTask(
   options?: UseMutationOptions<
     TasksResponse,
     Error,
-    { id: string; updates: Partial<TasksRecord> }
+    UpdateTaskVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      TasksResponse,
-      Error,
-      { id: string; updates: Partial<TasksRecord> }
-    >);
-
-  return useMutation({
-    mutationFn: async ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: Partial<TasksRecord>;
-    }) => {
-      return pb.collection("tasks").update(id, updates);
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Use detail validator for specific task invalidation
-      if (variables?.id) {
-        detailInvalidators.task(queryClient, variables.id);
-      } else {
-        compositeInvalidators.taskChange(queryClient);
-      }
-
-      // If project changed, also invalidate projects
-      if (variables?.updates?.project) {
-        compositeInvalidators.projectChange(
-          queryClient,
-          variables.updates.project,
-        );
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useUpdateTaskMutation(options);
 }
 
 /**
@@ -260,31 +294,7 @@ export function useUpdateTask(
 export function useDeleteTask(
   options?: UseMutationOptions<TasksResponse, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<TasksResponse, Error, string>);
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      return pb.collection("tasks").update<TasksResponse>(id, {
-        deleted_at: new Date().toISOString(),
-      });
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      // Use detail validator for specific task and projects
-      if (variables) {
-        detailInvalidators.task(queryClient, variables);
-      } else {
-        compositeInvalidators.taskChange(queryClient);
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useDeleteTaskMutation(options);
 }
 
 /**
@@ -294,44 +304,10 @@ export function useBulkUpdateTasks(
   options?: UseMutationOptions<
     TasksResponse[],
     Error,
-    { taskIds: string[]; updates: Partial<TasksRecord> }
+    BulkUpdateVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ??
-    ({} as UseMutationOptions<
-      TasksResponse[],
-      Error,
-      { taskIds: string[]; updates: Partial<TasksRecord> }
-    >);
-
-  return useMutation({
-    mutationFn: async ({
-      taskIds,
-      updates,
-    }: {
-      taskIds: string[];
-      updates: Partial<TasksRecord>;
-    }) => {
-      const updatePromises = taskIds.map((taskId) =>
-        pb.collection("tasks").update<TasksResponse>(taskId, updates),
-      );
-
-      return await Promise.all(updatePromises);
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useBulkUpdateTasksMutation(options);
 }
 
 /**
@@ -340,59 +316,12 @@ export function useBulkUpdateTasks(
 export function useBulkDeleteTasks(
   options?: UseMutationOptions<void, Error, string[]>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } =
-    options ?? ({} as UseMutationOptions<void, Error, string[]>);
-
-  return useMutation({
-    mutationFn: async (taskIds: string[]) => {
-      const timestamp = new Date().toISOString();
-      const deletePromises = taskIds.map((taskId) =>
-        pb.collection("tasks").update<TasksResponse>(taskId, {
-          deleted_at: timestamp,
-        }),
-      );
-
-      await Promise.all(deletePromises);
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useBulkDeleteTasksMutation(options);
 }
 
 /**
  * Hook to reorder a task within a status column
  */
 export function useReorderTask() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      taskId,
-      newOrder,
-      statusKey,
-    }: {
-      taskId: string;
-      newOrder: number;
-      statusKey: string;
-    }) => {
-      return pb.collection("tasks").update<TasksResponse>(taskId, {
-        order: newOrder,
-        status: statusKey as TasksRecord["status"],
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-    },
-  });
+  return useReorderTaskMutation();
 }

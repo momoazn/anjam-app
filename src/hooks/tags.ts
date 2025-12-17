@@ -1,12 +1,11 @@
 import {
   useQuery,
-  useMutation,
-  useQueryClient,
   type UseQueryOptions,
   type UseMutationOptions,
 } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import type { TagsResponse, TagsRecord } from "@/lib/pocketbase-types";
+import { createMutation } from "./use-mutation-factory";
 
 // Query keys for tags
 export const tagQueryKeys = {
@@ -14,6 +13,28 @@ export const tagQueryKeys = {
   lists: () => [...tagQueryKeys.all, "list"] as const,
   list: (filters?: string) => [...tagQueryKeys.lists(), { filters }] as const,
 };
+
+const useCreateTagMutation = createMutation<TagsResponse, Error, Partial<TagsRecord>>(
+  (data) => pb.collection("tags").create<TagsResponse>(data),
+  (client) => {
+    client.invalidateQueries({ queryKey: tagQueryKeys.all });
+  },
+);
+
+const useUpdateTagMutation = createMutation<
+  TagsResponse,
+  Error,
+  { id: string; data: Partial<TagsRecord> }
+>(({ id, data }) => pb.collection("tags").update<TagsResponse>(id, data), (client) => {
+  client.invalidateQueries({ queryKey: tagQueryKeys.all });
+});
+
+const useDeleteTagMutation = createMutation<void, Error, string>(
+  (id) => pb.collection("tags").delete(id),
+  (client) => {
+    client.invalidateQueries({ queryKey: tagQueryKeys.all });
+  },
+);
 
 /**
  * Fetch all tags
@@ -42,18 +63,7 @@ export function useTags(
 export function useCreateTag(
   options?: UseMutationOptions<TagsResponse, Error, Partial<TagsRecord>>,
 ) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: Partial<TagsRecord>) => {
-      return await pb.collection("tags").create<TagsResponse>(data);
-    },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: tagQueryKeys.all });
-      options?.onSuccess?.(data, variables, context);
-    },
-    ...options,
-  });
+  return useCreateTagMutation(options);
 }
 
 /**
@@ -66,24 +76,7 @@ export function useUpdateTag(
     { id: string; data: Partial<TagsRecord> }
   >,
 ) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: Partial<TagsRecord>;
-    }) => {
-      return await pb.collection("tags").update<TagsResponse>(id, data);
-    },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: tagQueryKeys.all });
-      options?.onSuccess?.(data, variables, context);
-    },
-    ...options,
-  });
+  return useUpdateTagMutation(options);
 }
 
 /**
@@ -92,16 +85,5 @@ export function useUpdateTag(
 export function useDeleteTag(
   options?: UseMutationOptions<void, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await pb.collection("tags").delete(id);
-    },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: tagQueryKeys.all });
-      options?.onSuccess?.(data, variables, context);
-    },
-    ...options,
-  });
+  return useDeleteTagMutation(options);
 }

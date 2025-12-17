@@ -6,9 +6,7 @@
  */
 
 import {
-  useMutation,
   useQuery,
-  useQueryClient,
   UseMutationOptions,
 } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
@@ -18,10 +16,57 @@ import {
   UsersResponse,
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
+import { createMutation } from "./use-mutation-factory";
 
 export type CommentWithUser = CommentsResponse<{
   user: UsersResponse;
 }>;
+
+type CreateCommentVariables = Omit<CommentsRecord, "id" | "created" | "updated">;
+type UpdateCommentVariables = { id: string; updates: Partial<CommentsRecord> };
+
+const useCreateCommentMutation = createMutation<
+  CommentsResponse,
+  Error,
+  CreateCommentVariables
+>((commentData) => pb.collection("comments").create(commentData), (client, _data, variables) => {
+  client.invalidateQueries({ queryKey: queryKeys.comments.all });
+  client.invalidateQueries({ queryKey: queryKeys.comments.lists() });
+
+  if (variables?.task) {
+    client.invalidateQueries({ queryKey: queryKeys.comments.byTask(variables.task) });
+  }
+});
+
+const useUpdateCommentMutation = createMutation<
+  CommentsResponse,
+  Error,
+  UpdateCommentVariables
+>(({ id, updates }) => pb.collection("comments").update(id, updates), (client, _data, variables) => {
+  client.invalidateQueries({ queryKey: queryKeys.comments.all });
+  client.invalidateQueries({ queryKey: queryKeys.comments.lists() });
+
+  if (variables?.updates?.task) {
+    client.invalidateQueries({
+      queryKey: queryKeys.comments.byTask(variables.updates.task),
+    });
+  }
+});
+
+const useDeleteCommentMutation = createMutation<CommentsResponse, Error, string>(
+  (id) =>
+    pb.collection("comments").update<CommentsResponse>(id, {
+      deleted_at: new Date().toISOString(),
+    }),
+  (client) => {
+    client.invalidateQueries({ queryKey: queryKeys.comments.all });
+    client.invalidateQueries({ queryKey: queryKeys.comments.lists() });
+    client.invalidateQueries({
+      predicate: (query) =>
+        query.queryKey[0] === "comments" && query.queryKey.includes("task"),
+    });
+  },
+);
 
 /**
  * Hook to fetch comments for a specific task with user expansion
@@ -61,33 +106,10 @@ export function useCreateComment(
   options?: UseMutationOptions<
     CommentsResponse,
     Error,
-    Omit<CommentsRecord, "id" | "created" | "updated">
+    CreateCommentVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } = options ?? {};
-
-  return useMutation({
-    mutationFn: (
-      commentData: Omit<CommentsRecord, "id" | "created" | "updated">,
-    ) => pb.collection("comments").create(commentData),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.comments.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.comments.lists() });
-
-      if (variables?.task) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.comments.byTask(variables.task),
-        });
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useCreateCommentMutation(options);
 }
 
 /**
@@ -99,37 +121,10 @@ export function useUpdateComment(
   options?: UseMutationOptions<
     CommentsResponse,
     Error,
-    { id: string; updates: Partial<CommentsRecord> }
+    UpdateCommentVariables
   >,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } = options ?? {};
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: Partial<CommentsRecord>;
-    }) => pb.collection("comments").update(id, updates),
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.comments.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.comments.lists() });
-
-      if (variables?.updates?.task) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.comments.byTask(variables.updates.task),
-        });
-      }
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useUpdateCommentMutation(options);
 }
 
 /**
@@ -137,32 +132,10 @@ export function useUpdateComment(
  * @param options - Mutation options
  * @returns Mutation hook for soft deleting comments
  */
-export function useSoftDeleteComment(
+export function useDeleteComment(
   options?: UseMutationOptions<CommentsResponse, Error, string>,
 ) {
-  const queryClient = useQueryClient();
-  const { onSuccess, onSettled, ...restOptions } = options ?? {};
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      return pb.collection("comments").update<CommentsResponse>(id, {
-        deleted_at: new Date().toISOString(),
-      });
-    },
-    onSuccess: (data, variables, context) => {
-      onSuccess?.(data, variables, context);
-    },
-    onSettled: (data, error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.comments.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.comments.lists() });
-
-      queryClient.invalidateQueries({
-        predicate: (query) =>
-          query.queryKey[0] === "comments" && query.queryKey.includes("task"),
-      });
-
-      onSettled?.(data, error, variables, context);
-    },
-    ...restOptions,
-  });
+  return useDeleteCommentMutation(options);
 }
+
+export const useSoftDeleteComment = useDeleteComment;
