@@ -1337,7 +1337,7 @@
         "type": "file"
       }
     ],
-    "indexes": [],
+    "indexes": ["CREATE UNIQUE INDEX idx_projects_code ON projects (code)"],
     "system": false
   },
   {
@@ -1657,7 +1657,9 @@
         "type": "autodate"
       }
     ],
-    "indexes": [],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_tasks_display_id ON tasks (display_id)"
+    ],
     "system": false
   },
   {

@@ -749,12 +749,6 @@ func createNotification(app core.App, userId, notificationType, title, message s
 		return fmt.Errorf("cannot create notification: empty user ID")
 	}
 
-	// Check if user exists
-	_, err := app.FindRecordById(CollectionUsers, userId)
-	if err != nil {
-		return fmt.Errorf("cannot create notification: user %s not found: %w", userId, err)
-	}
-
 	notificationsCollection, err := app.FindCollectionByNameOrId(CollectionNotifications)
 	if err != nil {
 		return fmt.Errorf("cannot create notification: notifications collection not found: %w", err)

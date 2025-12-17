@@ -7,7 +7,6 @@ import (
 	"log"
 	"reflect"
 	"sort"
-	"sync"
 
 	"github.com/google/uuid"
 	"github.com/pocketbase/pocketbase/apis"
@@ -44,16 +43,6 @@ var sensitiveFields = map[string]bool{
 	"accessKey":     true,
 	"oauth_secret":  true,
 	"private_notes": true,
-}
-
-func auditSnapshotKey(collectionName, recordID string, ctx context.Context) string {
-	if ctx == nil {
-		return fmt.Sprintf("%s:%s", collectionName, recordID)
-	}
-	if requestID, ok := ctx.Value(contextKeyRequestID).(string); ok && requestID != "" {
-		return fmt.Sprintf("%s:%s:%s", collectionName, recordID, requestID)
-	}
-	return fmt.Sprintf("%s:%s", collectionName, recordID)
 }
 
 // logAudit writes an audit log entry to the audit_logs collection.
@@ -327,12 +316,13 @@ func sanitizeValue(val interface{}, depth int) interface{} {
 }
 
 // extractActorInfo extracts actor information from the event.
-// First tries to get from HTTP request context, then falls back to record fields.
+// First tries to get from request-provided actor data in context when available,
+// then falls back to record fields.
 func extractActorInfo(e *core.RecordEvent) (actorID, actorRole, actorType string) {
 	actorType = "system"
 	actorRole = "system"
 
-	// Prefer request-provided actor data when available.
+	// Prefer request-provided actor data in context when available.
 	if e.Context != nil {
 		if actorIDFromCtx, ok := e.Context.Value(contextKeyActorID).(string); ok && actorIDFromCtx != "" {
 			actorID = actorIDFromCtx
@@ -487,32 +477,6 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		return e.Next()
 	})
 
-	var updateSnapshots sync.Map
-
-	captureUpdateSnapshot := func(e *core.RecordEvent) error {
-		// Capture record state BEFORE modifications. In OnRecordAfterUpdateSuccess, 
-		// the record already contains new values, so we need this snapshot 
-		// for accurate diff calculation.
-		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
-		originalRec := e.Record.Original()
-		if originalRec != nil {
-			beforeJSON, err := originalRec.MarshalJSON()
-			if err == nil {
-				updateSnapshots.Store(key, beforeJSON)
-			}
-		} else {
-			// Fallback: if Original() is not available, serialize current record.
-			beforeJSON, err := e.Record.MarshalJSON()
-			if err == nil {
-				updateSnapshots.Store(key, beforeJSON)
-			}
-		}
-		return e.Next()
-	}
-
-	app.OnRecordUpdate(collectionName).BindFunc(captureUpdateSnapshot)
-	app.OnRecordUpdateExecute(collectionName).BindFunc(captureUpdateSnapshot)
-
 	// Track successful update
 	app.OnRecordAfterUpdateSuccess(collectionName).BindFunc(func(e *core.RecordEvent) error {
 		collection, err := app.FindCollectionByNameOrId(collectionName)
@@ -521,28 +485,10 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			return e.Next()
 		}
 
-		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
-		snapshotValue, hadSnapshot := updateSnapshots.LoadAndDelete(key)
-		
-		var changes map[string]FieldDiff
-		var originalRec *core.Record
+		originalRec := e.Record.Original()
+		changes := calculateChanges(originalRec, e.Record, collection)
 
-		if hadSnapshot {
-			if originalJSON, ok := snapshotValue.([]byte); ok {
-				snapshotRecord := core.NewRecord(collection)
-				if err := snapshotRecord.UnmarshalJSON(originalJSON); err == nil {
-					originalRec = snapshotRecord
-				}
-			}
-		}
-
-		if originalRec == nil {
-			changes = make(map[string]FieldDiff)
-		} else {
-			changes = calculateChanges(originalRec, e.Record, collection)
-		}
-
-		if originalRec != nil && len(changes) == 0 {
+		if len(changes) == 0 {
 			return e.Next()
 		}
 
@@ -562,37 +508,14 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			IPAddress:  getIPAddress(e),
 		}
 
-		if originalRec == nil {
-			entry.Message = "Updated (diff unavailable)"
-		}
-
 		logAudit(app, entry)
 		return e.Next()
 	})
-
-	var deleteSnapshots sync.Map
-	
-	captureDeleteSnapshot := func(e *core.RecordEvent) error {
-		// Capture record state before delete because PocketBase clears record data 
-		// from the object after a successful deletion.
-		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
-		recordJSON, err := e.Record.MarshalJSON()
-		if err == nil {
-			deleteSnapshots.Store(key, recordJSON)
-		}
-		return e.Next()
-	}
-	
-	app.OnRecordDelete(collectionName).BindFunc(captureDeleteSnapshot)
-	app.OnRecordDeleteExecute(collectionName).BindFunc(captureDeleteSnapshot)
 
 	// Track successful delete
 	app.OnRecordAfterDeleteSuccess(collectionName).BindFunc(func(e *core.RecordEvent) error {
 		actorID, actorRole, actorType := extractActorInfo(e)
 
-		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
-		snapshotValue, hadSnapshot := deleteSnapshots.LoadAndDelete(key)
-		
 		entry := AuditEntry{
 			Actor:      actorID,
 			ActorRole:  actorRole,
@@ -606,25 +529,16 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			IPAddress:  getIPAddress(e),
 		}
 
-		if hadSnapshot {
-			if snapshotJSON, ok := snapshotValue.([]byte); ok {
-				collection, err := app.FindCollectionByNameOrId(collectionName)
-				if err == nil {
-					snapshotRecord := core.NewRecord(collection)
-					if err := snapshotRecord.UnmarshalJSON(snapshotJSON); err == nil {
-						resourceName := snapshotRecord.GetString("name")
-						if resourceName == "" {
-							resourceName = snapshotRecord.GetString("title")
-						}
-						if resourceName == "" {
-							resourceName = snapshotRecord.GetString("display_id")
-						}
-						if resourceName != "" {
-							entry.Message = fmt.Sprintf("Deleted %s: %s", collectionName, resourceName)
-						}
-					}
-				}
-			}
+		// Use the record data directly as it's still available in AfterDeleteSuccess
+		resourceName := e.Record.GetString("name")
+		if resourceName == "" {
+			resourceName = e.Record.GetString("title")
+		}
+		if resourceName == "" {
+			resourceName = e.Record.GetString("display_id")
+		}
+		if resourceName != "" {
+			entry.Message = fmt.Sprintf("Deleted %s: %s", collectionName, resourceName)
 		}
 
 		logAudit(app, entry)
