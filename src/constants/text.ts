@@ -7,25 +7,65 @@
 
 import { helps } from "./helps";
 
+// Shared constant strings to avoid duplication
+const SHARED_LABELS = {
+  // Common actions
+  cancel: "انصراف",
+  save: "ذخیره",
+  delete: "حذف",
+  edit: "ویرایش",
+  create: "ایجاد",
+  close: "بستن",
+  add: "افزودن",
+  remove: "حذف",
+  all: "همه",
+  
+  // Loading/async states
+  saving: "در حال ذخیره...",
+  creating: "در حال ایجاد...",
+  updating: "در حال به‌روزرسانی...",
+  loading: "در حال بارگذاری...",
+  deleting: "در حال حذف...",
+  
+  // Common status labels
+  active: "فعال",
+  inactive: "غیرفعال",
+  completed: "تکمیل شده",
+  pending: "در انتظار",
+  inProgress: "در حال انجام",
+  success: "موفق",
+  error: "خطا",
+  
+  // Time units
+  hours: "ساعت",
+  minutes: "دقیقه",
+  
+  // Pagination
+  previous: "قبلی",
+  next: "بعدی",
+  today: "امروز",
+} as const;
+
 export const fa = {
   // Application-level configuration
   app: {
     name: "مدیر تسک‌ها",
   },
 
+  // ============ COMMON/SHARED ============
   // Common strings used across multiple components
   common: {
-    cancel: "انصراف",
+    cancel: SHARED_LABELS.cancel,
     submit: "تایید",
-    delete: "حذف",
-    save: "ذخیره",
-    saving: "در حال ذخیره...",
-    edit: "ویرایش",
-    create: "ایجاد",
-    creating: "در حال ایجاد...",
+    delete: SHARED_LABELS.delete,
+    save: SHARED_LABELS.save,
+    saving: SHARED_LABELS.saving,
+    edit: SHARED_LABELS.edit,
+    create: SHARED_LABELS.create,
+    creating: SHARED_LABELS.creating,
     update: "به‌روزرسانی",
-    updating: "در حال به‌روزرسانی...",
-    loading: "در حال بارگذاری...",
+    updating: SHARED_LABELS.updating,
+    loading: SHARED_LABELS.loading,
     theme: {
       switchToLight: "روشن کردن صفحه",
       switchToDark: "تاریک کردن صفحه",
@@ -34,15 +74,15 @@ export const fa = {
     // Common button labels
     buttons: {
       ok: "باشه",
-      cancel: "انصراف",
-      save: "ذخیره",
-      delete: "حذف",
-      edit: "ویرایش",
-      create: "ایجاد",
+      cancel: SHARED_LABELS.cancel,
+      save: SHARED_LABELS.save,
+      delete: SHARED_LABELS.delete,
+      edit: SHARED_LABELS.edit,
+      create: SHARED_LABELS.create,
       update: "ذخیره تغییرات",
-      close: "بستن",
-      add: "افزودن",
-      remove: "حذف",
+      close: SHARED_LABELS.close,
+      add: SHARED_LABELS.add,
+      remove: SHARED_LABELS.remove,
       view: "مشاهده",
       search: "جستجو",
       filter: "فیلتر",
@@ -53,7 +93,7 @@ export const fa = {
       upload: "آپلود",
       select: "انتخاب",
       selected: "انتخاب شده",
-      all: "همه",
+      all: SHARED_LABELS.all,
       none: "هیچ‌کدام",
       yes: "بله",
       no: "خیر",
@@ -79,19 +119,19 @@ export const fa = {
 
     // Common state labels
     states: {
-      active: "فعال",
-      inactive: "غیرفعال",
-      enabled: "فعال",
-      disabled: "غیرفعال",
+      active: SHARED_LABELS.active,
+      inactive: SHARED_LABELS.inactive,
+      enabled: SHARED_LABELS.active,
+      disabled: SHARED_LABELS.inactive,
       visible: "نمایان",
       hidden: "مخفی",
-      success: "موفق",
-      error: "خطا",
+      success: SHARED_LABELS.success,
+      error: SHARED_LABELS.error,
       warning: "هشدار",
       info: "اطلاعات",
-      pending: "در انتظار",
-      completed: "تکمیل شده",
-      inProgress: "در حال انجام",
+      pending: SHARED_LABELS.pending,
+      completed: SHARED_LABELS.completed,
+      inProgress: SHARED_LABELS.inProgress,
       done: "انجام شده",
       canceled: "لغو شده",
     },
@@ -100,21 +140,21 @@ export const fa = {
     pagination: {
       page: "صفحه",
       of: "از",
-      previous: "قبلی",
-      next: "بعدی",
+      previous: SHARED_LABELS.previous,
+      next: SHARED_LABELS.next,
       loginAttemptsLabel: "تلاش‌های ورود به سیستم",
     },
 
     // Calendar and date-related
-    today: "امروز",
-    previous: "قبلی",
-    next: "بعدی",
+    today: SHARED_LABELS.today,
+    previous: SHARED_LABELS.previous,
+    next: SHARED_LABELS.next,
     more: "بیشتر",
     preview: "پیش‌نمایش",
 
     time: {
-      hoursShort: "ساعت",
-      minutesShort: "دقیقه",
+      hoursShort: SHARED_LABELS.hours,
+      minutesShort: SHARED_LABELS.minutes,
     },
 
     connectors: {
@@ -123,10 +163,11 @@ export const fa = {
 
     // Status labels
     total: "کل",
-    completed: "انجام شده",
-    pending: "در انتظار",
+    completed: SHARED_LABELS.completed,
+    pending: SHARED_LABELS.pending,
   },
 
+  // ============ NAVIGATION ============
   // Navigation menu items
   navigation: {
     allTasks: "همه تسک‌ها",
@@ -154,9 +195,10 @@ export const fa = {
     taskViews: "نماهای تسک",
     dueToday: "سررسید امروز",
     overdue: "گذشته‌موعد",
-    inProgress: "در حال انجام",
+    inProgress: SHARED_LABELS.inProgress,
   },
 
+  // ============ QUICK ACTIONS ============
   // Create new items
   create: {
     newTask: "تسک جدید",
@@ -183,6 +225,7 @@ export const fa = {
     },
   },
 
+  // ============ NOTIFICATIONS ============
   // Notifications module
   notifications: {
     title: "اعلان‌ها",
@@ -196,7 +239,7 @@ export const fa = {
       description: "وقتی اعلان جدیدی برایتان بیاید، اینجا نمایش داده می‌شود",
     },
     filters: {
-      all: "همه",
+      all: SHARED_LABELS.all,
       unread: "خوانده نشده",
       read: "خوانده شده",
     },
@@ -212,12 +255,12 @@ export const fa = {
     },
     actions: {
       markAsRead: "خوانده شد",
-      delete: "حذف",
+      delete: SHARED_LABELS.delete,
       viewAll: "مشاهده همه",
       clearRead: "پاک کردن خوانده‌شده‌ها",
     },
     groups: {
-      today: "امروز",
+      today: SHARED_LABELS.today,
       yesterday: "دیروز",
       thisWeek: "این هفته",
       older: "قدیمی‌تر",
@@ -235,9 +278,22 @@ export const fa = {
     selectAll: "انتخاب همه",
     deselectAll: "لغو انتخاب",
     deleteSelected: "حذف انتخاب‌شده‌ها",
-    cancel: "انصراف",
+    cancel: SHARED_LABELS.cancel,
   },
 
+  // Single notification (separate from notifications list)
+  notification: {
+    new: "جدید",
+    newNotifications: "اعلان‌های جدید اینجا نمایش داده می‌شوند",
+    unreadCount: "اعلان خوانده نشده",
+    notificationsLabel: "اعلان",
+    notificationsPanel: "پنل اعلان‌ها",
+    showCount: "نمایش {count} از",
+    markAsReadLabel: 'علامت‌گذاری اعلان "{title}" به عنوان خوانده شده',
+    notificationWord: "اعلان",
+  },
+
+  // ============ AUTHENTICATION ============
   // Authentication module
   auth: {
     login: {
@@ -295,6 +351,7 @@ export const fa = {
     },
   },
 
+  // ============ USER MANAGEMENT ============
   // User management module
   users: {
     title: "کاربران",
@@ -319,8 +376,8 @@ export const fa = {
         employee: "کارمند",
       },
       status: {
-        active: "فعال",
-        inactive: "غیرفعال",
+        active: SHARED_LABELS.active,
+        inactive: SHARED_LABELS.inactive,
         blocked: "مسدود",
         ok: "عادی",
       },
@@ -366,7 +423,7 @@ export const fa = {
         reason: "دلیل",
       },
       status: {
-        success: "موفق",
+        success: SHARED_LABELS.success,
         failed: "ناموفق",
       },
       empty: "هیچ سابقه ورودی ثبت نشده است",
@@ -400,6 +457,7 @@ export const fa = {
     },
   },
 
+  // ============ GROUPS ============
   // Groups module
   groups: {
     title: "گروه‌ها",
@@ -434,8 +492,8 @@ export const fa = {
       selectManager: "انتخاب مدیر",
     },
     status: {
-      active: "فعال",
-      inactive: "غیرفعال",
+      active: SHARED_LABELS.active,
+      inactive: SHARED_LABELS.inactive,
     },
     actions: {
       activate: "فعال‌سازی",
@@ -448,6 +506,7 @@ export const fa = {
     },
   },
 
+  // ============ PROJECTS ============
   // Projects module
   projects: {
     title: "پروژه‌ها",
@@ -498,147 +557,65 @@ export const fa = {
         codeLength: "کد پروژه باید ۳ کاراکتر باشد",
         description: "توضیحات",
         descriptionPlaceholder: "درباره این پروژه بنویسید...",
-        assets: "فایل‌های پیوست",
-        assetsPlaceholder: "فایل‌های مرتبط را اینجا بکشید یا کلیک کنید",
         group: "گروه",
         selectGroup: "انتخاب گروه",
-        supervisor: "سرپرست",
-        selectSupervisor: "سرپرست را انتخاب کنید",
+        manager: "مدیر پروژه",
+        selectManager: "انتخاب مدیر",
       },
-      submit: "ساخت پروژه",
-      success: "عالی! پروژه جدیدتان آماده است",
+      success: "عالی! پروژه جدید شما آماده است",
       error: "نتوانستیم پروژه را بسازیم: {error}",
     },
     edit: {
       title: "ویرایش پروژه",
-      description: "اطلاعات پروژه را به‌روزرسانی کنید",
-      submit: "ذخیره تغییرات",
+      button: "ذخیره تغییرات",
       success: "تغییرات با موفقیت ذخیره شد",
       error: "نتوانستیم تغییرات را ذخیره کنیم: {error}",
-      fileValidationError:
-        "بعضی از فایل‌ها قابل بارگذاری نیستند. لطفاً نوع فایل‌ها را بررسی کنید",
     },
     delete: {
       title: "حذف پروژه",
-      confirm:
-        "مطمئنید که می‌خواهید این پروژه را حذف کنید؟ با حذف پروژه، همه تسک‌هایش هم حذف می‌شوند.",
-      submit: "بله، حذف کن",
+      description:
+        "مطمئنید که می‌خواهید این پروژه را حذف کنید؟ تمام تسک‌های آن نیز حذف می‌شوند. این عمل قابل بازگشت نیست.",
+      confirm: "بله، حذف کن",
+      cancel: SHARED_LABELS.cancel,
       success: "پروژه حذف شد",
       error: "نتوانستیم پروژه را حذف کنیم: {error}",
     },
-    details: {
-      title: "جزئیات پروژه",
-      viewDetails: "مشاهده جزئیات",
-      information: "اطلاعات",
-      supervisor: "سرپرست",
-      createdAt: "تاریخ ساخت",
-      updatedAt: "آخرین تغییر",
-      description: "توضیحات",
-      noDescription: "هنوز توضیحاتی برای این پروژه نوشته نشده",
-      files: "فایل‌های پیوست",
-      filesCount: "{count} فایل",
-      noFiles: "هنوز فایلی بارگذاری نشده",
-      statistics: "آمار",
-      totalTasks: "تعداد تسک‌ها",
-      completedTasks: "تکمیل شده",
-      inProgressTasks: "در حال انجام",
-      totalTimeSpent: "کل زمان صرف شده",
-      backToProjects: "بازگشت به پروژه‌ها",
-    },
-    files: {
-      upload: "بارگذاری فایل",
-      dropzone: "فایل‌ها را اینجا بکشید یا کلیک کنید",
-      dropzoneActive: "رها کنید...",
-      selectFiles: "انتخاب فایل",
-      maxSize: "حداکثر حجم: {size}",
-      allowedTypes:
-        "فرمت‌های مجاز: PDF، تصاویر، Word، Excel، PowerPoint، TXT، CSV، JSON، XML",
-      uploading: "در حال بارگذاری...",
-      uploadSuccess: "فایل با موفقیت بارگذاری شد",
-      uploadError: "نتوانستیم فایل را بارگذاری کنیم. دوباره تلاش کنید",
-      deleteSuccess: "فایل حذف شد",
-      deleteError: "نتوانستیم فایل را حذف کنیم. دوباره تلاش کنید",
-      download: "دانلود",
-      remove: "حذف",
-      preview: "پیش‌نمایش",
-      fileName: "نام فایل",
-      fileSize: "حجم فایل",
-      fileType: "نوع فایل",
-      existingFiles: "فایل‌های موجود",
-      addNewFiles: "افزودن فایل جدید",
-      validation: {
-        tooLarge: "فایل خیلی بزرگ است. حداکثر حجم: {max}",
-        invalidType:
-          "فرمت فایل «{fileName}» مجاز نیست. فرمت‌های مجاز: PDF، تصاویر، Word، Excel، PowerPoint، CSV، TXT، JSON، XML",
-        uploadFailed: "بارگذاری فایل ناموفق بود. دوباره تلاش کنید",
-        mimeTypeError:
-          "فرمت فایل «{fileName}» نامعتبر است و قابل بارگذاری نیست",
-        maxFiles: "حداکثر {maxFiles} فایل قابل بارگذاری است",
-      },
-    },
     errors: {
       notFound: "پروژه یافت نشد",
-      projectNotFound: "پروژه یافت نشد",
+      loadFailed: "نتوانستیم پروژه‌ها را بارگذاری کنیم",
     },
   },
 
-  // Task management module
+  // Project section (condensed properties)
+  project: {
+    progress: "پیشرفت پروژه",
+    completedTasks: "تسک تکمیل شده",
+    tasks: "تسک‌ها",
+    users: "کاربران",
+    of: "از",
+  },
+
+  // ============ TASKS ============
+  // Tasks module
   tasks: {
-    // ...
-    board: {
-      title: "برد تسک‌ها",
-    },
     title: "تسک‌ها",
     allTasks: "همه تسک‌ها",
-
-    // Task priority levels
-    priority: {
+    priorities: {
       urgent: "فوری",
       high: "بالا",
       medium: "متوسط",
       low: "پایین",
     },
-
-    // Task status options
     status: {
       todo: "برای انجام",
-      in_progress: "در حال انجام",
-      pending: "در انتظار",
+      inProgress: SHARED_LABELS.inProgress,
       review: "در حال بررسی",
       testing: "در حال تست",
       ready: "آماده",
-      blocked: "مسدود شده",
-      on_hold: "متوقف شده",
-      done: "انجام شده",
+      completed: SHARED_LABELS.completed,
       canceled: "لغو شده",
     },
-
-    // Task tags
-    tags: {
-      bug: "اشکال",
-      feature: "ویژگی",
-      improvement: "بهبود",
-    },
-
-    // Filter options
     filters: {
-      search: "جستجو در تسک‌ها...",
-      status: "وضعیت",
-      priority: "اولویت",
-      assignee: "مسئول",
-      date: "تاریخ",
-      tag: "برچسب",
-      allStatuses: "همه وضعیت‌ها",
-      allPriorities: "همه اولویت‌ها",
-      allAssignees: "همه مسئولین",
-      allDates: "همه تاریخ‌ها",
-      allTags: "همه برچسب‌ها",
-      today: "امروز",
-      thisWeek: "این هفته",
-      thisMonth: "این ماه",
-      overdue: "گذشته‌موعد",
-      activeFilters: "فیلترهای فعال:",
-      clearAll: "پاک کردن همه",
       searchByTitleOrAssignee: "جستجو بر اساس عنوان یا مسئول...",
       advancedFilters: "فیلترهای پیشرفته",
       clearFilters: "پاک کردن فیلترها",
@@ -651,15 +628,13 @@ export const fa = {
         tag: "برچسب",
       },
       dateLabels: {
-        today: "امروز",
+        today: SHARED_LABELS.today,
         week: "این هفته",
         month: "این ماه",
         overdue: "گذشته‌موعد",
       },
       moreFilters: "{count} مورد دیگر",
     },
-
-    // Empty state messages
     emptyState: {
       noTasksFound: "تسکی پیدا نشد",
       noTasksFoundDescription:
@@ -676,8 +651,6 @@ export const fa = {
       noTasksWithFilters: "با این فیلترها تسکی پیدا نشد",
       loadingTasks: "در حال بارگذاری تسک‌ها...",
     },
-
-    // Pagination
     pagination: {
       range: "{start} تا {end} از {total} تسک",
       perPage: "{count} مورد در هر صفحه",
@@ -685,8 +658,6 @@ export const fa = {
       prev: "قبلی",
       next: "بعدی",
     },
-
-    // Calendar view
     calendar: {
       title: "تقویم تسک‌ها",
       description: "مشاهده تسک‌ها بر اساس تاریخ سررسید",
@@ -697,27 +668,25 @@ export const fa = {
       monthView: "نمای ماهانه",
       weekView: "نمای هفتگی",
       dayView: "نمای روزانه",
-      today: "امروز",
+      today: SHARED_LABELS.today,
       previousMonth: "ماه قبل",
       nextMonth: "ماه بعد",
       tasksThisMonth: "تسک‌های این ماه",
-      completedTasks: "انجام شده",
-      pendingTasks: "در انتظار",
+      completedTasks: SHARED_LABELS.completed,
+      pendingTasks: SHARED_LABELS.pending,
       overdueTasks: "گذشته‌موعد",
     },
-
-    // Bulk actions
     bulkActions: {
       selectedCount: "{count} تسک انتخاب شده",
       assignPlaceholder: "اختصاص دادن",
       statusPlaceholder: "تغییر وضعیت",
       priorityPlaceholder: "تغییر اولویت",
-      deleteButton: "حذف",
+      deleteButton: SHARED_LABELS.delete,
       deleteDialogTitle: "حذف {count} تسک؟",
       deleteDialogDescription:
-        "این عملیات قابل بازگشت نیست. آیا مطمئن هستید که می‌خواهید این تسک‌ها را حذف کنید?",
-      cancelButton: "انصراف",
-      deletingButton: "در حال حذف...",
+        "این عملیات قابل بازگشت نیست. آیا مطمئن هستید که می‌خواهید این تسک‌ها را حذف کنید؟",
+      cancelButton: SHARED_LABELS.cancel,
+      deletingButton: SHARED_LABELS.deleting,
       assignSuccess: "{count} تسک با موفقیت اختصاص داده شد",
       assignError: "خطا در اختصاص تسک‌ها",
       statusSuccess: "وضعیت {count} تسک تغییر کرد",
@@ -727,16 +696,12 @@ export const fa = {
       deleteSuccess: "{count} تسک حذف شد",
       deleteError: "خطا در حذف تسک‌ها",
     },
-
-    // Header section
     header: {
       tasksFound: "{count} تسک پیدا شد",
       manageTasks: "تسک‌هایتان را مدیریت کنید",
       tasksInProject: "{count} تسک در این پروژه",
       manageProjectTasks: "تسک‌های این پروژه",
     },
-
-    // Add task dialog
     addTask: {
       title: "ساخت تسک جدید",
       issueTitle: "عنوان تسک",
@@ -752,20 +717,16 @@ export const fa = {
       error: "نتوانستیم تسک را بسازیم: {error}",
       buttons: {
         create: "ساخت تسک",
-        creating: "در حال ساخت...",
+        creating: SHARED_LABELS.creating,
         more: "بیشتر",
         newTask: "تسک جدید",
         newTaskForProject: "تسک جدید برای این پروژه",
       },
     },
-
-    // Task list
     list: {
       noTasks: "تسکی وجود ندارد",
       openMenu: "باز کردن منو",
     },
-
-    // Task details
     details: {
       title: "جزئیات تسک",
       unknownUser: "بدون مسئول",
@@ -785,14 +746,14 @@ export const fa = {
       actionsCardTitle: "عملیات",
       editTaskButton: "ویرایش وظیفه",
       deleteTaskButton: "حذف وظیفه",
-      editButton: "ویرایش",
+      editButton: SHARED_LABELS.edit,
       timeTracking: {
         title: "زمان صرف شده",
-        hours: "ساعت",
-        minutes: "دقیقه",
+        hours: SHARED_LABELS.hours,
+        minutes: SHARED_LABELS.minutes,
         editTime: "ویرایش زمان",
         saveTime: "ذخیره",
-        cancelEdit: "انصراف",
+        cancelEdit: SHARED_LABELS.cancel,
         noTimeTracked: "هنوز زمانی ثبت نشده",
         updateSuccess: "زمان به‌روزرسانی شد",
         updateError: "نتوانستیم زمان را به‌روزرسانی کنیم",
@@ -801,43 +762,35 @@ export const fa = {
           "زمان وارد شده از برآورد زمانی ({hours}h {minutes}m) بیشتر است",
       },
       buttons: {
-        save: "ذخیره",
-        saving: "در حال ذخیره...",
-        cancel: "انصراف",
-        delete: "حذف تسک",
-        deleting: "در حال حذف...",
+        save: SHARED_LABELS.save,
+        saving: SHARED_LABELS.saving,
+        cancel: SHARED_LABELS.cancel,
+        delete: SHARED_LABELS.delete,
+        deleting: SHARED_LABELS.deleting,
       },
     },
-
-    // Edit task
     edit: {
       title: "ویرایش تسک",
       success: "تغییرات با موفقیت ذخیره شد",
       error: "نتوانستیم تغییرات را ذخیره کنیم: {error}",
       buttons: {
-        save: "ذخیره",
-        saving: "در حال ذخیره...",
-        cancel: "انصراف",
+        save: SHARED_LABELS.save,
+        saving: SHARED_LABELS.saving,
+        cancel: SHARED_LABELS.cancel,
       },
     },
-
-    // Delete task
     delete: {
       title: "حذف تسک",
       description:
         "مطمئنید که می‌خواهید این تسک را حذف کنید؟ بعد از حذف، دیگر در فهرست‌ها نمایش داده نمی‌شود.",
       confirm: "بله، حذف کن",
-      cancel: "انصراف",
+      cancel: SHARED_LABELS.cancel,
       success: "تسک حذف شد",
       error: "نتوانستیم تسک را حذف کنیم: {error}",
     },
-
-    // Errors
     errors: {
       notFound: "وظیفه یافت نشد",
     },
-
-    // Task-specific
     addNewTask: "افزودن تسک جدید",
     moreOptions: "گزینه‌های بیشتر",
     sortByPriority: "مرتب‌سازی براساس اولویت",
@@ -848,6 +801,7 @@ export const fa = {
     timeEstimate: "برآورد زمان",
   },
 
+  // ============ REPORTS ============
   // Reports module
   reports: {
     title: "گزارش‌ها",
@@ -864,8 +818,8 @@ export const fa = {
       prioritiesChart: "راهنمای نمودار اولویت‌ها",
     },
     taskCount: "{count} تسک",
-    completed: "تکمیل شده",
-    inProgress: "در حال انجام",
+    completed: SHARED_LABELS.completed,
+    inProgress: SHARED_LABELS.inProgress,
     canceled: "لغو شده",
     high: "اولویت بالا",
     medium: "اولویت متوسط",
@@ -875,275 +829,30 @@ export const fa = {
     status: "وضعیت",
     priority: "اولویت",
     clearFilters: "پاک کردن فیلترها",
-    completedTasks: "تکمیل شده",
+    completedTasks: SHARED_LABELS.completed,
     totalTasks: "کل تسک‌ها",
-    inProgressTasks: "در حال انجام",
+    inProgressTasks: SHARED_LABELS.inProgress,
     noData: "داده‌ای برای نمایش نیست",
     noTasksFound: "تسکی پیدا نشد",
     project: "پروژه",
     taskStatus: "وضعیت",
     taskPriority: "اولویت",
-    taskCompleted: "تکمیل شده",
+    taskCompleted: SHARED_LABELS.completed,
     completionRate: "نرخ تکمیل",
     name: "نام",
     completedTasksCount: "تعداد تکمیل شده",
     todo: "برای انجام",
-    pending: "در انتظار",
-    blocked: "مسدود شده",
-    review: "در حال بررسی",
-    testing: "در حال تست",
-    ready: "آماده",
-    on_hold: "متوقف شده",
-    deadline: "مهلت",
-    age: "سن",
-    ageUnit: "(روز)",
-    assignee: "مسئول",
-    assignee_plural: "مسئولین",
-    tags: "برچسب‌ها",
-    timePresets: {
-      today: "امروز",
-      last7Days: "۷ روز گذشته",
-      last30Days: "۳۰ روز گذشته",
-      currentQuarter: "سه‌ماهه جاری",
-      currentYear: "سال جاری",
-      custom: "سفارشی",
-    },
-    selectProjects: "انتخاب پروژه‌ها",
-    selectAssignees: "انتخاب مسئولین",
-    selectStatuses: "انتخاب وضعیت‌ها",
-    selectPriorities: "انتخاب اولویت‌ها",
-    to: "تا",
-    topPerformers: "بهترین عملکردها",
-    rank: "#",
-    onTimeRate: "نرخ به‌موقعی",
-    totalTasksCard: "کل تسک‌ها",
-    overdue: "گذشته مهلت",
-    onTime: "به‌موقع",
-    noDeadline: "بدون مهلت",
-    chart: {
-      timeliness: {
-        onTime: "به‌موقع",
-        overdue: "گذشته مهلت",
-        noDeadline: "بدون مهلت",
-      },
-    },
-    fallbacks: {
-      taskTitle: "بدون عنوان",
-      projectName: "نامشخص",
-      assigneeName: "بدون مسئول",
-    },
-    range: {
-      connector: "تا",
-      label: "بازه زمانی",
-    },
-    exportProject: "خروجی اکسل",
-    exportingProject: "در حال خروجی...",
-    exportProjectSuccess: "خروجی با موفقیت آماده شد",
-    exportProjectError: "نتوانستیم خروجی بگیریم",
-    exportProjectNoTasks:
-      "این پروژه تسکی ندارد. آیا می‌خواهید فایل خالی خروجی بگیرید؟",
-    exportProjectSuccessWithCount: "خروجی {count} تسک با موفقیت آماده شد",
-    excel: {
-      workbookTitle: "گزارش پروژه - {projectName}",
-      workbookSubject: "تسک‌های پروژه {projectCode}",
-      workbookAuthor: "سیستم مدیریت تسک",
-      workbookComments: "صادر شده در تاریخ {date}",
-      sheetProjectDetails: "جزئیات پروژه",
-      sheetProjectTasks: "تسک‌های پروژه",
-      columns: {
-        name: "نام",
-        code: "کد",
-        description: "توضیحات",
-        supervisor: "سرپرست",
-        createdAt: "تاریخ ایجاد",
-        updatedAt: "آخرین به‌روزرسانی",
-        taskNumber: "شماره",
-        taskTitle: "عنوان",
-        taskStatus: "وضعیت",
-        taskPriority: "اولویت",
-        taskAssignee: "مسئول",
-        taskDeadline: "مهلت",
-        taskTimeSpent: "زمان صرف شده (دقیقه)",
-        taskDescription: "توضیحات",
-      },
-      noTasksMessage: "این پروژه تسکی ندارد",
-      fallbackProjectName: "بدون نام",
-    },
-    projectsExportSection: "خروجی پروژه‌ها",
-    projectDetails: "جزئیات پروژه",
-    projectTasks: "تسک‌های پروژه",
-    noTasksInProject: "این پروژه تسکی ندارد",
-    charts: {
-      throughput: {
-        title: "روند تکمیل تسک‌ها",
-        periods: {
-          daily: "روزانه",
-          weekly: "هفتگی",
-        },
-        drilldownTitle: "تسک‌های تکمیل شده در {label}",
-        noData: "داده‌ای برای این بازه وجود ندارد",
-      },
-      timeliness: {
-        title: "توزیع به‌موقعی تکمیل",
-        noData: "تکمیل ثبت‌شده‌ای برای این بازه وجود ندارد",
-      },
-      priorities: {
-        title: "توزیع اولویت‌ها",
-        drilldownTitle: "اولویت {name}",
-        noData: "تسکی مطابق فیلترها پیدا نشد",
-      },
-      users: {
-        drilldownTitle: "تسک‌های {firstName} {lastName}",
-      },
-      employee: {
-        sectionTitle: "گزارش عملکرد کارکنان",
-        overviewCards: {
-          totalAssigned: "کل تخصیص‌یافته",
-          completed: "تکمیل شده",
-          inProgress: "در حال انجام",
-          overdue: "گذشته‌موعد",
-          avgTimeToComplete: "میانگین زمان تکمیل",
-          efficiencyScore: "امتیاز کارایی",
-          onTimeRate: "نرخ به‌موقعی",
-          overtimeIndicator: "شاخص اضافه‌کاری",
-        },
-        productivityChart: {
-          title: "روند بهره‌وری",
-          periods: {
-            daily: "روزانه",
-            weekly: "هفتگی",
-            monthly: "ماهانه",
-            quarterly: "سه‌ماهه",
-            annual: "سالانه",
-          },
-          drilldownTitle: "تسک‌های تکمیل شده در {label}",
-          noData: "داده‌ای برای این بازه وجود ندارد",
-        },
-        performanceTable: {
-          title: "عملکرد کارکنان",
-          exportCsvComingSoon: "این ویژگی به زودی اضافه خواهد شد",
-          columns: {
-            name: "نام",
-            totalAssigned: "کل تخصیص‌یافته",
-            completed: "تکمیل شده",
-            completionRate: "نرخ تکمیل",
-            onTimeRate: "نرخ به‌موقعی",
-            avgTimeToComplete: "میانگین زمان تکمیل",
-            efficiencyScore: "امتیاز کارایی",
-          },
-          drilldownTitle: "تسک‌های {name}",
-          noData: "داده‌ای برای نمایش نیست",
-          searchPlaceholder: "جستجو بر اساس نام...",
-          rowsPerPage: "ردیف در صفحه",
-          exportCsv: "خروجی CSV",
-        },
-        comparisonChart: {
-          title: "مقایسه با میانگین تیم",
-          vsTeam: "در برابر میانگین تیم",
-          noData: "داده‌ای برای مقایسه وجود ندارد",
-        },
-        emptyStates: {
-          noEmployees: "کارمندی برای نمایش نیست",
-          noData: "داده‌ای برای نمایش گزارش نیست",
-          largeDataset:
-            "داده‌های زیادی برای پردازش وجود دارد. لطفاً بازه زمانی را کوچکتر کنید",
-        },
-        tooltips: {
-          totalAssigned:
-            "تعداد کل تسک‌های تخصیص‌یافته در بازه زمانی انتخاب‌شده",
-          completed: "تعداد تسک‌های تکمیل‌شده در بازه زمانی",
-          completionRate: "نسبت تسک‌های تکمیل‌شده به کل تخصیص‌یافته",
-          onTimeRate: "نسبت تسک‌های تکمیل‌شده به‌موقع به کل تکمیل‌شده",
-          avgTimeToComplete: "میانگین زمان سپری‌شده از ساخت تا تکمیل تسک‌ها",
-          efficiencyScore: "نسبت تسک‌های تکمیل‌شده به کل تخصیص‌یافته",
-          overtimeIndicator: "برآورد ساعات اضافه‌کاری مورد نیاز",
-        },
-        overtimeAnalysis: {
-          title: "تحلیل اضافه‌کاری و بار کاری",
-          description: "بررسی الگوهای اضافه‌کاری و توزیع بار کاری",
-          chartTitle: "شاخص‌های اضافه‌کاری",
-          workloadChartTitle: "توزیع بار کاری",
-          columns: {
-            name: "نام",
-            totalTasks: "کل تسک‌ها",
-            completedTasks: "تکمیل شده",
-            overdueTasks: "گذشته‌موعد",
-            avgCompletionTime: "میانگین زمان تکمیل",
-            workloadScore: "امتیاز بار کاری",
-            overtimeIndicator: "شاخص اضافه‌کاری",
-            activeTasks: "تسک‌های فعال",
-            upcomingTasks: "تسک‌های پیش رو",
-            capacityUtilization: "استفاده از ظرفیت",
-            workloadLevel: "سطح بار کاری",
-          },
-          workloadLevels: {
-            low: "کم",
-            medium: "متوسط",
-            high: "زیاد",
-            critical: "بحرانی",
-          },
-          tooltips: {
-            workloadScore:
-              "امتیاز بار کاری بر اساس تسک‌های فعال، گذشته‌موعد و نرخ تکمیل",
-            overtimeIndicator: "برآورد ساعات اضافه‌کاری مورد نیاز",
-            capacityUtilization: "درصد استفاده از ظرفیت کاری",
-            workloadLevel: "سطح بار کاری بر اساس استفاده از ظرفیت",
-          },
-          noData: "داده‌ای برای تحلیل وجود ندارد",
-        },
-        productivityTrends: {
-          title: "روندهای بهره‌وری",
-          description: "تحلیل روندهای بهره‌وری با پیش‌بینی",
-          chartTitle: "روند بهره‌وری با پیش‌بینی",
-          trendLabels: {
-            increasing: "افزایشی",
-            decreasing: "کاهشی",
-            stable: "پایدار",
-          },
-          projectedNextPeriod: "پیش‌بینی دوره بعدی",
-          noData: "داده‌ای برای تحلیل روندها وجود ندارد",
-        },
-      },
-    },
+    pending: SHARED_LABELS.pending,
   },
 
+  // ============ DASHBOARD ============
   // Dashboard module
   dashboard: {
-    taskStatus: "وضعیت تسک‌ها",
     title: "داشبورد",
-    newTask: "تسک جدید",
-    taskShort: "تسک",
-    projectSummary: "خلاصه پروژه‌ها",
-    recentTasks: "تسک‌های اخیر",
-    overdueTasks: "گذشته‌موعد",
-    quickActions: "اقدامات سریع",
-    viewAllTasks: "مشاهده همه تسک‌ها",
-    manageProjects: "مدیریت پروژه‌ها",
-    viewReports: "مشاهده گزارش‌ها",
-    tasksCompleted: "٪{percentage} تکمیل شده",
-    of: "از",
-    stats: {
-      totalTasks: "کل تسک‌ها",
-      completed: "تکمیل شده",
-      inProgress: "در حال انجام",
-      pending: "در انتظار",
-      overdue: "گذشته‌موعد",
-    },
-    chart: {
-      count: "تعداد",
-    },
-    fallbacks: {
-      noDate: "بدون تاریخ",
-      noDeadline: "ندارد",
-    },
-    welcome: {
-      employee: "خوش آمدید {firstName} {lastName} عزیز!",
-      supervisor: "خوش آمدید سرپرست {firstName} {lastName}!",
-      admin: "خوش آمدید ادمین {firstName} {lastName}!",
-      employeeSubtitle: "وضعیت وظایف و پروژه‌های شما را مشاهده کنید",
-      supervisorSubtitle: "وضعیت تیم و پروژه‌ها را نظارت کنید",
-      adminSubtitle: "نمای کلی سیستم و گزارش‌ها را مشاهده کنید",
-    },
+    greeting: "خوش آمدید",
+    greetingMessage: "بر داشبورد شما خوش آمدید!",
+    progress: "پیشرفت پروژه",
+    completedTasks: "تسک تکمیل شده",
     cards: {
       todayDue: "امروز سررسید",
       completionRate: "نرخ تکمیل",
@@ -1156,7 +865,7 @@ export const fa = {
       notifications: "اعلان‌ها",
       viewAll: "مشاهده همه",
       progress: "پیشرفت",
-      completed: "تکمیل شده",
+      completed: SHARED_LABELS.completed,
       remaining: "باقی مانده",
       taskStatusDistribution: "توزیع وضعیت وظایف",
       productivityTrend: "روند بهره‌وری (۷ روز)",
@@ -1166,60 +875,17 @@ export const fa = {
       noActivityFound: "فعالیتی یافت نشد",
       overdueTasks: "وظایف سررسید گذشته",
     },
+    welcome: {
+      employee: "خوش آمدید {firstName} {lastName} عزیز!",
+      supervisor: "خوش آمدید سرپرست {firstName} {lastName}!",
+      admin: "خوش آمدید ادمین {firstName} {lastName}!",
+      employeeSubtitle: "وضعیت وظایف و پروژه‌های شما را مشاهده کنید",
+      supervisorSubtitle: "وضعیت تیم و پروژه‌ها را نظارت کنید",
+      adminSubtitle: "نمای کلی سیستم و گزارش‌ها را مشاهده کنید",
+    },
   },
 
-  // Project section
-  project: {
-    progress: "پیشرفت پروژه",
-    completedTasks: "تسک تکمیل شده",
-    tasks: "تسک‌ها",
-    users: "کاربران",
-    of: "از",
-  },
-
-  // Chart labels
-  charts: {
-    dateLabel: "تاریخ",
-  },
-
-  // Notification section
-  notification: {
-    new: "جدید",
-    newNotifications: "اعلان‌های جدید اینجا نمایش داده می‌شوند",
-    unreadCount: "اعلان خوانده نشده",
-    notificationsLabel: "اعلان",
-    notificationsPanel: "پنل اعلان‌ها",
-    showCount: "نمایش {count} از",
-    markAsReadLabel: 'علامت‌گذاری اعلان "{title}" به عنوان خوانده شده',
-    notificationWord: "اعلان",
-  },
-
-  // Task-related labels
-  task: {
-    editTask: "ویرایش تسک {title}",
-    completedTasks: "تکمیل شده",
-    sortByPriority: "مرتب‌سازی بر اساس اولویت",
-    newTask: "تسک جدید",
-    newTaskForProject: "تسک جدید برای این پروژه",
-    addNewTask: "افزودن تسک جدید",
-    moreOptions: "گزینه‌های بیشتر",
-    sortByDate: "مرتب‌سازی بر اساس تاریخ",
-    showCompletedTasks: "نمایش تکمیل شده‌ها",
-    // Time tracking
-    logTime: "ثبت زمان",
-    timeSpent: "زمان صرف شده",
-    estimatedHours: "ساعت برآورد",
-    estimatedMinutes: "دقیقه برآورد",
-    hours: "ساعت",
-    minutes: "دقیقه",
-    hour: "ساعت",
-    min: "دقیقه",
-    quickAdd: "افزودن سریع",
-    addTime: "افزودن زمان",
-    editTime: "ویرایش زمان",
-    noTimeLogged: "زمانی ثبت نشده",
-  },
-
+  // ============ COMMENTS ============
   // Comments module
   comments: {
     title: "نظرات",
@@ -1235,23 +901,323 @@ export const fa = {
     item: {
       deleted: "این نظر حذف شده",
       actions: "گزینه‌های نظر",
-      edit: "ویرایش",
-      delete: "حذف",
-      deleting: "در حال حذف...",
+      edit: SHARED_LABELS.edit,
+      delete: SHARED_LABELS.delete,
+      deleting: SHARED_LABELS.deleting,
       editPlaceholder: "ویرایش نظر...",
-      saving: "در حال ذخیره...",
-      save: "ذخیره",
-      cancel: "انصراف",
+      saving: SHARED_LABELS.saving,
+      save: SHARED_LABELS.save,
+      cancel: SHARED_LABELS.cancel,
       edited: "· ویرایش شده",
     },
   },
 
+  // ============ TAGS ============
+  // Tags Management
+  tagsManagement: {
+    title: "مدیریت برچسب‌ها",
+    description: "مدیریت برچسب‌های تسک‌ها",
+    addTag: "افزودن برچسب",
+    createTag: "ایجاد برچسب",
+    editTag: "ویرایش برچسب",
+    deleteTag: "حذف برچسب",
+    tagName: "نام برچسب",
+    tagColor: "رنگ برچسب",
+    selectColor: "انتخاب رنگ",
+    loading: SHARED_LABELS.loading,
+    noTags: "هیچ برچسبی وجود ندارد",
+    noTagsDescription: "برچسب ایجاد کنید تا بتوانید تسک‌ها را دسته‌بندی کنید",
+    createFirstTag: "ایجاد اولین برچسب",
+    namePlaceholder: "نام برچسب را وارد کنید...",
+    colorLabel: "رنگ",
+    nameLabel: "نام",
+    actionsLabel: "عملیات",
+    editButton: SHARED_LABELS.edit,
+    deleteButton: SHARED_LABELS.delete,
+    cancelButton: SHARED_LABELS.cancel,
+    saveButton: SHARED_LABELS.save,
+    createButton: SHARED_LABELS.create,
+    tagsList: "لیست برچسب‌ها",
+    tagsCount: "{count} برچسب",
+    deleteConfirm: {
+      title: "حذف برچسب؟",
+      description:
+        "آیا مطمئن هستید که می‌خواهید این برچسب را حذف کنید؟ این عمل قابل بازگشت نیست.",
+      cancel: SHARED_LABELS.cancel,
+      confirm: SHARED_LABELS.delete,
+    },
+    toast: {
+      created: "برچسب با موفقیت ایجاد شد",
+      updated: "برچسب با موفقیت به‌روزرسانی شد",
+      deleted: "برچسب با موفقیت حذف شد",
+      createError: "خطا در ایجاد برچسب",
+      updateError: "خطا در به‌روزرسانی برچسب",
+      deleteError: "خطا در حذف برچسب",
+    },
+    validation: {
+      nameRequired: "نام برچسب الزامی است",
+      colorRequired: "رنگ برچسب الزامی است",
+    },
+    colors: {
+      gray: "خاکستری",
+      red: "قرمز",
+      orange: "نارنجی",
+      yellow: "زرد",
+      green: "سبز",
+      blue: "آبی",
+      purple: "بنفش",
+      pink: "صورتی",
+    },
+  },
+
+  // ============ FILTERS ============
+  // Saved filters and custom views
+  savedFilters: {
+    title: "فیلترهای ذخیره شده",
+    saveCurrentFilter: "ذخیره فیلتر فعلی",
+    myFilters: "فیلترهای من",
+    noSavedFilters: "هیچ فیلتر ذخیره شده‌ای ندارید",
+    activeFilters: "فیلترهای فعال",
+    noActiveFilters: "بدون فیلتر",
+    manage: "مدیریت فیلترها",
+    default: "پیش‌فرض",
+    setAsDefault: "تنظیم به عنوان پیش‌فرض",
+    removeDefault: "حذف از پیش‌فرض",
+    createdAt: "ایجاد شده در",
+    saveDialog: {
+      title: "ذخیره فیلتر",
+      description: "فیلتر فعلی خود را با یک نام ذخیره کنید",
+      nameLabel: "نام فیلتر",
+      namePlaceholder: "مثلاً: تسک‌های اولویت بالا",
+      setAsDefault: "تنظیم به عنوان فیلتر پیش‌فرض",
+    },
+    deleteDialog: {
+      title: "حذف فیلتر؟",
+      description: "آیا مطمئن هستید که می‌خواهید فیلتر «{name}» را حذف کنید؟",
+    },
+    manageDialog: {
+      title: "مدیریت فیلترهای ذخیره شده",
+      description: "فیلترهای خود را مشاهده، ویرایش و حذف کنید",
+    },
+    criteria: {
+      search: "جستجو",
+      status: "وضعیت",
+      priority: "اولویت",
+      assignee: "مسئول",
+      date: "تاریخ",
+      tag: "برچسب",
+      noFilter: "بدون فیلتر",
+    },
+    toast: {
+      saved: "فیلتر با موفقیت ذخیره شد",
+      updated: "فیلتر با موفقیت به‌روزرسانی شد",
+      deleted: "فیلتر با موفقیت حذف شد",
+      defaultSet: "فیلتر پیش‌فرض تنظیم شد",
+      defaultRemoved: "فیلتر پیش‌فرض حذف شد",
+      applied: "فیلتر اعمال شد",
+      saveError: "خطا در ذخیره فیلتر",
+      updateError: "خطا در به‌روزرسانی فیلتر",
+      deleteError: "خطا در حذف فیلتر",
+      applyError: "خطا در اعمال فیلتر",
+      setDefaultError: "خطا در تنظیم فیلتر پیش‌فرض",
+    },
+  },
+
+  // ============ SETTINGS ============
+  // Settings module
+  settings: {
+    title: "تنظیمات",
+    description: "مدیریت حساب کاربری و تنظیمات برنامه",
+    tabs: {
+      profile: "پروفایل کاربری",
+      appearance: "ظاهر و تم",
+      security: "امنیت و ورود",
+      about: "درباره برنامه",
+    },
+    profile: {
+      title: "اطلاعات شناسایی",
+      description: "تصویر پروفایل و نام نمایشی خود را مدیریت کنید.",
+      changeImage: "تغییر تصویر",
+      firstName: "نام",
+      lastName: "نام خانوادگی",
+      username: "نام کاربری",
+      usernameDescription: "نام کاربری منحصر به فرد شما در سیستم.",
+      saveChanges: "ذخیره تغییرات",
+      contactTitle: "اطلاعات تماس",
+      contactDescription:
+        "ایمیل شما جهت بازیابی رمز عبور و دریافت اعلان‌ها استفاده می‌شود.",
+      email: "آدرس ایمیل",
+      emailChangeNote: "برای تغییر ایمیل با پشتیبانی تماس بگیرید.",
+      toast: {
+        updateSuccess: "پروفایل بروزرسانی شد",
+        updateSuccessDescription: "اطلاعات شما با موفقیت ذخیره گردید.",
+        updateError: SHARED_LABELS.error,
+        updateErrorDescription: "خطایی در ذخیره اطلاعات رخ داد.",
+      },
+    },
+    appearance: {
+      title: "تم برنامه",
+      description: "ظاهر برنامه را متناسب با سلیقه خود شخصی‌سازی کنید.",
+      light: "روشن",
+      dark: "تاریک",
+      system: "سیستم",
+    },
+    security: {
+      changePasswordTitle: "تغییر رمز عبور",
+      changePasswordDescription: "برای امنیت بیشتر، رمز عبور قوی انتخاب کنید.",
+      oldPassword: "رمز عبور فعلی",
+      newPassword: "رمز عبور جدید",
+      confirmPassword: "تکرار رمز عبور جدید",
+      updatePassword: "بروزرسانی رمز عبور",
+      activeSessionsTitle: "نشست‌های فعال",
+      activeSessionsDescription: "تاریخچه ورودهای اخیر به حساب کاربری شما.",
+      noLoginHistory: "هیچ سابقه ورودی یافت نشد.",
+      toast: {
+        passwordChanged: "رمز عبور تغییر کرد",
+        passwordChangedDescription: "رمز عبور شما با موفقیت تغییر یافت.",
+        passwordError: SHARED_LABELS.error,
+        passwordErrorDescription: "رمز عبور فعلی اشتباه است یا خطایی رخ داده.",
+        fetchLogsError: "خطا در دریافت سوابق ورود",
+      },
+      validation: {
+        oldPasswordRequired: "رمز عبور فعلی الزامی است",
+      },
+    },
+    about: {
+      title: "درباره برنامه",
+      version: "نسخه ۱.۰.۰",
+      description:
+        "این برنامه جهت مدیریت پروژه‌ها و تسک‌های تیمی طراحی شده است.",
+    },
+  },
+
+  // ============ AUDIT LOGS ============
+  // Audit Logs
+  auditLogs: {
+    title: "سوابق تغییرات",
+    description: "مشاهده تمام تغییرات انجام شده در سیستم",
+    table: {
+      timestamp: "زمان",
+      actor: "انجام‌دهنده",
+      action: "عملیات",
+      resource: "منبع",
+      resourceId: "شناسه منبع",
+      client: "کلاینت",
+      message: "پیام",
+      changes: "تغییرات",
+      requestId: "شناسه درخواست",
+      ipAddress: "آدرس IP",
+      noChanges: "بدون تغییر",
+      viewChanges: "مشاهده تغییرات",
+      hideChanges: "پنهان کردن تغییرات",
+    },
+    filters: {
+      resource: "نوع منبع",
+      resourceId: "شناسه منبع",
+      actor: "انجام‌دهنده",
+      action: "عملیات",
+      client: "کلاینت",
+      dateFrom: "از تاریخ",
+      dateTo: "تا تاریخ",
+      search: "جستجو در پیام یا شناسه درخواست",
+      clear: "پاک کردن فیلترها",
+      all: SHARED_LABELS.all,
+      allPlaceholder: SHARED_LABELS.all,
+    },
+    actions: {
+      create: SHARED_LABELS.create,
+      update: "به‌روزرسانی",
+      delete: SHARED_LABELS.delete,
+    },
+    clients: {
+      web: "مرورگر",
+      cli: "خط فرمان",
+      automation: "خودکار",
+      unknown: "نامشخص",
+    },
+    resources: {
+      tasks: "تسک‌ها",
+      projects: "پروژه‌ها",
+      users: "کاربران",
+      task: "تسک",
+      project: "پروژه",
+    },
+    empty: {
+      title: "سابقه‌ای یافت نشد",
+      description: "هنوز هیچ تغییری در سیستم ثبت نشده است.",
+      noResults: "نتیجه‌ای با فیلترهای انتخابی یافت نشد.",
+      empty: "خالی",
+    },
+    errors: {
+      loadFailed: "خطا در بارگذاری سوابق",
+      loadHistoryFailed: "خطا در بارگذاری تاریخچه",
+    },
+    labels: {
+      before: "قبل:",
+      after: "بعد:",
+    },
+    actorTypes: {
+      system: "سیستم",
+      unknown: "نامشخص",
+    },
+    activityStream: {
+      title: "تاریخچه تغییرات",
+      empty: "هیچ تغییری ثبت نشده است",
+      created: "{actor} این {resource} را ایجاد کرد",
+      updated: "{actor} {field} را از {old} به {new} تغییر داد",
+      deleted: "{actor} این {resource} را حذف کرد",
+      changed: "{actor} {field} را تغییر داد",
+      defaultMessage: "{actor} عملیات {action} را انجام داد",
+      by: "توسط",
+      at: "در",
+      showDetails: "نمایش جزئیات",
+      hideDetails: "پنهان کردن جزئیات",
+    },
+  },
+
+  // ============ MY TASKS ============
+  // My Tasks page
+  myTasks: {
+    title: "تسک‌های من",
+    description: "همه تسک‌های اختصاص داده شده به شما",
+    tabs: {
+      active: SHARED_LABELS.active,
+      completed: SHARED_LABELS.completed,
+      byProject: "بر اساس پروژه",
+    },
+    stats: {
+      active: SHARED_LABELS.active,
+      completed: SHARED_LABELS.completed,
+      overdue: "گذشته‌موعد",
+      canceled: "لغو شده",
+    },
+    empty: {
+      noTasks: "تسکی ندارید",
+      noTasksDescription: "هیچ تسکی به شما اختصاص داده نشده است",
+      noActiveTasks: "تسک فعالی ندارید",
+      noActiveTasksDescription: "همه تسک‌های شما انجام شده یا لغو شده‌اند",
+      noCompletedTasks: "هنوز تسکی را تکمیل نکرده‌اید",
+      noCompletedTasksDescription:
+        "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
+      noTasksFallback: "تسکی ندارید",
+      noTasksDescriptionFallback: "هیچ تسکی به شما اختصاص داده نشده است",
+      noActiveTasksFallback: "تسک فعالی ندارید",
+      noActiveTasksDescriptionFallback:
+        "همه تسک‌های شما انجام شده یا لغو شده‌اند",
+      noCompletedTasksFallback: "هنوز تسکی را تکمیل نکرده‌اید",
+      noCompletedTasksDescriptionFallback:
+        "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
+    },
+  },
+
+  // ============ HELP & DOCUMENTATION ============
   // Help documentation
   helps,
 
+  // ============ LOADING & UI ============
   // Loading states
   loading: {
-    application: "در حال بارگذاری...",
+    application: SHARED_LABELS.loading,
     notifications: "در حال بارگذاری اعلان‌ها...",
   },
 
@@ -1285,6 +1251,12 @@ export const fa = {
     placeholder: "تاریخ را انتخاب کنید",
   },
 
+  // Chart labels
+  charts: {
+    dateLabel: "تاریخ",
+  },
+
+  // ============ ERRORS ============
   // Error messages
   errors: {
     pageLoad: {
@@ -1343,280 +1315,36 @@ export const fa = {
     },
   },
 
+  // ============ OTHER PAGES ============
   // 404 page
   notFound: {
     title: "404",
     message: "صفحه‌ای که دنبالش می‌گردید پیدا نشد",
   },
 
-  // My Tasks page
-  myTasks: {
-    title: "تسک‌های من",
-    description: "همه تسک‌های اختصاص داده شده به شما",
-    tabs: {
-      active: "فعال",
-      completed: "انجام شده",
-      byProject: "بر اساس پروژه",
-    },
-    stats: {
-      active: "فعال",
-      completed: "انجام شده",
-      overdue: "گذشته‌موعد",
-      canceled: "لغو شده",
-    },
-    empty: {
-      noTasks: "تسکی ندارید",
-      noTasksDescription: "هیچ تسکی به شما اختصاص داده نشده است",
-      noActiveTasks: "تسک فعالی ندارید",
-      noActiveTasksDescription: "همه تسک‌های شما انجام شده یا لغو شده‌اند",
-      noCompletedTasks: "هنوز تسکی را تکمیل نکرده‌اید",
-      noCompletedTasksDescription:
-        "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
-      noTasksFallback: "تسکی ندارید",
-      noTasksDescriptionFallback: "هیچ تسکی به شما اختصاص داده نشده است",
-      noActiveTasksFallback: "تسک فعالی ندارید",
-      noActiveTasksDescriptionFallback:
-        "همه تسک‌های شما انجام شده یا لغو شده‌اند",
-      noCompletedTasksFallback: "هنوز تسکی را تکمیل نکرده‌اید",
-      noCompletedTasksDescriptionFallback:
-        "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
-    },
-  },
-
-  // Tags Management
-  tagsManagement: {
-    title: "مدیریت برچسب‌ها",
-    description: "مدیریت برچسب‌های تسک‌ها",
-    addTag: "افزودن برچسب",
-    createTag: "ایجاد برچسب",
-    editTag: "ویرایش برچسب",
-    deleteTag: "حذف برچسب",
-    tagName: "نام برچسب",
-    tagColor: "رنگ برچسب",
-    selectColor: "انتخاب رنگ",
-    loading: "در حال بارگذاری...",
-    noTags: "هیچ برچسبی وجود ندارد",
-    noTagsDescription: "برچسب ایجاد کنید تا بتوانید تسک‌ها را دسته‌بندی کنید",
-    createFirstTag: "ایجاد اولین برچسب",
-    namePlaceholder: "نام برچسب را وارد کنید...",
-    colorLabel: "رنگ",
-    nameLabel: "نام",
-    actionsLabel: "عملیات",
-    editButton: "ویرایش",
-    deleteButton: "حذف",
-    cancelButton: "انصراف",
-    saveButton: "ذخیره",
-    createButton: "ایجاد",
-    tagsList: "لیست برچسب‌ها",
-    tagsCount: "{count} برچسب",
-    deleteConfirm: {
-      title: "حذف برچسب؟",
-      description:
-        "آیا مطمئن هستید که می‌خواهید این برچسب را حذف کنید؟ این عمل قابل بازگشت نیست.",
-      cancel: "انصراف",
-      confirm: "حذف",
-    },
-    toast: {
-      created: "برچسب با موفقیت ایجاد شد",
-      updated: "برچسب با موفقیت به‌روزرسانی شد",
-      deleted: "برچسب با موفقیت حذف شد",
-      createError: "خطا در ایجاد برچسب",
-      updateError: "خطا در به‌روزرسانی برچسب",
-      deleteError: "خطا در حذف برچسب",
-    },
-    validation: {
-      nameRequired: "نام برچسب الزامی است",
-      colorRequired: "رنگ برچسب الزامی است",
-    },
-    colors: {
-      gray: "خاکستری",
-      red: "قرمز",
-      orange: "نارنجی",
-      yellow: "زرد",
-      green: "سبز",
-      blue: "آبی",
-      purple: "بنفش",
-      pink: "صورتی",
-    },
-  },
-
-  // Saved filters and custom views
-  savedFilters: {
-    title: "فیلترهای ذخیره شده",
-    saveCurrentFilter: "ذخیره فیلتر فعلی",
-    myFilters: "فیلترهای من",
-    noSavedFilters: "هیچ فیلتر ذخیره شده‌ای ندارید",
-    activeFilters: "فیلترهای فعال",
-    noActiveFilters: "بدون فیلتر",
-    manage: "مدیریت فیلترها",
-    default: "پیش‌فرض",
-    setAsDefault: "تنظیم به عنوان پیش‌فرض",
-    removeDefault: "حذف از پیش‌فرض",
-    createdAt: "ایجاد شده در",
-    saveDialog: {
-      title: "ذخیره فیلتر",
-      description: "فیلتر فعلی خود را با یک نام ذخیره کنید",
-      nameLabel: "نام فیلتر",
-      namePlaceholder: "مثلاً: تسک‌های اولویت بالا",
-      setAsDefault: "تنظیم به عنوان فیلتر پیش‌فرض",
-    },
-    deleteDialog: {
-      title: "حذف فیلتر؟",
-      description: "آیا مطمئن هستید که می‌خواهید فیلتر «{name}» را حذف کنید؟",
-    },
-    manageDialog: {
-      title: "مدیریت فیلترهای ذخیره شده",
-      description: "فیلترهای خود را مشاهده، ویرایش و حذف کنید",
-    },
-    criteria: {
-      search: "جستجو",
-      status: "وضعیت",
-      priority: "اولویت",
-      assignee: "مسئول",
-      date: "تاریخ",
-      tag: "برچسب",
-      noFilter: "بدون فیلتر",
-    },
-    toast: {
-      saved: "فیلتر با موفقیت ذخیره شد",
-      updated: "فیلتر با موفقیت به‌روزرسانی شد",
-      deleted: "فیلتر با موفقیت حذف شد",
-      defaultSet: "فیلتر پیش‌فرض تنظیم شد",
-      defaultRemoved: "فیلتر پیش‌فرض حذف شد",
-      applied: "فیلتر اعمال شد",
-      saveError: "خطا در ذخیره فیلتر",
-      updateError: "خطا در به‌روزرسانی فیلتر",
-      deleteError: "خطا در حذف فیلتر",
-      applyError: "خطا در اعمال فیلتر",
-      setDefaultError: "خطا در تنظیم فیلتر پیش‌فرض",
-    },
-  },
-
-  // Settings module
-  settings: {
-    title: "تنظیمات",
-    description: "مدیریت حساب کاربری و تنظیمات برنامه",
-    tabs: {
-      profile: "پروفایل کاربری",
-      appearance: "ظاهر و تم",
-      security: "امنیت و ورود",
-      about: "درباره برنامه",
-    },
-    profile: {
-      title: "اطلاعات شناسایی",
-      description: "تصویر پروفایل و نام نمایشی خود را مدیریت کنید.",
-      changeImage: "تغییر تصویر",
-      firstName: "نام",
-      lastName: "نام خانوادگی",
-      username: "نام کاربری",
-      usernameDescription: "نام کاربری منحصر به فرد شما در سیستم.",
-      saveChanges: "ذخیره تغییرات",
-      contactTitle: "اطلاعات تماس",
-      contactDescription:
-        "ایمیل شما جهت بازیابی رمز عبور و دریافت اعلان‌ها استفاده می‌شود.",
-      email: "آدرس ایمیل",
-      emailChangeNote: "برای تغییر ایمیل با پشتیبانی تماس بگیرید.",
-      toast: {
-        updateSuccess: "پروفایل بروزرسانی شد",
-        updateSuccessDescription: "اطلاعات شما با موفقیت ذخیره گردید.",
-        updateError: "خطا",
-        updateErrorDescription: "خطایی در ذخیره اطلاعات رخ داد.",
-      },
-    },
-    appearance: {
-      title: "تم برنامه",
-      description: "ظاهر برنامه را متناسب با سلیقه خود شخصی‌سازی کنید.",
-      light: "روشن",
-      dark: "تاریک",
-      system: "سیستم",
-    },
-    security: {
-      changePasswordTitle: "تغییر رمز عبور",
-      changePasswordDescription: "برای امنیت بیشتر، رمز عبور قوی انتخاب کنید.",
-      oldPassword: "رمز عبور فعلی",
-      newPassword: "رمز عبور جدید",
-      confirmPassword: "تکرار رمز عبور جدید",
-      updatePassword: "بروزرسانی رمز عبور",
-      activeSessionsTitle: "نشست‌های فعال",
-      activeSessionsDescription: "تاریخچه ورودهای اخیر به حساب کاربری شما.",
-      noLoginHistory: "هیچ سابقه ورودی یافت نشد.",
-      toast: {
-        passwordChanged: "رمز عبور تغییر کرد",
-        passwordChangedDescription: "رمز عبور شما با موفقیت تغییر یافت.",
-        passwordError: "خطا",
-        passwordErrorDescription: "رمز عبور فعلی اشتباه است یا خطایی رخ داده.",
-        fetchLogsError: "خطا در دریافت سوابق ورود",
-      },
-      validation: {
-        oldPasswordRequired: "رمز عبور فعلی الزامی است",
-      },
-    },
-    about: {
-      title: "درباره برنامه",
-      version: "نسخه ۱.۰.۰",
-      description:
-        "این برنامه جهت مدیریت پروژه‌ها و تسک‌های تیمی طراحی شده است.",
-    },
-  },
-
-  // Audit Logs
-  auditLogs: {
-    title: "سوابق تغییرات",
-    description: "مشاهده تمام تغییرات انجام شده در سیستم",
-    table: {
-      timestamp: "زمان",
-      actor: "انجام‌دهنده",
-      action: "عملیات",
-      resource: "منبع",
-      resourceId: "شناسه منبع",
-      client: "کلاینت",
-      message: "پیام",
-      changes: "تغییرات",
-      requestId: "شناسه درخواست",
-      ipAddress: "آدرس IP",
-      noChanges: "بدون تغییر",
-      viewChanges: "مشاهده تغییرات",
-      hideChanges: "پنهان کردن تغییرات",
-    },
-    filters: {
-      resource: "نوع منبع",
-      resourceId: "شناسه منبع",
-      actor: "انجام‌دهنده",
-      action: "عملیات",
-      client: "کلاینت",
-      dateFrom: "از تاریخ",
-      dateTo: "تا تاریخ",
-      search: "جستجو در پیام یا شناسه درخواست",
-      clear: "پاک کردن فیلترها",
-    },
-    actions: {
-      create: "ایجاد",
-      update: "به‌روزرسانی",
-      delete: "حذف",
-    },
-    clients: {
-      web: "مرورگر",
-      cli: "خط فرمان",
-      automation: "خودکار",
-      unknown: "نامشخص",
-    },
-    empty: {
-      title: "سابقه‌ای یافت نشد",
-      description: "هنوز هیچ تغییری در سیستم ثبت نشده است.",
-      noResults: "نتیجه‌ای با فیلترهای انتخابی یافت نشد.",
-    },
-    activityStream: {
-      title: "تاریخچه تغییرات",
-      empty: "هیچ تغییری ثبت نشده است",
-      created: "{actor} این {resource} را ایجاد کرد",
-      updated: "{actor} {field} را از {old} به {new} تغییر داد",
-      deleted: "{actor} این {resource} را حذف کرد",
-      changed: "{actor} {field} را تغییر داد",
-      by: "توسط",
-      at: "در",
-      showDetails: "نمایش جزئیات",
-      hideDetails: "پنهان کردن جزئیات",
-    },
+  // Task-related labels (legacy, use tasks.* instead)
+  task: {
+    editTask: "ویرایش تسک {title}",
+    completedTasks: SHARED_LABELS.completed,
+    sortByPriority: "مرتب‌سازی بر اساس اولویت",
+    newTask: "تسک جدید",
+    newTaskForProject: "تسک جدید برای این پروژه",
+    addNewTask: "افزودن تسک جدید",
+    moreOptions: "گزینه‌های بیشتر",
+    sortByDate: "مرتب‌سازی بر اساس تاریخ",
+    showCompletedTasks: "نمایش تکمیل شده‌ها",
+    logTime: "ثبت زمان",
+    timeSpent: "زمان صرف شده",
+    estimatedHours: "ساعت برآورد",
+    estimatedMinutes: "دقیقه برآورد",
+    hours: SHARED_LABELS.hours,
+    minutes: SHARED_LABELS.minutes,
+    hour: "ساعت",
+    min: "دقیقه",
+    quickAdd: "افزودن سریع",
+    addTime: "افزودن زمان",
+    editTime: "ویرایش زمان",
+    noTimeLogged: "زمانی ثبت نشده",
   },
 } as const;
 

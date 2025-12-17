@@ -419,14 +419,20 @@ export default function TaskDetails() {
             <CardHeader>
               <Tabs defaultValue="comments" className="w-full">
                 <TabsList>
-                  <TabsTrigger value="comments" className="flex items-center gap-2">
+                  <TabsTrigger
+                    value="comments"
+                    className="flex items-center gap-2"
+                  >
                     <MessageSquare className="h-4 w-4" />
                     {fa.comments.title}
                     <Badge variant="secondary" className="ml-1 text-xs">
                       {digitsEnToFa(comments.length)}
                     </Badge>
                   </TabsTrigger>
-                  <TabsTrigger value="history" className="flex items-center gap-2">
+                  <TabsTrigger
+                    value="history"
+                    className="flex items-center gap-2"
+                  >
                     <History className="h-4 w-4" />
                     {fa.auditLogs.activityStream.title}
                   </TabsTrigger>

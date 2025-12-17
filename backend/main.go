@@ -842,15 +842,6 @@ func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 	return e.Next()
 }
 
-// Context keys for request metadata
-type contextKey string
-
-const (
-	contextKeyRequestID contextKey = "request_id"
-	contextKeyIPAddress contextKey = "ip_address"
-	contextKeyClient    contextKey = "client"
-)
-
 // addRequestMetadataMiddleware injects request metadata (ID, IP, client) into context
 func addRequestMetadataMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

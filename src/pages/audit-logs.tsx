@@ -1,5 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { FileText, History, Loader2, Search, X } from "lucide-react";
+import { History, Loader2, X } from "lucide-react";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
@@ -32,7 +32,10 @@ import { PageTransition } from "@/components/page-transition";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fa } from "@/constants/text";
 import { useAuditLogs } from "@/hooks/audit-logs";
-import type { AuditLogsResponse, AuditLogsActionOptions, AuditLogsClientOptions } from "@/lib/pocketbase-types";
+import type {
+  AuditLogsActionOptions,
+  AuditLogsClientOptions,
+} from "@/lib/pocketbase-types";
 import { formatDateTime } from "@/lib/date-utils";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
@@ -43,7 +46,9 @@ type FieldDiff = {
   new: unknown;
 };
 
-function parseChanges(changes: string | Record<string, FieldDiff> | null | undefined): Record<string, FieldDiff> | null {
+function parseChanges(
+  changes: string | Record<string, FieldDiff> | null | undefined,
+): Record<string, FieldDiff> | null {
   if (!changes) return null;
   if (typeof changes === "string") {
     try {
@@ -100,7 +105,9 @@ export default function AuditLogs() {
       {/* Filters */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-lg">{fa.auditLogs.filters.clear}</CardTitle>
+          <CardTitle className="text-lg">
+            {fa.auditLogs.filters.clear}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -110,13 +117,13 @@ export default function AuditLogs() {
               </label>
               <Select value={resource} onValueChange={setResource}>
                 <SelectTrigger>
-                  <SelectValue placeholder="همه" />
+                  <SelectValue placeholder={fa.auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">همه</SelectItem>
-                  <SelectItem value="tasks">تسک‌ها</SelectItem>
-                  <SelectItem value="projects">پروژه‌ها</SelectItem>
-                  <SelectItem value="users">کاربران</SelectItem>
+                  <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
+                  <SelectItem value="tasks">{fa.auditLogs.resources.tasks}</SelectItem>
+                  <SelectItem value="projects">{fa.auditLogs.resources.projects}</SelectItem>
+                  <SelectItem value="users">{fa.auditLogs.resources.users}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -124,15 +131,26 @@ export default function AuditLogs() {
               <label className="mb-2 block text-sm font-medium">
                 {fa.auditLogs.filters.action}
               </label>
-              <Select value={action} onValueChange={(v) => setAction(v as AuditLogsActionOptions | "")}>
+              <Select
+                value={action}
+                onValueChange={(v) =>
+                  setAction(v as AuditLogsActionOptions | "")
+                }
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="همه" />
+                  <SelectValue placeholder={fa.auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">همه</SelectItem>
-                  <SelectItem value="create">{fa.auditLogs.actions.create}</SelectItem>
-                  <SelectItem value="update">{fa.auditLogs.actions.update}</SelectItem>
-                  <SelectItem value="delete">{fa.auditLogs.actions.delete}</SelectItem>
+                  <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
+                  <SelectItem value="create">
+                    {fa.auditLogs.actions.create}
+                  </SelectItem>
+                  <SelectItem value="update">
+                    {fa.auditLogs.actions.update}
+                  </SelectItem>
+                  <SelectItem value="delete">
+                    {fa.auditLogs.actions.delete}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -140,17 +158,30 @@ export default function AuditLogs() {
               <label className="mb-2 block text-sm font-medium">
                 {fa.auditLogs.filters.client}
               </label>
-              <Select value={client} onValueChange={(v) => setClient(v as AuditLogsClientOptions | "")}>
+              <Select
+                value={client}
+                onValueChange={(v) =>
+                  setClient(v as AuditLogsClientOptions | "")
+                }
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="همه" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">همه</SelectItem>
-                  <SelectItem value="web">{fa.auditLogs.clients.web}</SelectItem>
-                  <SelectItem value="cli">{fa.auditLogs.clients.cli}</SelectItem>
-                  <SelectItem value="automation">{fa.auditLogs.clients.automation}</SelectItem>
-                  <SelectItem value="unknown">{fa.auditLogs.clients.unknown}</SelectItem>
-                </SelectContent>
+                    <SelectValue placeholder={fa.auditLogs.filters.allPlaceholder} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
+                    <SelectItem value="web">
+                      {fa.auditLogs.clients.web}
+                    </SelectItem>
+                    <SelectItem value="cli">
+                      {fa.auditLogs.clients.cli}
+                    </SelectItem>
+                    <SelectItem value="automation">
+                      {fa.auditLogs.clients.automation}
+                    </SelectItem>
+                    <SelectItem value="unknown">
+                      {fa.auditLogs.clients.unknown}
+                    </SelectItem>
+                  </SelectContent>
               </Select>
             </div>
             <div>
@@ -195,12 +226,14 @@ export default function AuditLogs() {
               <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-destructive">خطا در بارگذاری سوابق</p>
+            <div className="py-12 text-center">
+              <p className="text-destructive">{fa.auditLogs.errors.loadFailed}</p>
             </div>
           ) : !data || data.items.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">{fa.auditLogs.empty.noResults}</p>
+            <div className="py-12 text-center">
+              <p className="text-muted-foreground">
+                {fa.auditLogs.empty.noResults}
+              </p>
             </div>
           ) : (
             <ScrollArea className="h-[600px]">
@@ -220,17 +253,27 @@ export default function AuditLogs() {
                   {data.items.map((log) => {
                     const actor = log.expand?.actor;
                     const actorName = actor
-                      ? formatUserName(actor.first_name, actor.last_name, actor.username)
+                      ? formatUserName(
+                          actor.first_name,
+                          actor.last_name,
+                          actor.username,
+                        )
                       : log.actor_type === "system"
-                      ? "سیستم"
-                      : "نامشخص";
+                        ? fa.auditLogs.actorTypes.system
+                        : fa.auditLogs.actorTypes.unknown;
                     const changes = parseChanges(log.changes);
-                    const hasChanges = changes && Object.keys(changes).length > 0;
+                    const hasChanges =
+                      changes && Object.keys(changes).length > 0;
 
                     return (
                       <TableRow key={log.id}>
                         <TableCell className="font-mono text-xs">
-                          {log.created ? formatDateTime(log.created) : "-"}
+                          {log.created
+                            ? (() => {
+                                const dt = formatDateTime(log.created);
+                                return `${dt.date} ${dt.time}`;
+                              })()
+                            : "-"}
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col">
@@ -244,7 +287,9 @@ export default function AuditLogs() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {fa.auditLogs.actions[log.action as keyof typeof fa.auditLogs.actions] || log.action}
+                            {fa.auditLogs.actions[
+                              log.action as keyof typeof fa.auditLogs.actions
+                            ] || log.action}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -258,7 +303,9 @@ export default function AuditLogs() {
                         <TableCell>
                           {log.client ? (
                             <Badge variant="secondary" className="text-xs">
-                              {fa.auditLogs.clients[log.client as keyof typeof fa.auditLogs.clients] || log.client}
+                              {fa.auditLogs.clients[
+                                log.client as keyof typeof fa.auditLogs.clients
+                              ] || log.client}
                             </Badge>
                           ) : (
                             "-"
@@ -272,35 +319,53 @@ export default function AuditLogs() {
                         <TableCell>
                           {hasChanges ? (
                             <Accordion type="single" collapsible>
-                              <AccordionItem value={log.id} className="border-none">
-                                <AccordionTrigger className="text-xs py-1">
+                              <AccordionItem
+                                value={log.id}
+                                className="border-none"
+                              >
+                                <AccordionTrigger className="py-1 text-xs">
                                   {fa.auditLogs.table.viewChanges}
                                 </AccordionTrigger>
                                 <AccordionContent>
                                   <div className="space-y-2 text-xs">
-                                    {Object.entries(changes!).map(([field, diff]) => (
-                                      <div key={field} className="border-l-2 pl-2">
-                                        <div className="font-medium">{field}:</div>
-                                        <div className="text-muted-foreground">
-                                          <div>
-                                            قبل:{" "}
-                                            <span className="font-mono">
-                                              {diff.old !== null && diff.old !== undefined
-                                                ? String(diff.old).substring(0, 50)
-                                                : "خالی"}
-                                            </span>
+                                    {Object.entries(changes!).map(
+                                      ([field, diff]) => (
+                                        <div
+                                          key={field}
+                                          className="border-l-2 pl-2"
+                                        >
+                                          <div className="font-medium">
+                                            {field}:
                                           </div>
-                                          <div>
-                                            بعد:{" "}
-                                            <span className="font-mono">
-                                              {diff.new !== null && diff.new !== undefined
-                                                ? String(diff.new).substring(0, 50)
-                                                : "خالی"}
-                                            </span>
+                                          <div className="text-muted-foreground">
+                                            <div>
+                                              {fa.auditLogs.labels.before}{" "}
+                                              <span className="font-mono">
+                                                {diff.old !== null &&
+                                                diff.old !== undefined
+                                                  ? String(diff.old).substring(
+                                                      0,
+                                                      50,
+                                                    )
+                                                  : fa.auditLogs.empty.empty}
+                                              </span>
+                                            </div>
+                                            <div>
+                                              {fa.auditLogs.labels.after}{" "}
+                                              <span className="font-mono">
+                                                {diff.new !== null &&
+                                                diff.new !== undefined
+                                                  ? String(diff.new).substring(
+                                                      0,
+                                                      50,
+                                                    )
+                                                  : fa.auditLogs.empty.empty}
+                                              </span>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    ))}
+                                      ),
+                                    )}
                                   </div>
                                 </AccordionContent>
                               </AccordionItem>
@@ -323,8 +388,8 @@ export default function AuditLogs() {
           {data && data.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="text-muted-foreground text-sm">
-                {fa.common.pagination.page} {digitsEnToFa(page)} {fa.common.pagination.of}{" "}
-                {digitsEnToFa(data.totalPages)}
+                {fa.common.pagination.page} {digitsEnToFa(page)}{" "}
+                {fa.common.pagination.of} {digitsEnToFa(data.totalPages)}
               </div>
               <div className="flex gap-2">
                 <Button
@@ -333,15 +398,17 @@ export default function AuditLogs() {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
-                  قبلی
+                  {fa.common.pagination.previous}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(data.totalPages, p + 1))
+                  }
                   disabled={page === data.totalPages}
                 >
-                  بعدی
+                  {fa.common.pagination.next}
                 </Button>
               </div>
             </div>
@@ -351,4 +418,3 @@ export default function AuditLogs() {
     </PageTransition>
   );
 }
-

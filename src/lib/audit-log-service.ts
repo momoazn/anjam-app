@@ -10,17 +10,21 @@ import type {
   AuditLogsResponse,
   AuditLogsActionOptions,
   AuditLogsClientOptions,
+  UsersResponse,
 } from "./pocketbase-types";
 
 // Sensitive fields that should be masked in the UI
-const SENSITIVE_FIELDS = [
-  "password",
-  "token",
-  "tokenKey",
-  "accessKey",
-  "oauth_secret",
-  "private_notes",
-];
+// Normalized to lowercase Set for O(1) case-insensitive matching
+const SENSITIVE_FIELDS_SET = new Set(
+  [
+    "password",
+    "token",
+    "tokenKey", // Will be normalized to "tokenkey"
+    "accessKey", // Will be normalized to "accesskey"
+    "oauth_secret",
+    "private_notes",
+  ].map((f) => f.toLowerCase()),
+);
 
 export type AuditLogsListParams = {
   page?: number;
@@ -36,7 +40,10 @@ export type AuditLogsListParams = {
 };
 
 export type AuditLogsListResult = {
-  items: AuditLogsResponse[];
+  items: AuditLogsResponse<
+    Record<string, FieldDiff> | null,
+    { actor?: UsersResponse }
+  >[];
   page: number;
   perPage: number;
   totalItems: number;
@@ -56,7 +63,8 @@ function maskSensitiveFields(
 ): Record<string, FieldDiff> {
   const masked: Record<string, FieldDiff> = {};
   for (const [key, diff] of Object.entries(changes)) {
-    if (SENSITIVE_FIELDS.includes(key.toLowerCase())) {
+    // Case-insensitive check: normalize key to lowercase and check against normalized set
+    if (SENSITIVE_FIELDS_SET.has(key.toLowerCase())) {
       masked[key] = {
         old: diff.old !== null && diff.old !== undefined ? "••••" : diff.old,
         new: diff.new !== null && diff.new !== undefined ? "••••" : diff.new,
@@ -134,8 +142,15 @@ export async function listAuditLogs(
   }
 
   if (search) {
+    // Escape quotes and special characters in search term to prevent injection
+    const escapedSearch = search
+      .replace(/\\/g, "\\\\") // Escape backslashes first
+      .replace(/"/g, '\\"') // Escape double quotes
+      .replace(/'/g, "\\'"); // Escape single quotes
     // Search in message or request_id
-    filters.push(`(message~"${search}" || request_id~"${search}")`);
+    filters.push(
+      `(message~"${escapedSearch}" || request_id~"${escapedSearch}")`,
+    );
   }
 
   const filter = filters.length > 0 ? filters.join(" && ") : "";
@@ -143,20 +158,47 @@ export async function listAuditLogs(
   // Fetch with pagination
   const result = await pb
     .collection("audit_logs")
-    .getList<AuditLogsResponse>(page, perPage, {
+    .getList<
+      AuditLogsResponse<
+        Record<string, FieldDiff> | null,
+        { actor?: UsersResponse }
+      >
+    >(page, perPage, {
       filter,
       sort: "-created", // Most recent first
       expand: "actor", // Expand actor relation to get user details
     });
 
   // Mask sensitive fields in changes
+  // Handle both string (legacy) and object (current) formats
   const maskedItems = result.items.map((item) => {
-    if (item.changes && typeof item.changes === "string") {
-      const maskedChanges = parseAndMaskChanges(item.changes);
-      return {
-        ...item,
-        changes: maskedChanges,
-      };
+    if (item.changes) {
+      let changes: Record<string, FieldDiff> | null = null;
+
+      if (typeof item.changes === "string") {
+        // Legacy format: stringified JSON
+        changes = parseAndMaskChanges(item.changes);
+      } else if (typeof item.changes === "object" && item.changes !== null) {
+        // Current format: JSON object
+        try {
+          changes = maskSensitiveFields(
+            item.changes as Record<string, FieldDiff>,
+          );
+        } catch {
+          // If parsing fails, try to parse as string
+          changes = parseAndMaskChanges(JSON.stringify(item.changes));
+        }
+      }
+
+      if (changes) {
+        return {
+          ...item,
+          changes,
+        } satisfies AuditLogsResponse<
+          Record<string, FieldDiff> | null,
+          { actor?: UsersResponse }
+        >;
+      }
     }
     return item;
   });

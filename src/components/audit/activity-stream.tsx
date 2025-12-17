@@ -6,12 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
 import { useResourceAuditLogs } from "@/hooks/audit-logs";
-import type { AuditLogsResponse } from "@/lib/pocketbase-types";
-import { formatDateTime } from "@/lib/date-utils";
+import type { AuditLogsResponse, UsersResponse } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
@@ -21,6 +19,11 @@ type FieldDiff = {
   old: unknown;
   new: unknown;
 };
+
+type AuditLog = AuditLogsResponse<
+  Record<string, FieldDiff> | null,
+  { actor?: UsersResponse }
+>;
 
 type ActivityStreamProps = {
   resource: string;
@@ -41,12 +44,14 @@ function getActionIcon(action: string) {
   }
 }
 
-function formatActionMessage(
-  log: AuditLogsResponse,
-  actorName: string,
-): string {
-  const resourceName = log.resource === "tasks" ? "تسک" : log.resource === "projects" ? "پروژه" : log.resource;
-  
+function formatActionMessage(log: AuditLog, actorName: string): string {
+  const resourceName =
+    log.resource === "tasks"
+      ? fa.auditLogs.resources.task
+      : log.resource === "projects"
+        ? fa.auditLogs.resources.project
+        : log.resource;
+
   switch (log.action) {
     case "create":
       return fa.auditLogs.activityStream.created
@@ -56,17 +61,24 @@ function formatActionMessage(
       return fa.auditLogs.activityStream.deleted
         .replace("{actor}", actorName)
         .replace("{resource}", resourceName);
-    case "update":
-      const changes = typeof log.changes === "string" 
-        ? JSON.parse(log.changes) as Record<string, FieldDiff>
-        : (log.changes as Record<string, FieldDiff> | null);
-      
+    case "update": {
+      const changes =
+        typeof log.changes === "string"
+          ? (JSON.parse(log.changes) as Record<string, FieldDiff>)
+          : (log.changes as Record<string, FieldDiff> | null);
+
       if (changes && Object.keys(changes).length > 0) {
         const firstChange = Object.entries(changes)[0];
         const [field, diff] = firstChange;
-        const oldVal = diff.old !== null && diff.old !== undefined ? String(diff.old) : "خالی";
-        const newVal = diff.new !== null && diff.new !== undefined ? String(diff.new) : "خالی";
-        
+        const oldVal =
+          diff.old !== null && diff.old !== undefined
+            ? String(diff.old)
+            : fa.auditLogs.empty.empty;
+        const newVal =
+          diff.new !== null && diff.new !== undefined
+            ? String(diff.new)
+            : fa.auditLogs.empty.empty;
+
         return fa.auditLogs.activityStream.updated
           .replace("{actor}", actorName)
           .replace("{field}", field)
@@ -76,24 +88,28 @@ function formatActionMessage(
       return fa.auditLogs.activityStream.changed
         .replace("{actor}", actorName)
         .replace("{resource}", resourceName);
+    }
     default:
-      return `${actorName} عملیات ${log.action} را انجام داد`;
+       return fa.auditLogs.activityStream.defaultMessage
+        .replace("{actor}", actorName)
+        .replace("{action}", log.action);
   }
 }
 
-function AuditLogItem({ log }: { log: AuditLogsResponse<Record<string, FieldDiff>, { actor?: { first_name?: string; last_name?: string; username?: string; avatar?: string; id?: string } }> }) {
+function AuditLogItem({ log }: { log: AuditLog }) {
   const [expanded, setExpanded] = useState(false);
-  
-  const actor = log.expand?.actor;
-  const actorName = actor
-    ? formatUserName(actor.first_name, actor.last_name, actor.username)
-    : log.actor_type === "system"
-    ? "سیستم"
-    : "نامشخص";
 
-  const changes = typeof log.changes === "string"
-    ? JSON.parse(log.changes) as Record<string, FieldDiff> | null
-    : (log.changes as Record<string, FieldDiff> | null);
+  const actor = log.expand?.actor;
+   const actorName = actor
+     ? formatUserName(actor.first_name, actor.last_name, actor.username)
+     : log.actor_type === "system"
+       ? fa.auditLogs.actorTypes.system
+       : fa.auditLogs.actorTypes.unknown;
+
+  const changes =
+    typeof log.changes === "string"
+      ? (JSON.parse(log.changes) as Record<string, FieldDiff> | null)
+      : (log.changes as Record<string, FieldDiff> | null);
 
   const hasChanges = changes && Object.keys(changes).length > 0;
   const relativeTime = log.created
@@ -104,23 +120,20 @@ function AuditLogItem({ log }: { log: AuditLogsResponse<Record<string, FieldDiff
     <Card className="mb-4">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 pt-1">
-            {getActionIcon(log.action)}
-          </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-shrink-0 pt-1">{getActionIcon(log.action)}</div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2 flex-1">
-                {actor && (
-                  <UserAvatar
-                    user={actor}
-                    className="h-6 w-6"
-                  />
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{formatActionMessage(log, actorName)}</p>
-                  <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-1 items-center gap-2">
+                {actor && <UserAvatar user={actor} className="h-6 w-6" />}
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium">
+                    {formatActionMessage(log, actorName)}
+                  </p>
+                  <div className="mt-1 flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
-                      {fa.auditLogs.actions[log.action as keyof typeof fa.auditLogs.actions] || log.action}
+                      {fa.auditLogs.actions[
+                        log.action as keyof typeof fa.auditLogs.actions
+                      ] || log.action}
                     </Badge>
                     <span className="text-muted-foreground text-xs">
                       {relativeTime ? digitsEnToFa(relativeTime) : ""}
@@ -143,27 +156,29 @@ function AuditLogItem({ log }: { log: AuditLogsResponse<Record<string, FieldDiff
             </div>
 
             {expanded && hasChanges && (
-              <div className="mt-4 pt-4 border-t">
-                <p className="text-sm font-medium mb-2">{fa.auditLogs.table.changes}:</p>
+              <div className="mt-4 border-t pt-4">
+                <p className="mb-2 text-sm font-medium">
+                  {fa.auditLogs.table.changes}:
+                </p>
                 <div className="space-y-2">
                   {Object.entries(changes).map(([field, diff]) => (
                     <div key={field} className="text-sm">
-                      <div className="font-medium mb-1">{field}:</div>
-                      <div className="flex gap-4 text-muted-foreground">
+                      <div className="mb-1 font-medium">{field}:</div>
+                      <div className="text-muted-foreground flex gap-4">
                         <div>
-                          <span className="text-xs">قبل: </span>
+                          <span className="text-xs">{fa.auditLogs.labels.before} </span>
                           <span className="font-mono text-xs">
                             {diff.old !== null && diff.old !== undefined
                               ? String(diff.old).substring(0, 50)
-                              : "خالی"}
+                              : fa.auditLogs.empty.empty}
                           </span>
                         </div>
                         <div>
-                          <span className="text-xs">بعد: </span>
+                          <span className="text-xs">{fa.auditLogs.labels.after} </span>
                           <span className="font-mono text-xs">
                             {diff.new !== null && diff.new !== undefined
                               ? String(diff.new).substring(0, 50)
-                              : "خالی"}
+                              : fa.auditLogs.empty.empty}
                           </span>
                         </div>
                       </div>
@@ -184,9 +199,13 @@ export function ActivityStream({
   resourceId,
   className,
 }: ActivityStreamProps) {
-  const { data, isLoading, error } = useResourceAuditLogs(resource, resourceId, {
-    perPage: 100,
-  });
+  const { data, isLoading, error } = useResourceAuditLogs(
+    resource,
+    resourceId,
+    {
+      perPage: 100,
+    },
+  );
 
   if (isLoading) {
     return (
@@ -203,17 +222,19 @@ export function ActivityStream({
   }
 
   if (error) {
-    return (
-      <div className={cn("text-center py-10", className)}>
-        <p className="text-destructive">خطا در بارگذاری تاریخچه</p>
-      </div>
-    );
-  }
+     return (
+       <div className={cn("py-10 text-center", className)}>
+         <p className="text-destructive">{fa.auditLogs.errors.loadHistoryFailed}</p>
+       </div>
+     );
+   }
 
   if (!data || data.items.length === 0) {
     return (
-      <div className={cn("text-center py-10", className)}>
-        <p className="text-muted-foreground">{fa.auditLogs.activityStream.empty}</p>
+      <div className={cn("py-10 text-center", className)}>
+        <p className="text-muted-foreground">
+          {fa.auditLogs.activityStream.empty}
+        </p>
       </div>
     );
   }
@@ -228,4 +249,3 @@ export function ActivityStream({
     </ScrollArea>
   );
 }
-

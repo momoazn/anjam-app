@@ -1853,9 +1853,9 @@
     "id": "pbc_audit_logs",
     "listRule": "@request.auth.role = \"admin\"",
     "viewRule": "@request.auth.role = \"admin\"",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "createRule": "false",
+    "updateRule": "false",
+    "deleteRule": "false",
     "name": "audit_logs",
     "type": "base",
     "fields": [

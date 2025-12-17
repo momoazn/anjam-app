@@ -2,7 +2,6 @@ import { PageTransition } from "@/components/page-transition";
 import { ProjectAssets } from "@/components/project/project-assets";
 import { ActivityStream } from "@/components/audit/activity-stream";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Input } from "@/components/ui/input";
