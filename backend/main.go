@@ -99,10 +99,10 @@ func main() {
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.PATCH("/api/tm/users/{id}/toggle-active", handleToggleUserActive)
-		se.Router.PATCH("/api/tm/users/{id}/unblock", handleUnblockUser)
-		se.Router.GET("/api/tm/users/{id}/login-logs", handleGetUserLoginLogs)
-		se.Router.GET("/api/tm/search", handleGlobalSearch)
+		se.Router.PATCH("/api/v1/users/{id}/toggle-active", handleToggleUserActive)
+		se.Router.PATCH("/api/v1/users/{id}/unblock", handleUnblockUser)
+		se.Router.GET("/api/v1/users/{id}/login-logs", handleGetUserLoginLogs)
+		se.Router.GET("/api/v1/search", handleGlobalSearch)
 
 		return se.Next()
 	})
@@ -1109,13 +1109,17 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(200, map[string]interface{}{
-		"active": newActive,
-		"message": func() string {
-			if newActive {
-				return MsgUserActivated
-			}
-			return MsgUserDeactivated
-		}(),
+		"data": map[string]interface{}{
+			"active": newActive,
+		},
+		"meta": map[string]interface{}{
+			"message": func() string {
+				if newActive {
+					return MsgUserActivated
+				}
+				return MsgUserDeactivated
+			}(),
+		},
 	})
 }
 
@@ -1145,8 +1149,11 @@ func handleUnblockUser(e *core.RequestEvent) error {
 		return e.JSON(500, map[string]string{"error": ErrFailedToUnblockUser})
 	}
 
-	return e.JSON(200, map[string]string{
-		"message": MsgUserUnblocked,
+	return e.JSON(200, map[string]interface{}{
+		"data": map[string]interface{}{},
+		"meta": map[string]interface{}{
+			"message": MsgUserUnblocked,
+		},
 	})
 }
 
@@ -1208,11 +1215,15 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(200, map[string]interface{}{
-		"items":      logs,
-		"page":       pagination.Page,
-		"perPage":    pagination.PerPage,
-		"totalItems": totalCount,
-		"totalPages": (totalCount + pagination.PerPage - 1) / pagination.PerPage,
+		"data": map[string]interface{}{
+			"items": logs,
+		},
+		"meta": map[string]interface{}{
+			"page":       pagination.Page,
+			"perPage":    pagination.PerPage,
+			"totalItems": totalCount,
+			"totalPages": (totalCount + pagination.PerPage - 1) / pagination.PerPage,
+		},
 	})
 }
 

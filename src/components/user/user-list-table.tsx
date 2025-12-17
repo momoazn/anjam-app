@@ -54,7 +54,7 @@ export function UserListTable({
 
   const toggleActiveMutation = useToggleUserActive({
     onSuccess: (data) => {
-      toast.success(data.message);
+      toast.success(data.meta.message);
       onUpdate?.();
     },
     onError: (error) => {
@@ -68,7 +68,7 @@ export function UserListTable({
 
   const unblockUserMutation = useUnblockUser({
     onSuccess: (data) => {
-      toast.success(data.message);
+      toast.success(data.meta.message);
       onUpdate?.();
     },
     onError: (error) => {

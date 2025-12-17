@@ -27,9 +27,10 @@ export function useGlobalSearch(query: string) {
     queryKey: ["global-search", query],
     queryFn: async () => {
       // Using send() to call the custom endpoint
-      return await pb.send("/api/tm/search", {
+      const res = await pb.send<{ data: SearchResponse }>("/api/v1/search", {
         params: { q: query },
       });
+      return res.data;
     },
     enabled: query.trim().length >= 2,
     staleTime: 1000 * 60 * 5, // 5 minutes

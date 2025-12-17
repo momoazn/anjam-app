@@ -191,6 +191,7 @@ This is a **task and project management application** with a Go backend (PocketB
 PocketBase lifecycle hooks registered in `backend/main.go`:
 
 - `OnRecordCreateExecute`: Runs **before** record creation (can modify record before saving)
+
   - `handleUserCreation`: Sets default values for new users
   - `handleTaskCreation`: Auto-generates task display IDs
   - `handleProjectCreationWithGroup`: Validates group membership and generates project codes
@@ -198,12 +199,14 @@ PocketBase lifecycle hooks registered in `backend/main.go`:
   - `handleUsersProjectsValidation`: Ensures user and project belong to same group
 
 - `OnRecordAfterCreateSuccess`: Runs **after** successful creation (for side effects)
+
   - `handleTaskAssignmentNotification`: Notifies assigned user
   - `handleCommentNotification`: Notifies task owner and participants
   - `handleUsersProjectsCreatedNotify`: Notifies user of project assignment
   - `handleGroupCreatedNotification`: Notifies group creator
 
 - `OnRecordAfterUpdateSuccess`: Runs **after** successful updates
+
   - `handleTaskUpdateNotification`: Notifies on task status/assignment changes
   - `handleProjectUpdateNotification`: Notifies on project updates
 

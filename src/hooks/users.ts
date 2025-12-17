@@ -57,7 +57,10 @@ const useDeleteUserMutation = createMutation<void, Error, string>(
   },
 );
 
-type ToggleUserActiveResponse = { message: string; active: boolean };
+type ToggleUserActiveResponse = {
+  data: { active: boolean };
+  meta: { message: string };
+};
 
 const useToggleUserActiveMutation = createMutation<
   ToggleUserActiveResponse,
@@ -66,7 +69,7 @@ const useToggleUserActiveMutation = createMutation<
 >(
   (userId) =>
     customApiCall<ToggleUserActiveResponse>(
-      `/api/tm/users/${userId}/toggle-active`,
+      `/api/v1/users/${userId}/toggle-active`,
       { method: "PATCH" },
     ),
   (client, _data, userId) => {
@@ -74,7 +77,10 @@ const useToggleUserActiveMutation = createMutation<
   },
 );
 
-type UnblockUserResponse = { message: string };
+type UnblockUserResponse = {
+  data: Record<string, never>;
+  meta: { message: string };
+};
 
 const useUnblockUserMutation = createMutation<
   UnblockUserResponse,
@@ -82,7 +88,7 @@ const useUnblockUserMutation = createMutation<
   string
 >(
   (userId) =>
-    customApiCall<UnblockUserResponse>(`/api/tm/users/${userId}/unblock`, {
+    customApiCall<UnblockUserResponse>(`/api/v1/users/${userId}/unblock`, {
       method: "PATCH",
     }),
   (client, _data, userId) => {

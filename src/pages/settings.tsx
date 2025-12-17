@@ -392,12 +392,10 @@ function SecuritySection() {
       if (!user?.id) return [];
       try {
         // Using the custom endpoint defined in backend/main.go
-        return await pb.send<UserLoginLogsResponse[]>(
-          `/api/tm/users/${user.id}/login-logs`,
-          {
-            method: "GET",
-          },
-        );
+        const res = await pb.send<{
+          data: { items: UserLoginLogsResponse[] };
+        }>(`/api/v1/users/${user.id}/login-logs`, { method: "GET" });
+        return res.data.items;
       } catch {
         // Silently fail - return empty array
         return [];

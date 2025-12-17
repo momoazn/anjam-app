@@ -18,8 +18,11 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	query := e.Request.URL.Query().Get("q")
 	if len(query) < 2 {
 		return e.JSON(200, map[string]interface{}{
-			"tasks":    []interface{}{},
-			"projects": []interface{}{},
+			"data": map[string]interface{}{
+				"tasks":    []interface{}{},
+				"projects": []interface{}{},
+			},
+			"meta": map[string]interface{}{},
 		})
 	}
 
@@ -95,43 +98,46 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(200, map[string]interface{}{
-		"tasks":    taskDTOs,
-		"projects": projectDTOs,
+		"data": map[string]interface{}{
+			"tasks":    taskDTOs,
+			"projects": projectDTOs,
+		},
+		"meta": map[string]interface{}{},
 	})
 }
 
 // Helper to check view permission for search results (mirroring the API rule roughly)
 func canViewTask(app core.App, task *core.Record, user *core.Record) bool {
-	if user.GetString("role") == "admin" {
+	if user.GetString("role") == RoleAdmin {
 		return true
 	}
-	
+
 	// Fetch the task's project to check group membership
 	projectId := task.GetString("project")
 	if projectId == "" {
 		return false
 	}
-	
+
 	project, err := app.FindRecordById("projects", projectId)
 	if err != nil {
 		return false
 	}
-	
+
 	// Both user and project must be in the same group
 	userGroupId := user.GetString("group")
 	projectGroupId := project.GetString("group")
-	
+
 	return userGroupId != "" && userGroupId == projectGroupId
 }
 
 func canViewProject(app core.App, project *core.Record, user *core.Record) bool {
-	if user.GetString("role") == "admin" {
+	if user.GetString("role") == RoleAdmin {
 		return true
 	}
-	
+
 	// Both user and project must be in the same group
 	userGroupId := user.GetString("group")
 	projectGroupId := project.GetString("group")
-	
+
 	return userGroupId != "" && userGroupId == projectGroupId
 }
