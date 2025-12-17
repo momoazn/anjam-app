@@ -13,6 +13,7 @@ import { pb, TaskWithProject } from "../lib/pocketbase";
 import {
   compositeInvalidators,
   detailInvalidators,
+  mutationInvalidators,
 } from "../lib/query-invalidators";
 import {
   UsersResponse,
@@ -29,7 +30,7 @@ type UpdateTaskVariables = { id: string; updates: Partial<TasksRecord> };
 const useCreateTaskMutation = createMutation<TasksResponse, Error, CreateTaskVariables>(
   (taskData) => pb.collection("tasks").create(taskData),
   (client) => {
-    compositeInvalidators.taskChange(client);
+    mutationInvalidators.crud.tasks.create(client);
   },
 );
 
@@ -40,14 +41,10 @@ const useUpdateTaskMutation = createMutation<
 >(
   ({ id, updates }) => pb.collection("tasks").update(id, updates),
   (client, _data, variables) => {
-    if (variables?.id) {
-      detailInvalidators.task(client, variables.id);
-    } else {
-      compositeInvalidators.taskChange(client);
-    }
+    mutationInvalidators.crud.tasks.update(client, variables?.id);
 
     if (variables?.updates?.project) {
-      compositeInvalidators.projectChange(client, variables.updates.project);
+      mutationInvalidators.crud.projects.update(client, variables.updates.project);
     }
   },
 );
@@ -58,7 +55,7 @@ const useDeleteTaskMutation = createMutation<TasksResponse, Error, string>(
       deleted_at: new Date().toISOString(),
     }),
   (client, _data, taskId) => {
-    detailInvalidators.task(client, taskId);
+    mutationInvalidators.crud.tasks.delete(client, taskId);
   },
 );
 
@@ -76,9 +73,7 @@ const useBulkUpdateTasksMutation = createMutation<
     return await Promise.all(updatePromises);
   },
   (client) => {
-    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+    mutationInvalidators.crud.tasks.bulk(client);
   },
 );
 
@@ -93,9 +88,7 @@ const useBulkDeleteTasksMutation = createMutation<void, Error, string[]>(
     await Promise.all(deletePromises);
   },
   (client) => {
-    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.projects.all });
+    mutationInvalidators.crud.tasks.bulk(client);
   },
 );
 
@@ -116,8 +109,7 @@ const useReorderTaskMutation = createMutation<
       status: statusKey as TasksRecord["status"],
     }),
   (client) => {
-    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    mutationInvalidators.crud.tasks.reorder(client);
   },
 );
 

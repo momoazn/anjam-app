@@ -134,6 +134,85 @@ export const compositeInvalidators = {
 };
 
 /**
+ * Preset invalidators for common CRUD mutation patterns.
+ */
+export const mutationInvalidators = {
+  crud: {
+    tasks: {
+      create: (client: QueryClient) => compositeInvalidators.taskChange(client),
+      update: (client: QueryClient, taskId?: string) =>
+        taskId ? detailInvalidators.task(client, taskId) : compositeInvalidators.taskChange(client),
+      delete: (client: QueryClient, taskId?: string) =>
+        taskId ? detailInvalidators.task(client, taskId) : compositeInvalidators.taskChange(client),
+      bulk: (client: QueryClient) => {
+        collectionInvalidators.tasks(client);
+        collectionInvalidators.projects(client);
+      },
+      reorder: (client: QueryClient) => collectionInvalidators.tasks(client),
+    },
+    projects: {
+      create: (client: QueryClient) => {
+        compositeInvalidators.projectChange(client);
+        client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+      },
+      update: (client: QueryClient, projectId?: string) => {
+        if (projectId) {
+          detailInvalidators.project(client, projectId);
+        } else {
+          compositeInvalidators.projectChange(client);
+        }
+        client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+      },
+      delete: (client: QueryClient, projectId?: string) => {
+        if (projectId) {
+          detailInvalidators.project(client, projectId);
+        } else {
+          compositeInvalidators.projectChange(client);
+        }
+        client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+      },
+    },
+    users: {
+      create: (client: QueryClient) => compositeInvalidators.userChange(client),
+      update: (client: QueryClient, userId?: string) =>
+        userId ? detailInvalidators.user(client, userId) : compositeInvalidators.userChange(client),
+      delete: (client: QueryClient, userId?: string) =>
+        userId ? detailInvalidators.user(client, userId) : compositeInvalidators.userChange(client),
+      adminAction: (client: QueryClient, userId?: string) =>
+        userId ? detailInvalidators.user(client, userId) : compositeInvalidators.userChange(client),
+    },
+    comments: {
+      create: (client: QueryClient, taskId?: string) =>
+        compositeInvalidators.commentChange(client, taskId),
+      update: (client: QueryClient, taskId?: string) =>
+        compositeInvalidators.commentChange(client, taskId),
+      delete: (client: QueryClient, taskId?: string) =>
+        compositeInvalidators.commentChange(client, taskId),
+    },
+    groups: {
+      create: (client: QueryClient) => {
+        collectionInvalidators.groups(client);
+        collectionInvalidators.projects(client);
+      },
+      update: (client: QueryClient, groupId?: string) => {
+        collectionInvalidators.groups(client);
+        if (groupId) {
+          client.invalidateQueries({ queryKey: queryKeys.groups.detail(groupId) });
+        }
+        collectionInvalidators.projects(client);
+      },
+      delete: (client: QueryClient, groupId?: string) => {
+        collectionInvalidators.groups(client);
+        if (groupId) {
+          client.invalidateQueries({ queryKey: queryKeys.groups.detail(groupId) });
+        }
+        collectionInvalidators.projects(client);
+      },
+    },
+  },
+};
+
+/**
  * Helper to create invalidation functions with specific patterns
  */
 export function createInvalidator(

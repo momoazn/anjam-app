@@ -16,6 +16,7 @@ import {
   UsersResponse,
   ProjectsResponse,
 } from "@/lib/pocketbase-types";
+import { mutationInvalidators } from "@/lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
@@ -25,32 +26,21 @@ type UpdateGroupVariables = { id: string; updates: Partial<GroupsRecord> };
 const useCreateGroupMutation = createMutation<GroupsResponse, Error, CreateGroupVariables>(
   (groupData) => pb.collection("groups").create(groupData),
   (client) => {
-    client.invalidateQueries({ queryKey: queryKeys.groups.all });
-    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.projects.all });
-    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+    mutationInvalidators.crud.groups.create(client);
   },
 );
 
 const useUpdateGroupMutation = createMutation<GroupsResponse, Error, UpdateGroupVariables>(
   ({ id, updates }) => pb.collection("groups").update(id, updates),
   (client, _data, variables) => {
-    client.invalidateQueries({ queryKey: queryKeys.groups.all });
-    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.groups.detail(variables.id) });
-    client.invalidateQueries({ queryKey: queryKeys.projects.all });
-    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+    mutationInvalidators.crud.groups.update(client, variables?.id);
   },
 );
 
 const useDeleteGroupMutation = createMutation<void, Error, string>(
   (id) => pb.collection("groups").delete(id),
   (client, _data, groupId) => {
-    client.invalidateQueries({ queryKey: queryKeys.groups.all });
-    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.groups.detail(groupId) });
-    client.invalidateQueries({ queryKey: queryKeys.projects.all });
-    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
+    mutationInvalidators.crud.groups.delete(client, groupId);
   },
 );
 

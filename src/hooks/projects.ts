@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { pb, ProjectWithSupervisor } from "../lib/pocketbase";
 import { ProjectsResponse, ProjectsRecord } from "../lib/pocketbase-types";
+import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
@@ -22,11 +23,7 @@ const useCreateProjectMutation = createMutation<
   Error,
   CreateProjectVariables
 >((projectData) => pb.collection("projects").create(projectData), (client) => {
-  client.invalidateQueries({ queryKey: queryKeys.projects.all });
-  client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-  client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-  client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-  client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+  mutationInvalidators.crud.projects.create(client);
 });
 
 const useUpdateProjectMutation = createMutation<
@@ -34,20 +31,12 @@ const useUpdateProjectMutation = createMutation<
   Error,
   UpdateProjectVariables
 >(({ id, updates }) => pb.collection("projects").update(id, updates), (client, _data, variables) => {
-  client.invalidateQueries({ queryKey: queryKeys.projects.all });
-  client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-
+  mutationInvalidators.crud.projects.update(client, variables?.id);
   if (variables?.id) {
-    client.invalidateQueries({ queryKey: queryKeys.projects.detail(variables.id) });
     client.invalidateQueries({
       queryKey: [...queryKeys.projects.detail(variables.id), "supervisor"],
     });
   }
-
-  client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-  client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-
-  client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
 });
 
 const useDeleteProjectMutation = createMutation<void, Error, string>(
@@ -55,16 +44,10 @@ const useDeleteProjectMutation = createMutation<void, Error, string>(
     await pb.collection("projects").delete(id);
   },
   (client, _data, projectId) => {
-    client.invalidateQueries({ queryKey: queryKeys.projects.all });
-    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) });
+    mutationInvalidators.crud.projects.delete(client, projectId);
     client.invalidateQueries({
       queryKey: [...queryKeys.projects.detail(projectId), "supervisor"],
     });
-
-    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
   },
 );
 

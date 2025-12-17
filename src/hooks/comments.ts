@@ -15,6 +15,7 @@ import {
   CommentsRecord,
   UsersResponse,
 } from "../lib/pocketbase-types";
+import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
@@ -30,12 +31,7 @@ const useCreateCommentMutation = createMutation<
   Error,
   CreateCommentVariables
 >((commentData) => pb.collection("comments").create(commentData), (client, _data, variables) => {
-  client.invalidateQueries({ queryKey: queryKeys.comments.all });
-  client.invalidateQueries({ queryKey: queryKeys.comments.lists() });
-
-  if (variables?.task) {
-    client.invalidateQueries({ queryKey: queryKeys.comments.byTask(variables.task) });
-  }
+  mutationInvalidators.crud.comments.create(client, variables?.task);
 });
 
 const useUpdateCommentMutation = createMutation<
@@ -43,14 +39,7 @@ const useUpdateCommentMutation = createMutation<
   Error,
   UpdateCommentVariables
 >(({ id, updates }) => pb.collection("comments").update(id, updates), (client, _data, variables) => {
-  client.invalidateQueries({ queryKey: queryKeys.comments.all });
-  client.invalidateQueries({ queryKey: queryKeys.comments.lists() });
-
-  if (variables?.updates?.task) {
-    client.invalidateQueries({
-      queryKey: queryKeys.comments.byTask(variables.updates.task),
-    });
-  }
+  mutationInvalidators.crud.comments.update(client, variables?.updates?.task);
 });
 
 const useDeleteCommentMutation = createMutation<CommentsResponse, Error, string>(
@@ -59,12 +48,7 @@ const useDeleteCommentMutation = createMutation<CommentsResponse, Error, string>
       deleted_at: new Date().toISOString(),
     }),
   (client) => {
-    client.invalidateQueries({ queryKey: queryKeys.comments.all });
-    client.invalidateQueries({ queryKey: queryKeys.comments.lists() });
-    client.invalidateQueries({
-      predicate: (query) =>
-        query.queryKey[0] === "comments" && query.queryKey.includes("task"),
-    });
+    mutationInvalidators.crud.comments.delete(client);
   },
 );
 

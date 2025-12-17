@@ -10,6 +10,7 @@ import {
   UseMutationOptions,
 } from "@tanstack/react-query";
 import { customApiCall, pb } from "../lib/pocketbase";
+import { mutationInvalidators } from "../lib/query-invalidators";
 import {
   UsersResponse,
   UsersRecord,
@@ -31,34 +32,14 @@ type UpdateUserVariables = { id: string; updates: Partial<UsersRecord> };
 const useCreateUserMutation = createMutation<UsersResponse, Error, CreateUserVariables>(
   (userData) => pb.collection("users").create(userData),
   (client) => {
-    client.invalidateQueries({ queryKey: queryKeys.users.all });
-    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+    mutationInvalidators.crud.users.create(client);
   },
 );
 
 const useUpdateUserMutation = createMutation<UsersResponse, Error, UpdateUserVariables>(
   ({ id, updates }) => pb.collection("users").update(id, updates),
   (client, _data, variables) => {
-    client.invalidateQueries({ queryKey: queryKeys.users.all });
-    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
-
-    if (variables?.id) {
-      client.invalidateQueries({ queryKey: queryKeys.users.detail(variables.id) });
-    }
-
-    if (
-      variables?.updates &&
-      (variables.updates.role ||
-        variables.updates.first_name ||
-        variables.updates.last_name)
-    ) {
-      client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-    }
+    mutationInvalidators.crud.users.update(client, variables?.id);
   },
 );
 
@@ -67,12 +48,7 @@ const useDeleteUserMutation = createMutation<void, Error, string>(
     await pb.collection("users").delete(id);
   },
   (client, _data, userId) => {
-    client.invalidateQueries({ queryKey: queryKeys.users.all });
-    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
+    mutationInvalidators.crud.users.delete(client, userId);
   },
 );
 
@@ -89,10 +65,7 @@ const useToggleUserActiveMutation = createMutation<
       { method: "PATCH" },
     ),
   (client, _data, userId) => {
-    client.invalidateQueries({ queryKey: queryKeys.users.all });
-    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
-    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+    mutationInvalidators.crud.users.adminAction(client, userId);
   },
 );
 
@@ -104,10 +77,7 @@ const useUnblockUserMutation = createMutation<UnblockUserResponse, Error, string
       method: "PATCH",
     }),
   (client, _data, userId) => {
-    client.invalidateQueries({ queryKey: queryKeys.users.all });
-    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
-    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+    mutationInvalidators.crud.users.adminAction(client, userId);
   },
 );
 
