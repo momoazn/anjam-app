@@ -47,7 +47,7 @@ func allowDefaultCredentials(app core.App) bool {
 		return true
 	}
 
-	totalAdmins, err := app.CountRecords(usersCollection.Id, dbx.HashExp{"role": "admin"})
+	totalAdmins, err := app.CountRecords(usersCollection.Id, dbx.HashExp{"role": RoleAdmin})
 	if err != nil {
 		// On error, allow defaults (safer for first run)
 		return true
@@ -194,7 +194,7 @@ func handleGroupCreation(e *core.RecordEvent) error {
 		}
 
 		managerRole := manager.GetString("role")
-		if managerRole != "manager" && managerRole != "admin" {
+		if managerRole != RoleManager && managerRole != RoleAdmin {
 			return errors.New(ErrOnlyManagersCanBeGroupManagers)
 		}
 	}
@@ -415,7 +415,7 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 		return err
 	}
 
-	totalAdmins, err := e.App.CountRecords(usersCollection.Id, dbx.HashExp{"role": "admin"})
+	totalAdmins, err := e.App.CountRecords(usersCollection.Id, dbx.HashExp{"role": RoleAdmin})
 	if err != nil {
 		log.Printf("Error counting admin users: %v", err)
 		return err
@@ -430,7 +430,7 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 		record := core.NewRecord(usersCollection)
 		record.Set("username", "admin")
 		record.Set("password", "admin12345")
-		record.Set("role", "admin")
+		record.Set("role", RoleAdmin)
 		record.Set("active", true) // Set admin as active by default
 
 		if err := e.App.Save(record); err != nil {
@@ -483,7 +483,7 @@ func handleUserCreation(e *core.RecordEvent) error {
 
 	// Set new users as inactive by default, except admins
 	if e.Record.Get("active") == nil {
-		if newUserRole == "admin" {
+		if newUserRole == RoleAdmin {
 			e.Record.Set("active", true) // Admins are always active
 		} else {
 			e.Record.Set("active", false) // Regular users start inactive
@@ -608,10 +608,10 @@ func getNextTaskNumber(app core.App, projectId string) (int, error) {
 func setTaskDefaults(e *core.RecordEvent) {
 	// Set default status
 	if e.Record.GetString("status") == "" {
-		e.Record.Set("status", "todo")
+		e.Record.Set("status", TaskStatusTodo)
 	}
 	if e.Record.GetString("priority") == "" {
-		e.Record.Set("priority", "medium")
+		e.Record.Set("priority", PriorityMedium)
 	}
 }
 
@@ -794,13 +794,13 @@ func validateAuth(e *core.RequestEvent) (*core.Record, error) {
 // translateStatus translates English status to Persian
 func translateStatus(status string) string {
 	switch status {
-	case "todo":
+	case TaskStatusTodo:
 		return StatusTodo
-	case "in_progress":
+	case TaskStatusInProgress:
 		return StatusInProgress
-	case "done":
+	case TaskStatusDone:
 		return StatusDone
-	case "canceled":
+	case TaskStatusCanceled:
 		return StatusCanceled
 	default:
 		return status
@@ -1045,7 +1045,7 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 	}
 
 	role := authRecord.GetString("role")
-	if role != "admin" {
+	if role != RoleAdmin {
 		return e.JSON(403, map[string]string{"error": ErrOnlyAdminCanToggleUserStatus})
 	}
 
@@ -1062,7 +1062,7 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 	}
 
 	// Prevent deactivating admin users
-	if user.GetString("role") == "admin" {
+	if user.GetString("role") == RoleAdmin {
 		return e.JSON(400, map[string]string{"error": ErrCannotDeactivateAdmin})
 	}
 
@@ -1097,7 +1097,7 @@ func handleUnblockUser(e *core.RequestEvent) error {
 	}
 
 	role := authRecord.GetString("role")
-	if role != "admin" {
+	if role != RoleAdmin {
 		return e.JSON(403, map[string]string{"error": ErrOnlyAdminCanUnblock})
 	}
 
@@ -1135,7 +1135,7 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 
 	// Check permissions: admin can view any user's logs, users can only view their own
 	role := authRecord.GetString("role")
-	if role != "admin" && authRecord.Id != userId {
+	if role != RoleAdmin && authRecord.Id != userId {
 		return e.JSON(403, map[string]string{"error": ErrCannotViewOtherUserLogs})
 	}
 

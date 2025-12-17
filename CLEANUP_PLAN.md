@@ -47,12 +47,14 @@ Comprehensive cleanup, organization, consolidation, and architecture improvement
 
 ### Phase 1 Completion Checklist
 
-- [ ] `go.work` version matches `go.mod` (1.24.0)
-- [ ] Role constants defined in `backend_constants.go`
-- [ ] Task status constants defined in `backend_constants.go`
-- [ ] Priority constants defined in `backend_constants.go`
-- [ ] All magic role strings in `main.go` replaced with constants
-- [ ] All magic status strings in `main.go` replaced with constants
+**Status (verified 2025-12-17):**
+
+- [x] `go.work` version matches `go.mod` (1.24.0)
+- [x] Role constants defined in `backend_constants.go`
+- [x] Task status constants defined in `backend_constants.go`
+- [x] Priority constants defined in `backend_constants.go`
+- [x] All magic role strings in `main.go` replaced with constants (no `role == "admin"`-style comparisons remain)
+- [x] All magic status strings in `main.go` replaced with constants (no direct status string comparisons remain)
 - [ ] `go build ./backend` succeeds without errors
 - [ ] `bun run check` passes
 
@@ -107,11 +109,13 @@ func requireRole(e *core.RequestEvent, roles ...string) (*core.Record, error)
 
 ### Phase 2 Completion Checklist
 
-- [ ] `backend/helpers.go` file created
+**Status (verified 2025-12-17):**
+
+- [x] `backend/helpers.go` file created
 - [ ] `extractIPAddress()` function implemented and tested
-- [ ] `PaginationParams` struct and `parsePagination()` function implemented
-- [ ] `requireAdmin()` helper implemented
-- [ ] `requireRole()` helper implemented
+- [x] `PaginationParams` struct and `parsePagination()` function implemented
+- [x] `requireAdmin()` helper implemented
+- [x] `requireRole()` helper implemented
 - [ ] All inline IP extraction code replaced with helper
 - [ ] All inline pagination parsing replaced with helper
 - [ ] All admin role checks use `requireAdmin()` helper

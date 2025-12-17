@@ -26,6 +26,30 @@ const (
 	MaxFailedLoginAttempts    = 5
 )
 
+// Role constants
+const (
+	RoleAdmin      = "admin"
+	RoleManager    = "manager"
+	RoleSupervisor = "supervisor"
+	RoleEmployee   = "employee"
+)
+
+// Task status constants
+const (
+	TaskStatusTodo       = "todo"
+	TaskStatusInProgress = "in_progress"
+	TaskStatusDone       = "done"
+	TaskStatusCanceled   = "canceled"
+	TaskStatusPending    = "pending"
+)
+
+// Priority constants
+const (
+	PriorityLow    = "low"
+	PriorityMedium = "medium"
+	PriorityHigh   = "high"
+)
+
 const (
 	// Validation errors
 	ErrSupervisorMustBeInSameGroup     = "منتور (supervisor) باید عضو همان گروه پروژه باشد"
