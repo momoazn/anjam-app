@@ -97,8 +97,8 @@ func logAudit(app core.App, entry AuditEntry) {
 	}
 
 	if len(entry.Changes) > 0 {
-		// Store changes as JSON object (not stringified) for type consistency
-		// PocketBase JSON fields handle this automatically
+		// Store changes as JSON object (not stringified) for type consistency.
+		// PocketBase JSON fields handle this automatically.
 		record.Set("changes", entry.Changes)
 	}
 
@@ -118,20 +118,16 @@ func calculateChanges(oldRec, newRec *core.Record, collection *core.Collection) 
 		return changes
 	}
 
-	// Iterate over all fields in the collection schema
 	for _, field := range collection.Fields {
 		fieldName := field.GetName()
 
-		// Skip system fields and sensitive fields
 		if field.GetSystem() || sensitiveFields[fieldName] {
 			continue
 		}
 
-		// Get old and new values
 		oldVal := oldRec.Get(fieldName)
 		newVal := newRec.Get(fieldName)
 
-		// Compare values (considering nil vs zero value)
 		if !areValuesEqual(oldVal, newVal) {
 			changes[fieldName] = FieldDiff{
 				Old: truncateValue(oldVal),
@@ -144,29 +140,23 @@ func calculateChanges(oldRec, newRec *core.Record, collection *core.Collection) 
 }
 
 // areValuesEqual compares two values for equality.
-// Handles nil, strings, numbers, booleans, and serializable types.
-// For maps/objects, normalizes key order to ensure stable comparison.
+// For maps/objects, it normalizes key order to ensure stable comparison
+// despite Go's randomized map iteration order.
 func areValuesEqual(old, new interface{}) bool {
-	// Both nil
 	if old == nil && new == nil {
 		return true
 	}
 
-	// One is nil, other is not
 	if (old == nil) != (new == nil) {
 		return false
 	}
 
-	// For maps, normalize key order before comparison to avoid false positives
-	// due to Go's randomized map iteration order
 	if oldMap, ok := old.(map[string]interface{}); ok {
 		if newMap, ok := new.(map[string]interface{}); ok {
 			return areMapsEqual(oldMap, newMap)
 		}
 	}
 
-	// Convert to JSON for deep comparison (handles slices, maps, etc.)
-	// For maps, we normalize first to ensure deterministic ordering
 	oldNormalized := normalizeForComparison(old)
 	newNormalized := normalizeForComparison(new)
 	
@@ -357,11 +347,9 @@ func extractActorInfo(e *core.RecordEvent) (actorID, actorRole, actorType string
 		}
 	}
 
-	// Fallback: Try to get from created_by field (PocketBase may auto-populate this)
 	if createdBy := e.Record.GetString("created_by"); createdBy != "" {
 		actorID = createdBy
 		actorType = "user"
-		// Try to fetch the user's role
 		user, err := e.App.FindRecordById(CollectionUsers, createdBy)
 		if err == nil {
 			actorRole = user.GetString("role")
@@ -369,7 +357,6 @@ func extractActorInfo(e *core.RecordEvent) (actorID, actorRole, actorType string
 		return
 	}
 
-	// Fallback: Try to get from updated_by field
 	if updatedBy := e.Record.GetString("updated_by"); updatedBy != "" {
 		actorID = updatedBy
 		actorType = "user"
@@ -418,8 +405,8 @@ func getRequestID(e *core.RecordEvent) string {
 }
 
 // registerAuditLogsImmutabilityGuards ensures that audit_logs records cannot be modified or deleted.
-// Immutability is enforced at both the database schema level (ACL rules) and Go-level handlers
-// to prevent even DAO access from modifying audit logs.
+// Immutability is enforced at the Go-level handlers to prevent even DAO access 
+// from modifying audit logs, ensuring a reliable audit trail.
 func registerAuditLogsImmutabilityGuards(pbApp interface{}) {
 	app, ok := pbApp.(core.App)
 	if !ok {
@@ -427,22 +414,18 @@ func registerAuditLogsImmutabilityGuards(pbApp interface{}) {
 		return
 	}
 
-	// Block all update attempts to audit_logs (both request and DAO paths).
 	app.OnRecordUpdate(CollectionAuditLogs).BindFunc(func(e *core.RecordEvent) error {
 		return apis.NewForbiddenError("Audit logs are immutable and cannot be modified", nil)
 	})
 
-	// Block all delete attempts to audit_logs (both request and DAO paths).
 	app.OnRecordDelete(CollectionAuditLogs).BindFunc(func(e *core.RecordEvent) error {
 		return apis.NewForbiddenError("Audit logs are immutable and cannot be deleted", nil)
 	})
 
-	log.Println("Audit logs immutability enforced via schema ACL rules and Go-level guards")
+	log.Println("Audit logs immutability enforced")
 }
 
 // registerAuditHooks registers audit log hooks for a specific collection.
-// It tracks create, update, and delete events.
-// Note: pbApp should be core.App interface type in practice.
 func registerAuditHooks(pbApp interface{}, collectionName string) {
 	app, ok := pbApp.(core.App)
 	if !ok {
@@ -450,7 +433,8 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		return
 	}
 
-	// Enrich request contexts with actor info so record model hooks can access it via `e.Context`.
+	// Enrich request contexts with actor info so record model hooks can access it 
+	// via `e.Context` even for background or indirect operations.
 	injectActorIntoRequestContext := func(e *core.RecordRequestEvent) error {
 		if e == nil || e.Request == nil {
 			return e.Next()
@@ -503,28 +487,21 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		return e.Next()
 	})
 
-	// Capture original record state before update for reliable diff calculation
-	// Use sync.Map for thread-safe access across concurrent requests
 	var updateSnapshots sync.Map
 
 	captureUpdateSnapshot := func(e *core.RecordEvent) error {
-		// Capture record state BEFORE any modifications (as per plan)
-		// In OnRecordUpdate/OnRecordUpdateExecute, e.Record contains NEW values, Original() contains OLD values
-		// We capture the OLD state (via Original()) for diff calculation in AfterUpdateSuccess
-		// Store by collection+id to avoid collisions
+		// Capture record state BEFORE modifications. In OnRecordAfterUpdateSuccess, 
+		// the record already contains new values, so we need this snapshot 
+		// for accurate diff calculation.
 		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
-		// Get the original state before this update
 		originalRec := e.Record.Original()
 		if originalRec != nil {
-			// Create a deep copy via JSON serialization to avoid reference issues
-			// This captures the "before" state that will be compared in AfterUpdateSuccess
 			beforeJSON, err := originalRec.MarshalJSON()
 			if err == nil {
 				updateSnapshots.Store(key, beforeJSON)
 			}
 		} else {
-			// Fallback: if Original() is not available, serialize current record
-			// (though this should rarely happen in BeforeUpdateRequest)
+			// Fallback: if Original() is not available, serialize current record.
 			beforeJSON, err := e.Record.MarshalJSON()
 			if err == nil {
 				updateSnapshots.Store(key, beforeJSON)
@@ -533,11 +510,10 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		return e.Next()
 	}
 
-	// Capture snapshots for both API requests and internal/DAO updates.
 	app.OnRecordUpdate(collectionName).BindFunc(captureUpdateSnapshot)
 	app.OnRecordUpdateExecute(collectionName).BindFunc(captureUpdateSnapshot)
 
-	// Track successful update with proper diff calculation
+	// Track successful update
 	app.OnRecordAfterUpdateSuccess(collectionName).BindFunc(func(e *core.RecordEvent) error {
 		collection, err := app.FindCollectionByNameOrId(collectionName)
 		if err != nil {
@@ -545,7 +521,6 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			return e.Next()
 		}
 
-		// Retrieve the snapshot captured before update
 		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
 		snapshotValue, hadSnapshot := updateSnapshots.LoadAndDelete(key)
 		
@@ -554,7 +529,6 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 
 		if hadSnapshot {
 			if originalJSON, ok := snapshotValue.([]byte); ok {
-				// Deserialize the snapshot to recreate the original record
 				snapshotRecord := core.NewRecord(collection)
 				if err := snapshotRecord.UnmarshalJSON(originalJSON); err == nil {
 					originalRec = snapshotRecord
@@ -562,19 +536,12 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			}
 		}
 
-		// Only use snapshot - don't fall back to Original() here.
-		// If snapshot is unavailable, log the update without field-level changes.
 		if originalRec == nil {
-			log.Printf("Warning: No snapshot available for update audit of %s:%s, skipping diff", collectionName, e.Record.Id)
-			// Still log the update but without field-level changes.
 			changes = make(map[string]FieldDiff)
 		} else {
-			// Calculate proper diff between original and new state
 			changes = calculateChanges(originalRec, e.Record, collection)
 		}
 
-		// Skip logging only when we have a reliable snapshot and the diff is empty.
-		// When snapshot is missing we still record the update for traceability.
 		if originalRec != nil && len(changes) == 0 {
 			return e.Next()
 		}
@@ -603,14 +570,11 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		return e.Next()
 	})
 
-	// Capture record state before delete (PocketBase clears record data after delete)
-	// Use sync.Map for thread-safe access across concurrent requests
 	var deleteSnapshots sync.Map
 	
-	// Capture for both request and non-request delete paths
 	captureDeleteSnapshot := func(e *core.RecordEvent) error {
-		// Serialize the record to create a deep copy for audit logging
-		// Store by collection+id to avoid collisions
+		// Capture record state before delete because PocketBase clears record data 
+		// from the object after a successful deletion.
 		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
 		recordJSON, err := e.Record.MarshalJSON()
 		if err == nil {
@@ -626,7 +590,6 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 	app.OnRecordAfterDeleteSuccess(collectionName).BindFunc(func(e *core.RecordEvent) error {
 		actorID, actorRole, actorType := extractActorInfo(e)
 
-		// Retrieve the snapshot captured before delete
 		key := auditSnapshotKey(collectionName, e.Record.Id, e.Context)
 		snapshotValue, hadSnapshot := deleteSnapshots.LoadAndDelete(key)
 		
@@ -643,15 +606,12 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			IPAddress:  getIPAddress(e),
 		}
 
-		// Use snapshot to include resource identifier in message
 		if hadSnapshot {
 			if snapshotJSON, ok := snapshotValue.([]byte); ok {
-				// Deserialize snapshot to extract resource name/identifier
 				collection, err := app.FindCollectionByNameOrId(collectionName)
 				if err == nil {
 					snapshotRecord := core.NewRecord(collection)
 					if err := snapshotRecord.UnmarshalJSON(snapshotJSON); err == nil {
-						// Extract resource name/identifier for message
 						resourceName := snapshotRecord.GetString("name")
 						if resourceName == "" {
 							resourceName = snapshotRecord.GetString("title")

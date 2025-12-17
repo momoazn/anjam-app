@@ -1,9 +1,6 @@
 package main
 
-// Context keys for request metadata.
-//
-// Stored on the active `context.Context` (typically derived from `*http.Request.Context()`)
-// so it can be accessed from PocketBase record hooks via `e.Context`.
+// contextKey defines keys used for request metadata in context.Context.
 type contextKey string
 
 const (

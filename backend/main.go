@@ -107,16 +107,12 @@ func main() {
 		return se.Next()
 	})
 
-	// --- Add Request Metadata Middleware ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		// Add request metadata middleware before other handlers
 		se.Server.Handler = addRequestMetadataMiddleware(se.Server.Handler)
 		return se.Next()
 	})
 
-	// --- Add Authentication Tracking Middleware ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		// Wrap the HTTP server to intercept auth requests
 		se.Server.Handler = trackAuthMiddleware(app, se.Server.Handler)
 		return se.Next()
 	})
@@ -843,41 +839,34 @@ func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 }
 
 // addRequestMetadataMiddleware injects request metadata (ID, IP, client) into context
+// so it can be used for auditing and tracking across the application.
 func addRequestMetadataMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Generate unique request ID
 		requestID := uuid.New().String()
 
-		// Extract IP address
 		ipAddress := r.Header.Get("X-Forwarded-For")
 		if ipAddress == "" {
 			ipAddress = r.Header.Get("X-Real-IP")
 		}
 		if ipAddress == "" {
-			// Remove port if present
 			ipAddress = strings.Split(r.RemoteAddr, ":")[0]
 		}
-		// Take first IP if X-Forwarded-For contains multiple
 		if strings.Contains(ipAddress, ",") {
 			ipAddress = strings.TrimSpace(strings.Split(ipAddress, ",")[0])
 		}
 
-		// Derive client type from User-Agent
 		userAgent := r.Header.Get("User-Agent")
 		client := deriveClientType(userAgent)
 
-		// Inject into context
 		ctx := r.Context()
 		ctx = context.WithValue(ctx, contextKeyRequestID, requestID)
 		ctx = context.WithValue(ctx, contextKeyIPAddress, ipAddress)
 		ctx = context.WithValue(ctx, contextKeyClient, client)
 
-		// Continue with updated context
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-// deriveClientType determines client type from User-Agent string
 func deriveClientType(userAgent string) string {
 	ua := strings.ToLower(userAgent)
 	if strings.Contains(ua, "curl") || strings.Contains(ua, "wget") {

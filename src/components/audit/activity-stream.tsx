@@ -10,15 +10,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fa } from "@/constants/text";
 import { useResourceAuditLogs } from "@/hooks/audit-logs";
 import type { AuditLogsResponse, UsersResponse } from "@/lib/pocketbase-types";
+import type { FieldDiff } from "@/lib/audit-log-service";
 import { formatUserName } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
-
-type FieldDiff = {
-  old: unknown;
-  new: unknown;
-};
 
 type AuditLog = AuditLogsResponse<
   Record<string, FieldDiff> | null,
@@ -90,7 +86,7 @@ function formatActionMessage(log: AuditLog, actorName: string): string {
         .replace("{resource}", resourceName);
     }
     default:
-       return fa.auditLogs.activityStream.defaultMessage
+      return fa.auditLogs.activityStream.defaultMessage
         .replace("{actor}", actorName)
         .replace("{action}", log.action);
   }
@@ -100,11 +96,11 @@ function AuditLogItem({ log }: { log: AuditLog }) {
   const [expanded, setExpanded] = useState(false);
 
   const actor = log.expand?.actor;
-   const actorName = actor
-     ? formatUserName(actor.first_name, actor.last_name, actor.username)
-     : log.actor_type === "system"
-       ? fa.auditLogs.actorTypes.system
-       : fa.auditLogs.actorTypes.unknown;
+  const actorName = actor
+    ? formatUserName(actor.first_name, actor.last_name, actor.username)
+    : log.actor_type === "system"
+      ? fa.auditLogs.actorTypes.system
+      : fa.auditLogs.actorTypes.unknown;
 
   const changes =
     typeof log.changes === "string"
@@ -166,7 +162,9 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                       <div className="mb-1 font-medium">{field}:</div>
                       <div className="text-muted-foreground flex gap-4">
                         <div>
-                          <span className="text-xs">{fa.auditLogs.labels.before} </span>
+                          <span className="text-xs">
+                            {fa.auditLogs.labels.before}{" "}
+                          </span>
                           <span className="font-mono text-xs">
                             {diff.old !== null && diff.old !== undefined
                               ? String(diff.old).substring(0, 50)
@@ -174,7 +172,9 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                           </span>
                         </div>
                         <div>
-                          <span className="text-xs">{fa.auditLogs.labels.after} </span>
+                          <span className="text-xs">
+                            {fa.auditLogs.labels.after}{" "}
+                          </span>
                           <span className="font-mono text-xs">
                             {diff.new !== null && diff.new !== undefined
                               ? String(diff.new).substring(0, 50)
@@ -222,12 +222,14 @@ export function ActivityStream({
   }
 
   if (error) {
-     return (
-       <div className={cn("py-10 text-center", className)}>
-         <p className="text-destructive">{fa.auditLogs.errors.loadHistoryFailed}</p>
-       </div>
-     );
-   }
+    return (
+      <div className={cn("py-10 text-center", className)}>
+        <p className="text-destructive">
+          {fa.auditLogs.errors.loadHistoryFailed}
+        </p>
+      </div>
+    );
+  }
 
   if (!data || data.items.length === 0) {
     return (

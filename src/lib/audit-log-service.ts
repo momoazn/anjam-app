@@ -5,6 +5,13 @@
  * Includes sensitive field masking for security.
  */
 
+/**
+ * Audit Log Service
+ *
+ * Provides type-safe functions for fetching audit logs with filtering and pagination.
+ * Includes sensitive field masking for security.
+ */
+
 import { pb } from "./pocketbase";
 import type {
   AuditLogsResponse,
@@ -13,14 +20,12 @@ import type {
   UsersResponse,
 } from "./pocketbase-types";
 
-// Sensitive fields that should be masked in the UI
-// Normalized to lowercase Set for O(1) case-insensitive matching
 const SENSITIVE_FIELDS_SET = new Set(
   [
     "password",
     "token",
-    "tokenKey", // Will be normalized to "tokenkey"
-    "accessKey", // Will be normalized to "accesskey"
+    "tokenKey",
+    "accessKey",
     "oauth_secret",
     "private_notes",
   ].map((f) => f.toLowerCase()),
@@ -34,9 +39,9 @@ export type AuditLogsListParams = {
   actor?: string;
   action?: AuditLogsActionOptions;
   client?: AuditLogsClientOptions;
-  dateFrom?: string; // ISO date string
-  dateTo?: string; // ISO date string
-  search?: string; // Search in message or request_id
+  dateFrom?: string;
+  dateTo?: string;
+  search?: string;
 };
 
 export type AuditLogsListResult = {
@@ -55,15 +60,11 @@ export type FieldDiff = {
   new: unknown;
 };
 
-/**
- * Masks sensitive field values in changes JSON
- */
 function maskSensitiveFields(
   changes: Record<string, FieldDiff>,
 ): Record<string, FieldDiff> {
   const masked: Record<string, FieldDiff> = {};
   for (const [key, diff] of Object.entries(changes)) {
-    // Case-insensitive check: normalize key to lowercase and check against normalized set
     if (SENSITIVE_FIELDS_SET.has(key.toLowerCase())) {
       masked[key] = {
         old: diff.old !== null && diff.old !== undefined ? "••••" : diff.old,
@@ -76,9 +77,6 @@ function maskSensitiveFields(
   return masked;
 }
 
-/**
- * Parses changes JSON string and masks sensitive fields
- */
 function parseAndMaskChanges(
   changesStr: string | null | undefined,
 ): Record<string, FieldDiff> | null {
@@ -91,9 +89,6 @@ function parseAndMaskChanges(
   }
 }
 
-/**
- * Lists audit logs with filtering and pagination
- */
 export async function listAuditLogs(
   params: AuditLogsListParams = {},
 ): Promise<AuditLogsListResult> {
@@ -110,7 +105,6 @@ export async function listAuditLogs(
     search,
   } = params;
 
-  // Build filter string
   const filters: string[] = [];
 
   if (resource) {
@@ -143,11 +137,11 @@ export async function listAuditLogs(
 
   if (search) {
     // Escape quotes and special characters in search term to prevent injection
+    // in the PocketBase filter string.
     const escapedSearch = search
-      .replace(/\\/g, "\\\\") // Escape backslashes first
-      .replace(/"/g, '\\"') // Escape double quotes
-      .replace(/'/g, "\\'"); // Escape single quotes
-    // Search in message or request_id
+      .replace(/\\/g, "\\\\")
+      .replace(/"/g, '\\"')
+      .replace(/'/g, "\\'");
     filters.push(
       `(message~"${escapedSearch}" || request_id~"${escapedSearch}")`,
     );
@@ -155,7 +149,6 @@ export async function listAuditLogs(
 
   const filter = filters.length > 0 ? filters.join(" && ") : "";
 
-  // Fetch with pagination
   const result = await pb
     .collection("audit_logs")
     .getList<
@@ -165,27 +158,23 @@ export async function listAuditLogs(
       >
     >(page, perPage, {
       filter,
-      sort: "-created", // Most recent first
-      expand: "actor", // Expand actor relation to get user details
+      sort: "-created",
+      expand: "actor",
     });
 
-  // Mask sensitive fields in changes
-  // Handle both string (legacy) and object (current) formats
   const maskedItems = result.items.map((item) => {
     if (item.changes) {
       let changes: Record<string, FieldDiff> | null = null;
 
+      // Handle both string (legacy/direct DB) and object (SDK/API) formats.
       if (typeof item.changes === "string") {
-        // Legacy format: stringified JSON
         changes = parseAndMaskChanges(item.changes);
       } else if (typeof item.changes === "object" && item.changes !== null) {
-        // Current format: JSON object
         try {
           changes = maskSensitiveFields(
             item.changes as Record<string, FieldDiff>,
           );
         } catch {
-          // If parsing fails, try to parse as string
           changes = parseAndMaskChanges(JSON.stringify(item.changes));
         }
       }
@@ -212,9 +201,6 @@ export async function listAuditLogs(
   };
 }
 
-/**
- * Gets audit logs for a specific resource (task, project, etc.)
- */
 export async function getAuditLogsForResource(
   resource: string,
   resourceId: string,

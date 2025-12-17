@@ -36,15 +36,11 @@ import type {
   AuditLogsActionOptions,
   AuditLogsClientOptions,
 } from "@/lib/pocketbase-types";
+import type { FieldDiff } from "@/lib/audit-log-service";
 import { formatDateTime } from "@/lib/date-utils";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
-
-type FieldDiff = {
-  old: unknown;
-  new: unknown;
-};
 
 function parseChanges(
   changes: string | Record<string, FieldDiff> | null | undefined,
@@ -117,13 +113,21 @@ export default function AuditLogs() {
               </label>
               <Select value={resource} onValueChange={setResource}>
                 <SelectTrigger>
-                  <SelectValue placeholder={fa.auditLogs.filters.allPlaceholder} />
+                  <SelectValue
+                    placeholder={fa.auditLogs.filters.allPlaceholder}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
-                  <SelectItem value="tasks">{fa.auditLogs.resources.tasks}</SelectItem>
-                  <SelectItem value="projects">{fa.auditLogs.resources.projects}</SelectItem>
-                  <SelectItem value="users">{fa.auditLogs.resources.users}</SelectItem>
+                  <SelectItem value="tasks">
+                    {fa.auditLogs.resources.tasks}
+                  </SelectItem>
+                  <SelectItem value="projects">
+                    {fa.auditLogs.resources.projects}
+                  </SelectItem>
+                  <SelectItem value="users">
+                    {fa.auditLogs.resources.users}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -138,7 +142,9 @@ export default function AuditLogs() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={fa.auditLogs.filters.allPlaceholder} />
+                  <SelectValue
+                    placeholder={fa.auditLogs.filters.allPlaceholder}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
@@ -165,23 +171,25 @@ export default function AuditLogs() {
                 }
               >
                 <SelectTrigger>
-                    <SelectValue placeholder={fa.auditLogs.filters.allPlaceholder} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
-                    <SelectItem value="web">
-                      {fa.auditLogs.clients.web}
-                    </SelectItem>
-                    <SelectItem value="cli">
-                      {fa.auditLogs.clients.cli}
-                    </SelectItem>
-                    <SelectItem value="automation">
-                      {fa.auditLogs.clients.automation}
-                    </SelectItem>
-                    <SelectItem value="unknown">
-                      {fa.auditLogs.clients.unknown}
-                    </SelectItem>
-                  </SelectContent>
+                  <SelectValue
+                    placeholder={fa.auditLogs.filters.allPlaceholder}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
+                  <SelectItem value="web">
+                    {fa.auditLogs.clients.web}
+                  </SelectItem>
+                  <SelectItem value="cli">
+                    {fa.auditLogs.clients.cli}
+                  </SelectItem>
+                  <SelectItem value="automation">
+                    {fa.auditLogs.clients.automation}
+                  </SelectItem>
+                  <SelectItem value="unknown">
+                    {fa.auditLogs.clients.unknown}
+                  </SelectItem>
+                </SelectContent>
               </Select>
             </div>
             <div>
@@ -227,7 +235,9 @@ export default function AuditLogs() {
             </div>
           ) : error ? (
             <div className="py-12 text-center">
-              <p className="text-destructive">{fa.auditLogs.errors.loadFailed}</p>
+              <p className="text-destructive">
+                {fa.auditLogs.errors.loadFailed}
+              </p>
             </div>
           ) : !data || data.items.length === 0 ? (
             <div className="py-12 text-center">
