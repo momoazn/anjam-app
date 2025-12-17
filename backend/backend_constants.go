@@ -72,6 +72,7 @@ const (
 	ErrUserNotFoundForLogin          = "کاربر یافت نشد"
 
 	// User management errors
+	ErrOnlyAdmin                    = "فقط ادمین مجاز به انجام این عملیات است"
 	ErrOnlyAdminCanToggleUserStatus = "فقط ادمین می‌تواند وضعیت فعال/غیرفعال کاربران را تغییر دهد"
 	ErrCannotDeactivateSelf         = "نمی‌توانید حساب کاربری خود را غیرفعال کنید"
 	ErrCannotDeactivateAdmin        = "نمی‌توان حساب کاربری ادمین را غیرفعال کرد"

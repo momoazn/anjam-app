@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
 )
 
 // PaginationParams holds pagination parameters
@@ -72,14 +71,14 @@ func parsePagination(r *http.Request) PaginationParams {
 
 // requireAdmin validates that the authenticated user is an admin
 // Returns the user record and error if validation fails
-func requireAdmin(e *core.RequestEvent) (*models.Record, error) {
-	authRecord, ok := e.Record
-	if !ok || authRecord == nil {
-		return nil, core.NewNotFoundError(ErrAuthRequired, nil)
+func requireAdmin(e *core.RequestEvent) (*core.Record, error) {
+	authRecord, err := validateAuth(e)
+	if err != nil {
+		return nil, err
 	}
 
 	if authRecord.GetString("role") != RoleAdmin {
-		return nil, core.NewForbiddenError(ErrOnlyAdminCanToggleUserStatus, nil)
+		return nil, core.NewForbiddenError(ErrOnlyAdmin, nil)
 	}
 
 	return authRecord, nil
@@ -87,10 +86,10 @@ func requireAdmin(e *core.RequestEvent) (*models.Record, error) {
 
 // requireRole validates that the authenticated user has one of the specified roles
 // Returns the user record and error if validation fails
-func requireRole(e *core.RequestEvent, roles ...string) (*models.Record, error) {
-	authRecord, ok := e.Record
-	if !ok || authRecord == nil {
-		return nil, core.NewNotFoundError(ErrAuthRequired, nil)
+func requireRole(e *core.RequestEvent, roles ...string) (*core.Record, error) {
+	authRecord, err := validateAuth(e)
+	if err != nil {
+		return nil, err
 	}
 
 	userRole := authRecord.GetString("role")

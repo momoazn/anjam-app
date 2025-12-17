@@ -520,12 +520,12 @@ func handleProjectCreation(e *core.RecordEvent) error {
 func generateUniqueProjectCode(app core.App) (string, error) {
 	for attempt := 0; attempt < MaxCodeGenerationAttempts; attempt++ {
 		projectCode := generateRandomCode()
-		
+
 		// Validate format before checking collision
 		if len(projectCode) != CodeLength {
 			return "", fmt.Errorf("generated code has invalid length %d (expected %d)", len(projectCode), CodeLength)
 		}
-		
+
 		exists, err := app.FindFirstRecordByData(CollectionProjects, "code", projectCode)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return "", fmt.Errorf("database error checking code collision for %q: %w", projectCode, err)
@@ -639,13 +639,16 @@ func handleTaskAssignmentNotification(e *core.RecordEvent) error {
 
 	projectName := project.GetString("name")
 
-	return createNotification(e.App, assigneeId, "task_assigned",
-		fmt.Sprintf(MsgTaskAssigned, taskTitle),
-		fmt.Sprintf(MsgTaskAssignedDesc, taskTitle, projectName),
-		map[string]interface{}{
+	return NewNotification(e.App).
+		User(assigneeId).
+		Type("task_assigned").
+		Title(fmt.Sprintf(MsgTaskAssigned, taskTitle)).
+		Message(fmt.Sprintf(MsgTaskAssignedDesc, taskTitle, projectName)).
+		Data(map[string]interface{}{
 			"taskId":    e.Record.Id,
 			"projectId": projectId,
-		})
+		}).
+		Send()
 }
 
 func handleTaskUpdateNotification(e *core.RecordEvent) error {
@@ -664,12 +667,15 @@ func handleTaskUpdateNotification(e *core.RecordEvent) error {
 
 	taskTitle := e.Record.GetString("title")
 
-	return createNotification(e.App, assigneeId, "task_assigned",
-		fmt.Sprintf(MsgTaskUpdated, taskTitle),
-		fmt.Sprintf(MsgTaskStatusChanged, taskTitle, translateStatus(oldStatus), translateStatus(newStatus)),
-		map[string]interface{}{
+	return NewNotification(e.App).
+		User(assigneeId).
+		Type("task_assigned").
+		Title(fmt.Sprintf(MsgTaskUpdated, taskTitle)).
+		Message(fmt.Sprintf(MsgTaskStatusChanged, taskTitle, translateStatus(oldStatus), translateStatus(newStatus))).
+		Data(map[string]interface{}{
 			"taskId": e.Record.Id,
-		})
+		}).
+		Send()
 }
 
 func handleProjectUpdateNotification(e *core.RecordEvent) error {
@@ -694,12 +700,15 @@ func handleProjectUpdateNotification(e *core.RecordEvent) error {
 			continue // Don't notify the updater
 		}
 
-		err := createNotification(e.App, pu.UserId, "project_updated",
-			fmt.Sprintf(MsgProjectUpdated, projectName),
-			fmt.Sprintf(MsgProjectUpdatedDesc, projectName),
-			map[string]interface{}{
+		err := NewNotification(e.App).
+			User(pu.UserId).
+			Type("project_updated").
+			Title(fmt.Sprintf(MsgProjectUpdated, projectName)).
+			Message(fmt.Sprintf(MsgProjectUpdatedDesc, projectName)).
+			Data(map[string]interface{}{
 				"projectId": e.Record.Id,
-			})
+			}).
+			Send()
 		if err != nil {
 			// Log the error but don't fail the parent operation
 			log.Printf("Warning: failed to create project update notification for user %s: %v", pu.UserId, err)
@@ -734,13 +743,58 @@ func handleCommentNotification(e *core.RecordEvent) error {
 		return e.Next() // No assignee or self-comment
 	}
 
-	return createNotification(e.App, assigneeId, "comment",
-		fmt.Sprintf(MsgNewComment, taskTitle),
-		fmt.Sprintf(MsgNewCommentDesc, taskTitle, truncateString(commentText, 100)),
-		map[string]interface{}{
+	return NewNotification(e.App).
+		User(assigneeId).
+		Type("comment").
+		Title(fmt.Sprintf(MsgNewComment, taskTitle)).
+		Message(fmt.Sprintf(MsgNewCommentDesc, taskTitle, truncateString(commentText, 100))).
+		Data(map[string]interface{}{
 			"taskId":    taskId,
 			"commentId": e.Record.Id,
-		})
+		}).
+		Send()
+}
+
+type NotificationBuilder struct {
+	app              core.App
+	userID           string
+	notificationType string
+	title            string
+	message          string
+	data             map[string]interface{}
+}
+
+func NewNotification(app core.App) *NotificationBuilder {
+	return &NotificationBuilder{app: app}
+}
+
+func (b *NotificationBuilder) User(userID string) *NotificationBuilder {
+	b.userID = userID
+	return b
+}
+
+func (b *NotificationBuilder) Type(notificationType string) *NotificationBuilder {
+	b.notificationType = notificationType
+	return b
+}
+
+func (b *NotificationBuilder) Title(title string) *NotificationBuilder {
+	b.title = title
+	return b
+}
+
+func (b *NotificationBuilder) Message(message string) *NotificationBuilder {
+	b.message = message
+	return b
+}
+
+func (b *NotificationBuilder) Data(data map[string]interface{}) *NotificationBuilder {
+	b.data = data
+	return b
+}
+
+func (b *NotificationBuilder) Send() error {
+	return createNotification(b.app, b.userID, b.notificationType, b.title, b.message, b.data)
 }
 
 func createNotification(app core.App, userId, notificationType, title, message string, data map[string]interface{}) error {
@@ -838,16 +892,7 @@ func addRequestMetadataMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestID := uuid.New().String()
 
-		ipAddress := r.Header.Get("X-Forwarded-For")
-		if ipAddress == "" {
-			ipAddress = r.Header.Get("X-Real-IP")
-		}
-		if ipAddress == "" {
-			ipAddress = strings.Split(r.RemoteAddr, ":")[0]
-		}
-		if strings.Contains(ipAddress, ",") {
-			ipAddress = strings.TrimSpace(strings.Split(ipAddress, ",")[0])
-		}
+		ipAddress := extractIPAddress(r)
 
 		userAgent := r.Header.Get("User-Agent")
 		client := deriveClientType(userAgent)
@@ -1005,14 +1050,7 @@ func logUserLogin(app core.App, userId string, req *http.Request, success bool, 
 		return
 	}
 
-	// Get IP address
-	ipAddress := req.Header.Get("X-Forwarded-For")
-	if ipAddress == "" {
-		ipAddress = req.Header.Get("X-Real-IP")
-	}
-	if ipAddress == "" {
-		ipAddress = req.RemoteAddr
-	}
+	ipAddress := extractIPAddress(req)
 
 	// Get user agent
 	userAgent := req.Header.Get("User-Agent")
@@ -1038,15 +1076,9 @@ func logUserLogin(app core.App, userId string, req *http.Request, success bool, 
 func handleToggleUserActive(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
-	// Validate authentication
-	authRecord, err := validateAuth(e)
+	authRecord, err := requireAdmin(e)
 	if err != nil {
 		return err
-	}
-
-	role := authRecord.GetString("role")
-	if role != RoleAdmin {
-		return e.JSON(403, map[string]string{"error": ErrOnlyAdminCanToggleUserStatus})
 	}
 
 	// Prevent admin from deactivating themselves
@@ -1090,15 +1122,9 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 func handleUnblockUser(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
-	// Validate authentication
-	authRecord, err := validateAuth(e)
+	_, err := requireAdmin(e)
 	if err != nil {
 		return err
-	}
-
-	role := authRecord.GetString("role")
-	if role != RoleAdmin {
-		return e.JSON(403, map[string]string{"error": ErrOnlyAdminCanUnblock})
 	}
 
 	// Fetch the user
@@ -1139,19 +1165,7 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 		return e.JSON(403, map[string]string{"error": ErrCannotViewOtherUserLogs})
 	}
 
-	// Get pagination parameters
-	page := 1
-	perPage := DefaultPageSize
-	if pageStr := e.Request.URL.Query().Get("page"); pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
-			page = p
-		}
-	}
-	if perPageStr := e.Request.URL.Query().Get("perPage"); perPageStr != "" {
-		if pp, err := strconv.Atoi(perPageStr); err == nil && pp > 0 && pp <= MaxPageSize {
-			perPage = pp
-		}
-	}
+	pagination := parsePagination(e.Request)
 
 	// Fetch login logs
 	var logs []struct {
@@ -1164,7 +1178,7 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 		Created       string `db:"created" json:"created"`
 	}
 
-	offset := (page - 1) * perPage
+	offset := (pagination.Page - 1) * pagination.PerPage
 	err = e.App.DB().NewQuery(`
 		SELECT id, user, ip_address, user_agent, success, failure_reason, created
 		FROM user_login_logs
@@ -1173,7 +1187,7 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 		LIMIT {:limit} OFFSET {:offset}
 	`).Bind(dbx.Params{
 		"userId": userId,
-		"limit":  perPage,
+		"limit":  pagination.PerPage,
 		"offset": offset,
 	}).All(&logs)
 
@@ -1195,10 +1209,10 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 
 	return e.JSON(200, map[string]interface{}{
 		"items":      logs,
-		"page":       page,
-		"perPage":    perPage,
+		"page":       pagination.Page,
+		"perPage":    pagination.PerPage,
 		"totalItems": totalCount,
-		"totalPages": (totalCount + perPage - 1) / perPage,
+		"totalPages": (totalCount + pagination.PerPage - 1) / pagination.PerPage,
 	})
 }
 
