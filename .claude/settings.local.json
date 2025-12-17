@@ -9,7 +9,12 @@
       "Bash(bun run fmt)",
       "Bash(bun run lint:check:*)",
       "Bash(bun run build:*)",
-      "Bash(bun run fmt:check:*)"
+      "Bash(bun run fmt:check:*)",
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(wc:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
