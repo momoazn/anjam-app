@@ -5,10 +5,7 @@
  * Includes task-based filtering and user expansion.
  */
 
-import {
-  useQuery,
-  UseMutationOptions,
-} from "@tanstack/react-query";
+import { useQuery, UseMutationOptions } from "@tanstack/react-query";
 import { pb } from "../lib/pocketbase";
 import {
   CommentsResponse,
@@ -23,26 +20,39 @@ export type CommentWithUser = CommentsResponse<{
   user: UsersResponse;
 }>;
 
-type CreateCommentVariables = Omit<CommentsRecord, "id" | "created" | "updated">;
+type CreateCommentVariables = Omit<
+  CommentsRecord,
+  "id" | "created" | "updated"
+>;
 type UpdateCommentVariables = { id: string; updates: Partial<CommentsRecord> };
 
 const useCreateCommentMutation = createMutation<
   CommentsResponse,
   Error,
   CreateCommentVariables
->((commentData) => pb.collection("comments").create(commentData), (client, _data, variables) => {
-  mutationInvalidators.crud.comments.create(client, variables?.task);
-});
+>(
+  (commentData) => pb.collection("comments").create(commentData),
+  (client, _data, variables) => {
+    mutationInvalidators.crud.comments.create(client, variables?.task);
+  },
+);
 
 const useUpdateCommentMutation = createMutation<
   CommentsResponse,
   Error,
   UpdateCommentVariables
->(({ id, updates }) => pb.collection("comments").update(id, updates), (client, _data, variables) => {
-  mutationInvalidators.crud.comments.update(client, variables?.updates?.task);
-});
+>(
+  ({ id, updates }) => pb.collection("comments").update(id, updates),
+  (client, _data, variables) => {
+    mutationInvalidators.crud.comments.update(client, variables?.updates?.task);
+  },
+);
 
-const useDeleteCommentMutation = createMutation<CommentsResponse, Error, string>(
+const useDeleteCommentMutation = createMutation<
+  CommentsResponse,
+  Error,
+  string
+>(
   (id) =>
     pb.collection("comments").update<CommentsResponse>(id, {
       deleted_at: new Date().toISOString(),
@@ -87,11 +97,7 @@ export function useComments(
  * @returns Mutation hook for creating comments
  */
 export function useCreateComment(
-  options?: UseMutationOptions<
-    CommentsResponse,
-    Error,
-    CreateCommentVariables
-  >,
+  options?: UseMutationOptions<CommentsResponse, Error, CreateCommentVariables>,
 ) {
   return useCreateCommentMutation(options);
 }
@@ -102,11 +108,7 @@ export function useCreateComment(
  * @returns Mutation hook for updating comments
  */
 export function useUpdateComment(
-  options?: UseMutationOptions<
-    CommentsResponse,
-    Error,
-    UpdateCommentVariables
-  >,
+  options?: UseMutationOptions<CommentsResponse, Error, UpdateCommentVariables>,
 ) {
   return useUpdateCommentMutation(options);
 }

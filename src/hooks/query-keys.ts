@@ -7,7 +7,15 @@ import type { AuditLogsListParams } from "@/lib/audit-log-service";
 const normalizeListOptions = <T extends Record<string, unknown>>(
   defaults: T,
   options?: Partial<T>,
-) => ({ ...defaults, ...options });
+) => {
+  const merged = { ...defaults, ...(options ?? {}) } as T;
+  (Object.keys(defaults) as Array<keyof T>).forEach((key) => {
+    if (options?.[key] === undefined) {
+      (merged as Record<string, unknown>)[key as string] = defaults[key];
+    }
+  });
+  return merged;
+};
 
 export const queryKeys = {
   tasks: {

@@ -141,9 +141,13 @@ export const mutationInvalidators = {
     tasks: {
       create: (client: QueryClient) => compositeInvalidators.taskChange(client),
       update: (client: QueryClient, taskId?: string) =>
-        taskId ? detailInvalidators.task(client, taskId) : compositeInvalidators.taskChange(client),
+        taskId
+          ? detailInvalidators.task(client, taskId)
+          : compositeInvalidators.taskChange(client),
       delete: (client: QueryClient, taskId?: string) =>
-        taskId ? detailInvalidators.task(client, taskId) : compositeInvalidators.taskChange(client),
+        taskId
+          ? detailInvalidators.task(client, taskId)
+          : compositeInvalidators.taskChange(client),
       bulk: (client: QueryClient) => {
         collectionInvalidators.tasks(client);
         collectionInvalidators.projects(client);
@@ -153,7 +157,9 @@ export const mutationInvalidators = {
     projects: {
       create: (client: QueryClient) => {
         compositeInvalidators.projectChange(client);
-        client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+        client.invalidateQueries({
+          queryKey: queryKeys.users.allProjectUsers(),
+        });
       },
       update: (client: QueryClient, projectId?: string) => {
         if (projectId) {
@@ -161,7 +167,9 @@ export const mutationInvalidators = {
         } else {
           compositeInvalidators.projectChange(client);
         }
-        client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+        client.invalidateQueries({
+          queryKey: queryKeys.users.allProjectUsers(),
+        });
       },
       delete: (client: QueryClient, projectId?: string) => {
         if (projectId) {
@@ -169,17 +177,25 @@ export const mutationInvalidators = {
         } else {
           compositeInvalidators.projectChange(client);
         }
-        client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
+        client.invalidateQueries({
+          queryKey: queryKeys.users.allProjectUsers(),
+        });
       },
     },
     users: {
       create: (client: QueryClient) => compositeInvalidators.userChange(client),
       update: (client: QueryClient, userId?: string) =>
-        userId ? detailInvalidators.user(client, userId) : compositeInvalidators.userChange(client),
+        userId
+          ? detailInvalidators.user(client, userId)
+          : compositeInvalidators.userChange(client),
       delete: (client: QueryClient, userId?: string) =>
-        userId ? detailInvalidators.user(client, userId) : compositeInvalidators.userChange(client),
+        userId
+          ? detailInvalidators.user(client, userId)
+          : compositeInvalidators.userChange(client),
       adminAction: (client: QueryClient, userId?: string) =>
-        userId ? detailInvalidators.user(client, userId) : compositeInvalidators.userChange(client),
+        userId
+          ? detailInvalidators.user(client, userId)
+          : compositeInvalidators.userChange(client),
     },
     comments: {
       create: (client: QueryClient, taskId?: string) =>
@@ -197,14 +213,18 @@ export const mutationInvalidators = {
       update: (client: QueryClient, groupId?: string) => {
         collectionInvalidators.groups(client);
         if (groupId) {
-          client.invalidateQueries({ queryKey: queryKeys.groups.detail(groupId) });
+          client.invalidateQueries({
+            queryKey: queryKeys.groups.detail(groupId),
+          });
         }
         collectionInvalidators.projects(client);
       },
       delete: (client: QueryClient, groupId?: string) => {
         collectionInvalidators.groups(client);
         if (groupId) {
-          client.invalidateQueries({ queryKey: queryKeys.groups.detail(groupId) });
+          client.invalidateQueries({
+            queryKey: queryKeys.groups.detail(groupId),
+          });
         }
         collectionInvalidators.projects(client);
       },

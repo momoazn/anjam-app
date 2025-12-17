@@ -35,7 +35,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { useDeleteTask, useTask, useUpdateTask } from "@/hooks";
 import { useComments } from "@/hooks/comments";
 import { formatTaskDate } from "@/lib/date-utils";

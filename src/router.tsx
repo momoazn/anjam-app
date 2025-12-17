@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { PageErrorBoundary } from "@/components/error/page-error-boundary";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { can, Permission } from "./lib/permissions";
 import { UsersRoleOptions } from "./lib/pocketbase-types";
 import { useAuthIsLoggedIn, useAuthUser } from "./store/auth-store";

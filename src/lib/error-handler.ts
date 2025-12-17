@@ -94,14 +94,14 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
       const blockedKeywords = fa.errors.validation.keywords.blocked;
 
       if (
-        inactiveKeywords.some((kw) => message.includes(kw)) ||
+        inactiveKeywords.some((kw: string) => message.includes(kw)) ||
         message.includes("inactive")
       ) {
         toast.error(fa.auth.errors.userInactive);
       }
       // Check if this is a blocked user error
       else if (
-        blockedKeywords.some((kw) => message.includes(kw)) ||
+        blockedKeywords.some((kw: string) => message.includes(kw)) ||
         message.includes("blocked") ||
         message.includes("user account")
       ) {

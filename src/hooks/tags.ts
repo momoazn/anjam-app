@@ -14,7 +14,11 @@ export const tagQueryKeys = {
   list: (filters?: string) => [...tagQueryKeys.lists(), { filters }] as const,
 };
 
-const useCreateTagMutation = createMutation<TagsResponse, Error, Partial<TagsRecord>>(
+const useCreateTagMutation = createMutation<
+  TagsResponse,
+  Error,
+  Partial<TagsRecord>
+>(
   (data) => pb.collection("tags").create<TagsResponse>(data),
   (client) => {
     client.invalidateQueries({ queryKey: tagQueryKeys.all });
@@ -25,12 +29,17 @@ const useUpdateTagMutation = createMutation<
   TagsResponse,
   Error,
   { id: string; data: Partial<TagsRecord> }
->(({ id, data }) => pb.collection("tags").update<TagsResponse>(id, data), (client) => {
-  client.invalidateQueries({ queryKey: tagQueryKeys.all });
-});
+>(
+  ({ id, data }) => pb.collection("tags").update<TagsResponse>(id, data),
+  (client) => {
+    client.invalidateQueries({ queryKey: tagQueryKeys.all });
+  },
+);
 
 const useDeleteTagMutation = createMutation<void, Error, string>(
-  (id) => pb.collection("tags").delete(id),
+  async (id) => {
+    await pb.collection("tags").delete(id);
+  },
   (client) => {
     client.invalidateQueries({ queryKey: tagQueryKeys.all });
   },

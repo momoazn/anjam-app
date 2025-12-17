@@ -4,6 +4,16 @@ import { shared } from "./shared";
 export const tasks = {
   title: "تسک‌ها",
   allTasks: "همه تسک‌ها",
+  board: {
+    title: "برد تسک‌ها",
+  },
+  pagination: {
+    range: "نمایش {start} تا {end} از {total}",
+    perPage: "{count} در صفحه",
+    prev: "قبلی",
+    next: "بعدی",
+    page: "صفحه {page} از {total}",
+  },
 
   // Task priority levels
   priority: {
@@ -95,6 +105,7 @@ export const tasks = {
   calendar: {
     title: "تقویم تسک‌ها",
     description: "مشاهده تسک‌ها بر اساس تاریخ سررسید",
+    weekdayShort: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
     noTasks: "هیچ تسکی با تاریخ سررسید وجود ندارد",
     noTasksDescription:
       "تسک‌هایی که تاریخ سررسید دارند در این تقویم نمایش داده می‌شوند",

@@ -7,4 +7,5 @@ export const timesheet = {
     project: "پروژه",
     minutesSpent: "دقیقه‌های صرف شده",
   },
+  noTimeSpent: "زمانی ثبت نشده است",
 } as const;

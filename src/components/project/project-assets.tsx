@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";

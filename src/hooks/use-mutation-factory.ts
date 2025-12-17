@@ -1,7 +1,4 @@
-import type {
-  QueryClient,
-  UseMutationOptions,
-} from "@tanstack/react-query";
+import type { QueryClient, UseMutationOptions } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function createMutation<TData, TError, TVariables>(

@@ -5,39 +5,45 @@
  * Includes supervisor relationship handling and flexible sorting options.
  */
 
-import {
-  useQuery,
-  UseMutationOptions,
-} from "@tanstack/react-query";
+import { useQuery, UseMutationOptions } from "@tanstack/react-query";
 import { pb, ProjectWithSupervisor } from "../lib/pocketbase";
 import { ProjectsResponse, ProjectsRecord } from "../lib/pocketbase-types";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
-type CreateProjectVariables = Omit<ProjectsRecord, "id" | "created" | "updated">;
+type CreateProjectVariables = Omit<
+  ProjectsRecord,
+  "id" | "created" | "updated"
+>;
 type UpdateProjectVariables = { id: string; updates: Partial<ProjectsRecord> };
 
 const useCreateProjectMutation = createMutation<
   ProjectsResponse,
   Error,
   CreateProjectVariables
->((projectData) => pb.collection("projects").create(projectData), (client) => {
-  mutationInvalidators.crud.projects.create(client);
-});
+>(
+  (projectData) => pb.collection("projects").create(projectData),
+  (client) => {
+    mutationInvalidators.crud.projects.create(client);
+  },
+);
 
 const useUpdateProjectMutation = createMutation<
   ProjectsResponse,
   Error,
   UpdateProjectVariables
->(({ id, updates }) => pb.collection("projects").update(id, updates), (client, _data, variables) => {
-  mutationInvalidators.crud.projects.update(client, variables?.id);
-  if (variables?.id) {
-    client.invalidateQueries({
-      queryKey: [...queryKeys.projects.detail(variables.id), "supervisor"],
-    });
-  }
-});
+>(
+  ({ id, updates }) => pb.collection("projects").update(id, updates),
+  (client, _data, variables) => {
+    mutationInvalidators.crud.projects.update(client, variables?.id);
+    if (variables?.id) {
+      client.invalidateQueries({
+        queryKey: [...queryKeys.projects.detail(variables.id), "supervisor"],
+      });
+    }
+  },
+);
 
 const useDeleteProjectMutation = createMutation<void, Error, string>(
   async (id) => {
@@ -118,11 +124,7 @@ export function useProjectWithSupervisor(options: {
  * @returns Mutation function for creating projects
  */
 export function useCreateProject(
-  options?: UseMutationOptions<
-    ProjectsResponse,
-    Error,
-    CreateProjectVariables
-  >,
+  options?: UseMutationOptions<ProjectsResponse, Error, CreateProjectVariables>,
 ) {
   return useCreateProjectMutation(options);
 }
@@ -133,11 +135,7 @@ export function useCreateProject(
  * @returns Mutation function for updating projects
  */
 export function useUpdateProject(
-  options?: UseMutationOptions<
-    ProjectsResponse,
-    Error,
-    UpdateProjectVariables
-  >,
+  options?: UseMutationOptions<ProjectsResponse, Error, UpdateProjectVariables>,
 ) {
   return useUpdateProjectMutation(options);
 }

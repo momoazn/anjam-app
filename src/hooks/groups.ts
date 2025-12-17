@@ -5,10 +5,7 @@
  * Includes group members and projects relationship handling.
  */
 
-import {
-  useQuery,
-  UseMutationOptions,
-} from "@tanstack/react-query";
+import { useQuery, UseMutationOptions } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import {
   GroupsResponse,
@@ -23,14 +20,22 @@ import { createMutation } from "./use-mutation-factory";
 type CreateGroupVariables = Omit<GroupsRecord, "id" | "created" | "updated">;
 type UpdateGroupVariables = { id: string; updates: Partial<GroupsRecord> };
 
-const useCreateGroupMutation = createMutation<GroupsResponse, Error, CreateGroupVariables>(
+const useCreateGroupMutation = createMutation<
+  GroupsResponse,
+  Error,
+  CreateGroupVariables
+>(
   (groupData) => pb.collection("groups").create(groupData),
   (client) => {
     mutationInvalidators.crud.groups.create(client);
   },
 );
 
-const useUpdateGroupMutation = createMutation<GroupsResponse, Error, UpdateGroupVariables>(
+const useUpdateGroupMutation = createMutation<
+  GroupsResponse,
+  Error,
+  UpdateGroupVariables
+>(
   ({ id, updates }) => pb.collection("groups").update(id, updates),
   (client, _data, variables) => {
     mutationInvalidators.crud.groups.update(client, variables?.id);
@@ -38,13 +43,19 @@ const useUpdateGroupMutation = createMutation<GroupsResponse, Error, UpdateGroup
 );
 
 const useDeleteGroupMutation = createMutation<void, Error, string>(
-  (id) => pb.collection("groups").delete(id),
+  async (id) => {
+    await pb.collection("groups").delete(id);
+  },
   (client, _data, groupId) => {
     mutationInvalidators.crud.groups.delete(client, groupId);
   },
 );
 
-const useToggleGroupActiveMutation = createMutation<GroupsResponse, Error, string>(
+const useToggleGroupActiveMutation = createMutation<
+  GroupsResponse,
+  Error,
+  string
+>(
   async (id) => {
     const group = await pb.collection("groups").getOne<GroupsResponse>(id);
     return pb.collection("groups").update(id, { active: !group.active });
@@ -140,11 +151,7 @@ export function useGroupProjects(options: {
  * @returns Mutation function for creating groups
  */
 export function useCreateGroup(
-  options?: UseMutationOptions<
-    GroupsResponse,
-    Error,
-    CreateGroupVariables
-  >,
+  options?: UseMutationOptions<GroupsResponse, Error, CreateGroupVariables>,
 ) {
   return useCreateGroupMutation(options);
 }
@@ -155,11 +162,7 @@ export function useCreateGroup(
  * @returns Mutation function for updating groups
  */
 export function useUpdateGroup(
-  options?: UseMutationOptions<
-    GroupsResponse,
-    Error,
-    UpdateGroupVariables
-  >,
+  options?: UseMutationOptions<GroupsResponse, Error, UpdateGroupVariables>,
 ) {
   return useUpdateGroupMutation(options);
 }

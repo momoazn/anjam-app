@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { useProjects, useProjectUsers, useUsers } from "@/hooks";
 import {
   TasksPriorityOptions,

@@ -5,16 +5,9 @@
  * Includes role-based filtering and optimistic updates for better UX.
  */
 
-import {
-  useQuery,
-  UseMutationOptions,
-} from "@tanstack/react-query";
+import { useQuery, UseMutationOptions } from "@tanstack/react-query";
 import { pb, TaskWithProject } from "../lib/pocketbase";
-import {
-  compositeInvalidators,
-  detailInvalidators,
-  mutationInvalidators,
-} from "../lib/query-invalidators";
+import { mutationInvalidators } from "../lib/query-invalidators";
 import {
   UsersResponse,
   UsersRoleOptions,
@@ -27,7 +20,11 @@ import { createMutation } from "./use-mutation-factory";
 type CreateTaskVariables = Omit<TasksRecord, "id" | "created" | "updated">;
 type UpdateTaskVariables = { id: string; updates: Partial<TasksRecord> };
 
-const useCreateTaskMutation = createMutation<TasksResponse, Error, CreateTaskVariables>(
+const useCreateTaskMutation = createMutation<
+  TasksResponse,
+  Error,
+  CreateTaskVariables
+>(
   (taskData) => pb.collection("tasks").create(taskData),
   (client) => {
     mutationInvalidators.crud.tasks.create(client);
@@ -44,7 +41,10 @@ const useUpdateTaskMutation = createMutation<
     mutationInvalidators.crud.tasks.update(client, variables?.id);
 
     if (variables?.updates?.project) {
-      mutationInvalidators.crud.projects.update(client, variables.updates.project);
+      mutationInvalidators.crud.projects.update(
+        client,
+        variables.updates.project,
+      );
     }
   },
 );
@@ -254,11 +254,7 @@ export function useTask(options: { id: string; enabled?: boolean }) {
  * @returns Mutation function for creating tasks
  */
 export function useCreateTask(
-  options?: UseMutationOptions<
-    TasksResponse,
-    Error,
-    CreateTaskVariables
-  >,
+  options?: UseMutationOptions<TasksResponse, Error, CreateTaskVariables>,
 ) {
   return useCreateTaskMutation(options);
 }
@@ -269,11 +265,7 @@ export function useCreateTask(
  * @returns Mutation function for updating tasks
  */
 export function useUpdateTask(
-  options?: UseMutationOptions<
-    TasksResponse,
-    Error,
-    UpdateTaskVariables
-  >,
+  options?: UseMutationOptions<TasksResponse, Error, UpdateTaskVariables>,
 ) {
   return useUpdateTaskMutation(options);
 }
@@ -293,11 +285,7 @@ export function useDeleteTask(
  * Bulk update multiple tasks at once
  */
 export function useBulkUpdateTasks(
-  options?: UseMutationOptions<
-    TasksResponse[],
-    Error,
-    BulkUpdateVariables
-  >,
+  options?: UseMutationOptions<TasksResponse[], Error, BulkUpdateVariables>,
 ) {
   return useBulkUpdateTasksMutation(options);
 }

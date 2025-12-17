@@ -73,7 +73,9 @@ export function useMarkAsRead() {
     (id) => pb.collection("notifications").update(id, { read: true }),
     (client) => {
       if (user?.id) {
-        client.invalidateQueries({ queryKey: getNotificationsQueryKey(user.id) });
+        client.invalidateQueries({
+          queryKey: getNotificationsQueryKey(user.id),
+        });
       }
     },
   );
@@ -101,7 +103,9 @@ export function useMarkAllAsRead() {
     (client, _data, userId) => {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
-        client.invalidateQueries({ queryKey: getNotificationsQueryKey(targetUserId) });
+        client.invalidateQueries({
+          queryKey: getNotificationsQueryKey(targetUserId),
+        });
       }
     },
   );
@@ -113,10 +117,14 @@ export function useDeleteNotification() {
   const user = useAuthUser();
 
   const mutation = createMutation<void, Error, string>(
-    (id) => pb.collection("notifications").delete(id),
+    async (id) => {
+      await pb.collection("notifications").delete(id);
+    },
     (client) => {
       if (user?.id) {
-        client.invalidateQueries({ queryKey: getNotificationsQueryKey(user.id) });
+        client.invalidateQueries({
+          queryKey: getNotificationsQueryKey(user.id),
+        });
       }
     },
   );
@@ -144,7 +152,9 @@ export function useClearAll() {
     (client, _data, userId) => {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
-        client.invalidateQueries({ queryKey: getNotificationsQueryKey(targetUserId) });
+        client.invalidateQueries({
+          queryKey: getNotificationsQueryKey(targetUserId),
+        });
       }
     },
   );
@@ -172,7 +182,9 @@ export function useClearRead() {
     (client, _data, userId) => {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
-        client.invalidateQueries({ queryKey: getNotificationsQueryKey(targetUserId) });
+        client.invalidateQueries({
+          queryKey: getNotificationsQueryKey(targetUserId),
+        });
       }
     },
   );

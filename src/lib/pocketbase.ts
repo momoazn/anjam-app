@@ -21,7 +21,7 @@ export async function customApiCall<TResponse>(
   path: string,
   options?: Parameters<typeof pb.send>[1],
 ) {
-  return pb.send<TResponse>(path, options);
+  return pb.send<TResponse>(path, options ?? {});
 }
 
 export type TaskWithProject = TasksResponse<{

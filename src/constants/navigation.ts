@@ -11,6 +11,7 @@ export const navigation = {
   helps: "راهنما",
   settings: "تنظیمات",
   notifications: "اعلان‌ها",
+  auditLogs: "لاگ‌های تغییرات",
   tags: "تگ‌ها",
   taskCalendar: "تقویم تسک‌ها",
   myTasks: "تسک‌های من",

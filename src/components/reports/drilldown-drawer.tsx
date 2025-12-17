@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 
 import {
   Drawer,

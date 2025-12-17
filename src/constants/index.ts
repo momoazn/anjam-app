@@ -17,6 +17,7 @@ import { dashboard } from "./dashboard";
 import { errors } from "./errors";
 import { notifications } from "./notifications";
 import { settings } from "./settings";
+import { auditLogs } from "./audit-logs";
 import { helps } from "./helps";
 import { comments } from "./comments";
 import { tagsManagement } from "./tags";
@@ -54,6 +55,7 @@ export const fa = {
   errors,
   notifications,
   settings,
+  auditLogs,
   helps,
   create,
   search,

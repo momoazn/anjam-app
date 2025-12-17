@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";

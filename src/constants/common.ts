@@ -52,6 +52,9 @@ export const common = {
     back: shared.back,
     retry: shared.retry,
   },
+  connectors: {
+    and: "و",
+  },
 
   // Validation messages
   validation: {

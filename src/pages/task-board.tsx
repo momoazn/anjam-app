@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { pb, TaskWithProject } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks/query-keys";
 import { TASK_STATUS_ORDER, TASK_STATUS_CONFIG } from "@/lib/status-utils";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { TasksStatusOptions, TasksRecord } from "@/lib/pocketbase-types";
 import { Loader2, Plus } from "lucide-react";
 import { Link } from "react-router-dom";

@@ -89,7 +89,7 @@ import {
   getTimeRange,
 } from "@/lib/reports-utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { useProjects, useTasks, useUsers, queryKeys } from "@/hooks";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { ProjectExportButton } from "@/components/reports/project-export-button";

@@ -5,10 +5,7 @@
  * Includes project-user relationship handling and simplified user data.
  */
 
-import {
-  useQuery,
-  UseMutationOptions,
-} from "@tanstack/react-query";
+import { useQuery, UseMutationOptions } from "@tanstack/react-query";
 import { customApiCall, pb } from "../lib/pocketbase";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import {
@@ -29,14 +26,22 @@ type UsersListOptions = {
 type CreateUserVariables = Omit<UsersRecord, "id" | "created" | "updated">;
 type UpdateUserVariables = { id: string; updates: Partial<UsersRecord> };
 
-const useCreateUserMutation = createMutation<UsersResponse, Error, CreateUserVariables>(
+const useCreateUserMutation = createMutation<
+  UsersResponse,
+  Error,
+  CreateUserVariables
+>(
   (userData) => pb.collection("users").create(userData),
   (client) => {
     mutationInvalidators.crud.users.create(client);
   },
 );
 
-const useUpdateUserMutation = createMutation<UsersResponse, Error, UpdateUserVariables>(
+const useUpdateUserMutation = createMutation<
+  UsersResponse,
+  Error,
+  UpdateUserVariables
+>(
   ({ id, updates }) => pb.collection("users").update(id, updates),
   (client, _data, variables) => {
     mutationInvalidators.crud.users.update(client, variables?.id);
@@ -71,7 +76,11 @@ const useToggleUserActiveMutation = createMutation<
 
 type UnblockUserResponse = { message: string };
 
-const useUnblockUserMutation = createMutation<UnblockUserResponse, Error, string>(
+const useUnblockUserMutation = createMutation<
+  UnblockUserResponse,
+  Error,
+  string
+>(
   (userId) =>
     customApiCall<UnblockUserResponse>(`/api/tm/users/${userId}/unblock`, {
       method: "PATCH",

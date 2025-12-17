@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { useTasks } from "@/hooks";
 import { ProjectsResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { digitsEnToFa } from "@persian-tools/persian-tools";

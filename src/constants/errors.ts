@@ -19,6 +19,15 @@ export const errors = {
   validation: {
     titleRequired: "عنوان الزامی است",
     projectIdRequired: "شناسه پروژه الزامی است",
+    keywords: {
+      inactive: ["غیرفعال", "inactive"],
+      blocked: ["مسدود", "blocked"],
+    },
+    invalidOption: "گزینه نامعتبر است",
+    invalidDate: "تاریخ نامعتبر است",
+    numberInvalid: "عدد نامعتبر است",
+    estimatedHoursRange: "ساعت باید بین {min} تا {max} باشد",
+    estimatedMinutesRange: "دقیقه باید بین {min} تا {max} باشد",
   },
   notFound: {
     projectNotFound: "پروژه یافت نشد",

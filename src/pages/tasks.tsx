@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { fa } from "@/constants/text";
+import { fa } from "@/constants";
 import { useTaskFilters, ALL_FILTER_VALUE } from "@/hooks/use-task-filters";
 import {
   useTasks,

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -78,7 +79,7 @@ func requireAdmin(e *core.RequestEvent) (*core.Record, error) {
 	}
 
 	if authRecord.GetString("role") != RoleAdmin {
-		return nil, core.NewForbiddenError(ErrOnlyAdmin, nil)
+		return nil, apis.NewForbiddenError(ErrOnlyAdmin, nil)
 	}
 
 	return authRecord, nil
@@ -99,5 +100,5 @@ func requireRole(e *core.RequestEvent, roles ...string) (*core.Record, error) {
 		}
 	}
 
-	return nil, core.NewForbiddenError("دسترسی محدود شده", nil)
+	return nil, apis.NewForbiddenError("دسترسی محدود شده", nil)
 }

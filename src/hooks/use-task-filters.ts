@@ -10,7 +10,9 @@ import { useMemo } from "react";
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
 export function isValidStatus(value: string): value is TasksStatusOptions {
-  return Object.values(TasksStatusOptions).includes(value as TasksStatusOptions);
+  return Object.values(TasksStatusOptions).includes(
+    value as TasksStatusOptions,
+  );
 }
 
 export function isValidPriority(value: string): value is TasksPriorityOptions {
@@ -107,7 +109,10 @@ export function useTaskFilters(
 
       // Filter logic
       let matchesStatus = true;
-      if (selectedStatus !== ALL_FILTER_VALUE && isValidStatus(selectedStatus)) {
+      if (
+        selectedStatus !== ALL_FILTER_VALUE &&
+        isValidStatus(selectedStatus)
+      ) {
         matchesStatus = task.status === selectedStatus;
       }
 
@@ -116,7 +121,8 @@ export function useTaskFilters(
         const statusArray = selectedStatus
           .split(",")
           .filter((s): s is TasksStatusOptions => isValidStatus(s));
-        matchesStatus = statusArray.length > 0 && statusArray.includes(task.status);
+        matchesStatus =
+          statusArray.length > 0 && statusArray.includes(task.status);
       }
 
       // Special handling for "My Tasks" which should show both todo and in_progress
@@ -127,7 +133,10 @@ export function useTaskFilters(
           task.status === TasksStatusOptions.pending;
       }
       let matchesPriority = true;
-      if (selectedPriority !== ALL_FILTER_VALUE && isValidPriority(selectedPriority)) {
+      if (
+        selectedPriority !== ALL_FILTER_VALUE &&
+        isValidPriority(selectedPriority)
+      ) {
         matchesPriority = task.priority === selectedPriority;
       }
       const matchesAssignee =
