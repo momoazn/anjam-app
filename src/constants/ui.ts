@@ -17,4 +17,6 @@ export const navigationLabels = {
   ownership: "مالکیت",
   time: "زمان",
   status: "وضعیت",
+  workspace: "فضای کاری",
+  admin: "مدیریت",
 } as const;

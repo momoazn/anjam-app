@@ -4,6 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -35,7 +36,6 @@ export function NavMain({ items }: NavMainProps) {
   const notificationsItem = items.find(
     (i) => i.title === fa.navigation.notifications,
   );
-  // Extract non-core items for the secondary section
   const restItems = items.filter(
     (i) =>
       ![
@@ -44,6 +44,25 @@ export function NavMain({ items }: NavMainProps) {
         fa.navigation.dashboard as typeof i.title,
         fa.navigation.notifications as typeof i.title,
       ].includes(i.title),
+  );
+
+  const workspaceItems = restItems.filter((i) =>
+    [
+      fa.navigation.taskCalendar,
+      fa.navigation.myTasks,
+      fa.navigation.helps,
+    ].includes(i.title),
+  );
+
+  const adminItems = restItems.filter((i) =>
+    [
+      fa.navigation.groups,
+      fa.navigation.tags,
+      fa.navigation.reports,
+      fa.navigationLabels.timesheet,
+      fa.navigation.users,
+      fa.navigation.settings,
+    ].includes(i.title),
   );
 
   return (
@@ -117,40 +136,88 @@ export function NavMain({ items }: NavMainProps) {
           <ProjectsSubmenu />
           <TaskViews />
         </SidebarMenu>
-        {/* Secondary simple links */}
-        <SidebarMenu>
-          {restItems.map((item) => {
-            const path = location.pathname;
-            const active = path === item.url || path.startsWith(item.url + "/");
-            return (
-              <NavLink
-                to={item.url}
-                key={item.title}
-                onClick={() => {
-                  if (isMobile) {
-                    setOpenMobile(false);
-                  }
-                }}
-              >
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    tooltip={item.title}
-                    className={cn(
-                      active
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "",
-                    )}
-                    aria-current={active ? "page" : undefined}
+        {workspaceItems.length > 0 ? (
+          <>
+            <SidebarGroupLabel className="pt-3">
+              {fa.navigationLabels.workspace}
+            </SidebarGroupLabel>
+            <SidebarMenu>
+              {workspaceItems.map((item) => {
+                const path = location.pathname;
+                const active =
+                  path === item.url || path.startsWith(item.url + "/");
+                return (
+                  <NavLink
+                    to={item.url}
+                    key={item.title}
+                    onClick={() => {
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
                   >
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                    {item.badge}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </NavLink>
-            );
-          })}
-        </SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        tooltip={item.title}
+                        className={cn(
+                          active
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "",
+                        )}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                        {item.badge}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </NavLink>
+                );
+              })}
+            </SidebarMenu>
+          </>
+        ) : null}
+        {adminItems.length > 0 ? (
+          <>
+            <SidebarGroupLabel className="pt-3">
+              {fa.navigationLabels.admin}
+            </SidebarGroupLabel>
+            <SidebarMenu>
+              {adminItems.map((item) => {
+                const path = location.pathname;
+                const active =
+                  path === item.url || path.startsWith(item.url + "/");
+                return (
+                  <NavLink
+                    to={item.url}
+                    key={item.title}
+                    onClick={() => {
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                  >
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        tooltip={item.title}
+                        className={cn(
+                          active
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "",
+                        )}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                        {item.badge}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </NavLink>
+                );
+              })}
+            </SidebarMenu>
+          </>
+        ) : null}
       </SidebarGroupContent>
     </SidebarGroup>
   );

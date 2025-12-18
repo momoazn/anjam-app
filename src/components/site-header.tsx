@@ -1,5 +1,6 @@
 import { HeaderUserMenu } from "@/components/header-user-menu";
 import { NotificationDropdown } from "@/components/notification-dropdown";
+import { GlobalSearch } from "@/components/global-search";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -369,6 +370,9 @@ export function SiteHeader() {
             ))}
           </BreadcrumbList>
         </Breadcrumb>
+        <div className="hidden w-[360px] max-w-[40vw] sm:block">
+          <GlobalSearch />
+        </div>
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-2 px-2 sm:gap-3 sm:px-3">
         <div className="flex items-center gap-2">

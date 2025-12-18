@@ -79,20 +79,20 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 3.1 Navigation & Layout Overhaul
 
-- [ ] **Split Navigation (Workspace vs. Admin)**
+- [x] **Split Navigation (Workspace vs. Admin)**
   - **Action:** Create two distinct sections in the Sidebar:
     - **Workspace:** Dashboard, Projects, Tasks, Calendar, My Tasks.
     - **Admin:** Users, Groups, Tags, Reports, Timesheet, Settings.
-- [ ] **Collapsible Sidebar**
+- [x] **Collapsible Sidebar**
   - **Action:** Implement a toggle to collapse the sidebar to an icons-only rail to maximize workspace.
 
 ### 3.2 Efficiency & Flexibility
 
-- [ ] **Global Search**
+- [x] **Global Search**
   - **Action:** Implement a header search bar querying Tasks, Projects, and Users simultaneously.
-- [ ] **Smart Quick Actions**
+- [x] **Smart Quick Actions**
   - **Action:** Update the Dashboard "Quick Actions" to be context-aware (e.g., "Review Overdue" if overdue > 0, "Assign Unassigned").
-- [ ] **Saved Filters / Views**
+- [x] **Saved Filters / Views**
   - **Action:** Allow users to save properties (e.g., "My High Priority Tasks") as a preset filter tab.
 
 ### 3.3 Bulk Actions

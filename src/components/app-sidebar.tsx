@@ -22,6 +22,7 @@ import {
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
+  IconSettings,
   IconTag,
   IconUser,
   IconUsers,
@@ -93,6 +94,11 @@ const data = {
       url: "/helps",
       icon: IconHelp,
     },
+    {
+      title: fa.navigation.settings,
+      url: "/settings",
+      icon: IconSettings,
+    },
   ],
 };
 
@@ -152,6 +158,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             if (
               item.title === fa.navigation.reports &&
               !can(user.role, "reports.view")
+            )
+              return false;
+            if (
+              item.title === fa.navigation.tags &&
+              !can(user.role, "tags.view")
+            )
+              return false;
+            if (
+              item.title === fa.navigationLabels.timesheet &&
+              !can(user.role, "timesheet.view")
+            )
+              return false;
+            if (
+              item.title === fa.navigation.settings &&
+              !can(user.role, "settings.view")
             )
               return false;
             return true;

@@ -29,6 +29,15 @@ const PERMISSIONS = {
   // Reports and analytics
   "reports.view": ["admin", "manager", "supervisor"],
 
+  // Tags
+  "tags.view": ["admin", "manager", "supervisor"],
+
+  // Timesheet
+  "timesheet.view": ["admin", "manager", "supervisor", "employee"],
+
+  // Settings
+  "settings.view": ["admin", "manager", "supervisor", "employee"],
+
   // System permissions
   "notifications.view": ["admin", "manager", "supervisor", "employee"],
   "helps.view": ["admin", "manager", "supervisor", "employee"],
