@@ -12,6 +12,7 @@ import {
   UsersResponse,
   UsersRecord,
   UsersProjectsResponse,
+  GroupsResponse,
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
@@ -107,6 +108,7 @@ export function useUsers(options: UsersListOptions = {}) {
     batch,
     sort,
     filter: filter ?? undefined,
+    expand: "group",
   };
 
   return useQuery({
@@ -116,7 +118,9 @@ export function useUsers(options: UsersListOptions = {}) {
       filter: filter ?? null,
     }),
     queryFn: () =>
-      pb.collection("users").getFullList<UsersResponse>(queryParams),
+      pb
+        .collection("users")
+        .getFullList<UsersResponse<{ group: GroupsResponse }>>(queryParams),
     enabled,
   });
 }

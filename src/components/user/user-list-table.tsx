@@ -40,15 +40,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fa } from "@/constants/text";
-import { UsersResponse } from "@/lib/pocketbase-types";
+import { UsersResponse, GroupsResponse } from "@/lib/pocketbase-types";
 import { useDeleteUser, useToggleUserActive, useUnblockUser } from "@/hooks";
 import { UserAvatar } from "../user-avatar";
 import { UserLoginLogsDialog } from "./user-login-logs-dialog";
 
 type UserListTableProps = {
-  users: UsersResponse[];
-  onEdit: (user: UsersResponse) => void;
-  onDelete: (user: UsersResponse) => void;
+  users: UsersResponse<{ group: GroupsResponse }>[];
+  onEdit: (user: UsersResponse<{ group: GroupsResponse }>) => void;
+  onDelete: (user: UsersResponse<{ group: GroupsResponse }>) => void;
   isAdmin: boolean;
   onUpdate?: () => void;
 };
@@ -60,8 +60,9 @@ export function UserListTable({
   isAdmin,
   onUpdate,
 }: UserListTableProps) {
-  const [selectedUserForLogs, setSelectedUserForLogs] =
-    useState<UsersResponse | null>(null);
+  const [selectedUserForLogs, setSelectedUserForLogs] = useState<UsersResponse<{
+    group: GroupsResponse;
+  }> | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
@@ -222,6 +223,9 @@ export function UserListTable({
             <TableHead className="text-right">
               {fa.users.table.columns.role}
             </TableHead>
+            <TableHead className="text-right">
+              {fa.users.table.columns.group}
+            </TableHead>
             {isAdmin && (
               <>
                 <TableHead className="text-center">
@@ -266,6 +270,9 @@ export function UserListTable({
               <TableCell className="text-right">{user.username}</TableCell>
               <TableCell className="text-right capitalize">
                 {fa.users.table.roles[user.role]}
+              </TableCell>
+              <TableCell className="text-right">
+                {user.expand?.group?.name ? user.expand.group.name : "-"}
               </TableCell>
               {isAdmin && (
                 <>

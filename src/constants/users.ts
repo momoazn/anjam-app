@@ -12,6 +12,7 @@ export const users = {
       username: "نام کاربری",
       email: "ایمیل",
       role: "نقش",
+      group: "گروه",
       status: "وضعیت",
       accountStatus: "وضعیت حساب",
       failedAttempts: "تلاش ناموفق",

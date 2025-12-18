@@ -57,7 +57,7 @@ export function UserLoginLogsDialog({
       setLoading(true);
       try {
         const response = await fetch(
-          `${pb.baseURL}api/tm/users/${user.id}/login-logs?page=${pageNum}&perPage=20`,
+          `${pb.baseURL}api/v1/users/${user.id}/login-logs?page=${pageNum}&perPage=20`,
           {
             headers: {
               Authorization: pb.authStore.token

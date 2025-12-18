@@ -194,6 +194,7 @@ export type ProjectsRecord = {
 export type TagsRecord = {
   color?: string;
   created: IsoAutoDateString;
+  group: RecordIdString;
   id: string;
   name: string;
   updated: IsoAutoDateString;
