@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -59,7 +59,7 @@ export default function CreateProject() {
       code: "",
       description: "",
       assets: [],
-      supervisor: user?.id || "",
+      supervisor: undefined,
       group: isManager && user?.group ? user.group : undefined,
     },
   });
@@ -111,7 +111,7 @@ export default function CreateProject() {
           size="icon"
           onClick={() => navigate("/projects")}
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowRight className="h-5 w-5" />
         </Button>
         <div>
           <h1 className="text-3xl font-bold">{fa.projects.create.title}</h1>

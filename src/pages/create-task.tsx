@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
@@ -135,7 +135,7 @@ export default function CreateTask() {
     <PageTransition className="container mx-auto space-y-6 p-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={handleCancel}>
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowRight className="h-5 w-5" />
         </Button>
         <div>
           <h1 className="text-3xl font-bold">{fa.tasks.addTask.title}</h1>
