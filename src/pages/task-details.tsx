@@ -387,10 +387,7 @@ export default function TaskDetails() {
                       fa.tasks.details.timeTracking.noTimeTracked}
                   </p>
                   <TimeComparison
-                    estimatedMinutes={
-                      (task.estimated_hours || 0) * 60 +
-                      (task.estimated_minutes || 0)
-                    }
+                    estimatedMinutes={task.estimated_minutes || 0}
                     actualMinutes={task.time_spent_minutes}
                   />
                 </div>

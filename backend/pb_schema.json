@@ -610,13 +610,13 @@
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text1579384326",
-        "max": 0,
-        "min": 0,
+        "max": 200,
+        "min": 1,
         "name": "name",
         "pattern": "",
         "presentable": false,
         "primaryKey": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "text"
       },
@@ -624,13 +624,13 @@
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text1997877400",
-        "max": 0,
-        "min": 0,
+        "max": 3,
+        "min": 3,
         "name": "code",
-        "pattern": "",
+        "pattern": "^[A-Z]{3}$",
         "presentable": false,
         "primaryKey": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "text"
       },
@@ -727,8 +727,8 @@
   },
   {
     "id": "pbc_2602490748",
-    "listRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || assignee.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)",
-    "viewRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || assignee.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)",
+    "listRule": "(@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || assignee.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
+    "viewRule": "(@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || assignee.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
     "createRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id)",
     "updateRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || (assignee.id = @request.auth.id && @request.body.status:isset = true)",
     "deleteRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id)",
@@ -767,13 +767,13 @@
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text724990059",
-        "max": 0,
-        "min": 0,
+        "max": 200,
+        "min": 1,
         "name": "title",
         "pattern": "",
         "presentable": false,
         "primaryKey": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "text"
       },
@@ -909,20 +909,8 @@
       },
       {
         "hidden": false,
-        "id": "number_estimated_hours",
-        "max": 999,
-        "min": 0,
-        "name": "estimated_hours",
-        "onlyInt": true,
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "number"
-      },
-      {
-        "hidden": false,
         "id": "number_estimated_minutes",
-        "max": 59,
+        "max": null,
         "min": 0,
         "name": "estimated_minutes",
         "onlyInt": true,
@@ -973,8 +961,8 @@
   },
   {
     "id": "pbc_533777971",
-    "listRule": "@request.auth.id != ''",
-    "viewRule": "@request.auth.id != ''",
+    "listRule": "(@request.auth.id != '') && ((deleted_at = \"\" || deleted_at = null))",
+    "viewRule": "(@request.auth.id != '') && ((deleted_at = \"\" || deleted_at = null))",
     "createRule": "@request.auth.id != ''",
     "updateRule": "@request.auth.id = user",
     "deleteRule": "@request.auth.id = user",
@@ -1002,7 +990,7 @@
         "maxSize": 0,
         "name": "content",
         "presentable": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "editor"
       },
@@ -1015,7 +1003,7 @@
         "minSelect": 0,
         "name": "task",
         "presentable": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "relation"
       },
@@ -1028,7 +1016,7 @@
         "minSelect": 0,
         "name": "user",
         "presentable": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "relation"
       },
@@ -1098,13 +1086,13 @@
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text1579384326",
-        "max": 0,
-        "min": 0,
+        "max": 100,
+        "min": 1,
         "name": "name",
         "pattern": "",
         "presentable": false,
         "primaryKey": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "text"
       },
@@ -1143,7 +1131,10 @@
         "type": "autodate"
       }
     ],
-    "indexes": [],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_tags_name ON tags (name)",
+      "CREATE INDEX idx_tags_name_lookup ON tags (name)"
+    ],
     "system": false
   },
   {
@@ -1179,7 +1170,7 @@
         "minSelect": 0,
         "name": "user",
         "presentable": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "relation"
       },
@@ -1192,7 +1183,7 @@
         "minSelect": 0,
         "name": "project",
         "presentable": false,
-        "required": false,
+        "required": true,
         "system": false,
         "type": "relation"
       },
@@ -1217,7 +1208,11 @@
         "type": "autodate"
       }
     ],
-    "indexes": [],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_users_projects_user_project ON users_projects (user, project)",
+      "CREATE INDEX idx_users_projects_user ON users_projects (user)",
+      "CREATE INDEX idx_users_projects_project ON users_projects (project)"
+    ],
     "system": false
   },
   {

@@ -71,7 +71,6 @@ export const createMockTask = (
   status: TasksStatusOptions.todo,
   priority: TasksPriorityOptions.medium,
   deadline: "2024-01-01T00:00:00.000Z",
-  estimated_hours: 0,
   estimated_minutes: 0,
   tags: [],
   order: 0,

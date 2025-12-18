@@ -142,13 +142,13 @@ export type AuditLogsRecord<Tchanges = unknown> = {
 };
 
 export type CommentsRecord = {
-  content?: HTMLString;
+  content: HTMLString;
   created: IsoAutoDateString;
   deleted_at?: string;
   id: string;
-  task?: RecordIdString;
+  task: RecordIdString;
   updated: IsoAutoDateString;
-  user?: RecordIdString;
+  user: RecordIdString;
 };
 
 export type GroupsRecord = {
@@ -181,12 +181,12 @@ export type NotificationsRecord<Tdata = unknown> = {
 
 export type ProjectsRecord = {
   assets?: FileNameString[];
-  code?: string;
+  code: string;
   created: IsoAutoDateString;
   description?: HTMLString;
   group: RecordIdString;
   id: string;
-  name?: string;
+  name: string;
   supervisor?: RecordIdString;
   updated: IsoAutoDateString;
 };
@@ -195,7 +195,7 @@ export type TagsRecord = {
   color?: string;
   created: IsoAutoDateString;
   id: string;
-  name?: string;
+  name: string;
   updated: IsoAutoDateString;
 };
 
@@ -225,7 +225,6 @@ export type TasksRecord = {
   deleted_at?: string;
   description?: HTMLString;
   display_id?: string;
-  estimated_hours?: number;
   estimated_minutes?: number;
   id: string;
   order?: number;
@@ -234,7 +233,7 @@ export type TasksRecord = {
   status: TasksStatusOptions;
   tags?: RecordIdString[];
   time_spent_minutes?: number;
-  title?: string;
+  title: string;
   updated: IsoAutoDateString;
 };
 
@@ -280,9 +279,9 @@ export type UsersRecord = {
 export type UsersProjectsRecord = {
   created: IsoAutoDateString;
   id: string;
-  project?: RecordIdString;
+  project: RecordIdString;
   updated: IsoAutoDateString;
-  user?: RecordIdString;
+  user: RecordIdString;
 };
 
 // Response types include system fields and match responses from the PocketBase API

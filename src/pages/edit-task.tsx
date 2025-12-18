@@ -23,6 +23,7 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
+import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
 
 const taskFormSchema = z.object({
   title: z
@@ -87,6 +88,9 @@ export default function EditTask() {
 
   useEffect(() => {
     if (task) {
+      const { hours, minutes } = minutesToHoursAndMinutes(
+        task.estimated_minutes,
+      );
       form.reset({
         title: task.title,
         description: task.description,
@@ -95,8 +99,8 @@ export default function EditTask() {
         status: task.status,
         project: task.project,
         deadline: task.deadline ? new Date(task.deadline) : undefined,
-        estimated_hours: task.estimated_hours,
-        estimated_minutes: task.estimated_minutes,
+        estimated_hours: hours || undefined,
+        estimated_minutes: minutes || undefined,
       });
     }
   }, [form, task]);
@@ -110,10 +114,21 @@ export default function EditTask() {
   function onSubmit(values: z.infer<typeof taskFormSchema>) {
     if (!task) return;
 
+    const {
+      estimated_hours,
+      estimated_minutes: estimatedMinutesPart,
+      ...rest
+    } = values;
+    const hasEstimate = estimated_hours != null || estimatedMinutesPart != null;
+    const estimated_minutes = hasEstimate
+      ? parseTimeInput(estimated_hours ?? 0, estimatedMinutesPart ?? 0)
+      : undefined;
+
     updateTask({
       id: task.id,
       updates: {
-        ...values,
+        ...rest,
+        estimated_minutes,
         // Only include project if present (not in project context or changed)
         project: values.project ?? task.project,
         assignee:

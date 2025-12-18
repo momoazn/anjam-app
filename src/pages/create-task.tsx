@@ -15,6 +15,7 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
+import { parseTimeInput } from "@/lib/time-utils";
 import { useAuthUser } from "@/store/auth-store";
 
 const taskFormSchema = z.object({
@@ -89,8 +90,19 @@ export default function CreateTask() {
   function onSubmit(values: z.infer<typeof taskFormSchema>) {
     if (!user) return;
 
+    const {
+      estimated_hours,
+      estimated_minutes: estimatedMinutesPart,
+      ...rest
+    } = values;
+    const hasEstimate = estimated_hours != null || estimatedMinutesPart != null;
+    const estimated_minutes = hasEstimate
+      ? parseTimeInput(estimated_hours ?? 0, estimatedMinutesPart ?? 0)
+      : undefined;
+
     createTask({
-      ...values,
+      ...rest,
+      estimated_minutes,
       creator: user.id,
       project: values.project || initialProject,
       assignee:
