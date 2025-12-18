@@ -333,45 +333,45 @@ export default function TagsManagement() {
         ) : !tags || tags.length === 0 ? (
           <EmptyState onCreateClick={() => setCreateDialogOpen(true)} />
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {tags.map((tag) => (
               <Card
                 key={tag.id}
                 className="transition-shadow hover:shadow-md cursor-pointer"
                 onClick={() => handleEdit(tag)}
               >
-                <CardContent className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3">
+                <CardContent className="flex items-center justify-between p-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     <div
-                      className="h-8 w-8 rounded"
+                      className="h-5 w-5 rounded flex-shrink-0"
                       style={{ backgroundColor: tag.color }}
                     />
-                    <div>
-                      <p className="font-medium">{tag.name}</p>
-                    </div>
+                    <p className="font-medium text-sm truncate">{tag.name}</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 flex-shrink-0">
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
+                      className="h-6 w-6 p-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleEdit(tag);
                       }}
                       title={text.tagsManagement.editButton}
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
+                      className="h-6 w-6 p-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(tag);
                       }}
                       title={text.tagsManagement.deleteButton}
                     >
-                      <Trash2 className="text-destructive h-4 w-4" />
+                      <Trash2 className="text-destructive h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </CardContent>
