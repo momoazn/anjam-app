@@ -55,6 +55,11 @@ export function SiteHeader() {
             { label: fa.navigation.dashboard, to: "/" as const },
             { label: fa.navigation.users },
           ];
+        case "groups":
+          return [
+            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: fa.navigation.groups },
+          ];
         case "reports":
           return [
             { label: fa.navigation.dashboard, to: "/" as const },
@@ -121,6 +126,13 @@ export function SiteHeader() {
           { label: fa.navigation.dashboard, to: "/" as const },
           { label: fa.navigation.users, to: "/users" as const },
           { label: fa.users.create.title },
+        ];
+      }
+      if (first === "groups" && second === "new") {
+        return [
+          { label: fa.navigation.dashboard, to: "/" as const },
+          { label: fa.navigation.groups, to: "/groups" as const },
+          { label: fa.groups.create.title },
         ];
       }
       if (first === "tasks" && second === "calendar") {
