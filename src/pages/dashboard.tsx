@@ -785,6 +785,27 @@ export default function Dashboard() {
                       {task?.expand?.project?.name ||
                         fa.dashboard.cards.noProject}{" "}
                       • {digitsEnToFa(format(new Date(task.created), "MM/dd"))}
+                      {task.deadline ? (
+                        <>
+                          {" "}
+                          •{" "}
+                          <span
+                            className={
+                              isPast(new Date(task.deadline)) &&
+                              !isToday(new Date(task.deadline))
+                                ? "text-destructive"
+                                : isToday(new Date(task.deadline))
+                                  ? "text-yellow-700 dark:text-yellow-300"
+                                  : ""
+                            }
+                          >
+                            {fa.tasks.addTask.deadline}:{" "}
+                            {digitsEnToFa(
+                              format(new Date(task.deadline), "MM/dd"),
+                            )}
+                          </span>
+                        </>
+                      ) : null}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -840,14 +861,28 @@ export default function Dashboard() {
                   tabIndex={0}
                   role="button"
                 >
-                  <span className="truncate text-sm font-medium">
-                    {task.title}
-                  </span>
-                  <span className="text-destructive text-xs font-medium">
-                    {task.deadline
-                      ? digitsEnToFa(format(new Date(task.deadline), "MM/dd"))
-                      : ""}
-                  </span>
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <UserAvatar
+                      user={task.expand?.assignee}
+                      className="h-7 w-7"
+                    />
+                    <span className="truncate text-sm font-medium">
+                      {task.title}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className={`${priorityColors[task.priority]} text-xs`}
+                    >
+                      {fa.tasks.priority[task.priority]}
+                    </Badge>
+                    <span className="text-destructive text-xs font-medium">
+                      {task.deadline
+                        ? digitsEnToFa(format(new Date(task.deadline), "MM/dd"))
+                        : ""}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -44,13 +44,13 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 - [x] **Standardize Terminology**
   - **Decision:** Use **"تسک" (Task)** exclusively. Remove "وظیفه".
   - **Action:** Global find/replace in localization files/constants.
-- [ ] **Mental Model Alignment**
+- [x] **Mental Model Alignment**
   - **Issue:** Navigation mixes Status (To-Do), Time (Due Today), and Ownership (My Tasks).
   - **Action:** Visually distinguish these filters in the UI (e.g., use Chips for Status, toggle for Ownership) rather than treating them as identical navigation links.
 
 ### 2.2 User Control & Error Prevention
 
-- [ ] **Undo / Soft Delete**
+- [x] **Undo / Soft Delete**
   - **Issue:** Destructive actions are instant.
   - **Action:** Implement a standard "Toast with Undo" (5-second duration) for deleting Tasks and Notifications.
 - [x] **Theme Toggle Clarity**
@@ -67,7 +67,7 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
     - Body Text: **14–16pt** (Regular)
 - [ ] **Number Formatting**
   - **Action:** Ensure all numerals use Persian digits (۰-۹) consistently.
-- [ ] **Metadata scanning**
+- [x] **Metadata scanning**
   - **Action:** Update list items (Recent Activity, Overdue) to show **Assignee Avatar**, **Priority Pill**, and **Due Date colors** to aid recognition rather than recall.
 
 ---
