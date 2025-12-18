@@ -103,6 +103,7 @@ func main() {
 		se.Router.PATCH("/api/v1/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/v1/users/{id}/login-logs", handleGetUserLoginLogs)
 		se.Router.GET("/api/v1/search", handleGlobalSearch)
+		se.Router.POST("/api/v1/groups/create-with-manager", handleCreateGroupWithManager)
 
 		return se.Next()
 	})
