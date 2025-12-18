@@ -25,6 +25,7 @@ const baseViews = [
     url: "/tasks",
     icon: IconList,
     getCount: () => 0,
+    badgeVariant: undefined,
   },
 ] as const;
 
