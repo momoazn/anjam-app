@@ -7,7 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **task and project management application** with a Go backend (PocketBase) and React frontend:
 
 - **Backend**: Go application using PocketBase framework, serving on port 8090
-
   - `backend/main.go`: Entry point with event handler registration and API routing
   - `backend/backend_constants.go`: Shared constants for collections, roles, and validation
   - `backend/audit.go`: Audit logging system for tracking all data changes
@@ -22,7 +21,6 @@ This is a **task and project management application** with a Go backend (PocketB
   - Comprehensive audit trail for all CRUD operations with field-level change tracking
 
 - **Frontend**: React + TypeScript SPA with Vite bundler
-
   - `src/components/`: UI components (Radix UI + Tailwind CSS)
   - `src/pages/`: Route-level page components
   - `src/lib/`: Business logic, utilities, PocketBase client (`pb`), and auto-generated types
@@ -131,14 +129,12 @@ This is a **task and project management application** with a Go backend (PocketB
 ## Testing Guidelines
 
 - **Unit tests**: Vitest + React Testing Library
-
   - Co-locate test files as `*.test.ts(x)` next to source files
   - Test setup at `src/test/setup.ts`
   - Coverage thresholds: 60% (lines, functions, branches, statements)
   - Focus on business logic in `src/lib/*` and critical components
 
 - **E2E tests**: Playwright
-
   - Test directory: `e2e/`
   - Runs against `http://localhost:5173` (dev client)
   - Auto-starts dev server via `webServer` config
@@ -159,7 +155,6 @@ This is a **task and project management application** with a Go backend (PocketB
 ## Commit & Pull Request Guidelines
 
 - **Conventional Commits**: Use `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`
-
   - Example: `feat(tasks): add drag-and-drop reordering`
   - Scope is optional but recommended: `(tasks)`, `(auth)`, `(ui)`, etc.
 
@@ -191,7 +186,6 @@ This is a **task and project management application** with a Go backend (PocketB
 PocketBase lifecycle hooks registered in `backend/main.go`:
 
 - `OnRecordCreateExecute`: Runs **before** record creation (can modify record before saving)
-
   - `handleUserCreation`: Sets default values for new users
   - `handleTaskCreation`: Auto-generates task display IDs
   - `handleProjectCreationWithGroup`: Validates group membership and generates project codes
@@ -199,14 +193,12 @@ PocketBase lifecycle hooks registered in `backend/main.go`:
   - `handleUsersProjectsValidation`: Ensures user and project belong to same group
 
 - `OnRecordAfterCreateSuccess`: Runs **after** successful creation (for side effects)
-
   - `handleTaskAssignmentNotification`: Notifies assigned user
   - `handleCommentNotification`: Notifies task owner and participants
   - `handleUsersProjectsCreatedNotify`: Notifies user of project assignment
   - `handleGroupCreatedNotification`: Notifies group creator
 
 - `OnRecordAfterUpdateSuccess`: Runs **after** successful updates
-
   - `handleTaskUpdateNotification`: Notifies on task status/assignment changes
   - `handleProjectUpdateNotification`: Notifies on project updates
 
@@ -249,7 +241,6 @@ TanStack Query keys are centralized in `src/hooks/query-keys.ts`:
 ## Security & Configuration
 
 - **Default credentials**: Dev mode creates admin accounts (`admin@example.com` / `admin12345` and `admin` / `admin12345`)
-
   - Change before production deployment
   - Controlled by `allowDefaultCredentials()` and env var `TM_ALLOW_DEFAULT_ACCOUNTS`
 

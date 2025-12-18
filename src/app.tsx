@@ -1,4 +1,8 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { Suspense } from "react";
@@ -16,7 +20,9 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { fa } from "./constants/text";
 import { AppRoutes } from "./router";
-import { TaskWithProject } from "@/lib/pocketbase";
+type RetryableError = {
+  status?: number;
+};
 
 // Optimized QueryClient configuration
 const queryClient = new QueryClient({
@@ -24,10 +30,13 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
       refetchOnMount: true, // Refetch only if data is stale
-      retry: 1, // Simple retry logic
-      // placeholderData keeps showing cached data while fetching new data
-      placeholderData: (previousData: TaskWithProject[] | undefined) =>
-        previousData,
+      retry: (failureCount, error) => {
+        const status = (error as RetryableError | undefined)?.status;
+        if (status && [400, 401, 403, 404].includes(status)) return false;
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      placeholderData: keepPreviousData,
     },
   },
 });

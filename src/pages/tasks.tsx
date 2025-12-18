@@ -1,4 +1,4 @@
-import { FilterX, ListTodo, Plus, CheckSquare, LayoutGrid } from "lucide-react";
+import { ListTodo, Plus, CheckSquare, LayoutGrid } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TaskFilters } from "@/components/task/task-filters";
@@ -17,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
+import { TaskEmptyState } from "@/components/task/task-empty-state";
 import { useToast } from "@/hooks/use-toast";
 import { fa } from "@/constants";
 import { useTaskFilters, ALL_FILTER_VALUE } from "@/hooks/use-task-filters";
@@ -45,93 +46,6 @@ import {
   startOfMonth,
   endOfMonth,
 } from "date-fns";
-
-// Loading skeleton component
-const TaskListSkeleton = () => (
-  <div className="space-y-4" data-animate-stagger>
-    {statusOrder?.map((status) => (
-      <Card key={status} className="overflow-hidden">
-        <div className="bg-muted/30 flex items-center justify-between border-b px-4 py-2">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-4 rounded" />
-            <Skeleton className="h-4 w-20 rounded" />
-            <Skeleton className="h-4 w-6 rounded" />
-          </div>
-          <Skeleton className="h-6 w-6 rounded" />
-        </div>
-        <div className="space-y-2 p-2" data-animate-stagger>
-          {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between rounded-md p-2"
-            >
-              <div className="flex flex-1 items-center gap-2">
-                <Skeleton className="h-4 w-4 rounded" />
-                <Skeleton className="h-4 w-12 rounded" />
-                <Skeleton className="h-4 w-4 rounded" />
-                <Skeleton className="h-4 w-32 rounded" />
-              </div>
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-4 w-16 rounded" />
-                <Skeleton className="h-8 w-8 rounded-full" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-    ))}
-  </div>
-);
-
-// Empty state component
-const EmptyState = ({ hasFilters }: { hasFilters: boolean }) => {
-  const navigate = useNavigate();
-
-  if (hasFilters) {
-    return (
-      <Card className="border-dashed">
-        <CardContent
-          className="flex flex-col items-center justify-center py-12 text-center"
-          data-animate-stagger
-        >
-          <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
-          <h3 className="mb-2 text-lg font-semibold">
-            {fa.tasks.emptyState.noTasksFound}
-          </h3>
-          <p className="text-muted-foreground mb-4 max-w-md">
-            {fa.tasks.emptyState.noTasksFoundDescription}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="border-dashed">
-      <CardContent
-        className="flex flex-col items-center justify-center py-12 text-center"
-        data-animate-stagger
-      >
-        <div
-          className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-          data-interactive-pulse
-        >
-          <Plus className="text-primary h-6 w-6" />
-        </div>
-        <h3 className="mb-2 text-lg font-semibold">
-          {fa.tasks.emptyState.noTasksYet}
-        </h3>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          {fa.tasks.emptyState.noTasksYetDescription}
-        </p>
-        <Button className="gap-2" onClick={() => navigate("/tasks/new")}>
-          <Plus className="h-4 w-4" />
-          {fa.tasks.emptyState.createFirstTask}
-        </Button>
-      </CardContent>
-    </Card>
-  );
-};
 
 export default function Tasks() {
   const navigate = useNavigate();
@@ -597,7 +511,7 @@ export default function Tasks() {
         {taskQuery.isPending ? (
           <TaskListSkeleton />
         ) : totalTasks === 0 ? (
-          <EmptyState hasFilters={hasActiveFilters} />
+          <TaskEmptyState hasFilters={hasActiveFilters} />
         ) : (
           statusOrder?.map((status) => {
             const tasksInGroup = groupedTasks?.[status] ?? [];

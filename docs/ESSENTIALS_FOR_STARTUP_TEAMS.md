@@ -14,7 +14,6 @@ These are core to day‑to‑day usefulness; without them the app will feel inco
 **How to implement / validate**
 
 1. **Backend model**
-
    - Verify `backend/pb_schema.json` defines:
      - `projects` with fields such as `name`, `description`, `code`, `group`, status fields as needed.
      - `tasks` with `project` relation, `assignee`, `creator`, `priority`, `status`, `deadline`, `tags`, `description`, `time_spent_minutes`, `estimated_hours`, `estimated_minutes` (already present).
@@ -281,7 +280,6 @@ The goal is a single entry point that searches across tasks and projects (and la
 **Backend (Option A – dedicated search endpoint)**
 
 1. **Design the API**
-
    - Endpoint: `GET /api/tm/search`.
    - Query params:
      - `q`: search term (required).
@@ -305,7 +303,6 @@ The goal is a single entry point that searches across tasks and projects (and la
      ```
 
 2. **Register the route in Go**
-
    - In `backend/main.go`, within `app.OnServe().BindFunc(func(se *core.ServeEvent) error { ... })`, add:
      - `se.Router.GET("/api/tm/search", handleGlobalSearch)`.
    - Implement `handleGlobalSearch(e *core.RequestEvent) error` near other request handlers:
@@ -313,7 +310,6 @@ The goal is a single entry point that searches across tasks and projects (and la
      - Read `q := e.Request.URL.Query().Get("q")` and trim/validate.
 
 3. **Query PocketBase for tasks and projects**
-
    - For tasks, use `RecordQuery("tasks")` with a filter like:
      - `title LIKE {:q} OR display_id LIKE {:q}` (wrap `%` around `q` for SQL LIKE).
    - For projects, query `projects` with a filter like:
@@ -321,7 +317,6 @@ The goal is a single entry point that searches across tasks and projects (and la
    - Limit results (e.g. 20 tasks + 20 projects) for performance.
 
 4. **Return a combined JSON payload**
-
    - Marshal tasks and projects into lightweight DTO structs (only fields you need in the UI).
    - Return `e.JSON(200, map[string]any{ "tasks": tasks, "projects": projects })`.
 
@@ -332,13 +327,11 @@ The goal is a single entry point that searches across tasks and projects (and la
 **Frontend – search UI and data flow**
 
 1. **Add a search input to the header**
-
    - In `src/components/site-header.tsx` (or equivalent):
      - Add a search input (or icon + input) that controls a local state `query`.
      - Use `useDebounce` (from `use-debounce`) to avoid firing on every keystroke.
 
 2. **Create a global search hook**
-
    - In `src/hooks/global-search.ts` (new file):
      - Export `useGlobalSearch(query: string)` using React Query:
        - `queryKey: ["global-search", query]`.
@@ -346,7 +339,6 @@ The goal is a single entry point that searches across tasks and projects (and la
        - `enabled: query.trim().length > 1`.
 
 3. **Render search results**
-
    - Option A: inline dropdown under the header search input:
      - Show grouped results (“Tasks”, “Projects”) with links to `/tasks/:id` or `/projects/:id/details`.
    - Option B: dedicated page `/search`:
@@ -354,7 +346,6 @@ The goal is a single entry point that searches across tasks and projects (and la
      - Pass the query via URL (`?q=...`) using `nuqs` or `useSearchParams`.
 
 4. **UX details**
-
    - Show a loading indicator while the query is running.
    - Handle empty states gracefully (“No matching tasks or projects found”).
    - Keyboard support:
@@ -385,13 +376,11 @@ The goal is a board view where tasks are grouped by status and can be dragged be
 **Frontend – basic board layout**
 
 1. **Decide the route**
-
    - Either:
      - Add a dedicated page `src/pages/task-board.tsx` with route `/tasks/board`, or
      - Add a board toggle to the existing `tasks.tsx` page (“List / Board” tabs).
 
 2. **Create a board page component**
-
    - New file: `src/pages/task-board.tsx` (if you choose a new page).
    - Use React Query to fetch tasks:
      - E.g. `useQuery(["tasks", "board"], () => pb.collection("tasks").getList(...))` with appropriate filters (active project, assignee, etc.).
@@ -408,17 +397,14 @@ The goal is a board view where tasks are grouped by status and can be dragged be
 **Drag & drop behavior**
 
 1. **Pick a DnD library**
-
    - Add a dependency such as `@dnd-kit/core` (or your preferred library) in `package.json`.
    - Keep the implementation minimal at first: drag a card from one column to another to change its status.
 
 2. **Set up DnD context**
-
    - In `task-board.tsx`, wrap columns in the library’s `DndContext` (or equivalent).
    - Mark each task card as a draggable item with an ID (task ID) and current status.
 
 3. **Handle drop events**
-
    - On drop:
      - Determine the target column (status) from the droppable zone.
      - Optionally determine the new `order` by looking at the index in the target column.

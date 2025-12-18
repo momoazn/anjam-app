@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 import { fa } from "@/constants/text";
 import { TaskWithProject } from "@/lib/pocketbase";
@@ -20,7 +20,7 @@ type TaskListGroupProps = {
   onSelectionChange?: (taskIds: string[]) => void;
 };
 
-export function TaskListGroup({
+function TaskListGroupInner({
   taskCount,
   status,
   tasks,
@@ -108,3 +108,5 @@ export function TaskListGroup({
     </section>
   );
 }
+
+export const TaskListGroup = memo(TaskListGroupInner);

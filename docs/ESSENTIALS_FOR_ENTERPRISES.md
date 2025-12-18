@@ -7,7 +7,6 @@ Many of these build on top of the startup essentials and extend them with strong
 ## 1. Multi‑Tenancy and Organizational Structure
 
 - **Explicit tenant/organization model**
-
   - Introduce an `organizations` (or similar) collection and associate users, groups, projects, and tasks with a tenant.
   - Ensure all queries and access rules are tenant‑scoped so data from different customers is strictly isolated.
 
@@ -21,12 +20,10 @@ Many of these build on top of the startup essentials and extend them with strong
 ## 2. Advanced RBAC and Governance
 
 - **Configurable roles and permissions**
-
   - Move beyond hard‑coded `admin/manager/supervisor/employee` roles to configurable role definitions per tenant.
   - Allow mapping of roles to permissions through data, not code only (e.g. per‑tenant permission policies in a collection).
 
 - **Fine‑grained access control**
-
   - Per‑project/space ACLs: owners, contributors, read‑only viewers.
   - Optional restrictions by group/department, with clear rules on cross‑group visibility.
 
@@ -36,12 +33,10 @@ Many of these build on top of the startup essentials and extend them with strong
 ## 3. Enterprise Authentication and Identity
 
 - **SSO integration**
-
   - Support SAML and/or OIDC with major identity providers (Okta, Azure AD, Google Workspace, etc.).
   - Allow per‑tenant SSO configuration.
 
 - **MFA/2FA**
-
   - Enforce multi‑factor authentication for certain users/roles or tenant‑wide.
 
 - **Provisioning and lifecycle**
@@ -51,7 +46,6 @@ Many of these build on top of the startup essentials and extend them with strong
 ## 4. Security, Compliance, and Auditing
 
 - **Comprehensive audit logging**
-
   - Immutable, queryable logs capturing:
     - Who changed what entity and field.
     - Before/after values where appropriate.
@@ -59,7 +53,6 @@ Many of these build on top of the startup essentials and extend them with strong
   - Ability to export logs or stream them to SIEM systems (Splunk, Datadog, etc.).
 
 - **Data protection and retention**
-
   - Configurable data retention policies (per tenant) for tasks, comments, and logs.
   - Legal hold or retention exceptions for specific projects.
   - Clear backup and restore procedures, including point‑in‑time recovery expectations.
@@ -72,12 +65,10 @@ Many of these build on top of the startup essentials and extend them with strong
 ## 5. Integrations and Automation
 
 - **Event webhooks**
-
   - Webhooks for key events: task created/updated/deleted, status changes, comments, time entries, project events, user changes.
   - Per‑tenant webhook management with signing and retry policies.
 
 - **First‑class integrations**
-
   - Slack/Teams notifications for channels and DMs.
   - Calendar integrations (Google/Microsoft) to sync due dates and key milestones.
   - Optional integrations with issue trackers, CRM, or development tools (Jira, GitHub, GitLab, etc.).
@@ -89,7 +80,6 @@ Many of these build on top of the startup essentials and extend them with strong
 ## 6. Scalability, Reliability, and Observability
 
 - **Scale‑ready architecture**
-
   - A path beyond single‑node SQLite if necessary (e.g. dedicated DB, replicas, or sharding strategy).
   - Background job processing for heavy tasks (reports, notifications, imports/exports) to keep request latency low.
 
@@ -101,12 +91,10 @@ Many of these build on top of the startup essentials and extend them with strong
 ## 7. Customization and Extensibility
 
 - **Custom fields and workflows**
-
   - Per‑tenant ability to define custom fields on tasks/projects (with types and validation).
   - Custom status workflows per project/space, rather than a single global status set.
 
 - **Configurable notifications and rules**
-
   - Let tenants define which events generate notifications, which channels are used, and which users/roles are subscribers.
 
 - **Extensible UI and reporting**
@@ -117,7 +105,6 @@ Many of these build on top of the startup essentials and extend them with strong
 Not always strictly required, but often expected for “project/portfolio management” tools in larger orgs.
 
 - **Epics, portfolios, and roadmaps**
-
   - Hierarchical planning structures: epics/initiatives containing tasks across multiple projects.
   - Roadmap views (timelines/Gantt) at project and portfolio levels.
 

@@ -1,4 +1,5 @@
 import { isToday } from "date-fns-jalali";
+import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,7 @@ type TaskListItemProps = {
   onSelectionChange?: (selected: boolean) => void;
 };
 
-export function TaskListItem({
+function TaskListItemInner({
   task,
   className,
   showProject = false,
@@ -186,3 +187,5 @@ export function TaskListItem({
     </div>
   );
 }
+
+export const TaskListItem = memo(TaskListItemInner);

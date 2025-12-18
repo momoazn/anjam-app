@@ -7,56 +7,69 @@ A focused plan for dependency upgrades and frontend architecture improvements.
 ## Phase 1: Dependency Upgrades
 
 ### 1.1 Frontend Dependencies
+
 **File:** `package.json`
 
 **Tasks:**
-- [ ] Run `bun outdated` to check for updates
-- [ ] Run `bun update` to apply minor/patch updates
-- [ ] Run `bun run check` to verify compatibility
-- [ ] Run `bun run test:run` to ensure tests pass
+
+- [x] Run `bun outdated` to check for updates
+- [x] Run `bun update` to apply minor/patch updates
+- [x] Run `bun run check` to verify compatibility
+- [x] Run `bun run test:run` to ensure tests pass
 
 ### 1.2 Backend Dependencies
+
 **File:** `backend/go.mod`
 
 **Tasks:**
-- [ ] Run `go get -u ./...` to update dependencies
-- [ ] Run `go mod tidy` to clean up
-- [ ] Run `go build ./backend` to verify compilation
+
+- [x] Run `go get -u ./...` to update dependencies
+- [x] Run `go mod tidy` to clean up
+- [x] Run `go build ./...` to verify compilation
 
 ---
 
 ## Phase 2: Frontend Architecture Improvements
 
 ### 2.1 Component Extraction from Large Pages
-**Target:** `src/pages/tasks.tsx` (693 lines)
+
+**Target:** `src/pages/tasks.tsx` (was 693 lines; now ~606 lines)
 
 **Extract to new files:**
+
 - `src/components/task/task-list-skeleton.tsx` - Loading skeleton
 - `src/components/task/task-empty-state.tsx` - Empty state UI
 
 **Tasks:**
-- [ ] Extract TaskListSkeleton component
-- [ ] Extract TaskEmptyState component
+
+- [x] Extract TaskListSkeleton component
+- [x] Extract TaskEmptyState component
 - [ ] Verify page still works correctly
 
 ### 2.2 Performance Optimizations
+
 **Files to modify:**
+
 - `src/components/task/task-list-item.tsx`
 - `src/components/task/task-list-group.tsx`
 
 **Tasks:**
-- [ ] Add React.memo to TaskListItem
-- [ ] Add React.memo to TaskListGroup
-- [ ] Verify useMemo dependencies in tasks page
+
+- [x] Add React.memo to TaskListItem
+- [x] Add React.memo to TaskListGroup
+- [x] Verify useMemo dependencies in tasks page
 
 ### 2.3 TanStack Query Improvements
+
 **File:** `src/app.tsx`
 
 **Tasks:**
-- [ ] Add retry with exponential backoff
-- [ ] Configure better error handling for network failures
+
+- [x] Add retry with exponential backoff
+- [x] Configure better error handling for network failures
 
 **Example config:**
+
 ```typescript
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,12 +83,15 @@ const queryClient = new QueryClient({
 ```
 
 ### 2.4 Suspense Boundaries (Optional)
+
 **Files to create:**
+
 - `src/components/suspense/route-suspense.tsx`
 
 **Tasks:**
-- [ ] Create route-level Suspense wrapper
-- [ ] Add route-specific loading skeletons
+
+- [x] Create route-level Suspense wrapper
+- [x] Add route-specific loading skeletons
 
 ---
 
@@ -91,8 +107,8 @@ const queryClient = new QueryClient({
 
 ## Success Criteria
 
-- [ ] All dependencies updated to latest stable
-- [ ] `bun run check` passes
-- [ ] `bun run test:run` passes
+- [x] All dependencies updated to latest stable
+- [x] `bun run check` passes
+- [x] `bun run test:run` passes
 - [ ] tasks.tsx reduced to <400 lines
 - [ ] No regression in functionality

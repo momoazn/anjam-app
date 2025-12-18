@@ -21,7 +21,6 @@ This document outlines the plan for integrating GitHub into the Task Manager App
 We need to extend the schema and add a secure way to store linkage metadata.
 
 1.  **`integrations` Collection (New - Server-only)**:
-
     - Purpose: Store GitHub SSO linkage metadata; PocketBase never stores long-lived OAuth tokens.
     - `user` (relation): Link to `users` collection.
     - `provider` (text): always `github` for now.
@@ -31,7 +30,6 @@ We need to extend the schema and add a secure way to store linkage metadata.
     - **ACL Rules**: `null` (Admin/Server-side only) to prevent API exposure.
 
 2.  **`projects` Collection**:
-
     - `github_repo_owner` (text): Owner of the linked repository.
     - `github_repo_name` (text): Name of the linked repository.
     - `github_repo_id` (text): Unique GitHub Repository ID (stable identifier).
@@ -47,7 +45,6 @@ We need to extend the schema and add a secure way to store linkage metadata.
 #### API Endpoints & Hooks
 
 1.  **OAuth Hook (`OnRecordAuthWithOAuth2Request`)**:
-
     - Handle GitHub SSO (first login creates user, subsequent logins attach metadata).
     - Validate GitHub primary email matches PocketBase user email to avoid duplicates.
     - Store `github_user_id`, `installation_id`, and profile metadata in `integrations`.
@@ -71,7 +68,6 @@ We need to extend the schema and add a secure way to store linkage metadata.
     - Show GitHub App installation status; block sync button if app isn’t installed on that repo.
     - "Sync Issues" button (triggers backend endpoint).
 2.  **Task Detail View**:
-
     - Display GitHub Issue badge/link (e.g., `#123 Open`).
     - Show "Create Branch" button (copy branch name format like `feature/task-id-title`).
 

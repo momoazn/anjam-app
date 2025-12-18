@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { PageErrorBoundary } from "@/components/error/page-error-boundary";
+import { RouteSuspense } from "@/components/suspense/route-suspense";
 import { fa } from "@/constants";
 import { can, Permission } from "./lib/permissions";
 import { UsersRoleOptions } from "./lib/pocketbase-types";
@@ -431,7 +432,26 @@ export const AppRoutes = () => {
     <PageErrorBoundary onRetry={() => window.location.reload()}>
       <Routes>
         {routes.map((route) => {
-          const content = <Title title={route.title}>{route.element}</Title>;
+          const routeKey =
+            route.path === "/"
+              ? "dashboard"
+              : route.path.startsWith("/projects")
+                ? "projects"
+                : route.path.startsWith("/tasks")
+                  ? "tasks"
+                  : route.path.startsWith("/users")
+                    ? "users"
+                    : route.path.startsWith("/reports")
+                      ? "reports"
+                      : route.path.startsWith("/notifications")
+                        ? "notifications"
+                        : undefined;
+
+          const content = (
+            <RouteSuspense routeKey={routeKey}>
+              <Title title={route.title}>{route.element}</Title>
+            </RouteSuspense>
+          );
           let element = content;
 
           if (route.protected) {

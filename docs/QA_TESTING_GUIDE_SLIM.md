@@ -84,7 +84,6 @@ Current E2E tests cover:
 **Recommended additional flows to test:**
 
 1. **Task Management**
-
    - Create task
    - Edit task
    - Change task status
@@ -92,7 +91,6 @@ Current E2E tests cover:
    - Add comment to task
 
 2. **Project Management**
-
    - Create project
    - Edit project
    - View project details
