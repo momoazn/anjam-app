@@ -46,24 +46,23 @@ export function NavMain({ items }: NavMainProps) {
       ].includes(i.title),
   );
 
-  const workspaceItems = restItems.filter((i) =>
-    [
-      fa.navigation.taskCalendar,
-      fa.navigation.myTasks,
-      fa.navigation.helps,
-    ].includes(i.title),
-  );
+  const workspaceTitles = new Set<string>([
+    fa.navigation.taskCalendar,
+    fa.navigation.myTasks,
+    fa.navigation.helps,
+  ]);
 
-  const adminItems = restItems.filter((i) =>
-    [
-      fa.navigation.groups,
-      fa.navigation.tags,
-      fa.navigation.reports,
-      fa.navigationLabels.timesheet,
-      fa.navigation.users,
-      fa.navigation.settings,
-    ].includes(i.title),
-  );
+  const adminTitles = new Set<string>([
+    fa.navigation.groups,
+    fa.navigation.tags,
+    fa.navigation.reports,
+    fa.navigationLabels.timesheet,
+    fa.navigation.users,
+    fa.navigation.settings,
+  ]);
+
+  const workspaceItems = restItems.filter((i) => workspaceTitles.has(i.title));
+  const adminItems = restItems.filter((i) => adminTitles.has(i.title));
 
   return (
     <SidebarGroup>
