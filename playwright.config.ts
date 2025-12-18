@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const workspaceGoCache = `${process.cwd()}/backend/.gocache`;
+const workspaceGoTmp = `${process.cwd()}/backend/.gotmp`;
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -36,9 +39,14 @@ export default defineConfig({
   webServer: [
     {
       command: "bun run dev:server",
-      url: "http://localhost:8090",
+      url: "http://localhost:8090/api/health",
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
+      env: {
+        ...process.env,
+        GOCACHE: workspaceGoCache,
+        GOTMPDIR: workspaceGoTmp,
+      },
     },
     {
       command: "bun run dev:client",
