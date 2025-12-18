@@ -70,12 +70,12 @@ export function TaskViews() {
   const counts = useTaskCounts();
   const { state, isMobile, setOpenMobile } = useSidebar();
 
-  const sections = [
-    { label: undefined, views: baseViews },
-    { label: fa.navigationLabels.ownership, views: ownershipViews },
-    { label: fa.navigationLabels.time, views: timeViews },
-    { label: fa.navigationLabels.status, views: statusViews },
-  ] as const;
+  const allViews = [
+    ...baseViews,
+    ...ownershipViews,
+    ...timeViews,
+    ...statusViews,
+  ];
 
   return (
     <SidebarGroup>
@@ -83,45 +83,36 @@ export function TaskViews() {
         <SidebarGroupLabel>{fa.navigation.taskViews}</SidebarGroupLabel>
       )}
       <SidebarGroupContent>
-        {sections.map((section) => (
-          <div key={section.label ?? "base"} className="space-y-1">
-            {state === "expanded" && section.label ? (
-              <div className="text-muted-foreground px-2 pt-2 text-[11px] font-medium">
-                {section.label}
-              </div>
-            ) : null}
-            <SidebarMenu>
-              {section.views.map((view) => (
-                <SidebarMenuItem key={view.url}>
-                  <SidebarMenuButton asChild tooltip={view.title}>
-                    <NavLink
-                      to={view.url}
-                      className={({ isActive }) =>
-                        isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : ""
-                      }
-                      onClick={() => {
-                        if (isMobile) {
-                          setOpenMobile(false);
-                        }
-                      }}
-                    >
-                      <view.icon />
-                      <span>{view.title}</span>
-                      {state === "expanded" && (
-                        <SidebarBadge
-                          count={view.getCount(counts)}
-                          variant={view.badgeVariant || "default"}
-                        />
-                      )}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </div>
-        ))}
+        <SidebarMenu>
+          {allViews.map((view) => (
+            <SidebarMenuItem key={view.url}>
+              <SidebarMenuButton asChild tooltip={view.title}>
+                <NavLink
+                  to={view.url}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : ""
+                  }
+                  onClick={() => {
+                    if (isMobile) {
+                      setOpenMobile(false);
+                    }
+                  }}
+                >
+                  <view.icon />
+                  <span>{view.title}</span>
+                  {state === "expanded" && (
+                    <SidebarBadge
+                      count={view.getCount(counts)}
+                      variant={view.badgeVariant || "default"}
+                    />
+                  )}
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
   );

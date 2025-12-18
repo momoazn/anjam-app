@@ -1,7 +1,12 @@
 import { NavMain } from "@/components/nav-main";
+import { QuickCreate } from "@/components/sidebar/quick-create";
+import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";
+import { TaskViews } from "@/components/sidebar/task-views";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -9,25 +14,29 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { fa } from "@/constants/text";
-import { can } from "@/lib/permissions";
+import { can, type Permission } from "@/lib/permissions";
 import { useAuthUser } from "@/store/auth-store";
 import {
+  Icon,
   IconBell,
   IconBuildingCommunity,
-  IconCalendar,
   IconChartBar,
   IconClock,
   IconDashboard,
-  IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
   IconSettings,
   IconTag,
-  IconUser,
   IconUsers,
 } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
+
+type NavItem = {
+  title: string;
+  url: string;
+  icon?: Icon;
+  permission?: Permission;
+};
 
 const data = {
   navMain: [
@@ -37,58 +46,44 @@ const data = {
       icon: IconDashboard,
     },
     {
+      title: fa.navigation.notifications,
+      url: "/notifications",
+      icon: IconBell,
+    },
+  ] as NavItem[],
+  navAdmin: [
+    {
       title: fa.navigation.groups,
       url: "/groups",
       icon: IconBuildingCommunity,
-      adminOnly: true,
-    },
-    {
-      title: fa.navigation.tasks,
-      url: "/tasks",
-      icon: IconListDetails,
+      permission: "groups.view",
     },
     {
       title: fa.navigation.tags,
       url: "/tags",
       icon: IconTag,
-    },
-    {
-      title: fa.navigation.taskCalendar,
-      url: "/tasks/calendar",
-      icon: IconCalendar,
-    },
-    {
-      title: fa.navigation.myTasks,
-      url: "/my-tasks",
-      icon: IconUser,
-    },
-    {
-      title: fa.navigation.projects,
-      url: "/projects",
-      icon: IconFolder,
-    },
-    {
-      title: fa.navigation.notifications,
-      url: "/notifications",
-      icon: IconBell,
+      permission: "tags.view",
     },
     {
       title: fa.navigation.reports,
       url: "/reports",
       icon: IconChartBar,
+      permission: "reports.view",
     },
     {
       title: fa.navigationLabels.timesheet,
       url: "/timesheet",
       icon: IconClock,
+      permission: "timesheet.view",
     },
     {
       title: fa.navigation.users,
       url: "/users",
       icon: IconUsers,
-      adminOnly: true,
-      supervisorOnly: true,
+      permission: "users.view",
     },
+  ] as NavItem[],
+  navSecondary: [
     {
       title: fa.navigation.helps,
       url: "/helps",
@@ -98,8 +93,9 @@ const data = {
       title: fa.navigation.settings,
       url: "/settings",
       icon: IconSettings,
+      permission: "settings.view",
     },
-  ],
+  ] as NavItem[],
 };
 
 function AppSidebarHeader() {
@@ -142,43 +138,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <AppSidebarHeader />
       <SidebarContent>
+        <QuickCreate />
+        <NavMain items={data.navMain} />
+        <ProjectsSubmenu />
+        <TaskViews />
         <NavMain
-          items={data.navMain.filter((item) => {
-            // Use new permission system
-            if (
-              item.title === fa.navigation.groups &&
-              !can(user.role, "groups.view")
-            )
-              return false;
-            if (
-              item.title === fa.navigation.users &&
-              !can(user.role, "users.view")
-            )
-              return false;
-            if (
-              item.title === fa.navigation.reports &&
-              !can(user.role, "reports.view")
-            )
-              return false;
-            if (
-              item.title === fa.navigation.tags &&
-              !can(user.role, "tags.view")
-            )
-              return false;
-            if (
-              item.title === fa.navigationLabels.timesheet &&
-              !can(user.role, "timesheet.view")
-            )
-              return false;
-            if (
-              item.title === fa.navigation.settings &&
-              !can(user.role, "settings.view")
-            )
-              return false;
-            return true;
-          })}
+          items={data.navAdmin.filter((item) =>
+            item.permission ? can(user.role, item.permission) : true,
+          )}
+          title={fa.navigationLabels.admin}
         />
       </SidebarContent>
+      <SidebarFooter>
+        <NavMain
+          items={data.navSecondary.filter((item) =>
+            item.permission ? can(user.role, item.permission) : true,
+          )}
+        />
+        <NavUser />
+      </SidebarFooter>
     </Sidebar>
   );
 }
