@@ -337,18 +337,18 @@ export default function TagsManagement() {
             {tags.map((tag) => (
               <Card
                 key={tag.id}
-                className="transition-shadow hover:shadow-md cursor-pointer"
+                className="cursor-pointer transition-shadow hover:shadow-md"
                 onClick={() => handleEdit(tag)}
               >
                 <CardContent className="flex items-center justify-between p-2">
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex min-w-0 items-center gap-2">
                     <div
-                      className="h-5 w-5 rounded flex-shrink-0"
+                      className="h-5 w-5 flex-shrink-0 rounded"
                       style={{ backgroundColor: tag.color }}
                     />
-                    <p className="font-medium text-sm truncate">{tag.name}</p>
+                    <p className="truncate text-sm font-medium">{tag.name}</p>
                   </div>
-                  <div className="flex gap-1 flex-shrink-0">
+                  <div className="flex flex-shrink-0 gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
