@@ -1342,11 +1342,11 @@
   },
   {
     "id": "pbc_1219621782",
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\"",
+    "updateRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\"",
+    "deleteRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\"",
     "name": "tags",
     "type": "base",
     "fields": [

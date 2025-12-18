@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Tag, Pencil, Trash2 } from "lucide-react";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
@@ -101,8 +101,8 @@ interface TagFormDialogProps {
 }
 
 function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
-  const [name, setName] = useState(tag?.name || "");
-  const [color, setColor] = useState(tag?.color || TAG_COLORS[0].value);
+  const [name, setName] = useState("");
+  const [color, setColor] = useState(TAG_COLORS[0].value);
   const { toast } = useToast();
 
   const createTag = useCreateTag({
@@ -157,11 +157,18 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
     onOpenChange(newOpen);
   };
 
-  // Update form when tag changes
-  if (tag && mode === "edit" && name !== tag.name) {
-    setName(tag.name || "");
-    setColor(tag.color || TAG_COLORS[0].value);
-  }
+  // Initialize form when dialog opens or tag changes
+  useEffect(() => {
+    if (open) {
+      if (tag && mode === "edit") {
+        setName(tag.name || "");
+        setColor(tag.color || TAG_COLORS[0].value);
+      } else {
+        setName("");
+        setColor(TAG_COLORS[0].value);
+      }
+    }
+  }, [open, tag, mode]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -328,7 +335,11 @@ export default function TagsManagement() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {tags.map((tag) => (
-              <Card key={tag.id} className="transition-shadow hover:shadow-md">
+              <Card
+                key={tag.id}
+                className="transition-shadow hover:shadow-md cursor-pointer"
+                onClick={() => handleEdit(tag)}
+              >
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3">
                     <div
@@ -343,7 +354,10 @@ export default function TagsManagement() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleEdit(tag)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(tag);
+                      }}
                       title={text.tagsManagement.editButton}
                     >
                       <Pencil className="h-4 w-4" />
@@ -351,7 +365,10 @@ export default function TagsManagement() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(tag)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(tag);
+                      }}
                       title={text.tagsManagement.deleteButton}
                     >
                       <Trash2 className="text-destructive h-4 w-4" />
