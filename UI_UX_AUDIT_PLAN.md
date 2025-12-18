@@ -109,10 +109,10 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 4.1 Design System 2.0 (RTL-First)
 
-- [ ] **Component Library Refactor**
+- [x] **Component Library Refactor**
   - **Action:** Build a cohesive library using tokens for Spacing (8pt grid), Colors (Semantic Success/Warning/Error), and Typography.
   - **Action:** Ensure all components use logical CSS properties (e.g., `margin-inline-start`) for native RTL support.
-- [ ] **Accessibility (WCAG 2.1 AA)**
+- [x] **Accessibility (WCAG 2.1 AA)**
   - **Contrast:** Ensure 4.5:1 text contrast ratio (fix gray text on dark cards).
   - **Touch Targets:** Minimum 44x44px for all mobile interactive elements.
   - **Focus States:** High-visibility focus rings for keyboard navigation.
@@ -120,23 +120,23 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 4.2 Advanced Analytics & Reporting
 
-- [ ] **Interactive Insights**
+- [x] **Interactive Insights**
   - **Action:** Replace static "Report" tables with interactive charts (Recharts) that allow clicking to drill down into data.
-- [ ] **Insights over Raw Data**
+- [x] **Insights over Raw Data**
   - **Action:** Instead of just charts, provide text insights (e.g., "Productivity is up 20% this week").
 
 ### 4.3 Onboarding & Contextual Help
 
-- [ ] **First-Run Experience**
+- [x] **First-Run Experience**
   - **Action:** specific onboarding flow for Admins vs. Members.
-- [ ] **Contextual Tooltips**
+- [x] **Contextual Tooltips**
   - **Action:** Add "Helper" icons (?) to complex forms explaining fields like "Weight" or "Priority logic".
 
 ### 4.4 Role-Based Experiences
 
-- [ ] **Adaptive Dashboards**
+- [x] **Adaptive Dashboards**
   - **Action:** Tailor Dashboard widgets based on user role (e.g., Admins see System Health/User stats; Members see My Tasks/Due Today).
-- [ ] **Permission-Aware Navigation**
+- [x] **Permission-Aware Navigation**
   - **Action:** Dynamic Sidebar that hides "Admin" sections completely for non-admin users to reduce noise.
 
 ---
