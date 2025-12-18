@@ -122,11 +122,11 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "bun x --bun prettier --write",
-      "bun x --bun eslint --fix"
+      "bun x --bun prettier --write --cache --cache-location .cache/prettier",
+      "bun x --bun eslint --fix --cache --cache-location .cache/eslint"
     ],
     "*.{json,md,yml,yaml}": [
-      "bun x --bun prettier --write"
+      "bun x --bun prettier --write --cache --cache-location .cache/prettier"
     ]
   }
 }

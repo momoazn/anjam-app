@@ -32,6 +32,7 @@ data/*
 !data/mock/**
 
 tmp/
+.cache/
 
 task-manager
 task-manager.exe
