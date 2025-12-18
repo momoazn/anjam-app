@@ -2,7 +2,7 @@
 
 ## Summary
 
-Comprehensive cleanup, organization, consolidation, and architecture improvement for the task-manager-app (Go backend + React frontend) to align with best practices and improve scalability.
+Comprehensive cleanup, organization, consolidation, and architecture improvement for the Anjam application (Go backend + React frontend) to align with best practices and improve scalability.
 
 ## Approach
 

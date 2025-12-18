@@ -48,7 +48,7 @@ COPY --from=frontend-builder /app/backend/dist ./backend/dist
 
 # Build the Go application
 WORKDIR /app/backend
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/task-manager .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/anjam .
 
 ###########
 # Stage 3 #
@@ -64,17 +64,17 @@ RUN apk add --no-cache ca-certificates tzdata
 ENV TZ=Etc/UTC
 
 # Copy the built binary
-COPY --from=backend-builder /app/task-manager /app/task-manager
+COPY --from=backend-builder /app/anjam /app/anjam
 
 # Create data directory and non-root user
 RUN mkdir -p /app/data \
-  && addgroup -S taskmanager \
-  && adduser -S -G taskmanager taskmanager \
-  && chown -R taskmanager:taskmanager /app
-USER taskmanager
+  && addgroup -S anjam \
+  && adduser -S -G anjam anjam \
+  && chown -R anjam:anjam /app
+USER anjam
 
 # Expose the default PocketBase port
 EXPOSE 8090
 
 # Run the application (backend binds to 0.0.0.0:8090 in production mode)
-CMD ["/app/task-manager", "--http=0.0.0.0:8090"]
+CMD ["/app/anjam", "--http=0.0.0.0:8090"]

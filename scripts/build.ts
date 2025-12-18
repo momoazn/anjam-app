@@ -12,6 +12,7 @@ const runWithEnvBat = path.join(devScriptsPath, "run-with-env.bat");
 const args = new Set(process.argv.slice(2));
 const currentPlatform = args.has("--current-platform");
 const shouldRun = args.has("--run");
+const useLegacyNames = args.has("--legacy-names");
 
 // Auto-detect current platform if flag is set
 if (currentPlatform) {
@@ -40,38 +41,58 @@ type Target = {
   env: NodeJS.ProcessEnv;
 };
 
-const targets: Target[] = [
-  {
-    name: "linux",
-    dir: "linux",
-    output: "task-manager",
-    env: {
-      GOOS: "linux",
-      GOARCH: "amd64",
-      CGO_ENABLED: "0",
-    } as unknown as NodeJS.ProcessEnv,
-  },
-  {
-    name: "windows",
-    dir: "windows",
-    output: "task-manager.exe",
-    env: {
-      GOOS: "windows",
-      GOARCH: "amd64",
-      CGO_ENABLED: "0",
-    } as unknown as NodeJS.ProcessEnv,
-  },
-  {
-    name: "macos",
-    dir: "macos",
-    output: "task-manager-macos",
-    env: {
-      GOOS: "darwin",
-      GOARCH: "amd64",
-      CGO_ENABLED: "0",
-    } as unknown as NodeJS.ProcessEnv,
-  },
-];
+function getTargets(): Target[] {
+  const legacyNames = {
+    linux: "task-manager",
+    windows: "task-manager.exe",
+    macos: "task-manager-macos",
+    windowsZip: "task-manager-windows.zip",
+  };
+
+  const newNames = {
+    linux: "anjam",
+    windows: "anjam.exe",
+    macos: "anjam-macos",
+    windowsZip: "anjam-windows.zip",
+  };
+
+  const names = useLegacyNames ? legacyNames : newNames;
+
+  return [
+    {
+      name: "linux",
+      dir: "linux",
+      output: names.linux,
+      env: {
+        GOOS: "linux",
+        GOARCH: "amd64",
+        CGO_ENABLED: "0",
+      } as unknown as NodeJS.ProcessEnv,
+    },
+    {
+      name: "windows",
+      dir: "windows",
+      output: names.windows,
+      env: {
+        GOOS: "windows",
+        GOARCH: "amd64",
+        CGO_ENABLED: "0",
+      } as unknown as NodeJS.ProcessEnv,
+    },
+    {
+      name: "macos",
+      dir: "macos",
+      output: names.macos,
+      env: {
+        GOOS: "darwin",
+        GOARCH: "amd64",
+        CGO_ENABLED: "0",
+      } as unknown as NodeJS.ProcessEnv,
+    },
+  ];
+}
+
+const targets = getTargets();
 
 function run(
   command: string,
@@ -134,10 +155,14 @@ function main() {
 
   if (!skipWindows && !skipZip) {
     console.log("Packaging Windows assets...");
+    const windowsTarget = targets.find((t) => t.name === "windows");
+    const zipName = useLegacyNames
+      ? "task-manager-windows.zip"
+      : "anjam-windows.zip";
     run("zip", [
       "-j",
-      path.join(releaseDir, "windows", "task-manager-windows.zip"),
-      path.join(releaseDir, "windows", "task-manager.exe"),
+      path.join(releaseDir, "windows", zipName),
+      path.join(releaseDir, "windows", windowsTarget?.output || "anjam.exe"),
       runBat,
       runWithEnvBat,
     ]);

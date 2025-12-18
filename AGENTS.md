@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-This is a **task and project management application** with a Go backend (PocketBase) and React frontend:
+This is the **Anjam (انجام)** task and project management application with a Go backend (PocketBase) and React frontend:
 
 - **Backend**: Go application using PocketBase framework, serving on port 8090
   - `backend/main.go`: Entry point with event handler registration and API routing
@@ -83,8 +83,9 @@ This is a **task and project management application** with a Go backend (PocketB
 - `bun run build` - Runs `scripts/build.ts` to produce the frontend, Linux backend, Windows backend, and release ZIP/binaries in `release/`.
 - `bun run build:client` - Build frontend only.
 - `bun run build:server` - Build only the Linux backend binary into `release/`.
-- `bun run build:windows` - Build the Windows backend binary and package `release/task-manager-windows.zip`.
+- `bun run build:windows` - Build the Windows backend binary and package `release/anjam-windows.zip`.
 - `bun run build:mac` - Build the macOS backend binary into `release/`.
+- `bun run build:legacy` - Build all platforms with legacy binary names (task-manager, task-manager.exe, etc.).
 
 ### Quality Checks (Run After Changes Complete)
 

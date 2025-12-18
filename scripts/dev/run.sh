@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ================================================================
-# Task Manager App - macOS/Linux Launcher
-# This shell script runs the task-manager with configurable
+# Anjam App - macOS/Linux Launcher
+# This shell script runs the anjam binary with configurable
 # host and port settings
 # ================================================================
 
@@ -28,18 +28,18 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
 fi
 
 # Check if executable exists
-if [[ ! -f "./task-manager" ]]; then
-    echo "Error: task-manager executable not found in current directory"
+if [[ ! -f "./anjam" ]]; then
+    echo "Error: anjam executable not found in current directory"
     echo "Please ensure the executable is in the same folder as this script"
     exit 1
 fi
 
 # Make script executable (in case it's not)
-chmod +x ./task-manager
+chmod +x ./anjam
 
 # Start the application with specified host and port
 echo "=========================================="
-echo "Starting Task Manager App..."
+echo "Starting Anjam App..."
 echo "=========================================="
 echo "Host: $HOST"
 echo "Port: $PORT"
@@ -53,4 +53,4 @@ echo ""
 
 # Pass host and port using the correct --http flag
 # Don't set --https at all - this prevents PocketBase from trying to use HTTPS
-./task-manager serve --http="$SERVER_ADDR"
+./anjam serve --http="$SERVER_ADDR"

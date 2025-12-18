@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide provides technical guidance for developers working on the task manager application.
+This guide provides technical guidance for developers working on the Anjam application.
 
 ## Prerequisites
 
@@ -108,9 +108,9 @@ bun run build:mac        # macOS backend only
 
 Build outputs are in `release/` directory:
 
-- `release/linux/task-manager` - Linux binary
-- `release/windows/task-manager.exe` + `task-manager-windows.zip`
-- `release/macos/task-manager-macos` - macOS binary
+- `release/linux/anjam` - Linux binary
+- `release/windows/anjam.exe` + `anjam-windows.zip`
+- `release/macos/anjam-macos` - macOS binary
 
 ## Database & Schema
 

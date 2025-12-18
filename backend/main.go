@@ -1,4 +1,4 @@
-// Package main implements a task manager application using PocketBase.
+// Package main implements the Anjam application using PocketBase.
 // It provides a web-based interface for managing projects, tasks, and users
 // with role-based access control and embedded static assets.
 package main

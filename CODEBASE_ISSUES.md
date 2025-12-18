@@ -2,7 +2,7 @@
 
 ## Summary
 
-This document outlines bugs, code quality issues, and potential improvements discovered during codebase analysis for the task-manager-app.
+This document outlines bugs, code quality issues, and potential improvements discovered during codebase analysis for the Anjam application.
 
 ---
 

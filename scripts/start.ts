@@ -8,11 +8,11 @@ function getBinaryPathForPlatform(): string {
   const platform = process.platform;
 
   if (platform === "linux") {
-    return path.join(releaseDir, "linux", "task-manager");
+    return path.join(releaseDir, "linux", "anjam");
   } else if (platform === "win32") {
-    return path.join(releaseDir, "windows", "task-manager.exe");
+    return path.join(releaseDir, "windows", "anjam.exe");
   } else if (platform === "darwin") {
-    return path.join(releaseDir, "macos", "task-manager-macos");
+    return path.join(releaseDir, "macos", "anjam-macos");
   }
 
   throw new Error(`Unsupported platform: ${platform}`);

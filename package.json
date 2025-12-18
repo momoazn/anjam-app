@@ -1,5 +1,5 @@
 {
-  "name": "task-manager-app",
+  "name": "anjam-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,6 +15,7 @@
     "build:windows": "bun run scripts/build.ts --skip-client --skip-linux --skip-mac",
     "build:mac": "bun run scripts/build.ts --skip-client --skip-linux --skip-windows",
     "build:run": "bun run scripts/build.ts --current-platform --run",
+    "build:legacy": "bun run scripts/build.ts --legacy-names",
     "start": "bun run scripts/start.ts",
     "test": "vitest",
     "test:run": "vitest run",
@@ -35,7 +36,7 @@
     "data:seed": "bun run scripts/seed-data.ts",
     "data:reset": "bun run data:truncate && bun run data:seed",
     "types:generate": "pocketbase-typegen --json ./backend/pb_schema.json --out src/lib/pocketbase-types.ts",
-    "clean": "rm -rf backend/dist node_modules tmp task-manager release",
+    "clean": "rm -rf backend/dist node_modules tmp release",
     "prepare": "husky"
   },
   "dependencies": {

@@ -17,8 +17,8 @@ export interface SavedFilter {
   isDefault?: boolean;
 }
 
-const STORAGE_KEY = "task_manager_saved_filters";
-const DEFAULT_FILTER_KEY = "task_manager_default_filter";
+const STORAGE_KEY = "anjam_saved_filters";
+const DEFAULT_FILTER_KEY = "anjam_default_filter";
 
 /**
  * Hook for managing saved filters in localStorage
@@ -31,12 +31,13 @@ export function useSavedFilters() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
+      const defaultId = localStorage.getItem(DEFAULT_FILTER_KEY);
+
       if (stored) {
         const filters = JSON.parse(stored) as SavedFilter[];
         setSavedFilters(filters);
       }
 
-      const defaultId = localStorage.getItem(DEFAULT_FILTER_KEY);
       setDefaultFilterId(defaultId);
     } catch {
       // Silently fail - filters will just be empty
