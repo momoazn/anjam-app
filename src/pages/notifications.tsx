@@ -10,11 +10,12 @@ import {
 } from "@tabler/icons-react";
 import { format, isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,7 +43,6 @@ import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 import { toast } from "sonner";
-import { useRef } from "react";
 
 type FilterType = "all" | "unread" | "read";
 type SortType = "newest" | "oldest";
@@ -84,10 +84,14 @@ function NotificationItem({
   notification,
   onMarkAsRead,
   onDelete,
+  selected,
+  onToggleSelect,
 }: {
   notification: NotificationsRecord;
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
+  selected: boolean;
+  onToggleSelect: (id: string) => void;
 }) {
   return (
     <div
@@ -97,6 +101,13 @@ function NotificationItem({
       )}
       data-interactive-item
     >
+      <div className="pt-1">
+        <Checkbox
+          checked={selected}
+          onCheckedChange={() => onToggleSelect(notification.id)}
+          aria-label={fa.notifications.selected}
+        />
+      </div>
       {/* Actions - Left side */}
       <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         {!notification.read && (
@@ -193,6 +204,7 @@ export default function Notifications() {
   const clearAll = useClearAll();
   const clearRead = useClearRead();
   const pendingDeletesRef = useRef(new Map<string, number>());
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [filter, setFilter] = useQueryState(
     "filter",
@@ -285,6 +297,24 @@ export default function Notifications() {
         },
       },
     });
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const clearSelection = () => setSelectedIds([]);
+
+  const bulkMarkRead = () => {
+    selectedIds.forEach((id) => markAsRead.mutate(id));
+    clearSelection();
+  };
+
+  const bulkDelete = () => {
+    selectedIds.forEach((id) => handleDelete(id));
+    clearSelection();
   };
 
   return (
@@ -437,22 +467,44 @@ export default function Notifications() {
         className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         data-animate-stagger
       >
-        <Tabs
-          value={filter}
-          onValueChange={(value) => setFilter(value as FilterType)}
-        >
-          <TabsList>
-            <TabsTrigger value="all">
-              {fa.notifications.filters.all}
-            </TabsTrigger>
-            <TabsTrigger value="unread">
-              {fa.notifications.filters.unread}
-            </TabsTrigger>
-            <TabsTrigger value="read">
-              {fa.notifications.filters.read}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {selectedIds.length > 0 ? (
+          <div className="bg-muted flex flex-wrap items-center gap-2 rounded-lg p-2">
+            <span className="text-sm font-medium">
+              {digitsEnToFa(selectedIds.length)} {fa.notifications.selected}
+            </span>
+            <Button size="sm" variant="outline" onClick={bulkMarkRead}>
+              {fa.notifications.actions.markAsRead}
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={bulkDelete}
+              disabled={deleteNotification.isPending}
+            >
+              {fa.notifications.actions.delete}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={clearSelection}>
+              {fa.notifications.deselectAll}
+            </Button>
+          </div>
+        ) : (
+          <Tabs
+            value={filter}
+            onValueChange={(value) => setFilter(value as FilterType)}
+          >
+            <TabsList>
+              <TabsTrigger value="all">
+                {fa.notifications.filters.all}
+              </TabsTrigger>
+              <TabsTrigger value="unread">
+                {fa.notifications.filters.unread}
+              </TabsTrigger>
+              <TabsTrigger value="read">
+                {fa.notifications.filters.read}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -533,6 +585,8 @@ export default function Notifications() {
                           notification={notification}
                           onMarkAsRead={handleMarkAsRead}
                           onDelete={handleDelete}
+                          selected={selectedIds.includes(notification.id)}
+                          onToggleSelect={toggleSelect}
                         />
                       ))}
                     </div>
