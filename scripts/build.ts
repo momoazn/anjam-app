@@ -11,6 +11,7 @@ const runWithEnvBat = path.join(devScriptsPath, "run-with-env.bat");
 
 const args = new Set(process.argv.slice(2));
 const currentPlatform = args.has("--current-platform");
+const shouldRun = args.has("--run");
 
 // Auto-detect current platform if flag is set
 if (currentPlatform) {
@@ -112,6 +113,7 @@ function buildTarget(target: Target) {
     env: target.env,
     cwd: path.join(process.cwd(), "backend"),
   });
+  return outputPath;
 }
 
 function main() {
@@ -122,9 +124,11 @@ function main() {
     run("bun", ["x", "--bun", "vite", "build"]);
   }
 
+  let builtBinaryPath: string | null = null;
+  
   targets.forEach((target) => {
     if (shouldBuild(target.name)) {
-      buildTarget(target);
+      builtBinaryPath = buildTarget(target);
     }
   });
 
@@ -137,6 +141,19 @@ function main() {
       runBat,
       runWithEnvBat,
     ]);
+  }
+
+  // Run the binary if --run flag is provided
+  if (shouldRun && builtBinaryPath) {
+    // For Windows, we need to handle the path differently
+    if (process.platform === "win32") {
+      // Use cmd /c to run the executable on Windows
+      run("cmd", ["/c", builtBinaryPath]);
+    } else {
+      // On Unix-like systems, make the binary executable first
+      run("chmod", ["+x", builtBinaryPath]);
+      run(builtBinaryPath, []);
+    }
   }
 }
 

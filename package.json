@@ -13,6 +13,8 @@
     "build:server": "bun run scripts/build.ts --skip-client --skip-windows --skip-mac",
     "build:windows": "bun run scripts/build.ts --skip-client --skip-linux --skip-mac",
     "build:mac": "bun run scripts/build.ts --skip-client --skip-linux --skip-windows",
+    "build:run": "bun run scripts/build.ts --current-platform --run",
+    "start": "bun run scripts/start.ts",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
