@@ -65,6 +65,7 @@ export {
   useGroupUsers,
   useGroupProjects,
   useCreateGroup,
+  useCreateGroupWithManager,
   useUpdateGroup,
   useDeleteGroup,
   useToggleGroupActive,

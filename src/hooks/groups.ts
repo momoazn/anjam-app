@@ -6,7 +6,7 @@
  */
 
 import { useQuery, UseMutationOptions } from "@tanstack/react-query";
-import { pb } from "@/lib/pocketbase";
+import { customApiCall, pb } from "@/lib/pocketbase";
 import {
   GroupsResponse,
   GroupsRecord,
@@ -20,6 +20,21 @@ import { createMutation } from "./use-mutation-factory";
 type CreateGroupVariables = Omit<GroupsRecord, "id" | "created" | "updated">;
 type UpdateGroupVariables = { id: string; updates: Partial<GroupsRecord> };
 
+type CreateGroupWithManagerVariables = {
+  group: { name: string; description?: string };
+  manager: {
+    username: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    email?: string;
+  };
+};
+
+type CreateGroupWithManagerResponse = {
+  data: { groupId: string; managerId: string };
+};
+
 const useCreateGroupMutation = createMutation<
   GroupsResponse,
   Error,
@@ -28,6 +43,24 @@ const useCreateGroupMutation = createMutation<
   (groupData) => pb.collection("groups").create(groupData),
   (client) => {
     mutationInvalidators.crud.groups.create(client);
+  },
+);
+
+const useCreateGroupWithManagerMutation = createMutation<
+  CreateGroupWithManagerResponse,
+  Error,
+  CreateGroupWithManagerVariables
+>(
+  (payload) =>
+    customApiCall<CreateGroupWithManagerResponse>(
+      "/api/v1/groups/create-with-manager",
+      { method: "POST", body: payload },
+    ),
+  (client) => {
+    client.invalidateQueries({ queryKey: queryKeys.groups.all });
+    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
+    client.invalidateQueries({ queryKey: queryKeys.users.all });
+    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
   },
 );
 
@@ -154,6 +187,16 @@ export function useCreateGroup(
   options?: UseMutationOptions<GroupsResponse, Error, CreateGroupVariables>,
 ) {
   return useCreateGroupMutation(options);
+}
+
+export function useCreateGroupWithManager(
+  options?: UseMutationOptions<
+    CreateGroupWithManagerResponse,
+    Error,
+    CreateGroupWithManagerVariables
+  >,
+) {
+  return useCreateGroupWithManagerMutation(options);
 }
 
 /**
