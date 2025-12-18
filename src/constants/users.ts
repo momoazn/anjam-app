@@ -52,6 +52,16 @@ export const users = {
     cannotDeactivateAdmin: "نمی‌توان حساب ادمین را غیرفعال کرد",
     toggleStatusError: "خطا در تغییر وضعیت کاربر",
     fetchLogsError: "خطا در دریافت سوابق ورود",
+    deleteError: "خطا در حذف کاربر",
+  },
+  bulk: {
+    toggleActive: "تغییر وضعیت",
+    unblock: "رفع مسدودی",
+    delete: "حذف گروهی",
+    deleteConfirm: "آیا از حذف {count} کاربر مطمئن هستید؟",
+    updated: "عملیات گروهی انجام شد",
+    deleted: "کاربران حذف شدند",
+    error: "عملیات گروهی ناموفق بود",
   },
   pendingActivation: {
     title: "حساب شما در انتظار تأیید است",

@@ -8,11 +8,12 @@ import {
   Trash,
   Unlock,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -30,7 +41,7 @@ import {
 } from "@/components/ui/table";
 import { fa } from "@/constants/text";
 import { UsersResponse } from "@/lib/pocketbase-types";
-import { useToggleUserActive, useUnblockUser } from "@/hooks";
+import { useDeleteUser, useToggleUserActive, useUnblockUser } from "@/hooks";
 import { UserAvatar } from "../user-avatar";
 import { UserLoginLogsDialog } from "./user-login-logs-dialog";
 
@@ -51,6 +62,8 @@ export function UserListTable({
 }: UserListTableProps) {
   const [selectedUserForLogs, setSelectedUserForLogs] =
     useState<UsersResponse | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const toggleActiveMutation = useToggleUserActive({
     onSuccess: (data) => {
@@ -78,6 +91,81 @@ export function UserListTable({
     },
   });
 
+  const deleteUserMutation = useDeleteUser({
+    onSuccess: () => {
+      onUpdate?.();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : fa.users.actions.deleteError,
+      );
+    },
+  });
+
+  const selectableUsers = useMemo(() => {
+    if (!isAdmin) return [];
+    return users.filter((u) => u.role !== "admin");
+  }, [users, isAdmin]);
+
+  const allSelected =
+    selectableUsers.length > 0
+      ? selectableUsers.every((u) => selectedIds.includes(u.id))
+      : false;
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds([]);
+      return;
+    }
+    setSelectedIds(selectableUsers.map((u) => u.id));
+  };
+
+  const bulkToggleActive = async () => {
+    if (!isAdmin || selectedIds.length === 0) return;
+    try {
+      await Promise.all(
+        selectedIds.map((id) => toggleActiveMutation.mutateAsync(id)),
+      );
+      toast.success(fa.users.bulk.updated);
+      setSelectedIds([]);
+    } catch {
+      toast.error(fa.users.bulk.error);
+    }
+  };
+
+  const bulkUnblock = async () => {
+    if (!isAdmin || selectedIds.length === 0) return;
+    try {
+      await Promise.all(
+        selectedIds.map((id) => unblockUserMutation.mutateAsync(id)),
+      );
+      toast.success(fa.users.bulk.updated);
+      setSelectedIds([]);
+    } catch {
+      toast.error(fa.users.bulk.error);
+    }
+  };
+
+  const confirmBulkDelete = async () => {
+    if (!isAdmin || selectedIds.length === 0) return;
+    try {
+      await Promise.all(
+        selectedIds.map((id) => deleteUserMutation.mutateAsync(id)),
+      );
+      toast.success(fa.users.bulk.deleted);
+      setSelectedIds([]);
+      setBulkDeleteOpen(false);
+    } catch {
+      toast.error(fa.users.bulk.error);
+    }
+  };
+
   const handleToggleActive = (user: UsersResponse) => {
     if (!isAdmin) return;
     toggleActiveMutation.mutate(user.id);
@@ -90,9 +178,41 @@ export function UserListTable({
 
   return (
     <>
+      {isAdmin && selectedIds.length > 0 ? (
+        <div className="bg-muted mb-3 flex flex-wrap items-center gap-2 rounded-lg p-2">
+          <span className="text-sm font-medium">
+            {digitsEnToFa(selectedIds.length)} {fa.notifications.selected}
+          </span>
+          <Button size="sm" variant="outline" onClick={bulkToggleActive}>
+            {fa.users.bulk.toggleActive}
+          </Button>
+          <Button size="sm" variant="outline" onClick={bulkUnblock}>
+            {fa.users.bulk.unblock}
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => setBulkDeleteOpen(true)}
+          >
+            {fa.users.bulk.delete}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>
+            {fa.notifications.deselectAll}
+          </Button>
+        </div>
+      ) : null}
       <Table data-animate-stagger>
         <TableHeader>
           <TableRow>
+            {isAdmin ? (
+              <TableHead className="w-10 text-center">
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label={fa.notifications.selectAll}
+                />
+              </TableHead>
+            ) : null}
             <TableHead className="text-right">
               {fa.users.table.columns.user}
             </TableHead>
@@ -123,6 +243,16 @@ export function UserListTable({
         <TableBody data-animate-stagger>
           {users.map((user) => (
             <TableRow key={user.id} data-interactive-item>
+              {isAdmin ? (
+                <TableCell className="w-10 text-center">
+                  <Checkbox
+                    checked={selectedIds.includes(user.id)}
+                    onCheckedChange={() => toggleSelect(user.id)}
+                    aria-label={fa.notifications.selected}
+                    disabled={user.role === "admin"}
+                  />
+                </TableCell>
+              ) : null}
               <TableCell className="flex text-right">
                 <div className="flex items-center justify-end gap-2 self-start">
                   <UserAvatar user={user} />
@@ -228,6 +358,7 @@ export function UserListTable({
                         size="icon"
                         className="text-destructive"
                         onClick={() => onDelete(user)}
+                        aria-label={fa.users.delete.title}
                       >
                         <Trash className="size-4" />
                       </Button>
@@ -247,6 +378,29 @@ export function UserListTable({
           onOpenChange={(open) => !open && setSelectedUserForLogs(null)}
         />
       )}
+
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent className="text-right">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{fa.users.bulk.delete}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {fa.users.bulk.deleteConfirm.replace(
+                "{count}",
+                digitsEnToFa(selectedIds.length).toString(),
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
+            <AlertDialogCancel>{fa.common.cancel}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmBulkDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {fa.users.delete.title}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

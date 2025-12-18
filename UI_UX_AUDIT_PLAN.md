@@ -60,12 +60,12 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 2.3 Visual Modernization (Basics)
 
-- [ ] **Consistent Typography Scale**
+- [x] **Consistent Typography Scale**
   - **Action:** Enforce a strict scale:
     - Page Titles: **24–28pt** (Bold)
     - Section Headers: **16–18pt** (Medium)
     - Body Text: **14–16pt** (Regular)
-- [ ] **Number Formatting**
+- [x] **Number Formatting**
   - **Action:** Ensure all numerals use Persian digits (۰-۹) consistently.
 - [x] **Metadata scanning**
   - **Action:** Update list items (Recent Activity, Overdue) to show **Assignee Avatar**, **Priority Pill**, and **Due Date colors** to aid recognition rather than recall.
@@ -97,7 +97,7 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 3.3 Bulk Actions
 
-- [ ] **Batch Operations**
+- [x] **Batch Operations**
   - **Action:** Add checkboxes to Task, Notification, and User lists. Show a floating action bar for "Bulk Delete", "Mark Read", or "Change Status".
 
 ---

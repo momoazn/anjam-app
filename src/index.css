@@ -20,6 +20,23 @@
   a[disabled] {
     @apply cursor-not-allowed;
   }
+
+  h1 {
+    @apply text-[28px] leading-tight font-bold;
+  }
+
+  h2 {
+    @apply text-[18px] leading-snug font-medium;
+  }
+
+  h3 {
+    @apply text-[16px] leading-snug font-medium;
+  }
+
+  p,
+  li {
+    @apply text-[15px];
+  }
 }
 
 @font-face {
