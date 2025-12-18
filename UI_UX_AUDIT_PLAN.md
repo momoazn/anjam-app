@@ -11,16 +11,16 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 1.1 Form Validation & Logic Issues
 
-- [ ] **Fix `CreateGroup` Form Validation** (High Priority)
+- [x] **Fix `CreateGroup` Form Validation** (High Priority)
   - **Issue:** Form fails submission regardless of "Existing" or "New" manager selection due to incorrect Zod schema logic.
   - **Action:** Refactor `src/pages/create-group.tsx` schema to conditionally require fields based on `managerMode`.
-- [ ] **Enforce Mandatory Fields in `CreateTask`**
+- [x] **Enforce Mandatory Fields in `CreateTask`**
   - **Issue:** Users can create "ghost tasks" without Titles or Due Dates.
   - **Action:** Update `src/components/forms/task-fields.tsx` to require Title and Due Date. Add inline error messages (e.g., "عنوان الزامی است").
 
 ### 1.2 System Stability
 
-- [ ] **Fix `EditUser` Page Crash**
+- [x] **Fix `EditUser` Page Crash**
   - **Issue:** White-screen crash (`Cannot destructure property...`) when editing users.
   - **Action:** Implement a `try/catch` block or Error Boundary in `src/pages/edit-user.tsx` and ensure `useUser` data is loaded before destructuring.
 

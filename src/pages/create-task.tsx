@@ -22,7 +22,7 @@ const taskFormSchema = z.object({
   title: z
     .string({ required_error: fa.common.validation.required })
     .min(1, { message: fa.errors.validation.titleRequired }),
-  description: z.string({ required_error: fa.common.validation.required }),
+  description: z.string().optional(),
   assignee: z.string({ required_error: fa.common.validation.required }),
   priority: z.nativeEnum(TasksPriorityOptions, {
     required_error: fa.errors.validation.invalidOption,
@@ -33,9 +33,10 @@ const taskFormSchema = z.object({
     invalid_type_error: fa.errors.validation.invalidOption,
   }),
   project: z.string().optional(),
-  deadline: z
-    .date({ invalid_type_error: fa.errors.validation.invalidDate })
-    .optional(),
+  deadline: z.date({
+    required_error: fa.common.validation.required,
+    invalid_type_error: fa.errors.validation.invalidDate,
+  }),
   estimated_hours: z.coerce
     .number({
       invalid_type_error: fa.errors.validation.numberInvalid,
