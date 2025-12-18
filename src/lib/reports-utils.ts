@@ -8,7 +8,7 @@ import {
 import { faIR } from "date-fns/locale";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { TaskWithProject } from "./pocketbase";
-import type { UsersRecord } from "./pocketbase-types";
+import type { IsoAutoDateString, UsersRecord } from "./pocketbase-types";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
@@ -746,6 +746,8 @@ export function computeProductivityTrend(
         role: UsersRoleOptions.employee,
         password: "",
         tokenKey: "",
+        created: "" as unknown as IsoAutoDateString,
+        updated: "" as unknown as IsoAutoDateString,
       } satisfies Partial<UsersRecord> &
         Pick<UsersRecord, "id" | "username" | "role" | "password" | "tokenKey">,
     ],

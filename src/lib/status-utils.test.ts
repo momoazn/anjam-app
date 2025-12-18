@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { TasksResponse } from "./pocketbase-types";
 import {
   Collections,
+  type IsoAutoDateString,
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "./pocketbase-types";
@@ -24,8 +25,8 @@ const createMockTask = (
   id: "task1",
   collectionId: Collections.Tasks,
   collectionName: Collections.Tasks,
-  created: "2024-01-01",
-  updated: "2024-01-01",
+  created: "2024-01-01" as unknown as IsoAutoDateString,
+  updated: "2024-01-01" as unknown as IsoAutoDateString,
   display_id: "TST-001",
   title: "Test Task",
   description: "",

@@ -10,7 +10,10 @@ import {
   useDeleteProject,
 } from "./projects";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ProjectsResponse } from "@/lib/pocketbase-types";
+import type {
+  IsoAutoDateString,
+  ProjectsResponse,
+} from "@/lib/pocketbase-types";
 import { Collections } from "@/lib/pocketbase-types";
 
 // Mock data
@@ -66,8 +69,8 @@ describe("useProjects", () => {
         description: "Test project",
         collectionId: Collections.Projects,
         collectionName: Collections.Projects,
-        created: "2024-01-01T00:00:00Z",
-        updated: "2024-01-01T00:00:00Z",
+        created: "2024-01-01T00:00:00Z" as unknown as IsoAutoDateString,
+        updated: "2024-01-01T00:00:00Z" as unknown as IsoAutoDateString,
       },
     ];
 
