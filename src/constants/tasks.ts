@@ -243,6 +243,7 @@ export const tasks = {
       "مطمئنید که می‌خواهید این تسک را حذف کنید؟ بعد از حذف، دیگر در فهرست‌ها نمایش داده نمی‌شود.",
     confirm: shared.confirm,
     cancel: shared.cancel,
+    queued: "تسک برای حذف در صف قرار گرفت",
     success: "تسک حذف شد",
     error: "نتوانستیم تسک را حذف کنیم: {error}",
   },

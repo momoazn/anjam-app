@@ -41,6 +41,8 @@ import {
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
+import { toast } from "sonner";
+import { useRef } from "react";
 
 type FilterType = "all" | "unread" | "read";
 type SortType = "newest" | "oldest";
@@ -190,6 +192,7 @@ export default function Notifications() {
   const deleteNotification = useDeleteNotification();
   const clearAll = useClearAll();
   const clearRead = useClearRead();
+  const pendingDeletesRef = useRef(new Map<string, number>());
 
   const [filter, setFilter] = useQueryState(
     "filter",
@@ -257,7 +260,31 @@ export default function Notifications() {
   };
 
   const handleDelete = (id: string) => {
-    deleteNotification.mutate(id);
+    const existing = pendingDeletesRef.current.get(id);
+    if (existing) {
+      window.clearTimeout(existing);
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      pendingDeletesRef.current.delete(id);
+      deleteNotification.mutate(id);
+    }, 5000);
+
+    pendingDeletesRef.current.set(id, timeoutId);
+
+    toast(fa.notifications.actions.deleteQueued, {
+      duration: 5000,
+      action: {
+        label: fa.common.undo,
+        onClick: () => {
+          const t = pendingDeletesRef.current.get(id);
+          if (t) {
+            window.clearTimeout(t);
+            pendingDeletesRef.current.delete(id);
+          }
+        },
+      },
+    });
   };
 
   return (

@@ -9,7 +9,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -60,6 +60,7 @@ export default function TaskDetails() {
   const navigate = useNavigate();
   const authUser = useAuthUser();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const pendingDeleteRef = useRef<number | null>(null);
 
   const { data: task, isLoading: taskLoading } = useTask({
     id: id ?? "",
@@ -548,7 +549,33 @@ export default function TaskDetails() {
               {fa.tasks.delete.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteTask.mutate(task.id)}
+              onClick={() => {
+                if (!task?.id) return;
+
+                if (pendingDeleteRef.current) {
+                  window.clearTimeout(pendingDeleteRef.current);
+                }
+
+                pendingDeleteRef.current = window.setTimeout(() => {
+                  pendingDeleteRef.current = null;
+                  deleteTask.mutate(task.id);
+                }, 5000);
+
+                toast(fa.tasks.delete.queued, {
+                  duration: 5000,
+                  action: {
+                    label: fa.common.undo,
+                    onClick: () => {
+                      if (pendingDeleteRef.current) {
+                        window.clearTimeout(pendingDeleteRef.current);
+                        pendingDeleteRef.current = null;
+                      }
+                    },
+                  },
+                });
+
+                setShowDeleteDialog(false);
+              }}
               disabled={deleteTask.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
             >

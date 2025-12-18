@@ -30,6 +30,7 @@ export const notifications = {
   actions: {
     markAsRead: "خوانده شد",
     delete: shared.delete,
+    deleteQueued: "اعلان برای حذف در صف قرار گرفت",
     viewAll: "مشاهده همه",
     clearRead: "پاک کردن خوانده‌شده‌ها",
   },

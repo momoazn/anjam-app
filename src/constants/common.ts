@@ -8,6 +8,7 @@ export const common = {
   submit: shared.submit,
   delete: shared.delete,
   save: shared.save,
+  undo: "بازگردانی",
   saving: shared.saving,
   edit: shared.edit,
   create: shared.create,

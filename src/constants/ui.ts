@@ -14,4 +14,7 @@ export const datePicker = {
 
 export const navigationLabels = {
   timesheet: "تایم‌شیت",
+  ownership: "مالکیت",
+  time: "زمان",
+  status: "وضعیت",
 } as const;

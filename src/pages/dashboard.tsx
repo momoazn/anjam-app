@@ -53,6 +53,8 @@ import { useNotifications, useProjects, useTasks } from "@/hooks";
 import { useAuthRole, useAuthUser } from "@/store/auth-store";
 import { TasksStatusOptions, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { taskStatusBgColors } from "@/lib/status-utils";
+import { UserAvatar } from "@/components/user-avatar";
+import { priorityColors } from "@/lib/status-utils";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -544,15 +546,27 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full justify-start gap-2"
-              onClick={() => navigate("/my-tasks")}
-            >
-              <ListTodo className="h-4 w-4" />
-              {fa.dashboard.cards.myTasks}
-            </Button>
+            {stats && stats.overdue > 0 ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start gap-2"
+                onClick={() => navigate("/tasks?due=overdue")}
+              >
+                <AlertTriangle className="h-4 w-4" />
+                {fa.dashboard.cards.reviewOverdue}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start gap-2"
+                onClick={() => navigate("/tasks/new")}
+              >
+                <Plus className="h-4 w-4" />
+                {fa.dashboard.cards.createTask}
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -761,17 +775,29 @@ export default function Dashboard() {
                       taskStatusBgColors[task.status]
                     }`}
                   />
+                  <UserAvatar
+                    user={task.expand?.assignee}
+                    className="h-7 w-7"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{task.title}</p>
                     <p className="text-muted-foreground text-xs">
                       {task?.expand?.project?.name ||
                         fa.dashboard.cards.noProject}{" "}
-                      • {format(new Date(task.created), "MM/dd")}
+                      • {digitsEnToFa(format(new Date(task.created), "MM/dd"))}
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-xs">
-                    {fa.tasks.status[task.status]}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className={`${priorityColors[task.priority]} text-xs`}
+                    >
+                      {fa.tasks.priority[task.priority]}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {fa.tasks.status[task.status]}
+                    </Badge>
+                  </div>
                 </div>
               ))}
               {recentTasks.length === 0 && (
@@ -819,7 +845,7 @@ export default function Dashboard() {
                   </span>
                   <span className="text-destructive text-xs font-medium">
                     {task.deadline
-                      ? format(new Date(task.deadline), "MM/dd")
+                      ? digitsEnToFa(format(new Date(task.deadline), "MM/dd"))
                       : ""}
                   </span>
                 </div>
