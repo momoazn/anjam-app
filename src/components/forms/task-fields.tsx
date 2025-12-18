@@ -1,4 +1,4 @@
-import type { Control, FieldValues } from "react-hook-form";
+import type { Control } from "react-hook-form";
 import { useParams } from "react-router-dom";
 
 import DatePicker from "@/components/ui/date-picker";
@@ -34,12 +34,27 @@ import {
 } from "../ui/select";
 import { TimeEstimateFields } from "./time-estimate-fields";
 
-type TaskFieldsProps = {
-  control: Control<FieldValues>;
+type TaskFormData = {
+  title: string;
+  description?: string;
+  assignee: string;
+  priority: TasksPriorityOptions;
+  status: TasksStatusOptions;
+  project?: string;
+  deadline?: Date;
+  estimated_hours?: number;
+  estimated_minutes?: number;
+};
+
+type TaskFieldsProps<T extends TaskFormData> = {
+  control: Control<T>;
   isInProject?: boolean;
 };
 
-export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
+export function TaskFields<T extends TaskFormData>({
+  control,
+  isInProject = false,
+}: TaskFieldsProps<T>) {
   const { id: projectId } = useParams<{ id: string }>();
   const actualIsInProject = isInProject || Boolean(projectId);
 
