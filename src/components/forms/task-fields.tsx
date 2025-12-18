@@ -36,7 +36,7 @@ import { TimeEstimateFields } from "./time-estimate-fields";
 
 type TaskFormData = {
   title: string;
-  description?: string;
+  description: string;
   assignee: string;
   priority: TasksPriorityOptions;
   status: TasksStatusOptions;
@@ -46,15 +46,12 @@ type TaskFormData = {
   estimated_minutes?: number;
 };
 
-type TaskFieldsProps<T extends TaskFormData> = {
-  control: Control<T>;
+type TaskFieldsProps = {
+  control: Control<TaskFormData>;
   isInProject?: boolean;
 };
 
-export function TaskFields<T extends TaskFormData>({
-  control,
-  isInProject = false,
-}: TaskFieldsProps<T>) {
+export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   const { id: projectId } = useParams<{ id: string }>();
   const actualIsInProject = isInProject || Boolean(projectId);
 

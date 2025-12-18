@@ -18,40 +18,49 @@ import {
 import { parseTimeInput } from "@/lib/time-utils";
 import { useAuthUser } from "@/store/auth-store";
 
-const taskFormSchema = z.object({
-  title: z
-    .string({ required_error: fa.common.validation.required })
-    .min(1, { message: fa.errors.validation.titleRequired }),
-  description: z.string().optional(),
-  assignee: z.string({ required_error: fa.common.validation.required }),
-  priority: z.nativeEnum(TasksPriorityOptions, {
-    required_error: fa.errors.validation.invalidOption,
-    invalid_type_error: fa.errors.validation.invalidOption,
-  }),
-  status: z.nativeEnum(TasksStatusOptions, {
-    required_error: fa.errors.validation.invalidOption,
-    invalid_type_error: fa.errors.validation.invalidOption,
-  }),
-  project: z.string().optional(),
-  deadline: z.date({
-    required_error: fa.common.validation.required,
-    invalid_type_error: fa.errors.validation.invalidDate,
-  }),
-  estimated_hours: z.coerce
-    .number({
-      invalid_type_error: fa.errors.validation.numberInvalid,
-    })
-    .min(0, { message: fa.errors.validation.estimatedHoursRange })
-    .max(999, { message: fa.errors.validation.estimatedHoursRange })
-    .optional(),
-  estimated_minutes: z.coerce
-    .number({
-      invalid_type_error: fa.errors.validation.numberInvalid,
-    })
-    .min(0, { message: fa.errors.validation.estimatedMinutesRange })
-    .max(59, { message: fa.errors.validation.estimatedMinutesRange })
-    .optional(),
-});
+const taskFormSchema = z
+  .object({
+    title: z
+      .string({ required_error: fa.common.validation.required })
+      .min(1, { message: fa.errors.validation.titleRequired }),
+    description: z.string({ required_error: fa.common.validation.required }),
+    assignee: z.string({ required_error: fa.common.validation.required }),
+    priority: z.nativeEnum(TasksPriorityOptions, {
+      required_error: fa.errors.validation.invalidOption,
+      invalid_type_error: fa.errors.validation.invalidOption,
+    }),
+    status: z.nativeEnum(TasksStatusOptions, {
+      required_error: fa.errors.validation.invalidOption,
+      invalid_type_error: fa.errors.validation.invalidOption,
+    }),
+    project: z.string().optional(),
+    deadline: z
+      .date({ invalid_type_error: fa.errors.validation.invalidDate })
+      .optional(),
+    estimated_hours: z.coerce
+      .number({
+        invalid_type_error: fa.errors.validation.numberInvalid,
+      })
+      .min(0, { message: fa.errors.validation.estimatedHoursRange })
+      .max(999, { message: fa.errors.validation.estimatedHoursRange })
+      .optional(),
+    estimated_minutes: z.coerce
+      .number({
+        invalid_type_error: fa.errors.validation.numberInvalid,
+      })
+      .min(0, { message: fa.errors.validation.estimatedMinutesRange })
+      .max(59, { message: fa.errors.validation.estimatedMinutesRange })
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.deadline) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: fa.common.validation.required,
+        path: ["deadline"],
+      });
+    }
+  });
 
 export default function CreateTask() {
   const navigate = useNavigate();
