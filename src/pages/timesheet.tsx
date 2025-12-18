@@ -17,6 +17,7 @@ import { pb } from "@/lib/pocketbase";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { useAuthStore } from "@/store/auth-store";
+import { Link } from "react-router-dom";
 
 export default function TimesheetPage() {
   const { user } = useAuthStore();
@@ -180,67 +181,92 @@ export default function TimesheetPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
-        {tasksByDay.map(({ date, tasks: dayTasks, totalTime }) => (
-          <Card key={date.toISOString()} className="min-h-[200px]">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">
-                {format(date, "EEEE", { locale: faIR })}
-                <div className="text-muted-foreground mt-1 text-xs">
-                  {format(date, "MM/dd")}
-                </div>
-              </CardTitle>
-              {totalTime.hours > 0 || totalTime.minutes > 0 ? (
-                <Badge variant="secondary" className="w-fit">
-                  <Clock className="mr-1 h-3 w-3" />
-                  {totalTime.hours}h {totalTime.minutes}m
-                </Badge>
-              ) : (
-                <div className="text-muted-foreground text-xs">-</div>
-              )}
-            </CardHeader>
+      {!isLoading && tasksByDay.every((d) => d.tasks.length === 0) ? (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+            <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
+              <Clock className="text-muted-foreground h-6 w-6" />
+            </div>
+            <h2 className="text-lg font-semibold">
+              {fa.timesheet.noTimeSpent}
+            </h2>
+            <p className="text-muted-foreground max-w-md text-sm">
+              {fa.timesheet.emptyStateDescription}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Button asChild size="sm">
+                <Link to="/tasks/create">{fa.timesheet.createTaskCta}</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/tasks/calendar">{fa.timesheet.calendarCta}</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
+          {tasksByDay.map(({ date, tasks: dayTasks, totalTime }) => (
+            <Card key={date.toISOString()} className="min-h-[200px]">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">
+                  {format(date, "EEEE", { locale: faIR })}
+                  <div className="text-muted-foreground mt-1 text-xs">
+                    {format(date, "MM/dd")}
+                  </div>
+                </CardTitle>
+                {totalTime.hours > 0 || totalTime.minutes > 0 ? (
+                  <Badge variant="secondary" className="w-fit">
+                    <Clock className="mr-1 h-3 w-3" />
+                    {totalTime.hours}h {totalTime.minutes}m
+                  </Badge>
+                ) : (
+                  <div className="text-muted-foreground text-xs">-</div>
+                )}
+              </CardHeader>
 
-            <CardContent className="pt-0">
-              {dayTasks.length > 0 ? (
-                <div className="space-y-2">
-                  {dayTasks.map((task) => {
-                    const taskTime = minutesToHoursAndMinutes(
-                      task.time_spent_minutes || 0,
-                    );
-                    return (
-                      <div key={task.id} className="text-xs">
-                        <div
-                          className="truncate font-medium"
-                          title={task.title}
-                        >
-                          {task.title}
+              <CardContent className="pt-0">
+                {dayTasks.length > 0 ? (
+                  <div className="space-y-2">
+                    {dayTasks.map((task) => {
+                      const taskTime = minutesToHoursAndMinutes(
+                        task.time_spent_minutes || 0,
+                      );
+                      return (
+                        <div key={task.id} className="text-xs">
+                          <div
+                            className="truncate font-medium"
+                            title={task.title}
+                          >
+                            {task.title}
+                          </div>
+                          <div className="text-muted-foreground">
+                            {(task.expand as { project?: { name?: string } })
+                              ?.project?.name ||
+                              fa.reports.fallbacks.projectName}
+                          </div>
+                          <div className="mt-1 flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>
+                              {taskTime.hours > 0 &&
+                                `${digitsEnToFa(taskTime.hours)}h `}
+                              {digitsEnToFa(taskTime.minutes)}m
+                            </span>
+                          </div>
+                          <Separator className="my-2" />
                         </div>
-                        <div className="text-muted-foreground">
-                          {(task.expand as { project?: { name?: string } })
-                            ?.project?.name || fa.reports.fallbacks.projectName}
-                        </div>
-                        <div className="mt-1 flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>
-                            {taskTime.hours > 0 &&
-                              `${digitsEnToFa(taskTime.hours)}h `}
-                            {digitsEnToFa(taskTime.minutes)}m
-                          </span>
-                        </div>
-                        <Separator className="my-2" />
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-muted-foreground py-4 text-center text-xs">
-                  {fa.timesheet.noTimeSpent} {fa.task.timeSpent}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground py-4 text-center text-xs">
+                    {fa.timesheet.noTimeSpent} {fa.task.timeSpent}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

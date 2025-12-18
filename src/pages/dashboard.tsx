@@ -43,6 +43,11 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { fa } from "@/constants/text";
 import { useNotifications, useProjects, useTasks } from "@/hooks";
 import { useAuthRole, useAuthUser } from "@/store/auth-store";
@@ -143,8 +148,7 @@ export default function Dashboard() {
       .sort(
         (a, b) =>
           new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime(),
-      )
-      .slice(0, 3);
+      );
   }, [userTasks, isLoadingTasks]);
 
   // Pie chart data for status distribution
@@ -427,6 +431,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.totalTasks}
           value={stats?.total ?? 0}
+          description="تعداد کل تسک‌های قابل دسترسی شما"
           icon={<ListTodo className="h-5 w-5" />}
           color="bg-blue-50 dark:bg-blue-400/10"
           textColor="text-blue-700 dark:text-blue-300"
@@ -434,6 +439,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.completed}
           value={stats?.completed ?? 0}
+          description="تسک‌های با وضعیت «انجام‌شده»"
           icon={<CheckCircle className="h-5 w-5" />}
           color="bg-green-50 dark:bg-green-400/10"
           textColor="text-green-700 dark:text-green-300"
@@ -441,6 +447,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.inProgress}
           value={stats?.inProgress ?? 0}
+          description="تسک‌های با وضعیت «در حال انجام»"
           icon={<Clock className="h-5 w-5" />}
           color="bg-orange-50 dark:bg-orange-400/10"
           textColor="text-orange-700 dark:text-orange-300"
@@ -448,6 +455,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.pending}
           value={stats?.pending ?? 0}
+          description="تسک‌های با وضعیت «در انتظار» و «برای انجام»"
           icon={<BarChart3 className="h-5 w-5" />}
           color="bg-purple-50 dark:bg-purple-400/10"
           textColor="text-purple-700 dark:text-purple-300"
@@ -455,6 +463,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.cards.todayDue}
           value={stats?.dueToday ?? 0}
+          description="تسک‌های دارای موعد امروز و انجام‌نشده"
           icon={<Calendar className="h-5 w-5" />}
           color="bg-yellow-50 dark:bg-yellow-400/10"
           textColor="text-yellow-700 dark:text-yellow-300"
@@ -462,6 +471,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.overdue}
           value={stats?.overdue ?? 0}
+          description="تسک‌های دارای موعد گذشته و انجام‌نشده"
           icon={<AlertTriangle className="h-5 w-5" />}
           color="bg-red-50 dark:bg-red-400/10"
           textColor="text-red-700 dark:text-red-300"
@@ -780,8 +790,12 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle className="text-destructive flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />
-              {fa.dashboard.cards.overdueTasks} (
-              {digitsEnToFa(overdueTasks.length)})
+              {fa.dashboard.cards.overdueTasks}{" "}
+              <span className="text-muted-foreground text-sm font-normal">
+                {overdueTasks.length > 4
+                  ? `(${digitsEnToFa(4)} / ${digitsEnToFa(overdueTasks.length)})`
+                  : `(${digitsEnToFa(overdueTasks.length)})`}
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -821,12 +835,14 @@ export default function Dashboard() {
 function StatCard({
   title,
   value,
+  description,
   icon,
   color,
   textColor = "text-foreground",
 }: {
   title: string;
   value: number;
+  description?: string;
   icon: React.ReactNode;
   color: string;
   textColor?: string;
@@ -836,9 +852,20 @@ function StatCard({
       <CardContent className="p-4 md:p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-muted-foreground text-xs font-medium md:text-sm">
-              {title}
-            </p>
+            {description ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <p className="text-muted-foreground text-xs font-medium md:text-sm">
+                    {title}
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={6}>{description}</TooltipContent>
+              </Tooltip>
+            ) : (
+              <p className="text-muted-foreground text-xs font-medium md:text-sm">
+                {title}
+              </p>
+            )}
             <p
               className={`mt-1 text-2xl font-bold md:mt-2 md:text-3xl ${textColor}`}
             >

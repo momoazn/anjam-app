@@ -185,7 +185,7 @@ export const tasks = {
     title: "جزئیات تسک",
     unknownUser: "بدون مسئول",
     unknownProject: "بدون پروژه",
-    backToList: "بازگشت به لیست وظایف",
+    backToList: "بازگشت به لیست تسک‌ها",
     detailsCardTitle: "جزئیات",
     assigneeLabel: "مسئول:",
     projectLabel: "پروژه:",
@@ -198,8 +198,8 @@ export const tasks = {
     createdLabel: "ایجاد شده:",
     updatedLabel: "بروزرسانی:",
     actionsCardTitle: shared.actions,
-    editTaskButton: "ویرایش وظیفه",
-    deleteTaskButton: "حذف وظیفه",
+    editTaskButton: "ویرایش تسک",
+    deleteTaskButton: "حذف تسک",
     editButton: shared.edit,
     timeTracking: {
       title: "زمان صرف شده",
@@ -249,7 +249,7 @@ export const tasks = {
 
   // Errors
   errors: {
-    notFound: "وظیفه یافت نشد",
+    notFound: "تسک یافت نشد",
   },
 
   // Task-specific

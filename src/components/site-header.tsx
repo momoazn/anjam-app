@@ -11,6 +11,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { fa } from "@/constants/text";
 import { queryKeys } from "@/hooks/query-keys";
 import { useTheme } from "@/hooks/use-theme";
@@ -375,16 +380,29 @@ export function SiteHeader() {
             onClick={toggleTheme}
             className="h-8 w-8 flex-shrink-0"
           >
-            {resolvedTheme === "dark" ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
-            <span className="sr-only">
-              {resolvedTheme === "dark"
-                ? fa.common.theme.switchToLight
-                : fa.common.theme.switchToDark}
-            </span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center justify-center">
+                  {resolvedTheme === "dark" ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                  <span className="sr-only">
+                    {resolvedTheme === "dark"
+                      ? fa.common.theme.switchToLight
+                      : fa.common.theme.switchToDark}
+                  </span>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent sideOffset={6}>
+                {resolvedTheme === "dark"
+                  ? "حالت تیره"
+                  : resolvedTheme === "light"
+                    ? "حالت روشن"
+                    : "حالت سیستم"}
+              </TooltipContent>
+            </Tooltip>
           </Button>
 
           <HeaderUserMenu />

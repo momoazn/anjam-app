@@ -26,10 +26,10 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 1.3 Data Integrity & Visibility
 
-- [ ] **Synchronization of Dashboard KPIs**
+- [x] **Synchronization of Dashboard KPIs**
   - **Issue:** Metric mismatch (e.g., "Overdue: 20" vs. List Count: 3).
   - **Action:** Audit backend queries for dashboard cards and list views to ensure identical filtering logic (e.g., `deadline < NOW()` alignment).
-- [ ] **Clarify Metrics Context**
+- [x] **Clarify Metrics Context**
   - **Action:** Add tooltips or subtitles to KPI cards defining the scope (e.g., "Based on all time" or "This Week").
 
 ---
@@ -41,7 +41,7 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 
 ### 2.1 Terminology & Mental Models (Match between System & World)
 
-- [ ] **Standardize Terminology**
+- [x] **Standardize Terminology**
   - **Decision:** Use **"تسک" (Task)** exclusively. Remove "وظیفه".
   - **Action:** Global find/replace in localization files/constants.
 - [ ] **Mental Model Alignment**
@@ -53,9 +53,9 @@ This living document integrates findings from the **[UI/UX Audit Report](./UI_UX
 - [ ] **Undo / Soft Delete**
   - **Issue:** Destructive actions are instant.
   - **Action:** Implement a standard "Toast with Undo" (5-second duration) for deleting Tasks and Notifications.
-- [ ] **Theme Toggle Clarity**
+- [x] **Theme Toggle Clarity**
   - **Action:** Update the theme switcher to clearly indicate the current state (Light / Dark / System) with icons/labels.
-- [ ] **Friendly Empty States**
+- [x] **Friendly Empty States**
   - **Action:** Replace blank screens in **Timesheet** and **Calendar** with illustrated empty states and a clear "Create" CTA.
 
 ### 2.3 Visual Modernization (Basics)
