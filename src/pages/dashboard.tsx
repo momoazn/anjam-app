@@ -433,7 +433,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.totalTasks}
           value={stats?.total ?? 0}
-          description="تعداد کل تسک‌های قابل دسترسی شما"
+          description={fa.dashboard.statDescriptions.totalTasks}
           icon={<ListTodo className="h-5 w-5" />}
           color="bg-blue-50 dark:bg-blue-400/10"
           textColor="text-blue-700 dark:text-blue-300"
@@ -441,7 +441,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.completed}
           value={stats?.completed ?? 0}
-          description="تسک‌های با وضعیت «انجام‌شده»"
+          description={fa.dashboard.statDescriptions.completed}
           icon={<CheckCircle className="h-5 w-5" />}
           color="bg-green-50 dark:bg-green-400/10"
           textColor="text-green-700 dark:text-green-300"
@@ -449,7 +449,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.inProgress}
           value={stats?.inProgress ?? 0}
-          description="تسک‌های با وضعیت «در حال انجام»"
+          description={fa.dashboard.statDescriptions.inProgress}
           icon={<Clock className="h-5 w-5" />}
           color="bg-orange-50 dark:bg-orange-400/10"
           textColor="text-orange-700 dark:text-orange-300"
@@ -457,7 +457,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.pending}
           value={stats?.pending ?? 0}
-          description="تسک‌های با وضعیت «در انتظار» و «برای انجام»"
+          description={fa.dashboard.statDescriptions.pending}
           icon={<BarChart3 className="h-5 w-5" />}
           color="bg-purple-50 dark:bg-purple-400/10"
           textColor="text-purple-700 dark:text-purple-300"
@@ -465,7 +465,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.cards.todayDue}
           value={stats?.dueToday ?? 0}
-          description="تسک‌های دارای موعد امروز و انجام‌نشده"
+          description={fa.dashboard.statDescriptions.todayDue}
           icon={<Calendar className="h-5 w-5" />}
           color="bg-yellow-50 dark:bg-yellow-400/10"
           textColor="text-yellow-700 dark:text-yellow-300"
@@ -473,7 +473,7 @@ export default function Dashboard() {
         <StatCard
           title={fa.dashboard.stats.overdue}
           value={stats?.overdue ?? 0}
-          description="تسک‌های دارای موعد گذشته و انجام‌نشده"
+          description={fa.dashboard.statDescriptions.overdue}
           icon={<AlertTriangle className="h-5 w-5" />}
           color="bg-red-50 dark:bg-red-400/10"
           textColor="text-red-700 dark:text-red-300"

@@ -61,4 +61,12 @@ export const dashboard = {
     noActivityFound: "فعالیتی یافت نشد",
     overdueTasks: "تسک‌های سررسید گذشته",
   },
+  statDescriptions: {
+    totalTasks: "تعداد کل تسک‌های قابل دسترسی شما",
+    completed: "تسک‌های با وضعیت «انجام‌شده»",
+    inProgress: "تسک‌های با وضعیت «در حال انجام»",
+    pending: "تسک‌های با وضعیت «در انتظار» و «برای انجام»",
+    todayDue: "تسک‌های دارای موعد امروز و انجام‌نشده",
+    overdue: "تسک‌های دارای موعد گذشته و انجام‌نشده",
+  },
 } as const;

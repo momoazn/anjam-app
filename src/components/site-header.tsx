@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { fa } from "@/constants/text";
+import { themeLabels } from "@/constants/ui";
 import { queryKeys } from "@/hooks/query-keys";
 import { useTheme } from "@/hooks/use-theme";
 import type { ProjectsResponse, TasksResponse } from "@/lib/pocketbase-types";
@@ -401,10 +402,10 @@ export function SiteHeader() {
               </TooltipTrigger>
               <TooltipContent sideOffset={6}>
                 {resolvedTheme === "dark"
-                  ? "حالت تیره"
+                  ? themeLabels.dark
                   : resolvedTheme === "light"
-                    ? "حالت روشن"
-                    : "حالت سیستم"}
+                    ? themeLabels.light
+                    : themeLabels.system}
               </TooltipContent>
             </Tooltip>
           </Button>

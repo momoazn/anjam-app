@@ -228,7 +228,7 @@ export default function CreateGroup() {
                 name="managerMode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>روش تعیین مدیر گروه</FormLabel>
+                    <FormLabel>{fa.groups.form.managerModeLabel}</FormLabel>
                     <div className="flex gap-2">
                       <Button
                         type="button"
@@ -246,7 +246,7 @@ export default function CreateGroup() {
                           });
                         }}
                       >
-                        انتخاب مدیر موجود
+                        {fa.groups.form.selectExisting}
                       </Button>
                       <Button
                         type="button"
@@ -256,7 +256,7 @@ export default function CreateGroup() {
                           form.setValue("manager", "");
                         }}
                       >
-                        ساخت مدیر جدید
+                        {fa.groups.form.createNew}
                       </Button>
                     </div>
                     <FormMessage />

@@ -34,6 +34,9 @@ export const groups = {
     descriptionPlaceholder: "توضیحات گروه (اختیاری)",
     manager: "مدیر گروه",
     selectManager: "انتخاب مدیر",
+    managerModeLabel: "روش تعیین مدیر گروه",
+    selectExisting: "انتخاب مدیر موجود",
+    createNew: "ساخت مدیر جدید",
   },
   status: {
     active: shared.active,

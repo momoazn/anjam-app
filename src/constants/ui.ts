@@ -20,3 +20,9 @@ export const navigationLabels = {
   workspace: "فضای کاری",
   admin: "مدیریت",
 } as const;
+
+export const themeLabels = {
+  dark: "حالت تیره",
+  light: "حالت روشن",
+  system: "حالت سیستم",
+} as const;
