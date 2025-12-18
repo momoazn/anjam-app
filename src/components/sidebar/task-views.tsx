@@ -35,6 +35,7 @@ const ownershipViews = [
     url: "/tasks?assigned=me&status=todo,in_progress,pending",
     icon: IconChecklist,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
+    badgeVariant: undefined,
   },
 ] as const;
 
