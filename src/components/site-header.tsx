@@ -29,7 +29,8 @@ export function SiteHeader() {
 
   const crumbs = useMemo(() => {
     const path = location.pathname;
-    const parts = path.split("/").filter(Boolean);
+    const normalizedPath = path === "/" ? "/" : path.replace(/\/+$/, "");
+    const parts = normalizedPath.split("/").filter(Boolean);
 
     // Root
     if (parts.length === 0) {
@@ -200,6 +201,32 @@ export function SiteHeader() {
       ];
     }
 
+    // Group edit routes: /groups/:id/edit
+    if (first === "groups" && parts.length === 3 && parts[2] === "edit") {
+      const groupId = parts[1];
+
+      let groupName: string | undefined;
+      const single = queryClient.getQueryData<{ name?: string }>(
+        queryKeys.groups.detail(groupId),
+      );
+      if (single?.name) groupName = single.name as string;
+      if (!groupName) {
+        const list = queryClient.getQueryData<{ id: string; name?: string }[]>(
+          queryKeys.groups.lists(),
+        );
+        groupName = list?.find((g) => g?.id === groupId)?.name as
+          | string
+          | undefined;
+      }
+
+      return [
+        { label: fa.navigation.dashboard, to: "/" as const },
+        { label: fa.navigation.groups, to: "/groups" as const },
+        { label: groupName ?? groupId },
+        { label: fa.groups.edit.title },
+      ];
+    }
+
     // Task detail routes: /tasks/:id
     if (
       first === "tasks" &&
@@ -277,7 +304,7 @@ export function SiteHeader() {
     // Fallback
     return [
       { label: fa.navigation.dashboard, to: "/" as const },
-      { label: path },
+      { label: normalizedPath },
     ];
   }, [location.pathname, queryClient]);
 

@@ -51,6 +51,10 @@ const CreateGroup = createLazyPage(
   () => import("@/pages/create-group"),
   fa.errors.pageLoad.notFound,
 );
+const EditGroup = createLazyPage(
+  () => import("@/pages/edit-group"),
+  fa.errors.pageLoad.notFound,
+);
 const Projects = createLazyPage(
   () => import("@/pages/projects"),
   fa.errors.pageLoad.projects,
@@ -248,6 +252,13 @@ const routes: RouteType[] = [
     protected: true,
     permission: "groups.manage",
     title: fa.groups.create.title,
+  },
+  {
+    path: "/groups/:id/edit",
+    element: <EditGroup />,
+    protected: true,
+    permission: "groups.manage",
+    title: fa.groups.edit.title,
   },
   {
     path: "/projects",
