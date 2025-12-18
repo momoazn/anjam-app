@@ -36,6 +36,9 @@ tmp/
 task-manager
 task-manager.exe
 
+backend/.gocache/
+backend/.gotmp/
+
 testing/
 
 # Test artifacts
