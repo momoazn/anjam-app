@@ -179,17 +179,23 @@ export default function ProjectUsers() {
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableUsers?.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      <span>
-                        {formatUserName(
-                          user.first_name,
-                          user.last_name,
-                          user.username,
-                        )}
-                      </span>
+                  {availableUsers && availableUsers.length > 0 ? (
+                    availableUsers.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        <span>
+                          {formatUserName(
+                            user.first_name,
+                            user.last_name,
+                            user.username,
+                          )}
+                        </span>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="__empty" disabled>
+                      {fa.common.messages.noData}
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
             </DialogContent>

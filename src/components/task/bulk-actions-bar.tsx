@@ -169,13 +169,19 @@ export function BulkActionsBar({
             />
           </SelectTrigger>
           <SelectContent>
-            {users.map((user) => (
-              <SelectItem key={user.id} value={user.id}>
-                {user.first_name || user.last_name
-                  ? `${user.first_name} ${user.last_name}`
-                  : user.username}
+            {users.length === 0 ? (
+              <SelectItem value="__empty" disabled>
+                {text.common.messages.noData}
               </SelectItem>
-            ))}
+            ) : (
+              users.map((user) => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.first_name || user.last_name
+                    ? `${user.first_name} ${user.last_name}`
+                    : user.username}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
 

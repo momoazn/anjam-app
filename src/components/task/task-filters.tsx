@@ -233,17 +233,23 @@ export function TaskFilters({
             <SelectItem value={ALL_FILTER_VALUE}>
               {fa.tasks.filters.allAssignees}
             </SelectItem>
-            {users?.map((user) => (
-              <SelectItem key={user.id} value={user.id}>
-                <span>
-                  {formatUserName(
-                    user.first_name,
-                    user.last_name,
-                    user.username,
-                  )}
-                </span>
+            {users && users.length > 0 ? (
+              users.map((user) => (
+                <SelectItem key={user.id} value={user.id}>
+                  <span>
+                    {formatUserName(
+                      user.first_name,
+                      user.last_name,
+                      user.username,
+                    )}
+                  </span>
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="__empty" disabled>
+                {fa.common.messages.noData}
               </SelectItem>
-            ))}
+            )}
           </SelectContent>
         </Select>
 
@@ -270,17 +276,23 @@ export function TaskFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{fa.tasks.filters.allTags}</SelectItem>
-            {tags?.map((tag) => (
-              <SelectItem key={tag.id} value={tag.id}>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="h-3 w-3 rounded"
-                    style={{ backgroundColor: tag.color }}
-                  />
-                  <span>{tag.name}</span>
-                </div>
+            {tags && tags.length > 0 ? (
+              tags.map((tag) => (
+                <SelectItem key={tag.id} value={tag.id}>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 rounded"
+                      style={{ backgroundColor: tag.color }}
+                    />
+                    <span>{tag.name}</span>
+                  </div>
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="__empty" disabled>
+                {fa.common.messages.noData}
               </SelectItem>
-            ))}
+            )}
           </SelectContent>
         </Select>
       </div>

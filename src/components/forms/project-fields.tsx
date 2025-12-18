@@ -109,17 +109,23 @@ export function ProjectFields({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {supervisors?.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      <span>
-                        {formatUserName(
-                          user.first_name,
-                          user.last_name,
-                          user.username,
-                        )}
-                      </span>
+                  {supervisors && supervisors.length > 0 ? (
+                    supervisors.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        <span>
+                          {formatUserName(
+                            user.first_name,
+                            user.last_name,
+                            user.username,
+                          )}
+                        </span>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="__empty" disabled>
+                      {fa.common.messages.noData}
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -148,11 +154,17 @@ export function ProjectFields({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {groups?.map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
+                  {groups && groups.length > 0 ? (
+                    groups.map((group) => (
+                      <SelectItem key={group.id} value={group.id}>
+                        {group.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="__empty" disabled>
+                      {fa.common.messages.noData}
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

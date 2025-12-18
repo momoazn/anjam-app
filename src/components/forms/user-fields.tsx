@@ -182,11 +182,17 @@ export function UserFields({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {groups?.map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
+                  {groups && groups.length > 0 ? (
+                    groups.map((group) => (
+                      <SelectItem key={group.id} value={group.id}>
+                        {group.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="__empty" disabled>
+                      {fa.common.messages.noData}
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

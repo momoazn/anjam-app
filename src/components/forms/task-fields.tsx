@@ -124,11 +124,17 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {projects?.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          <span>{p.name}</span>
+                      {projects && projects.length > 0 ? (
+                        projects.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            <span>{p.name}</span>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="__empty" disabled>
+                          {fa.common.messages.noData}
                         </SelectItem>
-                      ))}
+                      )}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -170,17 +176,23 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       <SelectItem value={fa.tasks.addTask.unassigned}>
                         <span>{fa.tasks.addTask.unassigned}</span>
                       </SelectItem>
-                      {assignees?.map((u) => (
-                        <SelectItem key={u.id} value={u.id}>
-                          <span>
-                            {formatUserName(
-                              u.first_name,
-                              u.last_name,
-                              u.username,
-                            )}
-                          </span>
+                      {assignees && assignees.length > 0 ? (
+                        assignees.map((u) => (
+                          <SelectItem key={u.id} value={u.id}>
+                            <span>
+                              {formatUserName(
+                                u.first_name,
+                                u.last_name,
+                                u.username,
+                              )}
+                            </span>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="__empty" disabled>
+                          {fa.common.messages.noData}
                         </SelectItem>
-                      ))}
+                      )}
                     </SelectContent>
                   </Select>
                 </FormControl>
