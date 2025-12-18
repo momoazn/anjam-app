@@ -125,7 +125,7 @@ function main() {
   }
 
   let builtBinaryPath: string | null = null;
-  
+
   targets.forEach((target) => {
     if (shouldBuild(target.name)) {
       builtBinaryPath = buildTarget(target);

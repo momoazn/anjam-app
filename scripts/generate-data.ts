@@ -1,11 +1,6 @@
 import {
-  CommentsRecord,
-  ProjectsRecord,
   TasksPriorityOptions,
-  TasksRecord,
   TasksStatusOptions,
-  UsersProjectsRecord,
-  UsersRecord,
   UsersRoleOptions,
 } from "@/lib/pocketbase-types";
 import { faker } from "@faker-js/faker/locale/fa";
@@ -35,33 +30,53 @@ const DEFAULT_USER: GeneratedUser = {
 // }
 
 // --- Type Definitions ---
-type GeneratedUser = Omit<UsersRecord, "id" | "tokenKey"> & {
+type GeneratedUser = {
+  username: string;
+  first_name: string;
+  last_name: string;
+  password: string;
   passwordConfirm: string;
+  role: UsersRoleOptions;
+  email?: string;
+  group?: string;
 };
 
-type GeneratedProject = Omit<ProjectsRecord, "id"> & {
-  supervisor: string; // Required, using username
-  group: string; // Required group identifier
+type GeneratedProject = {
+  name: string;
+  code: string;
+  supervisor: string; // username
+  group: string; // group identifier
+  created: string;
+  updated?: string;
 };
 
-type GeneratedTask = Omit<TasksRecord, "id" | "expand"> & {
-  display_id: string; // Required
-  project: string; // Required, using project code
-  creator: string; // Required, using username
-  assignee: string; // Required, using username
+type GeneratedTask = {
+  title: string;
+  display_id: string;
+  description: string;
+  project: string; // project code
+  creator: string; // username
+  assignee: string; // username
+  priority: TasksPriorityOptions;
+  status: TasksStatusOptions;
+  deadline?: string;
+  created: string;
+  updated: string;
 };
 
-type GeneratedComment = Omit<CommentsRecord, "id" | "expand"> & {
-  task: string; // Required, using task display_id
-  user: string; // Required, using username
-  content: string; // Required
-  created: string; // Required
+type GeneratedComment = {
+  task: string; // task display_id
+  user: string; // username
+  content: string;
+  created: string;
+  updated?: string;
 };
 
-type GeneratedUserProject = Omit<UsersProjectsRecord, "id" | "expand"> & {
-  user: string; // Required, using username
-  project: string; // Required, using project code
-  created: string; // Required
+type GeneratedUserProject = {
+  user: string; // username
+  project: string; // project code
+  created: string;
+  updated?: string;
 };
 
 // --- Data Generation Functions ---

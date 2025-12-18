@@ -6,7 +6,7 @@ const releaseDir = path.resolve(process.cwd(), "release");
 
 function getBinaryPathForPlatform(): string {
   const platform = process.platform;
-  
+
   if (platform === "linux") {
     return path.join(releaseDir, "linux", "task-manager");
   } else if (platform === "win32") {
@@ -14,31 +14,33 @@ function getBinaryPathForPlatform(): string {
   } else if (platform === "darwin") {
     return path.join(releaseDir, "macos", "task-manager-macos");
   }
-  
+
   throw new Error(`Unsupported platform: ${platform}`);
 }
 
 function runBinary(binaryPath: string) {
   console.log(`Starting binary: ${binaryPath}`);
-  
+
   // Check if binary exists
   if (!fs.existsSync(binaryPath)) {
-    throw new Error(`Binary not found at ${binaryPath}. Please run 'bun run build' first.`);
+    throw new Error(
+      `Binary not found at ${binaryPath}. Please run 'bun run build' first.`,
+    );
   }
-  
+
   // For Windows, we need to handle the path differently
   if (process.platform === "win32") {
     // Use cmd /c to run the executable on Windows
     const child = spawn("cmd", ["/c", binaryPath], {
       stdio: "inherit",
-      shell: true
+      shell: true,
     });
-    
+
     child.on("error", (err) => {
       console.error(`Failed to start binary: ${err.message}`);
       process.exit(1);
     });
-    
+
     child.on("exit", (code) => {
       process.exit(code || 0);
     });
@@ -49,17 +51,17 @@ function runBinary(binaryPath: string) {
     } catch {
       // Ignore chmod errors, the binary might already be executable
     }
-    
+
     const child = spawn(binaryPath, [], {
       stdio: "inherit",
-      shell: false
+      shell: false,
     });
-    
+
     child.on("error", (err) => {
       console.error(`Failed to start binary: ${err.message}`);
       process.exit(1);
     });
-    
+
     child.on("exit", (code) => {
       process.exit(code || 0);
     });
