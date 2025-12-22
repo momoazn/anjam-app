@@ -3,27 +3,22 @@ import {
   IconBell,
   IconBellOff,
   IconCheck,
-  IconEye,
-  IconSortAscending,
   IconTrash,
   IconTrashX,
 } from "@tabler/icons-react";
-import { format, isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+
+import { NotificationFilters } from "@/components/notifications/notification-filters";
+import {
+  type NotificationFilter,
+  type NotificationSort,
+} from "@/components/notifications/notification-filters";
+import { NotificationList } from "@/components/notifications/notification-list";
 import { PageTransition } from "@/components/page-transition";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -39,160 +34,7 @@ import {
   useMarkAsRead,
   useNotifications,
 } from "@/hooks/notifications";
-import type { NotificationsRecord } from "@/lib/pocketbase-types";
-import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
-import { toast } from "sonner";
-
-type FilterType = "all" | "unread" | "read";
-type SortType = "newest" | "oldest";
-
-const formatNotificationTime = (dateString?: string | null) => {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return "-";
-  return digitsEnToFa(format(date, "dd MMMM HH:mm"));
-};
-
-const getDateGroup = (dateString?: string | null) => {
-  if (!dateString) return "older";
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return "older";
-
-  if (isToday(date)) return "today";
-  if (isYesterday(date)) return "yesterday";
-  if (isThisWeek(date)) return "thisWeek";
-  return "older";
-};
-
-const getGroupTitle = (group: string) => {
-  switch (group) {
-    case "today":
-      return notificationsText.groups.today;
-    case "yesterday":
-      return notificationsText.groups.yesterday;
-    case "thisWeek":
-      return notificationsText.groups.thisWeek;
-    case "older":
-      return notificationsText.groups.older;
-    default:
-      return group;
-  }
-};
-
-function NotificationItem({
-  notification,
-  onMarkAsRead,
-  onDelete,
-  selected,
-  onToggleSelect,
-}: {
-  notification: NotificationsRecord;
-  onMarkAsRead: (id: string) => void;
-  onDelete: (id: string) => void;
-  selected: boolean;
-  onToggleSelect: (id: string) => void;
-}) {
-  return (
-    <div
-      className={cn(
-        "group hover:bg-muted/50 flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors",
-        !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
-      )}
-      data-interactive-item
-    >
-      <div className="pt-1">
-        <Checkbox
-          checked={selected}
-          onCheckedChange={() => onToggleSelect(notification.id)}
-          aria-label={notificationsText.selected}
-        />
-      </div>
-      {/* Actions - Left side */}
-      <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-        {!notification.read && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onMarkAsRead(notification.id)}
-            className="h-7 w-7 p-0"
-            title={notificationsText.actions.markAsRead}
-            aria-label={notificationsText.actions.markAsRead}
-          >
-            <IconEye className="h-3 w-3" />
-          </Button>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onDelete(notification.id)}
-          className="text-destructive hover:text-destructive h-7 w-7 p-0"
-          title={notificationsText.actions.delete}
-          aria-label={notificationsText.actions.delete}
-        >
-          <IconTrash className="h-3 w-3" />
-        </Button>
-      </div>
-
-      {/* Notification Content */}
-      <div className="min-w-0 flex-1">
-        <div className="text-right">
-          <div className="mb-1 flex items-center justify-end gap-2">
-            {!notification.read && (
-              <div className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
-            )}
-            <h4
-              className={cn(
-                "truncate text-sm font-medium",
-                !notification.read
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              {notification.title}
-            </h4>
-          </div>
-          <p className="text-muted-foreground mb-2 line-clamp-2 text-right text-xs">
-            {notification.message}
-          </p>
-          <div className="flex items-center justify-end gap-2">
-            <Badge variant="outline" className="text-xs">
-              {notificationsText.types[notification.type]}
-            </Badge>
-            <time
-              dateTime={notification.created || ""}
-              className="text-muted-foreground text-xs"
-            >
-              {formatNotificationTime(notification.created)}
-            </time>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div
-      className="flex flex-col items-center justify-center py-12 text-center"
-      data-animate-stagger
-    >
-      <div
-        className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-        data-interactive-pulse
-      >
-        <IconBellOff className="text-muted-foreground/50 h-8 w-8" />
-      </div>
-      <h3 className="text-foreground mb-2 text-lg font-semibold">
-        {notificationsText.emptyState.title}
-      </h3>
-      <p className="text-muted-foreground text-sm">
-        {notificationsText.emptyState.description}
-      </p>
-    </div>
-  );
-}
 
 export default function Notifications() {
   const user = useAuthUser();
@@ -208,14 +50,19 @@ export default function Notifications() {
 
   const [filter, setFilter] = useQueryState(
     "filter",
-    parseAsStringEnum<FilterType>(["all", "unread", "read"]).withDefault("all"),
+    parseAsStringEnum<NotificationFilter>([
+      "all",
+      "unread",
+      "read",
+    ]).withDefault("all"),
   );
   const [sort, setSort] = useQueryState(
     "sort",
-    parseAsStringEnum<SortType>(["newest", "oldest"]).withDefault("newest"),
+    parseAsStringEnum<NotificationSort>(["newest", "oldest"]).withDefault(
+      "newest",
+    ),
   );
 
-  // Filter notifications
   const filteredNotifications = useMemo(() => {
     let filtered = notificationsData;
 
@@ -230,7 +77,6 @@ export default function Notifications() {
         filtered = notificationsData;
     }
 
-    // Sort notifications
     return [...filtered].sort((a, b) => {
       switch (sort) {
         case "oldest":
@@ -247,23 +93,6 @@ export default function Notifications() {
       }
     });
   }, [notificationsData, filter, sort]);
-
-  // Group notifications by date
-  const groupedNotifications = useMemo(() => {
-    const groups: Record<string, NotificationsRecord[]> = {
-      today: [],
-      yesterday: [],
-      thisWeek: [],
-      older: [],
-    };
-
-    filteredNotifications.forEach((notification) => {
-      const group = getDateGroup(notification.created);
-      groups[group].push(notification);
-    });
-
-    return groups;
-  }, [filteredNotifications]);
 
   const unreadCount = notificationsData.filter((n) => !n.read).length;
 
@@ -319,7 +148,6 @@ export default function Notifications() {
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-right">
           <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
@@ -397,7 +225,6 @@ export default function Notifications() {
         </TooltipProvider>
       </div>
 
-      {/* Stats */}
       <div
         className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4"
         data-animate-stagger
@@ -464,141 +291,31 @@ export default function Notifications() {
         </Card>
       </div>
 
-      {/* Filters and Sort */}
-      <div
-        className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-        data-animate-stagger
-      >
-        {selectedIds.length > 0 ? (
-          <div className="bg-muted flex flex-wrap items-center gap-2 rounded-lg p-2">
-            <span className="text-sm font-medium">
-              {digitsEnToFa(selectedIds.length)} {notificationsText.selected}
-            </span>
-            <Button size="sm" variant="outline" onClick={bulkMarkRead}>
-              {notificationsText.actions.markAsRead}
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={bulkDelete}
-              disabled={deleteNotification.isPending}
-            >
-              {notificationsText.actions.delete}
-            </Button>
-            <Button size="sm" variant="ghost" onClick={clearSelection}>
-              {notificationsText.deselectAll}
-            </Button>
-          </div>
-        ) : (
-          <Tabs
-            value={filter}
-            onValueChange={(value) => setFilter(value as FilterType)}
-          >
-            <TabsList>
-              <TabsTrigger value="all">
-                {notificationsText.filters.all}
-              </TabsTrigger>
-              <TabsTrigger value="unread">
-                {notificationsText.filters.unread}
-              </TabsTrigger>
-              <TabsTrigger value="read">
-                {notificationsText.filters.read}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
+      <NotificationFilters
+        filter={filter}
+        sort={sort}
+        selectedIds={selectedIds}
+        onFilterChange={(value) => {
+          void setFilter(value);
+        }}
+        onSortChange={(value) => {
+          void setSort(value);
+        }}
+        onBulkMarkRead={bulkMarkRead}
+        onBulkDelete={bulkDelete}
+        onClearSelection={clearSelection}
+        isBulkDeletePending={deleteNotification.isPending}
+      />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <IconSortAscending className="ml-1 h-4 w-4" />
-              {notificationsText.sort[sort as SortType]}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setSort("newest")}>
-              {notificationsText.sort.newest}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSort("oldest")}>
-              {notificationsText.sort.oldest}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Loading State */}
-      {isLoading && (
-        <div
-          className="flex flex-col items-center justify-center py-12 text-center"
-          data-animate-stagger
-        >
-          <div
-            className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-            data-interactive-pulse
-          >
-            <IconBell className="text-muted-foreground/50 h-8 w-8 animate-pulse" />
-          </div>
-          <h3 className="text-foreground mb-2 text-lg font-semibold">
-            Loading notificationsText...
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Please wait while we fetch your notifications
-          </p>
-        </div>
-      )}
-
-      {/* Error State */}
-      {error && (
-        <div
-          className="flex flex-col items-center justify-center py-12 text-center"
-          data-animate-stagger
-        >
-          <div className="bg-destructive/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <IconBell className="text-destructive h-8 w-8" />
-          </div>
-          <h3 className="text-foreground mb-2 text-lg font-semibold">
-            Failed to load notifications
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            {error instanceof Error ? error.message : "An error occurred"}
-          </p>
-        </div>
-      )}
-
-      {/* Notifications List */}
-      {!isLoading && !error && filteredNotifications.length === 0 ? (
-        <EmptyState />
-      ) : !isLoading && !error ? (
-        <ScrollArea className="h-[600px]">
-          <div className="space-y-6" data-animate-stagger>
-            {Object.entries(groupedNotifications).map(
-              ([group, groupNotifications]) => {
-                if (groupNotifications.length === 0) return null;
-
-                return (
-                  <div key={group}>
-                    <h3 className="text-foreground mb-3 text-right text-sm font-semibold">
-                      {getGroupTitle(group)}
-                    </h3>
-                    <div className="space-y-2" data-animate-stagger>
-                      {groupNotifications.map((notification) => (
-                        <NotificationItem
-                          key={notification.id}
-                          notification={notification}
-                          onMarkAsRead={handleMarkAsRead}
-                          onDelete={handleDelete}
-                          selected={selectedIds.includes(notification.id)}
-                          onToggleSelect={toggleSelect}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                );
-              },
-            )}
-          </div>
-        </ScrollArea>
-      ) : null}
+      <NotificationList
+        notifications={filteredNotifications}
+        isLoading={isLoading}
+        error={error}
+        selectedIds={selectedIds}
+        onToggleSelect={toggleSelect}
+        onMarkAsRead={handleMarkAsRead}
+        onDelete={handleDelete}
+      />
     </PageTransition>
   );
 }
