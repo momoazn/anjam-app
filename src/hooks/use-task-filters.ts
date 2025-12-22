@@ -11,9 +11,9 @@ export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
 export type TaskFilterValues = {
   searchTerm: string;
-  selectedStatus: TasksStatusOptions | typeof ALL_FILTER_VALUE;
-  selectedPriority: TasksPriorityOptions | typeof ALL_FILTER_VALUE;
-  selectedAssignee: string | typeof ALL_FILTER_VALUE;
+  selectedStatus: string;
+  selectedPriority: string;
+  selectedAssignee: string;
   selectedDateRange: string;
   selectedTag: string;
 };
