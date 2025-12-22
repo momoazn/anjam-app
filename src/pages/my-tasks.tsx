@@ -34,7 +34,7 @@ export default function MyTasks() {
   const bulkDelete = useBulkDeleteTasks();
 
   const myTasksData = useMemo(() => {
-    if (!allTasks || !user) return [];
+    if (!user) return [];
     return allTasks.filter(
       (task) => task.assignee === user.id && !task.deleted_at,
     );

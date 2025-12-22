@@ -285,7 +285,7 @@ export default function Tasks() {
   }, [currentPerPage, perPage]);
 
   const groupedTasks = useMemo(() => {
-    if (taskQuery.isPending || !userTasks) {
+    if (taskQuery.isPending) {
       return {} as Record<TasksStatusOptions, TaskWithProject[]>;
     }
     return userTasks.reduce(

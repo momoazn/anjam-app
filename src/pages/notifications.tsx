@@ -96,10 +96,6 @@ export default function Notifications() {
 
   const unreadCount = notificationsData.filter((n) => !n.read).length;
 
-  const handleMarkAsRead = (id: string) => {
-    markAsRead.mutate(id);
-  };
-
   const handleDelete = (id: string) => {
     const existing = pendingDeletesRef.current.get(id);
     if (existing) {
@@ -134,16 +130,14 @@ export default function Notifications() {
     );
   };
 
-  const clearSelection = () => setSelectedIds([]);
-
   const bulkMarkRead = () => {
     selectedIds.forEach((id) => markAsRead.mutate(id));
-    clearSelection();
+    setSelectedIds([]);
   };
 
   const bulkDelete = () => {
     selectedIds.forEach((id) => handleDelete(id));
-    clearSelection();
+    setSelectedIds([]);
   };
 
   return (
@@ -303,7 +297,7 @@ export default function Notifications() {
         }}
         onBulkMarkRead={bulkMarkRead}
         onBulkDelete={bulkDelete}
-        onClearSelection={clearSelection}
+        onClearSelection={() => setSelectedIds([])}
         isBulkDeletePending={deleteNotification.isPending}
       />
 
@@ -313,7 +307,7 @@ export default function Notifications() {
         error={error}
         selectedIds={selectedIds}
         onToggleSelect={toggleSelect}
-        onMarkAsRead={handleMarkAsRead}
+        onMarkAsRead={(id) => markAsRead.mutate(id)}
         onDelete={handleDelete}
       />
     </PageTransition>
