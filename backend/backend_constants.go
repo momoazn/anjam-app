@@ -15,6 +15,7 @@ const (
 	CollectionSuperusers    = "_superusers"
 	CollectionUsersProjects = "users_projects"
 	CollectionComments      = "comments"
+	CollectionTags          = "tags"
 )
 
 // Configuration constants
@@ -54,6 +55,7 @@ const (
 	// Validation errors
 	ErrSupervisorMustBeInSameGroup     = "منتور (supervisor) باید عضو همان گروه پروژه باشد"
 	ErrUserAndProjectMustBeInSameGroup = "کاربر و پروژه باید در یک گروه باشند"
+	ErrTagsMustBeInSameGroup           = "تگ‌ها باید عضو همان گروه پروژه باشند"
 	ErrOnlyAdminCanCreateManagers      = "فقط ادمین می‌تواند مدیر (manager) ایجاد کند"
 	ErrOnlyManagersCanBeGroupManagers  = "فقط کاربران با نقش مدیر (manager) می‌توانند مدیر گروه باشند"
 	ErrManagerCanOnlyCreateInOwnGroup  = "مدیران فقط می‌توانند کاربران را در گروه خود ایجاد کنند"
