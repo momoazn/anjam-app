@@ -32,22 +32,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { fa } from "@/constants/text";
+import { auth, common, groups, users } from "@/constants";
 import { useCreateGroup, useCreateGroupWithManager, useUsers } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 const managerSchema = z.object({
-  username: z.string().min(1, { message: fa.common.validation.required }),
-  password: z.string().min(8, { message: fa.auth.errors.passwordMinLength }),
-  first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
-  last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
+  username: z.string().min(1, { message: common.validation.required }),
+  password: z.string().min(8, { message: auth.errors.passwordMinLength }),
+  first_name: z.string().min(1, { message: auth.errors.firstNameRequired }),
+  last_name: z.string().min(1, { message: auth.errors.lastNameRequired }),
   email: z.string().optional().or(z.literal("")),
 });
 
 const formSchema = z
   .object({
-    name: z.string().min(2, { message: fa.common.validation.required }),
+    name: z.string().min(2, { message: common.validation.required }),
     description: z.string().optional(),
     managerMode: z.enum(["existing", "new"]),
     manager: z.string().optional(),
@@ -58,7 +58,7 @@ const formSchema = z
       if (!data.manager || data.manager.trim().length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: fa.common.validation.required,
+          message: common.validation.required,
           path: ["manager"],
         });
       }
@@ -68,7 +68,7 @@ const formSchema = z
     if (!data.newManager) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: fa.common.validation.required,
+        message: common.validation.required,
         path: ["newManager"],
       });
     }
@@ -113,25 +113,23 @@ export default function CreateGroup() {
 
   const { mutate: createGroup, isPending } = useCreateGroup({
     onSuccess: () => {
-      toast.success(fa.groups.create.success);
+      toast.success(groups.create.success);
       navigate("/groups");
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : fa.groups.create.error,
-      );
+      toast.error(error instanceof Error ? error.message : groups.create.error);
     },
   });
 
   const { mutate: createGroupWithManager, isPending: isPendingBootstrap } =
     useCreateGroupWithManager({
       onSuccess: () => {
-        toast.success(fa.groups.create.success);
+        toast.success(groups.create.success);
         navigate("/groups");
       },
       onError: (error) => {
         toast.error(
-          error instanceof Error ? error.message : fa.groups.create.error,
+          error instanceof Error ? error.message : groups.create.error,
         );
       },
     });
@@ -173,17 +171,15 @@ export default function CreateGroup() {
           <ArrowRight className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.groups.create.title}</h1>
-          <p className="text-muted-foreground">
-            {fa.groups.create.description}
-          </p>
+          <h1 className="text-3xl font-bold">{groups.create.title}</h1>
+          <p className="text-muted-foreground">{groups.create.description}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.groups.create.title}</CardTitle>
-          <CardDescription>{fa.groups.create.formDescription}</CardDescription>
+          <CardTitle>{groups.create.title}</CardTitle>
+          <CardDescription>{groups.create.formDescription}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -193,10 +189,10 @@ export default function CreateGroup() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.groups.form.name}</FormLabel>
+                    <FormLabel>{groups.form.name}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={fa.groups.form.namePlaceholder}
+                        placeholder={groups.form.namePlaceholder}
                         {...field}
                       />
                     </FormControl>
@@ -210,10 +206,10 @@ export default function CreateGroup() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.groups.form.description}</FormLabel>
+                    <FormLabel>{groups.form.description}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={fa.groups.form.descriptionPlaceholder}
+                        placeholder={groups.form.descriptionPlaceholder}
                         className="min-h-[100px]"
                         {...field}
                       />
@@ -228,7 +224,7 @@ export default function CreateGroup() {
                 name="managerMode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.groups.form.managerModeLabel}</FormLabel>
+                    <FormLabel>{groups.form.managerModeLabel}</FormLabel>
                     <div className="flex gap-2">
                       <Button
                         type="button"
@@ -246,7 +242,7 @@ export default function CreateGroup() {
                           });
                         }}
                       >
-                        {fa.groups.form.selectExisting}
+                        {groups.form.selectExisting}
                       </Button>
                       <Button
                         type="button"
@@ -256,7 +252,7 @@ export default function CreateGroup() {
                           form.setValue("manager", "");
                         }}
                       >
-                        {fa.groups.form.createNew}
+                        {groups.form.createNew}
                       </Button>
                     </div>
                     <FormMessage />
@@ -270,7 +266,7 @@ export default function CreateGroup() {
                   name="manager"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{fa.groups.form.manager}</FormLabel>
+                      <FormLabel>{groups.form.manager}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -278,14 +274,14 @@ export default function CreateGroup() {
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue
-                              placeholder={fa.groups.form.selectManager}
+                              placeholder={groups.form.selectManager}
                             />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {managers.length === 0 ? (
                             <SelectItem value="__empty" disabled>
-                              {fa.common.messages.noData}
+                              {common.messages.noData}
                             </SelectItem>
                           ) : (
                             managers.map((user) => (
@@ -309,7 +305,7 @@ export default function CreateGroup() {
                     name="newManager.username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{fa.auth.login.username}</FormLabel>
+                        <FormLabel>{auth.login.username}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -323,7 +319,7 @@ export default function CreateGroup() {
                     name="newManager.password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{fa.auth.login.password}</FormLabel>
+                        <FormLabel>{auth.login.password}</FormLabel>
                         <FormControl>
                           <Input type="password" {...field} />
                         </FormControl>
@@ -337,7 +333,7 @@ export default function CreateGroup() {
                     name="newManager.first_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{fa.users.form.firstName}</FormLabel>
+                        <FormLabel>{users.form.firstName}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -351,7 +347,7 @@ export default function CreateGroup() {
                     name="newManager.last_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{fa.users.form.lastName}</FormLabel>
+                        <FormLabel>{users.form.lastName}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -365,7 +361,7 @@ export default function CreateGroup() {
                     name="newManager.email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{fa.users.table.columns.email}</FormLabel>
+                        <FormLabel>{users.table.columns.email}</FormLabel>
                         <FormControl>
                           <Input type="email" {...field} />
                         </FormControl>
@@ -383,13 +379,13 @@ export default function CreateGroup() {
                   onClick={() => navigate("/groups")}
                   disabled={isPendingAny}
                 >
-                  {fa.common.cancel}
+                  {common.cancel}
                 </Button>
                 <Button type="submit" disabled={isPendingAny}>
                   {isPendingAny ? (
                     <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                   ) : null}
-                  {fa.groups.create.button}
+                  {groups.create.button}
                 </Button>
               </div>
             </form>

@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { fa } from "@/constants/text";
+import { tasks } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { cn, getUserInitials } from "@/lib/utils";
 
@@ -94,7 +94,7 @@ export function UserAvatar({
     return (
       <Avatar className={avatarClassName}>
         <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
-          {fa.tasks.addTask.unassigned}
+          {tasks.addTask.unassigned}
         </AvatarFallback>
       </Avatar>
     );

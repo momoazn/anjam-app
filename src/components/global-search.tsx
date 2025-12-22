@@ -8,7 +8,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { fa } from "@/constants/text";
+import { common, navigation, search } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
 import { useDebounce } from "use-debounce";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +52,7 @@ export function GlobalSearch() {
         )}
         onClick={() => setOpen(true)}
       >
-        <span className="hidden lg:inline-flex">{fa.search.placeholder}</span>
+        <span className="hidden lg:inline-flex">{search.placeholder}</span>
         <span className="inline-flex lg:hidden">
           <Search className="h-4 w-4" />
         </span>
@@ -68,7 +68,7 @@ export function GlobalSearch() {
             className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 [&_[data-slot=command-input-wrapper]]:h-12 [&_[data-slot=command-input-wrapper]_svg]:h-5 [&_[data-slot=command-input-wrapper]_svg]:w-5"
           >
             <CommandInput
-              placeholder={fa.search.placeholder}
+              placeholder={search.placeholder}
               value={query}
               onValueChange={setQuery}
             />
@@ -76,18 +76,18 @@ export function GlobalSearch() {
               {isLoading && (
                 <div className="text-muted-foreground flex items-center justify-center p-4 text-sm">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {fa.common.loading}
+                  {common.loading}
                 </div>
               )}
 
               {!isLoading && !data && query.length > 0 && (
-                <CommandEmpty>{fa.common.messages.noData}</CommandEmpty>
+                <CommandEmpty>{common.messages.noData}</CommandEmpty>
               )}
 
               {data && (
                 <>
                   {data.tasks.length > 0 && (
-                    <CommandGroup heading={fa.navigation.tasks}>
+                    <CommandGroup heading={navigation.tasks}>
                       {data.tasks.map((task) => (
                         <CommandItem
                           key={task.id}
@@ -125,7 +125,7 @@ export function GlobalSearch() {
                   )}
 
                   {data.projects.length > 0 && (
-                    <CommandGroup heading={fa.navigation.projects}>
+                    <CommandGroup heading={navigation.projects}>
                       {data.projects.map((project) => (
                         <CommandItem
                           key={project.id}
@@ -152,7 +152,7 @@ export function GlobalSearch() {
                     data.projects.length === 0 &&
                     query.length >= 2 &&
                     !isLoading && (
-                      <CommandEmpty>{fa.common.messages.noData}</CommandEmpty>
+                      <CommandEmpty>{common.messages.noData}</CommandEmpty>
                     )}
                 </>
               )}

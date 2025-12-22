@@ -17,8 +17,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { fa } from "@/constants/text";
-import { themeLabels } from "@/constants/ui";
+import {
+  common,
+  groups,
+  navigation,
+  navigationLabels,
+  projects,
+  tasks,
+  users,
+} from "@/constants";
+import { themeLabels } from "@/constants";
 import { queryKeys } from "@/hooks/query-keys";
 import { useTheme } from "@/hooks/use-theme";
 import type { ProjectsResponse, TasksResponse } from "@/lib/pocketbase-types";
@@ -41,7 +49,7 @@ export function SiteHeader() {
 
     // Root
     if (parts.length === 0) {
-      return [{ label: fa.navigation.dashboard, to: "/" as const }];
+      return [{ label: navigation.dashboard, to: "/" as const }];
     }
 
     // Static first-level routes
@@ -50,62 +58,62 @@ export function SiteHeader() {
       switch (first) {
         case "projects":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.projects },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.projects },
           ];
         case "tasks":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.tasks },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.tasks },
           ];
         case "users":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.users },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.users },
           ];
         case "groups":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.groups },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.groups },
           ];
         case "reports":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.reports },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.reports },
           ];
         case "helps":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.helps },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.helps },
           ];
         case "notifications":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.notifications },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.notifications },
           ];
         case "timesheet":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigationLabels.timesheet },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigationLabels.timesheet },
           ];
         case "my-tasks":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.myTasks },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.myTasks },
           ];
         case "tags":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.tags },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.tags },
           ];
         case "settings":
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
-            { label: fa.navigation.settings },
+            { label: navigation.dashboard, to: "/" as const },
+            { label: navigation.settings },
           ];
         default:
           return [
-            { label: fa.navigation.dashboard, to: "/" as const },
+            { label: navigation.dashboard, to: "/" as const },
             { label: path.replace("/", "") || "" },
           ];
       }
@@ -117,37 +125,37 @@ export function SiteHeader() {
       const second = parts[1];
       if (first === "projects" && second === "new") {
         return [
-          { label: fa.navigation.dashboard, to: "/" as const },
-          { label: fa.navigation.projects, to: "/projects" as const },
-          { label: fa.projects.create.title },
+          { label: navigation.dashboard, to: "/" as const },
+          { label: navigation.projects, to: "/projects" as const },
+          { label: projects.create.title },
         ];
       }
       if (first === "tasks" && second === "new") {
         return [
-          { label: fa.navigation.dashboard, to: "/" as const },
-          { label: fa.navigation.tasks, to: "/tasks" as const },
-          { label: fa.tasks.addTask.title },
+          { label: navigation.dashboard, to: "/" as const },
+          { label: navigation.tasks, to: "/tasks" as const },
+          { label: tasks.addTask.title },
         ];
       }
       if (first === "users" && second === "new") {
         return [
-          { label: fa.navigation.dashboard, to: "/" as const },
-          { label: fa.navigation.users, to: "/users" as const },
-          { label: fa.users.create.title },
+          { label: navigation.dashboard, to: "/" as const },
+          { label: navigation.users, to: "/users" as const },
+          { label: users.create.title },
         ];
       }
       if (first === "groups" && second === "new") {
         return [
-          { label: fa.navigation.dashboard, to: "/" as const },
-          { label: fa.navigation.groups, to: "/groups" as const },
-          { label: fa.groups.create.title },
+          { label: navigation.dashboard, to: "/" as const },
+          { label: navigation.groups, to: "/groups" as const },
+          { label: groups.create.title },
         ];
       }
       if (first === "tasks" && second === "calendar") {
         return [
-          { label: fa.navigation.dashboard, to: "/" as const },
-          { label: fa.navigation.tasks, to: "/tasks" as const },
-          { label: fa.tasks.calendar.title },
+          { label: navigation.dashboard, to: "/" as const },
+          { label: navigation.tasks, to: "/tasks" as const },
+          { label: tasks.calendar.title },
         ];
       }
     }
@@ -158,9 +166,9 @@ export function SiteHeader() {
       const isCreateTask = sub === "tasks" && parts[3] === "new";
       const subLabel =
         sub === "tasks"
-          ? fa.projects.projectTasks
+          ? projects.projectTasks
           : sub === "users"
-            ? fa.projects.users.title
+            ? projects.users.title
             : sub;
 
       // Try to read the project's name from cache only
@@ -179,8 +187,8 @@ export function SiteHeader() {
       }
 
       const baseCrumbs = [
-        { label: fa.navigation.dashboard, to: "/" as const },
-        { label: fa.navigation.projects, to: "/projects" as const },
+        { label: navigation.dashboard, to: "/" as const },
+        { label: navigation.projects, to: "/projects" as const },
         { label: projectName ?? projectId },
         {
           label: subLabel,
@@ -191,7 +199,7 @@ export function SiteHeader() {
       ];
 
       if (isCreateTask) {
-        return [...baseCrumbs, { label: fa.tasks.addTask.title }];
+        return [...baseCrumbs, { label: tasks.addTask.title }];
       }
 
       return baseCrumbs;
@@ -201,10 +209,10 @@ export function SiteHeader() {
     if (first === "users" && parts.length === 3 && parts[2] === "edit") {
       const userId = parts[1];
       return [
-        { label: fa.navigation.dashboard, to: "/" as const },
-        { label: fa.navigation.users, to: "/users" as const },
+        { label: navigation.dashboard, to: "/" as const },
+        { label: navigation.users, to: "/users" as const },
         { label: userId },
-        { label: fa.users.edit.title },
+        { label: users.edit.title },
       ];
     }
 
@@ -227,10 +235,10 @@ export function SiteHeader() {
       }
 
       return [
-        { label: fa.navigation.dashboard, to: "/" as const },
-        { label: fa.navigation.groups, to: "/groups" as const },
+        { label: navigation.dashboard, to: "/" as const },
+        { label: navigation.groups, to: "/groups" as const },
         { label: groupName ?? groupId },
-        { label: fa.groups.edit.title },
+        { label: groups.edit.title },
       ];
     }
 
@@ -267,8 +275,8 @@ export function SiteHeader() {
       }
 
       return [
-        { label: fa.navigation.dashboard, to: "/" as const },
-        { label: fa.navigation.tasks, to: "/tasks" as const },
+        { label: navigation.dashboard, to: "/" as const },
+        { label: navigation.tasks, to: "/tasks" as const },
         { label: taskTitle ?? taskId },
       ];
     }
@@ -301,16 +309,16 @@ export function SiteHeader() {
       }
 
       return [
-        { label: fa.navigation.dashboard, to: "/" as const },
-        { label: fa.navigation.tasks, to: "/tasks" as const },
+        { label: navigation.dashboard, to: "/" as const },
+        { label: navigation.tasks, to: "/tasks" as const },
         { label: taskTitle ?? taskId, to: `/tasks/${taskId}` as const },
-        { label: fa.tasks.editTask.replace("{title}", taskTitle ?? taskId) },
+        { label: tasks.editTask.replace("{title}", taskTitle ?? taskId) },
       ];
     }
 
     // Fallback
     return [
-      { label: fa.navigation.dashboard, to: "/" as const },
+      { label: navigation.dashboard, to: "/" as const },
       { label: normalizedPath },
     ];
   }, [location.pathname, queryClient]);
@@ -395,8 +403,8 @@ export function SiteHeader() {
                   )}
                   <span className="sr-only">
                     {resolvedTheme === "dark"
-                      ? fa.common.theme.switchToLight
-                      : fa.common.theme.switchToDark}
+                      ? common.theme.switchToLight
+                      : common.theme.switchToDark}
                   </span>
                 </span>
               </TooltipTrigger>

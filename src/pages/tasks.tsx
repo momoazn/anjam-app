@@ -20,7 +20,7 @@ import {
 import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
 import { TaskEmptyState } from "@/components/task/task-empty-state";
 import { useToast } from "@/hooks/use-toast";
-import { fa } from "@/constants";
+import { common, savedFilters as savedFiltersText, tasks } from "@/constants";
 import { useTaskFilters, ALL_FILTER_VALUE } from "@/hooks/use-task-filters";
 import {
   useTasks,
@@ -78,7 +78,7 @@ export default function Tasks() {
 
   // Saved filters functionality
   const {
-    savedFilters,
+    savedFilters: savedFiltersData,
     saveFilter,
     updateFilter,
     deleteFilter,
@@ -107,18 +107,18 @@ export default function Tasks() {
         setAsDefault(newFilter.id);
       }
       toast({
-        title: fa.savedFilters.toast.saved,
+        title: savedFiltersText.toast.saved,
       });
     } catch {
       toast({
-        title: fa.savedFilters.toast.saveError,
+        title: savedFiltersText.toast.saveError,
         variant: "destructive",
       });
     }
   };
 
   // Handle apply filter
-  const handleApplyFilter = async (filter: (typeof savedFilters)[0]) => {
+  const handleApplyFilter = async (filter: (typeof savedFiltersData)[0]) => {
     try {
       await setSearchTerm(filter.filters.searchTerm || "");
       await setSelectedStatus(
@@ -134,11 +134,11 @@ export default function Tasks() {
       await setSelectedTag(filter.filters.selectedTag || "all");
 
       toast({
-        title: fa.savedFilters.toast.applied,
+        title: savedFiltersText.toast.applied,
       });
     } catch {
       toast({
-        title: fa.savedFilters.toast.applyError,
+        title: savedFiltersText.toast.applyError,
         variant: "destructive",
       });
     }
@@ -149,11 +149,11 @@ export default function Tasks() {
     try {
       deleteFilter(id);
       toast({
-        title: fa.savedFilters.toast.deleted,
+        title: savedFiltersText.toast.deleted,
       });
     } catch {
       toast({
-        title: fa.savedFilters.toast.deleteError,
+        title: savedFiltersText.toast.deleteError,
         variant: "destructive",
       });
     }
@@ -165,12 +165,12 @@ export default function Tasks() {
       setAsDefault(id);
       toast({
         title: id
-          ? fa.savedFilters.toast.defaultSet
-          : fa.savedFilters.toast.defaultRemoved,
+          ? savedFiltersText.toast.defaultSet
+          : savedFiltersText.toast.defaultRemoved,
       });
     } catch {
       toast({
-        title: fa.savedFilters.toast.setDefaultError,
+        title: savedFiltersText.toast.setDefaultError,
         variant: "destructive",
       });
     }
@@ -408,15 +408,15 @@ export default function Tasks() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <ListTodo className="h-5 w-5 md:h-6 md:w-6" />
-            {fa.tasks.allTasks}
+            {tasks.allTasks}
           </h1>
           <p className="text-muted-foreground mt-2">
             {totalTasks > 0
-              ? fa.tasks.header.tasksFound.replace(
+              ? tasks.header.tasksFound.replace(
                   "{count}",
                   totalTasks.toString(),
                 )
-              : fa.tasks.header.manageTasks}
+              : tasks.header.manageTasks}
           </p>
         </div>
         <div className="flex w-full gap-2 sm:w-auto">
@@ -427,7 +427,7 @@ export default function Tasks() {
             className="gap-2"
           >
             <LayoutGrid className="h-4 w-4" />
-            {fa.tasks.board.title}
+            {tasks.board.title}
           </Button>
           <Button
             variant={selectionMode ? "secondary" : "outline"}
@@ -437,8 +437,8 @@ export default function Tasks() {
           >
             <CheckSquare className="h-4 w-4" />
             {selectionMode
-              ? fa.common.buttons.cancelSelection
-              : fa.common.buttons.multiSelect}
+              ? common.buttons.cancelSelection
+              : common.buttons.multiSelect}
           </Button>
           <Button
             className="w-full gap-2 sm:w-auto"
@@ -446,7 +446,7 @@ export default function Tasks() {
             onClick={() => navigate("/tasks/new")}
           >
             <Plus className="h-4 w-4" />
-            {fa.tasks.addTask.buttons.newTask}
+            {tasks.addTask.buttons.newTask}
           </Button>
         </div>
       </div>
@@ -456,7 +456,7 @@ export default function Tasks() {
         {/* Saved Filters Dropdown */}
         <div className="flex justify-end">
           <SavedFiltersDropdown
-            savedFilters={savedFilters}
+            savedFilters={savedFiltersData}
             currentFilterMatch={currentFilterMatch}
             defaultFilterId={defaultFilterId}
             onApplyFilter={handleApplyFilter}
@@ -499,7 +499,7 @@ export default function Tasks() {
       <ManageSavedFiltersDialog
         open={manageFiltersDialogOpen}
         onOpenChange={setManageFiltersDialogOpen}
-        savedFilters={savedFilters}
+        savedFilters={savedFiltersData}
         defaultFilterId={defaultFilterId}
         onUpdateFilter={updateFilter}
         onDeleteFilter={handleDeleteFilter}
@@ -536,7 +536,7 @@ export default function Tasks() {
         <Card className="mt-6">
           <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-muted-foreground text-sm">
-              {fa.tasks.pagination.range
+              {tasks.pagination.range
                 .replace("{start}", pageStart.toString())
                 .replace("{end}", pageEnd.toString())
                 .replace("{total}", totalTasks.toString())}
@@ -552,7 +552,7 @@ export default function Tasks() {
                 <SelectContent>
                   {[25, 50, 100, 200, 500].map((size) => (
                     <SelectItem key={size} value={size.toString()}>
-                      {fa.tasks.pagination.perPage.replace(
+                      {tasks.pagination.perPage.replace(
                         "{count}",
                         size.toString(),
                       )}
@@ -567,10 +567,10 @@ export default function Tasks() {
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage <= 1}
                 >
-                  {fa.tasks.pagination.prev}
+                  {tasks.pagination.prev}
                 </Button>
                 <span className="text-muted-foreground text-sm">
-                  {fa.tasks.pagination.page
+                  {tasks.pagination.page
                     .replace("{page}", currentPage.toString())
                     .replace("{total}", totalPages.toString())}
                 </span>
@@ -580,7 +580,7 @@ export default function Tasks() {
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage >= totalPages}
                 >
-                  {fa.tasks.pagination.next}
+                  {tasks.pagination.next}
                 </Button>
               </div>
             </div>

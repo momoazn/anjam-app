@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { PageTransition } from "@/components/page-transition";
 import { Separator } from "@/components/ui/separator";
-import { fa } from "@/constants/text";
+import { helps } from "@/constants";
 import { HelpCircle } from "lucide-react";
 
 export default function Helps() {
@@ -21,7 +21,7 @@ export default function Helps() {
     reports,
     troubleshooting,
     system,
-  } = fa.helps.content;
+  } = helps.content;
 
   const problems = [
     troubleshooting.problems.login,
@@ -38,9 +38,9 @@ export default function Helps() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <HelpCircle className="h-5 w-5 md:h-6 md:w-6" />
-            {fa.helps.title}
+            {helps.title}
           </h1>
-          <p className="text-muted-foreground mt-2">{fa.helps.description}</p>
+          <p className="text-muted-foreground mt-2">{helps.description}</p>
         </div>
       </div>
       <Separator className="mb-6" />

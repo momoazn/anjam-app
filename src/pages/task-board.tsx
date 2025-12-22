@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { pb, TaskWithProject } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks/query-keys";
 import { TASK_STATUS_ORDER, TASK_STATUS_CONFIG } from "@/lib/status-utils";
-import { fa } from "@/constants";
+import { common, tasks as tasksText } from "@/constants";
 import { TasksStatusOptions, TasksRecord } from "@/lib/pocketbase-types";
 import { Loader2, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -42,7 +42,7 @@ export function TaskBoardPage() {
   const [activeTask, setActiveTask] = useState<TaskWithProject | null>(null);
 
   // Fetch all tasks with specific order sort priority
-  const { data: tasks = [], isLoading } = useQuery<TaskWithProject[]>({
+  const { data: tasksData = [], isLoading } = useQuery<TaskWithProject[]>({
     queryKey: queryKeys.tasks.all,
     queryFn: async () => {
       // Sort by order ascending, then updated descending (as fallback)
@@ -60,7 +60,7 @@ export function TaskBoardPage() {
       cols[status] = [];
     });
 
-    tasks.forEach((task) => {
+    tasksData.forEach((task) => {
       const status = task.status || TasksStatusOptions.todo;
       if (cols[status]) {
         cols[status].push(task);
@@ -71,7 +71,7 @@ export function TaskBoardPage() {
     });
 
     return cols;
-  }, [tasks]);
+  }, [tasksData]);
 
   const updateTaskPosition = useMutation({
     mutationFn: async ({
@@ -208,17 +208,17 @@ export function TaskBoardPage() {
       <div className="flex items-center justify-between border-b px-6 py-4">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold tracking-tight">
-            {fa.tasks.board.title}
+            {tasksText.board.title}
           </h1>
           <Badge variant="outline" className="hidden sm:flex">
-            {tasks.length} {fa.common.total}
+            {tasksData.length} {common.total}
           </Badge>
         </div>
         <div className="flex items-center gap-2">
           <Button asChild size="sm">
             <Link to="/tasks/new">
               <Plus className="mr-2 h-4 w-4" />
-              {fa.tasks.addTask.buttons.newTask}
+              {tasksText.addTask.buttons.newTask}
             </Link>
           </Button>
         </div>

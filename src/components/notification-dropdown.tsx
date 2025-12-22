@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NotificationBadge } from "@/components/notification-badge";
-import { fa } from "@/constants/text";
+import { notification, notifications } from "@/constants";
 import {
   useNotifications,
   useMarkAsRead,
@@ -56,7 +56,7 @@ function NotificationItem({
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
       )}
       role="listitem"
-      aria-label={`${fa.notification.notificationsLabel}: ${notification.title}`}
+      aria-label={`${notification.notificationsLabel}: ${notification.title}`}
       dir="rtl"
     >
       {/* Notification indicator */}
@@ -98,7 +98,7 @@ function NotificationItem({
                 variant="secondary"
                 className="rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
               >
-                {fa.notification.new}
+                {notification.new}
               </Badge>
             )}
           </div>
@@ -111,8 +111,8 @@ function NotificationItem({
           size="sm"
           onClick={handleMarkAsRead}
           className="h-7 w-7 shrink-0 p-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          title={fa.notifications.buttons.markAsRead}
-          aria-label={fa.notification.markAsReadLabel.replace(
+          title={notifications.buttons.markAsRead}
+          aria-label={notification.markAsReadLabel.replace(
             "{title}",
             notification.title,
           )}
@@ -145,7 +145,7 @@ export function NotificationDropdown({
       <DropdownMenuContent
         align={align}
         className="mt-1 ml-4 w-[28rem] max-w-[90vw] p-0"
-        aria-label={fa.notification.notificationsPanel}
+        aria-label={notification.notificationsPanel}
       >
         {/* Header */}
         <div
@@ -156,7 +156,7 @@ export function NotificationDropdown({
             className="text-foreground flex-1 truncate text-right font-semibold"
             id="notifications-heading"
           >
-            {fa.notifications.title}
+            {notifications.title}
           </h3>
           {notifications.length > 0 && (
             <div className="mr-3 flex flex-shrink-0 gap-1">
@@ -165,22 +165,22 @@ export function NotificationDropdown({
                 size="sm"
                 onClick={() => user?.id && markAllAsRead.mutate(user.id)}
                 className="hover:bg-muted/80 h-7 px-2 text-xs"
-                title={fa.notifications.markAllAsRead}
-                aria-label={fa.notifications.markAllAsRead}
+                title={notifications.markAllAsRead}
+                aria-label={notifications.markAllAsRead}
               >
                 <IconCheck className="ml-1 size-3" aria-hidden="true" />
-                {fa.notifications.markAllAsRead}
+                {notifications.markAllAsRead}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => user?.id && clearAll.mutate(user.id)}
                 className="hover:bg-destructive/10 hover:text-destructive h-7 px-2 text-xs"
-                title={fa.notifications.clearAll}
-                aria-label={fa.notifications.clearAll}
+                title={notifications.clearAll}
+                aria-label={notifications.clearAll}
               >
                 <IconTrash className="ml-1 size-3" aria-hidden="true" />
-                {fa.notifications.clearAll}
+                {notifications.clearAll}
               </Button>
             </div>
           )}
@@ -198,10 +198,10 @@ export function NotificationDropdown({
               <IconCheck className="text-muted-foreground/50 size-5" />
             </div>
             <p className="text-sm font-medium">
-              {fa.notifications.noNotifications}
+              {notifications.noNotifications}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
-              {fa.notification.newNotifications}
+              {notification.newNotifications}
             </p>
           </div>
         ) : (
@@ -226,12 +226,12 @@ export function NotificationDropdown({
           <div className="bg-muted/20 border-t px-4 py-2" dir="rtl">
             <div className="flex items-center justify-between">
               <p className="text-muted-foreground text-right text-xs">
-                {fa.notification.showCount.replace(
+                {notification.showCount.replace(
                   "{count}",
                   digitsEnToFa(Math.min(10, notifications.length)),
                 )}{" "}
                 {digitsEnToFa(notifications.length)}{" "}
-                {fa.notification.notificationWord}
+                {notification.notificationWord}
               </p>
               <Button
                 variant="ghost"
@@ -240,7 +240,7 @@ export function NotificationDropdown({
                 className="h-6 px-2 text-xs"
               >
                 <IconEye className="ml-1 h-3 w-3" />
-                {fa.notifications.actions.viewAll}
+                {notifications.actions.viewAll}
               </Button>
             </div>
           </div>

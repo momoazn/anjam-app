@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fa } from "@/constants";
+import { common, projects } from "@/constants";
 import { useUsers, useGroups } from "@/hooks";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
@@ -67,7 +67,7 @@ export function ProjectFields({
       <GenericFormField
         control={control}
         name="name"
-        label={fa.projects.create.form.name}
+        label={projects.create.form.name}
         type="input"
         required
       />
@@ -75,7 +75,7 @@ export function ProjectFields({
       <GenericFormField
         control={control}
         name="code"
-        label={fa.projects.create.form.code}
+        label={projects.create.form.code}
         type="input"
         required
       />
@@ -86,7 +86,7 @@ export function ProjectFields({
           name="supervisor"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{fa.projects.create.form.supervisor}</FormLabel>
+              <FormLabel>{projects.create.form.supervisor}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value === "" ? undefined : field.value}
@@ -94,7 +94,7 @@ export function ProjectFields({
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={fa.projects.create.form.selectSupervisor}
+                      placeholder={projects.create.form.selectSupervisor}
                     />
                   </SelectTrigger>
                 </FormControl>
@@ -113,7 +113,7 @@ export function ProjectFields({
                     ))
                   ) : (
                     <SelectItem value="__empty" disabled>
-                      {fa.common.messages.noData}
+                      {common.messages.noData}
                     </SelectItem>
                   )}
                 </SelectContent>
@@ -130,7 +130,7 @@ export function ProjectFields({
           name="group"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{fa.projects.create.form.group}</FormLabel>
+              <FormLabel>{projects.create.form.group}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
@@ -139,7 +139,7 @@ export function ProjectFields({
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={fa.projects.create.form.selectGroup}
+                      placeholder={projects.create.form.selectGroup}
                     />
                   </SelectTrigger>
                 </FormControl>
@@ -152,7 +152,7 @@ export function ProjectFields({
                     ))
                   ) : (
                     <SelectItem value="__empty" disabled>
-                      {fa.common.messages.noData}
+                      {common.messages.noData}
                     </SelectItem>
                   )}
                 </SelectContent>
@@ -167,9 +167,9 @@ export function ProjectFields({
         <GenericFormField
           control={control}
           name="description"
-          label={fa.projects.create.form.description}
+          label={projects.create.form.description}
           type="textarea"
-          placeholder={fa.projects.create.form.descriptionPlaceholder}
+          placeholder={projects.create.form.descriptionPlaceholder}
           className="min-h-32"
         />
       )}
@@ -180,7 +180,7 @@ export function ProjectFields({
           name="assets"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{fa.projects.create.form.assets}</FormLabel>
+              <FormLabel>{projects.create.form.assets}</FormLabel>
               <FormControl>
                 <FileUpload
                   value={field.value as FileWithPreview[]}

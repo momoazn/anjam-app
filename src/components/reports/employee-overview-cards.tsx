@@ -1,7 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 import type { EmployeeSummary } from "@/lib/reports-utils";
 
 type Props = {
@@ -13,7 +13,7 @@ export function EmployeeOverviewCards({ summaries, onCardClick }: Props) {
   if (summaries.length === 0) {
     return (
       <div className="text-muted-foreground flex h-32 items-center justify-center rounded-md border border-dashed text-sm">
-        {fa.reports.charts.employee.emptyStates.noEmployees}
+        {reports.charts.employee.emptyStates.noEmployees}
       </div>
     );
   }
@@ -35,7 +35,7 @@ export function EmployeeOverviewCards({ summaries, onCardClick }: Props) {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {fa.reports.charts.employee.overviewCards.totalAssigned}
+                  {reports.charts.employee.overviewCards.totalAssigned}
                 </span>
                 <span className="font-medium">
                   {digitsEnToFa(summary.totalAssigned)}
@@ -43,7 +43,7 @@ export function EmployeeOverviewCards({ summaries, onCardClick }: Props) {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {fa.reports.charts.employee.overviewCards.completed}
+                  {reports.charts.employee.overviewCards.completed}
                 </span>
                 <span className="font-medium">
                   {digitsEnToFa(summary.completed)}
@@ -51,7 +51,7 @@ export function EmployeeOverviewCards({ summaries, onCardClick }: Props) {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {fa.reports.charts.employee.overviewCards.inProgress}
+                  {reports.charts.employee.overviewCards.inProgress}
                 </span>
                 <span className="font-medium">
                   {digitsEnToFa(summary.inProgress)}
@@ -59,7 +59,7 @@ export function EmployeeOverviewCards({ summaries, onCardClick }: Props) {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {fa.reports.charts.employee.overviewCards.efficiencyScore}
+                  {reports.charts.employee.overviewCards.efficiencyScore}
                 </span>
                 <span className="font-medium">
                   {digitsEnToFa(Math.round(summary.efficiencyScore * 100))}%

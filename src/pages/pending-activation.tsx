@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
-import { fa } from "@/constants/text";
+import { users } from "@/constants";
 
 export default function PendingActivation() {
   const navigate = useNavigate();
@@ -20,16 +20,14 @@ export default function PendingActivation() {
           </div>
 
           <h1 className="text-foreground text-center text-2xl font-bold">
-            {fa.users.pendingActivation.title}
+            {users.pendingActivation.title}
           </h1>
 
           <div className="text-muted-foreground space-y-3 text-center">
-            <p>{fa.users.pendingActivation.message}</p>
+            <p>{users.pendingActivation.message}</p>
             <div className="bg-muted flex items-start gap-2 rounded-lg p-4 text-right">
               <Mail className="text-primary mt-0.5 h-5 w-5 shrink-0" />
-              <p className="text-sm">
-                {fa.users.pendingActivation.instruction}
-              </p>
+              <p className="text-sm">{users.pendingActivation.instruction}</p>
             </div>
           </div>
 
@@ -38,7 +36,7 @@ export default function PendingActivation() {
             className="w-full"
             size="lg"
           >
-            {fa.users.pendingActivation.backToLogin}
+            {users.pendingActivation.backToLogin}
           </Button>
         </div>
       </PageTransition>

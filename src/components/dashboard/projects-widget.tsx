@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Target } from "lucide-react";
-import { fa } from "@/constants";
+import { dashboard } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,10 @@ type ProjectsWidgetProps = {
   isLoading?: boolean;
 };
 
-export function ProjectsWidget({ projects = [], isLoading = false }: ProjectsWidgetProps) {
+export function ProjectsWidget({
+  projects = [],
+  isLoading = false,
+}: ProjectsWidgetProps) {
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -52,10 +55,10 @@ export function ProjectsWidget({ projects = [], isLoading = false }: ProjectsWid
       <div className="mb-6 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-lg font-semibold md:text-xl">
           <Target className="h-4 w-4 md:h-5 md:w-5" />
-          {fa.dashboard.projectSummary}
+          {dashboard.projectSummary}
         </h2>
         <Button variant="ghost" size="sm" onClick={() => navigate("/projects")}>
-          {fa.dashboard.cards.viewAll}
+          {dashboard.cards.viewAll}
         </Button>
       </div>
       <div
@@ -87,7 +90,7 @@ export function ProjectsWidget({ projects = [], isLoading = false }: ProjectsWid
             <CardContent>
               <div className="mb-3">
                 <div className="mb-1 flex justify-between text-sm">
-                  <span>{fa.dashboard.cards.progress}</span>
+                  <span>{dashboard.cards.progress}</span>
                   <span>{digitsEnToFa(project.progress)}%</span>
                 </div>
                 <div className="bg-muted/60 h-2 w-full overflow-hidden rounded-full">
@@ -100,11 +103,11 @@ export function ProjectsWidget({ projects = [], isLoading = false }: ProjectsWid
               <div className="text-muted-foreground flex justify-between text-sm">
                 <span>
                   {digitsEnToFa(project.completedTasks)}{" "}
-                  {fa.dashboard.cards.completed}
+                  {dashboard.cards.completed}
                 </span>
                 <span>
                   {digitsEnToFa(project.taskCount - project.completedTasks)}{" "}
-                  {fa.dashboard.cards.remaining}
+                  {dashboard.cards.remaining}
                 </span>
               </div>
             </CardContent>

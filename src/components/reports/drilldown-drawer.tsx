@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { fa } from "@/constants";
+import { dashboard, reports, tasks } from "@/constants";
 
 import {
   Drawer,
@@ -36,22 +36,22 @@ type Props = {
 };
 
 const STATUS_LABELS = {
-  todo: fa.reports.todo,
-  in_progress: fa.reports.inProgress,
-  done: fa.reports.completed,
-  canceled: fa.reports.canceled,
+  todo: reports.todo,
+  in_progress: reports.inProgress,
+  done: reports.completed,
+  canceled: reports.canceled,
 };
 
 const PRIORITY_LABELS = {
-  urgent: fa.tasks.priority.urgent,
-  high: fa.reports.high,
-  medium: fa.reports.medium,
-  low: fa.reports.low,
+  urgent: tasks.priority.urgent,
+  high: reports.high,
+  medium: reports.medium,
+  low: reports.low,
 };
 
 export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
   const formatDeadline = (deadline: string | null) => {
-    if (!deadline) return fa.dashboard.fallbacks.noDeadline;
+    if (!deadline) return dashboard.fallbacks.noDeadline;
     return new Date(deadline).toLocaleDateString("fa-IR");
   };
 
@@ -71,22 +71,22 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
         <div className="flex-1 overflow-auto p-4">
           {rows.length === 0 ? (
             <div className="text-muted-foreground flex h-32 items-center justify-center">
-              {fa.reports.noTasksFound}
+              {reports.noTasksFound}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{fa.reports.title}</TableHead>
-                  <TableHead>{fa.reports.taskStatus}</TableHead>
-                  <TableHead>{fa.reports.taskPriority}</TableHead>
-                  <TableHead>{fa.reports.deadline}</TableHead>
+                  <TableHead>{reports.title}</TableHead>
+                  <TableHead>{reports.taskStatus}</TableHead>
+                  <TableHead>{reports.taskPriority}</TableHead>
+                  <TableHead>{reports.deadline}</TableHead>
                   <TableHead>
-                    {fa.reports.age} {fa.reports.ageUnit}
+                    {reports.age} {reports.ageUnit}
                   </TableHead>
-                  <TableHead>{fa.reports.assignee}</TableHead>
-                  <TableHead>{fa.reports.project}</TableHead>
-                  <TableHead>{fa.reports.tags}</TableHead>
+                  <TableHead>{reports.assignee}</TableHead>
+                  <TableHead>{reports.project}</TableHead>
+                  <TableHead>{reports.tags}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

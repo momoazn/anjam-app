@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { text } from "@/constants/text";
+import { common, savedFilters } from "@/constants";
 interface SaveFilterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -55,40 +55,40 @@ export function SaveFilterDialog({
     const active: string[] = [];
     if (currentFilters.searchTerm)
       active.push(
-        `${text.savedFilters.criteria.search}: ${currentFilters.searchTerm}`,
+        `${savedFilters.criteria.search}: ${currentFilters.searchTerm}`,
       );
     if (
       currentFilters.selectedStatus &&
       currentFilters.selectedStatus !== "all"
     )
-      active.push(text.savedFilters.criteria.status);
+      active.push(savedFilters.criteria.status);
     if (
       currentFilters.selectedPriority &&
       currentFilters.selectedPriority !== "all"
     )
-      active.push(text.savedFilters.criteria.priority);
+      active.push(savedFilters.criteria.priority);
     if (
       currentFilters.selectedAssignee &&
       currentFilters.selectedAssignee !== "all"
     )
-      active.push(text.savedFilters.criteria.assignee);
+      active.push(savedFilters.criteria.assignee);
     if (currentFilters.selectedDateRange !== "all")
-      active.push(text.savedFilters.criteria.date);
+      active.push(savedFilters.criteria.date);
     if (currentFilters.selectedTag !== "all")
-      active.push(text.savedFilters.criteria.tag);
+      active.push(savedFilters.criteria.tag);
 
     return active.length > 0
       ? active.join(" • ")
-      : text.savedFilters.noActiveFilters;
+      : savedFilters.noActiveFilters;
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{text.savedFilters.saveDialog.title}</DialogTitle>
+          <DialogTitle>{savedFilters.saveDialog.title}</DialogTitle>
           <DialogDescription>
-            {text.savedFilters.saveDialog.description}
+            {savedFilters.saveDialog.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -96,7 +96,7 @@ export function SaveFilterDialog({
           {/* Filter summary */}
           <div className="bg-muted rounded-md p-3">
             <p className="text-muted-foreground mb-1 text-xs">
-              {text.savedFilters.activeFilters}
+              {savedFilters.activeFilters}
             </p>
             <p className="text-sm">{getFilterSummary()}</p>
           </div>
@@ -104,11 +104,11 @@ export function SaveFilterDialog({
           {/* Filter name input */}
           <div className="space-y-2">
             <Label htmlFor="filter-name">
-              {text.savedFilters.saveDialog.nameLabel}
+              {savedFilters.saveDialog.nameLabel}
             </Label>
             <Input
               id="filter-name"
-              placeholder={text.savedFilters.saveDialog.namePlaceholder}
+              placeholder={savedFilters.saveDialog.namePlaceholder}
               value={filterName}
               onChange={(e) => setFilterName(e.target.value)}
               onKeyDown={(e) => {
@@ -130,17 +130,17 @@ export function SaveFilterDialog({
               htmlFor="set-default"
               className="cursor-pointer text-sm font-normal"
             >
-              {text.savedFilters.saveDialog.setAsDefault}
+              {savedFilters.saveDialog.setAsDefault}
             </Label>
           </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel}>
-            {text.common.cancel}
+            {common.cancel}
           </Button>
           <Button onClick={handleSave} disabled={!filterName.trim()}>
-            {text.common.save}
+            {common.save}
           </Button>
         </DialogFooter>
       </DialogContent>

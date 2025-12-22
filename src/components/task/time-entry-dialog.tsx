@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { parseTimeInput, minutesToHoursAndMinutes } from "@/lib/time-utils";
-import { text } from "@/constants/text";
+import { common, task, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -97,7 +97,7 @@ export function TimeEntryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{text.task.logTime}</DialogTitle>
+          <DialogTitle>{task.logTime}</DialogTitle>
           <DialogDescription className="text-sm">{taskTitle}</DialogDescription>
         </DialogHeader>
 
@@ -112,7 +112,7 @@ export function TimeEntryDialog({
                 name="hours"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{text.task.hours}</FormLabel>
+                    <FormLabel>{task.hours}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -132,7 +132,7 @@ export function TimeEntryDialog({
                 name="minutes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{text.task.minutes}</FormLabel>
+                    <FormLabel>{task.minutes}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -149,7 +149,7 @@ export function TimeEntryDialog({
             </div>
 
             <div className="space-y-2">
-              <FormLabel>{text.task.quickAdd}</FormLabel>
+              <FormLabel>{task.quickAdd}</FormLabel>
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
@@ -157,7 +157,7 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(15)}
                 >
-                  +15{text.task.min}
+                  +15{task.min}
                 </Button>
                 <Button
                   type="button"
@@ -165,7 +165,7 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(30)}
                 >
-                  +30{text.task.min}
+                  +30{task.min}
                 </Button>
                 <Button
                   type="button"
@@ -173,7 +173,7 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(60)}
                 >
-                  +1{text.task.hour}
+                  +1{task.hour}
                 </Button>
                 <Button
                   type="button"
@@ -181,7 +181,7 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(120)}
                 >
-                  +2{text.task.hour}
+                  +2{task.hour}
                 </Button>
               </div>
             </div>
@@ -190,7 +190,7 @@ export function TimeEntryDialog({
               <Alert className="border-orange-200 bg-orange-50">
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
-                  {text.tasks.details.timeTracking.exceedsEstimate
+                  {tasks.details.timeTracking.exceedsEstimate
                     .replace(
                       "{hours}",
                       digitsEnToFa(Math.floor(estimatedMinutes / 60)),
@@ -207,10 +207,10 @@ export function TimeEntryDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                {text.common.cancel}
+                {common.cancel}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? text.common.saving : text.common.save}
+                {isSubmitting ? common.saving : common.save}
               </Button>
             </DialogFooter>
           </form>

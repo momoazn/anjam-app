@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants/text";
+import { auditLogs } from "@/constants";
 import { useResourceAuditLogs } from "@/hooks/audit-logs";
 import type { AuditLogsResponse, UsersResponse } from "@/lib/pocketbase-types";
 import type { FieldDiff } from "@/lib/audit-log-service";
@@ -43,18 +43,18 @@ function getActionIcon(action: string) {
 function formatActionMessage(log: AuditLog, actorName: string): string {
   const resourceName =
     log.resource === "tasks"
-      ? fa.auditLogs.resources.task
+      ? auditLogs.resources.task
       : log.resource === "projects"
-        ? fa.auditLogs.resources.project
+        ? auditLogs.resources.project
         : log.resource;
 
   switch (log.action) {
     case "create":
-      return fa.auditLogs.activityStream.created
+      return auditLogs.activityStream.created
         .replace("{actor}", actorName)
         .replace("{resource}", resourceName);
     case "delete":
-      return fa.auditLogs.activityStream.deleted
+      return auditLogs.activityStream.deleted
         .replace("{actor}", actorName)
         .replace("{resource}", resourceName);
     case "update": {
@@ -69,24 +69,24 @@ function formatActionMessage(log: AuditLog, actorName: string): string {
         const oldVal =
           diff.old !== null && diff.old !== undefined
             ? String(diff.old)
-            : fa.auditLogs.empty.empty;
+            : auditLogs.empty.empty;
         const newVal =
           diff.new !== null && diff.new !== undefined
             ? String(diff.new)
-            : fa.auditLogs.empty.empty;
+            : auditLogs.empty.empty;
 
-        return fa.auditLogs.activityStream.updated
+        return auditLogs.activityStream.updated
           .replace("{actor}", actorName)
           .replace("{field}", field)
           .replace("{old}", oldVal)
           .replace("{new}", newVal);
       }
-      return fa.auditLogs.activityStream.changed
+      return auditLogs.activityStream.changed
         .replace("{actor}", actorName)
         .replace("{resource}", resourceName);
     }
     default:
-      return fa.auditLogs.activityStream.defaultMessage
+      return auditLogs.activityStream.defaultMessage
         .replace("{actor}", actorName)
         .replace("{action}", log.action);
   }
@@ -99,8 +99,8 @@ function AuditLogItem({ log }: { log: AuditLog }) {
   const actorName = actor
     ? formatUserName(actor.first_name, actor.last_name, actor.username)
     : log.actor_type === "system"
-      ? fa.auditLogs.actorTypes.system
-      : fa.auditLogs.actorTypes.unknown;
+      ? auditLogs.actorTypes.system
+      : auditLogs.actorTypes.unknown;
 
   const changes =
     typeof log.changes === "string"
@@ -127,8 +127,8 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                   </p>
                   <div className="mt-1 flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
-                      {fa.auditLogs.actions[
-                        log.action as keyof typeof fa.auditLogs.actions
+                      {auditLogs.actions[
+                        log.action as keyof typeof auditLogs.actions
                       ] || log.action}
                     </Badge>
                     <span className="text-muted-foreground text-xs">
@@ -145,8 +145,8 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                   className="text-xs"
                 >
                   {expanded
-                    ? fa.auditLogs.activityStream.hideDetails
-                    : fa.auditLogs.activityStream.showDetails}
+                    ? auditLogs.activityStream.hideDetails
+                    : auditLogs.activityStream.showDetails}
                 </Button>
               )}
             </div>
@@ -154,7 +154,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
             {expanded && hasChanges && (
               <div className="mt-4 border-t pt-4">
                 <p className="mb-2 text-sm font-medium">
-                  {fa.auditLogs.table.changes}:
+                  {auditLogs.table.changes}:
                 </p>
                 <div className="space-y-2">
                   {Object.entries(changes).map(([field, diff]) => (
@@ -163,22 +163,22 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                       <div className="text-muted-foreground flex gap-4">
                         <div>
                           <span className="text-xs">
-                            {fa.auditLogs.labels.before}{" "}
+                            {auditLogs.labels.before}{" "}
                           </span>
                           <span className="font-mono text-xs">
                             {diff.old !== null && diff.old !== undefined
                               ? String(diff.old).substring(0, 50)
-                              : fa.auditLogs.empty.empty}
+                              : auditLogs.empty.empty}
                           </span>
                         </div>
                         <div>
                           <span className="text-xs">
-                            {fa.auditLogs.labels.after}{" "}
+                            {auditLogs.labels.after}{" "}
                           </span>
                           <span className="font-mono text-xs">
                             {diff.new !== null && diff.new !== undefined
                               ? String(diff.new).substring(0, 50)
-                              : fa.auditLogs.empty.empty}
+                              : auditLogs.empty.empty}
                           </span>
                         </div>
                       </div>
@@ -224,9 +224,7 @@ export function ActivityStream({
   if (error) {
     return (
       <div className={cn("py-10 text-center", className)}>
-        <p className="text-destructive">
-          {fa.auditLogs.errors.loadHistoryFailed}
-        </p>
+        <p className="text-destructive">{auditLogs.errors.loadHistoryFailed}</p>
       </div>
     );
   }
@@ -235,7 +233,7 @@ export function ActivityStream({
     return (
       <div className={cn("py-10 text-center", className)}>
         <p className="text-muted-foreground">
-          {fa.auditLogs.activityStream.empty}
+          {auditLogs.activityStream.empty}
         </p>
       </div>
     );

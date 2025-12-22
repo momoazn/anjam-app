@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { fa } from "@/constants/text";
+import { common, tasks } from "@/constants";
 import {
   ALL_FILTER_VALUE,
   UseTaskFiltersReturn,
@@ -88,7 +88,7 @@ export function TaskFilters({
 
     if (searchTerm) {
       labels.push({
-        label: `${fa.tasks.filters.labels.search} ${searchTerm}`,
+        label: `${tasks.filters.labels.search} ${searchTerm}`,
         onClear: () => setSearchTerm(""),
       });
     }
@@ -99,25 +99,24 @@ export function TaskFilters({
       if (selectedStatus.includes(",")) {
         const statusArray = selectedStatus.split(",");
         const statusLabels = statusArray
-          .map((status) => fa.tasks.status[status as TasksStatusOptions])
+          .map((status) => tasks.status[status as TasksStatusOptions])
           .filter(Boolean)
           .join(", ");
         statusLabel = statusLabels || selectedStatus;
       } else {
         statusLabel =
-          fa.tasks.status[selectedStatus as TasksStatusOptions] ||
-          selectedStatus;
+          tasks.status[selectedStatus as TasksStatusOptions] || selectedStatus;
       }
 
       labels.push({
-        label: `${fa.tasks.filters.labels.status} ${statusLabel}`,
+        label: `${tasks.filters.labels.status} ${statusLabel}`,
         onClear: () => setSelectedStatus(ALL_FILTER_VALUE),
       });
     }
 
     if (selectedPriority !== ALL_FILTER_VALUE) {
       labels.push({
-        label: `${fa.tasks.filters.labels.priority} ${fa.tasks.priority[selectedPriority as TasksPriorityOptions]}`,
+        label: `${tasks.filters.labels.priority} ${tasks.priority[selectedPriority as TasksPriorityOptions]}`,
         onClear: () => setSelectedPriority(ALL_FILTER_VALUE),
       });
     }
@@ -125,15 +124,15 @@ export function TaskFilters({
     if (selectedAssignee !== ALL_FILTER_VALUE) {
       const user = users?.find((u) => u.id === selectedAssignee);
       labels.push({
-        label: `${fa.tasks.filters.labels.assignee} ${user ? formatUserName(user.first_name, user.last_name, user.username) : selectedAssignee}`,
+        label: `${tasks.filters.labels.assignee} ${user ? formatUserName(user.first_name, user.last_name, user.username) : selectedAssignee}`,
         onClear: () => setSelectedAssignee(ALL_FILTER_VALUE),
       });
     }
 
     if (selectedDateRange !== "all") {
-      const dateLabels: Record<string, string> = fa.tasks.filters.dateLabels;
+      const dateLabels: Record<string, string> = tasks.filters.dateLabels;
       labels.push({
-        label: `${fa.tasks.filters.labels.date} ${dateLabels[selectedDateRange] || selectedDateRange}`,
+        label: `${tasks.filters.labels.date} ${dateLabels[selectedDateRange] || selectedDateRange}`,
         onClear: () => setSelectedDateRange("all"),
       });
     }
@@ -141,7 +140,7 @@ export function TaskFilters({
     if (selectedTag !== "all") {
       const tag = tags?.find((t) => t.id === selectedTag);
       labels.push({
-        label: `${fa.tasks.filters.labels.tag} ${tag?.name || selectedTag}`,
+        label: `${tasks.filters.labels.tag} ${tag?.name || selectedTag}`,
         onClear: () => setSelectedTag("all"),
       });
     }
@@ -164,7 +163,7 @@ export function TaskFilters({
       <div className="relative">
         <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
         <Input
-          placeholder={fa.tasks.filters.search}
+          placeholder={tasks.filters.search}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="h-9 pr-10"
@@ -182,15 +181,15 @@ export function TaskFilters({
           }
         >
           <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={fa.tasks.filters.status} />
+            <SelectValue placeholder={tasks.filters.status} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_FILTER_VALUE}>
-              {fa.tasks.filters.allStatuses}
+              {tasks.filters.allStatuses}
             </SelectItem>
             {statusOrder.map((status) => (
               <SelectItem key={status} value={status}>
-                {fa.tasks.status[status]}
+                {tasks.status[status]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -205,15 +204,15 @@ export function TaskFilters({
           }
         >
           <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={fa.tasks.filters.priority} />
+            <SelectValue placeholder={tasks.filters.priority} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_FILTER_VALUE}>
-              {fa.tasks.filters.allPriorities}
+              {tasks.filters.allPriorities}
             </SelectItem>
             {priorityOrder.map((priority) => (
               <SelectItem key={priority} value={priority}>
-                {fa.tasks.priority[priority]}
+                {tasks.priority[priority]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -227,11 +226,11 @@ export function TaskFilters({
           disabled={isLoadingUsers}
         >
           <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={fa.tasks.filters.assignee} />
+            <SelectValue placeholder={tasks.filters.assignee} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_FILTER_VALUE}>
-              {fa.tasks.filters.allAssignees}
+              {tasks.filters.allAssignees}
             </SelectItem>
             {users && users.length > 0 ? (
               users.map((user) => (
@@ -247,7 +246,7 @@ export function TaskFilters({
               ))
             ) : (
               <SelectItem value="__empty" disabled>
-                {fa.common.messages.noData}
+                {common.messages.noData}
               </SelectItem>
             )}
           </SelectContent>
@@ -255,14 +254,14 @@ export function TaskFilters({
 
         <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
           <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={fa.tasks.filters.date} />
+            <SelectValue placeholder={tasks.filters.date} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{fa.tasks.filters.allDates}</SelectItem>
-            <SelectItem value="today">{fa.tasks.filters.today}</SelectItem>
-            <SelectItem value="week">{fa.tasks.filters.thisWeek}</SelectItem>
-            <SelectItem value="month">{fa.tasks.filters.thisMonth}</SelectItem>
-            <SelectItem value="overdue">{fa.tasks.filters.overdue}</SelectItem>
+            <SelectItem value="all">{tasks.filters.allDates}</SelectItem>
+            <SelectItem value="today">{tasks.filters.today}</SelectItem>
+            <SelectItem value="week">{tasks.filters.thisWeek}</SelectItem>
+            <SelectItem value="month">{tasks.filters.thisMonth}</SelectItem>
+            <SelectItem value="overdue">{tasks.filters.overdue}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -272,10 +271,10 @@ export function TaskFilters({
           disabled={isLoadingTags}
         >
           <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={fa.tasks.filters.tag} />
+            <SelectValue placeholder={tasks.filters.tag} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{fa.tasks.filters.allTags}</SelectItem>
+            <SelectItem value="all">{tasks.filters.allTags}</SelectItem>
             {tags && tags.length > 0 ? (
               tags.map((tag) => (
                 <SelectItem key={tag.id} value={tag.id}>
@@ -290,7 +289,7 @@ export function TaskFilters({
               ))
             ) : (
               <SelectItem value="__empty" disabled>
-                {fa.common.messages.noData}
+                {common.messages.noData}
               </SelectItem>
             )}
           </SelectContent>
@@ -301,7 +300,7 @@ export function TaskFilters({
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-muted-foreground text-sm">
-            {fa.tasks.filters.activeFilters}
+            {tasks.filters.activeFilters}
           </span>
           <div className="flex flex-wrap gap-1">
             {getActiveFilterLabels()
@@ -315,7 +314,7 @@ export function TaskFilters({
               ))}
             {getActiveFilterLabels().length > 4 && (
               <Badge variant="outline" className="text-xs">
-                {fa.tasks.filters.moreFilters.replace(
+                {tasks.filters.moreFilters.replace(
                   "{count}",
                   (getActiveFilterLabels().length - 4).toString(),
                 )}
@@ -328,7 +327,7 @@ export function TaskFilters({
             onClick={clearAllFilters}
             className="hover:bg-muted h-7 px-2 text-xs"
           >
-            {fa.tasks.filters.clearAll}
+            {tasks.filters.clearAll}
           </Button>
         </div>
       )}

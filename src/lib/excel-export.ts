@@ -1,6 +1,6 @@
 import { format } from "date-fns-jalali";
 import * as XLSX from "xlsx";
-import { fa } from "@/constants/text";
+import { reports, tasks } from "@/constants";
 import { formatDateISO } from "./date-utils";
 import type { ProjectsResponse, UsersResponse } from "./pocketbase-types";
 import type { TaskWithProject } from "./pocketbase";
@@ -59,9 +59,7 @@ function getUserName(
  */
 function getStatusLabel(status: string | undefined): string {
   if (!status) return "-";
-  return (
-    fa.tasks.status[status as keyof typeof fa.tasks.status] || status || "-"
-  );
+  return tasks.status[status as keyof typeof tasks.status] || status || "-";
 }
 
 /**
@@ -70,9 +68,7 @@ function getStatusLabel(status: string | undefined): string {
 function getPriorityLabel(priority: string | undefined): string {
   if (!priority) return "-";
   return (
-    fa.tasks.priority[priority as keyof typeof fa.tasks.priority] ||
-    priority ||
-    "-"
+    tasks.priority[priority as keyof typeof tasks.priority] || priority || "-"
   );
 }
 
@@ -135,17 +131,17 @@ export async function exportProjectToExcel(
   // Add workbook properties
   const currentDate = format(new Date(), "yyyy/MM/dd HH:mm");
   workbook.Props = {
-    Title: fa.reports.excel.workbookTitle.replace(
+    Title: reports.excel.workbookTitle.replace(
       "{projectName}",
-      project.name || fa.reports.excel.fallbackProjectName,
+      project.name || reports.excel.fallbackProjectName,
     ),
-    Subject: fa.reports.excel.workbookSubject.replace(
+    Subject: reports.excel.workbookSubject.replace(
       "{projectCode}",
       project.code || "",
     ),
-    Author: fa.reports.excel.workbookAuthor,
+    Author: reports.excel.workbookAuthor,
     CreatedDate: new Date(),
-    Comments: fa.reports.excel.workbookComments.replace("{date}", currentDate),
+    Comments: reports.excel.workbookComments.replace("{date}", currentDate),
   };
 
   // Set workbook views (RTL support for Persian)
@@ -156,15 +152,15 @@ export async function exportProjectToExcel(
   // Sheet 1: Project Details
   const projectData = [
     {
-      [fa.reports.excel.columns.name]: project.name || "-",
-      [fa.reports.excel.columns.code]: project.code || "-",
-      [fa.reports.excel.columns.description]: stripHtml(project.description),
-      [fa.reports.excel.columns.supervisor]: getUserName(
+      [reports.excel.columns.name]: project.name || "-",
+      [reports.excel.columns.code]: project.code || "-",
+      [reports.excel.columns.description]: stripHtml(project.description),
+      [reports.excel.columns.supervisor]: getUserName(
         project.expand?.supervisor,
         "-",
       ),
-      [fa.reports.excel.columns.createdAt]: formatDateISO(project.created),
-      [fa.reports.excel.columns.updatedAt]: formatDateISO(project.updated),
+      [reports.excel.columns.createdAt]: formatDateISO(project.created),
+      [reports.excel.columns.updatedAt]: formatDateISO(project.updated),
     },
   ];
 
@@ -174,39 +170,39 @@ export async function exportProjectToExcel(
   XLSX.utils.book_append_sheet(
     workbook,
     projectSheet,
-    fa.reports.excel.sheetProjectDetails,
+    reports.excel.sheetProjectDetails,
   );
 
   // Sheet 2: Tasks
   const tasksData = projectTasks.map((task) => {
     const assignee = users.find((u) => u.id === task.assignee);
     return {
-      [fa.reports.excel.columns.taskNumber]: task.display_id || "-",
-      [fa.reports.excel.columns.taskTitle]: task.title || "-",
-      [fa.reports.excel.columns.taskStatus]: getStatusLabel(task.status),
-      [fa.reports.excel.columns.taskPriority]: getPriorityLabel(task.priority),
-      [fa.reports.excel.columns.taskAssignee]: getUserName(assignee, "-"),
-      [fa.reports.excel.columns.taskDeadline]: formatDateISO(task.deadline),
-      [fa.reports.excel.columns.createdAt]: formatDateISO(task.created),
-      [fa.reports.excel.columns.updatedAt]: formatDateISO(task.updated),
-      [fa.reports.excel.columns.taskTimeSpent]: task.time_spent_minutes || 0,
-      [fa.reports.excel.columns.taskDescription]: stripHtml(task.description),
+      [reports.excel.columns.taskNumber]: task.display_id || "-",
+      [reports.excel.columns.taskTitle]: task.title || "-",
+      [reports.excel.columns.taskStatus]: getStatusLabel(task.status),
+      [reports.excel.columns.taskPriority]: getPriorityLabel(task.priority),
+      [reports.excel.columns.taskAssignee]: getUserName(assignee, "-"),
+      [reports.excel.columns.taskDeadline]: formatDateISO(task.deadline),
+      [reports.excel.columns.createdAt]: formatDateISO(task.created),
+      [reports.excel.columns.updatedAt]: formatDateISO(task.updated),
+      [reports.excel.columns.taskTimeSpent]: task.time_spent_minutes || 0,
+      [reports.excel.columns.taskDescription]: stripHtml(task.description),
     };
   });
 
   // If no tasks, add a single row indicating no tasks
   if (tasksData.length === 0) {
     tasksData.push({
-      [fa.reports.excel.columns.taskNumber]: "-",
-      [fa.reports.excel.columns.taskTitle]: fa.reports.excel.noTasksMessage,
-      [fa.reports.excel.columns.taskStatus]: "-",
-      [fa.reports.excel.columns.taskPriority]: "-",
-      [fa.reports.excel.columns.taskAssignee]: "-",
-      [fa.reports.excel.columns.taskDeadline]: "-",
-      [fa.reports.excel.columns.createdAt]: "-",
-      [fa.reports.excel.columns.updatedAt]: "-",
-      [fa.reports.excel.columns.taskTimeSpent]: 0,
-      [fa.reports.excel.columns.taskDescription]: "-",
+      [reports.excel.columns.taskNumber]: "-",
+      [reports.excel.columns.taskTitle]: reports.excel.noTasksMessage,
+      [reports.excel.columns.taskStatus]: "-",
+      [reports.excel.columns.taskPriority]: "-",
+      [reports.excel.columns.taskAssignee]: "-",
+      [reports.excel.columns.taskDeadline]: "-",
+      [reports.excel.columns.createdAt]: "-",
+      [reports.excel.columns.updatedAt]: "-",
+      [reports.excel.columns.taskTimeSpent]: 0,
+      [reports.excel.columns.taskDescription]: "-",
     });
   }
 
@@ -219,7 +215,7 @@ export async function exportProjectToExcel(
   XLSX.utils.book_append_sheet(
     workbook,
     tasksSheet,
-    fa.reports.excel.sheetProjectTasks,
+    reports.excel.sheetProjectTasks,
   );
 
   // Generate unique filename

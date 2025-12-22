@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { text } from "@/constants/text";
+import { common, tagsManagement } from "@/constants";
 import {
   useTags,
   useCreateTag,
@@ -40,14 +40,14 @@ import { UsersRoleOptions } from "@/lib/pocketbase-types";
 
 // Predefined color palette for tags
 const TAG_COLORS = [
-  { value: "#9CA3AF", label: text.tagsManagement.colors.gray },
-  { value: "#EF4444", label: text.tagsManagement.colors.red },
-  { value: "#F97316", label: text.tagsManagement.colors.orange },
-  { value: "#F59E0B", label: text.tagsManagement.colors.yellow },
-  { value: "#10B981", label: text.tagsManagement.colors.green },
-  { value: "#3B82F6", label: text.tagsManagement.colors.blue },
-  { value: "#8B5CF6", label: text.tagsManagement.colors.purple },
-  { value: "#EC4899", label: text.tagsManagement.colors.pink },
+  { value: "#9CA3AF", label: tagsManagement.colors.gray },
+  { value: "#EF4444", label: tagsManagement.colors.red },
+  { value: "#F97316", label: tagsManagement.colors.orange },
+  { value: "#F59E0B", label: tagsManagement.colors.yellow },
+  { value: "#10B981", label: tagsManagement.colors.green },
+  { value: "#3B82F6", label: tagsManagement.colors.blue },
+  { value: "#8B5CF6", label: tagsManagement.colors.purple },
+  { value: "#EC4899", label: tagsManagement.colors.pink },
 ];
 
 // Loading skeleton component
@@ -80,15 +80,13 @@ const EmptyState = ({ onCreateClick }: { onCreateClick: () => void }) => (
       >
         <Tag className="text-primary h-6 w-6" />
       </div>
-      <h3 className="mb-2 text-lg font-semibold">
-        {text.tagsManagement.noTags}
-      </h3>
+      <h3 className="mb-2 text-lg font-semibold">{tagsManagement.noTags}</h3>
       <p className="text-muted-foreground mb-6 max-w-md">
-        {text.tagsManagement.noTagsDescription}
+        {tagsManagement.noTagsDescription}
       </p>
       <Button className="gap-2" onClick={onCreateClick}>
         <Plus className="h-4 w-4" />
-        {text.tagsManagement.createFirstTag}
+        {tagsManagement.createFirstTag}
       </Button>
     </CardContent>
   </Card>
@@ -109,7 +107,7 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
 
   const createTag = useCreateTag({
     onSuccess: () => {
-      toast({ title: text.tagsManagement.toast.created });
+      toast({ title: tagsManagement.toast.created });
       onOpenChange(false);
       resetForm();
     },
@@ -120,7 +118,7 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
 
   const updateTag = useUpdateTag({
     onSuccess: () => {
-      toast({ title: text.tagsManagement.toast.updated });
+      toast({ title: tagsManagement.toast.updated });
       onOpenChange(false);
       resetForm();
     },
@@ -139,7 +137,7 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
 
     if (!name.trim()) {
       toast({
-        title: text.tagsManagement.validation.nameRequired,
+        title: tagsManagement.validation.nameRequired,
         variant: "destructive",
       });
       return;
@@ -179,22 +177,22 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
           <DialogHeader>
             <DialogTitle>
               {mode === "create"
-                ? text.tagsManagement.createTag
-                : text.tagsManagement.editTag}
+                ? tagsManagement.createTag
+                : tagsManagement.editTag}
             </DialogTitle>
             <DialogDescription>
               {mode === "create"
-                ? text.tagsManagement.description
-                : text.tagsManagement.editTag}
+                ? tagsManagement.description
+                : tagsManagement.editTag}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="tag-name">{text.tagsManagement.nameLabel}</Label>
+              <Label htmlFor="tag-name">{tagsManagement.nameLabel}</Label>
               <Input
                 id="tag-name"
-                placeholder={text.tagsManagement.namePlaceholder}
+                placeholder={tagsManagement.namePlaceholder}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -202,7 +200,7 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>{text.tagsManagement.colorLabel}</Label>
+              <Label>{tagsManagement.colorLabel}</Label>
               <div className="grid grid-cols-4 gap-2">
                 {TAG_COLORS.map((tagColor) => (
                   <button
@@ -226,7 +224,7 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>{text.common.preview}</Label>
+              <Label>{common.preview}</Label>
               <div className="flex items-center gap-2">
                 <Badge
                   style={{
@@ -235,7 +233,7 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
                     border: "none",
                   }}
                 >
-                  {name || text.tagsManagement.tagName}
+                  {name || tagsManagement.tagName}
                 </Badge>
               </div>
             </div>
@@ -247,15 +245,15 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
               variant="outline"
               onClick={() => handleOpenChange(false)}
             >
-              {text.tagsManagement.cancelButton}
+              {tagsManagement.cancelButton}
             </Button>
             <Button
               type="submit"
               disabled={createTag.isPending || updateTag.isPending}
             >
               {mode === "create"
-                ? text.tagsManagement.createButton
-                : text.tagsManagement.saveButton}
+                ? tagsManagement.createButton
+                : tagsManagement.saveButton}
             </Button>
           </DialogFooter>
         </form>
@@ -277,7 +275,7 @@ export default function TagsManagement() {
 
   const deleteTag = useDeleteTag({
     onSuccess: () => {
-      toast({ title: text.tagsManagement.toast.deleted });
+      toast({ title: tagsManagement.toast.deleted });
       setDeleteDialogOpen(false);
       setSelectedTag(null);
     },
@@ -309,15 +307,15 @@ export default function TagsManagement() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <Tag className="h-5 w-5 md:h-6 md:w-6" />
-            {text.tagsManagement.title}
+            {tagsManagement.title}
           </h1>
           <p className="text-muted-foreground mt-2">
             {tags && tags.length > 0
-              ? text.tagsManagement.tagsCount.replace(
+              ? tagsManagement.tagsCount.replace(
                   "{count}",
                   tags.length.toString(),
                 )
-              : text.tagsManagement.description}
+              : tagsManagement.description}
           </p>
         </div>
         <Button
@@ -326,7 +324,7 @@ export default function TagsManagement() {
           onClick={() => setCreateDialogOpen(true)}
         >
           <Plus className="h-4 w-4" />
-          {text.tagsManagement.addTag}
+          {tagsManagement.addTag}
         </Button>
       </div>
 
@@ -361,7 +359,7 @@ export default function TagsManagement() {
                         e.stopPropagation();
                         handleEdit(tag);
                       }}
-                      title={text.tagsManagement.editButton}
+                      title={tagsManagement.editButton}
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -374,7 +372,7 @@ export default function TagsManagement() {
                           e.stopPropagation();
                           handleDelete(tag);
                         }}
-                        title={text.tagsManagement.deleteButton}
+                        title={tagsManagement.deleteButton}
                       >
                         <Trash2 className="text-destructive h-3.5 w-3.5" />
                       </Button>
@@ -409,22 +407,22 @@ export default function TagsManagement() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {text.tagsManagement.deleteConfirm.title}
+              {tagsManagement.deleteConfirm.title}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {text.tagsManagement.deleteConfirm.description}
+              {tagsManagement.deleteConfirm.description}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>
-              {text.tagsManagement.deleteConfirm.cancel}
+              {tagsManagement.deleteConfirm.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleteTag.isPending}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {text.tagsManagement.deleteConfirm.confirm}
+              {tagsManagement.deleteConfirm.confirm}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

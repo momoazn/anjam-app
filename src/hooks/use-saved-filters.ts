@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { fa } from "@/constants/text";
+import { savedFilters as savedFiltersText } from "@/constants";
 import {
   DEFAULT_TASK_FILTERS,
   type TaskFilterValues,
@@ -46,7 +46,7 @@ export function useSavedFilters() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
       setSavedFilters(filters);
     } catch {
-      throw new Error(fa.savedFilters.toast.saveError);
+      throw new Error(savedFiltersText.toast.saveError);
     }
   }, []);
 

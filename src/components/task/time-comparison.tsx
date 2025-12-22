@@ -1,5 +1,5 @@
 import { Clock, AlertTriangle } from "lucide-react";
-import { fa } from "@/constants/text";
+import { common, task } from "@/constants";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
@@ -31,17 +31,15 @@ export function TimeComparison({
     const parts: string[] = [];
 
     if (value.hours > 0) {
-      parts.push(`${digitsEnToFa(value.hours)} ${fa.common.time.hoursShort}`);
+      parts.push(`${digitsEnToFa(value.hours)} ${common.time.hoursShort}`);
     }
 
     if (value.minutes > 0) {
-      parts.push(
-        `${digitsEnToFa(value.minutes)} ${fa.common.time.minutesShort}`,
-      );
+      parts.push(`${digitsEnToFa(value.minutes)} ${common.time.minutesShort}`);
     }
 
     if (parts.length === 0) {
-      parts.push(`0 ${fa.common.time.minutesShort}`);
+      parts.push(`0 ${common.time.minutesShort}`);
     }
 
     return parts.join(" ");
@@ -53,7 +51,7 @@ export function TimeComparison({
       <div className="text-muted-foreground flex items-center gap-1">
         <Clock className="h-3 w-3" />
         <span>{formatDisplay(estimated)}</span>
-        <span className="text-xs">({fa.task.timeSpent})</span>
+        <span className="text-xs">({task.timeSpent})</span>
       </div>
 
       {/* Actual Time */}
@@ -65,7 +63,7 @@ export function TimeComparison({
           >
             <Clock className="h-3 w-3" />
             <span>{formatDisplay(actual)}</span>
-            <span className="text-xs">({fa.task.timeSpent})</span>
+            <span className="text-xs">({task.timeSpent})</span>
           </div>
 
           {/* Variance Indicator */}

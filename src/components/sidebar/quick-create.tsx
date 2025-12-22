@@ -6,7 +6,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { fa } from "@/constants/text";
+import { navigation } from "@/constants";
 
 export function QuickCreate() {
   const { isMobile, setOpenMobile } = useSidebar();
@@ -24,11 +24,11 @@ export function QuickCreate() {
           }}
         >
           <SidebarMenuButton
-            tooltip={fa.navigation.quickCreate.tooltip}
+            tooltip={navigation.quickCreate.tooltip}
             className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8"
           >
             <IconCirclePlusFilled />
-            <span>{fa.navigation.quickCreate.button}</span>
+            <span>{navigation.quickCreate.button}</span>
           </SidebarMenuButton>
         </NavLink>
       </SidebarMenuItem>

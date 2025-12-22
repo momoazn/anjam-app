@@ -5,7 +5,7 @@ import { useProjects } from "@/hooks/projects";
 import { useTaskCounts } from "@/hooks/use-task-counts";
 import { useSidebarActions } from "@/store/sidebar-store";
 import { SidebarBadge } from "./sidebar-badge";
-import { fa } from "@/constants/text";
+import { navigation } from "@/constants";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -38,13 +38,13 @@ export function ProjectsSubmenu() {
   return (
     <SidebarGroup>
       {state === "expanded" && (
-        <SidebarGroupLabel>{fa.navigation.projectsSection}</SidebarGroupLabel>
+        <SidebarGroupLabel>{navigation.projectsSection}</SidebarGroupLabel>
       )}
       <SidebarGroupContent>
         <SidebarMenu>
           {/* All Projects */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip={fa.navigation.allProjects}>
+            <SidebarMenuButton asChild tooltip={navigation.allProjects}>
               <NavLink
                 to="/projects"
                 onClick={() => {
@@ -54,7 +54,7 @@ export function ProjectsSubmenu() {
                 }}
               >
                 <IconFolder />
-                <span>{fa.navigation.allProjects}</span>
+                <span>{navigation.allProjects}</span>
               </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -64,7 +64,7 @@ export function ProjectsSubmenu() {
             <>
               <SidebarMenuItem>
                 <SidebarGroupLabel className="text-muted-foreground px-2 py-1 text-xs">
-                  {fa.navigation.recentProjects}
+                  {navigation.recentProjects}
                 </SidebarGroupLabel>
               </SidebarMenuItem>
               {recentProjects.map((project) => (
@@ -100,7 +100,7 @@ export function ProjectsSubmenu() {
             <>
               <SidebarMenuItem>
                 <SidebarGroupLabel className="text-muted-foreground px-2 py-1 text-xs">
-                  {fa.navigation.starredProjects}
+                  {navigation.starredProjects}
                 </SidebarGroupLabel>
               </SidebarMenuItem>
               {starredProjects.map((project) => (

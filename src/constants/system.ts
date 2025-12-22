@@ -1,3 +1,261 @@
+// System-level constants (errors, notifications, audit logs, settings, helps, timesheet)
+import { shared } from "./core";
+
+// Error messages module constants
+
+export const errors = {
+  pageLoad: {
+    login: "نتوانستیم صفحه ورود را بارگذاری کنیم",
+    register: "نتوانستیم صفحه ثبت‌نام را بارگذاری کنیم",
+    dashboard: "نتوانستیم داشبورد را بارگذاری کنیم",
+    projects: "نتوانستیم پروژه‌ها را بارگذاری کنیم",
+    tasks: "نتوانستیم تسک‌ها را بارگذاری کنیم",
+    projectTasks: "نتوانستیم تسک‌های پروژه را بارگذاری کنیم",
+    users: "نتوانستیم کاربران را بارگذاری کنیم",
+    projectUsers: "نتوانستیم اعضای پروژه را بارگذاری کنیم",
+    reports: "نتوانستیم گزارش‌ها را بارگذاری کنیم",
+    helps: "نتوانستیم راهنما را بارگذاری کنیم",
+    notifications: "نتوانستیم اعلان‌ها را بارگذاری کنیم",
+    notFound: "صفحه پیدا نشد",
+  },
+  validation: {
+    titleRequired: "عنوان الزامی است",
+    projectIdRequired: "شناسه پروژه الزامی است",
+    keywords: {
+      inactive: ["غیرفعال", "inactive"],
+      blocked: ["مسدود", "blocked"],
+    },
+    invalidOption: "گزینه نامعتبر است",
+    invalidDate: "تاریخ نامعتبر است",
+    numberInvalid: "عدد نامعتبر است",
+    estimatedHoursRange: "ساعت باید بین {min} تا {max} باشد",
+    estimatedMinutesRange: "دقیقه باید بین {min} تا {max} باشد",
+  },
+  notFound: {
+    projectNotFound: "پروژه یافت نشد",
+    taskNotFound: "تسک یافت نشد",
+  },
+  operationFailed: {
+    addUserToProject: "خطا در افزودن کاربر به پروژه",
+    removeUserFromProject: "خطا در حذف کاربر از پروژه",
+    saveTimeEntry: "خطا در ذخیره ورود زمانی",
+    exportProject: "خطا در خروجی پروژه",
+    fetchLoginLogs: "خطا در دریافت سوابق ورود",
+    applyFilter: "خطا در اعمال فیلتر",
+    loadSavedFilters: "خطا در بارگذاری فیلترهای ذخیره شده",
+    saveFilters: "خطا در ذخیره فیلترها",
+    subscribeNotifications: "خطا در اشتراک در اعلان‌ها",
+    loadNotifications: "نتوانستیم اعلان‌ها را بارگذاری کنیم",
+  },
+  permission: {
+    onlySuperusers:
+      "تنها کاربران ارشد (superuser) می‌توانند این عملیات را انجام دهند",
+  },
+  boundary: {
+    title: "اوه! مشکلی پیش آمده",
+    description:
+      "یک خطای غیرمنتظره رخ داده. نگران نباشید، می‌توانید دوباره تلاش کنید یا صفحه را بارگذاری مجدد کنید",
+    tryAgain: shared.retry,
+    reloadPage: "بارگذاری مجدد",
+  },
+} as const;
+
+// Notifications module constants
+
+export const notifications = {
+  title: "اعلان‌ها",
+  pageTitle: "اعلان‌ها",
+  pageDescription: "همه اعلان‌هایتان را در یکجا ببینید",
+  markAllAsRead: "خواندن همه",
+  clearAll: "پاک کردن همه",
+  noNotifications: "اعلان جدیدی ندارید",
+  emptyState: {
+    title: "هیچ اعلانی ندارید",
+    description: "وقتی اعلان جدیدی برایتان بیاید، اینجا نمایش داده می‌شود",
+  },
+  filters: {
+    all: shared.all,
+    unread: "خوانده نشده",
+    read: "خوانده شده",
+  },
+  sort: {
+    newest: "جدیدترین",
+    oldest: "قدیمی‌ترین",
+  },
+  types: {
+    task_assigned: "تسک جدید",
+    project_updated: "به‌روزرسانی پروژه",
+    system: "سیستم",
+    comment: "نظر جدید",
+  },
+  actions: {
+    markAsRead: "خوانده شد",
+    delete: shared.delete,
+    deleteQueued: "اعلان برای حذف در صف قرار گرفت",
+    viewAll: "مشاهده همه",
+    clearRead: "پاک کردن خوانده‌شده‌ها",
+  },
+  groups: {
+    today: shared.today,
+    yesterday: "دیروز",
+    thisWeek: "این هفته",
+    older: "قدیمی‌تر",
+  },
+  stats: {
+    total: "کل اعلان‌ها",
+    unread: "خوانده نشده",
+    read: "خوانده شده",
+    deletable: "قابل حذف",
+  },
+  buttons: {
+    markAsRead: "خوانده شد",
+  },
+  selected: "انتخاب شده",
+  selectAll: "انتخاب همه",
+  deselectAll: "لغو انتخاب",
+  deleteSelected: "حذف انتخاب‌شده‌ها",
+  cancel: shared.cancel,
+} as const;
+
+export const auditLogs = {
+  title: "لاگ‌های تغییرات",
+  actions: {
+    create: "ایجاد",
+    update: "به‌روزرسانی",
+    delete: "حذف",
+  },
+  resources: {
+    task: "تسک",
+    project: "پروژه",
+    tasks: "تسک‌ها",
+    projects: "پروژه‌ها",
+    users: "کاربران",
+  },
+  actorTypes: {
+    system: "سیستم",
+    unknown: "نامشخص",
+  },
+  empty: {
+    empty: "—",
+    noResults: "موردی برای نمایش وجود ندارد",
+  },
+  activityStream: {
+    title: "تاریخچه تغییرات",
+    created: "{actor} یک {resource} ایجاد کرد",
+    deleted: "{actor} یک {resource} حذف کرد",
+    changed: "{actor} یک {resource} را تغییر داد",
+    updated: "{actor} فیلد {field} را از {old} به {new} تغییر داد",
+    defaultMessage: "{actor} عملیات {action} را انجام داد",
+    showDetails: "نمایش جزئیات",
+    hideDetails: "پنهان کردن جزئیات",
+    empty: "تغییری برای نمایش وجود ندارد",
+  },
+  table: {
+    changes: "تغییرات",
+    timestamp: "زمان",
+    actor: "کاربر",
+    action: "عملیات",
+    resource: "منبع",
+    client: "کلاینت",
+    message: "پیام",
+    viewChanges: "مشاهده تغییرات",
+    noChanges: "بدون تغییر",
+  },
+  labels: {
+    before: "قبل:",
+    after: "بعد:",
+  },
+  errors: {
+    loadHistoryFailed: "نتوانستیم تاریخچه را بارگذاری کنیم",
+    loadFailed: "بارگذاری لاگ‌ها ناموفق بود",
+  },
+  clients: {
+    web: "وب",
+    cli: "خط فرمان",
+    automation: "اتوماسیون",
+    unknown: "نامشخص",
+  },
+  filters: {
+    resource: "منبع",
+    action: "عملیات",
+    actor: "کاربر",
+    client: "کلاینت",
+    dateFrom: "از تاریخ",
+    dateTo: "تا تاریخ",
+    search: "جستجو",
+    all: "همه",
+    allPlaceholder: "همه",
+    clear: "پاک کردن",
+  },
+} as const;
+
+// Settings module constants
+
+export const settings = {
+  title: "تنظیمات",
+  description: "مدیریت حساب کاربری و تنظیمات برنامه",
+  tabs: {
+    profile: "پروفایل کاربری",
+    appearance: "ظاهر و تم",
+    security: "امنیت و ورود",
+    about: "درباره برنامه",
+  },
+  profile: {
+    title: "اطلاعات شناسایی",
+    description: "تصویر پروفایل و نام نمایشی خود را مدیریت کنید.",
+    changeImage: "تغییر تصویر",
+    firstName: shared.name,
+    lastName: "نام خانوادگی",
+    username: "نام کاربری",
+    usernameDescription: "نام کاربری منحصر به فرد شما در سیستم.",
+    saveChanges: "ذخیره تغییرات",
+    contactTitle: "اطلاعات تماس",
+    contactDescription:
+      "ایمیل شما جهت بازیابی رمز عبور و دریافت اعلان‌ها استفاده می‌شود.",
+    email: "آدرس ایمیل",
+    emailChangeNote: "برای تغییر ایمیل با پشتیبانی تماس بگیرید.",
+    toast: {
+      updateSuccess: "پروفایل بروزرسانی شد",
+      updateSuccessDescription: "اطلاعات شما با موفقیت ذخیره گردید.",
+      updateError: shared.error,
+      updateErrorDescription: "خطایی در ذخیره اطلاعات رخ داد.",
+    },
+  },
+  appearance: {
+    title: "تم برنامه",
+    description: "ظاهر برنامه را متناسب با سلیقه خود شخصی‌سازی کنید.",
+    light: "روشن",
+    dark: "تاریک",
+    system: "سیستم",
+  },
+  security: {
+    changePasswordTitle: "تغییر رمز عبور",
+    changePasswordDescription: "برای امنیت بیشتر، رمز عبور قوی انتخاب کنید.",
+    oldPassword: "رمز عبور فعلی",
+    newPassword: "رمز عبور جدید",
+    confirmPassword: "تکرار رمز عبور جدید",
+    updatePassword: "بروزرسانی رمز عبور",
+    activeSessionsTitle: "نشست‌های فعال",
+    activeSessionsDescription: "تاریخچه ورودهای اخیر به حساب کاربری شما.",
+    noLoginHistory: "هیچ سابقه ورودی یافت نشد.",
+    toast: {
+      passwordChanged: "رمز عبور تغییر کرد",
+      passwordChangedDescription: "رمز عبور شما با موفقیت تغییر یافت.",
+      passwordError: shared.error,
+      passwordErrorDescription: "رمز عبور فعلی اشتباه است یا خطایی رخ داده.",
+      fetchLogsError: "خطا در دریافت سوابق ورود",
+    },
+    validation: {
+      oldPasswordRequired: "رمز عبور فعلی " + shared.required,
+    },
+  },
+  about: {
+    title: "درباره برنامه",
+    version: "نسخه ۱.۰.۰",
+    description: "این برنامه جهت مدیریت پروژه‌ها و تسک‌های تیمی طراحی شده است.",
+  },
+} as const;
+
 // Help documentation module constants
 
 export const helps = {
@@ -478,4 +736,20 @@ export const helps = {
       },
     },
   },
+} as const;
+
+// Timesheet
+
+export const timesheet = {
+  headers: {
+    date: "تاریخ",
+    taskTitle: "عنوان تسک",
+    project: "پروژه",
+    minutesSpent: "دقیقه‌های صرف شده",
+  },
+  noTimeSpent: "زمانی ثبت نشده است",
+  emptyStateDescription:
+    "برای ثبت تایم‌شیت، روی تسک‌ها زمان ثبت کنید یا یک تسک جدید بسازید.",
+  createTaskCta: "ساخت تسک جدید",
+  calendarCta: "مشاهده تقویم تسک‌ها",
 } as const;

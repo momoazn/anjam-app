@@ -1,5 +1,5 @@
 // Miscellaneous constants that don't fit into other modules
-import { shared } from "./shared";
+import { shared } from "./core";
 
 export const create = {
   newTask: "تسک جدید",

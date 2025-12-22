@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { fa } from "@/constants";
+import { projects } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
       <Card className={cn("p-6", className)}>
         <div className="text-muted-foreground text-center">
           <FileIcon className="mx-auto mb-2 h-12 w-12 opacity-50" />
-          <p>{fa.projects.details.noFiles}</p>
+          <p>{projects.details.noFiles}</p>
         </div>
       </Card>
     );
@@ -106,7 +106,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
                     onClick={() => handleDownload(filename)}
                   >
                     <Download className="mr-2 h-4 w-4" />
-                    {fa.projects.files.download}
+                    {projects.files.download}
                   </Button>
                   {isImage(filename) && (
                     <Button
@@ -114,7 +114,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
                       size="sm"
                       onClick={() => window.open(fileUrl, "_blank")}
                     >
-                      {fa.projects.files.preview}
+                      {projects.files.preview}
                     </Button>
                   )}
                 </div>

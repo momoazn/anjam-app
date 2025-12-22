@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { fa } from "@/constants/text";
+import { task, tasks } from "@/constants";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
@@ -84,7 +84,7 @@ export function TaskListHeader({
           strokeWidth={status === "todo" ? 1.5 : 2}
         />
         <h2 className="text-foreground me-2 text-sm font-medium">
-          {fa.tasks.status[status]}
+          {tasks.status[status]}
         </h2>
         <span className="text-muted-foreground text-sm">
           {digitsEnToFa(taskCount)}
@@ -100,7 +100,7 @@ export function TaskListHeader({
           variant="ghost"
           size="icon"
           className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-          title={fa.task.addNewTask}
+          title={task.addNewTask}
           onClick={handleCreateTask}
         >
           <Plus className="size-4" />
@@ -111,7 +111,7 @@ export function TaskListHeader({
               variant="ghost"
               size="icon"
               className="text-muted-foreground hover:bg-muted hover:text-foreground size-6 rounded"
-              title={fa.task.moreOptions}
+              title={task.moreOptions}
             >
               <MoreHorizontal className="size-4" />
             </Button>
@@ -125,7 +125,7 @@ export function TaskListHeader({
               {sortMode === "priority" && (
                 <Check className="text-primary me-1.5 size-3" />
               )}
-              {fa.task.sortByPriority}
+              {task.sortByPriority}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
@@ -135,10 +135,10 @@ export function TaskListHeader({
               {sortMode === "date" && (
                 <Check className="text-primary me-1.5 size-3" />
               )}
-              {fa.task.sortByDate}
+              {task.sortByDate}
             </DropdownMenuItem>
             <DropdownMenuItem disabled>
-              {fa.task.showCompletedTasks}
+              {task.showCompletedTasks}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

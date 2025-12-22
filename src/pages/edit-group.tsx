@@ -26,16 +26,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { fa } from "@/constants/text";
+import { common, groups } from "@/constants";
 import { useGroup, useUpdateGroup, useUsers } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: fa.common.validation.required }),
+  name: z.string().min(2, { message: common.validation.required }),
   description: z.string().optional(),
-  manager: z.string().min(1, { message: fa.common.validation.required }),
+  manager: z.string().min(1, { message: common.validation.required }),
 });
 
 export default function EditGroup() {
@@ -80,7 +80,7 @@ export default function EditGroup() {
 
   const { mutate: updateGroup, isPending } = useUpdateGroup({
     onSuccess: () => {
-      toast.success(fa.groups.edit.success);
+      toast.success(groups.edit.success);
       navigate("/groups");
     },
     onError: (error) => {
@@ -115,13 +115,13 @@ export default function EditGroup() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.groups.edit.title}</h1>
+          <h1 className="text-3xl font-bold">{groups.edit.title}</h1>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.groups.edit.title}</CardTitle>
+          <CardTitle>{groups.edit.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -131,10 +131,10 @@ export default function EditGroup() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.groups.form.name}</FormLabel>
+                    <FormLabel>{groups.form.name}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={fa.groups.form.namePlaceholder}
+                        placeholder={groups.form.namePlaceholder}
                         {...field}
                       />
                     </FormControl>
@@ -148,10 +148,10 @@ export default function EditGroup() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.groups.form.description}</FormLabel>
+                    <FormLabel>{groups.form.description}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder={fa.groups.form.descriptionPlaceholder}
+                        placeholder={groups.form.descriptionPlaceholder}
                         className="min-h-[100px]"
                         {...field}
                       />
@@ -166,19 +166,19 @@ export default function EditGroup() {
                 name="manager"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.groups.form.manager}</FormLabel>
+                    <FormLabel>{groups.form.manager}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue
-                            placeholder={fa.groups.form.selectManager}
+                            placeholder={groups.form.selectManager}
                           />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {managers.length === 0 ? (
                           <SelectItem value="__empty" disabled>
-                            {fa.common.messages.noData}
+                            {common.messages.noData}
                           </SelectItem>
                         ) : (
                           managers.map((m) => (
@@ -203,13 +203,13 @@ export default function EditGroup() {
                   onClick={() => navigate("/groups")}
                   disabled={isPending}
                 >
-                  {fa.common.cancel}
+                  {common.cancel}
                 </Button>
                 <Button type="submit" disabled={isPending || isLoading}>
                   {isPending ? (
                     <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                   ) : null}
-                  {fa.groups.edit.button}
+                  {groups.edit.button}
                 </Button>
               </div>
             </form>

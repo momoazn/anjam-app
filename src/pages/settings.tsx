@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { UserAvatar } from "@/components/user-avatar";
-import { fa } from "@/constants/text";
+import { app, auth, settings } from "@/constants";
 import { useTheme } from "@/hooks/use-theme";
 import { useUser } from "@/hooks/users";
 import { useAuthActions, useAuthUser } from "@/store/auth-store";
@@ -52,21 +52,21 @@ import { cn } from "@/lib/utils";
 // --- Validation Schemas ---
 
 const profileSchema = z.object({
-  username: z.string().min(3, fa.auth.errors.usernameMinLength),
-  first_name: z.string().min(1, fa.auth.errors.firstNameRequired),
-  last_name: z.string().min(1, fa.auth.errors.lastNameRequired),
+  username: z.string().min(3, auth.errors.usernameMinLength),
+  first_name: z.string().min(1, auth.errors.firstNameRequired),
+  last_name: z.string().min(1, auth.errors.lastNameRequired),
 });
 
 const passwordSchema = z
   .object({
     oldPassword: z
       .string()
-      .min(1, fa.settings.security.validation.oldPasswordRequired),
-    password: z.string().min(8, fa.auth.errors.passwordMinLength),
-    passwordConfirm: z.string().min(1, fa.auth.errors.passwordConfirmRequired),
+      .min(1, settings.security.validation.oldPasswordRequired),
+    password: z.string().min(8, auth.errors.passwordMinLength),
+    passwordConfirm: z.string().min(1, auth.errors.passwordConfirmRequired),
   })
   .refine((data) => data.password === data.passwordConfirm, {
-    message: fa.auth.errors.passwordsMismatch,
+    message: auth.errors.passwordsMismatch,
     path: ["passwordConfirm"],
   });
 
@@ -80,10 +80,10 @@ function SettingsSidebar({
   setActiveTab: (tab: string) => void;
 }) {
   const menuItems = [
-    { id: "profile", label: fa.settings.tabs.profile, icon: User },
-    { id: "appearance", label: fa.settings.tabs.appearance, icon: Palette },
-    { id: "security", label: fa.settings.tabs.security, icon: Shield },
-    { id: "about", label: fa.settings.tabs.about, icon: Info },
+    { id: "profile", label: settings.tabs.profile, icon: User },
+    { id: "appearance", label: settings.tabs.appearance, icon: Palette },
+    { id: "security", label: settings.tabs.security, icon: Shield },
+    { id: "about", label: settings.tabs.about, icon: Info },
   ];
 
   return (
@@ -173,14 +173,14 @@ function ProfileSection() {
       refetch();
       updateUser(updatedRecord);
       toast({
-        title: fa.settings.profile.toast.updateSuccess,
-        description: fa.settings.profile.toast.updateSuccessDescription,
+        title: settings.profile.toast.updateSuccess,
+        description: settings.profile.toast.updateSuccessDescription,
       });
       setAvatarFile(null);
     } catch {
       toast({
-        title: fa.settings.profile.toast.updateError,
-        description: fa.settings.profile.toast.updateErrorDescription,
+        title: settings.profile.toast.updateError,
+        description: settings.profile.toast.updateErrorDescription,
         variant: "destructive",
       });
     }
@@ -198,8 +198,8 @@ function ProfileSection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{fa.settings.profile.title}</CardTitle>
-          <CardDescription>{fa.settings.profile.description}</CardDescription>
+          <CardTitle>{settings.profile.title}</CardTitle>
+          <CardDescription>{settings.profile.description}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -216,7 +216,7 @@ function ProfileSection() {
                   >
                     <Camera className="h-4 w-4" />
                     <span className="sr-only">
-                      {fa.settings.profile.changeImage}
+                      {settings.profile.changeImage}
                     </span>
                   </label>
                   <input
@@ -235,7 +235,7 @@ function ProfileSection() {
                       name="first_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{fa.settings.profile.firstName}</FormLabel>
+                          <FormLabel>{settings.profile.firstName}</FormLabel>
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
@@ -248,7 +248,7 @@ function ProfileSection() {
                       name="last_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{fa.settings.profile.lastName}</FormLabel>
+                          <FormLabel>{settings.profile.lastName}</FormLabel>
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
@@ -262,12 +262,12 @@ function ProfileSection() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{fa.settings.profile.username}</FormLabel>
+                        <FormLabel>{settings.profile.username}</FormLabel>
                         <FormControl>
                           <Input {...field} dir="ltr" className="text-left" />
                         </FormControl>
                         <FormDescription>
-                          {fa.settings.profile.usernameDescription}
+                          {settings.profile.usernameDescription}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -281,7 +281,7 @@ function ProfileSection() {
                   {form.formState.isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {fa.settings.profile.saveChanges}
+                  {settings.profile.saveChanges}
                 </Button>
               </div>
             </form>
@@ -291,14 +291,14 @@ function ProfileSection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.settings.profile.contactTitle}</CardTitle>
+          <CardTitle>{settings.profile.contactTitle}</CardTitle>
           <CardDescription>
-            {fa.settings.profile.contactDescription}
+            {settings.profile.contactDescription}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-2">
-            <Label>{fa.settings.profile.email}</Label>
+            <Label>{settings.profile.email}</Label>
             <Input
               value={fullUser.email}
               disabled
@@ -306,7 +306,7 @@ function ProfileSection() {
               dir="ltr"
             />
             <p className="text-muted-foreground text-[0.8rem]">
-              {fa.settings.profile.emailChangeNote}
+              {settings.profile.emailChangeNote}
             </p>
           </div>
         </CardContent>
@@ -322,10 +322,8 @@ function AppearanceSection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{fa.settings.appearance.title}</CardTitle>
-          <CardDescription>
-            {fa.settings.appearance.description}
-          </CardDescription>
+          <CardTitle>{settings.appearance.title}</CardTitle>
+          <CardDescription>{settings.appearance.description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
@@ -338,9 +336,7 @@ function AppearanceSection() {
               onClick={() => setTheme("light")}
             >
               <Sun className="h-6 w-6" />
-              <span className="font-medium">
-                {fa.settings.appearance.light}
-              </span>
+              <span className="font-medium">{settings.appearance.light}</span>
             </Button>
             <Button
               variant="outline"
@@ -351,7 +347,7 @@ function AppearanceSection() {
               onClick={() => setTheme("dark")}
             >
               <Moon className="h-6 w-6" />
-              <span className="font-medium">{fa.settings.appearance.dark}</span>
+              <span className="font-medium">{settings.appearance.dark}</span>
             </Button>
             <Button
               variant="outline"
@@ -362,9 +358,7 @@ function AppearanceSection() {
               onClick={() => setTheme("system")}
             >
               <Laptop className="h-6 w-6" />
-              <span className="font-medium">
-                {fa.settings.appearance.system}
-              </span>
+              <span className="font-medium">{settings.appearance.system}</span>
             </Button>
           </div>
         </CardContent>
@@ -413,14 +407,14 @@ function SecuritySection() {
         passwordConfirm: values.passwordConfirm,
       });
       toast({
-        title: fa.settings.security.toast.passwordChanged,
-        description: fa.settings.security.toast.passwordChangedDescription,
+        title: settings.security.toast.passwordChanged,
+        description: settings.security.toast.passwordChangedDescription,
       });
       form.reset();
     } catch {
       toast({
-        title: fa.settings.security.toast.passwordError,
-        description: fa.settings.security.toast.passwordErrorDescription,
+        title: settings.security.toast.passwordError,
+        description: settings.security.toast.passwordErrorDescription,
         variant: "destructive",
       });
     }
@@ -430,9 +424,9 @@ function SecuritySection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{fa.settings.security.changePasswordTitle}</CardTitle>
+          <CardTitle>{settings.security.changePasswordTitle}</CardTitle>
           <CardDescription>
-            {fa.settings.security.changePasswordDescription}
+            {settings.security.changePasswordDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -446,7 +440,7 @@ function SecuritySection() {
                 name="oldPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.settings.security.oldPassword}</FormLabel>
+                    <FormLabel>{settings.security.oldPassword}</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
@@ -459,7 +453,7 @@ function SecuritySection() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fa.settings.security.newPassword}</FormLabel>
+                    <FormLabel>{settings.security.newPassword}</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
@@ -472,9 +466,7 @@ function SecuritySection() {
                 name="passwordConfirm"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {fa.settings.security.confirmPassword}
-                    </FormLabel>
+                    <FormLabel>{settings.security.confirmPassword}</FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
                     </FormControl>
@@ -487,7 +479,7 @@ function SecuritySection() {
                   {form.formState.isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {fa.settings.security.updatePassword}
+                  {settings.security.updatePassword}
                 </Button>
               </div>
             </form>
@@ -497,9 +489,9 @@ function SecuritySection() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.settings.security.activeSessionsTitle}</CardTitle>
+          <CardTitle>{settings.security.activeSessionsTitle}</CardTitle>
           <CardDescription>
-            {fa.settings.security.activeSessionsDescription}
+            {settings.security.activeSessionsDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -546,7 +538,7 @@ function SecuritySection() {
                 </div>
               ) : (
                 <div className="text-muted-foreground p-8 text-center">
-                  {fa.settings.security.noLoginHistory}
+                  {settings.security.noLoginHistory}
                 </div>
               )}
             </div>
@@ -562,7 +554,7 @@ function AboutSection() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{fa.settings.about.title}</CardTitle>
+          <CardTitle>{settings.about.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
@@ -570,15 +562,13 @@ function AboutSection() {
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">{fa.app.name}</h3>
-              <p className="text-muted-foreground">
-                {fa.settings.about.version}
-              </p>
+              <h3 className="text-lg font-bold">{app.name}</h3>
+              <p className="text-muted-foreground">{settings.about.version}</p>
             </div>
           </div>
           <Separator />
           <div className="space-y-2 text-sm">
-            <p>{fa.settings.about.description}</p>
+            <p>{settings.about.description}</p>
           </div>
         </CardContent>
       </Card>
@@ -596,11 +586,9 @@ export default function SettingsPage() {
       <PageTransition className="container mx-auto max-w-5xl p-4 md:p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight">
-            {fa.settings.title}
+            {settings.title}
           </h1>
-          <p className="text-muted-foreground mt-2">
-            {fa.settings.description}
-          </p>
+          <p className="text-muted-foreground mt-2">{settings.description}</p>
         </div>
 
         <div className="flex flex-col gap-8 lg:flex-row">

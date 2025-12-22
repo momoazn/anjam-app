@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { fa } from "@/constants/text";
+import { auditLogs, common, errors, projects } from "@/constants";
 import { queryKeys } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { formatDateLocale } from "@/lib/date-utils";
@@ -53,7 +53,7 @@ export default function ProjectDetails() {
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: queryKeys.projects.detail(id ?? ""),
     queryFn: async () => {
-      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
+      if (!id) throw new Error(errors.validation.projectIdRequired);
       return pb.collection("projects").getOne<ProjectWithSupervisor>(id, {
         expand: "supervisor",
       });
@@ -64,7 +64,7 @@ export default function ProjectDetails() {
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ["tasks", "project", id],
     queryFn: async () => {
-      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
+      if (!id) throw new Error(errors.validation.projectIdRequired);
       return pb
         .collection("tasks")
         .getFullList<TasksResponse>({ filter: `project="${id}"` });
@@ -86,8 +86,8 @@ export default function ProjectDetails() {
       newFiles: FileWithPreview[];
       filesToDelete: string[];
     }) => {
-      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
-      if (!project) throw new Error(fa.errors.notFound.projectNotFound);
+      if (!id) throw new Error(errors.validation.projectIdRequired);
+      if (!project) throw new Error(errors.notFound.projectNotFound);
 
       const formData = new FormData();
       formData.append("name", data.name);
@@ -115,7 +115,7 @@ export default function ProjectDetails() {
         });
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-      toast.success(fa.projects.edit.success);
+      toast.success(projects.edit.success);
       setIsEditing(false);
       setNewFiles([]);
       setFilesToDelete([]);
@@ -143,7 +143,7 @@ export default function ProjectDetails() {
         }
       }
 
-      toast.error(fa.projects.edit.error.replace("{error}", errorMessage));
+      toast.error(projects.edit.error.replace("{error}", errorMessage));
     },
   });
 
@@ -166,11 +166,11 @@ export default function ProjectDetails() {
 
   const handleSaveEdit = () => {
     if (!editedName.trim()) {
-      toast.error(fa.projects.create.form.nameRequired);
+      toast.error(projects.create.form.nameRequired);
       return;
     }
     if (!editedCode.trim()) {
-      toast.error(fa.projects.create.form.codeRequired);
+      toast.error(projects.create.form.codeRequired);
       return;
     }
 
@@ -200,16 +200,14 @@ export default function ProjectDetails() {
             data-animate-stagger
           >
             <Folder className="text-muted-foreground mb-4 h-12 w-12" />
-            <p className="text-muted-foreground">
-              {fa.projects.errors.notFound}
-            </p>
+            <p className="text-muted-foreground">{projects.errors.notFound}</p>
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => navigate("/projects")}
             >
               <ArrowLeft className="ml-2 h-4 w-4" />
-              {fa.projects.details.backToProjects}
+              {projects.details.backToProjects}
             </Button>
           </CardContent>
         </Card>
@@ -243,13 +241,13 @@ export default function ProjectDetails() {
               <Input
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
-                placeholder={fa.projects.create.form.name}
+                placeholder={projects.create.form.name}
                 className="h-auto text-2xl font-bold"
               />
               <Input
                 value={editedCode}
                 onChange={(e) => setEditedCode(e.target.value.slice(0, 3))}
-                placeholder={fa.projects.create.form.code}
+                placeholder={projects.create.form.code}
                 maxLength={3}
                 className="w-32"
               />
@@ -258,7 +256,7 @@ export default function ProjectDetails() {
             <div>
               <h1 className="text-3xl font-bold">{project.name}</h1>
               <p className="text-muted-foreground">
-                {fa.common.buttons.view} {project.code}
+                {common.buttons.view} {project.code}
               </p>
             </div>
           )}
@@ -274,7 +272,7 @@ export default function ProjectDetails() {
                   disabled={isUpdating}
                 >
                   <X className="mr-2 h-4 w-4" />
-                  {fa.common.cancel}
+                  {common.cancel}
                 </Button>
                 <Button
                   size="sm"
@@ -282,13 +280,13 @@ export default function ProjectDetails() {
                   disabled={isUpdating}
                 >
                   <Save className="mr-2 h-4 w-4" />
-                  {fa.common.save}
+                  {common.save}
                 </Button>
               </>
             ) : (
               <Button size="sm" onClick={handleStartEdit}>
                 <Edit className="mr-2 h-4 w-4" />
-                {fa.common.edit}
+                {common.edit}
               </Button>
             )}
           </div>
@@ -306,7 +304,7 @@ export default function ProjectDetails() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                {fa.projects.details.information}
+                {projects.details.information}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -315,7 +313,7 @@ export default function ProjectDetails() {
                 <User className="text-muted-foreground h-5 w-5" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">
-                    {fa.projects.details.supervisor}
+                    {projects.details.supervisor}
                   </p>
                   {supervisor ? (
                     <span className="text-muted-foreground text-sm">
@@ -339,7 +337,7 @@ export default function ProjectDetails() {
                   <Calendar className="text-muted-foreground mt-0.5 h-5 w-5" />
                   <div className="flex-1">
                     <p className="text-sm font-medium">
-                      {fa.projects.details.createdAt}
+                      {projects.details.createdAt}
                     </p>
                     <p className="text-muted-foreground text-sm">
                       {formatDateLocale(project.created)}
@@ -350,7 +348,7 @@ export default function ProjectDetails() {
                   <Calendar className="text-muted-foreground mt-0.5 h-5 w-5" />
                   <div className="flex-1">
                     <p className="text-sm font-medium">
-                      {fa.projects.details.updatedAt}
+                      {projects.details.updatedAt}
                     </p>
                     <p className="text-muted-foreground text-sm">
                       {formatDateLocale(project.updated)}
@@ -364,14 +362,14 @@ export default function ProjectDetails() {
           {/* Description */}
           <Card>
             <CardHeader>
-              <CardTitle>{fa.projects.details.description}</CardTitle>
+              <CardTitle>{projects.details.description}</CardTitle>
             </CardHeader>
             <CardContent>
               {isEditing ? (
                 <Textarea
                   value={editedDescription.replace(/<br>/g, "\n")}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  placeholder={fa.projects.create.form.descriptionPlaceholder}
+                  placeholder={projects.create.form.descriptionPlaceholder}
                   className="min-h-32"
                 />
               ) : project.description ? (
@@ -380,7 +378,7 @@ export default function ProjectDetails() {
                 </p>
               ) : (
                 <p className="text-muted-foreground py-6 text-center">
-                  {fa.projects.details.noDescription}
+                  {projects.details.noDescription}
                 </p>
               )}
             </CardContent>
@@ -390,10 +388,10 @@ export default function ProjectDetails() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>{fa.projects.details.files}</span>
+                <span>{projects.details.files}</span>
                 {!isEditing && project.assets && project.assets.length > 0 && (
                   <span className="text-muted-foreground text-sm font-normal">
-                    {fa.projects.details.filesCount.replace(
+                    {projects.details.filesCount.replace(
                       "{count}",
                       String(project.assets.length),
                     )}
@@ -408,7 +406,7 @@ export default function ProjectDetails() {
                   {project.assets && project.assets.length > 0 && (
                     <div className="space-y-2" data-animate-stagger>
                       <h4 className="text-sm font-medium">
-                        {fa.projects.files.existingFiles}
+                        {projects.files.existingFiles}
                       </h4>
                       <div
                         className="grid grid-cols-1 gap-2"
@@ -446,7 +444,7 @@ export default function ProjectDetails() {
                   <div className="space-y-2" data-animate-stagger>
                     <h4 className="flex items-center gap-2 text-sm font-medium">
                       <Upload className="h-4 w-4" />
-                      {fa.projects.files.addNewFiles}
+                      {projects.files.addNewFiles}
                     </h4>
                     <FileUpload
                       value={newFiles}
@@ -466,7 +464,7 @@ export default function ProjectDetails() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <History className="h-5 w-5" />
-                {fa.auditLogs.activityStream.title}
+                {auditLogs.activityStream.title}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -480,7 +478,7 @@ export default function ProjectDetails() {
           {/* Statistics */}
           <Card>
             <CardHeader>
-              <CardTitle>{fa.projects.details.statistics}</CardTitle>
+              <CardTitle>{projects.details.statistics}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {tasksLoading ? (
@@ -497,7 +495,7 @@ export default function ProjectDetails() {
                     data-interactive-item
                   >
                     <span className="text-sm font-medium">
-                      {fa.projects.details.totalTasks}
+                      {projects.details.totalTasks}
                     </span>
                     <span className="text-2xl font-bold">{totalTasks}</span>
                   </div>
@@ -506,7 +504,7 @@ export default function ProjectDetails() {
                     data-interactive-item
                   >
                     <span className="text-sm font-medium">
-                      {fa.projects.details.completedTasks}
+                      {projects.details.completedTasks}
                     </span>
                     <span className="text-2xl font-bold text-green-600 dark:text-green-400">
                       {completedTasks}
@@ -517,7 +515,7 @@ export default function ProjectDetails() {
                     data-interactive-item
                   >
                     <span className="text-sm font-medium">
-                      {fa.projects.details.inProgressTasks}
+                      {projects.details.inProgressTasks}
                     </span>
                     <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {inProgressTasks}
@@ -528,7 +526,7 @@ export default function ProjectDetails() {
                     data-interactive-item
                   >
                     <span className="text-sm font-medium">
-                      {fa.projects.details.totalTimeSpent}
+                      {projects.details.totalTimeSpent}
                     </span>
                     <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
                       {formatTimeSpent(totalTimeSpent)}
@@ -542,7 +540,7 @@ export default function ProjectDetails() {
           {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle>{fa.common.messages.quickActions}</CardTitle>
+              <CardTitle>{common.messages.quickActions}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2" data-animate-stagger>
               <Button
@@ -550,14 +548,14 @@ export default function ProjectDetails() {
                 className="w-full justify-start"
                 onClick={() => navigate(`/projects/${id}/tasks`)}
               >
-                {fa.projects.list.viewTasks}
+                {projects.list.viewTasks}
               </Button>
               <Button
                 variant="outline"
                 className="w-full justify-start"
                 onClick={() => navigate(`/projects/${id}/users`)}
               >
-                {fa.projects.users.title}
+                {projects.users.title}
               </Button>
             </CardContent>
           </Card>

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 import {
   ChartContainer,
   ChartTooltip,
@@ -16,11 +16,11 @@ type Props = {
 
 const chartConfig = {
   count: {
-    label: fa.reports.completedTasksCount,
+    label: reports.completedTasksCount,
     color: "hsl(var(--chart-1))",
   },
   projected: {
-    label: fa.reports.charts.employee.productivityTrends.projectedNextPeriod,
+    label: reports.charts.employee.productivityTrends.projectedNextPeriod,
     color: "hsl(var(--chart-2))",
   },
 };
@@ -50,7 +50,7 @@ export function ProductivityTrendsChart({
     ...historical,
     {
       key: "projected",
-      label: fa.reports.charts.employee.productivityTrends.projectedNextPeriod,
+      label: reports.charts.employee.productivityTrends.projectedNextPeriod,
       count: projectedNextPeriod,
       isProjected: true,
     },
@@ -60,13 +60,13 @@ export function ProductivityTrendsChart({
     <Card>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-base font-semibold md:text-lg">
-          {fa.reports.charts.employee.productivityTrends.chartTitle}
+          {reports.charts.employee.productivityTrends.chartTitle}
           <Badge
             variant="outline"
             className="text-xs"
             style={{ borderColor: getTrendColor(trend) }}
           >
-            {fa.reports.charts.employee.productivityTrends.trendLabels[trend]}
+            {reports.charts.employee.productivityTrends.trendLabels[trend]}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -97,7 +97,7 @@ export function ProductivityTrendsChart({
                     formatter={(value, name, props) => [
                       value,
                       props.payload?.isProjected
-                        ? fa.reports.charts.employee.productivityTrends
+                        ? reports.charts.employee.productivityTrends
                             .projectedNextPeriod
                         : name,
                     ]}
@@ -115,7 +115,7 @@ export function ProductivityTrendsChart({
               {projectedNextPeriod > 0 && (
                 <ReferenceLine
                   x={
-                    fa.reports.charts.employee.productivityTrends
+                    reports.charts.employee.productivityTrends
                       .projectedNextPeriod
                   }
                   stroke="var(--color-projected)"
@@ -127,7 +127,7 @@ export function ProductivityTrendsChart({
           </ChartContainer>
         ) : (
           <div className="text-muted-foreground flex h-full w-full items-center justify-center rounded-md border border-dashed text-sm">
-            {fa.reports.charts.employee.productivityTrends.noData}
+            {reports.charts.employee.productivityTrends.noData}
           </div>
         )}
       </CardContent>

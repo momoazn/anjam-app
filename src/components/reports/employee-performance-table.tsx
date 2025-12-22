@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 import type { EmployeeSummary } from "@/lib/reports-utils";
 
 type SortField = keyof EmployeeSummary;
@@ -54,13 +54,13 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
 
   const handleExportCsv = () => {
     // CSV export functionality (deferred per user request)
-    toast.info(fa.reports.charts.employee.performanceTable.exportCsvComingSoon);
+    toast.info(reports.charts.employee.performanceTable.exportCsvComingSoon);
   };
 
   if (summaries.length === 0) {
     return (
       <div className="text-muted-foreground flex h-32 items-center justify-center rounded-md border border-dashed text-sm">
-        {fa.reports.charts.employee.emptyStates.noData}
+        {reports.charts.employee.emptyStates.noData}
       </div>
     );
   }
@@ -69,11 +69,11 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">
-          {fa.reports.charts.employee.performanceTable.title}
+          {reports.charts.employee.performanceTable.title}
         </h3>
         <Button variant="outline" size="sm" onClick={handleExportCsv}>
           <Download className="mr-2 h-4 w-4" />
-          {fa.reports.charts.employee.performanceTable.exportCsv}
+          {reports.charts.employee.performanceTable.exportCsv}
         </Button>
       </div>
 
@@ -88,7 +88,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
                   className="h-auto p-0 font-medium"
                   onClick={() => handleSort("name")}
                 >
-                  {fa.reports.charts.employee.performanceTable.columns.name}
+                  {reports.charts.employee.performanceTable.columns.name}
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
@@ -100,7 +100,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
                   onClick={() => handleSort("totalAssigned")}
                 >
                   {
-                    fa.reports.charts.employee.performanceTable.columns
+                    reports.charts.employee.performanceTable.columns
                       .totalAssigned
                   }
                   <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -113,10 +113,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
                   className="h-auto p-0 font-medium"
                   onClick={() => handleSort("completed")}
                 >
-                  {
-                    fa.reports.charts.employee.performanceTable.columns
-                      .completed
-                  }
+                  {reports.charts.employee.performanceTable.columns.completed}
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
@@ -128,7 +125,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
                   onClick={() => handleSort("efficiencyScore")}
                 >
                   {
-                    fa.reports.charts.employee.performanceTable.columns
+                    reports.charts.employee.performanceTable.columns
                       .completionRate
                   }
                   <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -141,10 +138,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
                   className="h-auto p-0 font-medium"
                   onClick={() => handleSort("onTimeRate")}
                 >
-                  {
-                    fa.reports.charts.employee.performanceTable.columns
-                      .onTimeRate
-                  }
+                  {reports.charts.employee.performanceTable.columns.onTimeRate}
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
@@ -156,7 +150,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
                   onClick={() => handleSort("avgTimeToCompleteDays")}
                 >
                   {
-                    fa.reports.charts.employee.performanceTable.columns
+                    reports.charts.employee.performanceTable.columns
                       .avgTimeToComplete
                   }
                   <ArrowUpDown className="ml-2 h-4 w-4" />

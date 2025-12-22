@@ -89,7 +89,7 @@ import {
   getTimeRange,
 } from "@/lib/reports-utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants";
+import { reports } from "@/constants";
 import { useProjects, useTasks, useUsers, queryKeys } from "@/hooks";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { ProjectExportButton } from "@/components/reports/project-export-button";
@@ -213,17 +213,17 @@ export default function Reports() {
     const counts = classifyTimeliness(filteredTasks, timeRange);
     return [
       {
-        name: fa.reports.chart.timeliness.onTime,
+        name: reports.chart.timeliness.onTime,
         value: counts.on_time,
         key: "on_time" as const,
       },
       {
-        name: fa.reports.chart.timeliness.overdue,
+        name: reports.chart.timeliness.overdue,
         value: counts.overdue,
         key: "overdue" as const,
       },
       {
-        name: fa.reports.chart.timeliness.noDeadline,
+        name: reports.chart.timeliness.noDeadline,
         value: counts.no_deadline,
         key: "no_deadline" as const,
       },
@@ -329,7 +329,7 @@ export default function Reports() {
     const matchingTasks = filteredTasks.filter(predicate);
     const rows = matchingTasks.map((task) => ({
       id: task.id,
-      title: task.title || fa.reports.fallbacks.taskTitle,
+      title: task.title || reports.fallbacks.taskTitle,
       status: task.status,
       priority: task.priority,
       deadline: task.deadline || null,
@@ -342,9 +342,8 @@ export default function Reports() {
       assigneeName: task.expand?.assignee
         ? `${task.expand.assignee.first_name || ""} ${task.expand.assignee.last_name || ""}`.trim() ||
           task.expand.assignee.username
-        : fa.reports.fallbacks.assigneeName,
-      projectName:
-        task.expand?.project?.name || fa.reports.fallbacks.projectName,
+        : reports.fallbacks.assigneeName,
+      projectName: task.expand?.project?.name || reports.fallbacks.projectName,
       tags: task.tags || [],
     }));
 
@@ -402,7 +401,7 @@ export default function Reports() {
     </div>
   );
 
-  const rangeLabel = `${format(timeRange.start, "yyyy/MM/dd")} ${fa.reports.range.connector} ${format(timeRange.end, "yyyy/MM/dd")}`;
+  const rangeLabel = `${format(timeRange.start, "yyyy/MM/dd")} ${reports.range.connector} ${format(timeRange.end, "yyyy/MM/dd")}`;
 
   const totalTimeliness = timelinessData?.reduce(
     (a, b) => a + (b.value || 0),
@@ -418,17 +417,17 @@ export default function Reports() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <BarChart3 className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
-            {fa.reports.dashboardTitle}
+            {reports.dashboardTitle}
           </h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            {fa.reports.range.label} {rangeLabel}
+            {reports.range.label} {rangeLabel}
           </p>
         </div>
       </div>
 
       <div
         className="mb-8"
-        aria-label={fa.reports.aria.filters}
+        aria-label={reports.aria.filters}
         data-animate-stagger
       >
         <FiltersBar
@@ -443,7 +442,7 @@ export default function Reports() {
       {projects && projects.length > 0 && (
         <Card className="mb-6" data-animate-stagger>
           <CardHeader>
-            <CardTitle>{fa.reports.projectsExportSection}</CardTitle>
+            <CardTitle>{reports.projectsExportSection}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -472,11 +471,11 @@ export default function Reports() {
                       )}
                       <p className="text-muted-foreground mt-1 text-xs">
                         {taskCount > 0
-                          ? fa.reports.taskCount.replace(
+                          ? reports.taskCount.replace(
                               "{count}",
                               String(taskCount),
                             )
-                          : fa.reports.noTasksInProject}
+                          : reports.noTasksInProject}
                       </p>
                     </div>
                     <div className="ml-4 shrink-0">
@@ -506,12 +505,12 @@ export default function Reports() {
           className="mb-4 w-full justify-start overflow-x-auto"
           dir="rtl"
         >
-          <TabsTrigger value="overview">{fa.reports.tabs.overview}</TabsTrigger>
-          <TabsTrigger value="team">{fa.reports.tabs.team}</TabsTrigger>
+          <TabsTrigger value="overview">{reports.tabs.overview}</TabsTrigger>
+          <TabsTrigger value="team">{reports.tabs.team}</TabsTrigger>
           <TabsTrigger value="individuals">
-            {fa.reports.tabs.individuals}
+            {reports.tabs.individuals}
           </TabsTrigger>
-          <TabsTrigger value="insights">{fa.reports.tabs.insights}</TabsTrigger>
+          <TabsTrigger value="insights">{reports.tabs.insights}</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -524,24 +523,24 @@ export default function Reports() {
             className="grid grid-cols-1 gap-6 md:grid-cols-2"
             data-animate-stagger
           >
-            <Card role="region" aria-label={fa.reports.charts.timeliness.title}>
+            <Card role="region" aria-label={reports.charts.timeliness.title}>
               <CardHeader className="pb-4 text-right">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-base font-semibold md:text-lg">
-                    {fa.reports.charts.timeliness.title}
+                    {reports.charts.timeliness.title}
                   </CardTitle>
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          aria-label={fa.reports.aria.timelinessChart}
+                          aria-label={reports.aria.timelinessChart}
                           className="text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                           <Info className="h-4 w-4" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {fa.reports.charts.timeliness.title}
+                        {reports.charts.timeliness.title}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -576,29 +575,29 @@ export default function Reports() {
                     />
                   </Suspense>
                 ) : (
-                  <EmptyState message={fa.reports.charts.timeliness.noData} />
+                  <EmptyState message={reports.charts.timeliness.noData} />
                 )}
               </CardContent>
             </Card>
 
-            <Card role="region" aria-label={fa.reports.charts.priorities.title}>
+            <Card role="region" aria-label={reports.charts.priorities.title}>
               <CardHeader className="pb-4 text-right">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-base font-semibold md:text-lg">
-                    {fa.reports.charts.priorities.title}
+                    {reports.charts.priorities.title}
                   </CardTitle>
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          aria-label={fa.reports.aria.prioritiesChart}
+                          aria-label={reports.aria.prioritiesChart}
                           className="text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                           <Info className="h-4 w-4" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {fa.reports.charts.priorities.title}
+                        {reports.charts.priorities.title}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -611,7 +610,7 @@ export default function Reports() {
                       data={priorityData}
                       onSliceClick={(key) =>
                         handleDrilldown(
-                          fa.reports.charts.priorities.drilldownTitle.replace(
+                          reports.charts.priorities.drilldownTitle.replace(
                             "{name}",
                             priorityData.find((d) => d.key === key)?.name || "",
                           ),
@@ -621,20 +620,20 @@ export default function Reports() {
                     />
                   </Suspense>
                 ) : (
-                  <EmptyState message={fa.reports.charts.priorities.noData} />
+                  <EmptyState message={reports.charts.priorities.noData} />
                 )}
               </CardContent>
             </Card>
           </div>
 
-          <Card role="region" aria-label={fa.reports.topPerformers}>
+          <Card role="region" aria-label={reports.topPerformers}>
             <CardContent className="p-4 md:p-6" dir="rtl">
               <Suspense fallback={<Skeleton className="h-64 w-full" />}>
                 <Leaderboard
                   rows={leaderboardData}
                   onRowClick={(userId) =>
                     handleDrilldown(
-                      fa.reports.charts.users.drilldownTitle
+                      reports.charts.users.drilldownTitle
                         .replace(
                           "{firstName}",
                           users?.find((u) => u.id === userId)?.first_name || "",
@@ -688,7 +687,7 @@ export default function Reports() {
                   onBucketChange={setEmployeeBucket}
                   onBarClick={(key, label) =>
                     handleDrilldown(
-                      fa.reports.charts.employee.productivityChart.drilldownTitle.replace(
+                      reports.charts.employee.productivityChart.drilldownTitle.replace(
                         "{label}",
                         label,
                       ),
@@ -735,11 +734,11 @@ export default function Reports() {
             <div data-animate-stagger>
               <div className="mb-2 text-right">
                 <h3 className="text-lg font-semibold md:text-xl">
-                  {fa.reports.charts.employee.productivityTrends.title} -{" "}
+                  {reports.charts.employee.productivityTrends.title} -{" "}
                   {selectedEmployeeSummary.name}
                 </h3>
                 <p className="text-muted-foreground mt-1 text-sm">
-                  {fa.reports.charts.employee.productivityTrends.description}
+                  {reports.charts.employee.productivityTrends.description}
                 </p>
               </div>
               <Suspense fallback={<Skeleton className="h-80 w-full" />}>
@@ -763,7 +762,7 @@ export default function Reports() {
                   const user = users?.find((u) => u.id === userId);
                   if (user) {
                     handleDrilldown(
-                      fa.reports.charts.employee.performanceTable.drilldownTitle.replace(
+                      reports.charts.employee.performanceTable.drilldownTitle.replace(
                         "{name}",
                         user.first_name && user.last_name
                           ? `${user.first_name} ${user.last_name}`

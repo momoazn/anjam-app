@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
-import { fa } from "@/constants/text";
+import { comments, tasks } from "@/constants";
 import {
   CommentWithUser,
   useSoftDeleteComment,
@@ -106,14 +106,14 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
               {comment.user
                 ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
                   comment.expand.user.username
-                : fa.tasks.details.unknownUser}
+                : tasks.details.unknownUser}
             </span>
             <span className="text-muted-foreground text-xs">
               {formatCommentDate(comment.created)}
             </span>
           </div>
           <p className="text-muted-foreground text-sm italic">
-            {fa.comments.item.deleted}
+            {comments.item.deleted}
           </p>
         </div>
       </div>
@@ -134,7 +134,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
               {comment.user
                 ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
                   comment.expand.user.username
-                : fa.tasks.details.unknownUser}
+                : tasks.details.unknownUser}
             </span>
             <span className="text-muted-foreground text-xs">
               {formatCommentDate(comment.created)}
@@ -147,13 +147,13 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                   variant="ghost"
                   size="sm"
                   className="h-6 w-6 p-0"
-                  aria-label={fa.comments.item.actions}
+                  aria-label={comments.item.actions}
                   disabled={
                     updateComment.isPending || softDeleteComment.isPending
                   }
                 >
                   <MoreHorizontal className="h-3 w-3" />
-                  <span className="sr-only">{fa.comments.item.actions}</span>
+                  <span className="sr-only">{comments.item.actions}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -164,7 +164,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                   }}
                 >
                   <Edit className="mr-2 h-3 w-3" />
-                  {fa.comments.item.edit}
+                  {comments.item.edit}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={(e) => {
@@ -176,8 +176,8 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 >
                   <Trash2 className="mr-2 h-3 w-3" />
                   {softDeleteComment.isPending
-                    ? fa.comments.item.deleting
-                    : fa.comments.item.delete}
+                    ? comments.item.deleting
+                    : comments.item.delete}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -189,7 +189,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
               className="min-h-[80px] resize-none"
-              placeholder={fa.comments.item.editPlaceholder}
+              placeholder={comments.item.editPlaceholder}
               ref={textareaRef}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
@@ -210,8 +210,8 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 disabled={!editContent.trim() || updateComment.isPending}
               >
                 {updateComment.isPending
-                  ? fa.comments.item.saving
-                  : fa.comments.item.save}
+                  ? comments.item.saving
+                  : comments.item.save}
               </Button>
               <Button
                 size="sm"
@@ -219,7 +219,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 onClick={handleCancelEdit}
                 disabled={updateComment.isPending}
               >
-                {fa.comments.item.cancel}
+                {comments.item.cancel}
               </Button>
             </div>
           </div>
@@ -228,7 +228,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
             {comment.content?.trim() || "—"}
             {!deleted && wasEdited && (
               <span className="text-muted-foreground ml-2 text-[10px]">
-                {fa.comments.item.edited}
+                {comments.item.edited}
               </span>
             )}
           </div>

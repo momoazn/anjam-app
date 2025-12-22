@@ -1,6 +1,6 @@
 import { memo, useMemo, useState } from "react";
 
-import { fa } from "@/constants/text";
+import { tasks as tasksText } from "@/constants";
 import { TaskWithProject } from "@/lib/pocketbase";
 import {
   TasksPriorityOptions,
@@ -100,7 +100,7 @@ function TaskListGroupInner({
             ))
           ) : (
             <div className="text-muted-foreground text-center text-sm">
-              {fa.tasks.list.noTasks}
+              {tasksText.list.noTasks}
             </div>
           )}
         </div>

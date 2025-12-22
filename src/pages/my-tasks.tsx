@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
-import { fa, text } from "@/constants/text";
+import { common, myTasks as myTasksText, tasks } from "@/constants";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { useBulkUpdateTasks, useBulkDeleteTasks } from "@/hooks/tasks";
 import { useAuthUser } from "@/store/auth-store";
@@ -75,7 +75,7 @@ export default function MyTasks() {
   const bulkDelete = useBulkDeleteTasks();
 
   // Filter tasks assigned to current user
-  const myTasks = useMemo(() => {
+  const myTasksData = useMemo(() => {
     if (!allTasks || !user) return [];
     return allTasks.filter(
       (task) => task.assignee === user.id && !task.deleted_at,
@@ -88,7 +88,7 @@ export default function MyTasks() {
     const completed: TaskWithProject[] = [];
     const canceled: TaskWithProject[] = [];
 
-    myTasks.forEach((task) => {
+    myTasksData.forEach((task) => {
       if (isTaskCompleted(task)) {
         completed.push(task);
       } else if (isTaskCanceled(task)) {
@@ -99,7 +99,7 @@ export default function MyTasks() {
     });
 
     return { active, completed, canceled };
-  }, [myTasks]);
+  }, [myTasksData]);
 
   // Group tasks by status
   const groupTasksByStatus = (tasks: TaskWithProject[]) => {
@@ -132,11 +132,11 @@ export default function MyTasks() {
       { projectName: string; tasks: TaskWithProject[] }
     >();
 
-    myTasks.forEach((task) => {
+    myTasksData.forEach((task) => {
       if (!task.expand?.project) return;
 
       const projectId = task.project;
-      const projectName = task.expand.project.name || fa.common.messages.noName;
+      const projectName = task.expand.project.name || common.messages.noName;
 
       if (!grouped.has(projectId)) {
         grouped.set(projectId, { projectName, tasks: [] });
@@ -150,12 +150,12 @@ export default function MyTasks() {
       projectName: data.projectName,
       tasks: data.tasks,
     }));
-  }, [myTasks]);
+  }, [myTasksData]);
 
   // Statistics
   const stats = useMemo(() => {
     return {
-      total: myTasks.length,
+      total: myTasksData.length,
       active: categorizedTasks.active.length,
       completed: categorizedTasks.completed.length,
       canceled: categorizedTasks.canceled.length,
@@ -164,7 +164,7 @@ export default function MyTasks() {
         return new Date(task.deadline) < new Date();
       }).length,
     };
-  }, [myTasks, categorizedTasks]);
+  }, [myTasksData, categorizedTasks]);
 
   // Bulk operation handlers
   const handleBulkDelete = async () => {
@@ -220,10 +220,10 @@ export default function MyTasks() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <User className="h-5 w-5 md:h-6 md:w-6" />
-            {text.myTasks.title}
+            {myTasksText.title}
           </h1>
           <p className="text-muted-foreground mt-2">
-            {text.myTasks.description}
+            {myTasksText.description}
           </p>
         </div>
 
@@ -236,8 +236,8 @@ export default function MyTasks() {
           >
             <CheckSquare className="h-4 w-4" />
             {selectionMode
-              ? fa.common.buttons.cancelSelection
-              : fa.common.buttons.multiSelect}
+              ? common.buttons.cancelSelection
+              : common.buttons.multiSelect}
           </Button>
           <Button
             className="gap-2"
@@ -245,7 +245,7 @@ export default function MyTasks() {
             onClick={() => navigate("/tasks/new")}
           >
             <Plus className="h-4 w-4" />
-            {text.tasks.addTask.buttons.newTask}
+            {tasks.addTask.buttons.newTask}
           </Button>
         </div>
       </div>
@@ -254,9 +254,7 @@ export default function MyTasks() {
       <div className="mb-6 grid gap-4 md:grid-cols-5">
         <Card>
           <CardContent className="p-4">
-            <div className="text-muted-foreground text-sm">
-              {text.common.total}
-            </div>
+            <div className="text-muted-foreground text-sm">{common.total}</div>
             <div className="text-2xl font-bold">
               {digitsEnToFa(stats.total)}
             </div>
@@ -265,7 +263,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.active}
+              {myTasksText.stats.active}
             </div>
             <div className="text-2xl font-bold text-blue-600">
               {digitsEnToFa(stats.active)}
@@ -275,7 +273,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.completed}
+              {myTasksText.stats.completed}
             </div>
             <div className="text-2xl font-bold text-green-600">
               {digitsEnToFa(stats.completed)}
@@ -285,7 +283,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.overdue}
+              {myTasksText.stats.overdue}
             </div>
             <div className="text-2xl font-bold text-red-600">
               {digitsEnToFa(stats.overdue)}
@@ -295,7 +293,7 @@ export default function MyTasks() {
         <Card>
           <CardContent className="p-4">
             <div className="text-muted-foreground text-sm">
-              {text.myTasks.stats.canceled}
+              {myTasksText.stats.canceled}
             </div>
             <div className="text-muted-foreground text-2xl font-bold">
               {digitsEnToFa(stats.canceled)}
@@ -308,19 +306,19 @@ export default function MyTasks() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="active">
-            {text.myTasks.tabs.active}
+            {myTasksText.tabs.active}
             <Badge variant="secondary" className="ml-2">
               {digitsEnToFa(stats.active)}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="completed">
-            {text.myTasks.tabs.completed}
+            {myTasksText.tabs.completed}
             <Badge variant="secondary" className="ml-2">
               {digitsEnToFa(stats.completed)}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="by-project">
-            {text.myTasks.tabs.byProject}
+            {myTasksText.tabs.byProject}
           </TabsTrigger>
         </TabsList>
 
@@ -330,8 +328,8 @@ export default function MyTasks() {
             <MyTasksSkeleton />
           ) : categorizedTasks.active.length === 0 ? (
             <EmptyState
-              message={text.myTasks.empty.noActiveTasks}
-              description={text.myTasks.empty.noActiveTasksDescription}
+              message={myTasksText.empty.noActiveTasks}
+              description={myTasksText.empty.noActiveTasksDescription}
             />
           ) : (
             statusOrder.map((status) => {
@@ -360,8 +358,8 @@ export default function MyTasks() {
             <MyTasksSkeleton />
           ) : categorizedTasks.completed.length === 0 ? (
             <EmptyState
-              message={text.myTasks.empty.noCompletedTasks}
-              description={text.myTasks.empty.noCompletedTasksDescription}
+              message={myTasksText.empty.noCompletedTasks}
+              description={myTasksText.empty.noCompletedTasksDescription}
             />
           ) : (
             statusOrder.map((status) => {
@@ -390,8 +388,8 @@ export default function MyTasks() {
             <MyTasksSkeleton />
           ) : tasksByProject.length === 0 ? (
             <EmptyState
-              message={text.myTasks.empty.noTasks}
-              description={text.myTasks.empty.noTasksDescription}
+              message={myTasksText.empty.noTasks}
+              description={myTasksText.empty.noTasksDescription}
             />
           ) : (
             tasksByProject.map((project) => (
@@ -421,7 +419,7 @@ export default function MyTasks() {
                             <h4 className="font-medium">{task.title}</h4>
                             {task.deadline && (
                               <p className="text-muted-foreground mt-1 text-sm">
-                                {fa.tasks.addTask.deadline}:{" "}
+                                {tasks.addTask.deadline}:{" "}
                                 {new Date(task.deadline).toLocaleDateString(
                                   "fa-IR",
                                 )}
@@ -430,10 +428,10 @@ export default function MyTasks() {
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">
-                              {text.tasks.priority[task.priority]}
+                              {tasks.priority[task.priority]}
                             </Badge>
                             <Badge variant="outline">
-                              {text.tasks.status[task.status]}
+                              {tasks.status[task.status]}
                             </Badge>
                           </div>
                         </div>

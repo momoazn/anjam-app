@@ -9,7 +9,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { fa } from "@/constants";
+import { dashboard } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { useNavigate } from "react-router-dom";
 
@@ -62,7 +62,7 @@ export function ProductivityWidget({
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <TrendingUp className="h-4 w-4" />
-            {fa.dashboard.cards.completionRate}
+            {dashboard.cards.completionRate}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,7 +71,7 @@ export function ProductivityWidget({
           </div>
           <p className="text-muted-foreground mt-1 text-sm">
             {digitsEnToFa(stats?.thisWeekCompleted ?? 0)}{" "}
-            {fa.dashboard.cards.completedThisWeek}
+            {dashboard.cards.completedThisWeek}
           </p>
         </CardContent>
       </Card>
@@ -81,7 +81,7 @@ export function ProductivityWidget({
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Bell className="h-4 w-4" />
-            {fa.dashboard.cards.recentNotifications}
+            {dashboard.cards.recentNotifications}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -103,7 +103,7 @@ export function ProductivityWidget({
             ))
           ) : (
             <p className="text-muted-foreground text-sm">
-              {fa.dashboard.cards.noNewNotifications}
+              {dashboard.cards.noNewNotifications}
             </p>
           )}
         </CardContent>
@@ -114,7 +114,7 @@ export function ProductivityWidget({
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Zap className="h-4 w-4" />
-            {fa.dashboard.cards.quickActions}
+            {dashboard.cards.quickActions}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -126,7 +126,7 @@ export function ProductivityWidget({
               onClick={() => navigate("/tasks?due=overdue")}
             >
               <AlertTriangle className="h-4 w-4" />
-              {fa.dashboard.cards.reviewOverdue}
+              {dashboard.cards.reviewOverdue}
             </Button>
           ) : (
             <Button
@@ -136,7 +136,7 @@ export function ProductivityWidget({
               onClick={() => navigate("/tasks/new")}
             >
               <Plus className="h-4 w-4" />
-              {fa.dashboard.cards.createTask}
+              {dashboard.cards.createTask}
             </Button>
           )}
           <Button
@@ -146,7 +146,7 @@ export function ProductivityWidget({
             onClick={() => navigate("/tasks/calendar")}
           >
             <Calendar className="h-4 w-4" />
-            {fa.dashboard.cards.tasksCalendar}
+            {dashboard.cards.tasksCalendar}
           </Button>
           <Button
             variant="outline"
@@ -155,7 +155,7 @@ export function ProductivityWidget({
             onClick={() => navigate("/notifications")}
           >
             <Bell className="h-4 w-4" />
-            {fa.dashboard.cards.notifications}
+            {dashboard.cards.notifications}
           </Button>
         </CardContent>
       </Card>

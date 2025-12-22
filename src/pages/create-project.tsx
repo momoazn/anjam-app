@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { fa } from "@/constants/text";
+import { common, projects } from "@/constants";
 import { queryKeys } from "@/hooks";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { handlePocketBaseError } from "@/lib/error-handler";
@@ -25,11 +25,11 @@ import { pb } from "@/lib/pocketbase";
 import { useAuthUser } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
-  name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
+  name: z.string().min(1, { message: projects.create.form.nameRequired }),
   code: z
     .string()
     .min(1, {
-      message: fa.projects.create.form.codeRequired,
+      message: projects.create.form.codeRequired,
     })
     .length(3, {
       message: "Code must be exactly 3 characters",
@@ -91,7 +91,7 @@ export default function CreateProject() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-      toast.success(fa.projects.create.success);
+      toast.success(projects.create.success);
       navigate("/projects");
     },
     onError: (error) => {
@@ -114,17 +114,15 @@ export default function CreateProject() {
           <ArrowRight className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.projects.create.title}</h1>
-          <p className="text-muted-foreground">
-            {fa.projects.create.description}
-          </p>
+          <h1 className="text-3xl font-bold">{projects.create.title}</h1>
+          <p className="text-muted-foreground">{projects.create.description}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.projects.create.title}</CardTitle>
-          <CardDescription>{fa.projects.create.description}</CardDescription>
+          <CardTitle>{projects.create.title}</CardTitle>
+          <CardDescription>{projects.create.description}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -143,13 +141,13 @@ export default function CreateProject() {
                   onClick={() => navigate("/projects")}
                   disabled={isPending}
                 >
-                  {fa.common.cancel}
+                  {common.cancel}
                 </Button>
                 <Button type="submit" disabled={isPending}>
                   {isPending ? (
                     <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                   ) : null}
-                  {fa.projects.create.submit}
+                  {projects.create.submit}
                 </Button>
               </div>
             </form>

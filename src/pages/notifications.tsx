@@ -30,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { fa } from "@/constants/text";
+import { common, notifications } from "@/constants";
 import {
   useClearAll,
   useClearRead,
@@ -68,13 +68,13 @@ const getDateGroup = (dateString?: string | null) => {
 const getGroupTitle = (group: string) => {
   switch (group) {
     case "today":
-      return fa.notifications.groups.today;
+      return notifications.groups.today;
     case "yesterday":
-      return fa.notifications.groups.yesterday;
+      return notifications.groups.yesterday;
     case "thisWeek":
-      return fa.notifications.groups.thisWeek;
+      return notifications.groups.thisWeek;
     case "older":
-      return fa.notifications.groups.older;
+      return notifications.groups.older;
     default:
       return group;
   }
@@ -105,7 +105,7 @@ function NotificationItem({
         <Checkbox
           checked={selected}
           onCheckedChange={() => onToggleSelect(notification.id)}
-          aria-label={fa.notifications.selected}
+          aria-label={notifications.selected}
         />
       </div>
       {/* Actions - Left side */}
@@ -116,8 +116,8 @@ function NotificationItem({
             size="sm"
             onClick={() => onMarkAsRead(notification.id)}
             className="h-7 w-7 p-0"
-            title={fa.notifications.actions.markAsRead}
-            aria-label={fa.notifications.actions.markAsRead}
+            title={notifications.actions.markAsRead}
+            aria-label={notifications.actions.markAsRead}
           >
             <IconEye className="h-3 w-3" />
           </Button>
@@ -127,8 +127,8 @@ function NotificationItem({
           size="sm"
           onClick={() => onDelete(notification.id)}
           className="text-destructive hover:text-destructive h-7 w-7 p-0"
-          title={fa.notifications.actions.delete}
-          aria-label={fa.notifications.actions.delete}
+          title={notifications.actions.delete}
+          aria-label={notifications.actions.delete}
         >
           <IconTrash className="h-3 w-3" />
         </Button>
@@ -157,7 +157,7 @@ function NotificationItem({
           </p>
           <div className="flex items-center justify-end gap-2">
             <Badge variant="outline" className="text-xs">
-              {fa.notifications.types[notification.type]}
+              {notifications.types[notification.type]}
             </Badge>
             <time
               dateTime={notification.created || ""}
@@ -185,10 +185,10 @@ function EmptyState() {
         <IconBellOff className="text-muted-foreground/50 h-8 w-8" />
       </div>
       <h3 className="text-foreground mb-2 text-lg font-semibold">
-        {fa.notifications.emptyState.title}
+        {notifications.emptyState.title}
       </h3>
       <p className="text-muted-foreground text-sm">
-        {fa.notifications.emptyState.description}
+        {notifications.emptyState.description}
       </p>
     </div>
   );
@@ -284,10 +284,10 @@ export default function Notifications() {
 
     pendingDeletesRef.current.set(id, timeoutId);
 
-    toast(fa.notifications.actions.deleteQueued, {
+    toast(notifications.actions.deleteQueued, {
       duration: 5000,
       action: {
-        label: fa.common.undo,
+        label: common.undo,
         onClick: () => {
           const t = pendingDeletesRef.current.get(id);
           if (t) {
@@ -324,10 +324,10 @@ export default function Notifications() {
         <div className="text-right">
           <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
             <IconBell className="h-5 w-5 md:h-6 md:w-6" />
-            {fa.notifications.pageTitle}
+            {notifications.pageTitle}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {fa.notifications.pageDescription}
+            {notifications.pageDescription}
           </p>
         </div>
         <TooltipProvider>
@@ -341,14 +341,14 @@ export default function Notifications() {
                     onClick={() => user?.id && markAllAsRead.mutate(user.id)}
                     disabled={unreadCount === 0}
                     className="h-8 w-8 p-0"
-                    aria-label={fa.notifications.markAllAsRead}
+                    aria-label={notifications.markAllAsRead}
                   >
                     <IconCheck className="h-4 w-4" />
                   </Button>
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{fa.notifications.markAllAsRead}</p>
+                <p>{notifications.markAllAsRead}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -361,14 +361,14 @@ export default function Notifications() {
                     onClick={() => user?.id && clearRead.mutate(user.id)}
                     disabled={notifications.filter((n) => n.read).length === 0}
                     className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                    aria-label={fa.notifications.actions.clearRead}
+                    aria-label={notifications.actions.clearRead}
                   >
                     <IconTrashX className="h-4 w-4" />
                   </Button>
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{fa.notifications.actions.clearRead}</p>
+                <p>{notifications.actions.clearRead}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -381,14 +381,14 @@ export default function Notifications() {
                     onClick={() => user?.id && clearAll.mutate(user.id)}
                     disabled={notifications.length === 0}
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
-                    aria-label={fa.notifications.clearAll}
+                    aria-label={notifications.clearAll}
                   >
                     <IconTrash className="h-4 w-4" />
                   </Button>
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{fa.notifications.clearAll}</p>
+                <p>{notifications.clearAll}</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -406,7 +406,7 @@ export default function Notifications() {
               <IconBell className="text-primary h-5 w-5" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {fa.notifications.stats.total}
+                  {notifications.stats.total}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(notifications.length)}
@@ -421,7 +421,7 @@ export default function Notifications() {
               <IconBellOff className="h-5 w-5 text-blue-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {fa.notifications.stats.unread}
+                  {notifications.stats.unread}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(unreadCount)}
@@ -436,7 +436,7 @@ export default function Notifications() {
               <IconCheck className="h-5 w-5 text-green-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {fa.notifications.stats.read}
+                  {notifications.stats.read}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(notifications.filter((n) => n.read).length)}
@@ -451,7 +451,7 @@ export default function Notifications() {
               <IconTrash className="h-5 w-5 text-orange-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {fa.notifications.stats.deletable}
+                  {notifications.stats.deletable}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(notifications.filter((n) => n.read).length)}
@@ -470,10 +470,10 @@ export default function Notifications() {
         {selectedIds.length > 0 ? (
           <div className="bg-muted flex flex-wrap items-center gap-2 rounded-lg p-2">
             <span className="text-sm font-medium">
-              {digitsEnToFa(selectedIds.length)} {fa.notifications.selected}
+              {digitsEnToFa(selectedIds.length)} {notifications.selected}
             </span>
             <Button size="sm" variant="outline" onClick={bulkMarkRead}>
-              {fa.notifications.actions.markAsRead}
+              {notifications.actions.markAsRead}
             </Button>
             <Button
               size="sm"
@@ -481,10 +481,10 @@ export default function Notifications() {
               onClick={bulkDelete}
               disabled={deleteNotification.isPending}
             >
-              {fa.notifications.actions.delete}
+              {notifications.actions.delete}
             </Button>
             <Button size="sm" variant="ghost" onClick={clearSelection}>
-              {fa.notifications.deselectAll}
+              {notifications.deselectAll}
             </Button>
           </div>
         ) : (
@@ -493,14 +493,12 @@ export default function Notifications() {
             onValueChange={(value) => setFilter(value as FilterType)}
           >
             <TabsList>
-              <TabsTrigger value="all">
-                {fa.notifications.filters.all}
-              </TabsTrigger>
+              <TabsTrigger value="all">{notifications.filters.all}</TabsTrigger>
               <TabsTrigger value="unread">
-                {fa.notifications.filters.unread}
+                {notifications.filters.unread}
               </TabsTrigger>
               <TabsTrigger value="read">
-                {fa.notifications.filters.read}
+                {notifications.filters.read}
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -510,15 +508,15 @@ export default function Notifications() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               <IconSortAscending className="ml-1 h-4 w-4" />
-              {fa.notifications.sort[sort as SortType]}
+              {notifications.sort[sort as SortType]}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setSort("newest")}>
-              {fa.notifications.sort.newest}
+              {notifications.sort.newest}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSort("oldest")}>
-              {fa.notifications.sort.oldest}
+              {notifications.sort.oldest}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

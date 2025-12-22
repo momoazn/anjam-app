@@ -6,7 +6,7 @@ import { DeleteGroupDialog } from "@/components/group/delete-group-dialog";
 import { GroupListCard } from "@/components/group/group-list-card";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { fa } from "@/constants/text";
+import { groups as groupsText } from "@/constants";
 import {
   UsersRoleOptions,
   GroupsResponse,
@@ -21,7 +21,7 @@ export default function Groups() {
   const navigate = useNavigate();
   const [deleteGroupId, setDeleteGroupId] = useState<string | null>(null);
 
-  const { data: groups, isPending: isLoadingGroups } = useGroups();
+  const { data: groupsData, isPending: isLoadingGroups } = useGroups();
   const toggleGroupActiveMutation = useToggleGroupActive();
 
   const handleEdit = (groupId: string) => {
@@ -44,12 +44,12 @@ export default function Groups() {
         <div className="flex items-center gap-3">
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <Building2 className="h-5 w-5 md:h-6 md:w-6" />
-            {fa.groups.title}
+            {groupsText.title}
           </h1>
           <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-sm">
-            {fa.groups.list.count.replace(
+            {groupsText.list.count.replace(
               "{count}",
-              digitsEnToFa(groups?.length ?? 0).toString(),
+              digitsEnToFa(groupsData?.length ?? 0).toString(),
             )}
           </span>
         </div>
@@ -59,7 +59,7 @@ export default function Groups() {
             className="w-full gap-2 sm:w-auto"
           >
             <Plus className="h-4 w-4" />
-            {fa.groups.create.button}
+            {groupsText.create.button}
           </Button>
         )}
       </div>
@@ -68,9 +68,9 @@ export default function Groups() {
         <div className="flex h-full items-center justify-center py-12">
           <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
         </div>
-      ) : groups && groups.length > 0 ? (
+      ) : groupsData && groupsData.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {groups.map((group) => (
+          {groupsData.map((group) => (
             <GroupListCard
               key={group.id}
               group={group as GroupsResponse<{ manager: UsersResponse }>}
@@ -83,7 +83,7 @@ export default function Groups() {
       ) : (
         <div className="flex h-full items-center justify-center py-12">
           <p className="text-muted-foreground text-center">
-            {fa.groups.list.empty}
+            {groupsText.list.empty}
           </p>
         </div>
       )}
@@ -91,7 +91,7 @@ export default function Groups() {
       <DeleteGroupDialog
         open={!!deleteGroupId}
         onOpenChange={(open) => !open && setDeleteGroupId(null)}
-        group={groups?.find((g) => g.id === deleteGroupId) || null}
+        group={groupsData?.find((g) => g.id === deleteGroupId) || null}
       />
     </PageTransition>
   );

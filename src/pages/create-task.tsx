@@ -9,7 +9,7 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { fa } from "@/constants/text";
+import { common, errors, tasks } from "@/constants";
 import { useCreateTask } from "@/hooks";
 import {
   TasksPriorityOptions,
@@ -21,42 +21,42 @@ import { useAuthUser } from "@/store/auth-store";
 const taskFormSchema = z
   .object({
     title: z
-      .string({ required_error: fa.common.validation.required })
-      .min(1, { message: fa.errors.validation.titleRequired }),
-    description: z.string({ required_error: fa.common.validation.required }),
-    assignee: z.string({ required_error: fa.common.validation.required }),
+      .string({ required_error: common.validation.required })
+      .min(1, { message: errors.validation.titleRequired }),
+    description: z.string({ required_error: common.validation.required }),
+    assignee: z.string({ required_error: common.validation.required }),
     priority: z.nativeEnum(TasksPriorityOptions, {
-      required_error: fa.errors.validation.invalidOption,
-      invalid_type_error: fa.errors.validation.invalidOption,
+      required_error: errors.validation.invalidOption,
+      invalid_type_error: errors.validation.invalidOption,
     }),
     status: z.nativeEnum(TasksStatusOptions, {
-      required_error: fa.errors.validation.invalidOption,
-      invalid_type_error: fa.errors.validation.invalidOption,
+      required_error: errors.validation.invalidOption,
+      invalid_type_error: errors.validation.invalidOption,
     }),
     project: z.string().optional(),
     deadline: z
-      .date({ invalid_type_error: fa.errors.validation.invalidDate })
+      .date({ invalid_type_error: errors.validation.invalidDate })
       .optional(),
     estimated_hours: z.coerce
       .number({
-        invalid_type_error: fa.errors.validation.numberInvalid,
+        invalid_type_error: errors.validation.numberInvalid,
       })
-      .min(0, { message: fa.errors.validation.estimatedHoursRange })
-      .max(999, { message: fa.errors.validation.estimatedHoursRange })
+      .min(0, { message: errors.validation.estimatedHoursRange })
+      .max(999, { message: errors.validation.estimatedHoursRange })
       .optional(),
     estimated_minutes: z.coerce
       .number({
-        invalid_type_error: fa.errors.validation.numberInvalid,
+        invalid_type_error: errors.validation.numberInvalid,
       })
-      .min(0, { message: fa.errors.validation.estimatedMinutesRange })
-      .max(59, { message: fa.errors.validation.estimatedMinutesRange })
+      .min(0, { message: errors.validation.estimatedMinutesRange })
+      .max(59, { message: errors.validation.estimatedMinutesRange })
       .optional(),
   })
   .superRefine((data, ctx) => {
     if (!data.deadline) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: fa.common.validation.required,
+        message: common.validation.required,
         path: ["deadline"],
       });
     }
@@ -77,7 +77,7 @@ export default function CreateTask() {
     defaultValues: {
       title: "",
       description: "",
-      assignee: fa.tasks.addTask.unassigned,
+      assignee: tasks.addTask.unassigned,
       priority: TasksPriorityOptions.medium,
       status: TasksStatusOptions.todo,
       project: initialProject,
@@ -116,7 +116,7 @@ export default function CreateTask() {
       creator: user.id,
       project: values.project || initialProject,
       assignee:
-        values.assignee !== fa.tasks.addTask.unassigned
+        values.assignee !== tasks.addTask.unassigned
           ? values.assignee
           : undefined,
       deadline: values.deadline?.toISOString(),
@@ -138,11 +138,11 @@ export default function CreateTask() {
           <ArrowRight className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.tasks.addTask.title}</h1>
+          <h1 className="text-3xl font-bold">{tasks.addTask.title}</h1>
           <p className="text-muted-foreground">
             {isInProject
-              ? fa.tasks.addTask.descriptionProject
-              : fa.tasks.addTask.description}
+              ? tasks.addTask.descriptionProject
+              : tasks.addTask.description}
           </p>
         </div>
       </div>
@@ -160,15 +160,15 @@ export default function CreateTask() {
                   onClick={handleCancel}
                   disabled={isPending}
                 >
-                  {fa.tasks.details.buttons.cancel}
+                  {tasks.details.buttons.cancel}
                 </Button>
                 <Button type="submit" disabled={isPending}>
                   {isPending ? (
                     <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                   ) : null}
                   {isPending
-                    ? fa.tasks.addTask.buttons.creating
-                    : fa.tasks.addTask.buttons.create}
+                    ? tasks.addTask.buttons.creating
+                    : tasks.addTask.buttons.create}
                 </Button>
               </div>
             </form>

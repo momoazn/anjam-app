@@ -26,7 +26,7 @@ import {
   IconPlayerPause,
 } from "@tabler/icons-react";
 
-import { fa } from "@/constants/text";
+import { tasks } from "@/constants";
 import {
   TasksPriorityOptions,
   TasksResponse,
@@ -55,7 +55,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
   {
     todo: {
       key: TasksStatusOptions.todo,
-      name: fa.tasks.status.todo,
+      name: tasks.status.todo,
       color: "slate",
       icon: "circle",
       isCompleted: false,
@@ -65,7 +65,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     in_progress: {
       key: TasksStatusOptions.in_progress,
-      name: fa.tasks.status.in_progress,
+      name: tasks.status.in_progress,
       color: "blueSubtle",
       icon: "circle-half-2",
       isCompleted: false,
@@ -75,7 +75,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     review: {
       key: TasksStatusOptions.review,
-      name: fa.tasks.status.review,
+      name: tasks.status.review,
       color: "purpleSubtle",
       icon: "eye",
       isCompleted: false,
@@ -85,7 +85,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     testing: {
       key: TasksStatusOptions.testing,
-      name: fa.tasks.status.testing,
+      name: tasks.status.testing,
       color: "slateSubtle",
       icon: "flask",
       isCompleted: false,
@@ -95,7 +95,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     pending: {
       key: TasksStatusOptions.pending,
-      name: fa.tasks.status.pending,
+      name: tasks.status.pending,
       color: "amberSubtle",
       icon: "clock",
       isCompleted: false,
@@ -105,7 +105,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     blocked: {
       key: TasksStatusOptions.blocked,
-      name: fa.tasks.status.blocked,
+      name: tasks.status.blocked,
       color: "redSubtle",
       icon: "alert-circle",
       isCompleted: false,
@@ -115,7 +115,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     on_hold: {
       key: TasksStatusOptions.on_hold,
-      name: fa.tasks.status.on_hold,
+      name: tasks.status.on_hold,
       color: "slateSubtle",
       icon: "pause",
       isCompleted: false,
@@ -125,7 +125,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     done: {
       key: TasksStatusOptions.done,
-      name: fa.tasks.status.done,
+      name: tasks.status.done,
       color: "greenSubtle",
       icon: "check-circle-2",
       isCompleted: true,
@@ -135,7 +135,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     canceled: {
       key: TasksStatusOptions.canceled,
-      name: fa.tasks.status.canceled,
+      name: tasks.status.canceled,
       color: "graySubtle",
       icon: "x-circle",
       isCompleted: false,

@@ -18,7 +18,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useNotifications } from "@/hooks/notifications";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
-import { fa } from "./constants/text";
+import { loading } from "@/constants";
 import { AppRoutes } from "./router";
 type RetryableError = {
   status?: number;
@@ -47,9 +47,7 @@ function LoadingFallback() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="text-muted-foreground size-8 animate-spin" />
-        <p className="text-muted-foreground text-sm">
-          {fa.loading.application}
-        </p>
+        <p className="text-muted-foreground text-sm">{loading.application}</p>
       </div>
     </div>
   );

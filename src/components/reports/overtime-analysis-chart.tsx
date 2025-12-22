@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 import type { OvertimeAnalysis } from "@/lib/reports-utils";
 import {
   ChartContainer,
@@ -14,12 +14,11 @@ type Props = {
 
 const chartConfig = {
   workloadScore: {
-    label: fa.reports.charts.employee.overtimeAnalysis.columns.workloadScore,
+    label: reports.charts.employee.overtimeAnalysis.columns.workloadScore,
     color: "hsl(var(--chart-1))",
   },
   overtimeIndicator: {
-    label:
-      fa.reports.charts.employee.overtimeAnalysis.columns.overtimeIndicator,
+    label: reports.charts.employee.overtimeAnalysis.columns.overtimeIndicator,
     color: "hsl(var(--chart-2))",
   },
 };
@@ -38,7 +37,7 @@ export function OvertimeAnalysisChart({ data }: Props) {
     <Card>
       <CardHeader className="pb-4">
         <CardTitle className="text-base font-semibold md:text-lg">
-          {fa.reports.charts.employee.overtimeAnalysis.chartTitle}
+          {reports.charts.employee.overtimeAnalysis.chartTitle}
         </CardTitle>
       </CardHeader>
       <CardContent className="h-80 w-full p-4 pt-0">
@@ -69,7 +68,7 @@ export function OvertimeAnalysisChart({ data }: Props) {
                 content={
                   <ChartTooltipContent
                     formatter={(value, name) => [
-                      `${value}${name === fa.reports.charts.employee.overtimeAnalysis.columns.workloadScore ? "%" : "h"}`,
+                      `${value}${name === reports.charts.employee.overtimeAnalysis.columns.workloadScore ? "%" : "h"}`,
                       name,
                     ]}
                   />
@@ -89,7 +88,7 @@ export function OvertimeAnalysisChart({ data }: Props) {
           </ChartContainer>
         ) : (
           <div className="text-muted-foreground flex h-full w-full items-center justify-center rounded-md border border-dashed text-sm">
-            {fa.reports.charts.employee.overtimeAnalysis.noData}
+            {reports.charts.employee.overtimeAnalysis.noData}
           </div>
         )}
       </CardContent>

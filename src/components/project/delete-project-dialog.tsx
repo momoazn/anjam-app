@@ -1,5 +1,5 @@
 import { DeleteDialog } from "@/components/ui/delete-dialog";
-import { fa } from "@/constants/text";
+import { projects } from "@/constants";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
 
 type DeleteProjectDialogProps = {
@@ -18,8 +18,8 @@ export function DeleteProjectDialog({
       open={open}
       onOpenChange={onOpenChange}
       entityId={project?.id || null}
-      title={fa.projects.delete.title}
-      description={fa.projects.delete.confirm}
+      title={projects.delete.title}
+      description={projects.delete.confirm}
       collection="projects"
     />
   );

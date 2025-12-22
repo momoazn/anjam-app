@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-import { fa } from "@/constants/text";
+import { navigation, user as userLabels, users } from "@/constants";
 import type { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthActions, useAuthUser } from "@/store/auth-store";
 import { UserAvatar } from "./user-avatar";
@@ -41,11 +41,7 @@ function UserInfo({ user }: UserInfoProps) {
           </span>
           <span className="bg-muted-foreground/40 h-1 w-1 flex-shrink-0 rounded-full" />
           <span className="text-muted-foreground truncate text-xs">
-            {
-              fa.users.table.roles[
-                user.role as keyof typeof fa.users.table.roles
-              ]
-            }
+            {users.table.roles[user.role as keyof typeof users.table.roles]}
           </span>
         </div>
       </div>
@@ -94,7 +90,7 @@ export function HeaderUserMenu() {
             onClick={handleEditProfile}
           >
             <IconUserCircle className="size-4" />
-            <span className="flex-1">{fa.navigation.settings}</span>
+            <span className="flex-1">{navigation.settings}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="my-1" />
@@ -103,7 +99,7 @@ export function HeaderUserMenu() {
           onClick={handleLogout}
         >
           <IconLogout className="size-4" />
-          <span className="flex-1">{fa.user.dropdown.logout}</span>
+          <span className="flex-1">{userLabels.dropdown.logout}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

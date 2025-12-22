@@ -35,7 +35,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants";
+import {
+  auditLogs,
+  comments as commentsText,
+  common,
+  tasks,
+} from "@/constants";
 import { useDeleteTask, useTask, useUpdateTask } from "@/hooks";
 import { useComments } from "@/hooks/comments";
 import { formatTaskDate } from "@/lib/date-utils";
@@ -67,14 +72,14 @@ export default function TaskDetails() {
     enabled: !!id,
   });
 
-  const { data: comments = [], isLoading: commentsLoading } = useComments(
+  const { data: commentsData = [], isLoading: commentsLoading } = useComments(
     id ?? "",
     { enabled: !!id },
   );
 
   const deleteTask = useDeleteTask({
     onSuccess: () => {
-      toast.success(fa.tasks.delete.success);
+      toast.success(tasks.delete.success);
       setShowDeleteDialog(false);
       navigate("/tasks");
     },
@@ -118,7 +123,7 @@ export default function TaskDetails() {
     const m = Number(minutes) || 0;
 
     if (h < 0 || m < 0 || m >= 60) {
-      toast.error(fa.tasks.details.timeTracking.invalidInput);
+      toast.error(tasks.details.timeTracking.invalidInput);
       return;
     }
 
@@ -169,14 +174,14 @@ export default function TaskDetails() {
       <PageTransition className="container mx-auto space-y-6 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">{fa.tasks.errors.notFound}</p>
+            <p className="text-muted-foreground">{tasks.errors.notFound}</p>
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => navigate("/tasks")}
             >
               <ArrowLeft className="ml-2 h-4 w-4" />
-              {fa.tasks.details.backToList}
+              {tasks.details.backToList}
             </Button>
           </CardContent>
         </Card>
@@ -226,21 +231,21 @@ export default function TaskDetails() {
             className={getStatusColorVariant(task.status, "badge")}
           >
             <StatusIcon className="mr-1 h-3 w-3" />
-            {fa.tasks.status[task.status]}
+            {tasks.status[task.status]}
           </Badge>
           <Badge
             variant="outline"
             className={`${priorityColors[task.priority]} border-current`}
           >
             <PriorityIcon className="mr-1 h-3 w-3" />
-            {fa.tasks.priority[task.priority]}
+            {tasks.priority[task.priority]}
           </Badge>
           <Button
             size="sm"
             variant="outline"
             onClick={() => navigate(`/tasks/${id}/edit`)}
           >
-            {fa.tasks.details.editButton}
+            {tasks.details.editButton}
           </Button>
           <Button
             size="sm"
@@ -252,8 +257,8 @@ export default function TaskDetails() {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
             {deleteTask.isPending
-              ? fa.tasks.details.buttons.deleting
-              : fa.tasks.details.buttons.delete}
+              ? tasks.details.buttons.deleting
+              : tasks.details.buttons.delete}
           </Button>
         </div>
       </div>
@@ -264,12 +269,12 @@ export default function TaskDetails() {
           {/* Task Meta */}
           <Card>
             <CardHeader>
-              <CardTitle>{fa.tasks.details.detailsCardTitle}</CardTitle>
+              <CardTitle>{tasks.details.detailsCardTitle}</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.assigneeLabel}
+                  {tasks.details.assigneeLabel}
                 </span>{" "}
                 {task.expand?.assignee ? (
                   <span>
@@ -281,25 +286,25 @@ export default function TaskDetails() {
                   </span>
                 ) : (
                   <span className="text-muted-foreground">
-                    {fa.tasks.addTask.unassigned}
+                    {tasks.addTask.unassigned}
                   </span>
                 )}
               </div>
               <div>
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.projectLabel}
+                  {tasks.details.projectLabel}
                 </span>{" "}
-                {task.expand?.project?.name || fa.tasks.details.unknownProject}
+                {task.expand?.project?.name || tasks.details.unknownProject}
               </div>
               <div>
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.deadlineLabel}
+                  {tasks.details.deadlineLabel}
                 </span>{" "}
                 {formatTaskDate(task.deadline)}
               </div>
               <div>
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.displayIdLabel}
+                  {tasks.details.displayIdLabel}
                 </span>{" "}
                 {task.display_id || task.id}
               </div>
@@ -313,7 +318,7 @@ export default function TaskDetails() {
                 <div className="flex items-center gap-2">
                   <Clock className="text-primary h-5 w-5" />
                   <h3 className="font-medium">
-                    {fa.tasks.details.timeTracking.title}
+                    {tasks.details.timeTracking.title}
                   </h3>
                 </div>
                 {!isEditingTime && canEditTime && (
@@ -323,7 +328,7 @@ export default function TaskDetails() {
                     onClick={() => setIsEditingTime(true)}
                   >
                     <Pencil className="mr-2 h-4 w-4" />
-                    {fa.tasks.details.timeTracking.editTime}
+                    {tasks.details.timeTracking.editTime}
                   </Button>
                 )}
               </div>
@@ -333,7 +338,7 @@ export default function TaskDetails() {
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <label className="mb-2 block text-sm font-medium">
-                        {fa.tasks.details.timeTracking.hours}
+                        {tasks.details.timeTracking.hours}
                       </label>
                       <Input
                         type="number"
@@ -345,7 +350,7 @@ export default function TaskDetails() {
                     </div>
                     <div className="flex-1">
                       <label className="mb-2 block text-sm font-medium">
-                        {fa.tasks.details.timeTracking.minutes}
+                        {tasks.details.timeTracking.minutes}
                       </label>
                       <Input
                         type="number"
@@ -368,7 +373,7 @@ export default function TaskDetails() {
                       ) : (
                         <Save className="mr-2 h-4 w-4" />
                       )}
-                      {fa.tasks.details.timeTracking.saveTime}
+                      {tasks.details.timeTracking.saveTime}
                     </Button>
                     <Button
                       size="sm"
@@ -377,7 +382,7 @@ export default function TaskDetails() {
                       disabled={isUpdatingTime}
                     >
                       <X className="mr-2 h-4 w-4" />
-                      {fa.tasks.details.timeTracking.cancelEdit}
+                      {tasks.details.timeTracking.cancelEdit}
                     </Button>
                   </div>
                 </div>
@@ -385,7 +390,7 @@ export default function TaskDetails() {
                 <div className="mt-2 space-y-2">
                   <p className="text-primary text-2xl font-semibold">
                     {formatTimeSpent(task.time_spent_minutes) ||
-                      fa.tasks.details.timeTracking.noTimeTracked}
+                      tasks.details.timeTracking.noTimeTracked}
                   </p>
                   <TimeComparison
                     estimatedMinutes={task.estimated_minutes || 0}
@@ -400,7 +405,7 @@ export default function TaskDetails() {
           {task.description && (
             <Card>
               <CardHeader>
-                <CardTitle>{fa.tasks.details.descriptionCardTitle}</CardTitle>
+                <CardTitle>{tasks.details.descriptionCardTitle}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="prose prose-sm max-w-none">
@@ -422,9 +427,9 @@ export default function TaskDetails() {
                     className="flex items-center gap-2"
                   >
                     <MessageSquare className="h-4 w-4" />
-                    {fa.comments.title}
+                    {commentsText.title}
                     <Badge variant="secondary" className="ml-1 text-xs">
-                      {digitsEnToFa(comments.length)}
+                      {digitsEnToFa(commentsData.length)}
                     </Badge>
                   </TabsTrigger>
                   <TabsTrigger
@@ -432,7 +437,7 @@ export default function TaskDetails() {
                     className="flex items-center gap-2"
                   >
                     <History className="h-4 w-4" />
-                    {fa.auditLogs.activityStream.title}
+                    {auditLogs.activityStream.title}
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="comments" className="mt-4">
@@ -461,43 +466,43 @@ export default function TaskDetails() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>{fa.tasks.details.quickInfoCardTitle}</CardTitle>
+              <CardTitle>{tasks.details.quickInfoCardTitle}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.statusLabel}
+                  {tasks.details.statusLabel}
                 </span>
                 <Badge
                   variant="default"
                   className={getStatusColorVariant(task.status, "badge")}
                 >
                   <StatusIcon className="mr-1 h-3 w-3" />
-                  {fa.tasks.status[task.status]}
+                  {tasks.status[task.status]}
                 </Badge>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.priorityLabel}
+                  {tasks.details.priorityLabel}
                 </span>
                 <Badge
                   variant="outline"
                   className={`${priorityColors[task.priority]} border-current`}
                 >
                   <PriorityIcon className="mr-1 h-3 w-3" />
-                  {fa.tasks.priority[task.priority]}
+                  {tasks.priority[task.priority]}
                 </Badge>
               </div>
               <Separator />
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.createdLabel}
+                  {tasks.details.createdLabel}
                 </span>
                 <span>{formatTaskDate(task.created)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  {fa.tasks.details.updatedLabel}
+                  {tasks.details.updatedLabel}
                 </span>
                 <span>{formatTaskDate(task.updated)}</span>
               </div>
@@ -506,7 +511,7 @@ export default function TaskDetails() {
 
           <Card>
             <CardHeader>
-              <CardTitle>{fa.tasks.details.actionsCardTitle}</CardTitle>
+              <CardTitle>{tasks.details.actionsCardTitle}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button
@@ -515,7 +520,7 @@ export default function TaskDetails() {
                 onClick={() => navigate(`/tasks/${id}/edit`)}
               >
                 <Pencil className="ml-2 h-4 w-4" />
-                {fa.tasks.details.editTaskButton}
+                {tasks.details.editTaskButton}
               </Button>
               <Button
                 variant="outline"
@@ -524,7 +529,7 @@ export default function TaskDetails() {
                 disabled={deleteTask.isPending}
               >
                 <Trash2 className="ml-2 h-4 w-4" />
-                {fa.tasks.details.deleteTaskButton}
+                {tasks.details.deleteTaskButton}
               </Button>
             </CardContent>
           </Card>
@@ -535,10 +540,10 @@ export default function TaskDetails() {
         <AlertDialogContent className="text-right">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-right text-lg font-bold">
-              {fa.tasks.delete.title}
+              {tasks.delete.title}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground text-right">
-              {fa.tasks.delete.description}
+              {tasks.delete.description}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
@@ -546,7 +551,7 @@ export default function TaskDetails() {
               className="order-2"
               disabled={deleteTask.isPending}
             >
-              {fa.tasks.delete.cancel}
+              {tasks.delete.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
@@ -561,10 +566,10 @@ export default function TaskDetails() {
                   deleteTask.mutate(task.id);
                 }, 5000);
 
-                toast(fa.tasks.delete.queued, {
+                toast(tasks.delete.queued, {
                   duration: 5000,
                   action: {
-                    label: fa.common.undo,
+                    label: common.undo,
                     onClick: () => {
                       if (pendingDeleteRef.current) {
                         window.clearTimeout(pendingDeleteRef.current);
@@ -582,7 +587,7 @@ export default function TaskDetails() {
               {deleteTask.isPending ? (
                 <Loader2 className="text-muted-foreground ml-2 h-4 w-4 animate-spin" />
               ) : null}
-              {fa.tasks.delete.confirm}
+              {tasks.delete.confirm}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

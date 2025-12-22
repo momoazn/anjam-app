@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { text } from "@/constants/text";
+import { common, tasks } from "@/constants";
 import {
   TasksPriorityOptions,
   type TasksStatusOptions,
@@ -60,13 +60,13 @@ export function BulkActionsBar({
       setIsLoading(true);
       await onBulkAssign(userId);
       toast.success(
-        text.tasks.bulkActions.assignSuccess.replace(
+        tasks.bulkActions.assignSuccess.replace(
           "{count}",
           String(selectedCount),
         ),
       );
     } catch {
-      toast.error(text.tasks.bulkActions.assignError);
+      toast.error(tasks.bulkActions.assignError);
     } finally {
       setIsLoading(false);
     }
@@ -77,13 +77,13 @@ export function BulkActionsBar({
       setIsLoading(true);
       await onBulkStatus(status);
       toast.success(
-        text.tasks.bulkActions.statusSuccess.replace(
+        tasks.bulkActions.statusSuccess.replace(
           "{count}",
           String(selectedCount),
         ),
       );
     } catch {
-      toast.error(text.tasks.bulkActions.statusError);
+      toast.error(tasks.bulkActions.statusError);
     } finally {
       setIsLoading(false);
     }
@@ -94,13 +94,13 @@ export function BulkActionsBar({
       setIsLoading(true);
       await onBulkPriority(priority);
       toast.success(
-        text.tasks.bulkActions.prioritySuccess.replace(
+        tasks.bulkActions.prioritySuccess.replace(
           "{count}",
           String(selectedCount),
         ),
       );
     } catch {
-      toast.error(text.tasks.bulkActions.priorityError);
+      toast.error(tasks.bulkActions.priorityError);
     } finally {
       setIsLoading(false);
     }
@@ -111,14 +111,14 @@ export function BulkActionsBar({
       setIsLoading(true);
       await onBulkDelete();
       toast.success(
-        text.tasks.bulkActions.deleteSuccess.replace(
+        tasks.bulkActions.deleteSuccess.replace(
           "{count}",
           String(selectedCount),
         ),
       );
       setShowDeleteDialog(false);
     } catch {
-      toast.error(text.tasks.bulkActions.deleteError);
+      toast.error(tasks.bulkActions.deleteError);
     } finally {
       setIsLoading(false);
     }
@@ -126,15 +126,15 @@ export function BulkActionsBar({
 
   const priorityOptions: Array<{ value: TasksPriorityOptions; label: string }> =
     [
-      { value: TasksPriorityOptions.low, label: text.tasks.priority.low },
+      { value: TasksPriorityOptions.low, label: tasks.priority.low },
       {
         value: TasksPriorityOptions.medium,
-        label: text.tasks.priority.medium,
+        label: tasks.priority.medium,
       },
-      { value: TasksPriorityOptions.high, label: text.tasks.priority.high },
+      { value: TasksPriorityOptions.high, label: tasks.priority.high },
       {
         value: TasksPriorityOptions.urgent,
-        label: text.tasks.priority.urgent,
+        label: tasks.priority.urgent,
       },
     ];
 
@@ -143,7 +143,7 @@ export function BulkActionsBar({
       <div className="border-border bg-card fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-lg border px-4 py-3 shadow-lg">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">
-            {text.tasks.bulkActions.selectedCount.replace(
+            {tasks.bulkActions.selectedCount.replace(
               "{count}",
               String(selectedCount),
             )}
@@ -164,14 +164,12 @@ export function BulkActionsBar({
         <Select onValueChange={handleBulkAssign} disabled={isLoading}>
           <SelectTrigger className="w-[180px]">
             <Users className="mr-2 h-4 w-4" />
-            <SelectValue
-              placeholder={text.tasks.bulkActions.assignPlaceholder}
-            />
+            <SelectValue placeholder={tasks.bulkActions.assignPlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {users.length === 0 ? (
               <SelectItem value="__empty" disabled>
-                {text.common.messages.noData}
+                {common.messages.noData}
               </SelectItem>
             ) : (
               users.map((user) => (
@@ -189,9 +187,7 @@ export function BulkActionsBar({
         <Select onValueChange={handleBulkStatus} disabled={isLoading}>
           <SelectTrigger className="w-[160px]">
             <RefreshCw className="mr-2 h-4 w-4" />
-            <SelectValue
-              placeholder={text.tasks.bulkActions.statusPlaceholder}
-            />
+            <SelectValue placeholder={tasks.bulkActions.statusPlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {availableStatuses.map((status) => (
@@ -206,9 +202,7 @@ export function BulkActionsBar({
         <Select onValueChange={handleBulkPriority} disabled={isLoading}>
           <SelectTrigger className="w-[150px]">
             <Flag className="mr-2 h-4 w-4" />
-            <SelectValue
-              placeholder={text.tasks.bulkActions.priorityPlaceholder}
-            />
+            <SelectValue placeholder={tasks.bulkActions.priorityPlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {priorityOptions.map((priority) => (
@@ -229,7 +223,7 @@ export function BulkActionsBar({
           disabled={isLoading}
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          {text.tasks.bulkActions.deleteButton}
+          {tasks.bulkActions.deleteButton}
         </Button>
       </div>
 
@@ -237,18 +231,18 @@ export function BulkActionsBar({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {text.tasks.bulkActions.deleteDialogTitle.replace(
+              {tasks.bulkActions.deleteDialogTitle.replace(
                 "{count}",
                 String(selectedCount),
               )}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {text.tasks.bulkActions.deleteDialogDescription}
+              {tasks.bulkActions.deleteDialogDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isLoading}>
-              {text.tasks.bulkActions.cancelButton}
+              {tasks.bulkActions.cancelButton}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
@@ -256,8 +250,8 @@ export function BulkActionsBar({
               className="bg-destructive hover:bg-destructive/90"
             >
               {isLoading
-                ? text.tasks.bulkActions.deletingButton
-                : text.tasks.bulkActions.deleteButton}
+                ? tasks.bulkActions.deletingButton
+                : tasks.bulkActions.deleteButton}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -12,16 +12,16 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { fa } from "@/constants/text";
+import { auth, common, users } from "@/constants";
 import { useCreateUser } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({
-  username: z.string().min(1, { message: fa.auth.errors.usernameRequired }),
-  password: z.string().min(8, { message: fa.auth.errors.passwordMinLength }),
-  first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
-  last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
+  username: z.string().min(1, { message: auth.errors.usernameRequired }),
+  password: z.string().min(8, { message: auth.errors.passwordMinLength }),
+  first_name: z.string().min(1, { message: auth.errors.firstNameRequired }),
+  last_name: z.string().min(1, { message: auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
   group: z.string().optional(),
 });
@@ -83,13 +83,13 @@ export default function CreateUser() {
           <ArrowRight className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.users.create.title}</h1>
+          <h1 className="text-3xl font-bold">{users.create.title}</h1>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.users.create.title}</CardTitle>
+          <CardTitle>{users.create.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -105,13 +105,13 @@ export default function CreateUser() {
                   onClick={handleCancel}
                   disabled={isPending}
                 >
-                  {fa.common.cancel}
+                  {common.cancel}
                 </Button>
                 <Button type="submit" disabled={isPending}>
                   {isPending ? (
                     <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                   ) : null}
-                  {fa.users.create.button}
+                  {users.create.button}
                 </Button>
               </div>
             </form>

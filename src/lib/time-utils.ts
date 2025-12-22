@@ -1,5 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { fa } from "@/constants/text";
+import { task } from "@/constants";
 
 /**
  * Formats minutes into a compact "Xh Ym" format with localized labels
@@ -15,14 +15,14 @@ export function formatTimeSpent(minutes: number | null | undefined): string {
   const remainingMinutes = minutes % 60;
 
   if (hours === 0) {
-    return `${digitsEnToFa(remainingMinutes)} ${fa.task.minutes}`;
+    return `${digitsEnToFa(remainingMinutes)} ${task.minutes}`;
   }
 
   if (remainingMinutes === 0) {
-    return `${digitsEnToFa(hours)} ${fa.task.hours}`;
+    return `${digitsEnToFa(hours)} ${task.hours}`;
   }
 
-  return `${digitsEnToFa(hours)} ${fa.task.hours} ${digitsEnToFa(remainingMinutes)} ${fa.task.minutes}`;
+  return `${digitsEnToFa(hours)} ${task.hours} ${digitsEnToFa(remainingMinutes)} ${task.minutes}`;
 }
 
 /**

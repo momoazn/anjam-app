@@ -7,7 +7,7 @@ import {
 } from "date-fns-jalali";
 import { useMemo } from "react";
 import { PageTransition } from "@/components/page-transition";
-import { fa } from "@/constants/text";
+import { tasks } from "@/constants";
 import { useNotifications, useProjects, useTasks } from "@/hooks";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { getStatusColorVariant } from "@/lib/status-utils";
@@ -131,7 +131,7 @@ export default function Dashboard() {
     ];
 
     return Object.entries(statusCounts).map(([status, count], index) => ({
-      name: fa.tasks.status[status as TasksStatusOptions] || status,
+      name: tasks.status[status as TasksStatusOptions] || status,
       value: count,
       fill: colors[index % colors.length],
     }));

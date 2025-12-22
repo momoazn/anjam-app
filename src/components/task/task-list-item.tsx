@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserAvatar } from "@/components/user-avatar";
-import { fa } from "@/constants/text";
+import { task as taskLabels, tasks } from "@/constants";
 import { formatDateShort } from "@/lib/date-utils";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { UsersResponse } from "@/lib/pocketbase-types";
@@ -73,7 +73,7 @@ function TaskListItemInner({
           handleClick();
         }
       }}
-      aria-label={fa.task.editTask.replace("{title}", task.title)}
+      aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Left side: Checkbox, Icon, ID, Title (fixed layout) */}
       <div className="flex min-w-0 grow items-center gap-1">
@@ -119,12 +119,12 @@ function TaskListItemInner({
               // Limit tags shown
               // Simple color logic for tags
               let tagColor = "bg-muted text-muted-foreground border-border";
-              if (tag === fa.tasks.tags.bug)
+              if (tag === tasks.tags.bug)
                 tagColor =
                   "bg-destructive/10 text-destructive border-destructive/20";
-              if (tag === fa.tasks.tags.feature)
+              if (tag === tasks.tags.feature)
                 tagColor = "bg-primary/10 text-primary border-primary/20";
-              if (tag === fa.tasks.tags.improvement)
+              if (tag === tasks.tags.improvement)
                 tagColor = "bg-accent/10 text-accent border-accent/20";
               return (
                 <Badge

@@ -40,7 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fa } from "@/constants/text";
+import { common, projects, users } from "@/constants";
 import { useProjectUsers, useProjectWithSupervisor, useUsers } from "@/hooks";
 import { pb } from "@/lib/pocketbase";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
@@ -89,7 +89,7 @@ export default function ProjectUsers() {
         });
       }
       setIsAddUserOpen(false);
-      toast.success(fa.projects.users.addSuccess);
+      toast.success(projects.users.addSuccess);
     },
     onError: (error) => {
       handlePocketBaseError(error);
@@ -132,7 +132,7 @@ export default function ProjectUsers() {
         }
         setIsRemoveDialogOpen(false);
         setUserToRemove(null);
-        toast.success(fa.projects.users.removeSuccess);
+        toast.success(projects.users.removeSuccess);
       },
       onError: (error) => {
         handlePocketBaseError(error);
@@ -148,10 +148,10 @@ export default function ProjectUsers() {
     <PageTransition className="text-foreground mt-4 flex flex-col space-y-4 px-4 pb-8">
       <div className="flex items-center justify-between" data-animate-stagger>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">{fa.projects.users.title}</h1>
+          <h1 className="text-2xl font-bold">{projects.users.title}</h1>
           {projectUsers && (
             <span className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-sm">
-              {digitsEnToFa(projectUsers.length)} {fa.projects.users.count}
+              {digitsEnToFa(projectUsers.length)} {projects.users.count}
             </span>
           )}
         </div>
@@ -160,12 +160,12 @@ export default function ProjectUsers() {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 size-4" />
-                {fa.projects.users.add}
+                {projects.users.add}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{fa.projects.users.addDialog.title}</DialogTitle>
+                <DialogTitle>{projects.users.addDialog.title}</DialogTitle>
               </DialogHeader>
               <Select
                 onValueChange={(value) => {
@@ -175,7 +175,7 @@ export default function ProjectUsers() {
               >
                 <SelectTrigger>
                   <SelectValue
-                    placeholder={fa.projects.users.addDialog.selectPlaceholder}
+                    placeholder={projects.users.addDialog.selectPlaceholder}
                   />
                 </SelectTrigger>
                 <SelectContent>
@@ -193,7 +193,7 @@ export default function ProjectUsers() {
                     ))
                   ) : (
                     <SelectItem value="__empty" disabled>
-                      {fa.common.messages.noData}
+                      {common.messages.noData}
                     </SelectItem>
                   )}
                 </SelectContent>
@@ -208,14 +208,14 @@ export default function ProjectUsers() {
           <TableHeader>
             <TableRow>
               <TableHead className="text-right">
-                {fa.projects.users.table.user}
+                {projects.users.table.user}
               </TableHead>
               <TableHead className="text-center">
-                {fa.projects.users.table.role}
+                {projects.users.table.role}
               </TableHead>
               {canManageUsers && (
                 <TableHead className="w-[100px] text-center">
-                  {fa.projects.users.table.actions}
+                  {projects.users.table.actions}
                 </TableHead>
               )}
             </TableRow>
@@ -232,7 +232,7 @@ export default function ProjectUsers() {
                 </span>
               </TableCell>
               <TableCell className="text-center">
-                {fa.users.table.roles.supervisor}
+                {users.table.roles.supervisor}
               </TableCell>
             </TableRow>
             {projectUsers?.map((user) => (
@@ -247,7 +247,7 @@ export default function ProjectUsers() {
                   </span>
                 </TableCell>
                 <TableCell className="text-center">
-                  {fa.users.table.roles.employee}
+                  {users.table.roles.employee}
                 </TableCell>
                 {canManageUsers && (
                   <TableCell className="text-center">
@@ -281,15 +281,15 @@ export default function ProjectUsers() {
         <AlertDialogContent className="text-right">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-right text-lg font-bold">
-              {fa.projects.users.remove.title}
+              {projects.users.remove.title}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground text-right">
-              {fa.projects.users.remove.description}
+              {projects.users.remove.description}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
             <AlertDialogCancel className="order-2">
-              {fa.common.cancel}
+              {common.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
@@ -303,7 +303,7 @@ export default function ProjectUsers() {
               {isRemovingUser ? (
                 <Loader2 className="text-muted-foreground ml-2 size-4 animate-spin" />
               ) : null}
-              {fa.common.delete}
+              {common.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

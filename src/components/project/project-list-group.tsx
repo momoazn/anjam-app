@@ -5,7 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fa } from "@/constants";
+import {
+  project as projectLabels,
+  projects as projectsText,
+} from "@/constants";
 import { useTasks } from "@/hooks";
 import { ProjectsResponse, TasksStatusOptions } from "@/lib/pocketbase-types";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
@@ -111,7 +114,7 @@ export function ProjectListGroup({
                 {/* Progress indicator with real data */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>{fa.project.progress}</span>
+                    <span>{projectLabels.progress}</span>
                     <span className="font-medium">
                       {digitsEnToFa(progress.progress)}%
                     </span>
@@ -123,8 +126,9 @@ export function ProjectListGroup({
                     />
                   </div>
                   <div className="text-muted-foreground text-xs">
-                    {digitsEnToFa(progress.completed)} {fa.project.of}{" "}
-                    {digitsEnToFa(progress.total)} {fa.project.completedTasks}
+                    {digitsEnToFa(progress.completed)} {projectLabels.of}{" "}
+                    {digitsEnToFa(progress.total)}{" "}
+                    {projectLabels.completedTasks}
                   </div>
                 </div>
 
@@ -141,7 +145,7 @@ export function ProjectListGroup({
                   >
                     <FileText className="mr-2 h-3 w-3 flex-shrink-0" />
                     <span className="truncate">
-                      {fa.projects.details.viewDetails}
+                      {projectsText.details.viewDetails}
                     </span>
                   </Button>
                   <Button
@@ -154,7 +158,7 @@ export function ProjectListGroup({
                     }}
                   >
                     <Target className="mr-2 h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{fa.project.tasks}</span>
+                    <span className="truncate">{projectLabels.tasks}</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -166,7 +170,7 @@ export function ProjectListGroup({
                     }}
                   >
                     <Users className="mr-2 h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{fa.project.users}</span>
+                    <span className="truncate">{projectLabels.users}</span>
                   </Button>
                 </div>
               </CardContent>

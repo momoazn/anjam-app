@@ -1,4 +1,4 @@
-import { fa } from "@/constants/text";
+import { projects } from "@/constants";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -117,7 +117,7 @@ export function useFileUpload(options?: FileUploadOptions) {
         const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(0);
         return {
           valid: false,
-          error: fa.projects.files.validation.tooLarge.replace(
+          error: projects.files.validation.tooLarge.replace(
             "{max}",
             `${maxSizeMB}MB`,
           ),
@@ -131,7 +131,7 @@ export function useFileUpload(options?: FileUploadOptions) {
       if (!isAllowed) {
         return {
           valid: false,
-          error: fa.projects.files.validation.invalidType.replace(
+          error: projects.files.validation.invalidType.replace(
             "{fileName}",
             file.name,
           ),
@@ -149,7 +149,7 @@ export function useFileUpload(options?: FileUploadOptions) {
 
       // Check max files limit
       if (maxFiles && files.length + fileArray.length > maxFiles) {
-        const error = fa.projects.files.validation.maxFiles.replace(
+        const error = projects.files.validation.maxFiles.replace(
           "{maxFiles}",
           maxFiles.toString(),
         );
