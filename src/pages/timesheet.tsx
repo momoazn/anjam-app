@@ -23,12 +23,10 @@ export default function TimesheetPage() {
   const { user } = useAuthStore();
   const selectedDate = new Date();
 
-  // Get current week
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 6 }); // Saturday
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 6 });
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  // Fetch tasks with time tracking for the current user
   const { data: tasks, isLoading } = useQuery({
     queryKey: [
       "timesheet",
@@ -51,7 +49,6 @@ export default function TimesheetPage() {
     enabled: !!user?.id,
   });
 
-  // Group tasks by day
   const tasksByDay = weekDays.map((day) => {
     const dayTasks =
       tasks?.filter((task) => {

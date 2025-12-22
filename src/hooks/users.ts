@@ -25,7 +25,6 @@ type UsersListOptions = {
   filter?: string;
 };
 
-// Create CRUD hooks using the factory
 const {
   useCreate: useCreateUserMutation,
   useUpdate: useUpdateUserMutation,

@@ -50,7 +50,6 @@ export function useSavedFilters() {
     }
   }, []);
 
-  // Create a new saved filter
   const saveFilter = useCallback(
     (name: string, filters: TaskFilterValues): SavedFilter => {
       const newFilter: SavedFilter = {
@@ -68,7 +67,6 @@ export function useSavedFilters() {
     [savedFilters, persistFilters],
   );
 
-  // Update an existing filter
   const updateFilter = useCallback(
     (id: string, updates: Partial<Omit<SavedFilter, "id" | "createdAt">>) => {
       const updatedFilters = savedFilters.map((filter) =>
@@ -79,7 +77,6 @@ export function useSavedFilters() {
     [savedFilters, persistFilters],
   );
 
-  // Delete a saved filter
   const deleteFilter = useCallback(
     (id: string) => {
       const updatedFilters = savedFilters.filter((filter) => filter.id !== id);
@@ -94,7 +91,6 @@ export function useSavedFilters() {
     [savedFilters, defaultFilterId, persistFilters],
   );
 
-  // Set a filter as default
   const setAsDefault = useCallback((id: string | null) => {
     if (id) {
       localStorage.setItem(DEFAULT_FILTER_KEY, id);
@@ -104,13 +100,11 @@ export function useSavedFilters() {
     setDefaultFilterId(id);
   }, []);
 
-  // Get the default filter
   const getDefaultFilter = useCallback((): SavedFilter | null => {
     if (!defaultFilterId) return null;
     return savedFilters.find((f) => f.id === defaultFilterId) ?? null;
   }, [defaultFilterId, savedFilters]);
 
-  // Check if current filters match any saved filter
   const getCurrentFilterMatch = useCallback(
     (currentFilters: TaskFilterValues): SavedFilter | null => {
       return (
@@ -132,7 +126,6 @@ export function useSavedFilters() {
     [savedFilters],
   );
 
-  // Check if filters are default (all filters cleared)
   const isDefaultFilters = useCallback((filters: TaskFilterValues): boolean => {
     return (
       filters.searchTerm === DEFAULT_TASK_FILTERS.searchTerm &&

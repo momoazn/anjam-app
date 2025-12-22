@@ -119,7 +119,6 @@ export default function TaskCalendar() {
     return grouped;
   }, [tasksWithDeadlines]);
 
-  // Calculate calendar days
   const calendarDays = useMemo(() => {
     const start = startOfWeek(startOfMonth(currentMonth));
     const end = endOfWeek(endOfMonth(currentMonth));
@@ -127,21 +126,17 @@ export default function TaskCalendar() {
     return eachDayOfInterval({ start, end });
   }, [currentMonth]);
 
-  // Navigate months
   const goToPreviousMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToToday = () => setCurrentMonth(new Date());
 
-  // Get tasks for a specific day
   const getTasksForDay = (day: Date): TaskWithProject[] => {
     const dateKey = format(day, "yyyy-MM-dd");
     return tasksByDate.get(dateKey) || [];
   };
 
-  // Persian weekday names (short) from centralized constants
   const weekdayNames = tasks.calendar.weekdayShort;
 
-  // Count tasks by status for current month
   const monthStats = useMemo(() => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);

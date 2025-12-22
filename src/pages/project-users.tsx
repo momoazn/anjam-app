@@ -67,10 +67,8 @@ export default function ProjectUsers() {
   });
   const { data: projectUsers } = useProjectUsers({ projectId: id as string });
 
-  // Get all users for adding new users to project
   const { data: allUsers } = useUsers({ enabled: canManageUsers });
 
-  // Add user to project
   const { mutate: addUserToProject, isPending: isAddingUser } = useMutation({
     mutationFn: async (userId: string) => {
       return pb.collection("users_projects").create({

@@ -67,7 +67,6 @@ export default function CreateTask() {
   const user = useAuthUser();
   const { id: projectId } = useParams<{ id: string }>();
 
-  // Check if we're in a project context
   const isInProject = Boolean(projectId);
   const initialProject = projectId ?? "";
 

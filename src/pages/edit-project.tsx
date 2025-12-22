@@ -90,12 +90,10 @@ export default function EditProject() {
       }
 
       if (data.description !== undefined) {
-        // Convert line breaks to HTML
         const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
         formData.append("description", descriptionWithBreaks);
       }
 
-      // Handle new file uploads
       if (data.assets && data.assets.length > 0) {
         data.assets.forEach((file: FileWithPreview) => {
           formData.append("assets", file);

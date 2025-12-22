@@ -230,7 +230,6 @@ type RouteType = {
   title?: string;
 };
 
-// Sets document.title when mounted
 const Title = ({
   title,
   children,
