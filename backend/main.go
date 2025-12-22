@@ -94,6 +94,9 @@ func main() {
 	// Group-aware user-project assignment validation
 	app.OnRecordCreateExecute("users_projects").BindFunc(handleUsersProjectsValidation)
 
+	// Tag creation handler to set group
+	app.OnRecordCreateExecute("tags").BindFunc(handleTagCreation)
+
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
 
@@ -236,6 +239,32 @@ func handleProjectCreationWithGroup(e *core.RecordEvent) error {
 	if supervisorGroupId != groupId {
 		return errors.New(ErrSupervisorMustBeInSameGroup)
 	}
+
+	return e.Next()
+}
+
+// handleTagCreation sets the group for new tags based on the creator's group
+func handleTagCreation(e *core.RecordEvent) error {
+	// Get the creator's user ID from the record
+	creatorId := e.Record.GetString("creator")
+	if creatorId == "" {
+		return errors.New("creator is required")
+	}
+
+	// Fetch the creator's user record to get their group
+	creator, err := e.App.FindRecordById(CollectionUsers, creatorId)
+	if err != nil {
+		return fmt.Errorf("failed to find creator: %w", err)
+	}
+
+	// Get the creator's group
+	creatorGroupId := creator.GetString("group")
+	if creatorGroupId == "" {
+		return errors.New("creator must belong to a group")
+	}
+
+	// Set the group on the tag
+	e.Record.Set("group", creatorGroupId)
 
 	return e.Next()
 }
@@ -546,6 +575,13 @@ func handleTaskCreation(e *core.RecordEvent) error {
 		return err
 	}
 	setTaskDefaults(e)
+
+	// Validate that all tags belong to the same group as the project
+	if err := validateTaskTags(e); err != nil {
+		log.Printf("Error validating task tags: %v", err)
+		return err
+	}
+
 	log.Printf("Task creation successful, display_id: %s", e.Record.GetString("display_id"))
 	return e.Next()
 }
@@ -614,6 +650,45 @@ func setTaskDefaults(e *core.RecordEvent) {
 	if e.Record.GetString("priority") == "" {
 		e.Record.Set("priority", PriorityMedium)
 	}
+}
+
+func validateTaskTags(e *core.RecordEvent) error {
+	projectId := e.Record.GetString("project")
+	if projectId == "" {
+		return nil // No project, skip validation
+	}
+
+	// Get project to find its group
+	project, err := e.App.FindRecordById(CollectionProjects, projectId)
+	if err != nil {
+		return fmt.Errorf("failed to find project: %w", err)
+	}
+
+	projectGroupId := project.GetString("group")
+	if projectGroupId == "" {
+		return nil // Project has no group, skip validation
+	}
+
+	// Get tags from the task
+	tagIds := e.Record.GetStringSlice("tags")
+	if len(tagIds) == 0 {
+		return nil // No tags, nothing to validate
+	}
+
+	// Check each tag belongs to the same group
+	for _, tagId := range tagIds {
+		tag, err := e.App.FindRecordById(CollectionTags, tagId)
+		if err != nil {
+			return fmt.Errorf("failed to find tag %s: %w", tagId, err)
+		}
+
+		tagGroupId := tag.GetString("group")
+		if tagGroupId != projectGroupId {
+			return errors.New(ErrTagsMustBeInSameGroup)
+		}
+	}
+
+	return nil
 }
 
 // --- Notification Handlers ---
