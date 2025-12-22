@@ -13,7 +13,11 @@ export function useTaskCounts() {
   const tasks = useMemo(() => {
     // Get tasks from React Query cache
     const tasksData = queryClient.getQueryData<TaskWithProject[]>(
-      queryKeys.tasks.list(undefined, "project,assignee", "full"),
+      queryKeys.tasks.list({
+        projectId: undefined,
+        expandFields: "project,assignee",
+        mode: "full",
+      }),
     );
     return (tasksData ?? []).filter((task) => !task.deleted_at);
   }, [queryClient]);

@@ -345,7 +345,7 @@ export default function Tasks() {
 
   const handleBulkAssign = async (assigneeId: string) => {
     await bulkUpdate.mutateAsync({
-      taskIds: selectedTasks,
+      ids: selectedTasks,
       updates: { assignee: assigneeId },
     });
     setSelectedTasks([]);
@@ -353,7 +353,7 @@ export default function Tasks() {
 
   const handleBulkStatus = async (status: TasksStatusOptions) => {
     await bulkUpdate.mutateAsync({
-      taskIds: selectedTasks,
+      ids: selectedTasks,
       updates: { status },
     });
     setSelectedTasks([]);
@@ -361,7 +361,7 @@ export default function Tasks() {
 
   const handleBulkPriority = async (priority: TasksPriorityOptions) => {
     await bulkUpdate.mutateAsync({
-      taskIds: selectedTasks,
+      ids: selectedTasks,
       updates: { priority },
     });
     setSelectedTasks([]);
