@@ -4,9 +4,9 @@ import type { TagsResponse, TagsRecord } from "@/lib/pocketbase-types";
 import { mutationInvalidators } from "@/lib/query-invalidators";
 import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
+import { createMutation } from "./use-mutation-factory";
 
 const {
-  useCreate: useCreateTagMutation,
   useUpdate: useUpdateTagMutation,
   useDelete: useDeleteTagMutation,
 } = createCrudHooks<TagsRecord, TagsResponse>({
@@ -14,6 +14,19 @@ const {
   queryKeys: queryKeys.tags,
   invalidators: mutationInvalidators.crud.tags,
 });
+
+type CreateTagInput = Pick<TagsRecord, "name" | "color">;
+
+const useCreateTagMutation = createMutation<
+  TagsResponse,
+  Error,
+  CreateTagInput
+>(
+  (data) => pb.collection("tags").create<TagsResponse>(data),
+  (client) => {
+    mutationInvalidators.crud.tags.create(client);
+  },
+);
 
 /**
  * Fetch all tags
@@ -33,7 +46,7 @@ export function useTags() {
  * Create a new tag
  */
 export function useCreateTag(
-  options?: UseMutationOptions<TagsResponse, Error, Partial<TagsRecord>>,
+  options?: UseMutationOptions<TagsResponse, Error, CreateTagInput>,
 ) {
   return useCreateTagMutation({
     ...options,
@@ -43,10 +56,14 @@ export function useCreateTag(
       if (!currentUser) {
         throw new Error("User must be logged in to create a tag");
       }
+      if (!currentUser.group) {
+        throw new Error("User must belong to a group to create a tag");
+      }
 
       // Merge the creator field with the provided data
       const tagData = {
         ...data,
+        group: currentUser.group,
         creator: currentUser.id,
       };
 
@@ -72,7 +89,7 @@ export function useUpdateTag(
  * Delete a tag
  */
 export function useDeleteTag(
-  options?: UseMutationOptions<void, Error, string>,
+  options?: UseMutationOptions<TagsResponse, Error, string>,
 ) {
   return useDeleteTagMutation(options);
 }
