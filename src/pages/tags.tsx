@@ -35,6 +35,8 @@ import {
 import type { TagsResponse } from "@/lib/pocketbase-types";
 import { useToast } from "@/hooks/use-toast";
 import { handlePocketBaseError } from "@/lib/error-handler";
+import { useAuthRole } from "@/store/auth-store";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
 
 // Predefined color palette for tags
 const TAG_COLORS = [
@@ -270,6 +272,8 @@ export default function TagsManagement() {
 
   const { data: tags, isLoading } = useTags();
   const { toast } = useToast();
+  const userRole = useAuthRole();
+  const canDeleteTag = userRole !== UsersRoleOptions.employee;
 
   const deleteTag = useDeleteTag({
     onSuccess: () => {
@@ -361,18 +365,20 @@ export default function TagsManagement() {
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(tag);
-                      }}
-                      title={text.tagsManagement.deleteButton}
-                    >
-                      <Trash2 className="text-destructive h-3.5 w-3.5" />
-                    </Button>
+                    {canDeleteTag && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(tag);
+                        }}
+                        title={text.tagsManagement.deleteButton}
+                      >
+                        <Trash2 className="text-destructive h-3.5 w-3.5" />
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
