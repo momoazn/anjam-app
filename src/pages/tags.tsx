@@ -148,7 +148,7 @@ function TagFormDialog({ open, onOpenChange, tag, mode }: TagFormDialogProps) {
     if (mode === "create") {
       createTag.mutate({ name: name.trim(), color });
     } else if (tag) {
-      updateTag.mutate({ id: tag.id, data: { name: name.trim(), color } });
+      updateTag.mutate({ id: tag.id, updates: { name: name.trim(), color } });
     }
   };
 

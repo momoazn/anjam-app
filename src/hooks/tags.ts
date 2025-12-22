@@ -1,68 +1,31 @@
-import {
-  useQuery,
-  type UseQueryOptions,
-  type UseMutationOptions,
-} from "@tanstack/react-query";
+import { useQuery, type UseMutationOptions } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import type { TagsResponse, TagsRecord } from "@/lib/pocketbase-types";
-import { createMutation } from "./use-mutation-factory";
+import { mutationInvalidators } from "@/lib/query-invalidators";
+import { createCrudHooks } from "./factories/use-crud-factory";
+import { queryKeys } from "./query-keys";
 
-// Query keys for tags
-export const tagQueryKeys = {
-  all: ["tags"] as const,
-  lists: () => [...tagQueryKeys.all, "list"] as const,
-  list: (filters?: string) => [...tagQueryKeys.lists(), { filters }] as const,
-};
-
-const useCreateTagMutation = createMutation<
-  TagsResponse,
-  Error,
-  Partial<TagsRecord>
->(
-  (data) => pb.collection("tags").create<TagsResponse>(data),
-  (client) => {
-    client.invalidateQueries({ queryKey: tagQueryKeys.all });
-  },
-);
-
-const useUpdateTagMutation = createMutation<
-  TagsResponse,
-  Error,
-  { id: string; data: Partial<TagsRecord> }
->(
-  ({ id, data }) => pb.collection("tags").update<TagsResponse>(id, data),
-  (client) => {
-    client.invalidateQueries({ queryKey: tagQueryKeys.all });
-  },
-);
-
-const useDeleteTagMutation = createMutation<void, Error, string>(
-  async (id) => {
-    await pb.collection("tags").delete(id);
-  },
-  (client) => {
-    client.invalidateQueries({ queryKey: tagQueryKeys.all });
-  },
-);
+const {
+  useCreate: useCreateTagMutation,
+  useUpdate: useUpdateTagMutation,
+  useDelete: useDeleteTagMutation,
+} = createCrudHooks<TagsRecord, TagsResponse>({
+  collection: "tags",
+  queryKeys: queryKeys.tags,
+  invalidators: mutationInvalidators.crud.tags,
+});
 
 /**
  * Fetch all tags
  */
-export function useTags(
-  options?: Omit<
-    UseQueryOptions<TagsResponse[], Error>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function useTags() {
   return useQuery({
-    queryKey: tagQueryKeys.lists(),
+    queryKey: queryKeys.tags.list(),
     queryFn: async () => {
-      const records = await pb.collection("tags").getFullList<TagsResponse>({
+      return await pb.collection("tags").getFullList<TagsResponse>({
         sort: "name",
       });
-      return records;
     },
-    ...options,
   });
 }
 
@@ -99,7 +62,7 @@ export function useUpdateTag(
   options?: UseMutationOptions<
     TagsResponse,
     Error,
-    { id: string; data: Partial<TagsRecord> }
+    { id: string; updates: Partial<TagsRecord> }
   >,
 ) {
   return useUpdateTagMutation(options);

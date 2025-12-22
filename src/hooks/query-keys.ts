@@ -70,6 +70,11 @@ export const queryKeys = {
     byTask: (taskId: string) => ["comments", "list", "task", taskId] as const,
   },
 
+  tags: createListQueryKeys("tags", {
+    sort: "name",
+    filter: "",
+  }),
+
   notifications: {
     all: ["notifications"] as const,
     byUser: (userId: string) => ["notifications", "user", userId] as const,

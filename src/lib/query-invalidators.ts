@@ -54,10 +54,11 @@ export const collectionInvalidators = {
     queryKeys.comments.all,
     queryKeys.comments.lists,
   ),
-  tags: (client: QueryClient) => {
-    // Assuming tagQueryKeys exists in query-keys
-    client.invalidateQueries({ queryKey: ["tags"] });
-  },
+  tags: createCollectionInvalidator(
+    "tags",
+    queryKeys.tags.all,
+    queryKeys.tags.lists,
+  ),
 };
 
 /**
@@ -246,6 +247,11 @@ export const mutationInvalidators = {
         compositeInvalidators.commentChange(client, taskId),
       delete: (client: QueryClient, taskId?: string) =>
         compositeInvalidators.commentChange(client, taskId),
+    },
+    tags: {
+      create: (client: QueryClient) => collectionInvalidators.tags(client),
+      update: (client: QueryClient) => collectionInvalidators.tags(client),
+      delete: (client: QueryClient) => collectionInvalidators.tags(client),
     },
     groups: {
       ...createCrudInvalidatorsWithExtras(
