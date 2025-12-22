@@ -26,6 +26,7 @@ import (
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/security"
+	"task-manager/helpers"
 )
 
 //go:embed dist
@@ -1162,11 +1163,9 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 		return e.JSON(400, map[string]string{"error": ErrCannotDeactivateSelf})
 	}
 
-	// Fetch the user
-	user, err := e.App.FindRecordById(CollectionUsers, userId)
+	user, err := helpers.FindRecordByIDOrJSON(e, CollectionUsers, userId, ErrUserNotFound)
 	if err != nil {
-		log.Printf("Error finding user %q: %v", userId, err)
-		return e.JSON(404, map[string]string{"error": ErrUserNotFound})
+		return err
 	}
 
 	// Prevent deactivating admin users
@@ -1180,7 +1179,7 @@ func handleToggleUserActive(e *core.RequestEvent) error {
 	user.Set("active", newActive)
 
 	if err := e.App.Save(user); err != nil {
-		log.Printf("Error toggling user active status %q: %v", userId, err)
+		helpers.LogRecordError("toggling user active status", CollectionUsers, userId, err)
 		return e.JSON(500, map[string]string{"error": ErrFailedToUpdateUserStatus})
 	}
 
@@ -1207,11 +1206,9 @@ func handleUnblockUser(e *core.RequestEvent) error {
 		return err
 	}
 
-	// Fetch the user
-	user, err := e.App.FindRecordById(CollectionUsers, userId)
+	user, err := helpers.FindRecordByIDOrJSON(e, CollectionUsers, userId, ErrUserNotFound)
 	if err != nil {
-		log.Printf("Error finding user %q: %v", userId, err)
-		return e.JSON(404, map[string]string{"error": ErrUserNotFound})
+		return err
 	}
 
 	// Unblock the user
@@ -1221,7 +1218,7 @@ func handleUnblockUser(e *core.RequestEvent) error {
 	user.Set("failed_login_attempts", 0)
 
 	if err := e.App.Save(user); err != nil {
-		log.Printf("Error unblocking user %q: %v", userId, err)
+		helpers.LogRecordError("unblocking user", CollectionUsers, userId, err)
 		return e.JSON(500, map[string]string{"error": ErrFailedToUnblockUser})
 	}
 
