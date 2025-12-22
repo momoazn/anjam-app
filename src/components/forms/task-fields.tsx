@@ -9,8 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants";
 import { useProjects, useProjectUsers, useUsers } from "@/hooks";
 import {
@@ -20,9 +18,9 @@ import {
 import {
   priorityColors,
   priorityIcons,
-  taskStatusColors,
   taskStatusIcons,
   TASK_STATUS_CONFIG,
+  getStatusColorVariant,
 } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
 import {
@@ -33,6 +31,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { TimeEstimateFields } from "./time-estimate-fields";
+import { FormField as GenericFormField } from "./form-field";
 
 type TaskFormData = {
   title: string;
@@ -72,41 +71,24 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <FormField
+        <GenericFormField
           control={control}
           name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{fa.tasks.addTask.issueTitle}</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder={fa.tasks.addTask.issueTitle}
-                  autoFocus
-                  className="text-lg font-medium"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label={fa.tasks.addTask.issueTitle}
+          type="input"
+          placeholder={fa.tasks.addTask.issueTitle}
+          autoFocus
+          className="text-lg font-medium"
+          required
         />
 
-        <FormField
+        <GenericFormField
           control={control}
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{fa.tasks.addTask.description}</FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  className="min-h-[120px] resize-y"
-                  placeholder={fa.tasks.addTask.description}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label={fa.tasks.addTask.description}
+          type="textarea"
+          placeholder={fa.tasks.addTask.description}
+          className="min-h-[120px] resize-y"
         />
       </div>
 
@@ -210,8 +192,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           render={({ field }) => {
             const StatusIcon =
               taskStatusIcons[field.value] || taskStatusIcons.todo;
-            const statusColor =
-              taskStatusColors[field.value] || "text-gray-500";
+            const statusColor = getStatusColorVariant(field.value, "icon");
 
             return (
               <FormItem>
@@ -228,8 +209,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       {Object.values(TasksStatusOptions).map((status) => {
                         const ItemIcon =
                           taskStatusIcons[status] || taskStatusIcons.todo;
-                        const itemColor =
-                          taskStatusColors[status] || "text-gray-500";
+                        const itemColor = getStatusColorVariant(status, "icon");
                         return (
                           <SelectItem key={status} value={status}>
                             <div className="flex items-center gap-2">

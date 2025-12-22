@@ -20,6 +20,7 @@ import { fa } from "@/constants/text";
 import { useGroups } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
+import { FormField as GenericFormField } from "./form-field";
 
 export type UserFieldsFormValues = {
   username: string;
@@ -78,62 +79,41 @@ export function UserFields({
 
   return (
     <>
-      <FormField<UserFieldsFormValues>
+      <GenericFormField
         control={control}
         name="username"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{fa.auth.login.username}</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label={fa.auth.login.username}
+        type="input"
+        required
       />
 
       {!isEdit && (
-        <FormField<UserFieldsFormValues>
+        <GenericFormField
           control={control}
           name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{fa.auth.login.password}</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          label={fa.auth.login.password}
+          type="input"
+          placeholder={fa.auth.login.password}
+          required
+        >
+          <Input type="password" />
+        </GenericFormField>
       )}
 
-      <FormField<UserFieldsFormValues>
+      <GenericFormField
         control={control}
         name="first_name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{fa.users.form.firstName}</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label={fa.users.form.firstName}
+        type="input"
+        required
       />
 
-      <FormField<UserFieldsFormValues>
+      <GenericFormField
         control={control}
         name="last_name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{fa.users.form.lastName}</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label={fa.users.form.lastName}
+        type="input"
+        required
       />
 
       {/* Only show role field if user has permission to change roles or if not editing self */}

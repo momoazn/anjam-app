@@ -8,7 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,12 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { fa } from "@/constants";
 import { useUsers, useGroups } from "@/hooks";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
+import { FormField as GenericFormField } from "./form-field";
 
 type ProjectFieldsProps = {
   control: Control<{
@@ -65,32 +64,20 @@ export function ProjectFields({
 
   return (
     <>
-      <FormField
+      <GenericFormField
         control={control}
         name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{fa.projects.create.form.name}</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label={fa.projects.create.form.name}
+        type="input"
+        required
       />
 
-      <FormField
+      <GenericFormField
         control={control}
         name="code"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{fa.projects.create.form.code}</FormLabel>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label={fa.projects.create.form.code}
+        type="input"
+        required
       />
 
       {showSupervisor && isAdmin && (
@@ -177,22 +164,13 @@ export function ProjectFields({
       )}
 
       {showDescription && (
-        <FormField
+        <GenericFormField
           control={control}
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{fa.projects.create.form.description}</FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder={fa.projects.create.form.descriptionPlaceholder}
-                  className="min-h-32"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label={fa.projects.create.form.description}
+          type="textarea"
+          placeholder={fa.projects.create.form.descriptionPlaceholder}
+          className="min-h-32"
         />
       )}
 
