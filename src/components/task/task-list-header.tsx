@@ -16,11 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { fa } from "@/constants/text";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import {
-  taskStatusBgColors,
-  taskStatusColors,
-  taskStatusIcons,
-} from "@/lib/status-utils";
+import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
@@ -60,7 +56,7 @@ export function TaskListHeader({
     <header
       className={cn(
         "hover:bg-background/50 flex cursor-pointer items-center justify-between rounded-md border px-3 py-2 shadow-sm transition-colors",
-        taskStatusBgColors[status],
+        getStatusColorVariant(status, "background"),
       )}
       onClick={onToggleCollapse}
       role="button"
@@ -81,7 +77,10 @@ export function TaskListHeader({
           )}
         </div>
         <IconComponent
-          className={cn("me-2 h-3.5 w-3.5", taskStatusColors[status])}
+          className={cn(
+            "me-2 h-3.5 w-3.5",
+            getStatusColorVariant(status, "icon"),
+          )}
           strokeWidth={status === "todo" ? 1.5 : 2}
         />
         <h2 className="text-foreground me-2 text-sm font-medium">

@@ -8,9 +8,8 @@ import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import {
   TaskStatusConfig,
-  taskStatusBgColors,
-  taskStatusColors,
   taskStatusIcons,
+  getStatusColorVariant,
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -31,8 +30,14 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
   });
 
   const Icon = taskStatusIcons[status.key as TasksStatusOptions];
-  const iconColor = taskStatusColors[status.key as TasksStatusOptions];
-  const bgColor = taskStatusBgColors[status.key as TasksStatusOptions];
+  const iconColor = getStatusColorVariant(
+    status.key as TasksStatusOptions,
+    "icon",
+  );
+  const bgColor = getStatusColorVariant(
+    status.key as TasksStatusOptions,
+    "background",
+  );
 
   return (
     <div className="bg-muted/50 border-border/40 flex h-full w-[280px] min-w-[280px] flex-col rounded-lg border">

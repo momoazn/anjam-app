@@ -250,6 +250,38 @@ export function getStatusByKey(key: TasksStatusOptions): TaskStatusConfig {
 }
 
 /**
+ * Generate color variants for a status based on its base color
+ */
+export function getStatusColorVariant(
+  status: TasksStatusOptions,
+  variant: "icon" | "background" | "badge",
+): string {
+  const config = TASK_STATUS_CONFIG[status];
+  const baseColor = config.color;
+
+  // Map base colors to their variants
+  // Remove "Subtle" suffix if present to get the base color name
+  const colorName = baseColor.replace("Subtle", "");
+
+  switch (variant) {
+    case "icon":
+      // For icon colors, use a consistent pattern
+      return `text-${colorName}-700 dark:text-${colorName}-300`;
+
+    case "background":
+      // For background colors, use light background with dark mode variant
+      return `bg-${colorName}-50 dark:bg-${colorName}-900/30`;
+
+    case "badge":
+      // For solid badges, use bold colors with dark mode variant
+      return `bg-${colorName}-600 text-white dark:bg-${colorName}-500 dark:text-white`;
+
+    default:
+      return "text-gray-500";
+  }
+}
+
+/**
  * Check if a status represents an active working state
  */
 export function isActiveStatus(status: TasksStatusOptions): boolean {
@@ -306,63 +338,6 @@ export const taskStatusIcons: Record<TasksStatusOptions, Icon> = {
   [TasksStatusOptions.on_hold]: IconPlayerPause,
   [TasksStatusOptions.done]: IconCircleCheckFilled,
   [TasksStatusOptions.canceled]: IconCircleX,
-};
-
-/**
- * Status icon colors (subtle with hints of color)
- * Used for status indicators in task lists and headers
- */
-export const taskStatusColors: Record<TasksStatusOptions, string> = {
-  [TasksStatusOptions.todo]: "text-slate-600 dark:text-slate-400",
-  [TasksStatusOptions.in_progress]: "text-blue-700 dark:text-blue-300",
-  [TasksStatusOptions.review]: "text-purple-700 dark:text-purple-300",
-  [TasksStatusOptions.testing]: "text-slate-600 dark:text-slate-400",
-  [TasksStatusOptions.pending]: "text-amber-700 dark:text-amber-300",
-  [TasksStatusOptions.blocked]: "text-red-700 dark:text-red-300",
-  [TasksStatusOptions.on_hold]: "text-slate-600 dark:text-slate-400",
-  [TasksStatusOptions.done]: "text-green-700 dark:text-green-300",
-  [TasksStatusOptions.canceled]: "text-gray-600 dark:text-gray-400",
-};
-
-/**
- * Status background colors for group sections (subtle with hints of color)
- * Used for status column backgrounds in Kanban views
- */
-export const taskStatusBgColors: Record<TasksStatusOptions, string> = {
-  [TasksStatusOptions.todo]: "bg-slate-50 dark:bg-slate-900/50",
-  [TasksStatusOptions.in_progress]: "bg-blue-50 dark:bg-blue-900/30",
-  [TasksStatusOptions.review]: "bg-purple-50 dark:bg-purple-900/30",
-  [TasksStatusOptions.testing]: "bg-slate-50 dark:bg-slate-900/30",
-  [TasksStatusOptions.pending]: "bg-amber-50 dark:bg-amber-900/30",
-  [TasksStatusOptions.blocked]: "bg-red-50 dark:bg-red-900/30",
-  [TasksStatusOptions.on_hold]: "bg-slate-100 dark:bg-slate-800/30",
-  [TasksStatusOptions.done]: "bg-green-50 dark:bg-green-900/30",
-  [TasksStatusOptions.canceled]: "bg-gray-100 dark:bg-gray-800/50",
-};
-
-/**
- * Status solid badge colors for high-contrast badges (subtle with hints of color)
- * Used for status badges in task details and other UI elements
- */
-export const taskStatusBadgeSolids: Record<TasksStatusOptions, string> = {
-  [TasksStatusOptions.todo]:
-    "bg-slate-600 text-white dark:bg-slate-500 dark:text-white",
-  [TasksStatusOptions.in_progress]:
-    "bg-blue-600 text-white dark:bg-blue-500 dark:text-white",
-  [TasksStatusOptions.review]:
-    "bg-purple-600 text-white dark:bg-purple-500 dark:text-white",
-  [TasksStatusOptions.testing]:
-    "bg-slate-500 text-white dark:bg-slate-600 dark:text-white",
-  [TasksStatusOptions.pending]:
-    "bg-amber-600 text-white dark:bg-amber-500 dark:text-white",
-  [TasksStatusOptions.blocked]:
-    "bg-red-600 text-white dark:bg-red-500 dark:text-white",
-  [TasksStatusOptions.on_hold]:
-    "bg-slate-400 text-white dark:bg-slate-500 dark:text-white",
-  [TasksStatusOptions.done]:
-    "bg-green-600 text-white dark:bg-green-500 dark:text-white",
-  [TasksStatusOptions.canceled]:
-    "bg-gray-400 text-white dark:bg-gray-500 dark:text-white",
 };
 
 // ============================================================================

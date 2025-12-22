@@ -12,8 +12,8 @@ import { UsersResponse } from "@/lib/pocketbase-types";
 import {
   priorityColors,
   priorityIcons,
-  taskStatusColors,
   taskStatusIcons,
+  getStatusColorVariant,
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
@@ -38,7 +38,7 @@ function TaskListItemInner({
   const navigate = useNavigate();
 
   const StatusIcon = taskStatusIcons[task.status];
-  const statusIconColor = taskStatusColors[task.status];
+  const statusIconColor = getStatusColorVariant(task.status, "icon");
 
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];

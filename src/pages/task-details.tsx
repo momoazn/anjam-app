@@ -42,7 +42,7 @@ import { formatTaskDate } from "@/lib/date-utils";
 import {
   priorityColors,
   priorityIcons,
-  taskStatusBadgeSolids,
+  getStatusColorVariant,
   taskStatusIcons,
 } from "@/lib/status-utils";
 import {
@@ -223,7 +223,7 @@ export default function TaskDetails() {
         <div className="flex items-center gap-2">
           <Badge
             variant="default"
-            className={`${taskStatusBadgeSolids[task.status]}`}
+            className={getStatusColorVariant(task.status, "badge")}
           >
             <StatusIcon className="mr-1 h-3 w-3" />
             {fa.tasks.status[task.status]}
@@ -470,7 +470,7 @@ export default function TaskDetails() {
                 </span>
                 <Badge
                   variant="default"
-                  className={`${taskStatusBadgeSolids[task.status]}`}
+                  className={getStatusColorVariant(task.status, "badge")}
                 >
                   <StatusIcon className="mr-1 h-3 w-3" />
                   {fa.tasks.status[task.status]}
