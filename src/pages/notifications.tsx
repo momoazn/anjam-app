@@ -30,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { common, notifications } from "@/constants";
+import { common, notifications as notificationsText } from "@/constants";
 import {
   useClearAll,
   useClearRead,
@@ -68,13 +68,13 @@ const getDateGroup = (dateString?: string | null) => {
 const getGroupTitle = (group: string) => {
   switch (group) {
     case "today":
-      return notifications.groups.today;
+      return notificationsText.groups.today;
     case "yesterday":
-      return notifications.groups.yesterday;
+      return notificationsText.groups.yesterday;
     case "thisWeek":
-      return notifications.groups.thisWeek;
+      return notificationsText.groups.thisWeek;
     case "older":
-      return notifications.groups.older;
+      return notificationsText.groups.older;
     default:
       return group;
   }
@@ -105,7 +105,7 @@ function NotificationItem({
         <Checkbox
           checked={selected}
           onCheckedChange={() => onToggleSelect(notification.id)}
-          aria-label={notifications.selected}
+          aria-label={notificationsText.selected}
         />
       </div>
       {/* Actions - Left side */}
@@ -116,8 +116,8 @@ function NotificationItem({
             size="sm"
             onClick={() => onMarkAsRead(notification.id)}
             className="h-7 w-7 p-0"
-            title={notifications.actions.markAsRead}
-            aria-label={notifications.actions.markAsRead}
+            title={notificationsText.actions.markAsRead}
+            aria-label={notificationsText.actions.markAsRead}
           >
             <IconEye className="h-3 w-3" />
           </Button>
@@ -127,8 +127,8 @@ function NotificationItem({
           size="sm"
           onClick={() => onDelete(notification.id)}
           className="text-destructive hover:text-destructive h-7 w-7 p-0"
-          title={notifications.actions.delete}
-          aria-label={notifications.actions.delete}
+          title={notificationsText.actions.delete}
+          aria-label={notificationsText.actions.delete}
         >
           <IconTrash className="h-3 w-3" />
         </Button>
@@ -157,7 +157,7 @@ function NotificationItem({
           </p>
           <div className="flex items-center justify-end gap-2">
             <Badge variant="outline" className="text-xs">
-              {notifications.types[notification.type]}
+              {notificationsText.types[notification.type]}
             </Badge>
             <time
               dateTime={notification.created || ""}
@@ -185,10 +185,10 @@ function EmptyState() {
         <IconBellOff className="text-muted-foreground/50 h-8 w-8" />
       </div>
       <h3 className="text-foreground mb-2 text-lg font-semibold">
-        {notifications.emptyState.title}
+        {notificationsText.emptyState.title}
       </h3>
       <p className="text-muted-foreground text-sm">
-        {notifications.emptyState.description}
+        {notificationsText.emptyState.description}
       </p>
     </div>
   );
@@ -196,7 +196,7 @@ function EmptyState() {
 
 export default function Notifications() {
   const user = useAuthUser();
-  const { data: notifications = [], isLoading, error } = useNotifications();
+  const { data: notificationsData = [], isLoading, error } = useNotifications();
   const markAsRead = useMarkAsRead();
 
   const markAllAsRead = useMarkAllAsRead();
@@ -217,17 +217,17 @@ export default function Notifications() {
 
   // Filter notifications
   const filteredNotifications = useMemo(() => {
-    let filtered = notifications;
+    let filtered = notificationsData;
 
     switch (filter) {
       case "unread":
-        filtered = notifications.filter((n) => !n.read);
+        filtered = notificationsData.filter((n) => !n.read);
         break;
       case "read":
-        filtered = notifications.filter((n) => n.read);
+        filtered = notificationsData.filter((n) => n.read);
         break;
       default:
-        filtered = notifications;
+        filtered = notificationsData;
     }
 
     // Sort notifications
@@ -246,7 +246,7 @@ export default function Notifications() {
           );
       }
     });
-  }, [notifications, filter, sort]);
+  }, [notificationsData, filter, sort]);
 
   // Group notifications by date
   const groupedNotifications = useMemo(() => {
@@ -265,7 +265,7 @@ export default function Notifications() {
     return groups;
   }, [filteredNotifications]);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notificationsData.filter((n) => !n.read).length;
 
   const handleMarkAsRead = (id: string) => {
     markAsRead.mutate(id);
@@ -284,7 +284,7 @@ export default function Notifications() {
 
     pendingDeletesRef.current.set(id, timeoutId);
 
-    toast(notifications.actions.deleteQueued, {
+    toast(notificationsText.actions.deleteQueued, {
       duration: 5000,
       action: {
         label: common.undo,
@@ -324,10 +324,10 @@ export default function Notifications() {
         <div className="text-right">
           <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
             <IconBell className="h-5 w-5 md:h-6 md:w-6" />
-            {notifications.pageTitle}
+            {notificationsText.pageTitle}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            {notifications.pageDescription}
+            {notificationsText.pageDescription}
           </p>
         </div>
         <TooltipProvider>
@@ -341,14 +341,14 @@ export default function Notifications() {
                     onClick={() => user?.id && markAllAsRead.mutate(user.id)}
                     disabled={unreadCount === 0}
                     className="h-8 w-8 p-0"
-                    aria-label={notifications.markAllAsRead}
+                    aria-label={notificationsText.markAllAsRead}
                   >
                     <IconCheck className="h-4 w-4" />
                   </Button>
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{notifications.markAllAsRead}</p>
+                <p>{notificationsText.markAllAsRead}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -359,16 +359,18 @@ export default function Notifications() {
                     variant="outline"
                     size="sm"
                     onClick={() => user?.id && clearRead.mutate(user.id)}
-                    disabled={notifications.filter((n) => n.read).length === 0}
+                    disabled={
+                      notificationsData.filter((n) => n.read).length === 0
+                    }
                     className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                    aria-label={notifications.actions.clearRead}
+                    aria-label={notificationsText.actions.clearRead}
                   >
                     <IconTrashX className="h-4 w-4" />
                   </Button>
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{notifications.actions.clearRead}</p>
+                <p>{notificationsText.actions.clearRead}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -379,16 +381,16 @@ export default function Notifications() {
                     variant="outline"
                     size="sm"
                     onClick={() => user?.id && clearAll.mutate(user.id)}
-                    disabled={notifications.length === 0}
+                    disabled={notificationsData.length === 0}
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
-                    aria-label={notifications.clearAll}
+                    aria-label={notificationsText.clearAll}
                   >
                     <IconTrash className="h-4 w-4" />
                   </Button>
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{notifications.clearAll}</p>
+                <p>{notificationsText.clearAll}</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -406,10 +408,10 @@ export default function Notifications() {
               <IconBell className="text-primary h-5 w-5" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {notifications.stats.total}
+                  {notificationsText.stats.total}
                 </p>
                 <p className="text-2xl font-bold">
-                  {digitsEnToFa(notifications.length)}
+                  {digitsEnToFa(notificationsData.length)}
                 </p>
               </div>
             </div>
@@ -421,7 +423,7 @@ export default function Notifications() {
               <IconBellOff className="h-5 w-5 text-blue-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {notifications.stats.unread}
+                  {notificationsText.stats.unread}
                 </p>
                 <p className="text-2xl font-bold">
                   {digitsEnToFa(unreadCount)}
@@ -436,10 +438,10 @@ export default function Notifications() {
               <IconCheck className="h-5 w-5 text-green-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {notifications.stats.read}
+                  {notificationsText.stats.read}
                 </p>
                 <p className="text-2xl font-bold">
-                  {digitsEnToFa(notifications.filter((n) => n.read).length)}
+                  {digitsEnToFa(notificationsData.filter((n) => n.read).length)}
                 </p>
               </div>
             </div>
@@ -451,10 +453,10 @@ export default function Notifications() {
               <IconTrash className="h-5 w-5 text-orange-500" />
               <div className="text-right">
                 <p className="text-muted-foreground text-sm">
-                  {notifications.stats.deletable}
+                  {notificationsText.stats.deletable}
                 </p>
                 <p className="text-2xl font-bold">
-                  {digitsEnToFa(notifications.filter((n) => n.read).length)}
+                  {digitsEnToFa(notificationsData.filter((n) => n.read).length)}
                 </p>
               </div>
             </div>
@@ -470,10 +472,10 @@ export default function Notifications() {
         {selectedIds.length > 0 ? (
           <div className="bg-muted flex flex-wrap items-center gap-2 rounded-lg p-2">
             <span className="text-sm font-medium">
-              {digitsEnToFa(selectedIds.length)} {notifications.selected}
+              {digitsEnToFa(selectedIds.length)} {notificationsText.selected}
             </span>
             <Button size="sm" variant="outline" onClick={bulkMarkRead}>
-              {notifications.actions.markAsRead}
+              {notificationsText.actions.markAsRead}
             </Button>
             <Button
               size="sm"
@@ -481,10 +483,10 @@ export default function Notifications() {
               onClick={bulkDelete}
               disabled={deleteNotification.isPending}
             >
-              {notifications.actions.delete}
+              {notificationsText.actions.delete}
             </Button>
             <Button size="sm" variant="ghost" onClick={clearSelection}>
-              {notifications.deselectAll}
+              {notificationsText.deselectAll}
             </Button>
           </div>
         ) : (
@@ -493,12 +495,14 @@ export default function Notifications() {
             onValueChange={(value) => setFilter(value as FilterType)}
           >
             <TabsList>
-              <TabsTrigger value="all">{notifications.filters.all}</TabsTrigger>
+              <TabsTrigger value="all">
+                {notificationsText.filters.all}
+              </TabsTrigger>
               <TabsTrigger value="unread">
-                {notifications.filters.unread}
+                {notificationsText.filters.unread}
               </TabsTrigger>
               <TabsTrigger value="read">
-                {notifications.filters.read}
+                {notificationsText.filters.read}
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -508,15 +512,15 @@ export default function Notifications() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               <IconSortAscending className="ml-1 h-4 w-4" />
-              {notifications.sort[sort as SortType]}
+              {notificationsText.sort[sort as SortType]}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setSort("newest")}>
-              {notifications.sort.newest}
+              {notificationsText.sort.newest}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSort("oldest")}>
-              {notifications.sort.oldest}
+              {notificationsText.sort.oldest}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -535,7 +539,7 @@ export default function Notifications() {
             <IconBell className="text-muted-foreground/50 h-8 w-8 animate-pulse" />
           </div>
           <h3 className="text-foreground mb-2 text-lg font-semibold">
-            Loading notifications...
+            Loading notificationsText...
           </h3>
           <p className="text-muted-foreground text-sm">
             Please wait while we fetch your notifications

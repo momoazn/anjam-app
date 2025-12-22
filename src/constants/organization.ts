@@ -80,6 +80,7 @@ export const users = {
       time: shared.time,
       ip: "آی‌پی",
       status: shared.status,
+      reason: "دلیل",
       client: "کلاینت",
     },
     status: {
@@ -87,6 +88,33 @@ export const users = {
       failed: "ناموفق",
     },
     empty: "سوابقی یافت نشد",
+    loadMore: "بارگذاری بیشتر",
+  },
+  create: {
+    button: "کاربر جدید",
+    title: "افزودن کاربر جدید",
+    success: "عالی! کاربر جدید با موفقیت اضافه شد",
+    error: "نتوانستیم کاربر را اضافه کنیم: {error}",
+    errors: {
+      usernameRequired: "نام کاربری را وارد کنید",
+      passwordRequired: "رمز عبور باید حداقل ۸ کاراکتر باشد",
+      passwordConfirmRequired: "لطفاً رمز عبور را دوباره وارد کنید",
+      passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",
+    },
+  },
+  edit: {
+    title: "ویرایش کاربر",
+    button: "ذخیره تغییرات",
+  },
+  delete: {
+    title: "حذف کاربر",
+    description: "مطمئنید که می‌خواهید این کاربر را حذف کنید؟",
+    button: shared.confirm,
+    success: "کاربر با موفقیت حذف شد",
+    error: "نتوانستیم کاربر را حذف کنیم: {error}",
+  },
+  errors: {
+    notFound: "کاربر یافت نشد",
   },
 } as const;
 

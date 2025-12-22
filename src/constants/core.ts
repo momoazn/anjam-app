@@ -155,6 +155,13 @@ export const common = {
     noName: shared.noName,
     quickActions: "عملیات سریع",
   },
+  pagination: {
+    page: "صفحه",
+    of: "از",
+    previous: shared.previous,
+    next: shared.next,
+    loginAttemptsLabel: "تلاش‌های ورود به سیستم",
+  },
 
   // Common state labels
   states: {
@@ -180,9 +187,14 @@ export const common = {
     today: shared.today,
     previous: shared.previous,
     next: shared.next,
+    hoursShort: "ساعت",
+    minutesShort: "دقیقه",
   },
 
   // Misc
+  today: shared.today,
+  previous: shared.previous,
+  next: shared.next,
   more: shared.more,
   preview: shared.preview,
   total: shared.total,

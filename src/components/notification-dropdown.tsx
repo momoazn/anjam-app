@@ -11,7 +11,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NotificationBadge } from "@/components/notification-badge";
-import { notification, notifications } from "@/constants";
+import {
+  notification as notificationText,
+  notifications as notificationsText,
+} from "@/constants";
 import {
   useNotifications,
   useMarkAsRead,
@@ -56,7 +59,7 @@ function NotificationItem({
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
       )}
       role="listitem"
-      aria-label={`${notification.notificationsLabel}: ${notification.title}`}
+      aria-label={`${notificationText.notificationsLabel}: ${notification.title}`}
       dir="rtl"
     >
       {/* Notification indicator */}
@@ -98,7 +101,7 @@ function NotificationItem({
                 variant="secondary"
                 className="rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
               >
-                {notification.new}
+                {notificationText.new}
               </Badge>
             )}
           </div>
@@ -111,8 +114,8 @@ function NotificationItem({
           size="sm"
           onClick={handleMarkAsRead}
           className="h-7 w-7 shrink-0 p-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          title={notifications.buttons.markAsRead}
-          aria-label={notification.markAsReadLabel.replace(
+          title={notificationsText.buttons.markAsRead}
+          aria-label={notificationText.markAsReadLabel.replace(
             "{title}",
             notification.title,
           )}
@@ -129,11 +132,11 @@ export function NotificationDropdown({
 }: NotificationDropdownProps) {
   const navigate = useNavigate();
   const user = useAuthUser();
-  const { data: notifications = [] } = useNotifications();
+  const { data: notificationsData = [] } = useNotifications();
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
 
-  const recentNotifications = notifications.slice(0, 10); // Show last 10 notifications
+  const recentNotifications = notificationsData.slice(0, 10); // Show last 10 notifications
 
   return (
     <DropdownMenu>
@@ -145,7 +148,7 @@ export function NotificationDropdown({
       <DropdownMenuContent
         align={align}
         className="mt-1 ml-4 w-[28rem] max-w-[90vw] p-0"
-        aria-label={notification.notificationsPanel}
+        aria-label={notificationText.notificationsPanel}
       >
         {/* Header */}
         <div
@@ -156,31 +159,31 @@ export function NotificationDropdown({
             className="text-foreground flex-1 truncate text-right font-semibold"
             id="notifications-heading"
           >
-            {notifications.title}
+            {notificationsText.title}
           </h3>
-          {notifications.length > 0 && (
+          {notificationsData.length > 0 && (
             <div className="mr-3 flex flex-shrink-0 gap-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => user?.id && markAllAsRead.mutate(user.id)}
                 className="hover:bg-muted/80 h-7 px-2 text-xs"
-                title={notifications.markAllAsRead}
-                aria-label={notifications.markAllAsRead}
+                title={notificationsText.markAllAsRead}
+                aria-label={notificationsText.markAllAsRead}
               >
                 <IconCheck className="ml-1 size-3" aria-hidden="true" />
-                {notifications.markAllAsRead}
+                {notificationsText.markAllAsRead}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => user?.id && clearAll.mutate(user.id)}
                 className="hover:bg-destructive/10 hover:text-destructive h-7 px-2 text-xs"
-                title={notifications.clearAll}
-                aria-label={notifications.clearAll}
+                title={notificationsText.clearAll}
+                aria-label={notificationsText.clearAll}
               >
                 <IconTrash className="ml-1 size-3" aria-hidden="true" />
-                {notifications.clearAll}
+                {notificationsText.clearAll}
               </Button>
             </div>
           )}
@@ -198,10 +201,10 @@ export function NotificationDropdown({
               <IconCheck className="text-muted-foreground/50 size-5" />
             </div>
             <p className="text-sm font-medium">
-              {notifications.noNotifications}
+              {notificationsText.noNotifications}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
-              {notification.newNotifications}
+              {notificationText.newNotifications}
             </p>
           </div>
         ) : (
@@ -222,16 +225,16 @@ export function NotificationDropdown({
         )}
 
         {/* Footer with count and view all */}
-        {notifications.length > 0 && (
+        {notificationsData.length > 0 && (
           <div className="bg-muted/20 border-t px-4 py-2" dir="rtl">
             <div className="flex items-center justify-between">
               <p className="text-muted-foreground text-right text-xs">
-                {notification.showCount.replace(
+                {notificationText.showCount.replace(
                   "{count}",
-                  digitsEnToFa(Math.min(10, notifications.length)),
+                  digitsEnToFa(Math.min(10, notificationsData.length)),
                 )}{" "}
-                {digitsEnToFa(notifications.length)}{" "}
-                {notification.notificationWord}
+                {digitsEnToFa(notificationsData.length)}{" "}
+                {notificationText.notificationWord}
               </p>
               <Button
                 variant="ghost"
@@ -240,7 +243,7 @@ export function NotificationDropdown({
                 className="h-6 px-2 text-xs"
               >
                 <IconEye className="ml-1 h-3 w-3" />
-                {notifications.actions.viewAll}
+                {notificationsText.actions.viewAll}
               </Button>
             </div>
           </div>

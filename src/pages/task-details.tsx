@@ -448,7 +448,7 @@ export default function TaskDetails() {
                       </div>
                     ) : (
                       <>
-                        <CommentsList comments={comments} />
+                        <CommentsList comments={commentsData} />
                         <CommentComposer taskId={task.id} />
                       </>
                     )}

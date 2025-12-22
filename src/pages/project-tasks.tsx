@@ -4,7 +4,7 @@ import { TaskListGroup } from "@/components/task/task-list-group";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { projects, reports, tasks } from "@/constants";
+import { projects, reports, tasks as tasksText } from "@/constants";
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { TaskWithProject } from "@/lib/pocketbase";
@@ -74,10 +74,10 @@ const ProjectEmptyState = ({
         >
           <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="mb-2 text-lg font-semibold">
-            {tasks.emptyState.noTasksInProject}
+            {tasksText.emptyState.noTasksInProject}
           </h3>
           <p className="text-muted-foreground mb-4 max-w-md">
-            {tasks.emptyState.noTasksInProjectDescription.replace(
+            {tasksText.emptyState.noTasksInProjectDescription.replace(
               "{projectName}",
               projectName,
             )}
@@ -100,10 +100,10 @@ const ProjectEmptyState = ({
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">
-          {tasks.emptyState.projectNoTasksYet}
+          {tasksText.emptyState.projectNoTasksYet}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-md">
-          {tasks.emptyState.projectNoTasksYetDescription.replace(
+          {tasksText.emptyState.projectNoTasksYetDescription.replace(
             "{projectName}",
             projectName,
           )}
@@ -113,7 +113,7 @@ const ProjectEmptyState = ({
           onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
         >
           <Plus className="h-4 w-4" />
-          {tasks.emptyState.createFirstTask}
+          {tasksText.emptyState.createFirstTask}
         </Button>
       </CardContent>
     </Card>
@@ -124,8 +124,13 @@ export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { project, tasks, users, isLoadingTasks, isLoadingUsers } =
-    useProjectTasksPageData(projectId as string);
+  const {
+    project,
+    tasks: tasksData,
+    users,
+    isLoadingTasks,
+    isLoadingUsers,
+  } = useProjectTasksPageData(projectId as string);
 
   const {
     searchTerm,
@@ -141,7 +146,7 @@ export default function ProjectTasks() {
     setSelectedDateRange,
     setSelectedTag,
     filteredTasks,
-  } = useTaskFilters(tasks);
+  } = useTaskFilters(tasksData);
 
   const groupedTasks = useMemo(() => {
     // Prevent grouping during load state to avoid brief flash of unfiltered/empty groups
@@ -221,11 +226,11 @@ export default function ProjectTasks() {
             </div>
             <p className="text-muted-foreground">
               {totalTasks > 0
-                ? tasks.header.tasksInProject.replace(
+                ? tasksText.header.tasksInProject.replace(
                     "{count}",
                     totalTasks.toString(),
                   )
-                : tasks.header.manageProjectTasks}
+                : tasksText.header.manageProjectTasks}
             </p>
           </div>
           <div className="flex gap-2">
@@ -235,7 +240,7 @@ export default function ProjectTasks() {
               onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
             >
               <Plus className="h-4 w-4" />
-              {tasks.addTask.buttons.newTaskForProject}
+              {tasksText.addTask.buttons.newTaskForProject}
             </Button>
           </div>
         </div>
