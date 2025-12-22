@@ -3,17 +3,12 @@ import { cn } from "@/lib/utils";
 import { differenceInCalendarDays, type Locale } from "date-fns-jalali";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
-import {
-  labelNext,
-  labelPrevious,
-  useDayPicker,
-  type DayPickerProps,
-} from "react-day-picker";
+import { labelNext, labelPrevious, useDayPicker } from "react-day-picker";
 import { DayPicker, faIR } from "react-day-picker/persian";
 
 const localeOverride = faIR as Locale;
 
-export type CalendarProps = DayPickerProps & {
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   /**
    * In the year view, the number of years to display at once.
    * @default 12
