@@ -291,4 +291,4 @@ bun run data:reset
 
 - [Development Guide](./DEVELOPMENT_GUIDE.md) - Technical development guidance
 - [Implementation Status](./IMPLEMENTATION_STATUS.md) - Current feature status
-- [Bugs, Issues, and Shortcomings](./BUGS_ISSUES_AND_SHORTCOMINGS.md) - Known issues
+- [Codebase Issues](../CODEBASE_ISSUES.md) - Known issues

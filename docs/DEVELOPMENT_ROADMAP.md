@@ -161,7 +161,7 @@ The application has a solid foundation with core task and project management fea
 
 ## Known Limitations
 
-See [Bugs, Issues, and Shortcomings](./BUGS_ISSUES_AND_SHORTCOMINGS.md) for detailed list of current limitations, including:
+See [Codebase Issues](./CODEBASE_ISSUES.md) for detailed list of current limitations, including:
 
 - Single-tenant architecture
 - Synchronous side effects in HTTP requests
@@ -186,5 +186,5 @@ When proposing new features or improvements:
 
 - [Implementation Status](./IMPLEMENTATION_STATUS.md) - Current state
 - [Development Guide](./DEVELOPMENT_GUIDE.md) - Technical guidance
-- [Bugs, Issues, and Shortcomings](./BUGS_ISSUES_AND_SHORTCOMINGS.md) - Known limitations
+- [Codebase Issues](../CODEBASE_ISSUES.md) - Known limitations
 - [Project Overview](./PROJECT_OVERVIEW.md) - High-level introduction

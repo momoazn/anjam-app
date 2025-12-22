@@ -207,7 +207,7 @@ See the `docs/` directory for comprehensive documentation:
 - [Development Roadmap](./docs/DEVELOPMENT_ROADMAP.md) - Strategic planning
 - [Implementation Status](./docs/IMPLEMENTATION_STATUS.md) - Current state
 - [QA Testing Guide (SLIM)](./docs/QA_TESTING_GUIDE_SLIM.md) - Testing procedures
-- [Root Structure](./docs/ROOT_STRUCTURE.md) - Quick orientation for the repo root and how files are organized
+- [Improvements Plan](./docs/IMPROVEMENTS_PLAN.md) - Refactoring and improvement roadmap
 
 ## 🤝 Contributing
 
