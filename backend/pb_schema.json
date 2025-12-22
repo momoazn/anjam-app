@@ -1060,10 +1060,10 @@
   },
   {
     "id": "pbc_1219621782",
-    "listRule": "@request.auth.id != ''",
-    "viewRule": "@request.auth.id != ''",
-    "createRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\"",
-    "updateRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\"",
+    "listRule": "@request.auth.role = \"admin\" || group.id = @request.auth.group.id",
+    "viewRule": "@request.auth.role = \"admin\" || group.id = @request.auth.group.id",
+    "createRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\" || @request.auth.role = \"employee\"",
+    "updateRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\" || @request.auth.role = \"employee\"",
     "deleteRule": "@request.auth.role = \"admin\" || @request.auth.role = \"manager\" || @request.auth.role = \"supervisor\"",
     "name": "tags",
     "type": "base",
@@ -1111,6 +1111,32 @@
         "type": "text"
       },
       {
+        "cascadeDelete": false,
+        "collectionId": "pbc_groups",
+        "hidden": false,
+        "id": "relation_tag_group",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "group",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation_tag_creator",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "creator",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
         "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
@@ -1132,7 +1158,7 @@
       }
     ],
     "indexes": [
-      "CREATE UNIQUE INDEX idx_tags_name ON tags (name)",
+      "CREATE UNIQUE INDEX idx_tags_name_group ON tags (name, group)",
       "CREATE INDEX idx_tags_name_lookup ON tags (name)"
     ],
     "system": false
