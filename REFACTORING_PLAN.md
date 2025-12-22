@@ -2,11 +2,12 @@
 
 ## Executive Summary
 
-This plan addresses **massive code duplication** across the codebase with 700+ lines of repetitive hooks, 25+ identical UI components, 25 constants files creating re-export chains, and complex backend patterns. The refactoring is structured in **5 phases** prioritizing high-impact, low-risk changes first.
+This plan addresses **massive code duplication** across the codebase with 700+ lines of repetitive hooks, 25+ identical UI components, 25 constants files creating re-export chains, and complex backend patterns. The refactoring is structured in **7 phases** prioritizing high-impact, low-risk changes first.
 
 **Expected Outcomes:**
 
-- **30-40% code reduction** (~3000+ lines eliminated)
+- **~5,000+ lines eliminated** (hooks, pages, utils, constants)
+- **10 monolithic pages decomposed** into reusable components
 - **Single source of truth** for all duplicated patterns
 - **Improved maintainability** - easier to change common patterns in one place
 - **Better testability** - smaller, focused functions
@@ -16,25 +17,34 @@ This plan addresses **massive code duplication** across the codebase with 700+ l
 
 ## Task List & Progress Tracking
 
-### Phase 1: Frontend Hooks Consolidation ✅ COMPLETED
+### Phase 1: Frontend Hooks Consolidation 🔄 MOSTLY COMPLETED
 
 - [x] **1.1** Create Generic CRUD Hook Factory
   - [x] Created `src/hooks/factories/use-crud-factory.ts`
-  - [x] Refactored `src/hooks/tasks.ts` (308→257 lines)
-  - [x] Refactored `src/hooks/projects.ts` (153→116 lines)
-  - [x] Refactored `src/hooks/users.ts` (245→219 lines)
-  - [x] Refactored `src/hooks/groups.ts` (234→209 lines)
-  - [x] Result: **139 lines eliminated**
+  - [x] Refactored `src/hooks/tasks.ts` (308→283 lines)
+  - [x] Refactored `src/hooks/projects.ts` (153→126 lines)
+  - [x] Refactored `src/hooks/users.ts` (245→230 lines)
+  - [x] Refactored `src/hooks/groups.ts` (234→220 lines)
+  - [x] Result: **~106 lines eliminated**
 
 - [x] **1.2** Consolidate Query Key Management
-  - [x] Refactored `src/hooks/query-keys.ts` (145→122 lines)
+  - [x] Refactored `src/hooks/query-keys.ts` (145→119 lines)
   - [x] Created `createQueryKeys()` and `createListQueryKeys()` factories
-  - [x] Result: **23 lines eliminated**
+  - [x] Result: **26 lines eliminated**
 
 - [x] **1.3** Simplify Mutation Invalidators
-  - [x] Refactored `src/lib/query-invalidators.ts`
+  - [x] Refactored `src/lib/query-invalidators.ts` (currently 296 lines)
   - [x] Created multiple factory functions for invalidators
   - [x] Result: **Improved maintainability, reduced duplication**
+  - [ ] **Remaining:** Further consolidation possible (target: ~150 lines)
+
+- [ ] **1.4** Refactor Remaining Hooks ⏳ NOT STARTED (~923 lines total)
+  - [ ] `use-file-upload.ts` (214 lines) - Extract reusable upload logic
+  - [ ] `use-task-filters.ts` (212 lines) - Simplify filter state management
+  - [ ] `notifications.ts` (193 lines) - Apply CRUD factory pattern
+  - [ ] `use-saved-filters.ts` (189 lines) - Consolidate with task-filters
+  - [ ] `tags.ts` (115 lines) - Apply CRUD factory pattern
+  - [ ] Risk: **Low**
 
 ### Phase 2: UI Component Standardization ✅ COMPLETED
 
@@ -48,52 +58,178 @@ This plan addresses **massive code duplication** across the codebase with 700+ l
   - [x] Refactored task-fields.tsx, project-fields.tsx, user-fields.tsx
   - [x] Result: **Eliminated 50+ repeated FormField patterns**
 
-### Phase 3: Status Utils Simplification ✅ COMPLETED
+### Phase 3: Status Utils Simplification 🔄 PARTIALLY COMPLETED
 
-- [x] **3.1** Consolidate Status Color Logic
-  - [x] Refactored `src/lib/status-utils.ts` (384→~150 lines)
-  - [x] Removed 3 duplicate color mapping systems
-  - [x] Added `getStatusColorVariant()` helper function
-  - [x] Result: **60% reduction, single source of truth**
+- [x] **3.1** Add Status Color Helper
+  - [x] Added `getStatusColorVariant()` helper function (used in 10+ components)
+  - [x] Minor refactoring: `src/lib/status-utils.ts` (384→358 lines, 7% reduction)
+  - [ ] **Remaining work:**
+    - [ ] Remove duplicate color mapping systems (`STATUS_COLOR_CLASSES`, `taskStatusColors`, `taskStatusBgColors`, `taskStatusBadgeSolids`)
+    - [ ] Consolidate to single `STATUS_STYLES` source of truth
+    - [ ] Target: ~150 lines (60% reduction from current 358 lines)
 
 ### Phase 4: Constants Reorganization ⏳ PENDING
 
 - [ ] **4.1** Consolidate Constants
   - [ ] Reduce 25 files to 8 domain-based files
-  - [ ] Remove `constants/index.ts` re-export chain
+  - [ ] Replace the current “re-export everything” barrel with either direct domain imports or a thin, curated barrel
   - [ ] Merge common.ts and shared.ts into domain files
   - [ ] Result: **Eliminate indirection, clearer dependencies**
 
-### Phase 5: Monolithic Page Decomposition 🔄 IN PROGRESS
+### Phase 5: Monolithic Page Decomposition 🔄 IN PROGRESS (1/10 COMPLETE)
 
-- [x] **5.1** Break Down Dashboard
-  - [x] Created 6 widget components in `src/components/dashboard/`
+- [x] **5.1** Break Down Dashboard ✅ COMPLETED
+  - [x] Created 6 widget components in `src/components/dashboard/`:
+    - `stats-widget.tsx`, `charts-widget.tsx`, `projects-widget.tsx`
+    - `productivity-widget.tsx`, `overdue-tasks-widget.tsx`, `welcome-widget.tsx`
   - [x] Refactored `src/pages/dashboard.tsx` (941→232 lines)
   - [x] Result: **75% reduction, composable widgets**
 
-- [x] **5.1** Break Down Reports
-  - [x] Created 7 section components in `src/components/reports/`
-  - [x] Refactored `src/pages/reports.tsx` (815→386 lines)
-  - [x] Result: **53% reduction, modular components**
+- [ ] **5.2** Break Down Reports ⏳ NOT STARTED
+  - Current: `src/pages/reports.tsx` (815 lines - unchanged)
+  - [ ] Create section components in `src/components/reports/`:
+    - [ ] `filters-section.tsx`
+    - [ ] `metrics-section.tsx`
+    - [ ] `charts-section.tsx`
+    - [ ] `table-section.tsx`
+  - [ ] Refactor to ~300 lines
+  - [ ] Result: **Expected ~63% reduction**
 
-- [ ] **5.1** Break Down Settings
-  - [ ] Create section components for settings
-  - [ ] Refactor `src/pages/settings.tsx` (624 lines)
-  - [ ] Result: **Expected ~70% reduction**
+- [ ] **5.3** Break Down Settings ⏳ NOT STARTED
+  - Current: `src/pages/settings.tsx` (624 lines)
+  - [ ] Create section components:
+    - [ ] `profile-section.tsx`
+    - [ ] `notifications-section.tsx`
+    - [ ] `appearance-section.tsx`
+    - [ ] `security-section.tsx`
+  - [ ] Refactor to ~150 lines
+  - [ ] Risk: **Medium** | Result: **Expected ~75% reduction**
+
+- [ ] **5.4** Break Down Project Details ⏳ NOT STARTED
+  - Current: `src/pages/project-details.tsx` (619 lines)
+  - [ ] Extract: `project-header.tsx`, `project-tasks-list.tsx`, `project-stats.tsx`
+  - [ ] Refactor to ~200 lines
+  - [ ] Risk: **Medium** | Result: **Expected ~68% reduction**
+
+- [ ] **5.5** Break Down Tasks Page ⏳ NOT STARTED
+  - Current: `src/pages/tasks.tsx` (606 lines)
+  - [ ] Extract: `task-filters-panel.tsx`, `task-board-view.tsx`, `task-list-view.tsx`
+  - [ ] Refactor to ~200 lines
+  - [ ] Risk: **High** (complex state) | Result: **Expected ~67% reduction**
+
+- [ ] **5.6** Break Down Notifications Page ⏳ NOT STARTED
+  - Current: `src/pages/notifications.tsx` (602 lines)
+  - [ ] Extract: `notification-list.tsx`, `notification-filters.tsx`, `notification-item.tsx`
+  - [ ] Refactor to ~150 lines
+  - [ ] Risk: **Low** | Result: **Expected ~75% reduction**
+
+- [ ] **5.7** Break Down Task Details ⏳ NOT STARTED
+  - Current: `src/pages/task-details.tsx` (592 lines)
+  - [ ] Extract: `task-header.tsx`, `task-comments.tsx`, `task-activity.tsx`, `task-sidebar.tsx`
+  - [ ] Refactor to ~200 lines
+  - [ ] Risk: **Medium** | Result: **Expected ~66% reduction**
+
+- [ ] **5.8** Break Down My Tasks ⏳ NOT STARTED
+  - Current: `src/pages/my-tasks.tsx` (465 lines)
+  - [ ] Extract: Reuse components from 5.5 (tasks.tsx)
+  - [ ] Refactor to ~150 lines
+  - [ ] Risk: **Low** | Result: **Expected ~68% reduction**
+
+- [ ] **5.9** Break Down Helps Page ⏳ NOT STARTED
+  - Current: `src/pages/helps.tsx` (439 lines)
+  - [ ] Extract: `help-categories.tsx`, `help-article.tsx`, `help-search.tsx`
+  - [ ] Refactor to ~150 lines
+  - [ ] Risk: **Low** | Result: **Expected ~66% reduction**
+
+- [ ] **5.10** Break Down Tags Page ⏳ NOT STARTED
+  - Current: `src/pages/tags.tsx` (434 lines)
+  - [ ] Extract: `tag-list.tsx`, `tag-form.tsx`, `tag-stats.tsx`
+  - [ ] Refactor to ~150 lines
+  - [ ] Risk: **Low** | Result: **Expected ~65% reduction**
 
 ### Phase 6: Backend Simplification ⏳ PENDING
 
 - [ ] **6.1** Create Record Helper Functions
-  - [ ] Create `backend/helpers/record.go`
-  - [ ] Create `backend/helpers/response.go`
-  - [ ] Create `backend/helpers/logging.go`
+  - Current: `backend/main.go` (1319 lines)
+  - [ ] Create `backend/helpers/record.go` - FindRecordById wrapper with error handling
+  - [ ] Create `backend/helpers/response.go` - JSON response helpers (WriteJSONError, WriteJSONSuccess)
+  - [ ] Create `backend/helpers/logging.go` - Centralized logging patterns
   - [ ] Result: **Reduce ~200 lines, reusable helpers**
 
 - [ ] **6.2** Break Down Large Backend Functions
-  - [ ] Split `handleGetUserLoginLogs` (69 lines)
-  - [ ] Split `trackAuthMiddleware` (53 lines)
-  - [ ] Split `handleToggleUserActive` (49 lines)
+  - [ ] Split `handleGetUserLoginLogs` (69 lines) → validation, fetching, formatting
+  - [ ] Split `trackAuthMiddleware` (53 lines) → body parsing, auth tracking, response recording
+  - [ ] Split `handleToggleUserActive` (49 lines) → validation, toggle logic
   - [ ] Result: **Functions ~20 lines each, easier to test**
+
+- [ ] **6.3** Consider Additional Refactoring (Optional)
+  - [ ] Extract notification handlers to `backend/notifications.go`
+  - [ ] Extract audit handlers to separate functions in `backend/audit.go`
+  - [ ] Create `backend/validation.go` for shared validation logic
+
+### Phase 7: AI Slop Detection & Removal ⏳ PENDING
+
+Identify and remove AI-generated code patterns that are inconsistent with the codebase style.
+
+**Current Baseline (auto-detected):**
+
+- `as any` casts: **3 occurrences**
+- `@ts-ignore`/`@ts-expect-error`: **0 occurrences**
+- Verbose comments (Initialize/Create/Handle/etc.): **~125 occurrences**
+
+- [ ] **7.1** Remove Unnecessary Comments
+  - [ ] Scan for verbose/obvious comments (e.g., `// Initialize the state`, `// Return the result`)
+  - [ ] Remove JSDoc comments that just repeat the function name
+  - [ ] Remove commented-out code blocks
+  - [ ] Keep only comments that explain "why", not "what"
+  - [ ] Risk: **Low**
+
+- [ ] **7.2** Remove Excessive Defensive Checks
+  - [ ] Identify redundant null/undefined checks on already-validated data
+  - [ ] Remove unnecessary `try/catch` blocks in trusted codepaths
+  - [ ] Remove double-validation (e.g., checking props that TypeScript already guarantees)
+  - [ ] Audit: `if (x && x.y && x.y.z)` patterns where optional chaining suffices
+  - [ ] Risk: **Medium**
+
+- [ ] **7.3** Fix Type Workarounds
+  - [ ] Search for `as any` casts and fix underlying type issues
+  - [ ] Search for `@ts-ignore` / `@ts-expect-error` comments
+  - [ ] Search for `as unknown as T` double-cast patterns
+  - [ ] Replace `any` types with proper generics or specific types
+  - [ ] Risk: **Medium**
+
+- [ ] **7.4** Normalize Code Style Inconsistencies
+  - [ ] Identify mixed patterns (e.g., some files use `function`, others use arrow functions)
+  - [ ] Normalize error handling patterns (some throw, some return null, some use Result types)
+  - [ ] Standardize import ordering inconsistencies
+  - [ ] Fix inconsistent naming (camelCase vs snake_case in same context)
+  - [ ] Risk: **Low**
+
+- [ ] **7.5** Remove Over-Engineering
+  - [ ] Identify overly abstract patterns that add complexity without benefit
+  - [ ] Remove unnecessary wrapper functions that just pass through
+  - [ ] Simplify deeply nested ternaries or conditionals
+  - [ ] Remove unused generics or overly complex type gymnastics
+  - [ ] Risk: **Medium**
+
+**Detection Commands:**
+
+```bash
+# Find 'as any' casts
+rg "as any" --type ts --type tsx
+
+# Find ts-ignore comments
+rg "@ts-ignore|@ts-expect-error" --type ts --type tsx
+
+# Find verbose comments patterns
+rg "// (Initialize|Create|Set|Get|Return|Handle|Process|Check)" --type ts --type tsx
+
+# Find excessive optional chaining
+rg "\?\.\w+\?\.\w+\?\." --type ts --type tsx
+
+# Find try-catch that just rethrows
+rg -U "catch.*\{[\s\n]*throw" --type ts --type tsx
+```
 
 ---
 
@@ -101,28 +237,102 @@ This plan addresses **massive code duplication** across the codebase with 700+ l
 
 **Total Impact So Far:**
 
-- **Code Reduction:** ~1,892 lines inserted, ~1,424 lines deleted
-- **Files Created:** 15 new files
-- **Files Refactored:** 22 existing files
-- **Components Decomposed:** Dashboard (6 widgets), Reports (7 sections)
+- **Files Created:** 9 new files
+  - `src/hooks/factories/use-crud-factory.ts`
+  - `src/components/ui/metric-card.tsx`
+  - `src/components/forms/form-field.tsx`
+  - 6 dashboard widget components
+- **Files Refactored:** 9 existing files (hooks + dashboard)
+- **Components Decomposed:** Dashboard (6 widgets)
 - **Hooks Consolidated:** Tasks, Projects, Users, Groups
-- **Duplication Eliminated:** 700+ lines of duplicate CRUD patterns
-- **Status System Simplified:** 4 color systems → 1 unified system
+- **Code Reduction:** ~830+ lines total
+  - ~130 lines in hooks
+  - ~700 lines in dashboard page
 
 **Current Status:**
 
-- ✅ **Phase 1:** COMPLETED (Frontend Hooks)
+- 🔄 **Phase 1:** MOSTLY COMPLETED (Core hooks done, 5 remaining hooks identified)
 - ✅ **Phase 2:** COMPLETED (UI Components)
-- ✅ **Phase 3:** COMPLETED (Status Utils)
-- ⏳ **Phase 4:** PENDING (Constants)
-- 🔄 **Phase 5:** IN PROGRESS (Page Decomposition - 2/3 complete)
-- ⏳ **Phase 6:** PENDING (Backend)
+- 🔄 **Phase 3:** PARTIALLY COMPLETED (Status Utils - helper added, consolidation pending)
+- ⏳ **Phase 4:** PENDING (Constants - 25 files)
+- 🔄 **Phase 5:** IN PROGRESS (Page Decomposition - 1/10 complete, Dashboard only)
+- ⏳ **Phase 6:** PENDING (Backend - 1319 lines in main.go)
+- ⏳ **Phase 7:** PENDING (AI Slop Detection & Removal)
+
+**Remaining Work Estimate:**
+
+| Phase                  | Tasks        | Lines to Reduce        |
+| ---------------------- | ------------ | ---------------------- |
+| Phase 1.4 (Hooks)      | 5 hooks      | ~400 lines             |
+| Phase 3 (Status)       | 1 file       | ~200 lines             |
+| Phase 4 (Constants)    | 25→8 files   | ~500 lines             |
+| Phase 5.2-5.10 (Pages) | 9 pages      | ~3,800 lines           |
+| Phase 6 (Backend)      | 3 tasks      | ~200 lines             |
+| Phase 7 (AI Slop)      | 5 tasks      | ~300-500 lines         |
+| **Total**              | **23 tasks** | **~5,400-5,600 lines** |
+
+**Phase 5 Breakdown (9 remaining pages):**
+
+| Page                | Current   | Target     | Reduction  | Risk   |
+| ------------------- | --------- | ---------- | ---------- | ------ |
+| reports.tsx         | 815       | ~300       | 515        | Medium |
+| settings.tsx        | 624       | ~150       | 474        | Medium |
+| project-details.tsx | 619       | ~200       | 419        | Medium |
+| tasks.tsx           | 606       | ~200       | 406        | High   |
+| notifications.tsx   | 602       | ~150       | 452        | Low    |
+| task-details.tsx    | 592       | ~200       | 392        | Medium |
+| my-tasks.tsx        | 465       | ~150       | 315        | Low    |
+| helps.tsx           | 439       | ~150       | 289        | Low    |
+| tags.tsx            | 434       | ~150       | 284        | Low    |
+| **Total**           | **5,196** | **~1,650** | **~3,546** | -      |
+
+---
+
+## Verification Checklist (Per Task)
+
+Before marking any task as complete, ensure:
+
+### Code Quality
+
+- [ ] `bun run check` passes (TypeScript + ESLint + Prettier)
+- [ ] `bun run test:run` passes (unit tests)
+- [ ] No new TypeScript errors introduced
+- [ ] No console warnings in browser
+
+### Functional Verification
+
+- [ ] Feature works as before (manual testing)
+- [ ] No regressions in related features
+- [ ] Edge cases handled (empty states, errors, loading)
+
+### Code Review Criteria
+
+- [ ] No dead code left behind
+- [ ] Imports updated (no unused imports)
+- [ ] Component props properly typed
+- [ ] No hardcoded values (use constants)
+
+### Rollback Plan
+
+- [ ] Changes committed incrementally (easy to revert)
+- [ ] Each commit is atomic and buildable
+- [ ] Document any breaking changes
+
+---
+
+## Risk Assessment Matrix
+
+| Risk Level | Description                       | Mitigation                                   |
+| ---------- | --------------------------------- | -------------------------------------------- |
+| **Low**    | Isolated changes, no shared state | Standard testing                             |
+| **Medium** | Touches shared components/hooks   | Extra manual testing, staged rollout         |
+| **High**   | Complex state, many dependencies  | Feature flag, extensive testing, pair review |
 
 ---
 
 ## Phase 1: Frontend Hooks Consolidation ⭐ HIGH IMPACT, LOW RISK
 
-**Estimated Effort: 3-4 days | Impact: Reduces ~700 lines of duplicate code**
+**Impact: Reduces ~700 lines of duplicate code**
 
 ### 1.1 Create Generic CRUD Hook Factory
 
@@ -219,7 +429,7 @@ export function createInvalidator(
 
 ## Phase 2: UI Component Standardization ⭐ HIGH IMPACT, LOW RISK
 
-**Estimated Effort: 2-3 days | Impact: Eliminates 25+ duplicate components**
+**Impact: Eliminates 25+ duplicate components**
 
 ### 2.1 Create Reusable Card Components
 
@@ -343,7 +553,7 @@ export function FormField({
 
 ## Phase 3: Status Utils Simplification ⭐ HIGH IMPACT, MEDIUM RISK
 
-**Estimated Effort: 1-2 days | Impact: Reduces 384-line file by 60%**
+**Impact: Reduces 384-line file by 60%**
 
 ### 3.1 Consolidate Status Color Logic
 
@@ -396,7 +606,7 @@ function generateStyleVariants(base: StatusStyle) {
 
 ## Phase 4: Constants Reorganization 🔶 MEDIUM IMPACT, MEDIUM RISK
 
-**Estimated Effort: 2-3 days | Impact: Eliminates re-export chains**
+**Impact: Eliminates re-export chains**
 
 ### 4.1 Consolidate Constants
 
@@ -478,7 +688,7 @@ const title = tasks.status.todo;
 
 ## Phase 5: Monolithic Page Decomposition 🔶 MEDIUM IMPACT, HIGH RISK
 
-**Estimated Effort: 5-7 days | Impact: Better maintainability**
+**Impact: Better maintainability**
 
 ### 5.1 Break Down Large Pages
 
@@ -543,7 +753,7 @@ export default function DashboardPage() {
 
 ## Phase 6: Backend Simplification 🔶 MEDIUM IMPACT, MEDIUM RISK
 
-**Estimated Effort: 3-4 days | Impact: Reduces duplication, improves readability**
+**Impact: Reduces duplication, improves readability**
 
 ### 6.1 Create Record Helper Functions
 
@@ -653,12 +863,12 @@ func handleGetUserLoginLogs(w http.ResponseWriter, r *http.Request) {
 
 ### Phase Execution Order
 
-1. **Phase 1** (Frontend Hooks) - Week 1
-2. **Phase 2** (UI Components) - Week 1-2
-3. **Phase 3** (Status Utils) - Week 2
-4. **Phase 4** (Constants) - Week 3
-5. **Phase 6** (Backend) - Week 3-4
-6. **Phase 5** (Pages) - Week 4-5 (after other refactoring complete)
+1. **Phase 1** (Frontend Hooks)
+2. **Phase 2** (UI Components)
+3. **Phase 3** (Status Utils)
+4. **Phase 4** (Constants)
+5. **Phase 6** (Backend)
+6. **Phase 5** (Pages) - after other refactoring complete
 
 ### Risk Mitigation
 
@@ -678,48 +888,95 @@ func handleGetUserLoginLogs(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-## Critical Files for Implementation
+## Critical Files for Implementation (Updated)
 
-Based on this analysis, prioritize these files:
+Based on current state analysis, prioritize these files:
 
-### Highest Priority
+### Highest Priority (Quick Wins)
 
-1. **src/hooks/factories/use-crud-factory.ts** - New file to create
-   - Eliminates 700+ lines of duplicate CRUD hooks across tasks, projects, users, groups
+1. **src/lib/status-utils.ts** (358 lines) - Phase 3 completion
+   - Remove duplicate color mappings
+   - Target: ~150 lines | Risk: Low
 
-2. **src/hooks/tasks.ts** - High-impact refactor
-   - Largest hook file (308 lines), apply generic factory pattern
+2. **src/pages/reports.tsx** (815 lines) - Phase 5.2
+   - Largest page, highest impact
+   - Target: ~300 lines | Risk: Medium
 
-3. **src/lib/status-utils.ts** - KISS violation (384 lines, 4 color systems)
-   - Simplify complex status color logic, single source of truth
+3. **src/pages/settings.tsx** (624 lines) - Phase 5.3
+   - Target: ~150 lines | Risk: Medium
 
-### High Priority
+### High Priority (Large Pages)
 
-4. **src/components/ui/metric-card.tsx** - New file to create
-   - Replaces 25+ identical Card components across reports and dashboard
+4. **src/pages/project-details.tsx** (619 lines) - Phase 5.4
+   - Target: ~200 lines | Risk: Medium
 
-5. **src/hooks/query-keys.ts** - Central query key management
-   - Eliminate repeated normalizeListOptions pattern, improve consistency
+5. **src/pages/tasks.tsx** (606 lines) - Phase 5.5
+   - Complex state management
+   - Target: ~200 lines | Risk: High
 
-6. **src/lib/query-invalidators.ts** - Mutation invalidation consolidation
-   - 256 lines with repetitive patterns, simplify for all resources
+6. **src/pages/notifications.tsx** (602 lines) - Phase 5.6
+   - Target: ~150 lines | Risk: Low
 
-7. **backend/helpers/record.go** - New file to create
-   - Backend FindRecordById repeated 15+ times, create reusable helpers
+7. **src/pages/task-details.tsx** (592 lines) - Phase 5.7
+   - Target: ~200 lines | Risk: Medium
 
-8. **src/constants/index.ts** - Eliminate re-export chain
-   - 25 constants files creating unnecessary indirection
+### Medium Priority
+
+8. **src/pages/my-tasks.tsx** (465 lines) - Phase 5.8
+   - Can reuse components from tasks.tsx
+   - Target: ~150 lines | Risk: Low
+
+9. **src/pages/helps.tsx** (439 lines) - Phase 5.9
+   - Target: ~150 lines | Risk: Low
+
+10. **src/pages/tags.tsx** (434 lines) - Phase 5.10
+    - Target: ~150 lines | Risk: Low
+
+11. **Remaining hooks** (5 files, ~923 lines) - Phase 1.4
+    - `use-file-upload.ts`, `use-task-filters.ts`, `notifications.ts`, etc.
+    - Risk: Low
+
+### Lower Priority
+
+12. **src/constants/index.ts** - Phase 4
+    - 25→8 files | Risk: Medium
+
+13. **backend/helpers/record.go** - Phase 6.1 (new file)
+    - Risk: Low
+
+14. **src/lib/query-invalidators.ts** (296 lines) - Phase 1.3 remaining
+    - Target: ~150 lines | Risk: Low
+
+### Already Completed
+
+- ~~src/hooks/factories/use-crud-factory.ts~~ ✅
+- ~~src/components/ui/metric-card.tsx~~ ✅
+- ~~src/components/forms/form-field.tsx~~ ✅
+- ~~src/pages/dashboard.tsx~~ ✅ (941→232 lines)
+- ~~src/hooks/tasks.ts, projects.ts, users.ts, groups.ts~~ ✅
 
 ---
 
 ## Summary of Benefits
 
-### Immediate Wins
+### Achieved So Far
 
-- **Eliminate 700+ lines** of repetitive CRUD hook code
-- **Remove 25+ duplicate** Card components
-- **Simplify 384-line status utils** to 150 lines
-- **Create reusable patterns** for future development
+- ✅ **CRUD hook factory** - Consistent pattern for all resource hooks
+- ✅ **MetricCard component** - Replaced 25+ duplicate Card patterns
+- ✅ **FormField wrapper** - Simplified form field boilerplate
+- ✅ **Dashboard decomposition** - 75% reduction (941→232 lines)
+- ✅ **getStatusColorVariant()** - Unified status color API
+
+### Remaining Wins
+
+- **Complete status-utils.ts** - 358→150 lines (208 line reduction)
+- **Decompose 9 pages** - 5,196→~1,650 lines (~3,546 line reduction)
+  - reports.tsx, settings.tsx, project-details.tsx, tasks.tsx
+  - notifications.tsx, task-details.tsx, my-tasks.tsx, helps.tsx, tags.tsx
+- **Refactor 5 hooks** - ~923 lines → ~500 lines (~400 line reduction)
+- **Consolidate constants** - 25→8 files (clearer dependencies)
+- **Backend helpers** - ~200 line reduction, reusable patterns
+- **Total potential reduction:** ~4,350+ lines
 
 ### Long-term Improvements
 
@@ -728,4 +985,57 @@ Based on this analysis, prioritize these files:
 - **Better testing** - smaller, focused functions and components
 - **Reduced bugs** - single source of truth, less duplication to maintain
 
+---
+
+## Recommended Next Steps (Priority Order)
+
+### Quick Wins & High Impact
+
+1. **Complete Phase 3** - Finish status-utils.ts consolidation
+   - Quick win, low risk, clears "partially completed" status
+
+2. **Phase 5.2** - Break down reports.tsx (815 lines)
+   - Largest page, highest single-file impact
+
+3. **Phase 5.3** - Break down settings.tsx (624 lines)
+   - Medium risk, clear extraction boundaries
+
+### Large Pages (Medium Risk)
+
+4. **Phase 5.4** - Break down project-details.tsx (619 lines)
+5. **Phase 5.7** - Break down task-details.tsx (592 lines)
+6. **Phase 5.6** - Break down notifications.tsx (602 lines)
+
+### Complex & Remaining Pages
+
+7. **Phase 5.5** - Break down tasks.tsx (606 lines)
+   - **High risk** - complex state, do after simpler pages
+8. **Phase 5.8-5.10** - my-tasks.tsx, helps.tsx, tags.tsx
+   - Low risk, can reuse components from earlier work
+
+### Cleanup & Backend
+
+9. **Phase 1.4** - Remaining hooks consolidation
+10. **Phase 4** - Constants reorganization
+    - Do incrementally (one domain at a time)
+11. **Phase 6** - Backend simplification
+    - Can be done in parallel with frontend work
+
+### Code Quality (Phase 7)
+
+12. **Phase 7.1** - Remove unnecessary comments
+13. **Phase 7.3** - Fix type workarounds (`as any`, `@ts-ignore`)
+14. **Phase 7.2** - Remove excessive defensive checks
+15. **Phase 7.4-7.5** - Normalize style & remove over-engineering
+
+### Parallel Track (Optional)
+
+- **Phase 1.3 remaining** - query-invalidators.ts can be done anytime
+- **Phase 6** - Backend work can run parallel to frontend phases
+- **Phase 7** - AI slop removal can be done incrementally alongside other work
+
+---
+
 This plan provides a clear roadmap to transform the codebase from highly duplicated to clean, maintainable, and following DRY/KISS principles. Each phase builds on the previous one, and all changes maintain existing functionality while dramatically improving code quality.
+
+**Last Updated:** 2025-12-22 | **Plan Status:** Active
