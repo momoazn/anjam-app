@@ -16,6 +16,7 @@ import {
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
+import { createCrudHooks } from "./factories/use-crud-factory";
 
 type UsersListOptions = {
   enabled?: boolean;
@@ -24,39 +25,16 @@ type UsersListOptions = {
   filter?: string;
 };
 
-type CreateUserVariables = Omit<UsersRecord, "id" | "created" | "updated">;
-type UpdateUserVariables = { id: string; updates: Partial<UsersRecord> };
-
-const useCreateUserMutation = createMutation<
-  UsersResponse,
-  Error,
-  CreateUserVariables
->(
-  (userData) => pb.collection("users").create(userData),
-  (client) => {
-    mutationInvalidators.crud.users.create(client);
-  },
-);
-
-const useUpdateUserMutation = createMutation<
-  UsersResponse,
-  Error,
-  UpdateUserVariables
->(
-  ({ id, updates }) => pb.collection("users").update(id, updates),
-  (client, _data, variables) => {
-    mutationInvalidators.crud.users.update(client, variables?.id);
-  },
-);
-
-const useDeleteUserMutation = createMutation<void, Error, string>(
-  async (id) => {
-    await pb.collection("users").delete(id);
-  },
-  (client, _data, userId) => {
-    mutationInvalidators.crud.users.delete(client, userId);
-  },
-);
+// Create CRUD hooks using the factory
+const {
+  useCreate: useCreateUserMutation,
+  useUpdate: useUpdateUserMutation,
+  useDelete: useDeleteUserMutation,
+} = createCrudHooks<UsersRecord, UsersResponse>({
+  collection: "users",
+  queryKeys: queryKeys.users,
+  invalidators: mutationInvalidators.crud.users,
+});
 
 type ToggleUserActiveResponse = {
   data: { active: boolean };
@@ -194,7 +172,11 @@ export function useProjectUsers({
  * @returns Mutation function for creating users
  */
 export function useCreateUser(
-  options?: UseMutationOptions<UsersResponse, Error, CreateUserVariables>,
+  options?: UseMutationOptions<
+    UsersResponse,
+    Error,
+    Omit<UsersRecord, "id" | "created" | "updated">
+  >,
 ) {
   return useCreateUserMutation(options);
 }
@@ -205,7 +187,11 @@ export function useCreateUser(
  * @returns Mutation function for updating users
  */
 export function useUpdateUser(
-  options?: UseMutationOptions<UsersResponse, Error, UpdateUserVariables>,
+  options?: UseMutationOptions<
+    UsersResponse,
+    Error,
+    { id: string; updates: Partial<UsersRecord> }
+  >,
 ) {
   return useUpdateUserMutation(options);
 }
@@ -216,7 +202,7 @@ export function useUpdateUser(
  * @returns Mutation function for deleting users
  */
 export function useDeleteUser(
-  options?: UseMutationOptions<void, Error, string>,
+  options?: UseMutationOptions<UsersResponse, Error, string>,
 ) {
   return useDeleteUserMutation(options);
 }

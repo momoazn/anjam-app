@@ -16,9 +16,7 @@ import {
 import { mutationInvalidators } from "@/lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
-
-type CreateGroupVariables = Omit<GroupsRecord, "id" | "created" | "updated">;
-type UpdateGroupVariables = { id: string; updates: Partial<GroupsRecord> };
+import { createCrudHooks } from "./factories/use-crud-factory";
 
 type CreateGroupWithManagerVariables = {
   group: { name: string; description?: string };
@@ -35,17 +33,18 @@ type CreateGroupWithManagerResponse = {
   data: { groupId: string; managerId: string };
 };
 
-const useCreateGroupMutation = createMutation<
-  GroupsResponse,
-  Error,
-  CreateGroupVariables
->(
-  (groupData) => pb.collection("groups").create(groupData),
-  (client) => {
-    mutationInvalidators.crud.groups.create(client);
-  },
-);
+// Create CRUD hooks using the factory
+const {
+  useCreate: useCreateGroupMutation,
+  useUpdate: useUpdateGroupMutation,
+  useDelete: useDeleteGroupMutation,
+} = createCrudHooks<GroupsRecord, GroupsResponse>({
+  collection: "groups",
+  queryKeys: queryKeys.groups,
+  invalidators: mutationInvalidators.crud.groups,
+});
 
+// Special mutation for creating group with manager (custom API)
 const useCreateGroupWithManagerMutation = createMutation<
   CreateGroupWithManagerResponse,
   Error,
@@ -61,26 +60,6 @@ const useCreateGroupWithManagerMutation = createMutation<
     client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
     client.invalidateQueries({ queryKey: queryKeys.users.all });
     client.invalidateQueries({ queryKey: queryKeys.users.lists() });
-  },
-);
-
-const useUpdateGroupMutation = createMutation<
-  GroupsResponse,
-  Error,
-  UpdateGroupVariables
->(
-  ({ id, updates }) => pb.collection("groups").update(id, updates),
-  (client, _data, variables) => {
-    mutationInvalidators.crud.groups.update(client, variables?.id);
-  },
-);
-
-const useDeleteGroupMutation = createMutation<void, Error, string>(
-  async (id) => {
-    await pb.collection("groups").delete(id);
-  },
-  (client, _data, groupId) => {
-    mutationInvalidators.crud.groups.delete(client, groupId);
   },
 );
 
@@ -184,7 +163,11 @@ export function useGroupProjects(options: {
  * @returns Mutation function for creating groups
  */
 export function useCreateGroup(
-  options?: UseMutationOptions<GroupsResponse, Error, CreateGroupVariables>,
+  options?: UseMutationOptions<
+    GroupsResponse,
+    Error,
+    Omit<GroupsRecord, "id" | "created" | "updated">
+  >,
 ) {
   return useCreateGroupMutation(options);
 }
@@ -205,7 +188,11 @@ export function useCreateGroupWithManager(
  * @returns Mutation function for updating groups
  */
 export function useUpdateGroup(
-  options?: UseMutationOptions<GroupsResponse, Error, UpdateGroupVariables>,
+  options?: UseMutationOptions<
+    GroupsResponse,
+    Error,
+    { id: string; updates: Partial<GroupsRecord> }
+  >,
 ) {
   return useUpdateGroupMutation(options);
 }
@@ -216,7 +203,7 @@ export function useUpdateGroup(
  * @returns Mutation function for deleting groups
  */
 export function useDeleteGroup(
-  options?: UseMutationOptions<void, Error, string>,
+  options?: UseMutationOptions<GroupsResponse, Error, string>,
 ) {
   return useDeleteGroupMutation(options);
 }

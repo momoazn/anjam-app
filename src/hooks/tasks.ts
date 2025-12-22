@@ -5,7 +5,11 @@
  * Includes role-based filtering and optimistic updates for better UX.
  */
 
-import { useQuery, UseMutationOptions } from "@tanstack/react-query";
+import {
+  useQuery,
+  UseMutationOptions,
+  QueryClient,
+} from "@tanstack/react-query";
 import { pb, TaskWithProject } from "../lib/pocketbase";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import {
@@ -16,81 +20,40 @@ import {
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
+import {
+  createCrudHooks,
+  createBulkOperations,
+} from "./factories/use-crud-factory";
 
-type CreateTaskVariables = Omit<TasksRecord, "id" | "created" | "updated">;
-type UpdateTaskVariables = { id: string; updates: Partial<TasksRecord> };
+// Create CRUD hooks using the factory
+const crudHooks = createCrudHooks<TasksRecord, TasksResponse>({
+  collection: "tasks",
+  queryKeys: queryKeys.tasks,
+  invalidators: mutationInvalidators.crud.tasks,
+  relatedInvalidators: [
+    {
+      invalidator: mutationInvalidators.crud.projects.update,
+      args: [], // Will be populated dynamically
+    },
+  ],
+});
 
-const useCreateTaskMutation = createMutation<
-  TasksResponse,
-  Error,
-  CreateTaskVariables
->(
-  (taskData) => pb.collection("tasks").create(taskData),
-  (client) => {
-    mutationInvalidators.crud.tasks.create(client);
-  },
-);
+const bulkOps = createBulkOperations<TasksRecord, TasksResponse>({
+  collection: "tasks",
+  queryKeys: queryKeys.tasks,
+  invalidators: mutationInvalidators.crud.tasks,
+});
 
-const useUpdateTaskMutation = createMutation<
-  TasksResponse,
-  Error,
-  UpdateTaskVariables
->(
-  ({ id, updates }) => pb.collection("tasks").update(id, updates),
-  (client, _data, variables) => {
-    mutationInvalidators.crud.tasks.update(client, variables?.id);
-
-    if (variables?.updates?.project) {
-      mutationInvalidators.crud.projects.update(
-        client,
-        variables.updates.project,
-      );
-    }
-  },
-);
-
-const useDeleteTaskMutation = createMutation<TasksResponse, Error, string>(
-  (id) =>
-    pb.collection("tasks").update<TasksResponse>(id, {
-      deleted_at: new Date().toISOString(),
-    }),
-  (client, _data, taskId) => {
-    mutationInvalidators.crud.tasks.delete(client, taskId);
-  },
-);
-
-type BulkUpdateVariables = { taskIds: string[]; updates: Partial<TasksRecord> };
-
-const useBulkUpdateTasksMutation = createMutation<
-  TasksResponse[],
-  Error,
-  BulkUpdateVariables
->(
-  async ({ taskIds, updates }) => {
-    const updatePromises = taskIds.map((taskId) =>
-      pb.collection("tasks").update<TasksResponse>(taskId, updates),
-    );
-    return await Promise.all(updatePromises);
-  },
-  (client) => {
-    mutationInvalidators.crud.tasks.bulk(client);
-  },
-);
-
-const useBulkDeleteTasksMutation = createMutation<void, Error, string[]>(
-  async (taskIds) => {
-    const timestamp = new Date().toISOString();
-    const deletePromises = taskIds.map((taskId) =>
-      pb.collection("tasks").update<TasksResponse>(taskId, {
-        deleted_at: timestamp,
-      }),
-    );
-    await Promise.all(deletePromises);
-  },
-  (client) => {
-    mutationInvalidators.crud.tasks.bulk(client);
-  },
-);
+// Export CRUD hooks
+const {
+  useCreate: useCreateTaskMutation,
+  useUpdate: useUpdateTaskMutation,
+  useDelete: useDeleteTaskMutation,
+} = crudHooks;
+const {
+  useBulkUpdate: useBulkUpdateTasksMutation,
+  useBulkDelete: useBulkDeleteTasksMutation,
+} = bulkOps;
 
 type ReorderTaskVariables = {
   taskId: string;
@@ -98,17 +61,18 @@ type ReorderTaskVariables = {
   statusKey: string;
 };
 
+// Task-specific mutation for reordering (kept separate as it's unique to tasks)
 const useReorderTaskMutation = createMutation<
   TasksResponse,
   Error,
   ReorderTaskVariables
 >(
-  ({ taskId, newOrder, statusKey }) =>
+  ({ taskId, newOrder, statusKey }: ReorderTaskVariables) =>
     pb.collection("tasks").update<TasksResponse>(taskId, {
       order: newOrder,
       status: statusKey as TasksRecord["status"],
     }),
-  (client) => {
+  (client: QueryClient) => {
     mutationInvalidators.crud.tasks.reorder(client);
   },
 );
@@ -211,14 +175,14 @@ export function useTasks(
   } = options;
 
   return useQuery({
-    queryKey: queryKeys.tasks.list(
+    queryKey: queryKeys.tasks.list({
       projectId,
       expandFields,
       mode,
       page,
       perPage,
       filter,
-    ),
+    }),
     queryFn: () =>
       getTasks(projectId, expandFields, mode, page, perPage, filter),
     enabled,
@@ -254,7 +218,11 @@ export function useTask(options: { id: string; enabled?: boolean }) {
  * @returns Mutation function for creating tasks
  */
 export function useCreateTask(
-  options?: UseMutationOptions<TasksResponse, Error, CreateTaskVariables>,
+  options?: UseMutationOptions<
+    TasksResponse,
+    Error,
+    Omit<TasksRecord, "id" | "created" | "updated">
+  >,
 ) {
   return useCreateTaskMutation(options);
 }
@@ -265,7 +233,11 @@ export function useCreateTask(
  * @returns Mutation function for updating tasks
  */
 export function useUpdateTask(
-  options?: UseMutationOptions<TasksResponse, Error, UpdateTaskVariables>,
+  options?: UseMutationOptions<
+    TasksResponse,
+    Error,
+    { id: string; updates: Partial<TasksRecord> }
+  >,
 ) {
   return useUpdateTaskMutation(options);
 }
@@ -285,7 +257,11 @@ export function useDeleteTask(
  * Bulk update multiple tasks at once
  */
 export function useBulkUpdateTasks(
-  options?: UseMutationOptions<TasksResponse[], Error, BulkUpdateVariables>,
+  options?: UseMutationOptions<
+    TasksResponse[],
+    Error,
+    { ids: string[]; updates: Partial<TasksRecord> }
+  >,
 ) {
   return useBulkUpdateTasksMutation(options);
 }

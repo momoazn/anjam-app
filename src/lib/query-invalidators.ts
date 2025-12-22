@@ -7,41 +7,53 @@ import { QueryClient, QueryKey } from "@tanstack/react-query";
 import { queryKeys } from "@/hooks/query-keys";
 
 /**
+ * Factory to create collection invalidator for a resource
+ */
+function createCollectionInvalidator(
+  _resource: string,
+  allKey: readonly string[],
+  listsKey: () => readonly string[],
+  additionalKeys?: Array<() => readonly string[]>,
+) {
+  return (client: QueryClient) => {
+    client.invalidateQueries({ queryKey: allKey });
+    client.invalidateQueries({ queryKey: listsKey() });
+    additionalKeys?.forEach((keyFn) => {
+      client.invalidateQueries({ queryKey: keyFn() });
+    });
+  };
+}
+
+/**
  * Collection-based invalidation helpers
  */
 export const collectionInvalidators = {
-  /** Invalidate all task-related queries */
-  tasks: (client: QueryClient) => {
-    client.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    client.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
-  },
-
-  /** Invalidate all project-related queries */
-  projects: (client: QueryClient) => {
-    client.invalidateQueries({ queryKey: queryKeys.projects.all });
-    client.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-  },
-
-  /** Invalidate all user-related queries */
-  users: (client: QueryClient) => {
-    client.invalidateQueries({ queryKey: queryKeys.users.all });
-    client.invalidateQueries({ queryKey: queryKeys.users.lists() });
-    client.invalidateQueries({ queryKey: queryKeys.users.allProjectUsers() });
-  },
-
-  /** Invalidate all group-related queries */
-  groups: (client: QueryClient) => {
-    client.invalidateQueries({ queryKey: queryKeys.groups.all });
-    client.invalidateQueries({ queryKey: queryKeys.groups.lists() });
-  },
-
-  /** Invalidate all comment-related queries */
-  comments: (client: QueryClient) => {
-    client.invalidateQueries({ queryKey: queryKeys.comments.all });
-    client.invalidateQueries({ queryKey: queryKeys.comments.lists() });
-  },
-
-  /** Invalidate all tag-related queries */
+  tasks: createCollectionInvalidator(
+    "tasks",
+    queryKeys.tasks.all,
+    queryKeys.tasks.lists,
+  ),
+  projects: createCollectionInvalidator(
+    "projects",
+    queryKeys.projects.all,
+    queryKeys.projects.lists,
+  ),
+  users: createCollectionInvalidator(
+    "users",
+    queryKeys.users.all,
+    queryKeys.users.lists,
+    [queryKeys.users.allProjectUsers],
+  ),
+  groups: createCollectionInvalidator(
+    "groups",
+    queryKeys.groups.all,
+    queryKeys.groups.lists,
+  ),
+  comments: createCollectionInvalidator(
+    "comments",
+    queryKeys.comments.all,
+    queryKeys.comments.lists,
+  ),
   tags: (client: QueryClient) => {
     // Assuming tagQueryKeys exists in query-keys
     client.invalidateQueries({ queryKey: ["tags"] });
@@ -49,30 +61,34 @@ export const collectionInvalidators = {
 };
 
 /**
+ * Factory to create detail invalidator for a resource
+ */
+function createDetailInvalidator(
+  collectionInvalidator: (client: QueryClient) => void,
+  detailKeyFn: (id: string) => readonly string[],
+) {
+  return (client: QueryClient, id: string) => {
+    collectionInvalidator(client);
+    client.invalidateQueries({ queryKey: detailKeyFn(id) });
+  };
+}
+
+/**
  * Detail invalidation helpers
  */
 export const detailInvalidators = {
-  /** Invalidate specific task and its related queries */
-  task: (client: QueryClient, taskId: string) => {
-    collectionInvalidators.tasks(client);
-    client.invalidateQueries({ queryKey: queryKeys.tasks.detail(taskId) });
-  },
-
-  /** Invalidate specific project and its related queries */
-  project: (client: QueryClient, projectId: string) => {
-    collectionInvalidators.projects(client);
-    client.invalidateQueries({
-      queryKey: queryKeys.projects.detail(projectId),
-    });
-  },
-
-  /** Invalidate specific user and their related queries */
-  user: (client: QueryClient, userId: string) => {
-    collectionInvalidators.users(client);
-    client.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
-  },
-
-  /** Invalidate comments for a specific task */
+  task: createDetailInvalidator(
+    collectionInvalidators.tasks,
+    queryKeys.tasks.detail,
+  ),
+  project: createDetailInvalidator(
+    collectionInvalidators.projects,
+    queryKeys.projects.detail,
+  ),
+  user: createDetailInvalidator(
+    collectionInvalidators.users,
+    queryKeys.users.detail,
+  ),
   taskComments: (client: QueryClient, taskId: string) => {
     client.invalidateQueries({ queryKey: queryKeys.comments.byTask(taskId) });
     // Also invalidate all comments lists
@@ -134,20 +150,66 @@ export const compositeInvalidators = {
 };
 
 /**
+ * Factory to create standard CRUD invalidators
+ */
+function createStandardCrudInvalidators(
+  _collectionInvalidator: (client: QueryClient) => void,
+  detailInvalidator: (client: QueryClient, id: string) => void,
+  compositeChange: (client: QueryClient, id?: string) => void,
+) {
+  return {
+    create: (client: QueryClient) => compositeChange(client),
+    update: (client: QueryClient, id?: string) =>
+      id ? detailInvalidator(client, id) : compositeChange(client),
+    delete: (client: QueryClient, id?: string) =>
+      id ? detailInvalidator(client, id) : compositeChange(client),
+  };
+}
+
+/**
+ * Factory to create CRUD invalidators with additional invalidations
+ */
+function createCrudInvalidatorsWithExtras(
+  _collectionInvalidator: (client: QueryClient) => void,
+  detailInvalidator: (client: QueryClient, id: string) => void,
+  compositeChange: (client: QueryClient, id?: string) => void,
+  extraInvalidations?: (client: QueryClient, id?: string) => void,
+) {
+  return {
+    create: (client: QueryClient) => {
+      compositeChange(client);
+      extraInvalidations?.(client);
+    },
+    update: (client: QueryClient, id?: string) => {
+      if (id) {
+        detailInvalidator(client, id);
+      } else {
+        compositeChange(client);
+      }
+      extraInvalidations?.(client, id);
+    },
+    delete: (client: QueryClient, id?: string) => {
+      if (id) {
+        detailInvalidator(client, id);
+      } else {
+        compositeChange(client);
+      }
+      extraInvalidations?.(client, id);
+    },
+  };
+}
+
+/**
  * Preset invalidators for common CRUD mutation patterns.
  */
 export const mutationInvalidators = {
   crud: {
     tasks: {
-      create: (client: QueryClient) => compositeInvalidators.taskChange(client),
-      update: (client: QueryClient, taskId?: string) =>
-        taskId
-          ? detailInvalidators.task(client, taskId)
-          : compositeInvalidators.taskChange(client),
-      delete: (client: QueryClient, taskId?: string) =>
-        taskId
-          ? detailInvalidators.task(client, taskId)
-          : compositeInvalidators.taskChange(client),
+      ...createStandardCrudInvalidators(
+        collectionInvalidators.tasks,
+        detailInvalidators.task,
+        compositeInvalidators.taskChange,
+      ),
       bulk: (client: QueryClient) => {
         collectionInvalidators.tasks(client);
         collectionInvalidators.projects(client);
@@ -155,43 +217,23 @@ export const mutationInvalidators = {
       reorder: (client: QueryClient) => collectionInvalidators.tasks(client),
     },
     projects: {
-      create: (client: QueryClient) => {
-        compositeInvalidators.projectChange(client);
-        client.invalidateQueries({
-          queryKey: queryKeys.users.allProjectUsers(),
-        });
-      },
-      update: (client: QueryClient, projectId?: string) => {
-        if (projectId) {
-          detailInvalidators.project(client, projectId);
-        } else {
-          compositeInvalidators.projectChange(client);
-        }
-        client.invalidateQueries({
-          queryKey: queryKeys.users.allProjectUsers(),
-        });
-      },
-      delete: (client: QueryClient, projectId?: string) => {
-        if (projectId) {
-          detailInvalidators.project(client, projectId);
-        } else {
-          compositeInvalidators.projectChange(client);
-        }
-        client.invalidateQueries({
-          queryKey: queryKeys.users.allProjectUsers(),
-        });
-      },
+      ...createCrudInvalidatorsWithExtras(
+        collectionInvalidators.projects,
+        detailInvalidators.project,
+        compositeInvalidators.projectChange,
+        (client) => {
+          client.invalidateQueries({
+            queryKey: queryKeys.users.allProjectUsers(),
+          });
+        },
+      ),
     },
     users: {
-      create: (client: QueryClient) => compositeInvalidators.userChange(client),
-      update: (client: QueryClient, userId?: string) =>
-        userId
-          ? detailInvalidators.user(client, userId)
-          : compositeInvalidators.userChange(client),
-      delete: (client: QueryClient, userId?: string) =>
-        userId
-          ? detailInvalidators.user(client, userId)
-          : compositeInvalidators.userChange(client),
+      ...createStandardCrudInvalidators(
+        collectionInvalidators.users,
+        detailInvalidators.user,
+        compositeInvalidators.userChange,
+      ),
       adminAction: (client: QueryClient, userId?: string) =>
         userId
           ? detailInvalidators.user(client, userId)
@@ -206,28 +248,27 @@ export const mutationInvalidators = {
         compositeInvalidators.commentChange(client, taskId),
     },
     groups: {
-      create: (client: QueryClient) => {
-        collectionInvalidators.groups(client);
-        collectionInvalidators.projects(client);
-      },
-      update: (client: QueryClient, groupId?: string) => {
-        collectionInvalidators.groups(client);
-        if (groupId) {
+      ...createCrudInvalidatorsWithExtras(
+        collectionInvalidators.groups,
+        (client, id) => {
+          collectionInvalidators.groups(client);
           client.invalidateQueries({
-            queryKey: queryKeys.groups.detail(groupId),
+            queryKey: queryKeys.groups.detail(id),
           });
-        }
-        collectionInvalidators.projects(client);
-      },
-      delete: (client: QueryClient, groupId?: string) => {
-        collectionInvalidators.groups(client);
-        if (groupId) {
-          client.invalidateQueries({
-            queryKey: queryKeys.groups.detail(groupId),
-          });
-        }
-        collectionInvalidators.projects(client);
-      },
+        },
+        (client) => {
+          collectionInvalidators.groups(client);
+          collectionInvalidators.projects(client);
+        },
+        (client, id) => {
+          collectionInvalidators.projects(client);
+          if (id) {
+            client.invalidateQueries({
+              queryKey: queryKeys.groups.detail(id),
+            });
+          }
+        },
+      ),
     },
   },
 };

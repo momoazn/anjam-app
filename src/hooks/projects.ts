@@ -10,52 +10,18 @@ import { pb, ProjectWithSupervisor } from "../lib/pocketbase";
 import { ProjectsResponse, ProjectsRecord } from "../lib/pocketbase-types";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
-import { createMutation } from "./use-mutation-factory";
+import { createCrudHooks } from "./factories/use-crud-factory";
 
-type CreateProjectVariables = Omit<
-  ProjectsRecord,
-  "id" | "created" | "updated"
->;
-type UpdateProjectVariables = { id: string; updates: Partial<ProjectsRecord> };
-
-const useCreateProjectMutation = createMutation<
-  ProjectsResponse,
-  Error,
-  CreateProjectVariables
->(
-  (projectData) => pb.collection("projects").create(projectData),
-  (client) => {
-    mutationInvalidators.crud.projects.create(client);
-  },
-);
-
-const useUpdateProjectMutation = createMutation<
-  ProjectsResponse,
-  Error,
-  UpdateProjectVariables
->(
-  ({ id, updates }) => pb.collection("projects").update(id, updates),
-  (client, _data, variables) => {
-    mutationInvalidators.crud.projects.update(client, variables?.id);
-    if (variables?.id) {
-      client.invalidateQueries({
-        queryKey: [...queryKeys.projects.detail(variables.id), "supervisor"],
-      });
-    }
-  },
-);
-
-const useDeleteProjectMutation = createMutation<void, Error, string>(
-  async (id) => {
-    await pb.collection("projects").delete(id);
-  },
-  (client, _data, projectId) => {
-    mutationInvalidators.crud.projects.delete(client, projectId);
-    client.invalidateQueries({
-      queryKey: [...queryKeys.projects.detail(projectId), "supervisor"],
-    });
-  },
-);
+// Create CRUD hooks using the factory
+const {
+  useCreate: useCreateProjectMutation,
+  useUpdate: useUpdateProjectMutation,
+  useDelete: useDeleteProjectMutation,
+} = createCrudHooks<ProjectsRecord, ProjectsResponse>({
+  collection: "projects",
+  queryKeys: queryKeys.projects,
+  invalidators: mutationInvalidators.crud.projects,
+});
 
 /**
  * Hook to fetch all projects
@@ -124,7 +90,11 @@ export function useProjectWithSupervisor(options: {
  * @returns Mutation function for creating projects
  */
 export function useCreateProject(
-  options?: UseMutationOptions<ProjectsResponse, Error, CreateProjectVariables>,
+  options?: UseMutationOptions<
+    ProjectsResponse,
+    Error,
+    Omit<ProjectsRecord, "id" | "created" | "updated">
+  >,
 ) {
   return useCreateProjectMutation(options);
 }
@@ -135,7 +105,11 @@ export function useCreateProject(
  * @returns Mutation function for updating projects
  */
 export function useUpdateProject(
-  options?: UseMutationOptions<ProjectsResponse, Error, UpdateProjectVariables>,
+  options?: UseMutationOptions<
+    ProjectsResponse,
+    Error,
+    { id: string; updates: Partial<ProjectsRecord> }
+  >,
 ) {
   return useUpdateProjectMutation(options);
 }
@@ -146,7 +120,7 @@ export function useUpdateProject(
  * @returns Mutation function for deleting projects
  */
 export function useDeleteProject(
-  options?: UseMutationOptions<void, Error, string>,
+  options?: UseMutationOptions<ProjectsResponse, Error, string>,
 ) {
   return useDeleteProjectMutation(options);
 }
