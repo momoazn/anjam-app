@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"embed"
@@ -997,10 +998,43 @@ func deriveClientType(userAgent string) string {
 	return "unknown"
 }
 
+type authRequest struct {
+	Identity string `json:"identity"`
+	Password string `json:"password"`
+}
+
+func isAuthWithPasswordRequest(r *http.Request) bool {
+	return r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/auth-with-password")
+}
+
+func readRequestBody(r *http.Request) ([]byte, error) {
+	return io.ReadAll(r.Body)
+}
+
+func resetRequestBody(r *http.Request, body []byte) {
+	r.Body = io.NopCloser(bytes.NewReader(body))
+}
+
+func parseAuthRequest(body []byte) (authRequest, bool) {
+	var authReq authRequest
+	if err := json.Unmarshal(body, &authReq); err != nil {
+		return authRequest{}, false
+	}
+	return authReq, true
+}
+
+func trackAuthAttempt(app core.App, authReq authRequest, req *http.Request, statusCode int) {
+	if statusCode >= 200 && statusCode < 300 {
+		handleSuccessfulAuth(app, authReq.Identity, req)
+		return
+	}
+	handleFailedAuth(app, authReq.Identity, req)
+}
+
 func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept auth endpoints
-		if r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/auth-with-password") {
+		if isAuthWithPasswordRequest(r) {
 			// Create a response recorder to capture the response
 			rec := &responseRecorder{
 				ResponseWriter: w,
@@ -1008,19 +1042,16 @@ func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
 			}
 
 			// Store request body for later use (we need to parse it to get the identity)
-			bodyBytes, err := io.ReadAll(r.Body)
+			bodyBytes, err := readRequestBody(r)
 			if err != nil {
-				http.Error(w, "Failed to read request body", http.StatusBadRequest)
+				helpers.WriteJSONError(w, http.StatusBadRequest, "Failed to read request body")
 				return
 			}
-			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+			resetRequestBody(r, bodyBytes)
 
 			// Parse the auth request
-			var authReq struct {
-				Identity string `json:"identity"`
-				Password string `json:"password"`
-			}
-			if err := json.Unmarshal(bodyBytes, &authReq); err != nil {
+			authReq, ok := parseAuthRequest(bodyBytes)
+			if !ok {
 				// If JSON parsing fails, still allow the request to proceed
 				// The actual auth handler will handle invalid JSON
 				next.ServeHTTP(w, r)
@@ -1028,20 +1059,14 @@ func trackAuthMiddleware(app core.App, next http.Handler) http.Handler {
 			}
 
 			// Reset body for the actual handler
-			r.Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+			resetRequestBody(r, bodyBytes)
 
 			// Call the actual handler
 			next.ServeHTTP(rec, r)
 
 			// After the handler has run, track the auth attempt synchronously
 			// This ensures tracking completes before response is sent
-			if rec.statusCode >= 200 && rec.statusCode < 300 {
-				// Success - try to find the user and reset failed attempts
-				handleSuccessfulAuth(app, authReq.Identity, r)
-			} else {
-				// Failed - increment failed attempts
-				handleFailedAuth(app, authReq.Identity, r)
-			}
+			trackAuthAttempt(app, authReq, r, rec.statusCode)
 
 			return
 		}
@@ -1230,36 +1255,25 @@ func handleUnblockUser(e *core.RequestEvent) error {
 	})
 }
 
-func handleGetUserLoginLogs(e *core.RequestEvent) error {
-	userId := e.Request.PathValue("id")
+type userLoginLogRow struct {
+	ID            string `db:"id" json:"id"`
+	User          string `db:"user" json:"user"`
+	IPAddress     string `db:"ip_address" json:"ip_address"`
+	UserAgent     string `db:"user_agent" json:"user_agent"`
+	Success       bool   `db:"success" json:"success"`
+	FailureReason string `db:"failure_reason" json:"failure_reason"`
+	Created       string `db:"created" json:"created"`
+}
 
-	// Validate authentication
-	authRecord, err := validateAuth(e)
-	if err != nil {
-		return err
-	}
-
-	// Check permissions: admin can view any user's logs, users can only view their own
+func canViewLoginLogs(authRecord *core.Record, userId string) bool {
 	role := authRecord.GetString("role")
-	if role != RoleAdmin && authRecord.Id != userId {
-		return e.JSON(403, map[string]string{"error": ErrCannotViewOtherUserLogs})
-	}
+	return role == RoleAdmin || authRecord.Id == userId
+}
 
-	pagination := parsePagination(e.Request)
-
-	// Fetch login logs
-	var logs []struct {
-		ID            string `db:"id" json:"id"`
-		User          string `db:"user" json:"user"`
-		IPAddress     string `db:"ip_address" json:"ip_address"`
-		UserAgent     string `db:"user_agent" json:"user_agent"`
-		Success       bool   `db:"success" json:"success"`
-		FailureReason string `db:"failure_reason" json:"failure_reason"`
-		Created       string `db:"created" json:"created"`
-	}
-
+func fetchUserLoginLogs(app core.App, userId string, pagination PaginationParams) ([]userLoginLogRow, int, error) {
+	var logs []userLoginLogRow
 	offset := (pagination.Page - 1) * pagination.PerPage
-	err = e.App.DB().NewQuery(`
+	err := app.DB().NewQuery(`
 		SELECT id, user, ip_address, user_agent, success, failure_reason, created
 		FROM user_login_logs
 		WHERE user = {:userId}
@@ -1272,19 +1286,41 @@ func handleGetUserLoginLogs(e *core.RequestEvent) error {
 	}).All(&logs)
 
 	if err != nil {
-		log.Printf("Error fetching login logs for user %q: %v", userId, err)
-		return e.JSON(500, map[string]string{"error": ErrFailedToGetLoginLogs})
+		return nil, 0, err
 	}
 
-	// Get total count
 	var totalCount int
-	err = e.App.DB().NewQuery(`
+	err = app.DB().NewQuery(`
 		SELECT COUNT(*) FROM user_login_logs WHERE user = {:userId}
 	`).Bind(dbx.Params{"userId": userId}).Row(&totalCount)
-
 	if err != nil {
 		log.Printf("Error counting login logs for user %q: %v", userId, err)
 		totalCount = len(logs)
+	}
+
+	return logs, totalCount, nil
+}
+
+func handleGetUserLoginLogs(e *core.RequestEvent) error {
+	userId := e.Request.PathValue("id")
+
+	// Validate authentication
+	authRecord, err := validateAuth(e)
+	if err != nil {
+		return err
+	}
+
+	// Check permissions: admin can view any user's logs, users can only view their own
+	if !canViewLoginLogs(authRecord, userId) {
+		return e.JSON(403, map[string]string{"error": ErrCannotViewOtherUserLogs})
+	}
+
+	pagination := parsePagination(e.Request)
+
+	logs, totalCount, err := fetchUserLoginLogs(e.App, userId, pagination)
+	if err != nil {
+		log.Printf("Error fetching login logs for user %q: %v", userId, err)
+		return e.JSON(500, map[string]string{"error": ErrFailedToGetLoginLogs})
 	}
 
 	return e.JSON(200, map[string]interface{}{
