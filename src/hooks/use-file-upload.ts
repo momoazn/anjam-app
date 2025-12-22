@@ -112,7 +112,6 @@ export function useFileUpload(options?: FileUploadOptions) {
 
   const validateFile = useCallback(
     (file: File): { valid: boolean; error?: string } => {
-      // Check file size
       if (file.size > maxSize) {
         const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(0);
         return {
@@ -124,7 +123,6 @@ export function useFileUpload(options?: FileUploadOptions) {
         };
       }
 
-      // Check file type
       const fileType = file.type;
       const isAllowed = isAllowedType(fileType, allowedTypes);
 
@@ -147,7 +145,6 @@ export function useFileUpload(options?: FileUploadOptions) {
     (newFiles: FileList | File[]) => {
       const fileArray = Array.from(newFiles);
 
-      // Check max files limit
       if (maxFiles && files.length + fileArray.length > maxFiles) {
         const error = projects.files.validation.maxFiles.replace(
           "{maxFiles}",

@@ -119,7 +119,6 @@ export function SiteHeader() {
       }
     }
 
-    // Create pages like /projects/new
     if (parts.length === 2) {
       const first = parts[0];
       const second = parts[1];

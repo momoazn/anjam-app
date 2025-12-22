@@ -50,7 +50,6 @@ export function SaveFilterDialog({
     onOpenChange(false);
   };
 
-  // Get active filter summary
   const getFilterSummary = () => {
     const active: string[] = [];
     if (currentFilters.searchTerm)

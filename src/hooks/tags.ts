@@ -6,14 +6,12 @@ import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
-const {
-  useUpdate: useUpdateTagMutation,
-  useDelete: useDeleteTagMutation,
-} = createCrudHooks<TagsRecord, TagsResponse>({
-  collection: "tags",
-  queryKeys: queryKeys.tags,
-  invalidators: mutationInvalidators.crud.tags,
-});
+const { useUpdate: useUpdateTagMutation, useDelete: useDeleteTagMutation } =
+  createCrudHooks<TagsRecord, TagsResponse>({
+    collection: "tags",
+    queryKeys: queryKeys.tags,
+    invalidators: mutationInvalidators.crud.tags,
+  });
 
 type CreateTagInput = Pick<TagsRecord, "name" | "color">;
 
@@ -51,7 +49,6 @@ export function useCreateTag(
   return useCreateTagMutation({
     ...options,
     mutationFn: (data) => {
-      // Get the current user and set as creator
       const currentUser = pb.authStore.record;
       if (!currentUser) {
         throw new Error("User must be logged in to create a tag");

@@ -189,8 +189,6 @@ export const auditLogs = {
   },
 } as const;
 
-// Settings module constants
-
 export const settings = {
   title: "تنظیمات",
   description: "مدیریت حساب کاربری و تنظیمات برنامه",

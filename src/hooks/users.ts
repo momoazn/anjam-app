@@ -140,7 +140,6 @@ export function useProjectUsers({
         return Promise.resolve([]);
       }
 
-      // Get all user-project relationships for this project
       const userProjects = await pb
         .collection("users_projects")
         .getFullList<

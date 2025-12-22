@@ -32,7 +32,6 @@ export function FileUpload({
     (fileList: FileList) => {
       const fileArray = Array.from(fileList);
 
-      // Check max files limit
       if (maxFiles && value.length + fileArray.length > maxFiles) {
         toast.error(
           projects.files.validation.maxFiles.replace(

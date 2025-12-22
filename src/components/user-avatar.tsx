@@ -36,7 +36,6 @@ function getAvatarUrl(user: UserAvatarProps["user"]) {
   // If we have a PocketBase record shape, build the file URL
   if (user.id && (user.collectionId || user.collectionName)) {
     try {
-      // Create a minimal record shape that pb.files.getUrl expects
       const record = {
         id: user.id,
         collectionId: user.collectionId || "",

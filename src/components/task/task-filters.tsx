@@ -94,7 +94,6 @@ export function TaskFilters({
     }
 
     if (selectedStatus !== ALL_FILTER_VALUE) {
-      // Handle comma-separated status values
       let statusLabel = selectedStatus;
       if (selectedStatus.includes(",")) {
         const statusArray = selectedStatus.split(",");

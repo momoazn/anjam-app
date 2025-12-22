@@ -53,7 +53,6 @@ export function UserFields({
     enabled: showGroup,
   });
 
-  // Get available roles based on current user's role
   const availableRoles = useMemo(() => {
     if (!user) return [];
 

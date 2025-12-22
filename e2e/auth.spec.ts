@@ -7,7 +7,6 @@ test.describe("Authentication", () => {
   });
 
   test("should display login page", async ({ page }) => {
-    // Check if login form is visible
     await expect(
       page.getByRole("button", { name: fa.auth.login.loginButton }),
     ).toBeVisible();
@@ -16,7 +15,6 @@ test.describe("Authentication", () => {
   test("should show validation errors for empty form submission", async ({
     page,
   }) => {
-    // Try to submit empty form
     await page.getByRole("button", { name: fa.auth.login.loginButton }).click();
 
     // Should show validation errors

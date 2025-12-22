@@ -4,7 +4,6 @@ import { render, RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 
-// Create a custom render function that includes providers
 function createTestQueryClient() {
   return new QueryClient({
     defaultOptions: {
