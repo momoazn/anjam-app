@@ -1,59 +1,44 @@
-import { ListTodo, Plus, CheckSquare, LayoutGrid } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TaskFilters } from "@/components/task/task-filters";
-import { TaskListGroup } from "@/components/task/task-list-group";
+import {
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  formatISO,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
+
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
-import { SaveFilterDialog } from "@/components/task/save-filter-dialog";
-import { SavedFiltersDropdown } from "@/components/task/saved-filters-dropdown";
-import { ManageSavedFiltersDialog } from "@/components/task/manage-saved-filters-dialog";
+import { TaskFiltersPanel } from "@/components/task/task-filters-panel";
+import { TaskHeader } from "@/components/task/task-header";
+import { TaskListView } from "@/components/task/task-list-view";
+import { TaskPagination } from "@/components/task/task-pagination";
 import { PageTransition } from "@/components/page-transition";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
-import { TaskEmptyState } from "@/components/task/task-empty-state";
+import { savedFilters as savedFiltersText } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
-import { common, savedFilters as savedFiltersText, tasks } from "@/constants";
-import { useTaskFilters, ALL_FILTER_VALUE } from "@/hooks/use-task-filters";
+import { ALL_FILTER_VALUE, useTaskFilters } from "@/hooks/use-task-filters";
+import { useSavedFilters } from "@/hooks/use-saved-filters";
 import {
-  useTasks,
-  useBulkUpdateTasks,
   useBulkDeleteTasks,
+  useBulkUpdateTasks,
+  useTasks,
 } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
-import { useAuthUser } from "@/store/auth-store";
-import { useSavedFilters } from "@/hooks/use-saved-filters";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   TasksStatusOptions,
-  TasksPriorityOptions,
+  type TasksPriorityOptions,
 } from "@/lib/pocketbase-types";
-import { statusOrder } from "@/lib/status-utils";
-import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
-import {
-  formatISO,
-  startOfDay,
-  endOfDay,
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
-} from "date-fns";
+import { statusOrder, TASK_STATUS_CONFIG } from "@/lib/status-utils";
+import { useAuthUser } from "@/store/auth-store";
 
 export default function Tasks() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
-  const [saveFilterDialogOpen, setSaveFilterDialogOpen] = useState(false);
-  const [manageFiltersDialogOpen, setManageFiltersDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const authUser = useAuthUser();
@@ -76,7 +61,6 @@ export default function Tasks() {
   const bulkUpdate = useBulkUpdateTasks();
   const bulkDelete = useBulkDeleteTasks();
 
-  // Saved filters functionality
   const {
     savedFilters: savedFiltersData,
     saveFilter,
@@ -99,7 +83,6 @@ export default function Tasks() {
 
   const currentFilterMatch = getCurrentFilterMatch(currentFilters);
 
-  // Handle save filter
   const handleSaveFilter = (name: string, setAsDefaultFilter: boolean) => {
     try {
       const newFilter = saveFilter(name, currentFilters);
@@ -117,7 +100,6 @@ export default function Tasks() {
     }
   };
 
-  // Handle apply filter
   const handleApplyFilter = async (filter: (typeof savedFiltersData)[0]) => {
     try {
       await setSearchTerm(filter.filters.searchTerm || "");
@@ -144,7 +126,6 @@ export default function Tasks() {
     }
   };
 
-  // Handle delete filter
   const handleDeleteFilter = (id: string) => {
     try {
       deleteFilter(id);
@@ -159,7 +140,6 @@ export default function Tasks() {
     }
   };
 
-  // Handle set default
   const handleSetDefault = (id: string | null) => {
     try {
       setAsDefault(id);
@@ -175,8 +155,6 @@ export default function Tasks() {
       });
     }
   };
-
-  // URL params are now handled automatically by useQueryState in the hook
 
   const filterExpression = useMemo(() => {
     const parts: string[] = [];
@@ -268,18 +246,15 @@ export default function Tasks() {
     selectedTag,
   ]);
 
-  // Reset to first page when filters change
   useEffect(() => {
     setPage(1);
   }, [filterExpression]);
 
-  // Fetch users for dropdowns
   const { data: users, isPending: isLoadingUsers } = useUsers({
     batch: 100,
     sort: "-created",
   });
 
-  // Fetch tasks with server-side filtering and pagination
   const taskQuery = useTasks({
     expandFields: "project,assignee",
     mode: "paged",
@@ -297,7 +272,6 @@ export default function Tasks() {
   const currentPage = taskQuery.data?.page ?? page;
   const currentPerPage = taskQuery.data?.perPage ?? perPage;
 
-  // Keep local pagination in sync with server response
   useEffect(() => {
     if (currentPage !== page) {
       setPage(currentPage);
@@ -311,7 +285,6 @@ export default function Tasks() {
   }, [currentPerPage, perPage]);
 
   const groupedTasks = useMemo(() => {
-    // Prevent grouping during load state to avoid brief flash of unfiltered/empty groups
     if (taskQuery.isPending || !userTasks) {
       return {} as Record<TasksStatusOptions, TaskWithProject[]>;
     }
@@ -336,7 +309,6 @@ export default function Tasks() {
     selectedTag !== "all"
   );
 
-  // Bulk operation handlers
   const handleBulkDelete = async () => {
     await bulkDelete.mutateAsync(selectedTasks);
     setSelectedTasks([]);
@@ -394,7 +366,6 @@ export default function Tasks() {
   const pageEnd =
     totalTasks === 0 ? 0 : Math.min(currentPage * currentPerPage, totalTasks);
 
-  // Generate available statuses from centralized configuration
   const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
     Object.values(TASK_STATUS_CONFIG).map((config) => ({
       value: config.key,
@@ -403,192 +374,67 @@ export default function Tasks() {
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      {/* Header Section */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-            <ListTodo className="h-5 w-5 md:h-6 md:w-6" />
-            {tasks.allTasks}
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {totalTasks > 0
-              ? tasks.header.tasksFound.replace(
-                  "{count}",
-                  totalTasks.toString(),
-                )
-              : tasks.header.manageTasks}
-          </p>
-        </div>
-        <div className="flex w-full gap-2 sm:w-auto">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => navigate("/tasks/board")}
-            className="gap-2"
-          >
-            <LayoutGrid className="h-4 w-4" />
-            {tasks.board.title}
-          </Button>
-          <Button
-            variant={selectionMode ? "secondary" : "outline"}
-            size="lg"
-            onClick={toggleSelectionMode}
-            className="gap-2"
-          >
-            <CheckSquare className="h-4 w-4" />
-            {selectionMode
-              ? common.buttons.cancelSelection
-              : common.buttons.multiSelect}
-          </Button>
-          <Button
-            className="w-full gap-2 sm:w-auto"
-            size="lg"
-            onClick={() => navigate("/tasks/new")}
-          >
-            <Plus className="h-4 w-4" />
-            {tasks.addTask.buttons.newTask}
-          </Button>
-        </div>
-      </div>
-
-      {/* Search and Filter Controls */}
-      <div className="mb-8 space-y-3" data-animate-stagger>
-        {/* Saved Filters Dropdown */}
-        <div className="flex justify-end">
-          <SavedFiltersDropdown
-            savedFilters={savedFiltersData}
-            currentFilterMatch={currentFilterMatch}
-            defaultFilterId={defaultFilterId}
-            onApplyFilter={handleApplyFilter}
-            onDeleteFilter={handleDeleteFilter}
-            onSetDefault={handleSetDefault}
-            onOpenSaveDialog={() => setSaveFilterDialogOpen(true)}
-            onOpenManageDialog={() => setManageFiltersDialogOpen(true)}
-            disabled={isDefaultFilters(currentFilters)}
-          />
-        </div>
-
-        {/* Filter Controls */}
-        <TaskFilters
-          searchTerm={searchTerm}
-          selectedStatus={selectedStatus}
-          selectedPriority={selectedPriority}
-          selectedAssignee={selectedAssignee}
-          selectedDateRange={selectedDateRange}
-          selectedTag={selectedTag}
-          setSearchTerm={setSearchTerm}
-          setSelectedStatus={setSelectedStatus}
-          setSelectedPriority={setSelectedPriority}
-          setSelectedAssignee={setSelectedAssignee}
-          setSelectedDateRange={setSelectedDateRange}
-          setSelectedTag={setSelectedTag}
-          users={users}
-          isLoadingUsers={isLoadingUsers}
-        />
-      </div>
-
-      {/* Save Filter Dialog */}
-      <SaveFilterDialog
-        open={saveFilterDialogOpen}
-        onOpenChange={setSaveFilterDialogOpen}
-        currentFilters={currentFilters}
-        onSave={handleSaveFilter}
+      <TaskHeader
+        totalTasks={totalTasks}
+        selectionMode={selectionMode}
+        onToggleSelection={toggleSelectionMode}
+        onNavigateBoard={() => navigate("/tasks/board")}
+        onCreateTask={() => navigate("/tasks/new")}
       />
 
-      {/* Manage Saved Filters Dialog */}
-      <ManageSavedFiltersDialog
-        open={manageFiltersDialogOpen}
-        onOpenChange={setManageFiltersDialogOpen}
+      <TaskFiltersPanel
+        currentFilters={currentFilters}
         savedFilters={savedFiltersData}
+        currentFilterMatch={currentFilterMatch}
         defaultFilterId={defaultFilterId}
+        disableSave={isDefaultFilters(currentFilters)}
+        onSaveFilter={handleSaveFilter}
+        onApplyFilter={handleApplyFilter}
         onUpdateFilter={updateFilter}
         onDeleteFilter={handleDeleteFilter}
         onSetDefault={handleSetDefault}
+        searchTerm={searchTerm}
+        selectedStatus={selectedStatus}
+        selectedPriority={selectedPriority}
+        selectedAssignee={selectedAssignee}
+        selectedDateRange={selectedDateRange}
+        selectedTag={selectedTag}
+        setSearchTerm={setSearchTerm}
+        setSelectedStatus={setSelectedStatus}
+        setSelectedPriority={setSelectedPriority}
+        setSelectedAssignee={setSelectedAssignee}
+        setSelectedDateRange={setSelectedDateRange}
+        setSelectedTag={setSelectedTag}
+        users={users}
+        isLoadingUsers={isLoadingUsers}
       />
 
-      {/* Task List */}
       <div className="space-y-6" data-animate-stagger>
-        {taskQuery.isPending ? (
-          <TaskListSkeleton />
-        ) : totalTasks === 0 ? (
-          <TaskEmptyState hasFilters={hasActiveFilters} />
-        ) : (
-          statusOrder?.map((status) => {
-            const tasksInGroup = groupedTasks?.[status] ?? [];
-            return (
-              <TaskListGroup
-                key={status}
-                taskCount={tasksInGroup.length}
-                status={status}
-                tasks={tasksInGroup}
-                showProject={true}
-                enableSelection={selectionMode}
-                selectedTasks={selectedTasks}
-                onSelectionChange={handleSelectionChange}
-              />
-            );
-          })
-        )}
+        <TaskListView
+          isLoading={taskQuery.isPending}
+          totalTasks={totalTasks}
+          hasActiveFilters={hasActiveFilters}
+          statusOrder={statusOrder}
+          groupedTasks={groupedTasks}
+          selectionMode={selectionMode}
+          selectedTasks={selectedTasks}
+          onSelectionChange={handleSelectionChange}
+        />
       </div>
 
-      {/* Pagination Controls */}
-      {!taskQuery.isPending && totalTasks > 0 && (
-        <Card className="mt-6">
-          <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-muted-foreground text-sm">
-              {tasks.pagination.range
-                .replace("{start}", pageStart.toString())
-                .replace("{end}", pageEnd.toString())
-                .replace("{total}", totalTasks.toString())}
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <Select
-                value={currentPerPage.toString()}
-                onValueChange={handlePerPageChange}
-              >
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[25, 50, 100, 200, 500].map((size) => (
-                    <SelectItem key={size} value={size.toString()}>
-                      {tasks.pagination.perPage.replace(
-                        "{count}",
-                        size.toString(),
-                      )}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage <= 1}
-                >
-                  {tasks.pagination.prev}
-                </Button>
-                <span className="text-muted-foreground text-sm">
-                  {tasks.pagination.page
-                    .replace("{page}", currentPage.toString())
-                    .replace("{total}", totalPages.toString())}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= totalPages}
-                >
-                  {tasks.pagination.next}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {!taskQuery.isPending && (
+        <TaskPagination
+          totalTasks={totalTasks}
+          pageStart={pageStart}
+          pageEnd={pageEnd}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          currentPerPage={currentPerPage}
+          onPerPageChange={handlePerPageChange}
+          onPageChange={handlePageChange}
+        />
       )}
 
-      {/* Bulk Actions Bar */}
       {selectionMode && selectedTasks.length > 0 && (
         <BulkActionsBar
           selectedCount={selectedTasks.length}
