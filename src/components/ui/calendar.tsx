@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { differenceInCalendarDays } from "date-fns-jalali";
+import { differenceInCalendarDays, type Locale } from "date-fns-jalali";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
 import {
@@ -11,8 +11,7 @@ import {
 } from "react-day-picker";
 import { DayPicker, faIR } from "react-day-picker/persian";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const localeOverride = faIR as any;
+const localeOverride = faIR as Locale;
 
 export type CalendarProps = DayPickerProps & {
   /**
