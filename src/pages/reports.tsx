@@ -116,7 +116,6 @@ export default function Reports() {
   );
 
   const filteredTasks = useMemo(() => {
-    if (!tasks) return [];
     return filterTasksByControls(tasks, {
       start: timeRange.start,
       end: timeRange.end,
@@ -128,7 +127,6 @@ export default function Reports() {
   }, [tasks, timeRange, debouncedFilters.filters]);
 
   const filteredNonTime = useMemo(() => {
-    if (!tasks) return [];
     return filterTasksNonTime(tasks, {
       projectIds: debouncedFilters.filters.projectIds,
       assigneeIds: debouncedFilters.filters.assigneeIds,
@@ -138,7 +136,6 @@ export default function Reports() {
   }, [tasks, debouncedFilters.filters]);
 
   const overviewMetrics = useMemo(() => {
-    if (!filteredTasks) return null;
     const base = computeOverviewMetrics({
       tasks: filteredTasks,
       now: new Date(),
@@ -155,7 +152,6 @@ export default function Reports() {
   }, [filteredTasks, filteredNonTime, timeRange]);
 
   const timelinessData = useMemo<TimelinessDatum[]>(() => {
-    if (!filteredTasks) return [];
     const counts = classifyTimeliness(filteredTasks, timeRange);
     return [
       {
@@ -177,7 +173,6 @@ export default function Reports() {
   }, [filteredTasks, timeRange]);
 
   const priorityData = useMemo(() => {
-    if (!filteredTasks) return [];
     return countByPriority(filteredTasks);
   }, [filteredTasks]);
 
@@ -270,8 +265,6 @@ export default function Reports() {
     title: string,
     predicate: (task: TaskWithProject) => boolean,
   ) => {
-    if (!filteredTasks) return;
-
     const matchingTasks = filteredTasks.filter(predicate);
     const rows = matchingTasks.map((task) => ({
       id: task.id,
