@@ -9,6 +9,24 @@ import { useMemo } from "react";
 
 export const ALL_FILTER_VALUE = "all"; // Export for use in components
 
+export type TaskFilterValues = {
+  searchTerm: string;
+  selectedStatus: TasksStatusOptions | typeof ALL_FILTER_VALUE;
+  selectedPriority: TasksPriorityOptions | typeof ALL_FILTER_VALUE;
+  selectedAssignee: string | typeof ALL_FILTER_VALUE;
+  selectedDateRange: string;
+  selectedTag: string;
+};
+
+export const DEFAULT_TASK_FILTERS: TaskFilterValues = {
+  searchTerm: "",
+  selectedStatus: ALL_FILTER_VALUE,
+  selectedPriority: ALL_FILTER_VALUE,
+  selectedAssignee: ALL_FILTER_VALUE,
+  selectedDateRange: "all",
+  selectedTag: "all",
+};
+
 export function isValidStatus(value: string): value is TasksStatusOptions {
   return Object.values(TasksStatusOptions).includes(
     value as TasksStatusOptions,
@@ -20,16 +38,6 @@ export function isValidPriority(value: string): value is TasksPriorityOptions {
     value as TasksPriorityOptions,
   );
 }
-
-// Define the shape of the filters state
-export type TaskFiltersState = {
-  searchTerm: string;
-  selectedStatus: TasksStatusOptions | typeof ALL_FILTER_VALUE;
-  selectedPriority: TasksPriorityOptions | typeof ALL_FILTER_VALUE;
-  selectedAssignee: string | typeof ALL_FILTER_VALUE;
-  selectedDateRange: string;
-  selectedTag: string;
-};
 
 // Define the return type of the hook
 export type UseTaskFiltersReturn = {
@@ -60,34 +68,68 @@ export type UseTaskFiltersReturn = {
   filteredTasks: TaskWithProject[];
 };
 
+const useFilterState = (key: string, defaultValue: string) => {
+  return useQueryState(key, parseAsString.withDefault(defaultValue));
+};
+
+const matchesStatusFilter = (
+  task: TaskWithProject,
+  selectedStatus: string,
+  selectedAssignee: string,
+) => {
+  if (selectedStatus === ALL_FILTER_VALUE) {
+    if (selectedAssignee === "me") {
+      return (
+        task.status === TasksStatusOptions.todo ||
+        task.status === TasksStatusOptions.in_progress ||
+        task.status === TasksStatusOptions.pending
+      );
+    }
+    return true;
+  }
+
+  if (selectedStatus.includes(",")) {
+    const statusArray = selectedStatus
+      .split(",")
+      .filter((status): status is TasksStatusOptions => isValidStatus(status));
+    return statusArray.length > 0 && statusArray.includes(task.status);
+  }
+
+  if (isValidStatus(selectedStatus)) {
+    return task.status === selectedStatus;
+  }
+
+  return true;
+};
+
 // The custom hook
 export function useTaskFilters(
   tasks: TaskWithProject[] | undefined, // Accept the raw task list
   options?: { skipFiltering?: boolean },
 ): UseTaskFiltersReturn {
-  const [searchTerm, setSearchTerm] = useQueryState(
+  const [searchTerm, setSearchTerm] = useFilterState(
     "search",
-    parseAsString.withDefault(""),
+    DEFAULT_TASK_FILTERS.searchTerm,
   );
-  const [selectedStatus, setSelectedStatus] = useQueryState(
+  const [selectedStatus, setSelectedStatus] = useFilterState(
     "status",
-    parseAsString.withDefault(ALL_FILTER_VALUE),
+    DEFAULT_TASK_FILTERS.selectedStatus,
   );
-  const [selectedPriority, setSelectedPriority] = useQueryState(
+  const [selectedPriority, setSelectedPriority] = useFilterState(
     "priority",
-    parseAsString.withDefault(ALL_FILTER_VALUE),
+    DEFAULT_TASK_FILTERS.selectedPriority,
   );
-  const [selectedAssignee, setSelectedAssignee] = useQueryState(
+  const [selectedAssignee, setSelectedAssignee] = useFilterState(
     "assignee",
-    parseAsString.withDefault(ALL_FILTER_VALUE),
+    DEFAULT_TASK_FILTERS.selectedAssignee,
   );
-  const [selectedDateRange, setSelectedDateRange] = useQueryState(
+  const [selectedDateRange, setSelectedDateRange] = useFilterState(
     "due",
-    parseAsString.withDefault("all"),
+    DEFAULT_TASK_FILTERS.selectedDateRange,
   );
-  const [selectedTag, setSelectedTag] = useQueryState(
+  const [selectedTag, setSelectedTag] = useFilterState(
     "tag",
-    parseAsString.withDefault("all"),
+    DEFAULT_TASK_FILTERS.selectedTag,
   );
 
   const filteredTasks = useMemo(() => {
@@ -108,30 +150,11 @@ export function useTaskFilters(
           .includes(searchTerm.toLowerCase());
 
       // Filter logic
-      let matchesStatus = true;
-      if (
-        selectedStatus !== ALL_FILTER_VALUE &&
-        isValidStatus(selectedStatus)
-      ) {
-        matchesStatus = task.status === selectedStatus;
-      }
-
-      // Handle comma-separated status values (e.g., "todo,in_progress")
-      if (selectedStatus !== ALL_FILTER_VALUE && selectedStatus.includes(",")) {
-        const statusArray = selectedStatus
-          .split(",")
-          .filter((s): s is TasksStatusOptions => isValidStatus(s));
-        matchesStatus =
-          statusArray.length > 0 && statusArray.includes(task.status);
-      }
-
-      // Special handling for "My Tasks" which should show both todo and in_progress
-      if (selectedAssignee === "me" && selectedStatus === ALL_FILTER_VALUE) {
-        matchesStatus =
-          task.status === TasksStatusOptions.todo ||
-          task.status === TasksStatusOptions.in_progress ||
-          task.status === TasksStatusOptions.pending;
-      }
+      const matchesStatus = matchesStatusFilter(
+        task,
+        selectedStatus,
+        selectedAssignee,
+      );
       let matchesPriority = true;
       if (
         selectedPriority !== ALL_FILTER_VALUE &&

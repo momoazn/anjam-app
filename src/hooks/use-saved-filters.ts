@@ -1,18 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { fa } from "@/constants/text";
-import { ALL_FILTER_VALUE } from "./use-task-filters";
+import {
+  DEFAULT_TASK_FILTERS,
+  type TaskFilterValues,
+} from "./use-task-filters";
 
 export interface SavedFilter {
   id: string;
   name: string;
-  filters: {
-    searchTerm: string;
-    selectedStatus: string;
-    selectedPriority: string;
-    selectedAssignee: string;
-    selectedDateRange: string;
-    selectedTag: string;
-  };
+  filters: TaskFilterValues;
   createdAt: string;
   isDefault?: boolean;
 }
@@ -56,17 +52,7 @@ export function useSavedFilters() {
 
   // Create a new saved filter
   const saveFilter = useCallback(
-    (
-      name: string,
-      filters: {
-        searchTerm: string;
-        selectedStatus: string;
-        selectedPriority: string;
-        selectedAssignee: string;
-        selectedDateRange: string;
-        selectedTag: string;
-      },
-    ): SavedFilter => {
+    (name: string, filters: TaskFilterValues): SavedFilter => {
       const newFilter: SavedFilter = {
         id: `filter_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         name,
@@ -126,14 +112,7 @@ export function useSavedFilters() {
 
   // Check if current filters match any saved filter
   const getCurrentFilterMatch = useCallback(
-    (currentFilters: {
-      searchTerm: string;
-      selectedStatus: string;
-      selectedPriority: string;
-      selectedAssignee: string;
-      selectedDateRange: string;
-      selectedTag: string;
-    }): SavedFilter | null => {
+    (currentFilters: TaskFilterValues): SavedFilter | null => {
       return (
         savedFilters.find((saved) => {
           return (
@@ -154,26 +133,16 @@ export function useSavedFilters() {
   );
 
   // Check if filters are default (all filters cleared)
-  const isDefaultFilters = useCallback(
-    (filters: {
-      searchTerm: string;
-      selectedStatus: string;
-      selectedPriority: string;
-      selectedAssignee: string;
-      selectedDateRange: string;
-      selectedTag: string;
-    }): boolean => {
-      return (
-        filters.searchTerm === "" &&
-        filters.selectedStatus === ALL_FILTER_VALUE &&
-        filters.selectedPriority === ALL_FILTER_VALUE &&
-        filters.selectedAssignee === ALL_FILTER_VALUE &&
-        filters.selectedDateRange === "all" &&
-        filters.selectedTag === "all"
-      );
-    },
-    [],
-  );
+  const isDefaultFilters = useCallback((filters: TaskFilterValues): boolean => {
+    return (
+      filters.searchTerm === DEFAULT_TASK_FILTERS.searchTerm &&
+      filters.selectedStatus === DEFAULT_TASK_FILTERS.selectedStatus &&
+      filters.selectedPriority === DEFAULT_TASK_FILTERS.selectedPriority &&
+      filters.selectedAssignee === DEFAULT_TASK_FILTERS.selectedAssignee &&
+      filters.selectedDateRange === DEFAULT_TASK_FILTERS.selectedDateRange &&
+      filters.selectedTag === DEFAULT_TASK_FILTERS.selectedTag
+    );
+  }, []);
 
   return {
     savedFilters,
