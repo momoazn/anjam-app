@@ -72,7 +72,24 @@ export function useTags(
 export function useCreateTag(
   options?: UseMutationOptions<TagsResponse, Error, Partial<TagsRecord>>,
 ) {
-  return useCreateTagMutation(options);
+  return useCreateTagMutation({
+    ...options,
+    mutationFn: (data) => {
+      // Get the current user and set as creator
+      const currentUser = pb.authStore.record;
+      if (!currentUser) {
+        throw new Error("User must be logged in to create a tag");
+      }
+
+      // Merge the creator field with the provided data
+      const tagData = {
+        ...data,
+        creator: currentUser.id,
+      };
+
+      return pb.collection("tags").create<TagsResponse>(tagData);
+    },
+  });
 }
 
 /**
