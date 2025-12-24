@@ -1,21 +1,23 @@
 import { useState, useMemo } from "react";
 import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+  IconChevronLeft,
+  IconChevronRight,
+  IconCalendar,
+  IconHash,
+  IconPlus,
+} from "@tabler/icons-react";
 import { PageTransition } from "@/components/page-transition";
-import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { common, tasks } from "@/constants";
+import { common, tasks as tasksText } from "@/constants";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { getTaskStatus, isTaskCompleted } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   startOfMonth,
   endOfMonth,
@@ -28,34 +30,65 @@ import {
   isSameMonth,
   isToday,
 } from "date-fns-jalali";
+import { cn } from "@/lib/utils";
 
-// Priority colors for task indicators
 const priorityColors = {
-  low: "bg-gray-400",
-  medium: "bg-blue-500",
-  high: "bg-orange-500",
-  urgent: "bg-red-500",
+  low: "bg-emerald-500/20 text-emerald-600",
+  medium: "bg-blue-500/20 text-blue-600",
+  high: "bg-orange-500/20 text-orange-600",
+  urgent: "bg-rose-500/20 text-rose-600",
 };
 
-// Loading skeleton
 const CalendarSkeleton = () => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <Skeleton className="h-8 w-40" />
-      <div className="flex gap-2">
-        <Skeleton className="h-8 w-8" />
-        <Skeleton className="h-8 w-8" />
-      </div>
-    </div>
-    <div className="grid grid-cols-7 gap-2">
-      {Array.from({ length: 35 }).map((_, i) => (
-        <Skeleton key={i} className="h-24 w-full" />
+  <div className="space-y-6">
+    <div className="bg-muted/20 border-border/40 h-16 w-full animate-pulse border" />
+    <div className="bg-border/40 border-border/40 grid grid-cols-7 gap-px overflow-hidden border shadow-xl">
+      {[
+        "sk1",
+        "sk2",
+        "sk3",
+        "sk4",
+        "sk5",
+        "sk6",
+        "sk7",
+        "sk8",
+        "sk9",
+        "sk10",
+        "sk11",
+        "sk12",
+        "sk13",
+        "sk14",
+        "sk15",
+        "sk16",
+        "sk17",
+        "sk18",
+        "sk19",
+        "sk20",
+        "sk21",
+        "sk22",
+        "sk23",
+        "sk24",
+        "sk25",
+        "sk26",
+        "sk27",
+        "sk28",
+        "sk29",
+        "sk30",
+        "sk31",
+        "sk32",
+        "sk33",
+        "sk34",
+        "sk35",
+      ].map((key) => (
+        <div key={key} className="bg-card h-32 p-4">
+          <Skeleton className="mb-4 h-4 w-6 rounded-none" />
+          <Skeleton className="h-3 w-full rounded-none" />
+        </div>
       ))}
     </div>
   </div>
 );
 
-// Task card component for calendar cells
 interface CalendarTaskProps {
   task: TaskWithProject;
 }
@@ -67,20 +100,20 @@ function CalendarTask({ task }: CalendarTaskProps) {
   return (
     <Link to={taskUrl}>
       <div
-        className={`group hover:bg-muted/50 mb-1 rounded border-r-2 p-1 text-xs transition-colors ${
-          priorityColors[task.priority]
-        }`}
-        style={{ borderRightWidth: "3px" }}
+        className={cn(
+          "group hover:bg-muted/50 mb-1 rounded-none border-r-2 p-1.5 text-right transition-all",
+          priorityColors[task.priority],
+        )}
+        style={{ borderRightColor: status.color }}
       >
-        <div className="flex items-center gap-1">
-          <span
-            className="h-2 w-2 flex-shrink-0 rounded-full"
-            style={{ backgroundColor: status.color }}
-          />
-          <span className="line-clamp-1 flex-1 font-medium">{task.title}</span>
+        <div className="mb-0.5 flex items-center justify-end gap-1.5">
+          <span className="line-clamp-1 flex-1 text-[9px] font-black tracking-tight uppercase">
+            {task.title}
+          </span>
+          <div className="size-1 rounded-none bg-current" />
         </div>
         {task.expand?.assignee && (
-          <p className="text-muted-foreground mt-0.5 truncate text-[10px]">
+          <p className="truncate text-[8px] font-bold tracking-widest uppercase opacity-60">
             {formatUserName(
               task.expand.assignee.first_name,
               task.expand.assignee.last_name,
@@ -96,13 +129,12 @@ function CalendarTask({ task }: CalendarTaskProps) {
 export default function TaskCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { tasks: allTasks, isLoadingTasks } = useTasksPageData();
+  const navigate = useNavigate();
 
-  // Filter tasks with deadlines
   const tasksWithDeadlines = useMemo(() => {
     return allTasks?.filter((task) => task.deadline && !task.deleted_at) || [];
   }, [allTasks]);
 
-  // Group tasks by date
   const tasksByDate = useMemo(() => {
     const grouped = new Map<string, TaskWithProject[]>();
 
@@ -112,7 +144,7 @@ export default function TaskCalendar() {
         if (!grouped.has(dateKey)) {
           grouped.set(dateKey, []);
         }
-        grouped.get(dateKey)!.push(task);
+        grouped.get(dateKey)?.push(task);
       }
     });
 
@@ -135,7 +167,7 @@ export default function TaskCalendar() {
     return tasksByDate.get(dateKey) || [];
   };
 
-  const weekdayNames = tasks.calendar.weekdayShort;
+  const weekdayNames = tasksText.calendar.weekdayShort;
 
   const monthStats = useMemo(() => {
     const monthStart = startOfMonth(currentMonth);
@@ -154,166 +186,188 @@ export default function TaskCalendar() {
     };
   }, [tasksWithDeadlines, currentMonth]);
 
+  const headerActions = (
+    <div className="flex flex-wrap gap-2">
+      <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
+        <Badge
+          variant="outline"
+          className="text-primary rounded-none border-transparent text-[10px] font-black tracking-widest uppercase"
+        >
+          {digitsEnToFa(monthStats.total)} TOTAL
+        </Badge>
+        <div className="bg-border/40 mx-1 h-4 w-px" />
+        <Badge
+          variant="outline"
+          className="rounded-none border-transparent text-[10px] font-black tracking-widest text-emerald-500 uppercase"
+        >
+          {digitsEnToFa(monthStats.completed)} DONE
+        </Badge>
+      </div>
+      <Button
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        size="lg"
+        onClick={() => navigate("/tasks/new")}
+      >
+        <IconPlus className="size-5" />
+        <span className="tracking-widest uppercase">
+          {tasksText.addTask.buttons.newTask}
+        </span>
+      </Button>
+    </div>
+  );
+
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-            <CalendarIcon className="h-5 w-5 md:h-6 md:w-6" />
-            {tasks.calendar.title}
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {tasks.calendar.description}
-          </p>
+      <PageHeader
+        title={tasksText.calendar.title}
+        description={tasksText.calendar.description}
+        icon={IconCalendar}
+        nodeId="Temporal_Registry :: Calendar"
+        actions={headerActions}
+      />
+
+      {/* Navigation Registry */}
+      <div className="bg-muted/5 border-border/40 mb-8 flex items-center justify-between overflow-hidden border p-4 shadow-sm">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToPreviousMonth}
+            className="border-border/20 hover:bg-muted size-10 rounded-none border active:scale-95"
+          >
+            <IconChevronRight className="size-5" />
+          </Button>
+
+          <div className="flex min-w-[140px] flex-col items-end">
+            <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-[0.3em] uppercase">
+              Active_Temporal_Frame
+            </span>
+            <h2 className="text-lg font-black tracking-tight uppercase">
+              {format(currentMonth, "MMMM yyyy", { locale: undefined })}
+            </h2>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToNextMonth}
+            className="border-border/20 hover:bg-muted size-10 rounded-none border active:scale-95"
+          >
+            <IconChevronLeft className="size-5" />
+          </Button>
         </div>
 
-        {/* Month Stats */}
-        <div className="flex gap-2">
-          <Badge variant="outline" className="gap-1">
-            <span className="font-semibold">{monthStats.total}</span>
-            <span className="text-muted-foreground">{common.total}</span>
-          </Badge>
-          <Badge variant="outline" className="gap-1 border-green-500">
-            <span className="font-semibold text-green-600">
-              {monthStats.completed}
+        <div className="flex items-center gap-4">
+          <div className="border-primary/20 hidden flex-col items-end border-r-2 pr-4 sm:flex">
+            <span className="text-muted-foreground/40 mb-1 text-right text-[8px] leading-none font-black tracking-[0.2em] uppercase">
+              Reference
             </span>
-            <span className="text-muted-foreground">{common.completed}</span>
-          </Badge>
-          <Badge variant="outline" className="gap-1 border-orange-500">
-            <span className="font-semibold text-orange-600">
-              {monthStats.pending}
-            </span>
-            <span className="text-muted-foreground">{common.pending}</span>
-          </Badge>
+            <div className="text-foreground/60 text-[10px] font-black uppercase">
+              Node :: 01-PB-ALPHA
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToToday}
+            className="border-foreground bg-card h-9 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+          >
+            {common.today}
+          </Button>
         </div>
       </div>
 
-      {/* Calendar Navigation */}
-      <Card className="mb-4">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToPreviousMonth}
-              title={common.previous}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold">
-                {format(currentMonth, "MMMM yyyy", { locale: undefined })}
-              </h2>
-              <Button variant="ghost" size="sm" onClick={goToToday}>
-                {common.today}
-              </Button>
-            </div>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToNextMonth}
-              title={common.next}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Calendar Grid */}
+      {/* Calendar Grid Registry */}
       {isLoadingTasks ? (
         <CalendarSkeleton />
       ) : (
-        <Card>
-          <CardContent className="p-4">
-            {/* Weekday Headers */}
-            <div className="mb-2 grid grid-cols-7 gap-2">
-              {weekdayNames.map((day, index) => (
+        <div className="bg-border/40 border-border/40 overflow-hidden border shadow-2xl">
+          {/* Weekday Protocol Headers */}
+          <div className="bg-border/40 border-border/40 grid grid-cols-7 gap-px border-b">
+            {weekdayNames.map((day) => (
+              <div
+                key={day}
+                className="bg-muted/20 text-muted-foreground/60 py-3 text-center text-[10px] font-black tracking-[0.3em] uppercase"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Temporal Cells */}
+          <div className="bg-border/40 grid grid-cols-7 gap-px">
+            {calendarDays.map((day) => {
+              const dayTasks = getTasksForDay(day);
+              const isCurrentMonth = isSameMonth(day, currentMonth);
+              const isTodayDate = isToday(day);
+              const dateString = day.toISOString();
+
+              return (
                 <div
-                  key={index}
-                  className="text-muted-foreground text-center text-sm font-medium"
+                  key={dateString}
+                  className={cn(
+                    "group flex min-h-[140px] flex-col p-2 transition-colors",
+                    !isCurrentMonth
+                      ? "bg-muted/10 opacity-40 grayscale"
+                      : "bg-card hover:bg-muted/5",
+                    isTodayDate && "bg-primary/5",
+                  )}
                 >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar Days */}
-            <div className="grid grid-cols-7 gap-2">
-              {calendarDays.map((day, index) => {
-                const dayTasks = getTasksForDay(day);
-                const isCurrentMonth = isSameMonth(day, currentMonth);
-                const isTodayDate = isToday(day);
-
-                return (
-                  <div
-                    key={index}
-                    className={`min-h-[100px] rounded-lg border p-2 ${
-                      !isCurrentMonth
-                        ? "bg-muted/30 text-muted-foreground"
-                        : "bg-background"
-                    } ${
-                      isTodayDate
-                        ? "border-primary ring-primary ring-1 ring-offset-1"
-                        : "border-border"
-                    }`}
-                  >
-                    {/* Day Number */}
-                    <div className="mb-2 flex items-center justify-between">
-                      <span
-                        className={`text-sm font-medium ${
-                          isTodayDate
-                            ? "bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full"
-                            : ""
-                        }`}
-                      >
-                        {format(day, "d")}
-                      </span>
-                      {dayTasks.length > 0 && (
-                        <Badge
-                          variant="secondary"
-                          className="h-5 px-1.5 text-[10px]"
-                        >
-                          {dayTasks.length}
-                        </Badge>
+                  <div className="mb-3 flex items-start justify-between">
+                    <span
+                      className={cn(
+                        "text-xs font-black tabular-nums transition-all",
+                        isTodayDate
+                          ? "text-primary border-primary border-b-2"
+                          : "text-muted-foreground/40 group-hover:text-foreground",
                       )}
-                    </div>
-
-                    {/* Tasks for this day */}
-                    <div className="space-y-1">
-                      {dayTasks.slice(0, 3).map((task) => (
-                        <CalendarTask key={task.id} task={task} />
-                      ))}
-                      {dayTasks.length > 3 && (
-                        <div className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-center text-[10px]">
-                          +{digitsEnToFa(dayTasks.length - 3)} {common.more}
-                        </div>
-                      )}
-                    </div>
+                    >
+                      {digitsEnToFa(format(day, "d"))}
+                    </span>
+                    {dayTasks.length > 0 && (
+                      <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100">
+                        <IconHash className="size-2.5" />
+                        <span className="text-[9px] font-black tabular-nums">
+                          {digitsEnToFa(dayTasks.length)}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+
+                  <div className="flex-1 space-y-1 overflow-hidden">
+                    {dayTasks.slice(0, 4).map((task) => (
+                      <CalendarTask key={task.id} task={task} />
+                    ))}
+                    {dayTasks.length > 4 && (
+                      <div className="text-muted-foreground/40 border-border/10 mt-2 border-t pt-1 text-center text-[8px] font-black tracking-widest uppercase">
+                        + {digitsEnToFa(dayTasks.length - 4)} {common.more}
+                      </div>
+                    )}
+                  </div>
+
+                  {isTodayDate && (
+                    <div className="mt-auto flex justify-end pt-1">
+                      <div className="bg-primary size-1 rounded-none shadow-[0_0_4px_rgba(var(--primary),0.5)]" />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
 
-      {/* Empty State */}
+      {/* Empty Protocol */}
       {!isLoadingTasks && tasksWithDeadlines.length === 0 && (
-        <Card className="mt-4 border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <CalendarIcon className="text-muted-foreground mb-4 h-12 w-12" />
-            <h3 className="mb-2 text-lg font-semibold">
-              {tasks.calendar.noTasks}
-            </h3>
-            <p className="text-muted-foreground max-w-md">
-              {tasks.calendar.noTasksDescription}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="border-border/40 mt-8 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
+          <IconCalendar className="mb-4 size-12 stroke-[1]" />
+          <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
+            {tasksText.calendar.noTasks}
+          </h3>
+          <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
+            {tasksText.calendar.noTasksDescription}
+          </p>
+        </div>
       )}
     </PageTransition>
   );

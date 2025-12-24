@@ -1,5 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Loader2 } from "lucide-react";
+import {
+  IconLoader2,
+  IconBuildingCommunity,
+  IconChevronRight,
+  IconUser,
+  IconUserPlus,
+} from "@tabler/icons-react";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -7,35 +13,15 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { auth, common, groups, users } from "@/constants";
+import { Form } from "@/components/ui/form";
+import { auth, common, groups, users as usersConst } from "@/constants";
 import { useCreateGroup, useCreateGroupWithManager, useUsers } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
+import { FormField as GenericFormField } from "@/components/forms/form-field";
+import { cn } from "@/lib/utils";
 
 const managerSchema = z.object({
   username: z.string().min(1, { message: common.validation.required }),
@@ -79,19 +65,23 @@ export default function CreateGroup() {
   const user = useAuthUser();
   const isAdmin = user?.role === UsersRoleOptions.admin;
 
-  // Fetch only active managers for manager selection (only managers can be group managers)
   const { data: allUsers } = useUsers({
     filter: 'role = "manager" && active = true',
     sort: "-created",
   });
 
-  // Client-side safety filter: ensure only managers are shown
   const managers = useMemo(() => {
     return (
       allUsers?.filter(
-        (user) => user.role === UsersRoleOptions.manager && user.active,
+        (u) => u.role === UsersRoleOptions.manager && u.active,
       ) ?? []
-    );
+    ).map((u) => ({
+      value: u.id,
+      label:
+        u.first_name && u.last_name
+          ? `${u.first_name} ${u.last_name}`
+          : u.username,
+    }));
   }, [allUsers]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -164,234 +154,195 @@ export default function CreateGroup() {
     return null;
   }
 
+  const managerMode = form.watch("managerMode");
+
   return (
-    <PageTransition className="container mx-auto space-y-6 p-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/groups")}>
-          <ArrowRight className="h-5 w-5" />
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+      <div className="space-y-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/groups")}
+          className="group text-muted-foreground/40 hover:text-primary gap-2 p-0 text-[10px] font-black tracking-[0.3em] uppercase transition-all"
+        >
+          <IconChevronRight className="size-3" />
+          Back_To_Registry
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold">{groups.create.title}</h1>
-          <p className="text-muted-foreground">{groups.create.description}</p>
-        </div>
+
+        <PageHeader
+          title={groups.create.title}
+          description={groups.create.description}
+          icon={IconBuildingCommunity}
+          nodeId="Organization_Provisioning"
+        />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{groups.create.title}</CardTitle>
-          <CardDescription>{groups.create.formDescription}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{groups.form.name}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={groups.form.namePlaceholder}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{groups.form.description}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={groups.form.descriptionPlaceholder}
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="managerMode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{groups.form.managerModeLabel}</FormLabel>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant={
-                          field.value === "existing" ? "default" : "outline"
-                        }
-                        onClick={() => {
-                          field.onChange("existing");
-                          form.setValue("newManager", {
-                            username: "",
-                            password: "",
-                            first_name: "",
-                            last_name: "",
-                            email: "",
-                          });
-                        }}
-                      >
-                        {groups.form.selectExisting}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={field.value === "new" ? "default" : "outline"}
-                        onClick={() => {
-                          field.onChange("new");
-                          form.setValue("manager", "");
-                        }}
-                      >
-                        {groups.form.createNew}
-                      </Button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {form.watch("managerMode") === "existing" ? (
-                <FormField
-                  control={form.control}
-                  name="manager"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{groups.form.manager}</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={groups.form.selectManager}
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {managers.length === 0 ? (
-                            <SelectItem value="__empty" disabled>
-                              {common.messages.noData}
-                            </SelectItem>
-                          ) : (
-                            managers.map((user) => (
-                              <SelectItem key={user.id} value={user.id}>
-                                {user.first_name && user.last_name
-                                  ? `${user.first_name} ${user.last_name}`
-                                  : user.username}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ) : (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="newManager.username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{auth.login.username}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="newManager.password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{auth.login.password}</FormLabel>
-                        <FormControl>
-                          <Input type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="newManager.first_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{users.form.firstName}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="newManager.last_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{users.form.lastName}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="newManager.email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{users.table.columns.email}</FormLabel>
-                        <FormControl>
-                          <Input type="email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
-              )}
-
-              <div className="flex items-center justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/groups")}
-                  disabled={isPendingAny}
-                >
-                  {common.cancel}
-                </Button>
-                <Button type="submit" disabled={isPendingAny}>
-                  {isPendingAny ? (
-                    <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
-                  ) : null}
-                  {groups.create.button}
-                </Button>
+      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+            <section className="space-y-6">
+              <div className="flex items-center gap-4">
+                <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+                  01_Organization_Identity
+                </span>
+                <div className="bg-border/20 h-px flex-1" />
               </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+
+              <div className="space-y-6">
+                <GenericFormField
+                  control={form.control}
+                  name="name"
+                  label={groups.form.name}
+                  type="input"
+                  placeholder="Organization_Unit_Name"
+                  required
+                />
+
+                <GenericFormField
+                  control={form.control}
+                  name="description"
+                  label={groups.form.description}
+                  type="textarea"
+                  placeholder="Unit_Mission_Description"
+                />
+              </div>
+            </section>
+
+            <section className="space-y-6">
+              <div className="flex items-center gap-4">
+                <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+                  02_Managerial_Protocol
+                </span>
+                <div className="bg-border/20 h-px flex-1" />
+              </div>
+
+              <div className="space-y-8">
+                <div className="bg-border/40 border-border/40 flex gap-px overflow-hidden border shadow-sm">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className={cn(
+                      "h-12 flex-1 rounded-none text-[10px] font-black tracking-widest uppercase transition-all",
+                      managerMode === "existing"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground/60 hover:bg-muted/30",
+                    )}
+                    onClick={() => {
+                      form.setValue("managerMode", "existing");
+                      form.setValue("newManager", {
+                        username: "",
+                        password: "",
+                        first_name: "",
+                        last_name: "",
+                        email: "",
+                      });
+                    }}
+                  >
+                    <IconUser className="ml-2 size-4" />
+                    {groups.form.selectExisting}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className={cn(
+                      "h-12 flex-1 rounded-none text-[10px] font-black tracking-widest uppercase transition-all",
+                      managerMode === "new"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground/60 hover:bg-muted/30",
+                    )}
+                    onClick={() => {
+                      form.setValue("managerMode", "new");
+                      form.setValue("manager", "");
+                    }}
+                  >
+                    <IconUserPlus className="ml-2 size-4" />
+                    {groups.form.createNew}
+                  </Button>
+                </div>
+
+                {managerMode === "existing" ? (
+                  <div className="bg-card border-border/40 animate-in fade-in slide-in-from-top-2 border p-6">
+                    <GenericFormField
+                      control={form.control}
+                      name="manager"
+                      label={groups.form.manager}
+                      type="select"
+                      options={managers}
+                      placeholder={groups.form.selectManager}
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-card border-border/40 animate-in fade-in slide-in-from-top-2 space-y-6 border p-6 text-right">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <GenericFormField
+                        control={form.control}
+                        name="newManager.first_name"
+                        label={usersConst.form.firstName}
+                        type="input"
+                        required
+                      />
+                      <GenericFormField
+                        control={form.control}
+                        name="newManager.last_name"
+                        label={usersConst.form.lastName}
+                        type="input"
+                        required
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <GenericFormField
+                        control={form.control}
+                        name="newManager.username"
+                        label={auth.login.username}
+                        type="input"
+                        required
+                      />
+                      <GenericFormField
+                        control={form.control}
+                        name="newManager.password"
+                        label={auth.login.password}
+                        type="input"
+                        required
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    <GenericFormField
+                      control={form.control}
+                      name="newManager.email"
+                      label={usersConst.table.columns.email}
+                      type="input"
+                    />
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/groups")}
+                disabled={isPendingAny}
+                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
+              >
+                {common.cancel}
+              </Button>
+              <Button
+                type="submit"
+                disabled={isPendingAny}
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+              >
+                {isPendingAny && (
+                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                <span className="tracking-widest uppercase">
+                  {groups.create.button}
+                </span>
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </PageTransition>
   );
 }

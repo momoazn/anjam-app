@@ -1,13 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { IconLoader2, IconPlus, IconTerminal } from "@tabler/icons-react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { TaskFields } from "@/components/forms/task-fields";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { common, errors, tasks } from "@/constants";
 import { useCreateTask } from "@/hooks";
@@ -81,8 +81,8 @@ export default function CreateTask() {
       status: TasksStatusOptions.todo,
       project: initialProject,
       deadline: undefined,
-      estimated_hours: undefined,
-      estimated_minutes: undefined,
+      estimated_hours: 0,
+      estimated_minutes: 0,
     },
   });
 
@@ -131,49 +131,53 @@ export default function CreateTask() {
   };
 
   return (
-    <PageTransition className="container mx-auto space-y-6 p-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={handleCancel}>
-          <ArrowRight className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">{tasks.addTask.title}</h1>
-          <p className="text-muted-foreground">
-            {isInProject
-              ? tasks.addTask.descriptionProject
-              : tasks.addTask.description}
-          </p>
-        </div>
-      </div>
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+      <PageHeader
+        title={tasks.addTask.title}
+        description={
+          isInProject
+            ? tasks.addTask.descriptionProject
+            : tasks.addTask.description
+        }
+        icon={IconPlus}
+        nodeId="Task_Creation_Protocol"
+      />
 
-      <Card>
-        <CardContent className="pt-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <TaskFields control={form.control} isInProject={isInProject} />
+      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+            <TaskFields control={form.control} isInProject={isInProject} />
 
-              <div className="flex items-center justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isPending}
-                >
-                  {tasks.details.buttons.cancel}
-                </Button>
-                <Button type="submit" disabled={isPending}>
-                  {isPending ? (
-                    <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
-                  ) : null}
+            <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isPending}
+                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
+              >
+                {tasks.details.buttons.cancel}
+              </Button>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+              >
+                {isPending ? (
+                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <IconTerminal className="ml-2 size-4" />
+                )}
+                <span className="tracking-widest uppercase">
                   {isPending
                     ? tasks.addTask.buttons.creating
                     : tasks.addTask.buttons.create}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                </span>
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </PageTransition>
   );
 }

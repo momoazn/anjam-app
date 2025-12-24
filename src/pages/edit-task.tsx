@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { IconLoader2, IconPencil, IconTerminal } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,16 +7,9 @@ import { z } from "zod";
 
 import { TaskFields } from "@/components/forms/task-fields";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { Skeleton } from "@/components/ui/skeleton";
 import { common, errors, tasks } from "@/constants";
 import { useTask, useUpdateTask } from "@/hooks";
 import {
@@ -62,6 +55,8 @@ const taskFormSchema = z.object({
     .optional(),
 });
 
+type TaskFormValues = z.infer<typeof taskFormSchema>;
+
 export default function EditTask() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -71,8 +66,9 @@ export default function EditTask() {
     enabled: !!id,
   });
 
-  const form = useForm<z.infer<typeof taskFormSchema>>({
+  const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
+    mode: "onChange",
     defaultValues: {
       title: "",
       description: "",
@@ -81,8 +77,8 @@ export default function EditTask() {
       status: TasksStatusOptions.todo,
       project: "",
       deadline: undefined,
-      estimated_hours: undefined,
-      estimated_minutes: undefined,
+      estimated_hours: 0,
+      estimated_minutes: 0,
     },
   });
 
@@ -99,8 +95,8 @@ export default function EditTask() {
         status: task.status,
         project: task.project,
         deadline: task.deadline ? new Date(task.deadline) : undefined,
-        estimated_hours: hours || undefined,
-        estimated_minutes: minutes || undefined,
+        estimated_hours: hours || 0,
+        estimated_minutes: minutes || 0,
       });
     }
   }, [form, task]);
@@ -111,7 +107,7 @@ export default function EditTask() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof taskFormSchema>) {
+  function onSubmit(values: TaskFormValues) {
     if (!task) return;
 
     const {
@@ -129,7 +125,6 @@ export default function EditTask() {
       updates: {
         ...rest,
         estimated_minutes,
-        // Only include project if present (not in project context or changed)
         project: values.project ?? task.project,
         assignee:
           values.assignee !== tasks.addTask.unassigned
@@ -146,94 +141,79 @@ export default function EditTask() {
 
   if (isLoading) {
     return (
-      <PageTransition className="container mx-auto space-y-6 p-6">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-10 w-10 rounded" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-64" />
-          </div>
+      <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+        <div className="animate-pulse space-y-10">
+          <div className="bg-muted/20 h-24 w-full" />
+          <div className="bg-muted/10 border-border/20 h-96 w-full border" />
         </div>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-32 w-full" />
-          </CardContent>
-        </Card>
       </PageTransition>
     );
   }
 
   if (!task) {
     return (
-      <PageTransition className="container mx-auto space-y-6 p-6">
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">{tasks.errors.notFound}</p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => navigate("/tasks")}
-            >
-              <ArrowLeft className="ml-2 h-4 w-4" />
-              {common.buttons.backToList}
-            </Button>
-          </CardContent>
-        </Card>
+      <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+        <div className="bg-card border-border/40 border-2 border-dashed p-12 text-center opacity-30 grayscale">
+          <IconTerminal className="mx-auto mb-4 size-12 stroke-1" />
+          <p className="text-sm font-black tracking-widest uppercase">
+            {tasks.errors.notFound}
+          </p>
+          <Button
+            variant="outline"
+            className="mt-8 rounded-none"
+            onClick={() => navigate("/tasks")}
+          >
+            {common.buttons.backToList}
+          </Button>
+        </div>
       </PageTransition>
     );
   }
 
   return (
-    <PageTransition className="container mx-auto space-y-6 p-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={handleCancel}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">{tasks.edit.title}</h1>
-          <p className="text-muted-foreground">{task.title}</p>
-        </div>
-      </div>
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+      <PageHeader
+        title={tasks.edit.title}
+        description={`Modify registry parameters for node :: ${task.display_id || task.id}`}
+        icon={IconPencil}
+        nodeId={`Task_Modification :: ${task.display_id}`}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{tasks.edit.title}</CardTitle>
-          <CardDescription>
-            {common.buttons.view} {task.display_id || task.id}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <TaskFields control={form.control} isInProject={true} />
+      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+            <TaskFields control={form.control} isInProject={true} />
 
-              <div className="flex items-center justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isPending}
-                >
-                  {tasks.details.buttons.cancel}
-                </Button>
-                <Button type="submit" disabled={isPending}>
-                  {isPending ? (
-                    <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
-                  ) : null}
+            <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isPending}
+                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
+              >
+                {tasks.details.buttons.cancel}
+              </Button>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+              >
+                {isPending ? (
+                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <IconTerminal className="ml-2 size-4" />
+                )}
+                <span className="tracking-widest uppercase">
                   {isPending
                     ? tasks.edit.buttons.saving
                     : tasks.edit.buttons.save}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                </span>
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </PageTransition>
   );
 }

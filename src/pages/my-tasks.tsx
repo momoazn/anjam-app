@@ -1,16 +1,18 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { IconUser, IconChecklist, IconPlus } from "@tabler/icons-react";
 
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
-import { MyTasksHeader } from "@/components/task/my-tasks-header";
 import { MyTasksStats } from "@/components/task/my-tasks-stats";
 import { MyTasksTabs } from "@/components/task/my-tasks-tabs";
 import { PageTransition } from "@/components/page-transition";
-import { common } from "@/constants";
+import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
+import { common, myTasks as myTasksText, tasks } from "@/constants";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { useBulkDeleteTasks, useBulkUpdateTasks } from "@/hooks/tasks";
 import type { TaskWithProject } from "@/lib/pocketbase";
-import type {
+import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
@@ -20,6 +22,7 @@ import {
   TASK_STATUS_CONFIG,
 } from "@/lib/status-utils";
 import { useAuthUser } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
 
 export default function MyTasks() {
   const navigate = useNavigate();
@@ -58,7 +61,7 @@ export default function MyTasks() {
     return { active, completed, canceled };
   }, [myTasksData]);
 
-  const groupTasksByStatus = (tasks: TaskWithProject[]) => {
+  const groupTasksByStatus = useCallback((tasks: TaskWithProject[]) => {
     return tasks.reduce(
       (acc, task) => {
         if (!acc[task.status]) {
@@ -69,16 +72,16 @@ export default function MyTasks() {
       },
       {} as Record<TasksStatusOptions, TaskWithProject[]>,
     );
-  };
+  }, []);
 
   const activeGrouped = useMemo(
     () => groupTasksByStatus(categorizedTasks.active),
-    [categorizedTasks.active],
+    [categorizedTasks.active, groupTasksByStatus],
   );
 
   const completedGrouped = useMemo(
     () => groupTasksByStatus(categorizedTasks.completed),
-    [categorizedTasks.completed],
+    [categorizedTasks.completed, groupTasksByStatus],
   );
 
   const tasksByProject = useMemo(() => {
@@ -97,7 +100,7 @@ export default function MyTasks() {
         grouped.set(projectId, { projectName, tasks: [] });
       }
 
-      grouped.get(projectId)!.tasks.push(task);
+      grouped.get(projectId)?.tasks.push(task);
     });
 
     return Array.from(grouped.entries()).map(([projectId, data]) => ({
@@ -165,12 +168,45 @@ export default function MyTasks() {
       label: config.name,
     }));
 
+  const headerActions = (
+    <div className="flex flex-wrap gap-2">
+      <Button
+        variant={selectionMode ? "secondary" : "outline"}
+        size="lg"
+        onClick={toggleSelectionMode}
+        className={cn(
+          "border-border/40 bg-muted/20 h-12 gap-3 rounded-none px-6 font-bold transition-all",
+          selectionMode && "bg-primary/10 text-primary border-primary/30",
+        )}
+      >
+        <IconChecklist className="size-4" />
+        <span className="text-[11px] font-black tracking-widest uppercase">
+          {selectionMode
+            ? common.buttons.cancelSelection
+            : common.buttons.multiSelect}
+        </span>
+      </Button>
+      <Button
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        size="lg"
+        onClick={() => navigate("/tasks/new")}
+      >
+        <IconPlus className="size-5" />
+        <span className="tracking-widest uppercase">
+          {tasks.addTask.buttons.newTask}
+        </span>
+      </Button>
+    </div>
+  );
+
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <MyTasksHeader
-        selectionMode={selectionMode}
-        onToggleSelection={toggleSelectionMode}
-        onCreateTask={() => navigate("/tasks/new")}
+      <PageHeader
+        title={myTasksText.title}
+        description={myTasksText.description}
+        icon={IconUser}
+        nodeId="Operator_Workspace :: Index"
+        actions={headerActions}
       />
 
       <MyTasksStats stats={stats} />
