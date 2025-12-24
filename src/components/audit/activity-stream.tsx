@@ -1,12 +1,19 @@
 import { formatDistanceToNow } from "date-fns-jalali";
-import { CheckCircle2, MinusCircle, PlusCircle, Trash2 } from "lucide-react";
+import {
+  IconCircleCheck,
+  IconCircle,
+  IconCirclePlus,
+  IconTrash,
+  IconChevronDown,
+  IconChevronUp,
+  IconClock,
+  IconTerminal,
+  IconHistory,
+} from "@tabler/icons-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
 import { auditLogs } from "@/constants";
 import { useResourceAuditLogs } from "@/hooks/audit-logs";
 import type { AuditLogsResponse, UsersResponse } from "@/lib/pocketbase-types";
@@ -30,13 +37,13 @@ type ActivityStreamProps = {
 function getActionIcon(action: string) {
   switch (action) {
     case "create":
-      return <PlusCircle className="h-4 w-4 text-green-500" />;
+      return <IconCirclePlus className="h-4 w-4 text-emerald-500" />;
     case "update":
-      return <CheckCircle2 className="h-4 w-4 text-blue-500" />;
+      return <IconCircleCheck className="text-primary h-4 w-4" />;
     case "delete":
-      return <Trash2 className="h-4 w-4 text-red-500" />;
+      return <IconTrash className="h-4 w-4 text-rose-500" />;
     default:
-      return <MinusCircle className="h-4 w-4 text-gray-500" />;
+      return <IconCircle className="text-muted-foreground/40 h-4 w-4" />;
   }
 }
 
@@ -113,84 +120,101 @@ function AuditLogItem({ log }: { log: AuditLog }) {
     : "";
 
   return (
-    <Card className="mb-4">
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 pt-1">{getActionIcon(log.action)}</div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex flex-1 items-center gap-2">
-                {actor && <UserAvatar user={actor} className="h-6 w-6" />}
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">
-                    {formatActionMessage(log, actorName)}
-                  </p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {auditLogs.actions[
-                        log.action as keyof typeof auditLogs.actions
-                      ] || log.action}
-                    </Badge>
-                    <span className="text-muted-foreground text-xs">
-                      {relativeTime ? digitsEnToFa(relativeTime) : ""}
-                    </span>
-                  </div>
-                </div>
+    <div className="group bg-card hover:bg-muted/30 border-border/10 relative flex flex-col overflow-hidden border-b text-right transition-all">
+      <div className="flex items-start gap-4 p-4">
+        <div className="mt-1">{getActionIcon(log.action)}</div>
+
+        <div className="flex-1 space-y-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-right text-sm leading-relaxed font-bold opacity-90">
+                {formatActionMessage(log, actorName)}
+              </p>
+              <div className="mt-2 flex items-center justify-end gap-3 opacity-40">
+                <span className="text-[10px] font-black tracking-widest uppercase">
+                  {relativeTime ? digitsEnToFa(relativeTime) : ""}
+                </span>
+                <IconClock className="size-2.5" />
               </div>
-              {hasChanges && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setExpanded(!expanded)}
-                  className="text-xs"
-                >
-                  {expanded
-                    ? auditLogs.activityStream.hideDetails
-                    : auditLogs.activityStream.showDetails}
-                </Button>
-              )}
             </div>
 
-            {expanded && hasChanges && (
-              <div className="mt-4 border-t pt-4">
-                <p className="mb-2 text-sm font-medium">
-                  {auditLogs.table.changes}:
-                </p>
-                <div className="space-y-2">
-                  {Object.entries(changes).map(([field, diff]) => (
-                    <div key={field} className="text-sm">
-                      <div className="mb-1 font-medium">{field}:</div>
-                      <div className="text-muted-foreground flex gap-4">
-                        <div>
-                          <span className="text-xs">
-                            {auditLogs.labels.before}{" "}
-                          </span>
-                          <span className="font-mono text-xs">
-                            {diff.old !== null && diff.old !== undefined
-                              ? String(diff.old).substring(0, 50)
-                              : auditLogs.empty.empty}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-xs">
-                            {auditLogs.labels.after}{" "}
-                          </span>
-                          <span className="font-mono text-xs">
-                            {diff.new !== null && diff.new !== undefined
-                              ? String(diff.new).substring(0, 50)
-                              : auditLogs.empty.empty}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <div className="flex shrink-0 flex-col items-end gap-2">
+              <UserAvatar
+                user={actor}
+                className="border-border/20 size-8 rounded-none border shadow-sm"
+              />
+              <Badge
+                variant="outline"
+                className="border-primary/20 bg-primary/5 text-primary rounded-none text-[8px] font-black tracking-widest uppercase"
+              >
+                {auditLogs.actions[
+                  log.action as keyof typeof auditLogs.actions
+                ] || log.action}
+              </Badge>
+            </div>
           </div>
+
+          {hasChanges && (
+            <div className="flex justify-end">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setExpanded(!expanded)}
+                className="text-muted-foreground/60 hover:bg-muted/50 h-7 gap-2 rounded-none text-[9px] font-black tracking-widest uppercase"
+              >
+                {expanded ? (
+                  <>
+                    Hide_Registry_Diff <IconChevronUp className="size-3" />
+                  </>
+                ) : (
+                  <>
+                    View_Registry_Diff <IconChevronDown className="size-3" />
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {expanded && hasChanges && (
+        <div className="bg-muted/10 border-border/10 animate-in fade-in slide-in-from-top-2 space-y-4 border-t p-6 text-right font-mono text-[10px]">
+          {Object.entries(changes!).map(([field, diff]) => (
+            <div
+              key={field}
+              className="border-border/5 grid grid-cols-12 gap-4 border-b pb-4 last:border-0 last:pb-0"
+            >
+              <div className="border-border/10 col-span-3 flex flex-col items-end border-l">
+                <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                  Entry
+                </span>
+                <span className="text-primary/80 font-black uppercase">
+                  {field}
+                </span>
+              </div>
+              <div className="border-border/10 col-span-4 flex flex-col items-end border-l pr-4">
+                <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                  Original
+                </span>
+                <span className="w-full truncate opacity-60">
+                  {String(diff.old || "EMPTY")}
+                </span>
+              </div>
+              <div className="col-span-5 flex flex-col items-end pr-4">
+                <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                  Updated
+                </span>
+                <span className="text-foreground w-full truncate font-black">
+                  {String(diff.new || "EMPTY")}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+    </div>
   );
 }
 
@@ -209,13 +233,12 @@ export function ActivityStream({
 
   if (isLoading) {
     return (
-      <div className={cn("space-y-4", className)}>
+      <div className={cn("space-y-2", className)}>
         {[1, 2, 3].map((i) => (
-          <Card key={i}>
-            <CardContent className="p-4">
-              <Skeleton className="h-16 w-full" />
-            </CardContent>
-          </Card>
+          <div
+            key={i}
+            className="bg-muted/10 border-border/10 h-24 w-full animate-pulse border"
+          />
         ))}
       </div>
     );
@@ -223,29 +246,52 @@ export function ActivityStream({
 
   if (error) {
     return (
-      <div className={cn("py-10 text-center", className)}>
-        <p className="text-destructive">{auditLogs.errors.loadHistoryFailed}</p>
+      <div
+        className={cn(
+          "py-12 text-center text-xs font-black text-rose-500 uppercase",
+          className,
+        )}
+      >
+        <IconTerminal className="mx-auto mb-4 size-8 opacity-20" />
+        {auditLogs.errors.loadHistoryFailed}
       </div>
     );
   }
 
   if (!data || data.items.length === 0) {
     return (
-      <div className={cn("py-10 text-center", className)}>
-        <p className="text-muted-foreground">
-          {auditLogs.activityStream.empty}
-        </p>
+      <div
+        className={cn(
+          "text-muted-foreground/40 py-12 text-center text-xs font-black uppercase opacity-30 grayscale",
+          className,
+        )}
+      >
+        <IconHistory className="mx-auto mb-4 size-8" />
+        {auditLogs.activityStream.empty}
       </div>
     );
   }
 
   return (
-    <ScrollArea className={cn("h-[600px]", className)}>
-      <div className="space-y-2">
+    <div
+      className={cn(
+        "border-border/40 bg-muted/5 overflow-hidden border",
+        className,
+      )}
+    >
+      <div className="bg-muted/20 border-border/40 flex items-center justify-between border-b px-4 py-2">
+        <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.3em] uppercase">
+          Resource_Telemetry_Stream
+        </span>
+        <span className="text-[9px] font-black tabular-nums">
+          {digitsEnToFa(data.items.length)} EVENTS
+        </span>
+      </div>
+      <div className="divide-border/5 divide-y">
         {data.items.map((log) => (
           <AuditLogItem key={log.id} log={log} />
         ))}
       </div>
-    </ScrollArea>
+    </div>
   );
 }

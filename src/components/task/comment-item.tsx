@@ -1,6 +1,14 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  IconPencil,
+  IconDotsVertical,
+  IconTrash,
+  IconClock,
+  IconCheck,
+  IconX,
+  IconLoader2,
+} from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -11,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
-import { comments, tasks } from "@/constants";
+import { comments as commentsConst, tasks } from "@/constants";
 import {
   CommentWithUser,
   useSoftDeleteComment,
@@ -25,7 +33,7 @@ const formatCommentDate = (dateString: string) => {
   if (Number.isNaN(date.getTime())) {
     return "-";
   }
-  return digitsEnToFa(format(date, "dd MMMM yyyy - HH:mm"));
+  return digitsEnToFa(format(date, "dd MMMM yyyy — HH:mm"));
 };
 
 type CommentItemProps = {
@@ -96,24 +104,22 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
 
   if (deleted) {
     return (
-      <div className="bg-muted/30 flex gap-3 rounded-lg p-4">
-        <div className="shrink-0">
-          <UserAvatar user={comment.expand.user} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center gap-2">
-            <span className="text-muted-foreground text-sm font-medium">
+      <div className="bg-muted/10 border-border/20 flex gap-4 border p-4 text-right opacity-30 grayscale">
+        <UserAvatar
+          user={comment.expand.user}
+          className="border-border/40 size-8 rounded-none border"
+        />
+        <div className="flex-1 space-y-1">
+          <div className="flex items-center justify-end gap-3">
+            <span className="text-[10px] leading-none font-black tracking-widest uppercase">
               {comment.user
                 ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
                   comment.expand.user.username
                 : tasks.details.unknownUser}
             </span>
-            <span className="text-muted-foreground text-xs">
-              {formatCommentDate(comment.created)}
-            </span>
           </div>
-          <p className="text-muted-foreground text-sm italic">
-            {comments.item.deleted}
+          <p className="text-xs font-bold tracking-widest uppercase italic">
+            {commentsConst.item.deleted}
           </p>
         </div>
       </div>
@@ -123,117 +129,156 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
   const wasEdited = comment.updated && comment.updated !== comment.created;
 
   return (
-    <div className="hover:bg-muted/30 flex gap-3 rounded-lg p-4 transition-colors">
-      <div className="shrink-0">
-        <UserAvatar user={comment.expand.user} />
+    <div className="group border-border/10 bg-card hover:bg-muted/30 relative flex items-stretch border-b transition-all duration-200">
+      {/* Visual Identity Strip */}
+      <div className="bg-muted/5 border-border/5 flex w-12 shrink-0 flex-col items-center border-l pt-4">
+        <UserAvatar
+          user={comment.expand.user}
+          className="border-border/20 size-8 rounded-none border shadow-sm"
+        />
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">
-              {comment.user
-                ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
-                  comment.expand.user.username
-                : tasks.details.unknownUser}
-            </span>
-            <span className="text-muted-foreground text-xs">
-              {formatCommentDate(comment.created)}
-            </span>
+
+      {/* Content Engine */}
+      <div className="flex-1 space-y-3 p-4 pb-6 text-right">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {isAuthor && !deleted && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hover:border-border/40 hover:bg-muted h-7 w-7 rounded-none border border-transparent"
+                    disabled={
+                      updateComment.isPending || softDeleteComment.isPending
+                    }
+                  >
+                    <IconDotsVertical className="size-3.5 opacity-40 group-hover:opacity-100" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="border-foreground bg-card rounded-none border-2"
+                >
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      handleEdit();
+                    }}
+                    className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
+                  >
+                    <IconPencil className="ml-2 size-3.5 opacity-40" />
+                    {commentsConst.item.edit}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      handleSoftDelete();
+                    }}
+                    className="rounded-none p-3 text-[9px] font-black tracking-widest text-rose-500 uppercase focus:text-rose-500"
+                    disabled={softDeleteComment.isPending}
+                  >
+                    <IconTrash className="ml-2 size-3.5 opacity-40" />
+                    {softDeleteComment.isPending
+                      ? commentsConst.item.deleting
+                      : commentsConst.item.delete}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
-          {isAuthor && !deleted && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0"
-                  aria-label={comments.item.actions}
-                  disabled={
-                    updateComment.isPending || softDeleteComment.isPending
-                  }
-                >
-                  <MoreHorizontal className="h-3 w-3" />
-                  <span className="sr-only">{comments.item.actions}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    handleEdit();
-                  }}
-                >
-                  <Edit className="mr-2 h-3 w-3" />
-                  {comments.item.edit}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    handleSoftDelete();
-                  }}
-                  className="text-destructive focus:text-destructive"
-                  disabled={softDeleteComment.isPending}
-                >
-                  <Trash2 className="mr-2 h-3 w-3" />
-                  {softDeleteComment.isPending
-                    ? comments.item.deleting
-                    : comments.item.delete}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end">
+              <span className="text-foreground text-[10px] leading-none font-black tracking-tight uppercase">
+                {comment.user
+                  ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
+                    comment.expand.user.username
+                  : tasks.details.unknownUser}
+              </span>
+              <div className="mt-1 flex items-center gap-1.5 opacity-40">
+                <span className="font-mono text-[8px] font-black tabular-nums">
+                  {formatCommentDate(comment.created)}
+                </span>
+                <IconClock className="size-2.5" />
+              </div>
+            </div>
+          </div>
         </div>
+
         {isEditing ? (
-          <div className="space-y-2">
-            <Textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              className="min-h-[80px] resize-none"
-              placeholder={comments.item.editPlaceholder}
-              ref={textareaRef}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                  e.preventDefault();
-                  handleSaveEdit();
-                }
-                if (e.key === "Escape") {
-                  e.preventDefault();
-                  handleCancelEdit();
-                }
-              }}
-              disabled={updateComment.isPending}
-            />
-            <div className="flex gap-2">
+          <div className="animate-in fade-in slide-in-from-top-2 space-y-4">
+            <div className="relative">
+              <Textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="border-border/40 bg-muted/5 focus:border-primary/40 min-h-[100px] rounded-none text-right leading-relaxed font-medium focus:ring-0"
+                placeholder={commentsConst.item.editPlaceholder}
+                ref={textareaRef}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    handleSaveEdit();
+                  }
+                  if (e.key === "Escape") {
+                    e.preventDefault();
+                    handleCancelEdit();
+                  }
+                }}
+                disabled={updateComment.isPending}
+              />
+              <div className="bg-primary/40 absolute top-0 right-0 h-0.5 w-8" />
+            </div>
+            <div className="flex items-center justify-end gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelEdit}
+                disabled={updateComment.isPending}
+                className="text-muted-foreground/60 h-9 rounded-none text-[9px] font-black tracking-widest uppercase"
+              >
+                <IconX className="ml-2 size-3.5" />
+                {commentsConst.item.cancel}
+              </Button>
               <Button
                 size="sm"
                 onClick={handleSaveEdit}
                 disabled={!editContent.trim() || updateComment.isPending}
+                className="h-9 rounded-none px-6 text-[9px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
               >
+                {updateComment.isPending ? (
+                  <IconLoader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <IconCheck className="ml-2 size-3.5" />
+                )}
                 {updateComment.isPending
-                  ? comments.item.saving
-                  : comments.item.save}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleCancelEdit}
-                disabled={updateComment.isPending}
-              >
-                {comments.item.cancel}
+                  ? commentsConst.item.saving
+                  : commentsConst.item.save}
               </Button>
             </div>
           </div>
         ) : (
-          <div className="text-sm whitespace-pre-wrap" dir="auto">
-            {comment.content?.trim() || "—"}
+          <div className="group/content relative">
+            <div
+              className="text-sm leading-relaxed font-medium whitespace-pre-wrap opacity-90"
+              dir="auto"
+            >
+              {comment.content?.trim() || "—"}
+            </div>
             {!deleted && wasEdited && (
-              <span className="text-muted-foreground ml-2 text-[10px]">
-                {comments.item.edited}
-              </span>
+              <div className="mt-2 flex items-center justify-end gap-1 opacity-20 transition-opacity group-hover/content:opacity-40">
+                <IconPencil className="size-2.5" />
+                <span className="text-[8px] font-black tracking-widest uppercase">
+                  {commentsConst.item.edited}
+                </span>
+              </div>
             )}
           </div>
         )}
       </div>
+
+      {/* Active Selection Indicator */}
+      <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
     </div>
   );
 }
