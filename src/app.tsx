@@ -20,6 +20,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { loading } from "@/constants";
 import { AppRoutes } from "./router";
+import { useLocation } from "react-router-dom";
 type RetryableError = {
   status?: number;
 };
@@ -69,7 +70,18 @@ function MainContent() {
 // Layout component
 function AppLayout() {
   const isLoggedIn = useAuthIsLoggedIn();
+  const location = useLocation();
   useNotifications(); // Auto-subscribes
+
+  const isLandingPage = location.pathname === "/landing";
+
+  if (isLandingPage) {
+    return (
+      <Suspense fallback={<LoadingFallback />}>
+        <MainContent />
+      </Suspense>
+    );
+  }
 
   return (
     <SidebarProvider>
