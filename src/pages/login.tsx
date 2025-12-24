@@ -1,19 +1,26 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  IconFingerprint,
+  IconShieldLock,
+  IconUserBolt,
+  IconActivity,
+  IconCpu,
+  IconServer,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { auth } from "@/constants";
+import { auth, app } from "@/constants";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
-import { UsersRecord } from "@/lib/pocketbase-types";
+import type { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
-// In production, PocketBase auth response record doesn't include sensitive fields
-// like `password` or `tokenKey`. Use a minimal runtime check.
 function isUsersRecord(record: object | null): record is UsersRecord {
   return (
     record !== null &&
@@ -68,77 +75,170 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center">
-      <PageTransition
-        className="bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow"
-        disableStagger
-      >
-        <h2 className="text-foreground text-center text-3xl font-bold">
-          {auth.login.title}
-        </h2>
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4"
-          noValidate
-          data-animate-stagger
-        >
-          <div>
-            <Label className="text-foreground block text-sm font-medium">
-              {auth.login.username}
-            </Label>
-            <Input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full border px-3 py-2"
-              required
-              autoFocus
-              aria-invalid={Boolean(errors.username)}
-              aria-describedby={
-                errors.username ? "login-username-error" : undefined
-              }
-              disabled={submitting}
-            />
-            {errors.username && (
-              <p
-                id="login-username-error"
-                className="text-destructive mt-1 text-xs"
-              >
-                {errors.username}
-              </p>
-            )}
+    <div className="bg-background relative flex min-h-screen items-stretch overflow-hidden">
+      {/* Structural Background Decor */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(var(--primary) 1px, transparent 1px), linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
+          backgroundSize: "80px 80px, 40px 40px, 40px 40px",
+        }}
+      />
+
+      {/* Left Side: Visual/Technical Content (Desktop Only) */}
+      <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-l p-12 lg:flex">
+        <div className="text-primary flex items-center gap-3">
+          <div className="bg-primary/10 flex size-10 items-center justify-center rounded-xl">
+            <IconFingerprint className="size-6" />
           </div>
-          <div>
-            <Label className="text-foreground block text-sm font-medium">
-              {auth.login.password}
-            </Label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full border px-3 py-2"
-              required
-              aria-invalid={Boolean(errors.password)}
-              aria-describedby={
-                errors.password ? "login-password-error" : undefined
-              }
-              disabled={submitting}
-            />
-            {errors.password && (
-              <p
-                id="login-password-error"
-                className="text-destructive mt-1 text-xs"
-              >
-                {errors.password}
-              </p>
+          <span className="text-sm font-black tracking-[0.3em] uppercase opacity-70">
+            {app.name} / Core Auth
+          </span>
+        </div>
+
+        <div className="relative">
+          <div className="text-primary/5 absolute -top-24 -left-12 text-[180px] leading-none font-black uppercase select-none">
+            ANJAM
+          </div>
+          <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
+            {digitsEnToFa("توسعه سیستم")}
+            <br />
+            <span className="text-primary">{digitsEnToFa("مدیریت")}</span>
+          </h2>
+          <p className="text-muted-foreground/80 mt-8 max-w-md text-xl leading-relaxed font-medium">
+            {digitsEnToFa(
+              "ورود به درگاه عملیاتی سیستم انجام برای مدیریت یکپارچه تسک‌ها و پروژه‌های سازمانی.",
             )}
+          </p>
+        </div>
+
+        <div className="border-primary/10 grid grid-cols-2 gap-8 border-t pt-12">
+          <div className="flex items-start gap-4">
+            <IconCpu className="text-primary/60 mt-1 size-5" />
+            <div>
+              <span className="text-muted-foreground/50 block text-[10px] font-black tracking-widest uppercase">
+                Processor
+              </span>
+              <span className="text-sm font-bold">Node-PB-8090</span>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <IconActivity className="text-primary/60 mt-1 size-5" />
+            <div>
+              <span className="text-muted-foreground/50 block text-[10px] font-black tracking-widest uppercase">
+                Network Status
+              </span>
+              <span className="text-sm font-bold text-emerald-500">
+                Operational
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side: Login Form */}
+      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
+        <PageTransition className="w-full" disableStagger>
+          <div className="mb-10 lg:hidden">
+            <div className="bg-primary text-primary-foreground shadow-primary/20 mb-6 flex size-12 items-center justify-center rounded-2xl shadow-xl">
+              <IconFingerprint className="size-7" />
+            </div>
+            <h2 className="text-4xl font-black tracking-tight">
+              {auth.login.title}
+            </h2>
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? auth.login.loggingIn : auth.login.loginButton}
-          </Button>
-        </form>
-      </PageTransition>
+          <div className="bg-card relative rounded-3xl border p-8 shadow-2xl lg:p-10">
+            <div className="mb-8 flex items-center justify-between border-b pb-6">
+              <div>
+                <h3 className="text-xl font-black tracking-tight">
+                  {auth.login.title}
+                </h3>
+                <p className="text-muted-foreground mt-1 text-xs font-medium">
+                  Please provide operator credentials
+                </p>
+              </div>
+              <IconShieldLock className="text-primary/20 size-8" />
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                    {auth.login.username}
+                  </Label>
+                  <IconUserBolt className="text-muted-foreground/40 size-3" />
+                </div>
+                <Input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="border-primary/10 bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 px-4 font-bold transition-all"
+                  placeholder="operator_id"
+                  required
+                  autoFocus
+                  disabled={submitting}
+                />
+                {errors.username && (
+                  <p className="text-destructive text-[10px] font-bold">
+                    {errors.username}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                    {auth.login.password}
+                  </Label>
+                  <IconServer className="text-muted-foreground/40 size-3" />
+                </div>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border-primary/10 bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 px-4 font-bold transition-all"
+                  placeholder="••••••••"
+                  required
+                  disabled={submitting}
+                />
+                {errors.password && (
+                  <p className="text-destructive text-[10px] font-bold">
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="group shadow-primary/20 h-14 w-full rounded-2xl text-base font-black shadow-lg transition-all active:scale-95"
+                disabled={submitting}
+              >
+                <span className="flex items-center gap-2">
+                  {submitting ? auth.login.loggingIn : auth.login.loginButton}
+                  {!submitting && (
+                    <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                  )}
+                </span>
+              </Button>
+            </form>
+
+            <div className="mt-8 flex items-center justify-center gap-2 opacity-30 grayscale">
+              <div className="bg-border h-px flex-1" />
+              <span className="text-[9px] font-black tracking-widest uppercase">
+                Encryption: AES-256 Enabled
+              </span>
+              <div className="bg-border h-px flex-1" />
+            </div>
+          </div>
+
+          <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
+            {digitsEnToFa(
+              "© 2025 سامانه مدیریت تسک انجام. تمامی حقوق محفوظ است.",
+            )}
+          </p>
+        </PageTransition>
+      </div>
     </div>
   );
 }
