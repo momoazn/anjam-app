@@ -215,7 +215,7 @@ export default function TaskDetails() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
             >
               {deleteTask.isPending ? (
-                <Loader2 className="text-muted-foreground ml-2 h-4 w-4 animate-spin" />
+                <Loader2 className="text-muted-foreground ms-2 h-4 w-4 animate-spin" />
               ) : null}
               {tasks.delete.confirm}
             </AlertDialogAction>

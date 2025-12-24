@@ -186,10 +186,10 @@ export default function EditGroup() {
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                  className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
                 >
                   {isPending && (
-                    <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                   )}
                   <span className="tracking-widest uppercase">
                     {groups.edit.button}

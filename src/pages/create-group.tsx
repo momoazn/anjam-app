@@ -238,7 +238,7 @@ export default function CreateGroup() {
                       });
                     }}
                   >
-                    <IconUser className="ml-2 size-4" />
+                    <IconUser className="ms-2 size-4" />
                     {groups.form.selectExisting}
                   </Button>
                   <Button
@@ -255,7 +255,7 @@ export default function CreateGroup() {
                       form.setValue("manager", "");
                     }}
                   >
-                    <IconUserPlus className="ml-2 size-4" />
+                    <IconUserPlus className="ms-2 size-4" />
                     {groups.form.createNew}
                   </Button>
                 </div>
@@ -330,10 +330,10 @@ export default function CreateGroup() {
               <Button
                 type="submit"
                 disabled={isPendingAny}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
               >
                 {isPendingAny && (
-                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                 )}
                 <span className="tracking-widest uppercase">
                   {groups.create.button}

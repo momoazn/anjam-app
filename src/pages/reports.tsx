@@ -443,7 +443,7 @@ export default function Reports() {
                 </div>
                 <div className="text-5xl font-black tracking-tighter">
                   {digitsEnToFa(stat.value)}
-                  <span className="text-muted-foreground/30 mr-1 text-xl">
+                  <span className="text-muted-foreground/30 me-1 text-xl">
                     {stat.suffix}
                   </span>
                 </div>

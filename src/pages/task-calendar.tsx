@@ -101,7 +101,7 @@ function CalendarTask({ task }: CalendarTaskProps) {
     <Link to={taskUrl}>
       <div
         className={cn(
-          "group hover:bg-muted/50 mb-1 rounded-none border-r-2 p-1.5 text-right transition-all",
+          "group hover:bg-muted/50 mb-1 rounded-none border-e-2 p-1.5 text-right transition-all",
           priorityColors[task.priority],
         )}
         style={{ borderRightColor: status.color }}
@@ -204,7 +204,7 @@ export default function TaskCalendar() {
         </Badge>
       </div>
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
         size="lg"
         onClick={() => navigate("/tasks/new")}
       >
@@ -258,7 +258,7 @@ export default function TaskCalendar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="border-primary/20 hidden flex-col items-end border-r-2 pr-4 sm:flex">
+          <div className="border-primary/20 hidden flex-col items-end border-e-2 pe-4 sm:flex">
             <span className="text-muted-foreground/40 mb-1 text-right text-[8px] leading-none font-black tracking-[0.2em] uppercase">
               Reference
             </span>
@@ -270,7 +270,7 @@ export default function TaskCalendar() {
             variant="outline"
             size="sm"
             onClick={goToToday}
-            className="border-foreground bg-card h-9 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            className="border-foreground bg-card h-9 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none"
           >
             {common.today}
           </Button>

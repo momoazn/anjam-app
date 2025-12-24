@@ -36,7 +36,7 @@ const LandingPage = () => {
       {/* Navigation */}
       <nav className="border-border/40 bg-background/40 relative z-20 mx-auto flex max-w-7xl items-center justify-between border-b px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="bg-primary text-primary-foreground flex h-7 w-7 items-center justify-center rounded-none font-mono text-sm font-black shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+          <div className="bg-primary text-primary-foreground flex h-7 w-7 items-center justify-center rounded-none font-mono text-sm font-black shadow-[-2px_2px_0px_rgba(0,0,0,0.1)]">
             A
           </div>
           <div className="flex flex-col text-right">
@@ -88,7 +88,7 @@ const LandingPage = () => {
 
         <h1 className="animate-in fade-in slide-in-from-bottom-8 font-vazirmatn from-foreground via-foreground to-foreground/60 relative mb-4 bg-gradient-to-b bg-clip-text text-5xl font-black tracking-tighter text-transparent delay-200 duration-1000 md:text-7xl">
           انجام
-          <span className="text-primary/40 pointer-events-none absolute -top-2 -right-6 hidden font-mono text-[8px] tracking-[0.6em] uppercase md:block">
+          <span className="text-primary/40 pointer-events-none absolute -end-6 -top-2 hidden font-mono text-[8px] tracking-[0.6em] uppercase md:block">
             V2.0
           </span>
         </h1>
@@ -118,10 +118,10 @@ const LandingPage = () => {
 
         {/* Hero Visual - Registry UI Mock */}
         <div className="group animate-in fade-in zoom-in-95 relative mt-16 aspect-[16/10] w-full max-w-4xl delay-700 duration-1000">
-          <div className="border-primary/20 absolute -top-4 -left-4 h-12 w-12 border-t border-l"></div>
-          <div className="border-primary/20 absolute -top-4 -right-4 h-12 w-12 border-t border-r"></div>
-          <div className="border-primary/20 absolute -bottom-4 -left-4 h-12 w-12 border-b border-l"></div>
-          <div className="border-primary/20 absolute -right-4 -bottom-4 h-12 w-12 border-r border-b"></div>
+          <div className="border-primary/20 absolute -start-4 -top-4 h-12 w-12 border-s border-t"></div>
+          <div className="border-primary/20 absolute -end-4 -top-4 h-12 w-12 border-e border-t"></div>
+          <div className="border-primary/20 absolute -start-4 -bottom-4 h-12 w-12 border-s border-b"></div>
+          <div className="border-primary/20 absolute -end-4 -bottom-4 h-12 w-12 border-e border-b"></div>
 
           <div className="group/mock border-border/60 bg-card relative flex h-full w-full flex-col overflow-hidden border shadow-[0_0_40px_rgba(0,0,0,0.05)] dark:shadow-[0_0_50px_rgba(0,0,0,0.5)]">
             {/* Mock UI Header */}
@@ -144,9 +144,9 @@ const LandingPage = () => {
 
             <div className="grid flex-1 grid-cols-12 overflow-hidden">
               {/* Sidebar Mock */}
-              <div className="border-border/40 bg-muted/10 col-span-3 space-y-4 border-r p-4">
+              <div className="border-border/40 bg-muted/10 col-span-3 space-y-4 border-e p-4">
                 <div className="space-y-2">
-                  <div className="border-primary bg-muted/40 h-2 w-full border-r-2"></div>
+                  <div className="border-primary bg-muted/40 h-2 w-full border-e-2"></div>
                   <div className="bg-muted/20 h-2 w-3/4"></div>
                   <div className="bg-muted/20 h-2 w-5/6"></div>
                 </div>
@@ -317,7 +317,7 @@ const LandingPage = () => {
           ].map((metric) => (
             <div
               key={metric.id}
-              className="group border-border/40 hover:border-primary/50 flex flex-col gap-3 border-r pr-4 text-right transition-colors duration-500"
+              className="group border-border/40 hover:border-primary/50 flex flex-col gap-3 border-e pe-4 text-right transition-colors duration-500"
             >
               <div className="flex items-center justify-end gap-2">
                 <span className="font-vazirmatn text-[9px] leading-none tracking-[0.2em] text-zinc-500 uppercase">
@@ -353,7 +353,7 @@ const LandingPage = () => {
               در کالبد نرم‌افزار
             </h2>
           </div>
-          <p className="font-vazirmatn border-primary text-muted-foreground max-w-xs border-r pr-4 text-right text-xs leading-relaxed font-light">
+          <p className="font-vazirmatn border-primary text-muted-foreground max-w-xs border-e pe-4 text-right text-xs leading-relaxed font-light">
             انجام با مدیریت تیم شما مانند یک عملیات استراتژیک برخورد می‌کند؛
             جایی که هر تسک یک گره و هر تغییر یک رکورد ثبت شده است.
           </p>
@@ -411,8 +411,8 @@ const LandingPage = () => {
               <p className="font-vazirmatn text-muted-foreground group-hover:text-foreground/80 text-xs leading-relaxed font-light transition-colors">
                 {feature.desc}
               </p>
-              <div className="bg-primary/30 absolute top-0 right-0 h-[1px] w-10 transition-all duration-1000 group-hover:w-full"></div>
-              <div className="bg-primary/30 absolute top-0 right-0 h-10 w-[1px] transition-all duration-1000 group-hover:h-full"></div>
+              <div className="bg-primary/30 absolute end-0 top-0 h-[1px] w-10 transition-all duration-1000 group-hover:w-full"></div>
+              <div className="bg-primary/30 absolute end-0 top-0 h-10 w-[1px] transition-all duration-1000 group-hover:h-full"></div>
             </div>
           ))}
         </div>

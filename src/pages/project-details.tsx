@@ -182,7 +182,7 @@ export default function ProjectDetails() {
               className="mt-4"
               onClick={() => navigate("/projects")}
             >
-              <ArrowLeft className="ml-2 h-4 w-4" />
+              <ArrowLeft className="ms-2 h-4 w-4" />
               {projects.details.backToProjects}
             </Button>
           </CardContent>

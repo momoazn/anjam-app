@@ -25,7 +25,7 @@ export default function PendingActivation() {
       />
 
       <PageTransition
-        className="bg-card border-foreground relative z-10 w-full max-w-xl overflow-hidden rounded-none border-2 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.05)]"
+        className="bg-card border-foreground relative z-10 w-full max-w-xl overflow-hidden rounded-none border-2 shadow-[-12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[-12px_12px_0px_0px_rgba(255,255,255,0.05)]"
         disableStagger
       >
         <div className="bg-muted/20 border-foreground flex items-center justify-between border-b-2 px-8 py-4">
@@ -40,7 +40,7 @@ export default function PendingActivation() {
 
         <div className="space-y-10 p-10 text-right">
           <div className="flex flex-col items-center gap-6 text-center">
-            <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center rounded-none border-2 shadow-[8px_8px_0px_0px_rgba(var(--primary),0.1)]">
+            <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(var(--primary),0.1)]">
               <IconClock className="h-12 w-12 stroke-[1.5]" />
             </div>
 
@@ -59,7 +59,7 @@ export default function PendingActivation() {
               {usersText.pendingActivation.message}
             </p>
 
-            <div className="bg-muted/10 border-primary space-y-3 border-r-4 p-6">
+            <div className="bg-muted/10 border-primary space-y-3 border-e-4 p-6">
               <div className="text-primary flex items-center justify-end gap-3">
                 <span className="text-[10px] font-black tracking-widest uppercase">
                   Operator_Instruction
@@ -75,7 +75,7 @@ export default function PendingActivation() {
           <div className="border-border/20 border-t pt-6">
             <Button
               onClick={() => navigate("/login")}
-              className="h-14 w-full rounded-none text-base font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+              className="h-14 w-full rounded-none text-base font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
               size="lg"
             >
               {usersText.pendingActivation.backToLogin}

@@ -131,7 +131,7 @@ export default function TimesheetPage() {
 
   const headerActions = (
     <div className="flex items-center gap-4">
-      <div className="border-primary/20 mr-2 flex flex-col items-end border-r-2 pr-4">
+      <div className="border-primary/20 me-2 flex flex-col items-end border-e-2 pe-4">
         <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.2em] uppercase">
           Weekly_Total
         </span>
@@ -143,9 +143,9 @@ export default function TimesheetPage() {
       <Button
         onClick={handleExport}
         variant="outline"
-        className="border-foreground bg-card h-12 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+        className="border-foreground bg-card h-12 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
       >
-        <IconDownload className="ml-2 size-4" />
+        <IconDownload className="ms-2 size-4" />
         {common.buttons.export}
       </Button>
     </div>
@@ -190,7 +190,7 @@ export default function TimesheetPage() {
           <div className="flex gap-4">
             <Button
               asChild
-              className="h-12 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="h-12 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               <Link to="/tasks/new">{timesheet.createTaskCta}</Link>
             </Button>
@@ -256,7 +256,7 @@ export default function TimesheetPage() {
                             {digitsEnToFa(tTime.minutes)}m
                           </span>
                         </div>
-                        <div className="bg-primary/20 absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
+                        <div className="bg-primary/20 absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
                       </div>
                     );
                   })

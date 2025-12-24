@@ -98,19 +98,19 @@ export default function AuditLogs() {
         {/* Registry Filter Logic */}
         <section className="space-y-4">
           <div className="bg-border/40 border-border/40 flex items-center gap-px overflow-hidden border shadow-sm">
-            <div className="bg-muted/20 border-border/20 flex h-10 shrink-0 items-center gap-2 border-l px-3">
+            <div className="bg-muted/20 border-border/20 flex h-10 shrink-0 items-center gap-2 border-s px-3">
               <IconTerminal className="text-primary/60 size-3" />
               <span className="text-muted-foreground/60 text-[9px] font-black tracking-[0.2em] uppercase">
                 Search
               </span>
             </div>
             <div className="group relative h-10 flex-1">
-              <IconTerminal className="text-muted-foreground/30 absolute top-1/2 right-3.5 h-3.5 w-3.5 -translate-y-1/2" />
+              <IconTerminal className="text-muted-foreground/30 absolute top-1/2 end-3.5 h-3.5 w-3.5 -translate-y-1/2" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Query_String..."
-                className="h-full w-full rounded-none border-none bg-transparent pr-11 text-xs font-bold tracking-tight transition-all outline-none focus:ring-0"
+                className="h-full w-full rounded-none border-none bg-transparent pe-11 text-xs font-bold tracking-tight transition-all outline-none focus:ring-0"
               />
             </div>
             {hasFilters && (
@@ -123,7 +123,7 @@ export default function AuditLogs() {
                   setClient("");
                   setSearch("");
                 }}
-                className="border-border/20 h-10 gap-2 rounded-none border-r px-4 text-[9px] font-black tracking-widest text-rose-500 uppercase transition-all hover:bg-rose-500/10"
+                className="border-border/20 h-10 gap-2 rounded-none border-e px-4 text-[9px] font-black tracking-widest text-rose-500 uppercase transition-all hover:bg-rose-500/10"
               >
                 <IconX className="size-3" />
                 Reset_Filters
@@ -132,7 +132,7 @@ export default function AuditLogs() {
           </div>
 
           <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm sm:grid-cols-3">
-            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-l p-3">
+            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
               <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-[0.3em] uppercase">
                 <IconFilter className="size-2" /> {auditLogs.filters.resource}
               </span>
@@ -169,7 +169,7 @@ export default function AuditLogs() {
               </Select>
             </div>
 
-            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-l p-3">
+            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
               <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-[0.3em] uppercase">
                 <IconActivity className="size-2" /> {auditLogs.filters.action}
               </span>
@@ -267,27 +267,27 @@ export default function AuditLogs() {
           <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-xl">
             {/* Table Head Protocol */}
             <div className="bg-muted/20 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
-              <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+              <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
                 <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
                   {auditLogs.table.timestamp}
                 </span>
               </div>
-              <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+              <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
                 <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
                   {auditLogs.table.actor}
                 </span>
               </div>
-              <div className="border-border/10 col-span-1 flex items-center justify-center border-l">
+              <div className="border-border/10 col-span-1 flex items-center justify-center border-s">
                 <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
                   {auditLogs.table.action}
                 </span>
               </div>
-              <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+              <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
                 <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
                   {auditLogs.table.resource}
                 </span>
               </div>
-              <div className="border-border/10 col-span-1 flex items-center justify-center border-l">
+              <div className="border-border/10 col-span-1 flex items-center justify-center border-s">
                 <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
                   {auditLogs.table.client}
                 </span>
@@ -336,12 +336,12 @@ export default function AuditLogs() {
                         className="group bg-card hover:bg-muted/20 flex flex-col text-right transition-all"
                       >
                         <div className="relative grid grid-cols-12 overflow-hidden">
-                          <div className="border-border/10 col-span-2 flex items-center justify-end border-l p-4 font-mono text-[10px] font-black tracking-widest uppercase opacity-60">
+                          <div className="border-border/10 col-span-2 flex items-center justify-end border-s p-4 font-mono text-[10px] font-black tracking-widest uppercase opacity-60">
                             {log.created
                               ? `${formatDateTime(log.created).date} ${formatDateTime(log.created).time}`
                               : "—"}
                           </div>
-                          <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-l p-4">
+                          <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-s p-4">
                             <span className="text-[11px] font-black tracking-tight uppercase">
                               {actorName}
                             </span>
@@ -349,7 +349,7 @@ export default function AuditLogs() {
                               {log.actor_role || "External"}
                             </span>
                           </div>
-                          <div className="border-border/10 col-span-1 flex items-center justify-center border-l p-4">
+                          <div className="border-border/10 col-span-1 flex items-center justify-center border-s p-4">
                             <Badge
                               variant="outline"
                               className="border-primary/20 bg-primary/5 text-primary rounded-none text-[8px] font-black tracking-widest uppercase"
@@ -359,7 +359,7 @@ export default function AuditLogs() {
                               ] || log.action}
                             </Badge>
                           </div>
-                          <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-l p-4">
+                          <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-s p-4">
                             <span className="text-[11px] font-black tracking-tight uppercase">
                               {log.resource}
                             </span>
@@ -370,14 +370,14 @@ export default function AuditLogs() {
                               </span>
                             </div>
                           </div>
-                          <div className="border-border/10 col-span-1 flex items-center justify-center border-l p-4 font-mono text-[10px] font-black uppercase opacity-40">
+                          <div className="border-border/10 col-span-1 flex items-center justify-center border-s p-4 font-mono text-[10px] font-black uppercase opacity-40">
                             {log.client || "—"}
                           </div>
                           <div className="col-span-4 flex items-center justify-end p-4 text-xs leading-relaxed font-medium opacity-80">
                             {log.message || "—"}
                           </div>
 
-                          <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+                          <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
                         </div>
 
                         {/* Expandable Changes Area */}
@@ -408,7 +408,7 @@ export default function AuditLogs() {
                                           key={field}
                                           className="group/field border-border/10 grid grid-cols-12 gap-4 border-b pb-4 last:border-0 last:pb-0"
                                         >
-                                          <div className="border-border/10 col-span-2 flex flex-col items-end border-l">
+                                          <div className="border-border/10 col-span-2 flex flex-col items-end border-s">
                                             <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
                                               Field
                                             </span>
@@ -416,7 +416,7 @@ export default function AuditLogs() {
                                               {field}
                                             </span>
                                           </div>
-                                          <div className="border-border/10 col-span-5 flex flex-col items-end border-l pr-4">
+                                          <div className="border-border/10 col-span-5 flex flex-col items-end border-s pe-4">
                                             <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
                                               Before
                                             </span>
@@ -424,7 +424,7 @@ export default function AuditLogs() {
                                               {String(diff.old || "EMPTY")}
                                             </span>
                                           </div>
-                                          <div className="col-span-5 flex flex-col items-end pr-4">
+                                          <div className="col-span-5 flex flex-col items-end pe-4">
                                             <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
                                               After
                                             </span>

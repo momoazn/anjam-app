@@ -21,7 +21,7 @@ export default function NotFound() {
         data-animate-stagger
       >
         <div className="flex flex-col items-center gap-4">
-          <div className="bg-primary/10 text-primary border-primary/20 mb-4 flex h-24 w-24 items-center justify-center rounded-none border-2 shadow-[8px_8px_0px_0px_rgba(var(--primary),0.1)]">
+          <div className="bg-primary/10 text-primary border-primary/20 mb-4 flex h-24 w-24 items-center justify-center rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(var(--primary),0.1)]">
             <IconAlertTriangle className="size-12 stroke-[1.5]" />
           </div>
 
@@ -46,7 +46,7 @@ export default function NotFound() {
         <div className="flex items-center gap-4 pt-8" data-animate-stagger>
           <Button
             asChild
-            className="h-14 rounded-none px-10 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+            className="h-14 rounded-none px-10 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
           >
             <Link to="/" className="tracking-widest uppercase">
               {navigation.dashboard}
@@ -55,17 +55,17 @@ export default function NotFound() {
           <Button
             asChild
             variant="outline"
-            className="border-foreground bg-card h-14 rounded-none border-2 px-10 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:shadow-none"
+            className="border-foreground bg-card h-14 rounded-none border-2 px-10 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:shadow-none"
           >
             <Link to="/projects">{navigation.projects}</Link>
           </Button>
         </div>
       </div>
 
-      <div className="absolute top-12 left-12 hidden font-mono text-[8px] font-black tracking-[0.5em] uppercase opacity-10 lg:block">
+      <div className="absolute top-12 start-12 hidden font-mono text-[8px] font-black tracking-[0.5em] uppercase opacity-10 lg:block">
         SECTOR_REGISTRY : CORRUPT
       </div>
-      <div className="absolute right-12 bottom-12 hidden font-mono text-[8px] font-black tracking-[0.5em] uppercase opacity-10 lg:block">
+      <div className="absolute end-12 bottom-12 hidden font-mono text-[8px] font-black tracking-[0.5em] uppercase opacity-10 lg:block">
         SYSTEM_STABILITY : MARGINAL
       </div>
     </PageTransition>

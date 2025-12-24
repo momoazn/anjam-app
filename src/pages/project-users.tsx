@@ -137,7 +137,7 @@ export default function ProjectUsers() {
   const headerActions = canManageUsers ? (
     <Button
       onClick={() => setIsAddUserOpen(true)}
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
       size="lg"
     >
       <IconPlus className="size-5" />
@@ -164,12 +164,12 @@ export default function ProjectUsers() {
         data-animate-stagger
       >
         <div className="bg-muted/20 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
-          <div className="border-border/10 col-span-6 flex items-center justify-end border-l px-6">
+          <div className="border-border/10 col-span-6 flex items-center justify-end border-s px-6">
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {projects.users.table.user}
             </span>
           </div>
-          <div className="border-border/10 col-span-4 flex items-center justify-end border-l px-6">
+          <div className="border-border/10 col-span-4 flex items-center justify-end border-s px-6">
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {projects.users.table.role}
             </span>
@@ -185,7 +185,7 @@ export default function ProjectUsers() {
 
         {project?.expand?.supervisor && (
           <div className="group bg-muted/5 relative grid grid-cols-12 overflow-hidden text-right">
-            <div className="border-border/10 col-span-6 flex items-center justify-end gap-3 border-l px-6 py-4">
+            <div className="border-border/10 col-span-6 flex items-center justify-end gap-3 border-s px-6 py-4">
               <div className="flex flex-col items-end">
                 <span className="mb-1 text-[11px] leading-none font-black tracking-tight uppercase">
                   {formatUserName(
@@ -206,7 +206,7 @@ export default function ProjectUsers() {
                 className="border-border/40 size-9 rounded-none border"
               />
             </div>
-            <div className="border-border/10 col-span-4 flex items-center justify-end border-l px-6 py-4">
+            <div className="border-border/10 col-span-4 flex items-center justify-end border-s px-6 py-4">
               <Badge
                 variant="outline"
                 className="border-primary/20 bg-primary/5 text-primary rounded-none text-[9px] font-black tracking-widest uppercase"
@@ -215,7 +215,7 @@ export default function ProjectUsers() {
               </Badge>
             </div>
             {canManageUsers && <div className="col-span-2" />}
-            <div className="bg-primary/10 absolute right-0 bottom-0 h-0.5 w-full" />
+            <div className="bg-primary/10 absolute end-0 bottom-0 h-0.5 w-full" />
           </div>
         )}
 
@@ -224,7 +224,7 @@ export default function ProjectUsers() {
             key={u.id}
             className="group bg-card hover:bg-muted/30 relative grid grid-cols-12 overflow-hidden text-right transition-all"
           >
-            <div className="border-border/10 col-span-6 flex items-center justify-end gap-3 border-l px-6 py-4">
+            <div className="border-border/10 col-span-6 flex items-center justify-end gap-3 border-s px-6 py-4">
               <div className="flex flex-col items-end">
                 <span className="mb-1 text-[11px] leading-none font-black tracking-tight uppercase">
                   {formatUserName(u.first_name, u.last_name, u.username)}
@@ -242,7 +242,7 @@ export default function ProjectUsers() {
               />
             </div>
 
-            <div className="border-border/10 col-span-4 flex items-center justify-end border-l px-6 py-4">
+            <div className="border-border/10 col-span-4 flex items-center justify-end border-s px-6 py-4">
               <Badge
                 variant="outline"
                 className="border-border/40 bg-muted/30 text-muted-foreground rounded-none text-[9px] font-black tracking-widest uppercase"
@@ -268,13 +268,13 @@ export default function ProjectUsers() {
               </div>
             )}
 
-            <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+            <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
           </div>
         ))}
       </div>
 
       <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
-        <DialogContent className="border-foreground bg-card overflow-hidden rounded-none border-2 p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <DialogContent className="border-foreground bg-card overflow-hidden rounded-none border-2 p-0 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="bg-muted/20 border-border/40 flex items-center justify-between border-b px-6 py-4">
             <div className="flex items-center gap-3">
               <IconTerminal className="text-primary size-4" />
@@ -347,7 +347,7 @@ export default function ProjectUsers() {
         open={isRemoveDialogOpen}
         onOpenChange={setIsRemoveDialogOpen}
       >
-        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)]">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center gap-3 text-rose-500">
               <IconTrash className="size-5" />
@@ -368,10 +368,10 @@ export default function ProjectUsers() {
                 userToRemove && removeUserFromProject(userToRemove.id)
               }
               disabled={isRemovingUser}
-              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none"
             >
               {isRemovingUser && (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
               )}
               {common.delete}
             </AlertDialogAction>
