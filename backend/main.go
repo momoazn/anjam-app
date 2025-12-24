@@ -87,6 +87,7 @@ func main() {
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
+	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
 	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
 
 	// --- Bind Authentication Event Handlers ---
