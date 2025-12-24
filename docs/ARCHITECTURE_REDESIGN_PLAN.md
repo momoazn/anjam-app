@@ -3,7 +3,7 @@
 ## Comprehensive Implementation Guide
 
 **Status**: Ready for Implementation
-**Scope**: Full redesign (Greenfield, breaking changes allowed)
+**Scope**: Greenfield build (no existing users/data; no migrations or backward compatibility)
 **Hierarchy**: Organization > Projects > Tasks (no Workspaces)
 **Date**: December 2024
 **Estimated Duration**: 5-6 weeks
@@ -12,17 +12,242 @@
 
 ## Table of Contents
 
-1. [Executive Summary](#executive-summary)
-2. [Current Architecture Analysis](#current-architecture-analysis)
-3. [Target Architecture](#target-architecture)
-4. [Phase 0: Security Hardening](#phase-0-security-hardening)
-5. [Phase 1: Foundation - Organizations](#phase-1-foundation---organizations)
-6. [Phase 2: RBAC Overhaul](#phase-2-rbac-overhaul)
-7. [Phase 3: Task Enhancements](#phase-3-task-enhancements)
-8. [Phase 4: Collaboration Engine](#phase-4-collaboration-engine)
-9. [Phase 5: Performance & Security](#phase-5-performance--security)
-10. [Testing Strategy](#testing-strategy)
-11. [Rollback Plan](#rollback-plan)
+1. [PocketBase Built-in Features](#pocketbase-built-in-features)
+2. [Executive Summary](#executive-summary)
+3. [Current Architecture Analysis](#current-architecture-analysis)
+4. [Target Architecture](#target-architecture)
+5. [UI/UX Requirements](#uiux-requirements)
+6. [Phase 0: Security Hardening](#phase-0-security-hardening)
+7. [Phase 1: Foundation - Organizations](#phase-1-foundation---organizations)
+8. [Phase 2: RBAC Overhaul](#phase-2-rbac-overhaul)
+9. [Phase 3: Task Enhancements](#phase-3-task-enhancements)
+10. [Phase 4: Collaboration Engine](#phase-4-collaboration-engine)
+11. [Phase 5: Performance & Security](#phase-5-performance--security)
+12. [Testing Strategy](#testing-strategy)
+13. [Rollback Plan](#rollback-plan)
+
+---
+
+## PocketBase Built-in Features
+
+### Overview
+
+**IMPORTANT**: Before implementing custom solutions, leverage PocketBase's built-in features. This reduces code complexity, improves maintainability, and ensures consistency with PocketBase's security model.
+
+**Repo note (schema format)**: In this repository, `backend/pb_schema.json` is imported via `ImportCollectionsByMarshaledJSON(...)` and uses PocketBase's exported-collections JSON shape (top-level array of collections with `fields`, `indexes`, etc.). The schema snippets in this document are _conceptual_; prefer creating/updating collections in the PocketBase Admin UI and exporting to `backend/pb_schema.json`, or mirror the existing file's JSON structure (including stable `id`/`collectionId` values).
+
+### Features to Leverage Instead of Recreating
+
+| Feature                       | PocketBase Built-in                                   | Instead of Recreating                                  |
+| ----------------------------- | ----------------------------------------------------- | ------------------------------------------------------ |
+| **Access Control**            | API Rules act as both access control AND data filters | No need for manual filtering in Go code                |
+| **Membership Checks**         | Back-relations with `?=` operator                     | No need for manual JOIN queries                        |
+| **Cleanup on Delete**         | `cascadeDelete: true` on relation fields              | No need for custom cleanup handlers                    |
+| **Collection-specific Logic** | Tagged hooks: `app.OnRecordCreate("tasks")`           | Cleaner than checking collection name in generic hooks |
+| **Computed Fields**           | `OnRecordEnrich` hook adds fields on-the-fly          | No need to store computed values in DB                 |
+| **Validation**                | `OnRecordValidate` hook per collection                | Centralized validation logic                           |
+| **Access Checks in Code**     | `app.CanAccessRecord(record, requestInfo, rule)`      | Reuse existing rules in custom endpoints               |
+| **Real-time Updates**         | Built-in SSE with automatic topic filtering           | No need for custom WebSocket infrastructure            |
+| **System Updates**            | `app.SaveNoValidate(record)`                          | Skip validation for trusted system operations          |
+| **Soft Delete**               | `OnRecordDeleteRequest` with `e.StopPropagation()`    | Intercept delete and convert to update                 |
+
+### API Rules as Filters
+
+PocketBase API rules serve dual purposes - they control access AND filter results automatically:
+
+```
+// This rule:
+listRule: "@request.auth.id != '' && status = 'active' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id"
+
+// Automatically:
+// 1. Denies access if user has no organization
+// 2. Filters to only return active records
+// 3. Filters to only return records in user's organization
+```
+
+**Recommendation**: Put filtering logic in API rules, not in Go code. The rules are evaluated at the database level and are more efficient.
+
+### Back-Relations for Membership Checks
+
+The `?=` operator checks if ANY record in the related collection matches:
+
+```
+// Check if user is a member of the organization
+@collection.organization_members.organization.id ?= organization.id
+&& @collection.organization_members.user.id ?= @request.auth.id
+
+// This is equivalent to:
+// SELECT 1 FROM organization_members
+// WHERE organization = record.organization
+// AND user = current_user
+```
+
+**Recommendation**: Use back-relations in API rules instead of custom permission checking functions.
+
+### Tagged Hooks Pattern
+
+Instead of checking collection names in generic hooks:
+
+```go
+// BAD: Generic hook with collection check
+app.OnRecordCreate().BindFunc(func(e *core.RecordEvent) error {
+    if e.Record.Collection().Name == "tasks" {
+        // task-specific logic
+    }
+    return e.Next()
+})
+
+// GOOD: Tagged hook for specific collection
+app.OnRecordCreate("tasks").BindFunc(func(e *core.RecordEvent) error {
+    // task-specific logic - cleaner and more performant
+    return e.Next()
+})
+```
+
+### OnRecordEnrich for Computed Fields
+
+Add computed fields without storing them:
+
+```go
+app.OnRecordEnrich("tasks").BindFunc(func(e *core.RecordEnrichEvent) error {
+    // Add computed field
+    e.Record.WithCustomData(true)
+    created := e.Record.GetDateTime("created")
+    e.Record.Set("age_days", int(time.Since(created.Time()).Hours()/24))
+
+    // Hide sensitive fields from non-owners
+    if e.RequestInfo.Auth == nil ||
+       e.Record.GetString("assignee") != e.RequestInfo.Auth.Id {
+        e.Record.Hide("internal_notes")
+    }
+
+    return e.Next()
+})
+```
+
+### CanAccessRecord for Custom Endpoints
+
+Reuse collection rules in custom API endpoints:
+
+```go
+// In custom search endpoint - reuse existing rules
+func canViewTask(e *core.RequestEvent, task *core.Record) bool {
+    requestInfo, err := e.RequestInfo()
+    if err != nil {
+        return false
+    }
+
+    rule := task.Collection().ViewRule
+    if rule == nil {
+        return false // locked to superusers only
+    }
+
+    canAccess, _ := e.App.CanAccessRecord(task, requestInfo, rule)
+    return canAccess
+}
+```
+
+**Recommendation for Phase 0**: Replace the custom `canViewTask()` and `canViewProject()` functions with `app.CanAccessRecord()` to ensure search results respect the same rules as direct API access.
+
+### Soft Delete Pattern
+
+Intercept delete requests and convert to soft delete:
+
+```go
+app.OnRecordDeleteRequest("tasks").BindFunc(func(e *core.RecordRequestEvent) error {
+    // Convert to soft delete
+    e.Record.Set("deleted_at", time.Now().Format(time.RFC3339))
+    if e.Auth != nil {
+        e.Record.Set("deleted_by", e.Auth.Id)
+    }
+
+    if err := e.App.Save(e.Record); err != nil {
+        return err
+    }
+
+    // Prevent actual deletion
+    e.StopPropagation()
+    return nil
+})
+```
+
+### Cascade Delete Configuration
+
+Use relation field options instead of custom cleanup:
+
+```json
+{
+  "name": "project",
+  "type": "relation",
+  "options": {
+    "collectionId": "projects",
+    "cascadeDelete": true // Auto-delete when parent is deleted
+  }
+}
+```
+
+**When to use `cascadeDelete: true`**:
+
+- `organization_members` → when organization is deleted
+- `project_members` → when project is deleted
+- `comments` → when task is deleted
+- `subtasks` → when parent task is deleted
+
+**When to use `cascadeDelete: false`**:
+
+- `projects` → organization deletion should be explicit
+- `tasks` → project deletion should be explicit (prevent accidents)
+
+### Real-time Subscriptions
+
+PocketBase provides built-in real-time via SSE:
+
+```javascript
+// Client-side: Subscribe to task changes in a project
+pb.collection("tasks").subscribe(
+  "*",
+  (e) => {
+    console.log(e.action); // 'create', 'update', 'delete'
+    console.log(e.record);
+  },
+  { filter: 'project = "PROJECT_ID"' },
+);
+
+// Subscribe to specific record
+pb.collection("tasks").subscribe("RECORD_ID", (e) => {
+  console.log("Task updated:", e.record);
+});
+```
+
+**Recommendation for Phase 4**: Use built-in real-time instead of creating custom activity streaming. The audit logs + real-time subscriptions can replace a custom `activities` collection.
+
+### Validation Hooks
+
+Centralize validation per collection:
+
+```go
+app.OnRecordValidate("tasks").BindFunc(func(e *core.RecordEvent) error {
+    // Validate status transition
+    if e.Record.Original() != nil {
+        oldStatus := e.Record.Original().GetString("status")
+        newStatus := e.Record.GetString("status")
+
+        if !isValidStatusTransition(oldStatus, newStatus) {
+            return errors.New("invalid status transition")
+        }
+    }
+
+    // Validate due date is in the future for new tasks
+    if e.Record.IsNew() {
+        dueDate := e.Record.GetDateTime("due_date")
+        if !dueDate.IsZero() && dueDate.Time().Before(time.Now()) {
+            return errors.New("due date must be in the future")
+        }
+    }
+
+    return e.Next()
+})
+```
 
 ---
 
@@ -251,26 +476,92 @@ User requests access to Task X
 
 ---
 
+## UI/UX Requirements
+
+This plan includes some frontend implementation steps (e.g. auth store, permission hooks), but a greenfield redesign also needs explicit UI/UX scope so the product is cohesive and permission-safe.
+
+### Global UX Rules (Always True)
+
+- **Tenant context is visible**: Always show the current organization in the primary layout (header/sidebar) to prevent cross-tenant confusion.
+- **Organization selection is a first-class flow**: After login, the user must be able to pick an organization (or create one if allowed) before seeing any projects/tasks.
+- **Permission-driven UI**: If the backend denies an action, the UI should not present it as available (disable/hide buttons based on effective permissions).
+- **Empty states explain “why”**: “No projects” vs “You don’t have access to any projects” must be distinguishable and actionable.
+- **Consistent navigation**: URLs and navigation should always include enough context to avoid ambiguity (at minimum, a selected org; project pages are scoped within that org).
+
+### Phase 1 UX: Organizations
+
+**Change**: “Group” mental model → “Organization”.
+
+- Add an **organization switcher** in the main layout (why: multi-org membership is core to the new tenancy model).
+- Add **organization settings** (name, logo, slug) with role-gated edit access (why: org branding + admin controls).
+- Add **organization members UI** (list members, invite/add, roles: owner/admin/member; status: invited/active/suspended) (why: tenant administration without relying on PocketBase admin UI).
+- Update all list/detail pages to show only data for the selected org (why: avoids accidental cross-tenant browsing and reinforces boundaries).
+
+### Phase 2 UX: RBAC (Project Roles)
+
+**Change**: Global user role assumptions → project-scoped roles.
+
+- Project “Members” screen with per-project roles (owner/admin/member/viewer) (why: the core RBAC primitive).
+- Permission-aware controls across the app:
+  - Hide/disable “Edit project”, “Manage members”, “Delete project” based on effective permissions.
+  - Gate task actions (create/edit/assign/status change) based on project role + org role.
+- Prefer **clear role affordances** (badges/labels) and **explanatory tooltips** on disabled actions (why: reduce support burden and confusion).
+
+### Phase 3 UX: Task Enhancements
+
+**Change**: Tasks become richer objects (subtasks, time entries, custom statuses).
+
+- Task detail page should support:
+  - Subtasks checklist (why: decomposing work)
+  - Time entries (why: historical time tracking per user)
+  - Custom statuses (why: workflow customization per project)
+- Update create/edit task flows:
+  - Status selection driven by the project’s configured statuses.
+  - Enforce/communicate invalid status transitions (why: prevent “silent failures”).
+
+### Phase 4 UX: Activity Feed (Audit Logs as Activity)
+
+**Change**: “Activity” becomes a project-scoped timeline derived from `audit_logs`.
+
+- Add an “Activity” panel/tab in:
+  - Project view (project-wide timeline)
+  - Task view (task-specific timeline)
+- Decide on **who sees what**:
+  - Admins can see full field diffs (`changes`)
+  - Non-admins see redacted diffs or message-only entries (why: minimize leakage of sensitive fields)
+- Add filtering and readability:
+  - Filter by resource (`tasks/comments/projects`) and action (`create/update/delete`)
+  - Human-readable messages (why: audit entries are technical by default)
+- Real-time UX:
+  - Subscribe to `audit_logs` (filtered by project) and update the UI incrementally or invalidate the activity query (why: live collaboration without building custom infra)
+
+### Phase 5 UX: Performance & Safety
+
+- Rate-limit feedback and error states should be user-friendly and consistent (why: security without a “broken app” feel).
+- Admin-facing audit views can include export/filtering (optional) (why: operational usefulness).
+
+---
+
 ## Phase 0: Security Hardening
 
 ### Overview
 
-**Goal**: Fix critical security vulnerabilities before making schema changes.
+**Goal**: Establish a secure baseline from day 1 (no legacy patching or backward compatibility).
 **Duration**: 1-2 days
 **Priority**: CRITICAL - Must complete first
 **Risk if skipped**: Data leaks between tenants in production
 
 ### Step 0.1: Fix Comments Tenant Isolation
 
-#### What's Wrong
+#### Security Requirement
 
-The comments collection has this access rule:
+Comments must never be readable cross-tenant. In a greenfield build, implement the correct rules immediately (instead of “fixing” them later).
 
 ```json
 "listRule": "@request.auth.id != ''"
 ```
 
-This translates to: "Any authenticated user can list all comments."
+By itself, this translates to: "Any authenticated user can list all comments." That is not tenant-safe.
 
 #### Why It's Dangerous
 
@@ -297,7 +588,7 @@ This translates to: "Any authenticated user can list all comments."
 ```json
 {
   "name": "comments",
-  "listRule": "@request.auth.id != '' && task.project.group.id = @request.auth.group.id && (deleted_at = '' || deleted_at = null)",
+  "listRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= task.project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && (deleted_at = '' || deleted_at = null)",
   ...
 }
 ```
@@ -308,9 +599,9 @@ This translates to: "Any authenticated user can list all comments."
 @request.auth.id != ''
   → User must be authenticated
 
-&& task.project.group.id = @request.auth.group.id
-  → The comment's task's project's group must match the user's group
-  → This ensures tenant isolation
+&& @collection.organization_members.organization.id ?= task.project.organization.id
+&& @collection.organization_members.user.id ?= @request.auth.id
+  → The user must be a member of the organization that owns the comment's task.project
 
 && (deleted_at = '' || deleted_at = null)
   → Filter out soft-deleted comments
@@ -318,22 +609,22 @@ This translates to: "Any authenticated user can list all comments."
 
 #### How to Test
 
-1. Create two users in different groups
-2. Create a task with a comment in Group A
-3. Log in as user from Group B
+1. Create two users in different organizations
+2. Create a project + task + comment in Organization A
+3. Log in as user from Organization B
 4. Try to fetch comments - should return empty
-5. Log in as user from Group A
+5. Log in as user from Organization A
 6. Try to fetch comments - should return the comment
 
 ```bash
-# Test as Group B user (should fail)
+# Test as Organization B user (should fail)
 curl -X GET "http://localhost:8090/api/collections/comments/records" \
-  -H "Authorization: Bearer <group_b_user_token>"
+  -H "Authorization: Bearer <org_b_user_token>"
 # Expected: []
 
-# Test as Group A user (should succeed)
+# Test as Organization A user (should succeed)
 curl -X GET "http://localhost:8090/api/collections/comments/records" \
-  -H "Authorization: Bearer <group_a_user_token>"
+  -H "Authorization: Bearer <org_a_user_token>"
 # Expected: [{ comment data }]
 ```
 
@@ -343,163 +634,140 @@ curl -X GET "http://localhost:8090/api/collections/comments/records" \
 
 #### What's Wrong
 
-**File**: `backend/search.go` (lines 109-130)
+**File**: `backend/search.go`
 
-```go
-func canViewTask(app core.App, task *core.Record, user *core.Record) bool {
-    if user.GetString("role") == "admin" {
-        return true
-    }
-    return true  // ← BUG: This always returns true!
-}
-
-func canViewProject(app core.App, project *core.Record, user *core.Record) bool {
-    if user.GetString("role") == "admin" {
-        return true
-    }
-    return true  // ← BUG: Same issue
-}
-```
+The search endpoint fetches records via `e.App.FindRecordsByFilter(...)` (server/admin context), which **does not automatically enforce collection API rules**. Any manual `canView*` helper must stay perfectly in sync with the collection `listRule`/`viewRule` or it will leak cross-tenant or over-broad results.
 
 #### Why It's Dangerous
 
-The global search endpoint (`/api/search`) uses these functions to filter results. Since they always return `true`, users can search and find tasks/projects from other groups.
+The global search endpoint (`/api/v1/search`) can accidentally return tasks/projects a user shouldn't be able to discover if the helper logic drifts from the PocketBase rules (tenant isolation, membership checks, soft delete filters, etc.).
 
-#### The Fix
+#### The Fix (Using PocketBase Built-in Features)
 
 **File to modify**: `backend/search.go`
 
-**Replace the `canViewTask` function** (around line 109):
+> **RECOMMENDED APPROACH**: Use `app.CanAccessRecord()` to reuse existing collection rules instead of duplicating permission logic. This ensures search results respect the same rules as direct API access.
+
+**Replace the `canViewTask` function**:
 
 ```go
 // canViewTask checks if a user has permission to view a specific task
-// This enforces tenant isolation at the search level
+// Uses PocketBase's built-in CanAccessRecord to reuse collection rules
+func canViewTask(e *core.RequestEvent, task *core.Record) bool {
+    requestInfo, err := e.RequestInfo()
+    if err != nil {
+        return false
+    }
+
+    // If rule is nil, only superusers can access.
+    rule := task.Collection().ViewRule
+    if rule == nil {
+        return false
+    }
+
+    // Reuse the collection's viewRule for consistent access checks.
+    canAccess, _ := e.App.CanAccessRecord(task, requestInfo, rule)
+    return canAccess
+}
+```
+
+**Replace the `canViewProject` function**:
+
+```go
+// canViewProject checks if a user has permission to view a specific project
+// Uses PocketBase's built-in CanAccessRecord to reuse collection rules
+func canViewProject(e *core.RequestEvent, project *core.Record) bool {
+    requestInfo, err := e.RequestInfo()
+    if err != nil {
+        return false
+    }
+
+    rule := project.Collection().ViewRule
+    if rule == nil {
+        return false
+    }
+
+    canAccess, _ := e.App.CanAccessRecord(project, requestInfo, rule)
+    return canAccess
+}
+```
+
+**Update the search handler** to pass `*core.RequestEvent`:
+
+```go
+// In the search handler, update the calls:
+for _, task := range tasks {
+    if canViewTask(e, task) {
+        results = append(results, task)
+    }
+}
+
+for _, project := range projects {
+    if canViewProject(e, project) {
+        results = append(results, project)
+    }
+}
+```
+
+#### Why This Approach is Better
+
+1. **Single Source of Truth**: Permission logic is defined once in collection rules
+2. **Automatic Updates**: When rules change, search respects them automatically
+3. **Less Code**: No need to duplicate complex permission checking
+4. **Consistency**: Search results match what users can access via direct API
+5. **Future-Proof**: Works automatically with organization-based rules after Phase 1
+
+#### Alternative: Manual Implementation (If CanAccessRecord doesn't fit)
+
+If you need more control or `CanAccessRecord` doesn't work for your use case, here's the manual implementation:
+
+```go
+// canViewTask - manual implementation with tenant isolation
 func canViewTask(app core.App, task *core.Record, user *core.Record) bool {
     userID := user.Id
     userRole := user.GetString("role")
     userGroupID := user.GetString("group")
 
-    // Admin can see everything within the system
-    // Note: After Phase 1, this will check org membership instead
     if userRole == RoleAdmin {
         return true
     }
 
-    // Get the project this task belongs to
     projectID := task.GetString("project")
     if projectID == "" {
-        return false // Task without project = orphan, deny access
+        return false
     }
 
     project, err := app.FindRecordById("projects", projectID)
     if err != nil {
-        // Project not found or error, deny access
         return false
     }
 
-    // Get the group this project belongs to
-    projectGroupID := project.GetString("group")
-
-    // CRITICAL: User must be in the same group as the project
-    if projectGroupID != userGroupID {
+    // CRITICAL: Tenant isolation check
+    if project.GetString("group") != userGroupID {
         return false
     }
 
-    // For managers: they can see all tasks in their group
+    // Role-based checks within the tenant
     if userRole == RoleManager {
         return true
     }
 
-    // For supervisors: they can see tasks in projects they supervise
-    if userRole == RoleSupervisor {
-        supervisorID := project.GetString("supervisor")
-        if supervisorID == userID {
-            return true
-        }
-    }
-
-    // For employees: check if they're assigned to the task
-    assigneeID := task.GetString("assignee")
-    if assigneeID == userID {
+    if userRole == RoleSupervisor && project.GetString("supervisor") == userID {
         return true
     }
 
-    // Check if user is a member of this project via users_projects
-    usersProjects, err := app.FindRecordsByFilter(
+    if task.GetString("assignee") == userID {
+        return true
+    }
+
+    // Check project membership
+    members, _ := app.FindRecordsByFilter(
         "users_projects",
         "user = {:user} && project = {:project}",
-        "",
-        1, // limit to 1
-        0,
-        map[string]any{
-            "user":    userID,
-            "project": projectID,
-        },
+        "", 1, 0,
+        map[string]any{"user": userID, "project": projectID},
     )
-
-    if err == nil && len(usersProjects) > 0 {
-        return true
-    }
-
-    // Default: deny access
-    return false
-}
-```
-
-**Replace the `canViewProject` function** (around line 130):
-
-```go
-// canViewProject checks if a user has permission to view a specific project
-func canViewProject(app core.App, project *core.Record, user *core.Record) bool {
-    userID := user.Id
-    userRole := user.GetString("role")
-    userGroupID := user.GetString("group")
-
-    // Admin can see everything
-    if userRole == RoleAdmin {
-        return true
-    }
-
-    // Get the group this project belongs to
-    projectGroupID := project.GetString("group")
-
-    // CRITICAL: User must be in the same group as the project
-    if projectGroupID != userGroupID {
-        return false
-    }
-
-    // For managers: they can see all projects in their group
-    if userRole == RoleManager {
-        return true
-    }
-
-    // For supervisors: check if they're the project supervisor
-    if userRole == RoleSupervisor {
-        supervisorID := project.GetString("supervisor")
-        if supervisorID == userID {
-            return true
-        }
-    }
-
-    // Check if user is a member of this project via users_projects
-    usersProjects, err := app.FindRecordsByFilter(
-        "users_projects",
-        "user = {:user} && project = {:project}",
-        "",
-        1,
-        0,
-        map[string]any{
-            "user":    userID,
-            "project": project.Id,
-        },
-    )
-
-    if err == nil && len(usersProjects) > 0 {
-        return true
-    }
-
-    // Default: deny access
-    return false
+    return len(members) > 0
 }
 ```
 
@@ -507,15 +775,15 @@ func canViewProject(app core.App, project *core.Record, user *core.Record) bool 
 
 ```bash
 # Create test data:
-# - Group A with Project A1 and Task A1-001
-# - Group B with Project B1 and Task B1-001
-# - User in Group A
+# - Org A with Project A1 and Task A1-001
+# - Org B with Project B1 and Task B1-001
+# - User in Org A
 
-# Search as Group A user
-curl -X GET "http://localhost:8090/api/search?q=test" \
-  -H "Authorization: Bearer <group_a_token>"
+# Search as Org A user
+curl -X GET "http://localhost:8090/api/v1/search?q=test" \
+  -H "Authorization: Bearer <org_a_token>"
 
-# Expected: Only returns tasks/projects from Group A
+# Expected: Only returns tasks/projects from Org A
 # Should NOT include B1-001 or Project B1
 ```
 
@@ -533,7 +801,7 @@ Currently, `deleted_at` is a `text` field with inconsistent handling:
 
 #### The Fix
 
-We'll keep `deleted_at` as text (PocketBase limitation) but standardize:
+We'll keep `deleted_at` as text (to match the current schema) but standardize:
 
 - Empty string `""` = not deleted
 - ISO timestamp = deleted at that time
@@ -560,9 +828,8 @@ We'll keep `deleted_at` as text (PocketBase limitation) but standardize:
 
 ### Phase 0 Completion Checklist
 
-- [ ] Comments listRule updated to include group check
-- [ ] `canViewTask()` properly checks group membership
-- [ ] `canViewProject()` properly checks group membership
+- [ ] Comments rules enforce organization membership
+- [ ] Search results are filtered via `CanAccessRecord`
 - [ ] All soft delete patterns standardized
 - [ ] Run `bun run check` - no errors
 - [ ] Manual security testing completed
@@ -574,7 +841,7 @@ We'll keep `deleted_at` as text (PocketBase limitation) but standardize:
 
 ### Overview
 
-**Goal**: Replace the "Groups" concept with "Organizations" as the tenant boundary.
+**Goal**: Implement organizations as the tenant boundary (no groups).
 **Duration**: 1 week
 **Dependencies**: Phase 0 must be complete
 **Breaking Changes**: Yes - all frontend and backend code affected
@@ -599,7 +866,7 @@ A new collection that represents the "tenant" - the company or team that owns th
 
 **File to modify**: `backend/pb_schema.json`
 
-Add this new collection definition (add to the `collections` array):
+Add this new collection definition (add to the top-level array in `backend/pb_schema.json`):
 
 ```json
 {
@@ -1023,9 +1290,24 @@ Add to audit_logs collection:
 
 Some audit events might be system-level (not tied to a specific org), so we allow null.
 
+#### Implementation Notes (Important)
+
+- Adding the field to the schema is not enough: update `backend/audit.go` to populate `audit_logs.organization` when writing audit entries.
+- If you plan to use audit logs as a **project activity feed** (Phase 4), also add a `project` relation field to `audit_logs` (or do it in Phase 4) so you can query efficiently by project: `filter: project = "{projectId}"`.
+
 ---
 
-### Step 1.6: Create Migration Script
+### Step 1.6: Bootstrap / Seed (Greenfield)
+
+Because this is a greenfield project (no existing users/data), we don't need migrations. Instead, add a small bootstrap/seed flow for development and QA:
+
+1. Create an initial organization
+2. Create an initial org owner membership for the first admin user
+3. Optionally create a sample project and a few tasks for UI testing
+
+Implement this either as a one-time bootstrap endpoint (superuser-only) or as a Bun script under `scripts/` that runs against an empty database.
+
+<!--
 
 #### What We're Building
 
@@ -1360,6 +1642,8 @@ bun run scripts/migrate-groups-to-orgs.ts
 ADMIN_EMAIL=custom@example.com ADMIN_PASSWORD=secret bun run scripts/migrate-groups-to-orgs.ts
 ```
 
+-->
+
 ---
 
 ### Step 1.7: Update Backend Constants
@@ -1372,7 +1656,7 @@ Replace the old role constants with new organization and project role constants.
 
 **File**: `backend/backend_constants.go`
 
-**Add new constants** (keep old ones temporarily for migration):
+**Add new constants**:
 
 ```go
 // =============================================================================
@@ -1415,25 +1699,7 @@ const (
     MemberStatusSuspended = "suspended"
 )
 
-// =============================================================================
-// DEPRECATED: Old Role System (keeping for migration compatibility)
-// =============================================================================
-
-// Deprecated: Use OrgRoleOwner/OrgRoleAdmin/OrgRoleMember instead
-const (
-    RoleAdmin      = "admin"      // Deprecated
-    RoleManager    = "manager"    // Deprecated
-    RoleSupervisor = "supervisor" // Deprecated
-    RoleEmployee   = "employee"   // Deprecated
-)
-
-// RoleHierarchy maps old roles for backward compatibility during migration
-var RoleHierarchy = map[string]int{
-    RoleAdmin:      4, // Deprecated
-    RoleManager:    3, // Deprecated
-    RoleSupervisor: 2, // Deprecated
-    RoleEmployee:   1, // Deprecated
-}
+	// Greenfield note: do not keep the old group-based roles around.
 ```
 
 #### Add Validation Helpers
@@ -1894,8 +2160,7 @@ This will update `src/lib/pocketbase-types.ts` with:
 - [ ] Tags collection has `organization` field
 - [ ] Audit logs collection has `organization` field
 - [ ] All access rules updated for organization-based access
-- [ ] Migration script created and tested
-- [ ] Migration script run successfully
+- [ ] Bootstrap/seed flow implemented (optional but recommended)
 - [ ] Backend constants updated with new roles
 - [ ] Organization API endpoints created
 - [ ] Auth store updated with organization context
@@ -2832,7 +3097,11 @@ export function useCanManageProject(projectId: string): boolean {
 
 ---
 
-### Step 2.6: Migrate users_projects to project_members
+### Step 2.6: No Migration Required (Greenfield)
+
+Because this is a greenfield build, skip any migration from `users_projects`. Implement `project_members` directly and remove `users_projects` from the target schema/code.
+
+<!--
 
 #### Migration Script
 
@@ -2926,6 +3195,8 @@ async function main() {
 main();
 ```
 
+-->
+
 ---
 
 ### Phase 2 Completion Checklist
@@ -2935,7 +3206,6 @@ main();
 - [ ] Permissions API endpoint created
 - [ ] `src/lib/permissions.ts` rewritten
 - [ ] `src/hooks/usePermissions.ts` created
-- [ ] Migration script created and run
 - [ ] All components updated to use new permission hooks
 - [ ] Run `bun run check` - no errors
 - [ ] Manual testing of role-based access
@@ -2959,11 +3229,54 @@ Due to length constraints, I'll summarize the remaining phases. Each follows the
 
 ### Phase 4: Collaboration Engine
 
-1. **Create `activities` collection** - Activity feed/audit trail
-2. **Create `mentions` collection** - @mention tracking
+> **RECOMMENDATION**: Leverage PocketBase built-in features instead of recreating them:
+>
+> - Use existing `audit_logs` collection instead of creating separate `activities` collection
+> - Use PocketBase real-time subscriptions instead of custom event dispatching
+> - The `OnRecordEnrich` hook can add computed activity data on-the-fly
+
+**Repo alignment**: This repo already has server-side audit logging (`backend/audit.go`) and a UI component that renders audit entries (`src/components/audit/activity-stream.tsx`). Phase 4 mainly extends this into a consistent, project-scoped “activity feed”.
+
+1. **Extend `audit_logs` for activity feed** (required to make this implementable)
+   - Add `organization` (tenant boundary) **and** `project` (for efficient project-scoped activity queries).
+   - Update `backend/audit.go` to populate `audit_logs.organization`/`audit_logs.project` on write.
+   - Update `audit_logs` `listRule/viewRule` to allow reading activity for authorized org/project members (today it is admin-only in `backend/pb_schema.json`).
+   - Optional but recommended: use `OnRecordEnrich("audit_logs")` to hide `changes` for non-admin users (show message-only activity to viewers).
+2. **Create `mentions` collection** - @mention tracking (still needed)
 3. **Enhance comments** - Threading, reactions, attachments
-4. **Create `backend/events.go`** - Async event dispatcher
-5. **Implement mention extraction** - Parse @username from text
+4. **Use PocketBase real-time** - subscribe to `audit_logs` for a single, consistent activity stream
+5. **Implement mention extraction** - Parse @username in `OnRecordValidate` hook
+
+**Real-time Activity Example** (client-side):
+
+```javascript
+// Recommended: subscribe to audit logs (single feed), and refetch/invalidate queries.
+//
+// Notes:
+// - The "filter" is additive; access is still enforced by audit_logs rules.
+// - For this to work, audit_logs must be readable by project members and include a `project` field.
+pb.collection("audit_logs").subscribe(
+  "*",
+  (e) => {
+    // e.action: 'create' | 'update' | 'delete'
+    // e.record: the new audit log record
+    invalidateProjectActivityQuery(e.record.project);
+  },
+  { filter: `project = "${projectId}"` },
+);
+```
+
+**Activity from Audit Logs** (instead of separate collection):
+
+```ts
+// No custom Go endpoint is required if audit_logs rules allow reads.
+// Fetch project activity directly via the collection list API.
+await pb.collection("audit_logs").getList(1, 50, {
+  filter: `project = "${projectId}" && (resource = "tasks" || resource = "comments" || resource = "projects")`,
+  sort: "-created",
+  expand: "actor",
+});
+```
 
 ### Phase 5: Performance & Security
 
@@ -2984,7 +3297,6 @@ For each phase, add tests for:
 - Permission resolution logic
 - Role inheritance
 - Access rule enforcement
-- Data migration integrity
 
 ### Integration Tests
 
@@ -3024,11 +3336,9 @@ For each phase, add tests for:
 
 After all phases complete and are verified:
 
-1. Remove deprecated `groups` collection
-2. Remove deprecated `users_projects` collection
-3. Remove `role` field from users collection
-4. Remove `group` field from users/projects/tags
-5. Update all documentation
+1. Remove any unused collections/fields and dead code paths
+2. Review API rules for least privilege
+3. Update all documentation
 
 ### Documentation Updates
 
