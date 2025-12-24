@@ -1,6 +1,13 @@
 import { format } from "date-fns-jalali";
 import { Suspense, lazy, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
+import {
+  IconChartBar,
+  IconActivity,
+  IconClock,
+  IconCircleCheck,
+  IconAlertTriangle,
+} from "@tabler/icons-react";
 
 const DrilldownDrawer = lazy(() =>
   import("@/components/reports/drilldown-drawer").then((m) => ({
@@ -9,11 +16,10 @@ const DrilldownDrawer = lazy(() =>
 );
 import type { Filters, TimeRange } from "@/components/reports/filters-bar";
 import { FiltersSection } from "@/components/reports/filters-section";
-import { MetricsSection } from "@/components/reports/metrics-section";
 import { ChartsSection } from "@/components/reports/charts-section";
 import { TableSection } from "@/components/reports/table-section";
 import { PageTransition } from "@/components/page-transition";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   buildLeaderboard,
@@ -22,19 +28,21 @@ import {
   computeEmployeeSummary,
   computeOvertimeAnalysis,
   computeOverviewMetrics,
-  computeProductivityTrends,
   computeTeamAverages,
   computeWorkloadDistribution,
   countByPriority,
   filterTasksByControls,
   filterTasksNonTime,
   getTimeRange,
+  computeProductivityTrends,
 } from "@/lib/reports-utils";
 import { reports } from "@/constants";
 import { useProjects, useTasks, useUsers, queryKeys } from "@/hooks";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { useQuery } from "@tanstack/react-query";
 import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { cn } from "@/lib/utils";
 
 type DrilldownState = {
   title: string;
@@ -247,7 +255,7 @@ export default function Reports() {
     return computeWorkloadDistribution(users, tasks);
   }, [users, tasks]);
 
-  const productivityTrends = useMemo(() => {
+  const productivityTrendsData = useMemo(() => {
     if (!selectedEmployeeId || !tasks) return null;
     // Convert employeeBucket to valid bucket type for trends
     const validBucket =
@@ -261,6 +269,7 @@ export default function Reports() {
       validBucket as "daily" | "weekly" | "monthly",
     );
   }, [selectedEmployeeId, tasks, timeRange, employeeBucket]);
+
   const handleDrilldown = (
     title: string,
     predicate: (task: TaskWithProject) => boolean,
@@ -274,7 +283,7 @@ export default function Reports() {
       deadline: task.deadline || null,
       ageDays: task.created
         ? Math.ceil(
-            (new Date().getTime() - new Date(task.created).getTime()) /
+            (Date.now() - new Date(task.created).getTime()) /
               (1000 * 60 * 60 * 24),
           )
         : 0,
@@ -289,51 +298,6 @@ export default function Reports() {
     setDrilldown({ title, rows });
   };
 
-  if (isLoading) {
-    return (
-      <PageTransition className="container mx-auto space-y-6 p-4 md:p-6">
-        <div
-          className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-          data-animate-stagger
-        >
-          <Skeleton className="h-8 w-48" />
-        </div>
-        <Skeleton className="h-16 w-full" />
-        <div
-          className="grid grid-cols-2 gap-4 md:grid-cols-5"
-          data-animate-stagger
-        >
-          {[...Array(5)].map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-4" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-12" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        <div
-          className="grid grid-cols-1 gap-6 md:grid-cols-2"
-          data-animate-stagger
-        >
-          {[...Array(4)].map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="pb-4">
-                <Skeleton className="h-6 w-32" />
-              </CardHeader>
-              <CardContent className="h-64 w-full p-4 pt-0 md:h-80">
-                <Skeleton className="h-full w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </PageTransition>
-    );
-  }
-
   const rangeLabel = `${format(timeRange.start, "yyyy/MM/dd")} ${reports.range.connector} ${format(timeRange.end, "yyyy/MM/dd")}`;
 
   const totalTimeliness = timelinessData?.reduce(
@@ -344,48 +308,188 @@ export default function Reports() {
   const totalPriority = priorityData?.reduce((a, b) => a + (b.value || 0), 0);
   const hasPriority = (totalPriority || 0) > 0;
 
+  if (isLoading) {
+    return (
+      <PageTransition className="container mx-auto max-w-[1600px] p-6 md:p-10">
+        <PageHeader
+          title={reports.dashboardTitle}
+          description={`${reports.range.label} ${digitsEnToFa(rangeLabel)}`}
+          icon={IconChartBar}
+          nodeId="Analytics_Core"
+        />
+
+        <div className="space-y-16">
+          <section className="space-y-6">
+            <div className="flex items-center gap-4">
+              <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+                01_Configuration
+              </span>
+              <div className="bg-border/20 h-px flex-1" />
+            </div>
+            <Skeleton className="h-24 w-full rounded-none" />
+          </section>
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-4">
+              <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+                02_Telemetry_Summary
+              </span>
+              <div className="bg-border/20 h-px flex-1" />
+            </div>
+            <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-5">
+              {["s1", "s2", "s3", "s4", "s5"].map((key) => (
+                <div key={key} className="bg-card h-32 p-8">
+                  <Skeleton className="mb-4 h-4 w-20" />
+                  <Skeleton className="h-10 w-16" />
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </PageTransition>
+    );
+  }
+
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
-      <FiltersSection
-        value={filtersState}
-        onChange={setFiltersState}
-        rangeLabel={rangeLabel}
-        projects={projects || []}
-        users={users || []}
-        projectsWithSupervisor={projectsWithSupervisor}
-        tasks={tasks}
+    <PageTransition className="container mx-auto max-w-[1600px] p-6 md:p-10">
+      <PageHeader
+        title={reports.dashboardTitle}
+        description={`${reports.range.label} ${digitsEnToFa(rangeLabel)}`}
+        icon={IconChartBar}
+        nodeId="Analytics_Core"
       />
 
-      <MetricsSection totals={overviewMetrics} />
-
-      <ChartsSection
-        timelinessData={timelinessData}
-        priorityData={priorityData}
-        hasTimeliness={hasTimeliness}
-        hasPriority={hasPriority}
-        leaderboardData={leaderboardData}
-        users={users}
-        timeRange={timeRange}
-        onDrilldown={handleDrilldown}
-        overtimeAnalysis={overtimeAnalysis}
-        workloadDistribution={workloadDistribution}
-        employeeSummaries={employeeSummaries}
-        employeeBuckets={employeeBuckets}
-        employeeBucket={employeeBucket}
-        onEmployeeBucketChange={setEmployeeBucket}
-        onSelectEmployee={setSelectedEmployeeId}
-        selectedEmployeeSummary={selectedEmployeeSummary}
-        productivityTrends={productivityTrends}
-        teamAverages={teamAverages}
-        tableSection={
-          <TableSection
-            summaries={employeeSummaries}
-            users={users}
-            onSelectEmployee={setSelectedEmployeeId}
-            onDrilldown={handleDrilldown}
+      <div className="space-y-16">
+        <section className="space-y-6">
+          <div className="flex items-center gap-4">
+            <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+              01_Configuration
+            </span>
+            <div className="bg-border/20 h-px flex-1" />
+          </div>
+          <FiltersSection
+            value={filtersState}
+            onChange={setFiltersState}
+            rangeLabel={rangeLabel}
+            projects={projects || []}
+            users={users || []}
+            projectsWithSupervisor={projectsWithSupervisor}
+            tasks={tasks}
           />
-        }
-      />
+        </section>
+
+        <section className="space-y-8">
+          <div className="flex items-center gap-4">
+            <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+              02_Telemetry_Summary
+            </span>
+            <div className="bg-border/20 h-px flex-1" />
+          </div>
+          <div
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5"
+            data-animate-stagger
+          >
+            {[
+              {
+                id: "total",
+                label: reports.totalTasksCard,
+                value: overviewMetrics.total,
+                icon: IconActivity,
+                color: "text-primary",
+                suffix: "",
+              },
+              {
+                id: "completed",
+                label: reports.taskCompleted,
+                value: overviewMetrics.completed,
+                icon: IconCircleCheck,
+                color: "text-emerald-500",
+                suffix: "",
+              },
+              {
+                id: "in-progress",
+                label: reports.inProgressTasks,
+                value: overviewMetrics.wip,
+                icon: IconClock,
+                color: "text-amber-500",
+                suffix: "",
+              },
+              {
+                id: "overdue",
+                label: reports.overdue,
+                value: overviewMetrics.overdue,
+                icon: IconAlertTriangle,
+                color: "text-rose-500",
+                suffix: "",
+              },
+              {
+                id: "on-time",
+                label: reports.onTimeRate,
+                value: Math.round(overviewMetrics.onTimeRate * 100),
+                icon: IconActivity,
+                color: "text-primary",
+                suffix: "%",
+              },
+            ].map((stat) => (
+              <div
+                key={stat.id}
+                className="bg-card border-border/40 hover:shadow-primary/5 border p-8 text-right shadow-sm transition-all hover:translate-y-[-2px] hover:shadow-xl"
+              >
+                <div className="mb-4 flex items-center justify-end gap-4 opacity-60">
+                  <span className="text-muted-foreground text-[11px] font-black tracking-widest uppercase">
+                    {stat.label}
+                  </span>
+                  <stat.icon className={cn("size-5", stat.color)} />
+                </div>
+                <div className="text-5xl font-black tracking-tighter">
+                  {digitsEnToFa(stat.value)}
+                  <span className="text-muted-foreground/30 mr-1 text-xl">
+                    {stat.suffix}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-8">
+          <div className="flex items-center gap-4">
+            <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+              03_Visual_Analytics
+            </span>
+            <div className="bg-border/20 h-px flex-1" />
+          </div>
+          <ChartsSection
+            timelinessData={timelinessData}
+            priorityData={priorityData}
+            hasTimeliness={hasTimeliness}
+            hasPriority={hasPriority}
+            leaderboardData={leaderboardData}
+            users={users}
+            timeRange={timeRange}
+            onDrilldown={handleDrilldown}
+            overtimeAnalysis={overtimeAnalysis}
+            workloadDistribution={workloadDistribution}
+            employeeSummaries={employeeSummaries}
+            employeeBuckets={employeeBuckets}
+            employeeBucket={employeeBucket}
+            onEmployeeBucketChange={setEmployeeBucket}
+            onSelectEmployee={setSelectedEmployeeId}
+            selectedEmployeeSummary={selectedEmployeeSummary}
+            productivityTrends={productivityTrendsData}
+            teamAverages={teamAverages}
+            tableSection={
+              <TableSection
+                summaries={employeeSummaries}
+                users={users}
+                onSelectEmployee={setSelectedEmployeeId}
+                onDrilldown={handleDrilldown}
+              />
+            }
+          />
+        </section>
+      </div>
+
       <Suspense>
         <DrilldownDrawer
           open={!!drilldown}

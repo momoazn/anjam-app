@@ -1,13 +1,12 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
+  IconActivity,
   IconBell,
   IconCheck,
-  IconTrash,
-  IconTrashX,
-  IconActivity,
   IconCircleCheck,
   IconClock,
-  IconStack2,
+  IconTrash,
+  IconTrashX,
 } from "@tabler/icons-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useMemo, useRef, useState } from "react";
@@ -20,6 +19,7 @@ import type {
 } from "@/components/notifications/notification-filters";
 import { NotificationList } from "@/components/notifications/notification-list";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -27,7 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { common, notifications as notificationsText, app } from "@/constants";
+import { common, notifications as notificationsText } from "@/constants";
 import {
   useClearAll,
   useClearRead,
@@ -145,98 +145,72 @@ export default function Notifications() {
     setSelectedIds([]);
   };
 
+  const headerActions = (
+    <TooltipProvider>
+      <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => user?.id && markAllAsRead.mutate(user.id)}
+              disabled={unreadCount === 0}
+              className="hover:bg-primary/10 hover:text-primary size-10 rounded-none transition-all disabled:opacity-20"
+            >
+              <IconCheck className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+            {notificationsText.markAllAsRead}
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => user?.id && clearRead.mutate(user.id)}
+              disabled={readCount === 0}
+              className="size-10 rounded-none text-amber-500 transition-all hover:bg-amber-500/10 disabled:opacity-20"
+            >
+              <IconTrashX className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+            {notificationsText.actions.clearRead}
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => user?.id && clearAll.mutate(user.id)}
+              disabled={notificationsData.length === 0}
+              className="size-10 rounded-none text-rose-500 transition-all hover:bg-rose-500/10 disabled:opacity-20"
+            >
+              <IconTrash className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+            {notificationsText.clearAll}
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  );
+
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      {/* Registry Header Console */}
-      <div className="border-border/40 bg-card relative mb-8 overflow-hidden rounded-none border p-8 shadow-xl">
-        {/* Blueprint Grid Backdrop */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-
-        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-5">
-            <div className="bg-primary/10 text-primary border-primary/20 flex size-14 items-center justify-center rounded-none border">
-              <IconBell className="size-7" />
-            </div>
-            <div>
-              <div className="text-primary flex items-center gap-2">
-                <IconStack2 className="size-3" />
-                <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
-                  {app.name} / Alert_Central
-                </span>
-              </div>
-              <h1 className="mt-1 text-right text-3xl font-black tracking-tight uppercase md:text-4xl">
-                {notificationsText.pageTitle}
-              </h1>
-              <p className="text-muted-foreground mt-2 text-right text-sm leading-relaxed font-medium">
-                {notificationsText.pageDescription}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <TooltipProvider>
-              <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => user?.id && markAllAsRead.mutate(user.id)}
-                      disabled={unreadCount === 0}
-                      className="hover:bg-primary/10 hover:text-primary size-10 rounded-none transition-all disabled:opacity-20"
-                    >
-                      <IconCheck className="size-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
-                    {notificationsText.markAllAsRead}
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => user?.id && clearRead.mutate(user.id)}
-                      disabled={readCount === 0}
-                      className="size-10 rounded-none text-amber-500 transition-all hover:bg-amber-500/10 disabled:opacity-20"
-                    >
-                      <IconTrashX className="size-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
-                    {notificationsText.actions.clearRead}
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => user?.id && clearAll.mutate(user.id)}
-                      disabled={notificationsData.length === 0}
-                      className="size-10 rounded-none text-rose-500 transition-all hover:bg-rose-500/10 disabled:opacity-20"
-                    >
-                      <IconTrash className="size-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
-                    {notificationsText.clearAll}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </TooltipProvider>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title={notificationsText.pageTitle}
+        description={notificationsText.pageDescription}
+        icon={IconBell}
+        nodeId="Alert_Central"
+        actions={headerActions}
+      />
 
       {/* Telemetry Bar */}
       <div

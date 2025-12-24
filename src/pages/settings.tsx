@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { IconSettings } from "@tabler/icons-react";
 
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { AboutSection } from "@/components/settings/about-section";
 import { AppearanceSection } from "@/components/settings/appearance-section";
 import { ProfileSection } from "@/components/settings/profile-section";
@@ -12,28 +14,26 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
 
   return (
-    <div dir="rtl" className="min-h-screen pb-10">
-      <PageTransition className="container mx-auto max-w-5xl p-4 md:p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">
-            {settings.title}
-          </h1>
-          <p className="text-muted-foreground mt-2">{settings.description}</p>
-        </div>
+    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-6">
+      <PageHeader
+        title={settings.title}
+        description={settings.description}
+        icon={IconSettings}
+        nodeId="System_Config"
+      />
 
-        <div className="flex flex-col gap-8 lg:flex-row">
-          <aside className="lg:w-1/4">
-            <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          </aside>
+      <div className="flex flex-col items-start gap-10 lg:flex-row">
+        <aside className="sticky top-24 lg:w-1/4">
+          <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        </aside>
 
-          <div className="flex-1">
-            {activeTab === "profile" && <ProfileSection />}
-            {activeTab === "appearance" && <AppearanceSection />}
-            {activeTab === "security" && <SecuritySection />}
-            {activeTab === "about" && <AboutSection />}
-          </div>
+        <div className="bg-muted/5 border-border/40 w-full flex-1 border p-8 shadow-sm">
+          {activeTab === "profile" && <ProfileSection />}
+          {activeTab === "appearance" && <AppearanceSection />}
+          {activeTab === "security" && <SecuritySection />}
+          {activeTab === "about" && <AboutSection />}
         </div>
-      </PageTransition>
-    </div>
+      </div>
+    </PageTransition>
   );
 }

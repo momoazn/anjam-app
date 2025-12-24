@@ -13,20 +13,25 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { BoardColumn } from "@/components/task/board/board-column";
 import { BoardCard } from "@/components/task/board/board-card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { pb, TaskWithProject } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks/query-keys";
 import { TASK_STATUS_ORDER, TASK_STATUS_CONFIG } from "@/lib/status-utils";
-import { common, tasks as tasksText } from "@/constants";
-import { TasksStatusOptions, TasksRecord } from "@/lib/pocketbase-types";
-import { Loader2, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { tasks as tasksText } from "@/constants";
+import {
+  TasksStatusOptions,
+  TasksRecord,
+  ProjectsResponse,
+} from "@/lib/pocketbase-types";
+import { IconLayoutGrid, IconPlus, IconList } from "@tabler/icons-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
-// Custom drop animation
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
     styles: {
@@ -39,21 +44,32 @@ const dropAnimation: DropAnimation = {
 
 export function TaskBoardPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { id: projectId } = useParams<{ id: string }>();
   const [activeTask, setActiveTask] = useState<TaskWithProject | null>(null);
 
-  // Fetch all tasks with specific order sort priority
+  // Fetch project details if in project mode
+  const { data: project } = useQuery<ProjectsResponse>({
+    queryKey: queryKeys.projects.detail(projectId || ""),
+    queryFn: () => pb.collection("projects").getOne(projectId || ""),
+    enabled: !!projectId,
+  });
+
+  // Fetch tasks
   const { data: tasksData = [], isLoading } = useQuery<TaskWithProject[]>({
-    queryKey: queryKeys.tasks.all,
+    queryKey: projectId
+      ? [...queryKeys.tasks.all, "project", projectId]
+      : queryKeys.tasks.all,
     queryFn: async () => {
-      // Sort by order ascending, then updated descending (as fallback)
+      const filter = projectId ? `project = "${projectId}"` : "";
       return await pb.collection("tasks").getFullList({
         sort: "+order,-updated",
         expand: "project,assignee",
+        filter,
       });
     },
   });
 
-  // Organize tasks by status
   const columns = useMemo(() => {
     const cols: Record<string, TaskWithProject[]> = {};
     TASK_STATUS_ORDER.forEach((status) => {
@@ -90,9 +106,6 @@ export function TaskBoardPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      // ToAvoid spamming toast on every drag, maybe disable or use a subtle indicator?
-      // Keeping it for now for feedback.
-      // toast.success("Task updated");
     },
     onError: (err) => {
       toast.error("Failed to update task position");
@@ -127,62 +140,31 @@ export function TaskBoardPage() {
     let newStatus = activeTaskData.status;
     let newOrder = activeTaskData.order || 0;
 
-    // Logic to calculate new Order
     if (overData?.type === "Column") {
-      // Dropped on a column (empty space or specifically the column container)
       const targetStatus = overData.status as TasksStatusOptions;
       newStatus = targetStatus;
-
       const targetTasks = columns[targetStatus] || [];
       if (targetTasks.length > 0) {
-        // Append to end
         const lastTask = targetTasks[targetTasks.length - 1];
-        // Use a gap of 10000 to allow future insertions
         newOrder = (lastTask.order || 0) + 10000;
       } else {
-        // Empty column, start fresh
         newOrder = 10000;
       }
     } else if (overData?.type === "Task") {
-      // Dropped on another task
       const targetTask = overData.task as TaskWithProject;
       newStatus = targetTask.status;
-
       const targetTasks = columns[newStatus] || [];
       const overIndex = targetTasks.findIndex((t) => t.id === targetTask.id);
-
-      if (overIndex === -1) return; // Should not happen
-
-      // Determine if we are placing BEFORE or AFTER the target
-      // This is tricky without rects from DragEndEvent, but generally dropping "on" a sortable item
-      // usually implies taking its position (inserting before).
-      // However, if we come from "above", we might want to be "after".
-      // A simple heuristic: Insert BEFORE targetTask.
-
+      if (overIndex === -1) return;
       const prevTask = overIndex > 0 ? targetTasks[overIndex - 1] : null;
       const nextTask = targetTask;
-
-      // If we are moving within the same column and moving DOWN,
-      // 'active' is visually before 'over', so if we drop 'over', we want to be AFTER 'over'.
-      // But standard implementation: Always insert between prev and next.
-      // If same column:
-      if (activeTaskData.status === newStatus) {
-        // This is complex because 'tasks' still has old order.
-        // Let's rely on simple average logic assuming insertion at 'overIndex'.
-        // If activeIndex < overIndex (moving down), we probably want to place after.
-        // But let's simplify: Always place relative to target.
-      }
-
-      // Calculation:
       const prevOrder = prevTask
         ? prevTask.order || 0
         : (nextTask.order || 0) - 10000;
       const nextOrder = nextTask.order || 0;
-
       newOrder = (prevOrder + nextOrder) / 2;
     }
 
-    // Only update if changed
     if (
       newStatus !== activeTaskData.status ||
       Math.abs(newOrder - (activeTaskData.order || 0)) > 0.0001
@@ -195,41 +177,72 @@ export function TaskBoardPage() {
     }
   };
 
+  const headerActions = (
+    <div className="flex flex-wrap gap-2">
+      <Button
+        variant="ghost"
+        size="lg"
+        onClick={() =>
+          navigate(projectId ? `/projects/${projectId}/tasks` : "/tasks")
+        }
+        className="hover:bg-primary/5 hover:text-primary border-border/40 bg-muted/20 h-12 gap-3 rounded-none border px-6 font-bold transition-all"
+      >
+        <IconList className="size-4" />
+        <span className="text-[11px] font-black tracking-widest uppercase">
+          List_View
+        </span>
+      </Button>
+
+      <Button
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        size="lg"
+        onClick={() =>
+          navigate(
+            projectId ? `/projects/${projectId}/tasks/new` : "/tasks/new",
+          )
+        }
+      >
+        <IconPlus className="size-5" />
+        <span className="tracking-widest uppercase">
+          {tasksText.addTask.buttons.newTask}
+        </span>
+      </Button>
+    </div>
+  );
+
   if (isLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center">
-        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+      <div className="flex flex-1 items-center justify-center p-24">
+        <IconLayoutGrid className="text-primary/20 size-12 animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b px-6 py-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold tracking-tight">
-            {tasksText.board.title}
-          </h1>
-          <Badge variant="outline" className="hidden sm:flex">
-            {tasksData.length} {common.total}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button asChild size="sm">
-            <Link to="/tasks/new">
-              <Plus className="mr-2 h-4 w-4" />
-              {tasksText.addTask.buttons.newTask}
-            </Link>
-          </Button>
-        </div>
-      </div>
+    <PageTransition className="container mx-auto flex h-[calc(100vh-4rem)] flex-col p-4 md:p-6">
+      <PageHeader
+        title={
+          projectId
+            ? `${project?.name} :: ${tasksText.board.title}`
+            : tasksText.board.title
+        }
+        description={tasksText.header.tasksFound.replace(
+          "{count}",
+          digitsEnToFa(tasksData.length).toString(),
+        )}
+        icon={IconLayoutGrid}
+        nodeId={
+          projectId ? `Project_Board :: ${project?.code}` : "Global_Task_Board"
+        }
+        actions={headerActions}
+      />
 
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       >
-        <div className="flex flex-1 gap-4 overflow-x-auto p-4 lg:p-6">
+        <div className="bg-border/40 border-border/40 scrollbar-none flex flex-1 gap-px overflow-x-auto overflow-y-hidden border">
           {TASK_STATUS_ORDER.map((statusKey) => (
             <BoardColumn
               key={statusKey}
@@ -242,7 +255,7 @@ export function TaskBoardPage() {
         {createPortal(
           <DragOverlay dropAnimation={dropAnimation}>
             {activeTask && (
-              <div className="w-[280px]">
+              <div className="ring-primary border-foreground w-[300px] border-2 opacity-80 shadow-2xl ring-2">
                 <BoardCard task={activeTask} />
               </div>
             )}
@@ -250,6 +263,6 @@ export function TaskBoardPage() {
           document.body,
         )}
       </DndContext>
-    </div>
+    </PageTransition>
   );
 }

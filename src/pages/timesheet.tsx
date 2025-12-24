@@ -7,12 +7,11 @@ import {
   startOfWeek,
 } from "date-fns";
 import { faIR } from "date-fns/locale";
-import { Calendar, Clock, Download } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { IconClock, IconDownload, IconTerminal } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { common, reports, task, timesheet } from "@/constants";
+import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
+import { common, reports, timesheet, navigationLabels } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
@@ -27,7 +26,7 @@ export default function TimesheetPage() {
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 6 });
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  const { data: tasks, isLoading } = useQuery({
+  const { data: tasksData = [], isLoading } = useQuery({
     queryKey: [
       "timesheet",
       user?.id,
@@ -51,13 +50,13 @@ export default function TimesheetPage() {
 
   const tasksByDay = weekDays.map((day) => {
     const dayTasks =
-      tasks?.filter((task) => {
-        const taskDate = new Date(task.updated);
+      tasksData?.filter((t) => {
+        const taskDate = new Date(t.updated);
         return isSameDay(taskDate, day);
       }) || [];
 
     const totalMinutes = dayTasks.reduce(
-      (sum, task) => sum + (task.time_spent_minutes || 0),
+      (sum, t) => sum + (t.time_spent_minutes || 0),
       0,
     );
     const totalTime = minutesToHoursAndMinutes(totalMinutes);
@@ -93,13 +92,13 @@ export default function TimesheetPage() {
     tasksByDay.forEach(({ date, tasks: dayTasks }) => {
       const dateStr = format(date, "yyyy-MM-dd");
 
-      dayTasks.forEach((task) => {
+      dayTasks.forEach((t) => {
         const projectName = (
-          (task.expand as { project?: { name?: string } })?.project?.name ||
+          (t.expand as { project?: { name?: string } })?.project?.name ||
           reports.fallbacks.projectName
         ).replace(/"/g, '""');
-        const title = (task.title || "").replace(/"/g, '""');
-        const minutes = task.time_spent_minutes || 0;
+        const title = (t.title || "").replace(/"/g, '""');
+        const minutes = t.time_spent_minutes || 0;
 
         rows.push(
           [
@@ -112,10 +111,7 @@ export default function TimesheetPage() {
       });
     });
 
-    if (rows.length === 1) {
-      // Only header row -> nothing to export
-      return;
-    }
+    if (rows.length === 1) return;
 
     const csvContent = rows.join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -133,134 +129,147 @@ export default function TimesheetPage() {
     URL.revokeObjectURL(url);
   };
 
+  const headerActions = (
+    <div className="flex items-center gap-4">
+      <div className="border-primary/20 mr-2 flex flex-col items-end border-r-2 pr-4">
+        <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.2em] uppercase">
+          Weekly_Total
+        </span>
+        <div className="text-primary text-right text-sm font-black tabular-nums">
+          {digitsEnToFa(weeklyTotalTime.hours)}h{" "}
+          {digitsEnToFa(weeklyTotalTime.minutes)}m
+        </div>
+      </div>
+      <Button
+        onClick={handleExport}
+        variant="outline"
+        className="border-foreground bg-card h-12 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+      >
+        <IconDownload className="ml-2 size-4" />
+        {common.buttons.export}
+      </Button>
+    </div>
+  );
+
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="animate-pulse">
-          <div className="mb-6 h-8 w-48 rounded bg-gray-200"></div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="h-32 rounded bg-gray-200"></div>
+      <PageTransition className="container mx-auto p-4 md:p-6">
+        <div className="animate-pulse space-y-10">
+          <div className="bg-muted/20 h-24 w-full" />
+          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-7">
+            {["s1", "s2", "s3", "s4", "s5", "s6", "s7"].map((key) => (
+              <div key={key} className="bg-card h-64" />
             ))}
           </div>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold">
-            <Calendar className="h-6 w-6" />
-            {reports.title} - {task.timeSpent}
-          </h1>
-          <p className="text-muted-foreground">
-            {format(weekStart, "yyyy/MM/dd")} - {format(weekEnd, "yyyy/MM/dd")}
-          </p>
-        </div>
+    <PageTransition className="container mx-auto p-4 md:p-6">
+      <PageHeader
+        title={navigationLabels.timesheet}
+        description={`${digitsEnToFa(format(weekStart, "yyyy/MM/dd"))} — ${digitsEnToFa(format(weekEnd, "yyyy/MM/dd"))}`}
+        icon={IconClock}
+        nodeId="Temporal_Registry"
+        actions={headerActions}
+      />
 
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-muted-foreground text-sm">
-              {common.total} {task.timeSpent}
-            </div>
-            <div className="text-lg font-semibold">
-              {weeklyTotalTime.hours}h {weeklyTotalTime.minutes}m
-            </div>
+      {tasksByDay.every((d) => d.tasks.length === 0) ? (
+        <div className="border-border/40 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
+          <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2">
+            <IconClock className="size-10 stroke-[1]" />
           </div>
-
-          <Button onClick={handleExport} variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            {common.buttons.export}
-          </Button>
+          <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
+            {timesheet.noTimeSpent}
+          </h3>
+          <p className="text-muted-foreground mb-8 text-xs font-bold tracking-widest uppercase">
+            {timesheet.emptyStateDescription}
+          </p>
+          <div className="flex gap-4">
+            <Button
+              asChild
+              className="h-12 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <Link to="/tasks/new">{timesheet.createTaskCta}</Link>
+            </Button>
+          </div>
         </div>
-      </div>
-
-      {!isLoading && tasksByDay.every((d) => d.tasks.length === 0) ? (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-            <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
-              <Clock className="text-muted-foreground h-6 w-6" />
-            </div>
-            <h2 className="text-lg font-semibold">{timesheet.noTimeSpent}</h2>
-            <p className="text-muted-foreground max-w-md text-sm">
-              {timesheet.emptyStateDescription}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button asChild size="sm">
-                <Link to="/tasks/create">{timesheet.createTaskCta}</Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link to="/tasks/calendar">{timesheet.calendarCta}</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
+        <div
+          className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-7"
+          data-animate-stagger
+        >
           {tasksByDay.map(({ date, tasks: dayTasks, totalTime }) => (
-            <Card key={date.toISOString()} className="min-h-[200px]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">
+            <div
+              key={date.toISOString()}
+              className="bg-card flex min-h-[400px] flex-col"
+            >
+              <div className="border-border/20 bg-muted/10 border-b p-4 text-right">
+                <span className="text-muted-foreground/60 text-[10px] leading-none font-black tracking-[0.2em] uppercase">
                   {format(date, "EEEE", { locale: faIR })}
-                  <div className="text-muted-foreground mt-1 text-xs">
-                    {format(date, "MM/dd")}
-                  </div>
-                </CardTitle>
+                </span>
+                <div className="mt-1 flex items-baseline justify-end gap-2">
+                  <span className="text-lg font-black tabular-nums">
+                    {digitsEnToFa(format(date, "MM/dd"))}
+                  </span>
+                </div>
                 {totalTime.hours > 0 || totalTime.minutes > 0 ? (
-                  <Badge variant="secondary" className="w-fit">
-                    <Clock className="mr-1 h-3 w-3" />
-                    {totalTime.hours}h {totalTime.minutes}m
-                  </Badge>
+                  <div className="text-primary mt-3 flex items-center justify-end gap-1.5">
+                    <IconClock className="size-3" />
+                    <span className="text-[10px] font-black tabular-nums">
+                      {digitsEnToFa(totalTime.hours)}h{" "}
+                      {digitsEnToFa(totalTime.minutes)}m
+                    </span>
+                  </div>
                 ) : (
-                  <div className="text-muted-foreground text-xs">-</div>
+                  <div className="text-muted-foreground/30 mt-3 text-right text-[10px] font-bold">
+                    -
+                  </div>
                 )}
-              </CardHeader>
+              </div>
 
-              <CardContent className="pt-0">
+              <div className="divide-border/10 flex-1 divide-y p-0">
                 {dayTasks.length > 0 ? (
-                  <div className="space-y-2">
-                    {dayTasks.map((task) => {
-                      const taskTime = minutesToHoursAndMinutes(
-                        task.time_spent_minutes || 0,
-                      );
-                      return (
-                        <div key={task.id} className="text-xs">
-                          <div
-                            className="truncate font-medium"
-                            title={task.title}
-                          >
-                            {task.title}
-                          </div>
-                          <div className="text-muted-foreground">
-                            {(task.expand as { project?: { name?: string } })
-                              ?.project?.name || reports.fallbacks.projectName}
-                          </div>
-                          <div className="mt-1 flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>
-                              {taskTime.hours > 0 &&
-                                `${digitsEnToFa(taskTime.hours)}h `}
-                              {digitsEnToFa(taskTime.minutes)}m
-                            </span>
-                          </div>
-                          <Separator className="my-2" />
+                  dayTasks.map((t) => {
+                    const tTime = minutesToHoursAndMinutes(
+                      t.time_spent_minutes || 0,
+                    );
+                    return (
+                      <div
+                        key={t.id}
+                        className="group hover:bg-muted/30 relative overflow-hidden p-4 text-right transition-colors"
+                      >
+                        <span className="text-primary/40 mb-1 block text-[8px] font-black tracking-widest uppercase">
+                          {(t.expand as { project?: { name?: string } })
+                            ?.project?.name || reports.fallbacks.projectName}
+                        </span>
+                        <div className="group-hover:text-primary mb-3 truncate text-[11px] leading-tight font-black tracking-tight transition-colors">
+                          {t.title}
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="flex items-center justify-end gap-1.5 opacity-40">
+                          <IconClock className="size-2.5" />
+                          <span className="text-[9px] font-black tabular-nums">
+                            {tTime.hours > 0 &&
+                              `${digitsEnToFa(tTime.hours)}h `}
+                            {digitsEnToFa(tTime.minutes)}m
+                          </span>
+                        </div>
+                        <div className="bg-primary/20 absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
+                      </div>
+                    );
+                  })
                 ) : (
-                  <div className="text-muted-foreground py-4 text-center text-xs">
-                    {timesheet.noTimeSpent} {task.timeSpent}
+                  <div className="flex flex-col items-center justify-center py-12 opacity-10">
+                    <IconTerminal className="size-6 stroke-[1]" />
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}
-    </div>
+    </PageTransition>
   );
 }

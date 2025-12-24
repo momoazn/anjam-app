@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   endOfDay,
@@ -247,7 +247,9 @@ export default function Tasks() {
   ]);
 
   useEffect(() => {
-    setPage(1);
+    if (filterExpression) {
+      setPage(1);
+    }
   }, [filterExpression]);
 
   const { data: users, isPending: isLoadingUsers } = useUsers({
@@ -263,10 +265,6 @@ export default function Tasks() {
     filter: filterExpression || undefined,
   });
 
-  const userTasks = useMemo(
-    () => taskQuery.data?.items ?? [],
-    [taskQuery.data?.items],
-  );
   const totalTasks = taskQuery.data?.totalItems ?? 0;
   const totalPages = taskQuery.data?.totalPages ?? 1;
   const currentPage = taskQuery.data?.page ?? page;
@@ -285,10 +283,11 @@ export default function Tasks() {
   }, [currentPerPage, perPage]);
 
   const groupedTasks = useMemo(() => {
-    if (taskQuery.isPending) {
+    const items = taskQuery.data?.items;
+    if (taskQuery.isPending || !items) {
       return {} as Record<TasksStatusOptions, TaskWithProject[]>;
     }
-    return userTasks.reduce(
+    return items.reduce(
       (acc, task) => {
         if (!acc[task.status]) {
           acc[task.status] = [];
@@ -298,7 +297,7 @@ export default function Tasks() {
       },
       {} as Record<TasksStatusOptions, TaskWithProject[]>,
     );
-  }, [userTasks, taskQuery.isPending]);
+  }, [taskQuery.data?.items, taskQuery.isPending]);
 
   const hasActiveFilters = !!(
     searchTerm ||
@@ -339,14 +338,14 @@ export default function Tasks() {
     setSelectedTasks([]);
   };
 
-  const toggleSelectionMode = () => {
-    setSelectionMode(!selectionMode);
+  const toggleSelectionMode = useCallback(() => {
+    setSelectionMode((prev) => !prev);
     setSelectedTasks([]);
-  };
+  }, []);
 
-  const handleSelectionChange = (taskIds: string[]) => {
+  const handleSelectionChange = useCallback((taskIds: string[]) => {
     setSelectedTasks(taskIds);
-  };
+  }, []);
 
   const handlePerPageChange = (value: string) => {
     const next = Number(value);
@@ -409,7 +408,7 @@ export default function Tasks() {
         isLoadingUsers={isLoadingUsers}
       />
 
-      <div className="space-y-6" data-animate-stagger>
+      <div className="space-y-10" data-animate-stagger>
         <TaskListView
           isLoading={taskQuery.isPending}
           totalTasks={totalTasks}
@@ -422,17 +421,19 @@ export default function Tasks() {
         />
       </div>
 
-      {!taskQuery.isPending && (
-        <TaskPagination
-          totalTasks={totalTasks}
-          pageStart={pageStart}
-          pageEnd={pageEnd}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          currentPerPage={currentPerPage}
-          onPerPageChange={handlePerPageChange}
-          onPageChange={handlePageChange}
-        />
+      {!taskQuery.isPending && totalTasks > 0 && (
+        <div className="border-border/20 mt-10 border-t pt-10">
+          <TaskPagination
+            totalTasks={totalTasks}
+            pageStart={pageStart}
+            pageEnd={pageEnd}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            currentPerPage={currentPerPage}
+            onPerPageChange={handlePerPageChange}
+            onPageChange={handlePageChange}
+          />
+        </div>
       )}
 
       {selectionMode && selectedTasks.length > 0 && (

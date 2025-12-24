@@ -1,10 +1,11 @@
-import { Loader2, Plus, Target, Layers } from "lucide-react";
+import { Loader2, Plus, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { ProjectListGroup } from "@/components/project/project-list-group";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { projects, app } from "@/constants";
+import { projects } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useProjects } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
@@ -27,60 +28,31 @@ export default function Projects() {
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
   const canCreateProject = isAdmin || isSupervisor;
 
+  const headerActions = canCreateProject ? (
+    <Button
+      onClick={() => navigate("/projects/new")}
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+      size="lg"
+    >
+      <Plus className="size-5" />
+      <span className="tracking-widest uppercase">
+        {projects.create.button}
+      </span>
+    </Button>
+  ) : null;
+
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <div className="bg-card relative mb-8 overflow-hidden rounded-3xl border p-8 shadow-xl">
-        {/* Blueprint Grid Background */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-
-        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-5">
-            <div className="bg-primary/10 text-primary ring-primary/20 flex size-14 items-center justify-center rounded-2xl ring-1">
-              <Target className="size-7" />
-            </div>
-            <div>
-              <div className="text-primary flex items-center gap-2">
-                <Layers className="size-3" />
-                <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
-                  {app.name} / Central Registry
-                </span>
-              </div>
-              <h1 className="mt-1 text-3xl font-black tracking-tight md:text-4xl">
-                {projects.title}
-              </h1>
-              <p className="text-muted-foreground mt-2 text-sm leading-relaxed font-medium">
-                {projects.list.count.replace(
-                  "{count}",
-                  digitsEnToFa(userProjects?.length ?? 0).toString(),
-                )}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            {canCreateProject && (
-              <Button
-                onClick={() => navigate("/projects/new")}
-                className="shadow-primary/20 h-12 gap-3 rounded-xl px-6 font-black shadow-lg transition-all hover:scale-105 active:scale-95"
-                size="lg"
-              >
-                <Plus className="size-5" />
-                {projects.create.button}
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Structural Accent */}
-        <div className="bg-primary/20 absolute right-0 bottom-0 h-1 w-32" />
-        <div className="bg-primary/20 absolute right-0 bottom-0 h-8 w-1" />
-      </div>
+      <PageHeader
+        title={projects.title}
+        description={projects.list.count.replace(
+          "{count}",
+          digitsEnToFa(userProjects?.length ?? 0).toString(),
+        )}
+        icon={Target}
+        nodeId="Central_Registry"
+        actions={headerActions}
+      />
 
       {isLoadingProjects ? (
         <div className="flex h-full items-center justify-center py-24">

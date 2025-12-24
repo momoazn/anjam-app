@@ -1,124 +1,29 @@
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
+import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { projects, reports, tasks as tasksText } from "@/constants";
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
-import { TaskWithProject } from "@/lib/pocketbase";
+import type { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { FilterX, FolderOpen, Plus } from "lucide-react";
+import { IconLayoutGrid } from "@tabler/icons-react";
+import {
+  FolderOpen,
+  Plus,
+  Activity,
+  Clock,
+  CircleCheck,
+  AlertTriangle,
+} from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
-// Loading skeleton component for project tasks
-const ProjectTaskListSkeleton = () => (
-  <div className="space-y-4" data-animate-stagger>
-    {statusOrder?.map((status) => (
-      <Card key={status} className="overflow-hidden">
-        <div className="bg-muted/30 flex items-center justify-between border-b px-4 py-2">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-4 rounded" />
-            <Skeleton className="h-4 w-20 rounded" />
-            <Skeleton className="h-4 w-6 rounded" />
-          </div>
-          <Skeleton className="h-6 w-6 rounded" />
-        </div>
-        <div className="space-y-2 p-2" data-animate-stagger>
-          {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between rounded-md p-2"
-            >
-              <div className="flex flex-1 items-center gap-2">
-                <Skeleton className="h-4 w-4 rounded" />
-                <Skeleton className="h-4 w-12 rounded" />
-                <Skeleton className="h-4 w-4 rounded" />
-                <Skeleton className="h-4 w-32 rounded" />
-              </div>
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-4 w-16 rounded" />
-                <Skeleton className="h-8 w-8 rounded-full" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-    ))}
-  </div>
-);
-
-// Empty state component for project tasks
-const ProjectEmptyState = ({
-  hasFilters,
-  projectName,
-  projectId,
-}: {
-  hasFilters: boolean;
-  projectName: string;
-  projectId: string;
-}) => {
-  const navigate = useNavigate();
-
-  if (hasFilters) {
-    return (
-      <Card className="border-dashed">
-        <CardContent
-          className="flex flex-col items-center justify-center py-12 text-center"
-          data-animate-stagger
-        >
-          <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
-          <h3 className="mb-2 text-lg font-semibold">
-            {tasksText.emptyState.noTasksInProject}
-          </h3>
-          <p className="text-muted-foreground mb-4 max-w-md">
-            {tasksText.emptyState.noTasksInProjectDescription.replace(
-              "{projectName}",
-              projectName,
-            )}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="border-dashed">
-      <CardContent
-        className="flex flex-col items-center justify-center py-12 text-center"
-        data-animate-stagger
-      >
-        <div
-          className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-          data-interactive-pulse
-        >
-          <Plus className="text-primary h-6 w-6" />
-        </div>
-        <h3 className="mb-2 text-lg font-semibold">
-          {tasksText.emptyState.projectNoTasksYet}
-        </h3>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          {tasksText.emptyState.projectNoTasksYetDescription.replace(
-            "{projectName}",
-            projectName,
-          )}
-        </p>
-        <Button
-          className="gap-2"
-          onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
-        >
-          <Plus className="h-4 w-4" />
-          {tasksText.emptyState.createFirstTask}
-        </Button>
-      </CardContent>
-    </Card>
-  );
-};
+import { cn } from "@/lib/utils";
 
 export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -149,37 +54,28 @@ export default function ProjectTasks() {
   } = useTaskFilters(tasksData);
 
   const groupedTasks = useMemo(() => {
-    // Prevent grouping during load state to avoid brief flash of unfiltered/empty groups
-    if (isLoadingTasks || !filteredTasks) {
+    const items = filteredTasks;
+    if (isLoadingTasks || !items) {
       return {} as Record<TasksStatusOptions, TaskWithProject[]>;
     }
-    return filteredTasks.reduce(
+    return items.reduce(
       (acc, task) => {
-        (acc[task.status] = acc[task.status] || []).push(task);
+        const status = task.status as TasksStatusOptions;
+        if (!acc[status]) {
+          acc[status] = [];
+        }
+        acc[status].push(task);
         return acc;
       },
       {} as Record<TasksStatusOptions, TaskWithProject[]>,
     );
   }, [filteredTasks, isLoadingTasks]);
 
-  const hasActiveFilters = !!(
-    searchTerm ||
-    selectedStatus !== "all" ||
-    selectedPriority !== "all" ||
-    selectedAssignee !== "all" ||
-    selectedDateRange !== "all" ||
-    selectedTag !== "all"
-  );
-
   const totalTasks = filteredTasks?.length || 0;
 
   const taskStats = useMemo(() => {
     if (!filteredTasks || filteredTasks.length === 0) {
-      return {
-        active: 0,
-        completed: 0,
-        overdue: 0,
-      };
+      return { active: 0, completed: 0, overdue: 0 };
     }
 
     const now = new Date();
@@ -190,21 +86,15 @@ export default function ProjectTasks() {
     filteredTasks.forEach((task) => {
       if (isTaskCompleted(task)) {
         completed += 1;
-        return;
-      }
-
-      if (!isTaskCanceled(task)) {
-        active += 1;
-      }
-
-      if (task.deadline) {
-        const deadlineDate = new Date(task.deadline);
-        if (
-          deadlineDate < now &&
-          !isTaskCompleted(task) &&
-          !isTaskCanceled(task)
-        ) {
-          overdue += 1;
+      } else {
+        if (!isTaskCanceled(task)) {
+          active += 1;
+        }
+        if (task.deadline) {
+          const deadlineDate = new Date(task.deadline);
+          if (deadlineDate < now && !isTaskCanceled(task)) {
+            overdue += 1;
+          }
         }
       }
     });
@@ -212,94 +102,99 @@ export default function ProjectTasks() {
     return { active, completed, overdue };
   }, [filteredTasks]);
 
+  const headerActions = (
+    <div className="flex flex-wrap gap-2">
+      <Button
+        variant="ghost"
+        size="lg"
+        onClick={() => navigate(`/projects/${projectId}/board`)}
+        className="hover:bg-primary/5 hover:text-primary border-border/40 bg-muted/20 h-12 gap-3 rounded-none border px-6 font-bold transition-all"
+      >
+        <IconLayoutGrid className="size-4" />
+        <span className="text-[11px] font-black tracking-widest uppercase">
+          {tasksText.board.title}
+        </span>
+      </Button>
+
+      <Button
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        size="lg"
+        onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
+      >
+        <Plus className="size-5" />
+        <span className="tracking-widest uppercase">
+          {tasksText.addTask.buttons.newTaskForProject}
+        </span>
+      </Button>
+    </div>
+  );
+
   return (
-    <PageTransition className="container mx-auto px-4 py-6">
-      {/* Header Section */}
-      <div className="mb-6" data-animate-stagger>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <FolderOpen className="text-muted-foreground h-6 w-6" />
-              <h1 className="text-3xl font-bold tracking-tight">
-                {project?.name || projects.fallbacks.name}
-              </h1>
+    <PageTransition className="container mx-auto p-4 md:p-6">
+      <PageHeader
+        title={project?.name || projects.fallbacks.name}
+        description={
+          totalTasks > 0
+            ? tasksText.header.tasksInProject.replace(
+                "{count}",
+                digitsEnToFa(totalTasks).toString(),
+              )
+            : tasksText.header.manageProjectTasks
+        }
+        icon={FolderOpen}
+        nodeId={`Project_Node :: ${project?.code || "???"}`}
+        actions={headerActions}
+      />
+
+      {/* Telemetry Stats Bar */}
+      <div
+        className="bg-border/40 border-border/40 mb-8 grid grid-cols-2 gap-px border sm:grid-cols-4"
+        data-animate-stagger
+      >
+        {[
+          {
+            label: projects.details.totalTasks,
+            value: totalTasks,
+            icon: Activity,
+            color: "text-primary",
+          },
+          {
+            label: projects.activeTasks,
+            value: taskStats.active,
+            icon: Clock,
+            color: "text-amber-500",
+          },
+          {
+            label: projects.details.completedTasks,
+            value: taskStats.completed,
+            icon: CircleCheck,
+            color: "text-emerald-500",
+          },
+          {
+            label: reports.overdue,
+            value: taskStats.overdue,
+            icon: AlertTriangle,
+            color: "text-rose-500",
+          },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
+          >
+            <div className="mb-2 flex items-center justify-end gap-3">
+              <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+                {stat.label}
+              </span>
+              <stat.icon className={cn("size-4", stat.color)} />
             </div>
-            <p className="text-muted-foreground">
-              {totalTasks > 0
-                ? tasksText.header.tasksInProject.replace(
-                    "{count}",
-                    totalTasks.toString(),
-                  )
-                : tasksText.header.manageProjectTasks}
-            </p>
+            <div className="text-3xl font-black tracking-tighter">
+              {digitsEnToFa(stat.value)}
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              className="gap-2"
-              size="lg"
-              onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
-            >
-              <Plus className="h-4 w-4" />
-              {tasksText.addTask.buttons.newTaskForProject}
-            </Button>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Project task stats */}
-      <div className="mb-6 grid gap-3 text-sm sm:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {projects.details.totalTasks}
-              </span>
-              <span className="text-foreground text-xl font-semibold">
-                {digitsEnToFa(totalTasks)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {projects.activeTasks}
-              </span>
-              <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
-                {digitsEnToFa(taskStats.active)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {projects.details.completedTasks}
-              </span>
-              <span className="text-xl font-semibold text-emerald-600 dark:text-emerald-400">
-                {digitsEnToFa(taskStats.completed)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {reports.overdue}
-              </span>
-              <span className="text-xl font-semibold text-red-600 dark:text-red-400">
-                {digitsEnToFa(taskStats.overdue)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filter Controls */}
-      <div className="mb-6" data-animate-stagger>
+      <div className="bg-muted/5 border-border/40 mb-10 border p-6">
         <TaskFilters
           searchTerm={searchTerm}
           selectedStatus={selectedStatus}
@@ -318,19 +213,13 @@ export default function ProjectTasks() {
         />
       </div>
 
-      {/* Task List */}
-      <div className="space-y-4" data-animate-stagger>
+      <div className="space-y-10" data-animate-stagger>
         {isLoadingTasks ? (
-          <ProjectTaskListSkeleton />
-        ) : !filteredTasks || filteredTasks.length === 0 ? (
-          <ProjectEmptyState
-            hasFilters={hasActiveFilters}
-            projectName={project?.name || projects.fallbacks.thisProject}
-            projectId={projectId || ""}
-          />
+          <TaskListSkeleton />
         ) : (
           statusOrder?.map((status) => {
             const tasks = groupedTasks?.[status] ?? [];
+            if (tasks.length === 0) return null;
 
             return (
               <TaskListGroup
