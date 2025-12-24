@@ -15,7 +15,7 @@ const (
 	CollectionUserLoginLogs = "user_login_logs"
 	CollectionAuditLogs     = "audit_logs"
 	CollectionSuperusers    = "_superusers"
-	CollectionUsersProjects = "users_projects"
+	CollectionProjectMembers = "project_members"
 	CollectionComments      = "comments"
 	CollectionTags          = "tags"
 )

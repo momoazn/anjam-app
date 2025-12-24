@@ -23,7 +23,6 @@ export enum Collections {
   Tasks = "tasks",
   UserLoginLogs = "user_login_logs",
   Users = "users",
-  UsersProjects = "users_projects",
 }
 
 // Alias types for improved usability
@@ -345,14 +344,6 @@ export type UsersRecord = {
   verified?: boolean;
 };
 
-export type UsersProjectsRecord = {
-  created: IsoAutoDateString;
-  id: string;
-  project: RecordIdString;
-  updated: IsoAutoDateString;
-  user: RecordIdString;
-};
-
 // Response types include system fields and match responses from the PocketBase API
 export type AuthoriginsResponse<Texpand = unknown> =
   Required<AuthoriginsRecord> & BaseSystemFields<Texpand>;
@@ -394,8 +385,6 @@ export type UserLoginLogsResponse<Texpand = unknown> =
   Required<UserLoginLogsRecord> & BaseSystemFields<Texpand>;
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> &
   AuthSystemFields<Texpand>;
-export type UsersProjectsResponse<Texpand = unknown> =
-  Required<UsersProjectsRecord> & BaseSystemFields<Texpand>;
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
@@ -417,7 +406,6 @@ export type CollectionRecords = {
   tasks: TasksRecord;
   user_login_logs: UserLoginLogsRecord;
   users: UsersRecord;
-  users_projects: UsersProjectsRecord;
 };
 
 export type CollectionResponses = {
@@ -438,7 +426,6 @@ export type CollectionResponses = {
   tasks: TasksResponse;
   user_login_logs: UserLoginLogsResponse;
   users: UsersResponse;
-  users_projects: UsersProjectsResponse;
 };
 
 // Utility types for create/update operations

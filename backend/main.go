@@ -86,20 +86,7 @@ func main() {
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
-	app.OnRecordAfterCreateSuccess("users_projects").BindFunc(handleUsersProjectsCreatedNotify)
-
-	// Group management handlers
-	app.OnRecordCreateExecute("groups").BindFunc(handleGroupCreation)
-	app.OnRecordAfterCreateSuccess("groups").BindFunc(handleGroupCreatedNotification)
-
-	// Group-aware project creation validation
-	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreationWithGroup)
-
-	// Group-aware user-project assignment validation
-	app.OnRecordCreateExecute("users_projects").BindFunc(handleUsersProjectsValidation)
-
-	// Tag creation handler to set group
-	app.OnRecordCreateExecute("tags").BindFunc(handleTagCreation)
+	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
 
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
@@ -110,7 +97,6 @@ func main() {
 		se.Router.PATCH("/api/v1/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/v1/users/{id}/login-logs", handleGetUserLoginLogs)
 		se.Router.GET("/api/v1/search", handleGlobalSearch)
-		se.Router.POST("/api/v1/groups/create-with-manager", handleCreateGroupWithManager)
 
 		return se.Next()
 	})
@@ -247,87 +233,7 @@ func handleProjectCreationWithGroup(e *core.RecordEvent) error {
 	return e.Next()
 }
 
-// handleTagCreation sets the group for new tags based on the creator's group
-func handleTagCreation(e *core.RecordEvent) error {
-	// Get the creator's user ID from the record
-	creatorId := e.Record.GetString("creator")
-	if creatorId == "" {
-		return errors.New("creator is required")
-	}
-
-	// Fetch the creator's user record to get their group
-	creator, err := e.App.FindRecordById(CollectionUsers, creatorId)
-	if err != nil {
-		return fmt.Errorf("failed to find creator: %w", err)
-	}
-
-	// Get the creator's group
-	creatorGroupId := creator.GetString("group")
-	if creatorGroupId == "" {
-		return errors.New("creator must belong to a group")
-	}
-
-	// Set the group on the tag
-	e.Record.Set("group", creatorGroupId)
-
-	return e.Next()
-}
-
-// handleUsersProjectsValidation ensures that when adding a user to a project,
-// both the user and project belong to the same group
-func handleUsersProjectsValidation(e *core.RecordEvent) error {
-	record := e.Record
-
-	userId := record.GetString("user")
-	projectId := record.GetString("project")
-
-	// Skip if either field is missing
-	if userId == "" || projectId == "" {
-		return e.Next()
-	}
-
-	// Fetch user record
-	user, err := e.App.FindRecordById(CollectionUsers, userId)
-	if err != nil {
-		return fmt.Errorf("user not found: %w", err)
-	}
-
-	// Fetch project record
-	project, err := e.App.FindRecordById(CollectionProjects, projectId)
-	if err != nil {
-		return fmt.Errorf("project not found: %w", err)
-	}
-
-	// Validate both belong to the same group
-	userGroupId := user.GetString("group")
-	projectGroupId := project.GetString("group")
-
-	if userGroupId != projectGroupId {
-		return errors.New(ErrUserAndProjectMustBeInSameGroup)
-	}
-
-	return e.Next()
-}
-
-// handleGroupCreatedNotification sends a notification to the manager
-// when they are assigned to manage a new group
-func handleGroupCreatedNotification(e *core.RecordEvent) error {
-	record := e.Record
-	managerId := record.GetString("manager")
-
-	if managerId == "" {
-		return e.Next()
-	}
-
-	groupName := record.GetString("name")
-	return createNotification(e.App, managerId, "system",
-		MsgGroupCreated,
-		fmt.Sprintf(MsgAssignedToGroup, groupName),
-		map[string]interface{}{
-			"group_id":   record.Id,
-			"group_name": groupName,
-		})
-}
+// NOTE: Tag creation now expects organization to be provided by the client.
 
 func startApp(app *pocketbase.PocketBase) {
 	if app.IsDev() {
@@ -352,7 +258,7 @@ func startApp(app *pocketbase.PocketBase) {
 	}
 }
 
-func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
+func handleProjectMembersCreatedNotify(e *core.RecordEvent) error {
 	userId := e.Record.GetString("user")
 	projectId := e.Record.GetString("project")
 	if userId == "" || projectId == "" {
@@ -766,7 +672,7 @@ func handleProjectUpdateNotification(e *core.RecordEvent) error {
 		UserId string `db:"user"`
 	}
 	err := e.App.DB().NewQuery(`
-		SELECT user FROM users_projects WHERE project = {:projectId}
+		SELECT user FROM project_members WHERE project = {:projectId}
 	`).Bind(dbx.Params{"projectId": e.Record.Id}).All(&projectUsers)
 
 	if err != nil {

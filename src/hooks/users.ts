@@ -11,8 +11,8 @@ import { mutationInvalidators } from "../lib/query-invalidators";
 import {
   UsersResponse,
   UsersRecord,
-  UsersProjectsResponse,
   GroupsResponse,
+  ProjectMembersResponse,
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
@@ -140,24 +140,30 @@ export function useProjectUsers({
         return Promise.resolve([]);
       }
 
-      const userProjects = await pb
-        .collection("users_projects")
+      const projectMembers = await pb
+        .collection("project_members")
         .getFullList<
-          UsersProjectsResponse & { expand?: { user?: UsersResponse } }
+          ProjectMembersResponse & { expand?: { user?: UsersResponse } }
         >({
           filter: `project = "${projectId}"`,
           expand: "user",
         });
 
       // Extract user data from the expanded relationships
-      return userProjects
-        .map((up) => up.expand?.user)
-        .filter((user): user is UsersResponse => Boolean(user))
-        .map((user) => ({
-          id: user.id,
-          username: user.username,
-          first_name: user.first_name,
-          last_name: user.last_name,
+      return projectMembers
+        .map((pm) => ({
+          member: pm.expand?.user,
+          role: pm.role,
+        }))
+        .filter((item): item is { member: UsersResponse; role: string } =>
+          Boolean(item.member),
+        )
+        .map(({ member, role }) => ({
+          id: member.id,
+          username: member.username,
+          first_name: member.first_name,
+          last_name: member.last_name,
+          project_role: role,
         }));
     },
     enabled: enabled && Boolean(projectId),

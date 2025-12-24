@@ -39,25 +39,28 @@ import {
 import { common, projects, users as usersText } from "@/constants";
 import { useProjectUsers, useProjectWithSupervisor, useUsers } from "@/hooks";
 import { pb } from "@/lib/pocketbase";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
+import { usePermissions } from "@/hooks/usePermissions";
 import { formatUserName } from "@/lib/utils";
-import { useAuthUser } from "@/store/auth-store";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { UserAvatar } from "@/components/user-avatar";
 
 export default function ProjectUsers() {
   const { id } = useParams<{ id: string }>();
-  const user = useAuthUser();
   const queryClient = useQueryClient();
-  const isAdmin = user?.role === UsersRoleOptions.admin;
-  const isSupervisor = user?.role === UsersRoleOptions.supervisor;
-  const canManageUsers = isAdmin || isSupervisor;
+  const { can } = usePermissions(id);
+  const canManageUsers = can("project.manage_members");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<{
     id: string;
     username: string;
   } | null>(null);
+  const projectRoleLabels: Record<string, string> = {
+    owner: "Owner",
+    admin: "Admin",
+    member: usersText.table.roles.employee,
+    viewer: "Viewer",
+  };
 
   const { data: project } = useProjectWithSupervisor({
     id: id as string,
@@ -68,9 +71,12 @@ export default function ProjectUsers() {
 
   const { mutate: addUserToProject, isPending: isAddingUser } = useMutation({
     mutationFn: async (userId: string) => {
-      return pb.collection("users_projects").create({
+      return pb.collection("project_members").create({
         user: userId,
         project: id,
+        role: "member",
+        notifications: true,
+        added_at: new Date().toISOString(),
       });
     },
     onSuccess: () => {
@@ -104,11 +110,11 @@ export default function ProjectUsers() {
           ),
         );
 
-        const records = await pb.collection("users_projects").getFullList({
+        const records = await pb.collection("project_members").getFullList({
           filter: `user = "${userId}" && project = "${id}"`,
         });
         if (records.length > 0) {
-          return pb.collection("users_projects").delete(records[0].id);
+          return pb.collection("project_members").delete(records[0].id);
         }
       },
       onSuccess: () => {
@@ -247,7 +253,8 @@ export default function ProjectUsers() {
                 variant="outline"
                 className="border-border/40 bg-muted/30 text-muted-foreground rounded-none text-[9px] font-black tracking-widest uppercase"
               >
-                {usersText.table.roles.employee}
+                {projectRoleLabels[u.project_role ?? "member"] ??
+                  usersText.table.roles.employee}
               </Badge>
             </div>
 
