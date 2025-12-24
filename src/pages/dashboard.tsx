@@ -11,8 +11,7 @@ import { tasks } from "@/constants";
 import { useNotifications, useProjects, useTasks } from "@/hooks";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { getStatusColorVariant } from "@/lib/status-utils";
-import { WelcomeWidget } from "@/components/dashboard/welcome-widget";
-import { StatsWidget } from "@/components/dashboard/stats-widget";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { ProductivityWidget } from "@/components/dashboard/productivity-widget";
 import { ProjectsWidget } from "@/components/dashboard/projects-widget";
 import { ChartsWidget } from "@/components/dashboard/charts-widget";
@@ -124,10 +123,10 @@ export default function Dashboard() {
     );
 
     const colors = [
-      getStatusColorVariant(TasksStatusOptions.todo, "background"),
-      getStatusColorVariant(TasksStatusOptions.in_progress, "background"),
-      getStatusColorVariant(TasksStatusOptions.done, "background"),
-      getStatusColorVariant(TasksStatusOptions.pending, "background"),
+      getStatusColorVariant(TasksStatusOptions.todo, "fill"),
+      getStatusColorVariant(TasksStatusOptions.in_progress, "fill"),
+      getStatusColorVariant(TasksStatusOptions.done, "fill"),
+      getStatusColorVariant(TasksStatusOptions.pending, "fill"),
     ];
 
     return Object.entries(statusCounts).map(([status, count], index) => ({
@@ -212,8 +211,7 @@ export default function Dashboard() {
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <WelcomeWidget isLoading={isLoading} />
-      <StatsWidget stats={stats} isLoading={isLoading} />
+      <DashboardHeader stats={stats} isLoading={isLoading} />
       <ProductivityWidget
         stats={stats}
         recentNotifications={recentNotifications}
