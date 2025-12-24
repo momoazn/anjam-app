@@ -26,6 +26,7 @@ export enum Collections {
   Tasks = "tasks",
   TimeEntries = "time_entries",
   UserLoginLogs = "user_login_logs",
+  UserPreferences = "user_preferences",
   Users = "users",
 }
 
@@ -379,6 +380,18 @@ export type UserLoginLogsRecord = {
   user_agent?: string;
 };
 
+export type UserPreferencesRecord<
+  Tnotifications = unknown,
+  Tpreferences = unknown,
+> = {
+  created: IsoAutoDateString;
+  id: string;
+  notifications?: null | Tnotifications;
+  preferences?: null | Tpreferences;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
+};
+
 export enum UsersRoleOptions {
   "admin" = "admin",
   "manager" = "manager",
@@ -456,6 +469,12 @@ export type TimeEntriesResponse<Texpand = unknown> =
   Required<TimeEntriesRecord> & BaseSystemFields<Texpand>;
 export type UserLoginLogsResponse<Texpand = unknown> =
   Required<UserLoginLogsRecord> & BaseSystemFields<Texpand>;
+export type UserPreferencesResponse<
+  Tnotifications = unknown,
+  Tpreferences = unknown,
+  Texpand = unknown,
+> = Required<UserPreferencesRecord<Tnotifications, Tpreferences>> &
+  BaseSystemFields<Texpand>;
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> &
   AuthSystemFields<Texpand>;
 
@@ -482,6 +501,7 @@ export type CollectionRecords = {
   tasks: TasksRecord;
   time_entries: TimeEntriesRecord;
   user_login_logs: UserLoginLogsRecord;
+  user_preferences: UserPreferencesRecord;
   users: UsersRecord;
 };
 
@@ -506,6 +526,7 @@ export type CollectionResponses = {
   tasks: TasksResponse;
   time_entries: TimeEntriesResponse;
   user_login_logs: UserLoginLogsResponse;
+  user_preferences: UserPreferencesResponse;
   users: UsersResponse;
 };
 

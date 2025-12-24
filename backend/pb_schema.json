@@ -1425,7 +1425,10 @@
       }
     ],
     "indexes": [
-      "CREATE UNIQUE INDEX idx_tasks_display_id ON tasks (display_id)"
+      "CREATE INDEX idx_tasks_status ON tasks (status)",
+      "CREATE UNIQUE INDEX idx_tasks_display_id ON tasks (display_id)",
+      "CREATE INDEX idx_tasks_assignee ON tasks (assignee)",
+      "CREATE INDEX idx_tasks_project ON tasks (project)"
     ],
     "system": false
   },
@@ -1562,7 +1565,7 @@
         "type": "file"
       }
     ],
-    "indexes": [],
+    "indexes": ["CREATE INDEX idx_comments_task ON comments (task)"],
     "system": false
   },
   {
@@ -2986,6 +2989,89 @@
     "indexes": [
       "CREATE INDEX idx_mentions_project ON mentions (project)",
       "CREATE INDEX idx_mentions_user ON mentions (mentioned_user)"
+    ],
+    "system": false
+  },
+  {
+    "id": "pbc_7547358095",
+    "listRule": "@request.auth.id != '' && user.id = @request.auth.id",
+    "viewRule": "@request.auth.id != '' && user.id = @request.auth.id",
+    "createRule": "@request.auth.id != '' && user.id = @request.auth.id",
+    "updateRule": "@request.auth.id != '' && user.id = @request.auth.id",
+    "deleteRule": "@request.auth.id != '' && user.id = @request.auth.id",
+    "name": "user_preferences",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation6430103431",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "user",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "json7121952172",
+        "maxSize": 65536,
+        "name": "preferences",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "json"
+      },
+      {
+        "hidden": false,
+        "id": "json1141551293",
+        "maxSize": 65536,
+        "name": "notifications",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "json"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_user_preferences_user ON user_preferences (user)"
     ],
     "system": false
   }

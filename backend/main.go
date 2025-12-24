@@ -78,6 +78,7 @@ func main() {
 	app.OnServe().BindFunc(registerAuditHooksHandler)
 	registerOrganizationEndpoints(app)
 	registerPermissionsEndpoint(app)
+	registerBatchEndpoints(app)
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
@@ -103,6 +104,8 @@ func main() {
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Server.Handler = addRequestMetadataMiddleware(se.Server.Handler)
+		limiter := newRateLimiter(120, time.Minute)
+		se.Server.Handler = rateLimitMiddleware(limiter)(se.Server.Handler)
 		return se.Next()
 	})
 
