@@ -5,6 +5,7 @@ import {
   type IsoAutoDateString,
   TasksPriorityOptions,
   TasksStatusOptions,
+  TasksTaskTypeOptions,
 } from "./pocketbase-types";
 import {
   getAllTaskStatuses,
@@ -43,7 +44,7 @@ const createMockTask = (
   deleted_at: "",
   status_ref: "",
   story_points: 0,
-  task_type: "task",
+  task_type: TasksTaskTypeOptions.task,
   watchers: [],
   ...overrides,
 });
