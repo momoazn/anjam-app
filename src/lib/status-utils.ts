@@ -56,7 +56,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     todo: {
       key: TasksStatusOptions.todo,
       name: tasks.status.todo,
-      color: "slate",
+      color: "blue",
       icon: "circle",
       isCompleted: false,
       isCanceled: false,
@@ -66,7 +66,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     in_progress: {
       key: TasksStatusOptions.in_progress,
       name: tasks.status.in_progress,
-      color: "blueSubtle",
+      color: "amber",
       icon: "circle-half-2",
       isCompleted: false,
       isCanceled: false,
@@ -76,7 +76,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     review: {
       key: TasksStatusOptions.review,
       name: tasks.status.review,
-      color: "purpleSubtle",
+      color: "indigo",
       icon: "eye",
       isCompleted: false,
       isCanceled: false,
@@ -86,7 +86,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     testing: {
       key: TasksStatusOptions.testing,
       name: tasks.status.testing,
-      color: "slateSubtle",
+      color: "cyan",
       icon: "flask",
       isCompleted: false,
       isCanceled: false,
@@ -96,7 +96,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     pending: {
       key: TasksStatusOptions.pending,
       name: tasks.status.pending,
-      color: "amberSubtle",
+      color: "purple",
       icon: "clock",
       isCompleted: false,
       isCanceled: false,
@@ -106,7 +106,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     blocked: {
       key: TasksStatusOptions.blocked,
       name: tasks.status.blocked,
-      color: "redSubtle",
+      color: "rose",
       icon: "alert-circle",
       isCompleted: false,
       isCanceled: false,
@@ -116,7 +116,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     on_hold: {
       key: TasksStatusOptions.on_hold,
       name: tasks.status.on_hold,
-      color: "slateSubtle",
+      color: "slate",
       icon: "pause",
       isCompleted: false,
       isCanceled: false,
@@ -126,7 +126,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     done: {
       key: TasksStatusOptions.done,
       name: tasks.status.done,
-      color: "greenSubtle",
+      color: "emerald",
       icon: "check-circle-2",
       isCompleted: true,
       isCanceled: false,
@@ -136,7 +136,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     canceled: {
       key: TasksStatusOptions.canceled,
       name: tasks.status.canceled,
-      color: "graySubtle",
+      color: "gray",
       icon: "x-circle",
       isCompleted: false,
       isCanceled: true,
@@ -173,24 +173,6 @@ export function getTaskStatus(task: TasksResponse): TaskStatusConfig {
   return TASK_STATUS_CONFIG[TasksStatusOptions.todo];
 }
 
-const STATUS_COLOR_SUFFIX = "Subtle";
-
-const getStatusColorBase = (color: string) =>
-  color.endsWith(STATUS_COLOR_SUFFIX)
-    ? color.slice(0, -STATUS_COLOR_SUFFIX.length)
-    : color;
-
-const isSubtleStatusColor = (color: string) =>
-  color.endsWith(STATUS_COLOR_SUFFIX);
-
-const getStatusColorClassName = (color: string) => {
-  const base = getStatusColorBase(color);
-  if (isSubtleStatusColor(color)) {
-    return `bg-${base}-50 text-${base}-700 dark:bg-${base}-900 dark:text-${base}-300`;
-  }
-  return `bg-${base}-100 text-${base}-800 dark:bg-${base}-800 dark:text-${base}-200`;
-};
-
 /**
  * Check if a task is completed (based on status)
  */
@@ -212,7 +194,7 @@ export function isTaskCanceled(task: TasksResponse): boolean {
  */
 export function getStatusColorClass(task: TasksResponse): string {
   const status = getTaskStatus(task);
-  return getStatusColorClassName(status.color);
+  return getStatusColorVariant(status.key, "background");
 }
 
 /**
@@ -234,23 +216,39 @@ export function getStatusByKey(key: TasksStatusOptions): TaskStatusConfig {
  */
 export function getStatusColorVariant(
   status: TasksStatusOptions,
-  variant: "icon" | "background" | "badge",
+  variant: "icon" | "background" | "badge" | "border" | "fill",
 ): string {
   const config = TASK_STATUS_CONFIG[status];
-  const colorName = getStatusColorBase(config.color);
+  const colorName = config.color;
 
   switch (variant) {
     case "icon":
-      // For icon colors, use a consistent pattern
-      return `text-${colorName}-700 dark:text-${colorName}-300`;
+      return `text-${colorName}-600 dark:text-${colorName}-400`;
 
     case "background":
-      // For background colors, use light background with dark mode variant
-      return `bg-${colorName}-50 dark:bg-${colorName}-900/30`;
+      return `bg-${colorName}-500/10`;
+
+    case "border":
+      return `border-${colorName}-500/20`;
 
     case "badge":
-      // For solid badges, use bold colors with dark mode variant
-      return `bg-${colorName}-600 text-white dark:bg-${colorName}-500 dark:text-white`;
+      return `bg-${colorName}-500/15 text-${colorName}-700 dark:text-${colorName}-300 border-${colorName}-500/20`;
+
+    case "fill": {
+      // Map status colors to approximate oklch values for charts
+      const fillColors: Record<string, string> = {
+        blue: "oklch(0.6 0.12 250)",
+        amber: "oklch(0.75 0.15 70)",
+        emerald: "oklch(0.65 0.15 160)",
+        purple: "oklch(0.6 0.15 300)",
+        rose: "oklch(0.6 0.18 25)",
+        indigo: "oklch(0.55 0.15 270)",
+        cyan: "oklch(0.7 0.12 200)",
+        slate: "oklch(0.6 0.05 240)",
+        gray: "oklch(0.6 0.02 240)",
+      };
+      return fillColors[colorName] || "oklch(0.6 0.05 240)";
+    }
 
     default:
       return "text-gray-500";
@@ -281,10 +279,10 @@ export function isTerminalStatus(status: TasksStatusOptions): boolean {
  * Priority color mappings for task priority indicators
  */
 export const priorityColors: Record<TasksPriorityOptions, string> = {
-  low: "text-green-500 dark:text-green-400",
-  medium: "text-yellow-500 dark:text-yellow-400",
-  high: "text-orange-500 dark:text-orange-400",
-  urgent: "text-red-500 dark:text-red-400",
+  low: "text-emerald-600 dark:text-emerald-400",
+  medium: "text-amber-600 dark:text-amber-400",
+  high: "text-orange-600 dark:text-orange-400",
+  urgent: "text-rose-600 dark:text-rose-400",
 };
 
 /**
