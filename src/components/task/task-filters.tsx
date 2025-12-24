@@ -9,22 +9,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { common, tasks } from "@/constants";
+import { tasks } from "@/constants";
 import {
   ALL_FILTER_VALUE,
-  UseTaskFiltersReturn,
+  type UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
-  UsersResponse,
+  type UsersResponse,
 } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
-import { Search, X } from "lucide-react";
+import {
+  Search,
+  X,
+  Terminal,
+  Filter,
+  Hash,
+  Eraser,
+  User,
+  Calendar,
+  Tag,
+} from "lucide-react";
 import { useTags } from "@/hooks/tags";
 
-// Define priority order here or import from a central place if needed elsewhere
 const priorityOrder: TasksPriorityOptions[] = [
   TasksPriorityOptions.low,
   TasksPriorityOptions.medium,
@@ -32,13 +41,11 @@ const priorityOrder: TasksPriorityOptions[] = [
   TasksPriorityOptions.urgent,
 ];
 
-// Define props based on the hook's return type, excluding filteredTasks, users, and isLoadingUsers
 type TaskFiltersProps = Omit<UseTaskFiltersReturn, "filteredTasks"> & {
   users: UsersResponse[] | undefined;
   isLoadingUsers: boolean;
 };
 
-// Active filter badge component
 const ActiveFilterBadge = ({
   label,
   onClear,
@@ -48,7 +55,7 @@ const ActiveFilterBadge = ({
 }) => (
   <Badge
     variant="secondary"
-    className="hover:bg-muted/80 cursor-pointer gap-1 pr-1 transition-colors"
+    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-none border pr-1 text-[9px] font-black tracking-widest uppercase transition-all"
     onClick={onClear}
   >
     {label}
@@ -157,177 +164,267 @@ export function TaskFilters({
   };
 
   return (
-    <div className="space-y-3">
-      {/* Search bar */}
-      <div className="relative">
-        <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-        <Input
-          placeholder={tasks.filters.search}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="h-9 pr-10"
-        />
-      </div>
-
-      {/* Main filters */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        <Select
-          value={selectedStatus}
-          onValueChange={(value) =>
-            setSelectedStatus(
-              value as TasksStatusOptions | typeof ALL_FILTER_VALUE,
-            )
-          }
-        >
-          <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={tasks.filters.status} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_FILTER_VALUE}>
-              {tasks.filters.allStatuses}
-            </SelectItem>
-            {statusOrder.map((status) => (
-              <SelectItem key={status} value={status}>
-                {tasks.status[status]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={selectedPriority}
-          onValueChange={(value) =>
-            setSelectedPriority(
-              value as TasksPriorityOptions | typeof ALL_FILTER_VALUE,
-            )
-          }
-        >
-          <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={tasks.filters.priority} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_FILTER_VALUE}>
-              {tasks.filters.allPriorities}
-            </SelectItem>
-            {priorityOrder.map((priority) => (
-              <SelectItem key={priority} value={priority}>
-                {tasks.priority[priority]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={selectedAssignee}
-          onValueChange={(value) =>
-            setSelectedAssignee(value as string | typeof ALL_FILTER_VALUE)
-          }
-          disabled={isLoadingUsers}
-        >
-          <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={tasks.filters.assignee} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_FILTER_VALUE}>
-              {tasks.filters.allAssignees}
-            </SelectItem>
-            {users && users.length > 0 ? (
-              users.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  <span>
-                    {formatUserName(
-                      user.first_name,
-                      user.last_name,
-                      user.username,
-                    )}
-                  </span>
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="__empty" disabled>
-                {common.messages.noData}
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-
-        <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
-          <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={tasks.filters.date} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{tasks.filters.allDates}</SelectItem>
-            <SelectItem value="today">{tasks.filters.today}</SelectItem>
-            <SelectItem value="week">{tasks.filters.thisWeek}</SelectItem>
-            <SelectItem value="month">{tasks.filters.thisMonth}</SelectItem>
-            <SelectItem value="overdue">{tasks.filters.overdue}</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={selectedTag}
-          onValueChange={setSelectedTag}
-          disabled={isLoadingTags}
-        >
-          <SelectTrigger className="h-9 w-full">
-            <SelectValue placeholder={tasks.filters.tag} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{tasks.filters.allTags}</SelectItem>
-            {tags && tags.length > 0 ? (
-              tags.map((tag) => (
-                <SelectItem key={tag.id} value={tag.id}>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-3 w-3 rounded"
-                      style={{ backgroundColor: tag.color }}
-                    />
-                    <span>{tag.name}</span>
-                  </div>
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="__empty" disabled>
-                {common.messages.noData}
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Active filters display */}
-      {hasActiveFilters && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-muted-foreground text-sm">
-            {tasks.filters.activeFilters}
+    <div className="space-y-2">
+      {/* Search & Global Reset Segment - Ultra Compact */}
+      <div className="bg-border/40 border-border/40 flex items-center gap-px overflow-hidden border">
+        <div className="bg-muted/20 border-border/20 flex h-9 shrink-0 items-center gap-2 border-l px-3">
+          <Terminal className="text-primary/60 size-3" />
+          <span className="text-muted-foreground/60 text-[8px] font-black tracking-[0.2em] uppercase">
+            Search
           </span>
-          <div className="flex flex-wrap gap-1">
-            {getActiveFilterLabels()
-              .slice(0, 4)
-              .map((filter, index) => (
-                <ActiveFilterBadge
-                  key={index}
-                  label={filter.label}
-                  onClear={filter.onClear}
-                />
-              ))}
-            {getActiveFilterLabels().length > 4 && (
-              <Badge variant="outline" className="text-xs">
-                {tasks.filters.moreFilters.replace(
-                  "{count}",
-                  (getActiveFilterLabels().length - 4).toString(),
-                )}
-              </Badge>
-            )}
-          </div>
+        </div>
+
+        <div className="group relative h-9 flex-1">
+          <Search className="text-muted-foreground/30 group-focus-within:text-primary absolute top-1/2 right-3.5 h-3 w-3 -translate-y-1/2 transition-colors" />
+          <Input
+            placeholder={tasks.filters.search}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="h-full rounded-none border-none bg-transparent pr-10 text-xs font-bold tracking-tight transition-all focus:ring-0"
+          />
+        </div>
+
+        {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             onClick={clearAllFilters}
-            className="hover:bg-muted h-7 px-2 text-xs"
+            className="border-border/20 h-9 gap-2 rounded-none border-r px-4 text-[8px] font-black tracking-widest text-rose-500 uppercase transition-all hover:bg-rose-500/10 hover:text-rose-600"
           >
-            {tasks.filters.clearAll}
+            <Eraser className="size-3" />
+            Reset
           </Button>
+        )}
+      </div>
+
+      {/* Logic Gates Grid - Strictly Aligned Column Layout */}
+      <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px overflow-hidden border sm:grid-cols-3 md:grid-cols-5">
+        {/* Status Gate */}
+        <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
+          <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              {tasks.filters.status}
+            </span>
+            <Filter className="size-2" />
+          </div>
+          <Select
+            value={selectedStatus}
+            onValueChange={(value) =>
+              setSelectedStatus(
+                value as TasksStatusOptions | typeof ALL_FILTER_VALUE,
+              )
+            }
+          >
+            <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+              <SelectValue placeholder={tasks.filters.status} />
+            </SelectTrigger>
+            <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectItem
+                value={ALL_FILTER_VALUE}
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.allStatuses}
+              </SelectItem>
+              {statusOrder.map((status) => (
+                <SelectItem
+                  key={status}
+                  value={status}
+                  className="text-[10px] font-black uppercase"
+                >
+                  {tasks.status[status]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Priority Gate */}
+        <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
+          <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              {tasks.filters.priority}
+            </span>
+            <Hash className="size-2" />
+          </div>
+          <Select
+            value={selectedPriority}
+            onValueChange={(value) =>
+              setSelectedPriority(
+                value as TasksPriorityOptions | typeof ALL_FILTER_VALUE,
+              )
+            }
+          >
+            <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+              <SelectValue placeholder={tasks.filters.priority} />
+            </SelectTrigger>
+            <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectItem
+                value={ALL_FILTER_VALUE}
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.allPriorities}
+              </SelectItem>
+              {priorityOrder.map((priority) => (
+                <SelectItem
+                  key={priority}
+                  value={priority}
+                  className="text-[10px] font-black uppercase"
+                >
+                  {tasks.priority[priority]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Assignee Gate */}
+        <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
+          <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              Operator_ID
+            </span>
+            <User className="size-2" />
+          </div>
+          <Select
+            value={selectedAssignee}
+            onValueChange={(value) =>
+              setSelectedAssignee(value as string | typeof ALL_FILTER_VALUE)
+            }
+            disabled={isLoadingUsers}
+          >
+            <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+              <SelectValue placeholder={tasks.filters.assignee} />
+            </SelectTrigger>
+            <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectItem
+                value={ALL_FILTER_VALUE}
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.allAssignees}
+              </SelectItem>
+              {users?.map((user) => (
+                <SelectItem
+                  key={user.id}
+                  value={user.id}
+                  className="text-[10px] font-bold uppercase"
+                >
+                  {formatUserName(
+                    user.first_name,
+                    user.last_name,
+                    user.username,
+                  )}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Date Gate */}
+        <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
+          <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              Time_Frame
+            </span>
+            <Calendar className="size-2" />
+          </div>
+          <Select
+            value={selectedDateRange}
+            onValueChange={setSelectedDateRange}
+          >
+            <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+              <SelectValue placeholder={tasks.filters.date} />
+            </SelectTrigger>
+            <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectItem
+                value="all"
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.allDates}
+              </SelectItem>
+              <SelectItem
+                value="today"
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.today}
+              </SelectItem>
+              <SelectItem
+                value="week"
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.thisWeek}
+              </SelectItem>
+              <SelectItem
+                value="month"
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.thisMonth}
+              </SelectItem>
+              <SelectItem
+                value="overdue"
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.overdue}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Tag Gate */}
+        <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
+          <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              Tag_Index
+            </span>
+            <Tag className="size-2" />
+          </div>
+          <Select
+            value={selectedTag}
+            onValueChange={(value) => setSelectedTag(value)}
+            disabled={isLoadingTags}
+          >
+            <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+              <SelectValue placeholder={tasks.filters.tag} />
+            </SelectTrigger>
+            <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectItem
+                value="all"
+                className="text-[10px] font-black uppercase"
+              >
+                {tasks.filters.allTags}
+              </SelectItem>
+              {tags?.map((tag) => (
+                <SelectItem
+                  key={tag.id}
+                  value={tag.id}
+                  className="text-[10px] font-bold uppercase"
+                >
+                  {tag.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Active Stack Feed - Inline Display */}
+      {hasActiveFilters && (
+        <div className="bg-primary/5 border-primary/20 flex items-center gap-3 overflow-hidden border p-2 shadow-sm">
+          <div className="flex shrink-0 items-center gap-2">
+            <Terminal className="text-primary/60 size-2.5" />
+            <span className="text-primary/60 text-[8px] font-black tracking-widest uppercase">
+              Gates_Open
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {getActiveFilterLabels().map((filter) => (
+              <ActiveFilterBadge
+                key={filter.label}
+                label={filter.label}
+                onClear={filter.onClear}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

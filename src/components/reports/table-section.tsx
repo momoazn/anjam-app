@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { IconTable, IconTerminal } from "@tabler/icons-react";
 
 import { EmployeePerformanceTable } from "@/components/reports/employee-performance-table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,8 +24,19 @@ export function TableSection({
   onDrilldown,
 }: TableSectionProps) {
   return (
-    <div dir="rtl">
-      <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+    <div className="space-y-6" dir="rtl">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <IconTable className="text-primary/60 size-4" />
+          <h3 className="text-sm font-black tracking-widest uppercase">
+            Employee_Performance_Matrix
+          </h3>
+        </div>
+        <div className="bg-border/20 h-px flex-1" />
+        <IconTerminal className="text-muted-foreground/20 size-3.5" />
+      </div>
+
+      <Suspense fallback={<Skeleton className="h-64 w-full rounded-none" />}>
         <EmployeePerformanceTable
           summaries={summaries}
           onRowClick={(userId) => {

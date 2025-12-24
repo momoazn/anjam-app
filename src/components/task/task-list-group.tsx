@@ -80,30 +80,32 @@ function TaskListGroupInner({
         onToggleCollapse={() => setIsCollapsed((prev) => !prev)}
       />
       {!isCollapsed && (
-        <div
-          className={cn("mt-2 min-h-[30px] space-y-1.5 pe-1")}
+        <ul
+          className={cn(
+            "bg-muted/5 border-border/20 mt-1 min-h-[30px] space-y-0 border-x border-b shadow-sm",
+          )}
           data-animate-stagger
-          role="list"
         >
           {sortedTasks?.length > 0 ? (
             sortedTasks.map((task) => (
-              <TaskListItem
-                key={task.id}
-                task={task}
-                showProject={showProject}
-                isSelectable={enableSelection}
-                isSelected={localSelectedTasks.includes(task.id)}
-                onSelectionChange={(selected) =>
-                  handleTaskSelection(task.id, selected)
-                }
-              />
+              <li key={task.id}>
+                <TaskListItem
+                  task={task}
+                  showProject={showProject}
+                  isSelectable={enableSelection}
+                  isSelected={localSelectedTasks.includes(task.id)}
+                  onSelectionChange={(selected) =>
+                    handleTaskSelection(task.id, selected)
+                  }
+                />
+              </li>
             ))
           ) : (
-            <div className="text-muted-foreground/40 py-6 text-center text-xs font-black tracking-widest uppercase">
+            <div className="text-muted-foreground/40 py-12 text-center text-[10px] font-black tracking-[0.3em] uppercase">
               {tasksText.list.noTasks}
             </div>
           )}
-        </div>
+        </ul>
       )}
     </section>
   );

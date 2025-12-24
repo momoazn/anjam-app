@@ -1,17 +1,19 @@
-import { CheckCircle2, Clock, Loader2, XCircle } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
+import {
+  IconShieldLock,
+  IconActivity,
+  IconClock,
+  IconLoader2,
+  IconCheck,
+  IconX,
+  IconTerminal,
+  IconServer,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -26,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { pb } from "@/lib/pocketbase";
 import type { UserLoginLogsResponse } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 const passwordSchema = z
   .object({
@@ -94,130 +97,179 @@ export function SecuritySection() {
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{settings.security.changePasswordTitle}</CardTitle>
-          <CardDescription>
-            {settings.security.changePasswordDescription}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onChangePassword)}
-              className="max-w-md space-y-4"
-            >
-              <FormField
-                control={form.control}
-                name="oldPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{settings.security.oldPassword}</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{settings.security.newPassword}</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="passwordConfirm"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{settings.security.confirmPassword}</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="pt-2">
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {settings.security.updatePassword}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+    <div className="space-y-12" data-animate-stagger>
+      <div className="space-y-8">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <IconShieldLock className="text-primary/60 size-4" />
+            <h3 className="text-sm font-black tracking-widest uppercase">
+              {settings.security.changePasswordTitle}
+            </h3>
+          </div>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{settings.security.activeSessionsTitle}</CardTitle>
-          <CardDescription>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onChangePassword)}
+            className="max-w-md space-y-6"
+          >
+            <FormField
+              control={form.control}
+              name="oldPassword"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                    {settings.security.oldPassword}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      {...field}
+                      className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-[10px] font-bold" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                    {settings.security.newPassword}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      {...field}
+                      className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-[10px] font-bold" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="passwordConfirm"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                    {settings.security.confirmPassword}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      {...field}
+                      className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-[10px] font-bold" />
+                </FormItem>
+              )}
+            />
+            <div className="pt-4">
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+              >
+                {form.formState.isSubmitting && (
+                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                <span className="tracking-widest uppercase">
+                  {settings.security.updatePassword}
+                </span>
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+
+      <div className="space-y-8">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <IconActivity className="text-primary/60 size-4" />
+            <h3 className="text-sm font-black tracking-widest uppercase">
+              {settings.security.activeSessionsTitle}
+            </h3>
+          </div>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="space-y-4">
+          <p className="text-muted-foreground/60 text-right text-xs leading-relaxed font-bold tracking-widest uppercase">
             {settings.security.activeSessionsDescription}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+
           {loadingLogs ? (
-            <div className="flex justify-center p-4">
-              <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+            <div className="flex justify-center p-12 opacity-20">
+              <IconLoader2 className="h-8 w-8 animate-spin" />
             </div>
           ) : (
-            <div className="rounded-md border">
+            <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border">
               {loginLogs && loginLogs.length > 0 ? (
-                <div className="divide-y">
-                  {loginLogs.map((log) => (
-                    <div
-                      key={log.id}
-                      className="flex items-center justify-between p-3 text-sm"
-                    >
-                      <div className="flex items-center gap-3">
-                        {log.success ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-red-500" />
-                        )}
-                        <div>
-                          <p className="font-medium">
-                            {log.ip_address || "Unknown IP"}
-                          </p>
-                          <p className="text-muted-foreground max-w-[200px] truncate text-xs sm:max-w-xs">
-                            {log.user_agent || "Unknown Device"}
-                          </p>
-                        </div>
+                loginLogs.map((log) => (
+                  <div
+                    key={log.id}
+                    className="group bg-card hover:bg-muted/30 relative flex items-stretch p-4 text-right transition-all"
+                  >
+                    <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-l">
+                      {log.success ? (
+                        <IconCheck className="size-4 text-emerald-500" />
+                      ) : (
+                        <IconX className="size-4 text-rose-500" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 px-4 py-1">
+                      <div className="mb-1 flex items-center justify-end gap-2">
+                        <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.2em] uppercase">
+                          Remote_Host
+                        </span>
+                        <IconServer className="size-2.5 opacity-20" />
                       </div>
-                      <div className="text-right">
-                        <div className="text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>
-                            {new Date(log.created || "").toLocaleString(
-                              "fa-IR",
-                            )}
-                          </span>
-                        </div>
+                      <p className="text-[11px] font-black tabular-nums">
+                        {log.ip_address || "Unknown IP"}
+                      </p>
+                      <p className="text-muted-foreground/40 mt-1 max-w-[240px] truncate text-[9px] font-bold uppercase">
+                        {log.user_agent || "Unknown Device"}
+                      </p>
+                    </div>
+
+                    <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center border-r px-2">
+                      <span className="text-muted-foreground/40 mb-1 text-[7px] font-black tracking-[0.2em] uppercase">
+                        Auth_Time
+                      </span>
+                      <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-black tabular-nums">
+                        <IconClock className="size-2.5 opacity-40" />
+                        {digitsEnToFa(
+                          new Date(log.created || "").toLocaleString("fa-IR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }),
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
+
+                    <div className="bg-primary/20 absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
+                  </div>
+                ))
               ) : (
-                <div className="text-muted-foreground p-8 text-center">
-                  {settings.security.noLoginHistory}
+                <div className="bg-card p-12 text-center opacity-30 grayscale">
+                  <IconTerminal className="mx-auto mb-4 size-8 stroke-[1]" />
+                  <p className="text-[10px] font-black tracking-widest uppercase">
+                    {settings.security.noLoginHistory}
+                  </p>
                 </div>
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

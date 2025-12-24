@@ -1,4 +1,4 @@
-import { BarChart3 } from "lucide-react";
+import { IconTerminal, IconStack2 } from "@tabler/icons-react";
 
 import {
   FiltersBar,
@@ -6,10 +6,10 @@ import {
   type TimeRange,
 } from "@/components/reports/filters-bar";
 import { ProjectExportButton } from "@/components/reports/project-export-button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
 import type { ProjectWithSupervisor, TaskWithProject } from "@/lib/pocketbase";
 import type { ProjectsResponse, UsersResponse } from "@/lib/pocketbase-types";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export type FiltersSectionState = {
   timeRange: TimeRange;
@@ -29,31 +29,23 @@ type FiltersSectionProps = {
 export function FiltersSection({
   value,
   onChange,
-  rangeLabel,
   projects,
   users,
   projectsWithSupervisor,
   tasks,
 }: FiltersSectionProps) {
   return (
-    <>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-            <BarChart3 className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
-            {reports.dashboardTitle}
-          </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
-            {reports.range.label} {rangeLabel}
-          </p>
-        </div>
-      </div>
-
+    <div className="space-y-10">
       <div
-        className="mb-8"
-        aria-label={reports.aria.filters}
+        className="bg-muted/5 border-border/40 border p-6"
         data-animate-stagger
       >
+        <div className="mb-6 flex items-center justify-end gap-2 text-right opacity-40">
+          <span className="text-[10px] font-black tracking-[0.3em] uppercase">
+            Telemetry_Filter_Protocol
+          </span>
+          <IconTerminal className="text-primary size-3.5" />
+        </div>
         <FiltersBar
           value={value}
           onChange={onChange}
@@ -63,60 +55,71 @@ export function FiltersSection({
       </div>
 
       {projects.length > 0 && (
-        <Card className="mb-6" data-animate-stagger>
-          <CardHeader>
-            <CardTitle>{reports.projectsExportSection}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project) => {
-                const projectWithSupervisor = projectsWithSupervisor?.find(
-                  (p) => p.id === project.id,
-                ) || {
-                  ...project,
-                  expand: { supervisor: undefined },
-                };
-                const projectTasks = tasks.filter(
-                  (task) => task.project === project.id,
-                );
-                const taskCount = projectTasks.length;
+        <div data-animate-stagger>
+          <div className="mb-6 flex items-center gap-4">
+            <div className="bg-border/20 h-px flex-1" />
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-black tracking-widest uppercase">
+                {reports.projectsExportSection}
+              </h2>
+              <IconStack2 className="text-primary/60 size-4" />
+            </div>
+          </div>
 
-                return (
-                  <div
-                    key={project.id}
-                    className="flex items-center justify-between rounded-lg border p-4"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-semibold">{project.name}</h3>
-                      {project.code && (
-                        <p className="text-muted-foreground text-sm">
-                          {project.code}
-                        </p>
-                      )}
-                      <p className="text-muted-foreground mt-1 text-xs">
-                        {taskCount > 0
-                          ? reports.taskCount.replace(
-                              "{count}",
-                              String(taskCount),
-                            )
-                          : reports.noTasksInProject}
-                      </p>
+          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => {
+              const pWithSupervisor = projectsWithSupervisor?.find(
+                (p) => p.id === project.id,
+              ) || {
+                ...project,
+                expand: { supervisor: undefined },
+              };
+              const projectTasks = tasks.filter(
+                (task) => task.project === project.id,
+              );
+              const taskCount = projectTasks.length;
+
+              return (
+                <div
+                  key={project.id}
+                  className="group bg-card hover:bg-muted/10 relative flex flex-col justify-between overflow-hidden p-6 transition-all"
+                >
+                  <div className="min-w-0 flex-1 text-right">
+                    <div className="mb-1 flex items-center justify-end gap-2 opacity-40">
+                      <span className="font-mono text-[9px] font-black tracking-widest uppercase">
+                        {project.code}
+                      </span>
                     </div>
-                    <div className="ml-4 shrink-0">
-                      <ProjectExportButton
-                        project={projectWithSupervisor}
-                        tasks={tasks}
-                        users={users}
-                        taskCount={taskCount}
-                      />
+                    <h3 className="group-hover:text-primary mb-4 truncate text-base font-black tracking-tight uppercase transition-colors">
+                      {project.name}
+                    </h3>
+                    <div className="flex items-center justify-end gap-2 text-right">
+                      <span className="text-muted-foreground/60 text-[10px] font-bold uppercase">
+                        Registry_Entry
+                      </span>
+                      <div className="bg-border/40 h-px w-4" />
+                      <span className="text-xs font-black tabular-nums">
+                        {taskCount > 0 ? digitsEnToFa(taskCount) : "0"}
+                      </span>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+
+                  <div className="mt-6 flex justify-end">
+                    <ProjectExportButton
+                      project={pWithSupervisor}
+                      tasks={tasks}
+                      users={users}
+                      taskCount={taskCount}
+                    />
+                  </div>
+
+                  <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
-    </>
+    </div>
   );
 }

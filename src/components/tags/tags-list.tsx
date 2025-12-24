@@ -1,7 +1,12 @@
-import { Pencil, Plus, Tag as TagIcon, Trash2 } from "lucide-react";
+import {
+  IconPencil,
+  IconPlus,
+  IconTag,
+  IconTrash,
+  IconHash,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { tagsManagement } from "@/constants";
 import type { TagsResponse } from "@/lib/pocketbase-types";
@@ -16,43 +21,38 @@ type TagsListProps = {
 };
 
 const TagsListSkeleton = () => (
-  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    {[1, 2, 3, 4, 5, 6].map((i) => (
-      <Card key={i}>
-        <CardContent className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-8 w-8 rounded" />
-            <Skeleton className="h-4 w-24 rounded" />
-          </div>
-          <div className="flex gap-2">
-            <Skeleton className="h-8 w-8 rounded" />
-            <Skeleton className="h-8 w-8 rounded" />
-          </div>
-        </CardContent>
-      </Card>
+  <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+      <div key={i} className="bg-card space-y-3 p-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-4 w-20 rounded-none" />
+          <Skeleton className="h-4 w-4 rounded-none" />
+        </div>
+        <Skeleton className="h-2 w-full rounded-none" />
+      </div>
     ))}
   </div>
 );
 
 const EmptyState = ({ onCreateClick }: { onCreateClick: () => void }) => (
-  <Card className="border-dashed">
-    <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-      <div
-        className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-        data-interactive-pulse
-      >
-        <TagIcon className="text-primary h-6 w-6" />
-      </div>
-      <h3 className="mb-2 text-lg font-semibold">{tagsManagement.noTags}</h3>
-      <p className="text-muted-foreground mb-6 max-w-md">
-        {tagsManagement.noTagsDescription}
-      </p>
-      <Button className="gap-2" onClick={onCreateClick}>
-        <Plus className="h-4 w-4" />
-        {tagsManagement.createFirstTag}
-      </Button>
-    </CardContent>
-  </Card>
+  <div className="border-border/40 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
+    <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2">
+      <IconTag className="size-10 stroke-[1]" />
+    </div>
+    <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
+      {tagsManagement.noTags}
+    </h3>
+    <p className="text-muted-foreground mb-8 text-xs font-bold tracking-widest uppercase">
+      {tagsManagement.noTagsDescription}
+    </p>
+    <Button
+      onClick={onCreateClick}
+      className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+    >
+      <IconPlus className="size-4" />
+      {tagsManagement.createFirstTag}
+    </Button>
+  </div>
 );
 
 export function TagsList({
@@ -72,51 +72,57 @@ export function TagsList({
   }
 
   return (
-    <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div
+      className="bg-border/40 border-border/40 grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      data-animate-stagger
+    >
       {tags.map((tag) => (
-        <Card
+        <div
           key={tag.id}
-          className="cursor-pointer transition-shadow hover:shadow-md"
-          onClick={() => onEdit(tag)}
+          className="group bg-card hover:bg-muted/30 relative overflow-hidden p-4 text-right transition-all"
         >
-          <CardContent className="flex items-center justify-between p-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <div
-                className="h-5 w-5 flex-shrink-0 rounded"
-                style={{ backgroundColor: tag.color }}
-              />
-              <p className="truncate text-sm font-medium">{tag.name}</p>
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2 opacity-40">
+              <IconHash className="size-3" />
+              <span className="font-mono text-[9px] font-black tracking-widest uppercase">
+                {tag.id.slice(0, 6)}
+              </span>
             </div>
-            <div className="flex flex-shrink-0 gap-1">
+            <div
+              className="border-foreground/10 h-3 w-3 border shadow-sm"
+              style={{ backgroundColor: tag.color }}
+            />
+          </div>
+
+          <h3 className="mb-6 truncate text-sm font-black tracking-tight uppercase">
+            {tag.name}
+          </h3>
+
+          <div className="flex translate-y-1 items-center justify-end gap-1 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-primary/10 hover:text-primary h-8 w-8 rounded-none"
+              onClick={() => onEdit(tag)}
+              title={tagsManagement.editButton}
+            >
+              <IconPencil className="h-4 w-4" />
+            </Button>
+            {canDeleteTag && (
               <Button
                 variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onEdit(tag);
-                }}
-                title={tagsManagement.editButton}
+                size="icon"
+                className="h-8 w-8 rounded-none text-rose-500 hover:bg-rose-500/10"
+                onClick={() => onDelete(tag)}
+                title={tagsManagement.deleteButton}
               >
-                <Pencil className="h-3.5 w-3.5" />
+                <IconTrash className="h-4 w-4" />
               </Button>
-              {canDeleteTag && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onDelete(tag);
-                  }}
-                  title={tagsManagement.deleteButton}
-                >
-                  <Trash2 className="text-destructive h-3.5 w-3.5" />
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+
+          <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+        </div>
       ))}
     </div>
   );

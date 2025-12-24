@@ -1,10 +1,13 @@
 import { reports, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { CalendarIcon, Filter, X } from "lucide-react";
+import {
+  IconCalendar,
+  IconFilter,
+  IconX,
+  IconChevronDown,
+} from "@tabler/icons-react";
 import { useMemo } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import DatePicker from "@/components/ui/date-picker";
 import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
@@ -20,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import type {
   ProjectsRecord,
   TasksPriorityOptions,
@@ -53,15 +55,11 @@ const TIME_PRESETS = {
   TODAY: { label: reports.timePresets.today, value: "TODAY" as const },
   "7D": { label: reports.timePresets.last7Days, value: "7D" as const },
   "30D": { label: reports.timePresets.last30Days, value: "30D" as const },
-  QTD: {
-    label: reports.timePresets.currentQuarter,
-    value: "QTD" as const,
-  },
+  QTD: { label: reports.timePresets.currentQuarter, value: "QTD" as const },
   YTD: { label: reports.timePresets.currentYear, value: "YTD" as const },
   CUSTOM: { label: reports.timePresets.custom, value: "CUSTOM" as const },
 } as const;
 
-// Generate status options from centralized configuration
 const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] =
   Object.values(TASK_STATUS_CONFIG).map((config) => ({
     label: config.name,
@@ -69,10 +67,7 @@ const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] =
   }));
 
 const PRIORITY_OPTIONS: { label: string; value: TasksPriorityOptions }[] = [
-  {
-    label: tasks.priority.urgent,
-    value: "urgent" as TasksPriorityOptions,
-  },
+  { label: tasks.priority.urgent, value: "urgent" as TasksPriorityOptions },
   { label: reports.high, value: "high" as TasksPriorityOptions },
   { label: reports.medium, value: "medium" as TasksPriorityOptions },
   { label: reports.low, value: "low" as TasksPriorityOptions },
@@ -83,18 +78,15 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
     () => projects.filter((p) => value.filters.projectIds.includes(p.id)),
     [projects, value.filters.projectIds],
   );
-
   const selectedUsers = useMemo(
     () => users.filter((u) => value.filters.assigneeIds.includes(u.id)),
     [users, value.filters.assigneeIds],
   );
-
   const selectedStatuses = useMemo(
     () =>
       STATUS_OPTIONS.filter((s) => value.filters.statuses.includes(s.value)),
     [value.filters.statuses],
   );
-
   const selectedPriorities = useMemo(
     () =>
       PRIORITY_OPTIONS.filter((p) =>
@@ -114,57 +106,17 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
   );
 
   const handleTimeRangeChange = (preset: TimeRange["preset"]) => {
-    onChange({
-      ...value,
-      timeRange: { preset },
-    });
+    onChange({ ...value, timeRange: { preset } });
   };
 
-  const handleProjectToggle = (projectId: string, checked: boolean) => {
-    const newProjectIds = checked
-      ? [...value.filters.projectIds, projectId]
-      : value.filters.projectIds.filter((id) => id !== projectId);
-
-    onChange({
-      ...value,
-      filters: { ...value.filters, projectIds: newProjectIds },
-    });
-  };
-
-  const handleUserToggle = (userId: string, checked: boolean) => {
-    const newAssigneeIds = checked
-      ? [...value.filters.assigneeIds, userId]
-      : value.filters.assigneeIds.filter((id) => id !== userId);
-
-    onChange({
-      ...value,
-      filters: { ...value.filters, assigneeIds: newAssigneeIds },
-    });
-  };
-
-  const handleStatusToggle = (status: TasksStatusOptions, checked: boolean) => {
-    const newStatuses = checked
-      ? [...value.filters.statuses, status]
-      : value.filters.statuses.filter((s) => s !== status);
-
-    onChange({
-      ...value,
-      filters: { ...value.filters, statuses: newStatuses },
-    });
-  };
-
-  const handlePriorityToggle = (
-    priority: TasksPriorityOptions,
+  const handleToggle = (
+    key: keyof Filters,
+    id: string | TasksStatusOptions | TasksPriorityOptions,
     checked: boolean,
   ) => {
-    const newPriorities = checked
-      ? [...value.filters.priorities, priority]
-      : value.filters.priorities.filter((p) => p !== priority);
-
-    onChange({
-      ...value,
-      filters: { ...value.filters, priorities: newPriorities },
-    });
+    const current = value.filters[key] as string[];
+    const next = checked ? [...current, id] : current.filter((x) => x !== id);
+    onChange({ ...value, filters: { ...value.filters, [key]: next } });
   };
 
   const clearAllFilters = () => {
@@ -180,127 +132,87 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
   };
 
   return (
-    <div className="bg-card flex flex-wrap items-center gap-3 rounded-lg border p-4">
-      {/* Time Range Preset */}
-      <div className="flex items-center gap-2">
-        <CalendarIcon className="text-muted-foreground h-4 w-4" />
+    <div className="bg-border/40 flex flex-wrap items-center gap-px overflow-hidden">
+      {/* Time Segment */}
+      <div className="bg-card border-border/10 flex h-16 min-w-[160px] flex-col justify-between border-l p-3">
+        <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+          <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+            Time_Frame
+          </span>
+          <IconCalendar className="size-2.5" />
+        </div>
         <Select
           value={value.timeRange.preset}
           onValueChange={handleTimeRangeChange}
         >
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="bg-muted/10 h-7 rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="border-foreground bg-card rounded-none border-2">
             {Object.values(TIME_PRESETS).map((preset) => (
-              <SelectItem key={preset.value} value={preset.value}>
+              <SelectItem
+                key={preset.value}
+                value={preset.value}
+                className="text-[10px] font-black uppercase"
+              >
                 {preset.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {value.timeRange.preset === "CUSTOM" && (
-          <div className="ml-2 flex items-center gap-2">
-            <DatePicker
-              date={value.timeRange.start}
-              setDate={(date) =>
-                onChange({
-                  ...value,
-                  timeRange: { ...value.timeRange, start: date },
-                })
-              }
-            />
-            <span className="text-muted-foreground">{reports.to}</span>
-            <DatePicker
-              date={value.timeRange.end}
-              setDate={(date) =>
-                onChange({
-                  ...value,
-                  timeRange: { ...value.timeRange, end: date },
-                })
-              }
-            />
-          </div>
-        )}
       </div>
 
-      <Separator orientation="vertical" className="h-6" />
-
-      {/* Projects Filter */}
+      {/* Projects Segment */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="justify-start">
-            <Filter className="mr-2 h-4 w-4" />
-            {reports.projects}
-            {selectedProjects.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {digitsEnToFa(selectedProjects.length)}
-              </Badge>
-            )}
-          </Button>
+          <button
+            type="button"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+          >
+            <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+                {reports.projects}
+              </span>
+              <IconFilter className="size-2.5" />
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <IconChevronDown className="size-3 opacity-20" />
+              <span className="text-[11px] font-black tracking-tight uppercase">
+                {selectedProjects.length > 0
+                  ? `${digitsEnToFa(selectedProjects.length)} Selected`
+                  : "All Projects"}
+              </span>
+            </div>
+          </button>
         </PopoverTrigger>
-        <PopoverContent className="w-64 p-0" align="start">
+        <PopoverContent
+          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          align="start"
+        >
           <div className="p-4">
-            <h4 className="font-medium">{reports.selectProjects}</h4>
-            <div className="mt-3 max-h-48 space-y-2 overflow-y-auto">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+              {reports.selectProjects}
+            </h4>
+            <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
               {projects.map((project) => (
-                <div key={project.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`project-${project.id}`}
-                    checked={value.filters.projectIds.includes(project.id)}
-                    onCheckedChange={(checked) =>
-                      handleProjectToggle(project.id, checked as boolean)
-                    }
-                  />
+                <div
+                  key={project.id}
+                  className="flex items-center justify-end space-x-2 space-x-reverse"
+                >
                   <label
-                    htmlFor={`project-${project.id}`}
-                    className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    htmlFor={`p-${project.id}`}
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
                   >
                     {project.name}
                   </label>
-                </div>
-              ))}
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      {/* Assignees Filter */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="justify-start">
-            <Filter className="mr-2 h-4 w-4" />
-            {reports.assignee_plural}
-            {selectedUsers.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {digitsEnToFa(selectedUsers.length)}
-              </Badge>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-64 p-0" align="start">
-          <div className="p-4">
-            <h4 className="font-medium">{reports.selectAssignees}</h4>
-            <div className="mt-3 max-h-48 space-y-2 overflow-y-auto">
-              {users.map((user) => (
-                <div key={user.id} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`user-${user.id}`}
-                    checked={value.filters.assigneeIds.includes(user.id)}
-                    onCheckedChange={(checked) =>
-                      handleUserToggle(user.id, checked as boolean)
+                    id={`p-${project.id}`}
+                    checked={value.filters.projectIds.includes(project.id)}
+                    onCheckedChange={(c) =>
+                      handleToggle("projectIds", project.id, !!c)
                     }
+                    className="rounded-none"
                   />
-                  <label
-                    htmlFor={`user-${user.id}`}
-                    className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {formatUserName(
-                      user.first_name,
-                      user.last_name,
-                      user.username,
-                    )}
-                  </label>
                 </div>
               ))}
             </div>
@@ -308,80 +220,57 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         </PopoverContent>
       </Popover>
 
-      {/* Status Filter */}
+      {/* Assignees Segment */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="justify-start">
-            <Filter className="mr-2 h-4 w-4" />
-            {reports.status}
-            {selectedStatuses.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {digitsEnToFa(selectedStatuses.length)}
-              </Badge>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-64 p-0" align="start">
-          <div className="p-4">
-            <h4 className="font-medium">{reports.selectStatuses}</h4>
-            <div className="mt-3 space-y-2">
-              {STATUS_OPTIONS.map((status) => (
-                <div key={status.value} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`status-${status.value}`}
-                    checked={value.filters.statuses.includes(status.value)}
-                    onCheckedChange={(checked) =>
-                      handleStatusToggle(status.value, checked as boolean)
-                    }
-                  />
-                  <label
-                    htmlFor={`status-${status.value}`}
-                    className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {status.label}
-                  </label>
-                </div>
-              ))}
+          <button
+            type="button"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+          >
+            <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+                {reports.assignee_plural}
+              </span>
+              <IconFilter className="size-2.5" />
             </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      {/* Priority Filter */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="justify-start">
-            <Filter className="mr-2 h-4 w-4" />
-            {reports.priority}
-            {selectedPriorities.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {digitsEnToFa(selectedPriorities.length)}
-              </Badge>
-            )}
-          </Button>
+            <div className="flex items-center justify-end gap-2">
+              <IconChevronDown className="size-3 opacity-20" />
+              <span className="text-[11px] font-black tracking-tight uppercase">
+                {selectedUsers.length > 0
+                  ? `${digitsEnToFa(selectedUsers.length)} Selected`
+                  : "All Assignees"}
+              </span>
+            </div>
+          </button>
         </PopoverTrigger>
-        <PopoverContent className="w-64 p-0" align="start">
+        <PopoverContent
+          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          align="start"
+        >
           <div className="p-4">
-            <h4 className="font-medium">{reports.selectPriorities}</h4>
-            <div className="mt-3 space-y-2">
-              {PRIORITY_OPTIONS.map((priority) => (
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+              {reports.selectAssignees}
+            </h4>
+            <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
+              {users.map((u) => (
                 <div
-                  key={priority.value}
-                  className="flex items-center space-x-2"
+                  key={u.id}
+                  className="flex items-center justify-end space-x-2 space-x-reverse"
                 >
-                  <Checkbox
-                    id={`priority-${priority.value}`}
-                    checked={value.filters.priorities.includes(priority.value)}
-                    onCheckedChange={(checked) =>
-                      handlePriorityToggle(priority.value, checked as boolean)
-                    }
-                  />
                   <label
-                    htmlFor={`priority-${priority.value}`}
-                    className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    htmlFor={`u-${u.id}`}
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
                   >
-                    {priority.label}
+                    {formatUserName(u.first_name, u.last_name, u.username)}
                   </label>
+                  <Checkbox
+                    id={`u-${u.id}`}
+                    checked={value.filters.assigneeIds.includes(u.id)}
+                    onCheckedChange={(c) =>
+                      handleToggle("assigneeIds", u.id, !!c)
+                    }
+                    className="rounded-none"
+                  />
                 </div>
               ))}
             </div>
@@ -389,15 +278,161 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         </PopoverContent>
       </Popover>
 
-      {/* Clear Filters */}
+      {/* Status Segment */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+          >
+            <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+                {reports.status}
+              </span>
+              <IconFilter className="size-2.5" />
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <IconChevronDown className="size-3 opacity-20" />
+              <span className="text-[11px] font-black tracking-tight uppercase">
+                {selectedStatuses.length > 0
+                  ? `${digitsEnToFa(selectedStatuses.length)} Selected`
+                  : "All Statuses"}
+              </span>
+            </div>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          align="start"
+        >
+          <div className="p-4">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+              {reports.selectStatuses}
+            </h4>
+            <div className="space-y-2 overflow-y-auto pr-1">
+              {STATUS_OPTIONS.map((s) => (
+                <div
+                  key={s.value}
+                  className="flex items-center justify-end space-x-2 space-x-reverse"
+                >
+                  <label
+                    htmlFor={`s-${s.value}`}
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
+                  >
+                    {s.label}
+                  </label>
+                  <Checkbox
+                    id={`s-${s.value}`}
+                    checked={value.filters.statuses.includes(s.value)}
+                    onCheckedChange={(c) =>
+                      handleToggle("statuses", s.value, !!c)
+                    }
+                    className="rounded-none"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      {/* Priority Segment */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+          >
+            <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+                {reports.priority}
+              </span>
+              <IconFilter className="size-2.5" />
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <IconChevronDown className="size-3 opacity-20" />
+              <span className="text-[11px] font-black tracking-tight uppercase">
+                {selectedPriorities.length > 0
+                  ? `${digitsEnToFa(selectedPriorities.length)} Selected`
+                  : "All Priorities"}
+              </span>
+            </div>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          align="start"
+        >
+          <div className="p-4">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+              {reports.selectPriorities}
+            </h4>
+            <div className="space-y-2 overflow-y-auto pr-1">
+              {PRIORITY_OPTIONS.map((p) => (
+                <div
+                  key={p.value}
+                  className="flex items-center justify-end space-x-2 space-x-reverse"
+                >
+                  <label
+                    htmlFor={`pr-${p.value}`}
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
+                  >
+                    {p.label}
+                  </label>
+                  <Checkbox
+                    id={`pr-${p.value}`}
+                    checked={value.filters.priorities.includes(p.value)}
+                    onCheckedChange={(c) =>
+                      handleToggle("priorities", p.value, !!c)
+                    }
+                    className="rounded-none"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      {/* Clear Reset Segment */}
       {hasActiveFilters && (
-        <>
-          <Separator orientation="vertical" className="h-6" />
-          <Button variant="ghost" size="sm" onClick={clearAllFilters}>
-            <X className="mr-2 h-4 w-4" />
-            {reports.clearFilters}
-          </Button>
-        </>
+        <button
+          type="button"
+          onClick={clearAllFilters}
+          className="bg-muted/20 border-border/10 flex h-16 flex-col items-center justify-center border-l px-6 text-rose-500 transition-colors hover:bg-rose-500/10"
+        >
+          <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
+            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              Reset_Gates
+            </span>
+            <IconX className="size-2.5" />
+          </div>
+          <span className="text-[10px] font-black tracking-widest uppercase">
+            Protocol_00
+          </span>
+        </button>
+      )}
+
+      {/* Custom Date Range Picker */}
+      {value.timeRange.preset === "CUSTOM" && (
+        <div className="bg-muted/10 border-border/10 flex h-16 items-center gap-2 border-l px-4">
+          <DatePicker
+            date={value.timeRange.start}
+            setDate={(d) =>
+              onChange({
+                ...value,
+                timeRange: { ...value.timeRange, start: d },
+              })
+            }
+          />
+          <span className="text-[10px] font-black opacity-30">TO</span>
+          <DatePicker
+            date={value.timeRange.end}
+            setDate={(d) =>
+              onChange({ ...value, timeRange: { ...value.timeRange, end: d } })
+            }
+          />
+        </div>
       )}
     </div>
   );

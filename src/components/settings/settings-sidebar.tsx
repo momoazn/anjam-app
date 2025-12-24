@@ -1,14 +1,20 @@
-import { Info, Palette, Shield, User } from "lucide-react";
+import {
+  IconInfoCircle,
+  IconPalette,
+  IconShield,
+  IconUser,
+  IconChevronLeft,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import { settings } from "@/constants";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { id: "profile", label: settings.tabs.profile, icon: User },
-  { id: "appearance", label: settings.tabs.appearance, icon: Palette },
-  { id: "security", label: settings.tabs.security, icon: Shield },
-  { id: "about", label: settings.tabs.about, icon: Info },
+  { id: "profile", label: settings.tabs.profile, icon: IconUser },
+  { id: "appearance", label: settings.tabs.appearance, icon: IconPalette },
+  { id: "security", label: settings.tabs.security, icon: IconShield },
+  { id: "about", label: settings.tabs.about, icon: IconInfoCircle },
 ];
 
 type SettingsSidebarProps = {
@@ -21,21 +27,47 @@ export function SettingsSidebar({
   onTabChange,
 }: SettingsSidebarProps) {
   return (
-    <nav className="flex space-x-2 space-x-reverse lg:flex-col lg:space-y-1 lg:space-x-0">
+    <nav className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
+      <div className="mb-4 hidden px-4 lg:block">
+        <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.3em] uppercase">
+          Config_Modules
+        </span>
+      </div>
+
       {menuItems.map((item) => {
         const Icon = item.icon;
+        const isActive = activeTab === item.id;
+
         return (
           <Button
             key={item.id}
-            variant={activeTab === item.id ? "secondary" : "ghost"}
+            variant="ghost"
             className={cn(
-              "justify-start gap-3",
-              activeTab === item.id && "bg-muted font-medium",
+              "group relative h-12 justify-start gap-4 rounded-none border-l-2 px-4 transition-all transition-none duration-100",
+              isActive
+                ? "bg-primary/5 border-primary text-primary"
+                : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground border-transparent",
             )}
             onClick={() => onTabChange(item.id)}
           >
-            <Icon className="h-4 w-4" />
-            <span className="hidden sm:inline">{item.label}</span>
+            <Icon
+              className={cn(
+                "size-5 transition-transform duration-200 group-hover:scale-110",
+                isActive ? "text-primary" : "text-muted-foreground/40",
+              )}
+            />
+            <span
+              className={cn(
+                "text-[13px] font-black tracking-tight uppercase",
+                isActive ? "opacity-100" : "opacity-90",
+              )}
+            >
+              {item.label}
+            </span>
+
+            {isActive && (
+              <IconChevronLeft className="mr-auto size-4 opacity-40" />
+            )}
           </Button>
         );
       })}

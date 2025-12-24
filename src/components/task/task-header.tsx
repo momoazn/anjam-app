@@ -1,7 +1,10 @@
 import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
 import { common, tasks } from "@/constants";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { cn } from "@/lib/utils";
 
 type TaskHeaderProps = {
   totalTasks: number;
@@ -18,49 +21,68 @@ export function TaskHeader({
   onNavigateBoard,
   onCreateTask,
 }: TaskHeaderProps) {
-  return (
-    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-          <ListTodo className="h-5 w-5 md:h-6 md:w-6" />
-          {tasks.allTasks}
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          {totalTasks > 0
-            ? tasks.header.tasksFound.replace("{count}", totalTasks.toString())
-            : tasks.header.manageTasks}
-        </p>
-      </div>
-      <div className="flex w-full gap-2 sm:w-auto">
+  const headerActions = (
+    <div className="flex flex-wrap gap-2">
+      <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
         <Button
-          variant="outline"
+          variant="ghost"
           size="lg"
           onClick={onNavigateBoard}
-          className="gap-2"
+          className="hover:bg-primary/5 hover:text-primary h-12 gap-3 rounded-none px-6 font-bold transition-all"
         >
-          <LayoutGrid className="h-4 w-4" />
-          {tasks.board.title}
+          <LayoutGrid className="size-4" />
+          <span className="text-[11px] font-black tracking-widest uppercase">
+            {tasks.board.title}
+          </span>
         </Button>
+
+        <div className="bg-border/40 h-6 w-px" />
+
         <Button
-          variant={selectionMode ? "secondary" : "outline"}
+          variant="ghost"
           size="lg"
           onClick={onToggleSelection}
-          className="gap-2"
+          className={cn(
+            "h-12 gap-3 rounded-none px-6 font-bold transition-all",
+            selectionMode && "bg-primary/10 text-primary",
+          )}
         >
-          <CheckSquare className="h-4 w-4" />
-          {selectionMode
-            ? common.buttons.cancelSelection
-            : common.buttons.multiSelect}
-        </Button>
-        <Button
-          className="w-full gap-2 sm:w-auto"
-          size="lg"
-          onClick={onCreateTask}
-        >
-          <Plus className="h-4 w-4" />
-          {tasks.addTask.buttons.newTask}
+          <CheckSquare className="size-4" />
+          <span className="text-[11px] font-black tracking-widest uppercase">
+            {selectionMode
+              ? common.buttons.cancelSelection
+              : common.buttons.multiSelect}
+          </span>
         </Button>
       </div>
+
+      <Button
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        size="lg"
+        onClick={onCreateTask}
+      >
+        <Plus className="size-5" />
+        <span className="tracking-widest uppercase">
+          {tasks.addTask.buttons.newTask}
+        </span>
+      </Button>
     </div>
+  );
+
+  return (
+    <PageHeader
+      title={tasks.allTasks}
+      description={
+        totalTasks > 0
+          ? tasks.header.tasksFound.replace(
+              "{count}",
+              digitsEnToFa(totalTasks).toString(),
+            )
+          : tasks.header.manageTasks
+      }
+      icon={ListTodo}
+      nodeId="Task_Registry"
+      actions={headerActions}
+    />
   );
 }

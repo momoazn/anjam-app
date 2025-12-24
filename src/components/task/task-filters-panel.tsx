@@ -10,6 +10,7 @@ import type {
   UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
 import type { UsersResponse } from "@/lib/pocketbase-types";
+import { Layers } from "lucide-react";
 
 export type TaskFiltersPanelProps = {
   currentFilters: TaskFilterValues;
@@ -71,8 +72,15 @@ export function TaskFiltersPanel({
   const [manageFiltersDialogOpen, setManageFiltersDialogOpen] = useState(false);
 
   return (
-    <div className="mb-8 space-y-3" data-animate-stagger>
-      <div className="flex justify-end">
+    <div className="mb-10 space-y-6" data-animate-stagger>
+      <div className="border-border/20 flex items-center justify-between border-b pb-4">
+        <div className="flex items-center gap-2">
+          <Layers className="text-primary/60 size-3.5" />
+          <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            Registry_Filter_Logic
+          </span>
+        </div>
+
         <SavedFiltersDropdown
           savedFilters={savedFilters}
           currentFilterMatch={currentFilterMatch}
@@ -86,22 +94,24 @@ export function TaskFiltersPanel({
         />
       </div>
 
-      <TaskFilters
-        searchTerm={searchTerm}
-        selectedStatus={selectedStatus}
-        selectedPriority={selectedPriority}
-        selectedAssignee={selectedAssignee}
-        selectedDateRange={selectedDateRange}
-        selectedTag={selectedTag}
-        setSearchTerm={setSearchTerm}
-        setSelectedStatus={setSelectedStatus}
-        setSelectedPriority={setSelectedPriority}
-        setSelectedAssignee={setSelectedAssignee}
-        setSelectedDateRange={setSelectedDateRange}
-        setSelectedTag={setSelectedTag}
-        users={users}
-        isLoadingUsers={isLoadingUsers}
-      />
+      <div className="bg-muted/5 border-border/40 border p-6">
+        <TaskFilters
+          searchTerm={searchTerm}
+          selectedStatus={selectedStatus}
+          selectedPriority={selectedPriority}
+          selectedAssignee={selectedAssignee}
+          selectedDateRange={selectedDateRange}
+          selectedTag={selectedTag}
+          setSearchTerm={setSearchTerm}
+          setSelectedStatus={setSelectedStatus}
+          setSelectedPriority={setSelectedPriority}
+          setSelectedAssignee={setSelectedAssignee}
+          setSelectedDateRange={setSelectedDateRange}
+          setSelectedTag={setSelectedTag}
+          users={users}
+          isLoadingUsers={isLoadingUsers}
+        />
+      </div>
 
       <SaveFilterDialog
         open={saveFilterDialogOpen}

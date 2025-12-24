@@ -51,18 +51,15 @@ export function DashboardHeader({
 
     const welcomeMessage = isEmployee
       ? dashboard.welcome.employee
-          .replace("{firstName}", user?.first_name || "")
-          .replace("{lastName}", user?.last_name || "")
-          .trim()
       : isSupervisor
         ? dashboard.welcome.supervisor
-            .replace("{firstName}", user?.first_name || "")
-            .replace("{lastName}", user?.last_name || "")
-            .trim()
-        : dashboard.welcome.admin
-            .replace("{firstName}", user?.first_name || "")
-            .replace("{lastName}", user?.last_name || "")
-            .trim();
+        : dashboard.welcome.admin;
+
+    const welcomeSubtitle = isEmployee
+      ? dashboard.welcome.employeeSubtitle
+      : isSupervisor
+        ? dashboard.welcome.supervisorSubtitle
+        : dashboard.welcome.adminSubtitle;
 
     const quickActions = [
       {
@@ -97,6 +94,7 @@ export function DashboardHeader({
 
     return {
       welcomeMessage,
+      welcomeSubtitle,
       quickActions,
     };
   }, [userRole, user, navigate]);
@@ -176,7 +174,7 @@ export function DashboardHeader({
           </h1>
 
           <p className="text-muted-foreground mt-4 max-w-xl text-lg leading-relaxed">
-            {dashboard.welcome.adminSubtitle}
+            {config.welcomeSubtitle}
           </p>
 
           <div className="mt-10 flex flex-wrap gap-3">

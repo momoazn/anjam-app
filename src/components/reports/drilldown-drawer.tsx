@@ -1,5 +1,6 @@
-import { X } from "lucide-react";
+import { IconX, IconTerminal, IconHash } from "@tabler/icons-react";
 import { dashboard, reports, tasks } from "@/constants";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 import {
   Drawer,
@@ -7,14 +8,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 type TaskRow = {
   id: string;
@@ -52,69 +45,107 @@ const PRIORITY_LABELS = {
 export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
   const formatDeadline = (deadline: string | null) => {
     if (!deadline) return dashboard.fallbacks.noDeadline;
-    return new Date(deadline).toLocaleDateString("fa-IR");
+    return digitsEnToFa(new Date(deadline).toLocaleDateString("fa-IR"));
   };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[80vh]">
-        <DrawerHeader className="flex flex-row items-center justify-between">
-          <DrawerTitle>{title}</DrawerTitle>
+      <DrawerContent className="border-foreground bg-card max-h-[85vh] rounded-none border-t-2 shadow-[0_-8px_24px_rgba(0,0,0,0.2)]">
+        <DrawerHeader className="border-border/40 bg-muted/20 flex flex-row items-center justify-between border-b px-6 py-4">
+          <div className="flex items-center gap-3">
+            <IconTerminal className="text-primary size-4" />
+            <DrawerTitle className="text-sm font-black tracking-widest uppercase">
+              {title}
+            </DrawerTitle>
+          </div>
           <button
+            type="button"
             onClick={() => onOpenChange(false)}
-            className="ring-offset-background focus:ring-ring cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            className="hover:bg-muted hover:border-border/40 border border-transparent p-2 transition-colors"
           >
-            <X className="h-4 w-4" />
+            <IconX className="size-4" />
           </button>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-auto p-4">
+        <div className="scrollbar-none flex-1 overflow-auto">
           {rows.length === 0 ? (
-            <div className="text-muted-foreground flex h-32 items-center justify-center">
-              {reports.noTasksFound}
+            <div className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale">
+              <IconHash className="mb-4 size-10 stroke-[1]" />
+              <p className="text-[10px] font-black tracking-[0.3em] uppercase">
+                {reports.noTasksFound}
+              </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{reports.title}</TableHead>
-                  <TableHead>{reports.taskStatus}</TableHead>
-                  <TableHead>{reports.taskPriority}</TableHead>
-                  <TableHead>{reports.deadline}</TableHead>
-                  <TableHead>
-                    {reports.age} {reports.ageUnit}
-                  </TableHead>
-                  <TableHead>{reports.assignee}</TableHead>
-                  <TableHead>{reports.project}</TableHead>
-                  <TableHead>{reports.tags}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell className="font-medium">{row.title}</TableCell>
-                    <TableCell>
-                      {STATUS_LABELS[
-                        row.status as keyof typeof STATUS_LABELS
-                      ] || row.status}
-                    </TableCell>
-                    <TableCell>
-                      {PRIORITY_LABELS[
-                        row.priority as keyof typeof PRIORITY_LABELS
-                      ] || row.priority}
-                    </TableCell>
-                    <TableCell>{formatDeadline(row.deadline)}</TableCell>
-                    <TableCell>{row.ageDays}</TableCell>
-                    <TableCell>{row.assigneeName}</TableCell>
-                    <TableCell>{row.projectName}</TableCell>
-                    <TableCell>
-                      {row.tags?.length ? row.tags.join(", ") : "—"}
-                    </TableCell>
-                  </TableRow>
+            <div className="bg-border/40 divide-border/10 grid grid-cols-1 gap-px divide-y">
+              {/* Table Head Mockup */}
+              <div className="bg-muted/30 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-8 border-b backdrop-blur-sm">
+                {[
+                  reports.title,
+                  reports.taskStatus,
+                  reports.taskPriority,
+                  reports.deadline,
+                  reports.age,
+                  reports.assignee,
+                  reports.project,
+                  reports.tags,
+                ].map((head) => (
+                  <div
+                    key={head}
+                    className="text-muted-foreground/60 border-border/10 flex items-center justify-center border-l text-[8px] font-black tracking-widest uppercase last:border-l-0"
+                  >
+                    {head}
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+
+              {/* Table Body Modules */}
+              {rows.map((row) => (
+                <div
+                  key={row.id}
+                  className="group bg-card hover:bg-muted/30 relative grid grid-cols-8 overflow-hidden text-right transition-all"
+                >
+                  <div className="border-border/10 flex items-center justify-end truncate border-l p-4 text-xs font-bold">
+                    {row.title}
+                  </div>
+                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
+                    {STATUS_LABELS[row.status as keyof typeof STATUS_LABELS] ||
+                      row.status}
+                  </div>
+                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
+                    {PRIORITY_LABELS[
+                      row.priority as keyof typeof PRIORITY_LABELS
+                    ] || row.priority}
+                  </div>
+                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tabular-nums opacity-60">
+                    {formatDeadline(row.deadline)}
+                  </div>
+                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tabular-nums opacity-60">
+                    {digitsEnToFa(row.ageDays)}
+                  </div>
+                  <div className="border-border/10 flex items-center justify-end truncate border-l p-4 text-[10px] font-black uppercase">
+                    {row.assigneeName}
+                  </div>
+                  <div className="border-border/10 flex items-center justify-end truncate border-l p-4 text-[10px] font-black uppercase opacity-60">
+                    {row.projectName}
+                  </div>
+                  <div className="flex items-center justify-end p-4 text-[9px] font-black tracking-widest uppercase opacity-40">
+                    {row.tags?.length ? row.tags.join(", ") : "—"}
+                  </div>
+
+                  <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+                </div>
+              ))}
+            </div>
           )}
+        </div>
+
+        <div className="bg-muted/20 border-border/40 flex items-center justify-between border-t px-6 py-2">
+          <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.3em] uppercase">
+            Protocol_Active :: Registry_Dump
+          </span>
+          <span className="text-[10px] font-black tabular-nums">
+            {digitsEnToFa(rows.length)} ENTRIES
+          </span>
         </div>
       </DrawerContent>
     </Drawer>

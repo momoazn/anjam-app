@@ -1,6 +1,6 @@
+import { X, Trash2, Users, Flag, RefreshCw, Terminal } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { X, Trash2, Users, Flag, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ import {
   TasksPriorityOptions,
   type TasksStatusOptions,
 } from "@/lib/pocketbase-types";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface BulkActionsBarProps {
   selectedCount: number;
@@ -140,114 +141,143 @@ export function BulkActionsBar({
 
   return (
     <>
-      <div className="border-border bg-card fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-lg border px-4 py-3 shadow-lg">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">
-            {tasks.bulkActions.selectedCount.replace(
-              "{count}",
-              String(selectedCount),
-            )}
-          </span>
+      <div className="border-foreground bg-card animate-in fade-in slide-in-from-bottom-4 fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-none border-2 p-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)]">
+        <div className="bg-muted/20 border-border/40 flex items-center gap-3 border px-4 py-2">
+          <div className="flex flex-col items-end">
+            <span className="text-muted-foreground/40 mb-1 text-right text-[7px] leading-none font-black tracking-[0.3em] uppercase">
+              Selection_Mode
+            </span>
+            <div className="flex items-center gap-2">
+              <Terminal className="text-primary size-3" />
+              <span className="text-xs font-black uppercase">
+                {digitsEnToFa(selectedCount)} ITEMS
+              </span>
+            </div>
+          </div>
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={onClearSelection}
             disabled={isLoading}
+            className="size-8 rounded-none hover:bg-rose-500/10 hover:text-rose-500"
           >
-            <X className="h-4 w-4" />
+            <X className="size-4" />
           </Button>
         </div>
 
-        <div className="bg-border h-6 w-px" />
+        <div className="bg-border/40 h-8 w-px" />
 
-        {/* Bulk Assign */}
-        <Select onValueChange={handleBulkAssign} disabled={isLoading}>
-          <SelectTrigger className="w-[180px]">
-            <Users className="mr-2 h-4 w-4" />
-            <SelectValue placeholder={tasks.bulkActions.assignPlaceholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {users.length === 0 ? (
-              <SelectItem value="__empty" disabled>
-                {common.messages.noData}
-              </SelectItem>
-            ) : (
-              users.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.first_name || user.last_name
-                    ? `${user.first_name} ${user.last_name}`
-                    : user.username}
+        <div className="flex items-center gap-2">
+          {/* Bulk Assign */}
+          <Select onValueChange={handleBulkAssign} disabled={isLoading}>
+            <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-[160px] rounded-none text-[10px] font-bold tracking-widest uppercase focus:ring-0">
+              <Users className="ml-2 size-3.5 opacity-40" />
+              <SelectValue placeholder={tasks.bulkActions.assignPlaceholder} />
+            </SelectTrigger>
+            <SelectContent className="border-foreground rounded-none border-2">
+              {users.length === 0 ? (
+                <SelectItem value="__empty" disabled>
+                  {common.messages.noData}
                 </SelectItem>
-              ))
-            )}
-          </SelectContent>
-        </Select>
+              ) : (
+                users.map((user) => (
+                  <SelectItem
+                    key={user.id}
+                    value={user.id}
+                    className="text-[10px] font-bold uppercase"
+                  >
+                    {user.first_name || user.last_name
+                      ? `${user.first_name} ${user.last_name}`
+                      : user.username}
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
 
-        {/* Bulk Status Change */}
-        <Select onValueChange={handleBulkStatus} disabled={isLoading}>
-          <SelectTrigger className="w-[160px]">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            <SelectValue placeholder={tasks.bulkActions.statusPlaceholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {availableStatuses.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          {/* Bulk Status Change */}
+          <Select onValueChange={handleBulkStatus} disabled={isLoading}>
+            <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-[140px] rounded-none text-[10px] font-bold tracking-widest uppercase focus:ring-0">
+              <RefreshCw className="ml-2 size-3.5 opacity-40" />
+              <SelectValue placeholder={tasks.bulkActions.statusPlaceholder} />
+            </SelectTrigger>
+            <SelectContent className="border-foreground rounded-none border-2">
+              {availableStatuses.map((status) => (
+                <SelectItem
+                  key={status.value}
+                  value={status.value}
+                  className="text-[10px] font-bold uppercase"
+                >
+                  {status.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Bulk Priority Change */}
-        <Select onValueChange={handleBulkPriority} disabled={isLoading}>
-          <SelectTrigger className="w-[150px]">
-            <Flag className="mr-2 h-4 w-4" />
-            <SelectValue placeholder={tasks.bulkActions.priorityPlaceholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {priorityOptions.map((priority) => (
-              <SelectItem key={priority.value} value={priority.value}>
-                {priority.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          {/* Bulk Priority Change */}
+          <Select onValueChange={handleBulkPriority} disabled={isLoading}>
+            <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-[130px] rounded-none text-[10px] font-bold tracking-widest uppercase focus:ring-0">
+              <Flag className="ml-2 size-3.5 opacity-40" />
+              <SelectValue
+                placeholder={tasks.bulkActions.priorityPlaceholder}
+              />
+            </SelectTrigger>
+            <SelectContent className="border-foreground rounded-none border-2">
+              {priorityOptions.map((priority) => (
+                <SelectItem
+                  key={priority.value}
+                  value={priority.value}
+                  className="text-[10px] font-bold uppercase"
+                >
+                  {priority.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        <div className="bg-border h-6 w-px" />
+        <div className="bg-border/40 h-8 w-px" />
 
         {/* Bulk Delete */}
         <Button
-          variant="destructive"
+          variant="ghost"
           size="sm"
           onClick={() => setShowDeleteDialog(true)}
           disabled={isLoading}
+          className="h-10 rounded-none px-4 text-[10px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
         >
-          <Trash2 className="mr-2 h-4 w-4" />
+          <Trash2 className="ml-2 size-4" />
           {tasks.bulkActions.deleteButton}
         </Button>
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {tasks.bulkActions.deleteDialogTitle.replace(
-                "{count}",
-                String(selectedCount),
-              )}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
+            <div className="mb-2 flex items-center gap-3 text-rose-500">
+              <Trash2 className="size-5" />
+              <AlertDialogTitle className="text-xl font-black tracking-tight uppercase">
+                {tasks.bulkActions.deleteDialogTitle.replace(
+                  "{count}",
+                  digitsEnToFa(selectedCount),
+                )}
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-sm font-bold opacity-70">
               {tasks.bulkActions.deleteDialogDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoading}>
+          <AlertDialogFooter className="mt-6 gap-2">
+            <AlertDialogCancel
+              disabled={isLoading}
+              className="border-foreground rounded-none border-2 text-[10px] font-black tracking-widest uppercase"
+            >
               {tasks.bulkActions.cancelButton}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isLoading}
-              className="bg-destructive hover:bg-destructive/90"
+              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
             >
               {isLoading
                 ? tasks.bulkActions.deletingButton

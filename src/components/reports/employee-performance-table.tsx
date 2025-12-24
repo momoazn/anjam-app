@@ -1,19 +1,20 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { ArrowUpDown, Download } from "lucide-react";
+import {
+  IconArrowsSort,
+  IconDownload,
+  IconUser,
+  IconHash,
+  IconCircleCheck,
+  IconClock,
+  IconActivity,
+} from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { reports } from "@/constants";
 import type { EmployeeSummary } from "@/lib/reports-utils";
+import { cn } from "@/lib/utils";
 
 type SortField = keyof EmployeeSummary;
 type SortDirection = "asc" | "desc";
@@ -53,140 +54,134 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
   };
 
   const handleExportCsv = () => {
-    // CSV export functionality (deferred per user request)
     toast.info(reports.charts.employee.performanceTable.exportCsvComingSoon);
   };
 
   if (summaries.length === 0) {
     return (
-      <div className="text-muted-foreground flex h-32 items-center justify-center rounded-md border border-dashed text-sm">
-        {reports.charts.employee.emptyStates.noData}
+      <div className="border-border/40 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
+        <p className="text-[10px] font-black tracking-[0.3em] uppercase">
+          {reports.charts.employee.emptyStates.noData}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">
+    <div className="space-y-6">
+      <div className="border-border/20 flex items-center justify-between border-b pb-4">
+        <h3 className="text-sm font-black tracking-widest uppercase">
           {reports.charts.employee.performanceTable.title}
         </h3>
-        <Button variant="outline" size="sm" onClick={handleExportCsv}>
-          <Download className="mr-2 h-4 w-4" />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportCsv}
+          className="border-foreground bg-card h-10 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+        >
+          <IconDownload className="ml-2 size-4" />
           {reports.charts.employee.performanceTable.exportCsv}
         </Button>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-48">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 font-medium"
-                  onClick={() => handleSort("name")}
-                >
-                  {reports.charts.employee.performanceTable.columns.name}
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 font-medium"
-                  onClick={() => handleSort("totalAssigned")}
-                >
-                  {
-                    reports.charts.employee.performanceTable.columns
-                      .totalAssigned
-                  }
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 font-medium"
-                  onClick={() => handleSort("completed")}
-                >
-                  {reports.charts.employee.performanceTable.columns.completed}
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 font-medium"
-                  onClick={() => handleSort("efficiencyScore")}
-                >
-                  {
-                    reports.charts.employee.performanceTable.columns
-                      .completionRate
-                  }
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 font-medium"
-                  onClick={() => handleSort("onTimeRate")}
-                >
-                  {reports.charts.employee.performanceTable.columns.onTimeRate}
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 font-medium"
-                  onClick={() => handleSort("avgTimeToCompleteDays")}
-                >
-                  {
-                    reports.charts.employee.performanceTable.columns
-                      .avgTimeToComplete
-                  }
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedSummaries.map((summary) => (
-              <TableRow
-                key={summary.userId}
-                onClick={() => onRowClick?.(summary.userId)}
-                className={onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}
-              >
-                <TableCell className="font-medium">{summary.name}</TableCell>
-                <TableCell className="text-center">
-                  {digitsEnToFa(summary.totalAssigned)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {digitsEnToFa(summary.completed)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {digitsEnToFa(Math.round(summary.efficiencyScore * 100))}%
-                </TableCell>
-                <TableCell className="text-center">
-                  {digitsEnToFa(Math.round(summary.onTimeRate * 100))}%
-                </TableCell>
-                <TableCell className="text-center">
-                  {summary.avgTimeToCompleteDays > 0
-                    ? digitsEnToFa(Math.round(summary.avgTimeToCompleteDays))
-                    : "-"}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <div
+        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border"
+        data-animate-stagger
+      >
+        {/* Table Head Protocol */}
+        <div className="bg-muted/20 border-border/40 grid h-10 grid-cols-6 border-b">
+          {[
+            {
+              field: "name",
+              label: reports.charts.employee.performanceTable.columns.name,
+              icon: IconUser,
+            },
+            {
+              field: "totalAssigned",
+              label:
+                reports.charts.employee.performanceTable.columns.totalAssigned,
+              icon: IconHash,
+            },
+            {
+              field: "completed",
+              label: reports.charts.employee.performanceTable.columns.completed,
+              icon: IconCircleCheck,
+            },
+            {
+              field: "efficiencyScore",
+              label:
+                reports.charts.employee.performanceTable.columns.completionRate,
+              icon: IconClock,
+            },
+            {
+              field: "onTimeRate",
+              label:
+                reports.charts.employee.performanceTable.columns.onTimeRate,
+              icon: IconActivity,
+            },
+            {
+              field: "avgTimeToCompleteDays",
+              label:
+                reports.charts.employee.performanceTable.columns
+                  .avgTimeToComplete,
+              icon: IconClock,
+            },
+          ].map((col) => (
+            <button
+              key={col.field}
+              type="button"
+              onClick={() => handleSort(col.field as SortField)}
+              className="hover:bg-muted/30 border-border/10 flex items-center justify-center gap-2 border-l transition-colors last:border-l-0"
+            >
+              <col.icon className="text-primary/40 size-3" />
+              <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                {col.label}
+              </span>
+              <IconArrowsSort
+                className={cn(
+                  "size-2.5 opacity-20",
+                  sortField === col.field && "text-primary opacity-100",
+                )}
+              />
+            </button>
+          ))}
+        </div>
+
+        {/* Table Body Modules */}
+        {sortedSummaries.map((summary) => (
+          <button
+            key={summary.userId}
+            type="button"
+            onClick={() => onRowClick?.(summary.userId)}
+            className={cn(
+              "group bg-card hover:bg-muted/30 relative grid grid-cols-6 overflow-hidden text-right transition-all",
+              onRowClick && "cursor-pointer",
+            )}
+          >
+            <div className="border-border/10 flex items-center justify-end border-l p-4 text-[11px] font-black tracking-tight uppercase">
+              {summary.name}
+            </div>
+            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black tabular-nums opacity-60">
+              {digitsEnToFa(summary.totalAssigned)}
+            </div>
+            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black text-emerald-500/80 tabular-nums">
+              {digitsEnToFa(summary.completed)}
+            </div>
+            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black tabular-nums">
+              {digitsEnToFa(Math.round(summary.efficiencyScore * 100))}%
+            </div>
+            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black tabular-nums">
+              {digitsEnToFa(Math.round(summary.onTimeRate * 100))}%
+            </div>
+            <div className="flex items-center justify-center p-4 text-xs font-black tabular-nums opacity-40">
+              {summary.avgTimeToCompleteDays > 0
+                ? digitsEnToFa(Math.round(summary.avgTimeToCompleteDays))
+                : "—"}
+            </div>
+
+            <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+          </button>
+        ))}
       </div>
     </div>
   );
