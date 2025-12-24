@@ -134,7 +134,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
   return (
     <div className="bg-border/40 flex flex-wrap items-center gap-px overflow-hidden">
       {/* Time Segment */}
-      <div className="bg-card border-border/10 flex h-16 min-w-[160px] flex-col justify-between border-l p-3">
+      <div className="bg-card border-border/10 flex h-16 min-w-[160px] flex-col justify-between border-s p-3">
         <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
           <span className="text-[7px] font-black tracking-[0.2em] uppercase">
             Time_Frame
@@ -167,7 +167,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-black tracking-[0.2em] uppercase">
@@ -193,7 +193,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
               {reports.selectProjects}
             </h4>
-            <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
+            <div className="max-h-48 space-y-2 overflow-y-auto pe-1">
               {projects.map((project) => (
                 <div
                   key={project.id}
@@ -225,7 +225,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-black tracking-[0.2em] uppercase">
@@ -251,7 +251,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
               {reports.selectAssignees}
             </h4>
-            <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
+            <div className="max-h-48 space-y-2 overflow-y-auto pe-1">
               {users.map((u) => (
                 <div
                   key={u.id}
@@ -283,7 +283,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-black tracking-[0.2em] uppercase">
@@ -309,7 +309,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
               {reports.selectStatuses}
             </h4>
-            <div className="space-y-2 overflow-y-auto pr-1">
+            <div className="space-y-2 overflow-y-auto pe-1">
               {STATUS_OPTIONS.map((s) => (
                 <div
                   key={s.value}
@@ -341,7 +341,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-l p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-black tracking-[0.2em] uppercase">
@@ -367,20 +367,20 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
               {reports.selectPriorities}
             </h4>
-            <div className="space-y-2 overflow-y-auto pr-1">
+            <div className="space-y-2 overflow-y-auto pe-1">
               {PRIORITY_OPTIONS.map((p) => (
                 <div
                   key={p.value}
                   className="flex items-center justify-end space-x-2 space-x-reverse"
                 >
                   <label
-                    htmlFor={`pr-${p.value}`}
+                    htmlFor={`pe-${p.value}`}
                     className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
                   >
                     {p.label}
                   </label>
                   <Checkbox
-                    id={`pr-${p.value}`}
+                    id={`pe-${p.value}`}
                     checked={value.filters.priorities.includes(p.value)}
                     onCheckedChange={(c) =>
                       handleToggle("priorities", p.value, !!c)
@@ -399,7 +399,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <button
           type="button"
           onClick={clearAllFilters}
-          className="bg-muted/20 border-border/10 flex h-16 flex-col items-center justify-center border-l px-6 text-rose-500 transition-colors hover:bg-rose-500/10"
+          className="bg-muted/20 border-border/10 flex h-16 flex-col items-center justify-center border-s px-6 text-rose-500 transition-colors hover:bg-rose-500/10"
         >
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
             <span className="text-[7px] font-black tracking-[0.2em] uppercase">
@@ -415,7 +415,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
 
       {/* Custom Date Range Picker */}
       {value.timeRange.preset === "CUSTOM" && (
-        <div className="bg-muted/10 border-border/10 flex h-16 items-center gap-2 border-l px-4">
+        <div className="bg-muted/10 border-border/10 flex h-16 items-center gap-2 border-s px-4">
           <DatePicker
             date={value.timeRange.start}
             setDate={(d) =>

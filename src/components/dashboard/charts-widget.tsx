@@ -176,7 +176,7 @@ export function ChartsWidget({
                 <span className="text-muted-foreground/80 text-[10px] font-black tracking-tight uppercase">
                   {entry.name}
                 </span>
-                <span className="mr-auto text-xs font-black">
+                <span className="ms-auto text-xs font-black">
                   {digitsEnToFa(entry.value)}
                 </span>
               </div>

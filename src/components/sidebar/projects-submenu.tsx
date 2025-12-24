@@ -47,7 +47,7 @@ export function ProjectsSubmenu() {
               <SidebarMenuButton
                 tooltip={navigation.allProjects}
                 className={cn(
-                  "group relative h-10 w-full justify-start gap-4 rounded-none border-l-2 px-4 transition-all duration-100",
+                  "group relative h-10 w-full justify-start gap-4 rounded-none border-s-2 px-4 transition-all duration-100",
                   isProjectsActive
                     ? "bg-primary/5 border-primary text-primary"
                     : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground border-transparent",
@@ -91,7 +91,7 @@ export function ProjectsSubmenu() {
                   >
                     <SidebarMenuButton
                       className={cn(
-                        "group hover:bg-muted/20 relative h-9 w-full justify-start gap-4 rounded-none border-l-2 border-transparent px-4 pl-2 transition-all",
+                        "group hover:bg-muted/20 relative h-9 w-full justify-start gap-4 rounded-none border-s-2 border-transparent px-4 ps-2 transition-all",
                         isActive
                           ? "bg-muted/30 border-primary/40"
                           : "text-foreground",

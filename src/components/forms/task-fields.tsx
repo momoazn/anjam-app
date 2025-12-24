@@ -128,7 +128,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
         <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm sm:grid-cols-2 lg:grid-cols-3">
           {!actualIsInProject && (
-            <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-l p-4">
+            <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
               <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
                 <IconStack2 className="size-2.5" /> Project_Node
               </span>
@@ -144,7 +144,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             </div>
           )}
 
-          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-l p-4">
+          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
             <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
               <IconUser className="size-2.5" /> Operator_Assignment
             </span>
@@ -159,7 +159,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             />
           </div>
 
-          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-l p-4">
+          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
             <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
               <IconFilter className="size-2.5" /> Status_Mode
             </span>
@@ -207,7 +207,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             />
           </div>
 
-          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-l p-4">
+          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
             <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
               <IconHash className="size-2.5" /> Priority_Level
             </span>
@@ -255,7 +255,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             />
           </div>
 
-          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-l p-4">
+          <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
             <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
               <IconCalendar className="size-2.5" /> Temporal_Deadline
             </span>

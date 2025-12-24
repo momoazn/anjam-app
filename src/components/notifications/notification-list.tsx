@@ -98,7 +98,7 @@ export function NotificationList({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center border-2 border-rose-500/20 bg-rose-500/10">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center border-2 border-eose-500/20 bg-rose-500/10">
           <IconBell className="size-10 text-rose-500" />
         </div>
         <h3 className="mb-2 text-lg font-black tracking-widest text-rose-500 uppercase">

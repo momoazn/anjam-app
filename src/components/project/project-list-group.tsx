@@ -160,7 +160,7 @@ export function ProjectListGroup({
 
                 <div className="bg-muted/60 relative mt-4 h-3 w-full overflow-hidden rounded-full">
                   <div
-                    className="bg-primary absolute inset-y-0 left-0 transition-all duration-1000 ease-out"
+                    className="bg-primary absolute inset-y-0 start-0 transition-all duration-1000 ease-out"
                     style={{ width: `${progress.progress}%` }}
                   >
                     <div className="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />

@@ -36,11 +36,11 @@ export function NotificationItem({
       className={cn(
         "group border-border/20 bg-card hover:bg-muted/30 relative flex items-stretch border-b transition-all duration-200",
         selected && "bg-primary/5",
-        !notification.read && "border-r-primary border-r-2",
+        !notification.read && "border-e-primary border-e-2",
       )}
     >
       {/* Selection Zone */}
-      <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-l">
+      <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-s">
         <Checkbox
           checked={selected}
           onCheckedChange={() => onToggleSelect(notification.id)}
@@ -88,7 +88,7 @@ export function NotificationItem({
       </div>
 
       {/* Protocol & Actions Zone */}
-      <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-r px-4">
+      <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-e px-4">
         <div className="flex flex-col items-center">
           <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-[0.2em] uppercase">
             Event_Time

@@ -175,10 +175,10 @@ export function SecuritySection() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
               >
                 {form.formState.isSubmitting && (
-                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                 )}
                 <span className="tracking-widest uppercase">
                   {settings.security.updatePassword}
@@ -217,7 +217,7 @@ export function SecuritySection() {
                     key={log.id}
                     className="group bg-card hover:bg-muted/30 relative flex items-stretch p-4 text-right transition-all"
                   >
-                    <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-l">
+                    <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-s">
                       {log.success ? (
                         <IconCheck className="size-4 text-emerald-500" />
                       ) : (
@@ -240,7 +240,7 @@ export function SecuritySection() {
                       </p>
                     </div>
 
-                    <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center border-r px-2">
+                    <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center border-e px-2">
                       <span className="text-muted-foreground/40 mb-1 text-[7px] font-black tracking-[0.2em] uppercase">
                         Auth_Time
                       </span>
@@ -255,7 +255,7 @@ export function SecuritySection() {
                       </div>
                     </div>
 
-                    <div className="bg-primary/20 absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
+                    <div className="bg-primary/20 absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
                   </div>
                 ))
               ) : (

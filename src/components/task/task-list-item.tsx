@@ -75,7 +75,7 @@ function TaskListItemInner({
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Selection & Priority Zone */}
-      <div className="border-border/30 bg-muted/10 flex w-14 shrink-0 flex-col items-center justify-center gap-2 border-l py-3 text-right">
+      <div className="border-border/30 bg-muted/10 flex w-14 shrink-0 flex-col items-center justify-center gap-2 border-s py-3 text-right">
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
@@ -185,7 +185,7 @@ function TaskListItemInner({
               className="border-background size-10 rounded-sm border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
             />
             {assigneeRecord && (
-              <div className="border-background absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 bg-emerald-500">
+              <div className="border-background absolute -end-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 bg-emerald-500">
                 <div className="size-1 rounded-full bg-white" />
               </div>
             )}
@@ -196,7 +196,7 @@ function TaskListItemInner({
       {/* Active Indicator Bar */}
       <div
         className={cn(
-          "absolute inset-y-0 right-0 w-1 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
+          "absolute inset-y-0 end-0 w-1 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
           statusIconColor.replace("text", "bg"),
         )}
       />

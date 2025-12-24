@@ -137,7 +137,7 @@ export function BoardCard({ task }: BoardCardProps) {
       {/* Visual Status Bar */}
       <div
         className={cn(
-          "absolute inset-y-0 right-0 w-0.5 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
+          "absolute inset-y-0 end-0 w-0.5 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
           getStatusColorVariant(task.status, "icon").replace("text", "bg"),
         )}
       />

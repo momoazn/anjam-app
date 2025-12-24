@@ -105,7 +105,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
                     className="flex-1"
                     onClick={() => handleDownload(filename)}
                   >
-                    <Download className="mr-2 h-4 w-4" />
+                    <Download className="me-2 h-4 w-4" />
                     {projects.files.download}
                   </Button>
                   {isImage(filename) && (

@@ -43,7 +43,7 @@ export function SettingsSidebar({
             key={item.id}
             variant="ghost"
             className={cn(
-              "group relative h-12 justify-start gap-4 rounded-none border-l-2 px-4 transition-all transition-none duration-100",
+              "group relative h-12 justify-start gap-4 rounded-none border-s-2 px-4 transition-all transition-none duration-100",
               isActive
                 ? "bg-primary/5 border-primary text-primary"
                 : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground border-transparent",
@@ -66,7 +66,7 @@ export function SettingsSidebar({
             </span>
 
             {isActive && (
-              <IconChevronLeft className="mr-auto size-4 opacity-40" />
+              <IconChevronLeft className="ms-auto size-4 opacity-40" />
             )}
           </Button>
         );

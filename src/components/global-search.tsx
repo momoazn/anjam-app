@@ -56,7 +56,7 @@ export function GlobalSearch() {
       <Button
         variant="outline"
         className={cn(
-          "bg-muted/30 text-muted-foreground/60 border-border/40 hover:bg-muted/50 hover:text-foreground hover:border-primary/30 relative h-9 w-full justify-start rounded-none border font-mono text-[10px] tracking-widest uppercase shadow-none transition-all active:scale-[0.98] sm:pr-12 md:w-40 lg:w-64",
+          "bg-muted/30 text-muted-foreground/60 border-border/40 hover:bg-muted/50 hover:text-foreground hover:border-primary/30 relative h-9 w-full justify-start rounded-none border font-mono text-[10px] tracking-widest uppercase shadow-none transition-all active:scale-[0.98] sm:pe-12 md:w-40 lg:w-64",
         )}
         onClick={() => setOpen(true)}
       >
@@ -64,13 +64,13 @@ export function GlobalSearch() {
           <Search className="h-3 w-3 opacity-40" />
           <span className="hidden lg:inline-flex">{search.placeholder}</span>
         </span>
-        <kbd className="bg-primary/10 text-primary border-primary/20 pointer-events-none absolute top-[0.35rem] left-[0.35rem] hidden h-4 items-center gap-1 rounded-none border px-1 font-mono text-[8px] font-black tracking-tighter uppercase opacity-100 select-none sm:flex">
+        <kbd className="bg-primary/10 text-primary border-primary/20 pointer-events-none absolute top-[0.35rem] start-[0.35rem] hidden h-4 items-center gap-1 rounded-none border px-1 font-mono text-[8px] font-black tracking-tighter uppercase opacity-100 select-none sm:flex">
           <span className="text-[10px]">⌘</span>K
         </kbd>
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="border-foreground bg-card max-w-[600px] overflow-hidden rounded-none border-2 p-0 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.05)]">
+        <DialogContent className="border-foreground bg-card max-w-[600px] overflow-hidden rounded-none border-2 p-0 shadow-[-12px_12px_0px_0px_rgba(0,0,0,1)] transition-all dark:shadow-[-12px_12px_0px_0px_rgba(255,255,255,0.05)]">
           <div className="border-border/40 bg-muted/20 flex items-center justify-between border-b px-4 py-2">
             <div className="flex items-center gap-2">
               <Terminal className="text-primary size-3" />
@@ -134,9 +134,9 @@ export function GlobalSearch() {
                           onSelect={() =>
                             handleSelectRequest(`/tasks/${task.id}`)
                           }
-                          className="group data-[selected=true]:border-primary data-[selected=true]:bg-primary/5 relative border-l-2 border-transparent transition-all"
+                          className="group data-[selected=true]:border-primary data-[selected=true]:bg-primary/5 relative border-s-2 border-transparent transition-all"
                         >
-                          <FileText className="text-muted-foreground/40 group-data-[selected=true]:text-primary ml-3 h-4 w-4" />
+                          <FileText className="text-muted-foreground/40 group-data-[selected=true]:text-primary ms-3 h-4 w-4" />
                           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                             <span className="group-data-[selected=true]:text-primary truncate text-sm font-bold tracking-tight">
                               {task.title}
@@ -157,7 +157,7 @@ export function GlobalSearch() {
                           </div>
                           <Badge
                             variant="outline"
-                            className="border-border/40 bg-muted/30 text-muted-foreground group-data-[selected=true]:border-primary/30 group-data-[selected=true]:text-primary mr-auto rounded-none px-1.5 py-0 text-[8px] font-black tracking-widest uppercase"
+                            className="border-border/40 bg-muted/30 text-muted-foreground group-data-[selected=true]:border-primary/30 group-data-[selected=true]:text-primary ms-auto rounded-none px-1.5 py-0 text-[8px] font-black tracking-widest uppercase"
                           >
                             {task.status}
                           </Badge>
@@ -177,9 +177,9 @@ export function GlobalSearch() {
                               `/projects/${project.id}/details`,
                             )
                           }
-                          className="group data-[selected=true]:border-primary data-[selected=true]:bg-primary/5 relative border-l-2 border-transparent transition-all"
+                          className="group data-[selected=true]:border-primary data-[selected=true]:bg-primary/5 relative border-s-2 border-transparent transition-all"
                         >
-                          <Folder className="text-muted-foreground/40 group-data-[selected=true]:text-primary ml-3 h-4 w-4" />
+                          <Folder className="text-muted-foreground/40 group-data-[selected=true]:text-primary ms-3 h-4 w-4" />
                           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                             <span className="group-data-[selected=true]:text-primary truncate text-sm font-bold tracking-tight">
                               {project.name}

@@ -137,12 +137,12 @@ export function ProfileSection() {
                     user={{ ...fullUser, avatar: currentAvatarUrl }}
                     className="border-border/40 h-32 w-32 rounded-none border-2 shadow-sm"
                   />
-                  <div className="border-background absolute -right-1 -bottom-1 h-3 w-3 border bg-emerald-500" />
+                  <div className="border-background absolute -end-1 -bottom-1 h-3 w-3 border bg-emerald-500" />
                 </div>
 
                 <label
                   htmlFor="avatar-upload"
-                  className="bg-card border-foreground hover:bg-muted absolute -bottom-2 -left-2 cursor-pointer border-2 p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                  className="bg-card border-foreground hover:bg-muted absolute -bottom-2 -start-2 cursor-pointer border-2 p-2 shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-1px] active:translate-y-[1px] active:shadow-none"
                 >
                   <IconCamera className="h-4 w-4" />
                   <span className="sr-only">
@@ -230,10 +230,10 @@ export function ProfileSection() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
               >
                 {form.formState.isSubmitting && (
-                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                 )}
                 <span className="tracking-widest uppercase">
                   {settings.profile.saveChanges}

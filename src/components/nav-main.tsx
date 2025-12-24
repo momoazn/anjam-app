@@ -55,7 +55,7 @@ export function NavMain({ items, title }: NavMainProps) {
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={cn(
-                      "group relative h-10 w-full justify-start gap-4 rounded-none border-l-2 px-4 transition-all transition-none duration-100",
+                      "group relative h-10 w-full justify-start gap-4 rounded-none border-s-2 px-4 transition-all transition-none duration-100",
                       active
                         ? "bg-primary/5 border-primary text-primary"
                         : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground border-transparent",
@@ -82,10 +82,10 @@ export function NavMain({ items, title }: NavMainProps) {
                     </span>
 
                     {active && state === "expanded" && (
-                      <div className="bg-primary/20 absolute top-1 right-0 bottom-1 w-[1px]" />
+                      <div className="bg-primary/20 absolute top-1 end-0 bottom-1 w-[1px]" />
                     )}
 
-                    <div className="mr-auto">{item.badge}</div>
+                    <div className="ms-auto">{item.badge}</div>
                   </SidebarMenuButton>
                 </NavLink>
               </SidebarMenuItem>

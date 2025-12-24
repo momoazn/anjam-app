@@ -80,7 +80,7 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
           <div className="text-3xl font-black tracking-tighter">
             {digitsEnToFa(stat.value)}
           </div>
-          <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+          <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
         </div>
       ))}
     </div>

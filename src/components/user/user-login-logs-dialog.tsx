@@ -113,7 +113,7 @@ export function UserLoginLogsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[500px] pr-4">
+        <ScrollArea className="max-h-[500px] pe-4">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />

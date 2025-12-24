@@ -56,7 +56,7 @@ export function ProjectDetailsSections({
         </div>
 
         <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-2">
-          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6 text-right">
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6 text-right">
             <div className="flex items-center justify-end gap-2 opacity-40">
               <span className="text-[8px] font-black tracking-widest uppercase">
                 Supervisor_ID
@@ -88,7 +88,7 @@ export function ProjectDetailsSections({
             </div>
           </div>
 
-          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6 text-right">
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6 text-right">
             <div className="flex items-center justify-end gap-2 opacity-40">
               <span className="text-[8px] font-black tracking-widest uppercase">
                 Internal_Hash
@@ -187,7 +187,7 @@ export function ProjectDetailsSections({
                           >
                             <IconTrash className="size-4" />
                           </Button>
-                          <span className="flex-1 truncate pr-4 text-right font-mono text-xs font-bold tracking-widest uppercase opacity-60">
+                          <span className="flex-1 truncate pe-4 text-right font-mono text-xs font-bold tracking-widest uppercase opacity-60">
                             {filename}
                           </span>
                         </div>

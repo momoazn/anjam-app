@@ -74,8 +74,8 @@ export function MyTasksHeader({
       </div>
 
       {/* Structural Accent */}
-      <div className="bg-primary/20 absolute right-0 bottom-0 h-1 w-32" />
-      <div className="bg-primary/20 absolute right-0 bottom-0 h-8 w-1" />
+      <div className="bg-primary/20 absolute end-0 bottom-0 h-1 w-32" />
+      <div className="bg-primary/20 absolute end-0 bottom-0 h-8 w-1" />
     </div>
   );
 }

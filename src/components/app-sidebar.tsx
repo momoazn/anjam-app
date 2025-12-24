@@ -108,7 +108,7 @@ function AppSidebarHeader() {
         <SidebarMenuItem className="h-full">
           <SidebarMenuButton
             asChild
-            className="hover:bg-muted/30 active:bg-muted/50 h-full rounded-none border-l-0 transition-none"
+            className="hover:bg-muted/30 active:bg-muted/50 h-full rounded-none border-s-0 transition-none"
           >
             <NavLink
               to="/"
@@ -119,7 +119,7 @@ function AppSidebarHeader() {
                 }
               }}
             >
-              <div className="bg-primary text-primary-foreground border-primary/30 flex size-8 items-center justify-center rounded-none border shadow-[2px_2px_0px_0px_rgba(var(--primary),0.2)]">
+              <div className="bg-primary text-primary-foreground border-primary/30 flex size-8 items-center justify-center rounded-none border shadow-[-2px_2px_0px_0px_rgba(var(--primary),0.2)]">
                 <IconInnerShadowTop className="size-4.5" />
               </div>
               {state === "expanded" && (
@@ -153,7 +153,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
       collapsible="icon"
-      className="border-border/40 group-data-[side=left]:border-r group-data-[side=right]:border-l"
+      className="border-border/40 group-data-[side=left]:border-e group-data-[side=right]:border-s"
       {...props}
     >
       {/* Precision Blueprint Backdrop */}

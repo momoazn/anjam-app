@@ -77,9 +77,9 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
           variant="outline"
           size="sm"
           onClick={handleExportCsv}
-          className="border-foreground bg-card h-10 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+          className="border-foreground bg-card h-10 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
         >
-          <IconDownload className="ml-2 size-4" />
+          <IconDownload className="ms-2 size-4" />
           {reports.charts.employee.performanceTable.exportCsv}
         </Button>
       </div>
@@ -131,7 +131,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
               key={col.field}
               type="button"
               onClick={() => handleSort(col.field as SortField)}
-              className="hover:bg-muted/30 border-border/10 flex items-center justify-center gap-2 border-l transition-colors last:border-l-0"
+              className="hover:bg-muted/30 border-border/10 flex items-center justify-center gap-2 border-s transition-colors last:border-s-0"
             >
               <col.icon className="text-primary/40 size-3" />
               <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
@@ -158,19 +158,19 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
               onRowClick && "cursor-pointer",
             )}
           >
-            <div className="border-border/10 flex items-center justify-end border-l p-4 text-[11px] font-black tracking-tight uppercase">
+            <div className="border-border/10 flex items-center justify-end border-s p-4 text-[11px] font-black tracking-tight uppercase">
               {summary.name}
             </div>
-            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black tabular-nums opacity-60">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black tabular-nums opacity-60">
               {digitsEnToFa(summary.totalAssigned)}
             </div>
-            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black text-emerald-500/80 tabular-nums">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black text-emerald-500/80 tabular-nums">
               {digitsEnToFa(summary.completed)}
             </div>
-            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black tabular-nums">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black tabular-nums">
               {digitsEnToFa(Math.round(summary.efficiencyScore * 100))}%
             </div>
-            <div className="border-border/10 flex items-center justify-center border-l p-4 text-xs font-black tabular-nums">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black tabular-nums">
               {digitsEnToFa(Math.round(summary.onTimeRate * 100))}%
             </div>
             <div className="flex items-center justify-center p-4 text-xs font-black tabular-nums opacity-40">
@@ -179,7 +179,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
                 : "—"}
             </div>
 
-            <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+            <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
           </button>
         ))}
       </div>

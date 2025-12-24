@@ -184,7 +184,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
               key={field}
               className="border-border/5 grid grid-cols-12 gap-4 border-b pb-4 last:border-0 last:pb-0"
             >
-              <div className="border-border/10 col-span-3 flex flex-col items-end border-l">
+              <div className="border-border/10 col-span-3 flex flex-col items-end border-s">
                 <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
                   Entry
                 </span>
@@ -192,7 +192,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                   {field}
                 </span>
               </div>
-              <div className="border-border/10 col-span-4 flex flex-col items-end border-l pr-4">
+              <div className="border-border/10 col-span-4 flex flex-col items-end border-s pe-4">
                 <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
                   Original
                 </span>
@@ -200,7 +200,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                   {String(diff.old || "EMPTY")}
                 </span>
               </div>
-              <div className="col-span-5 flex flex-col items-end pr-4">
+              <div className="col-span-5 flex flex-col items-end pe-4">
                 <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
                   Updated
                 </span>
@@ -213,7 +213,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
         </div>
       )}
 
-      <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+      <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
     </div>
   );
 }

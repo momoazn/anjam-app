@@ -34,7 +34,7 @@ export function AppearanceSection() {
           <Button
             variant="ghost"
             className={cn(
-              "bg-card border-border/10 flex h-32 flex-col items-center justify-center gap-4 rounded-none border-l transition-all transition-none",
+              "bg-card border-border/10 flex h-32 flex-col items-center justify-center gap-4 rounded-none border-s transition-all transition-none",
               theme === "light" && "bg-primary/5 text-primary",
             )}
             onClick={() => setTheme("light")}
@@ -49,14 +49,14 @@ export function AppearanceSection() {
               {settings.appearance.light}
             </span>
             {theme === "light" && (
-              <div className="bg-primary absolute right-0 bottom-0 left-0 h-1" />
+              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
             )}
           </Button>
 
           <Button
             variant="ghost"
             className={cn(
-              "bg-card border-border/10 flex h-32 flex-col items-center justify-center gap-4 rounded-none border-l transition-all transition-none",
+              "bg-card border-border/10 flex h-32 flex-col items-center justify-center gap-4 rounded-none border-s transition-all transition-none",
               theme === "dark" && "bg-primary/5 text-primary",
             )}
             onClick={() => setTheme("dark")}
@@ -71,7 +71,7 @@ export function AppearanceSection() {
               {settings.appearance.dark}
             </span>
             {theme === "dark" && (
-              <div className="bg-primary absolute right-0 bottom-0 left-0 h-1" />
+              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
             )}
           </Button>
 
@@ -88,7 +88,7 @@ export function AppearanceSection() {
               {settings.appearance.system}
             </span>
             {theme === "system" && (
-              <div className="bg-primary absolute right-0 bottom-0 left-0 h-1" />
+              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
             )}
           </Button>
         </div>

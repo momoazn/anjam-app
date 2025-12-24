@@ -66,7 +66,7 @@ export function SiteHeader() {
   return (
     <header className="bg-background sticky top-0 z-50 flex h-14 shrink-0 items-center border-b transition-all">
       {/* Left Segment: Frame Integration */}
-      <div className="bg-muted/5 flex h-full items-center border-l px-4 lg:px-6">
+      <div className="bg-muted/5 flex h-full items-center border-s px-4 lg:px-6">
         <SidebarTrigger className="border-border/40 bg-card hover:bg-muted/50 size-9 border transition-all active:scale-95" />
       </div>
 
@@ -75,7 +75,7 @@ export function SiteHeader() {
         <Breadcrumb className="hidden min-w-0 flex-1 md:block">
           <BreadcrumbList className="flex-nowrap">
             <BreadcrumbItem>
-              <Terminal className="text-primary/60 mr-2 size-3" />
+              <Terminal className="text-primary/60 me-2 size-3" />
             </BreadcrumbItem>
             {crumbs.map((c, idx) => (
               <Fragment key={`${c.label}-${idx}`}>
@@ -111,9 +111,9 @@ export function SiteHeader() {
       </div>
 
       {/* Right Segment: Telemetry & Actions */}
-      <div className="bg-muted/5 flex h-full items-center gap-4 border-r px-4 lg:px-8">
+      <div className="bg-muted/5 flex h-full items-center gap-4 border-e px-4 lg:px-8">
         {/* Telemetry Console */}
-        <div className="border-border/40 mr-4 hidden h-full items-center gap-8 border-r pr-8 lg:flex">
+        <div className="border-border/40 me-4 hidden h-full items-center gap-8 border-e pe-8 lg:flex">
           <div className="flex flex-col items-end justify-center">
             <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-[0.3em] uppercase">
               Status

@@ -80,7 +80,7 @@ export class ErrorBoundary extends Component<
               )}
               <div className="flex gap-2">
                 <Button onClick={this.handleRetry} className="flex-1">
-                  <RefreshCw className="mr-2 size-4" />
+                  <RefreshCw className="me-2 size-4" />
                   {common.buttons.retry}
                 </Button>
                 <Button
@@ -88,7 +88,7 @@ export class ErrorBoundary extends Component<
                   onClick={() => window.history.back()}
                   className="flex-1"
                 >
-                  <ArrowLeft className="mr-2 size-4" />
+                  <ArrowLeft className="me-2 size-4" />
                   {common.buttons.back}
                 </Button>
               </div>

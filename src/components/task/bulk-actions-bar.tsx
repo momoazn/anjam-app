@@ -141,7 +141,7 @@ export function BulkActionsBar({
 
   return (
     <>
-      <div className="border-foreground bg-card animate-in fade-in slide-in-from-bottom-4 fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-none border-2 p-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)]">
+      <div className="border-foreground bg-card animate-in fade-in slide-in-from-bottom-4 fixed bottom-8 start-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-none border-2 p-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)] transition-all dark:shadow-[-8px_8px_0px_0px_rgba(255,255,255,0.1)]">
         <div className="bg-muted/20 border-border/40 flex items-center gap-3 border px-4 py-2">
           <div className="flex flex-col items-end">
             <span className="text-muted-foreground/40 mb-1 text-right text-[7px] leading-none font-black tracking-[0.3em] uppercase">
@@ -171,7 +171,7 @@ export function BulkActionsBar({
           {/* Bulk Assign */}
           <Select onValueChange={handleBulkAssign} disabled={isLoading}>
             <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-[160px] rounded-none text-[10px] font-bold tracking-widest uppercase focus:ring-0">
-              <Users className="ml-2 size-3.5 opacity-40" />
+              <Users className="ms-2 size-3.5 opacity-40" />
               <SelectValue placeholder={tasks.bulkActions.assignPlaceholder} />
             </SelectTrigger>
             <SelectContent className="border-foreground rounded-none border-2">
@@ -198,7 +198,7 @@ export function BulkActionsBar({
           {/* Bulk Status Change */}
           <Select onValueChange={handleBulkStatus} disabled={isLoading}>
             <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-[140px] rounded-none text-[10px] font-bold tracking-widest uppercase focus:ring-0">
-              <RefreshCw className="ml-2 size-3.5 opacity-40" />
+              <RefreshCw className="ms-2 size-3.5 opacity-40" />
               <SelectValue placeholder={tasks.bulkActions.statusPlaceholder} />
             </SelectTrigger>
             <SelectContent className="border-foreground rounded-none border-2">
@@ -217,7 +217,7 @@ export function BulkActionsBar({
           {/* Bulk Priority Change */}
           <Select onValueChange={handleBulkPriority} disabled={isLoading}>
             <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-[130px] rounded-none text-[10px] font-bold tracking-widest uppercase focus:ring-0">
-              <Flag className="ml-2 size-3.5 opacity-40" />
+              <Flag className="ms-2 size-3.5 opacity-40" />
               <SelectValue
                 placeholder={tasks.bulkActions.priorityPlaceholder}
               />
@@ -246,13 +246,13 @@ export function BulkActionsBar({
           disabled={isLoading}
           className="h-10 rounded-none px-4 text-[10px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
         >
-          <Trash2 className="ml-2 size-4" />
+          <Trash2 className="ms-2 size-4" />
           {tasks.bulkActions.deleteButton}
         </Button>
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)]">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center gap-3 text-rose-500">
               <Trash2 className="size-5" />
@@ -277,7 +277,7 @@ export function BulkActionsBar({
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isLoading}
-              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none"
             >
               {isLoading
                 ? tasks.bulkActions.deletingButton

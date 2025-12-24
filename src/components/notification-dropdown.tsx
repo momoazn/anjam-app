@@ -147,7 +147,7 @@ export function NotificationDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={align}
-        className="mt-1 ml-4 w-[28rem] max-w-[90vw] p-0"
+        className="mt-1 ms-4 w-[28rem] max-w-[90vw] p-0"
         aria-label={notificationText.notificationsPanel}
       >
         {/* Header */}
@@ -162,7 +162,7 @@ export function NotificationDropdown({
             {notificationsText.title}
           </h3>
           {notificationsData.length > 0 && (
-            <div className="mr-3 flex flex-shrink-0 gap-1">
+            <div className="me-3 flex flex-shrink-0 gap-1">
               <Button
                 variant="ghost"
                 size="sm"
@@ -171,7 +171,7 @@ export function NotificationDropdown({
                 title={notificationsText.markAllAsRead}
                 aria-label={notificationsText.markAllAsRead}
               >
-                <IconCheck className="ml-1 size-3" aria-hidden="true" />
+                <IconCheck className="ms-1 size-3" aria-hidden="true" />
                 {notificationsText.markAllAsRead}
               </Button>
               <Button
@@ -182,7 +182,7 @@ export function NotificationDropdown({
                 title={notificationsText.clearAll}
                 aria-label={notificationsText.clearAll}
               >
-                <IconTrash className="ml-1 size-3" aria-hidden="true" />
+                <IconTrash className="ms-1 size-3" aria-hidden="true" />
                 {notificationsText.clearAll}
               </Button>
             </div>
@@ -242,7 +242,7 @@ export function NotificationDropdown({
                 onClick={() => navigate("/notifications")}
                 className="h-6 px-2 text-xs"
               >
-                <IconEye className="ml-1 h-3 w-3" />
+                <IconEye className="ms-1 h-3 w-3" />
                 {notificationsText.actions.viewAll}
               </Button>
             </div>

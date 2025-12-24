@@ -74,7 +74,7 @@ export function HelpCategories() {
               {cat.id === "getting-started" && (
                 <>
                   <HelpArticle title={gettingStarted.title}>
-                    <ol className="mr-4 space-y-3">
+                    <ol className="me-4 space-y-3">
                       {gettingStarted.steps.map((step) => (
                         <li
                           key={step.label}
@@ -118,7 +118,7 @@ export function HelpCategories() {
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                   {features.items.map((section) => (
                     <HelpArticle key={section.title} title={section.title}>
-                      <ul className="mr-4 space-y-2">
+                      <ul className="me-4 space-y-2">
                         {section.items.map((item) => (
                           <li
                             key={item}
@@ -144,7 +144,7 @@ export function HelpCategories() {
                         </h3>
                         <IconShield className="text-primary/40 size-3" />
                       </div>
-                      <ul className="mr-2 space-y-2">
+                      <ul className="me-2 space-y-2">
                         {role.items.map((item) => (
                           <li
                             key={item}
@@ -164,7 +164,7 @@ export function HelpCategories() {
                   {problems.map((problem) => (
                     <div
                       key={problem.title}
-                      className="bg-muted/20 border-primary/20 border-r-2 p-4 text-right"
+                      className="bg-muted/20 border-primary/20 border-e-2 p-4 text-right"
                     >
                       <h4 className="text-foreground mb-1 text-[11px] font-black tracking-widest uppercase">
                         {problem.title}

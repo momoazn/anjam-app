@@ -18,7 +18,7 @@ export function AboutSection() {
         </div>
 
         <div className="flex flex-col gap-8 md:flex-row md:items-start">
-          <div className="bg-primary text-primary-foreground border-primary/30 flex h-24 w-24 shrink-0 items-center justify-center rounded-none border-2 shadow-[4px_4px_0px_0px_rgba(var(--primary),0.2)]">
+          <div className="bg-primary text-primary-foreground border-primary/30 flex h-24 w-24 shrink-0 items-center justify-center rounded-none border-2 shadow-[-4px_4px_0px_0px_rgba(var(--primary),0.2)]">
             <IconCircleCheck className="h-10 w-10" />
           </div>
 

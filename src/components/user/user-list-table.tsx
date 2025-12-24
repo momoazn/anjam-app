@@ -189,7 +189,7 @@ export function UserListTable({
             onClick={bulkToggleActive}
             className="hover:bg-primary/10 h-9 rounded-none text-[9px] font-black tracking-widest uppercase"
           >
-            <IconPower className="ml-1.5 size-3.5" />
+            <IconPower className="ms-1.5 size-3.5" />
             {usersText.bulk.toggleActive}
           </Button>
           <Button
@@ -198,7 +198,7 @@ export function UserListTable({
             onClick={bulkUnblock}
             className="hover:bg-primary/10 h-9 rounded-none text-[9px] font-black tracking-widest uppercase"
           >
-            <IconLockOpen className="ml-1.5 size-3.5" />
+            <IconLockOpen className="ms-1.5 size-3.5" />
             {usersText.bulk.unblock}
           </Button>
           <Button
@@ -207,17 +207,17 @@ export function UserListTable({
             onClick={() => setBulkDeleteOpen(true)}
             className="h-9 rounded-none text-[9px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
           >
-            <IconTrash className="ml-1.5 size-3.5" />
+            <IconTrash className="ms-1.5 size-3.5" />
             {usersText.bulk.delete}
           </Button>
-          <div className="mr-auto">
+          <div className="ms-auto">
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setSelectedIds([])}
               className="h-9 rounded-none text-[9px] font-black tracking-widest uppercase opacity-60"
             >
-              <IconX className="ml-1.5 size-3.5" />
+              <IconX className="ms-1.5 size-3.5" />
               {notifications.deselectAll}
             </Button>
           </div>
@@ -231,7 +231,7 @@ export function UserListTable({
         {/* Table Head Protocol */}
         <div className="bg-muted/20 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
           {isAdmin && (
-            <div className="border-border/10 col-span-1 flex items-center justify-center border-l">
+            <div className="border-border/10 col-span-1 flex items-center justify-center border-s">
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={toggleSelectAll}
@@ -242,7 +242,7 @@ export function UserListTable({
           )}
           <div
             className={cn(
-              "border-border/10 flex items-center justify-end border-l px-4",
+              "border-border/10 flex items-center justify-end border-s px-4",
               isAdmin ? "col-span-3" : "col-span-4",
             )}
           >
@@ -250,17 +250,17 @@ export function UserListTable({
               {usersText.table.columns.user}
             </span>
           </div>
-          <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+          <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {usersText.table.columns.username}
             </span>
           </div>
-          <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+          <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {usersText.table.columns.role}
             </span>
           </div>
-          <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+          <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {usersText.table.columns.group}
             </span>
@@ -281,7 +281,7 @@ export function UserListTable({
             className="group bg-card hover:bg-muted/30 relative grid grid-cols-12 overflow-hidden text-right transition-all"
           >
             {isAdmin && (
-              <div className="border-border/10 bg-muted/5 col-span-1 flex items-center justify-center border-l">
+              <div className="border-border/10 bg-muted/5 col-span-1 flex items-center justify-center border-s">
                 <Checkbox
                   checked={selectedIds.includes(u.id)}
                   onCheckedChange={() => toggleSelect(u.id)}
@@ -294,7 +294,7 @@ export function UserListTable({
 
             <div
               className={cn(
-                "border-border/10 flex items-center justify-end gap-3 border-l px-4 py-3",
+                "border-border/10 flex items-center justify-end gap-3 border-s px-4 py-3",
                 isAdmin ? "col-span-3" : "col-span-4",
               )}
             >
@@ -316,18 +316,18 @@ export function UserListTable({
                 />
                 <div
                   className={cn(
-                    "border-background absolute -right-0.5 -bottom-0.5 h-2 w-2 border shadow-[0_0_4px_rgba(0,0,0,0.2)]",
+                    "border-background absolute -end-0.5 -bottom-0.5 h-2 w-2 border shadow-[0_0_4px_rgba(0,0,0,0.2)]",
                     u.active ? "bg-emerald-500" : "bg-rose-500",
                   )}
                 />
               </div>
             </div>
 
-            <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4 py-3 font-mono text-[10px] font-black tracking-widest uppercase opacity-60">
+            <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4 py-3 font-mono text-[10px] font-black tracking-widest uppercase opacity-60">
               {u.username}
             </div>
 
-            <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4 py-3">
+            <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4 py-3">
               <Badge
                 variant="outline"
                 className="border-primary/20 bg-primary/5 text-primary rounded-none text-[9px] font-black tracking-widest uppercase"
@@ -336,7 +336,7 @@ export function UserListTable({
               </Badge>
             </div>
 
-            <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4 py-3">
+            <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4 py-3">
               {u.expand?.group?.name ? (
                 <div className="text-muted-foreground/60 flex items-center gap-2">
                   <span className="text-[10px] font-bold tracking-tight uppercase">
@@ -393,7 +393,7 @@ export function UserListTable({
                         }
                         className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
                       >
-                        <IconPower className="ml-2 size-4 opacity-40" />
+                        <IconPower className="ms-2 size-4 opacity-40" />
                         {u.active
                           ? usersText.actions.deactivate
                           : usersText.actions.activate}
@@ -403,7 +403,7 @@ export function UserListTable({
                         onClick={() => setSelectedUserForLogs(u)}
                         className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
                       >
-                        <IconHistory className="ml-2 size-4 opacity-40" />
+                        <IconHistory className="ms-2 size-4 opacity-40" />
                         {usersText.actions.viewLogs}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -421,7 +421,7 @@ export function UserListTable({
               </div>
             )}
 
-            <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+            <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
           </div>
         ))}
       </div>
@@ -435,7 +435,7 @@ export function UserListTable({
       )}
 
       <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
-        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)]">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center gap-3 text-rose-500">
               <IconTrash className="size-5" />
@@ -456,7 +456,7 @@ export function UserListTable({
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmBulkDelete}
-              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none"
             >
               {usersText.delete.title}
             </AlertDialogAction>

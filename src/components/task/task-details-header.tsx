@@ -43,7 +43,7 @@ export function TaskDetailsHeader({
             getStatusColorVariant(task.status, "badge"),
           )}
         >
-          <StatusIcon className="ml-1.5 h-3.5 w-3.5" />
+          <StatusIcon className="ms-1.5 h-3.5 w-3.5" />
           {tasks.status[task.status]}
         </Badge>
 
@@ -56,7 +56,7 @@ export function TaskDetailsHeader({
             priorityColors[task.priority],
           )}
         >
-          <PriorityIcon className="ml-1.5 h-3.5 w-3.5" />
+          <PriorityIcon className="ms-1.5 h-3.5 w-3.5" />
           {tasks.priority[task.priority]}
         </Badge>
       </div>
@@ -65,9 +65,9 @@ export function TaskDetailsHeader({
         <Button
           variant="outline"
           onClick={onEdit}
-          className="border-foreground bg-card h-12 rounded-none border-2 px-6 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+          className="border-foreground bg-card h-12 rounded-none border-2 px-6 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
         >
-          <IconPencil className="ml-2 size-4" />
+          <IconPencil className="ms-2 size-4" />
           {tasks.details.editButton}
         </Button>
 
@@ -77,7 +77,7 @@ export function TaskDetailsHeader({
           disabled={isDeleting}
           className="h-12 rounded-none px-6 text-[10px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
         >
-          <IconTrash className="ml-2 size-4" />
+          <IconTrash className="ms-2 size-4" />
           {isDeleting
             ? tasks.details.buttons.deleting
             : tasks.details.buttons.delete}

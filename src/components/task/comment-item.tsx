@@ -131,7 +131,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
   return (
     <div className="group border-border/10 bg-card hover:bg-muted/30 relative flex items-stretch border-b transition-all duration-200">
       {/* Visual Identity Strip */}
-      <div className="bg-muted/5 border-border/5 flex w-12 shrink-0 flex-col items-center border-l pt-4">
+      <div className="bg-muted/5 border-border/5 flex w-12 shrink-0 flex-col items-center border-s pt-4">
         <UserAvatar
           user={comment.expand.user}
           className="border-border/20 size-8 rounded-none border shadow-sm"
@@ -167,7 +167,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                     }}
                     className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
                   >
-                    <IconPencil className="ml-2 size-3.5 opacity-40" />
+                    <IconPencil className="ms-2 size-3.5 opacity-40" />
                     {commentsConst.item.edit}
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -178,7 +178,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                     className="rounded-none p-3 text-[9px] font-black tracking-widest text-rose-500 uppercase focus:text-rose-500"
                     disabled={softDeleteComment.isPending}
                   >
-                    <IconTrash className="ml-2 size-3.5 opacity-40" />
+                    <IconTrash className="ms-2 size-3.5 opacity-40" />
                     {softDeleteComment.isPending
                       ? commentsConst.item.deleting
                       : commentsConst.item.delete}
@@ -227,7 +227,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 }}
                 disabled={updateComment.isPending}
               />
-              <div className="bg-primary/40 absolute top-0 right-0 h-0.5 w-8" />
+              <div className="bg-primary/40 absolute top-0 end-0 h-0.5 w-8" />
             </div>
             <div className="flex items-center justify-end gap-3">
               <Button
@@ -237,19 +237,19 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 disabled={updateComment.isPending}
                 className="text-muted-foreground/60 h-9 rounded-none text-[9px] font-black tracking-widest uppercase"
               >
-                <IconX className="ml-2 size-3.5" />
+                <IconX className="ms-2 size-3.5" />
                 {commentsConst.item.cancel}
               </Button>
               <Button
                 size="sm"
                 onClick={handleSaveEdit}
                 disabled={!editContent.trim() || updateComment.isPending}
-                className="h-9 rounded-none px-6 text-[9px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-9 rounded-none px-6 text-[9px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
               >
                 {updateComment.isPending ? (
-                  <IconLoader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  <IconLoader2 className="me-2 h-3.5 w-3.5 animate-spin" />
                 ) : (
-                  <IconCheck className="ml-2 size-3.5" />
+                  <IconCheck className="ms-2 size-3.5" />
                 )}
                 {updateComment.isPending
                   ? commentsConst.item.saving
@@ -278,7 +278,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
       </div>
 
       {/* Active Selection Indicator */}
-      <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+      <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
     </div>
   );
 }

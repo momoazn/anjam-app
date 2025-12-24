@@ -96,7 +96,7 @@ export function SavedFiltersDropdown({
               <>
                 {savedFiltersText.title}
                 {savedFilters.length > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 px-1.5">
+                  <Badge variant="secondary" className="ms-1 h-5 px-1.5">
                     {digitsEnToFa(savedFilters.length)}
                   </Badge>
                 )}

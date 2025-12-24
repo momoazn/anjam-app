@@ -25,7 +25,7 @@ export function SidebarBadge({
     <Badge
       variant="secondary"
       className={cn(
-        "ml-auto h-5 min-w-5 px-1.5 text-xs font-medium group-data-[collapsible=icon]:hidden",
+        "ms-auto h-5 min-w-5 px-1.5 text-xs font-medium group-data-[collapsible=icon]:hidden",
         variantClasses[variant],
         className,
       )}

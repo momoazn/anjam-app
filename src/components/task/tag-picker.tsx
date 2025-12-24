@@ -65,7 +65,7 @@ export function TagPicker({
                 ? `${digitsEnToFa(selectedTags.length)} ${tasks.filters.tag}`
                 : placeholder}
             </span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ms-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
@@ -92,7 +92,7 @@ export function TagPicker({
                     </div>
                     <Check
                       className={cn(
-                        "ml-auto h-4 w-4",
+                        "ms-auto h-4 w-4",
                         isSelected ? "opacity-100" : "opacity-0",
                       )}
                     />
@@ -115,13 +115,13 @@ export function TagPicker({
                 color: "#FFFFFF",
                 border: "none",
               }}
-              className="gap-1 pr-1"
+              className="gap-1 pe-1"
             >
               {tag.name}
               <button
                 type="button"
                 onClick={() => handleRemove(tag.id)}
-                className="ml-1 rounded-sm p-0.5 transition-colors hover:bg-black/20"
+                className="ms-1 rounded-sm p-0.5 transition-colors hover:bg-black/20"
               >
                 <X className="h-3 w-3" />
               </button>

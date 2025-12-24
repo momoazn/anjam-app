@@ -43,7 +43,7 @@ function UserInfo({ user }: UserInfoProps) {
           user={user}
           className="border-border/40 size-8 rounded-none border"
         />
-        <div className="absolute -right-0.5 -bottom-0.5 h-2 w-2 rounded-none bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+        <div className="absolute -end-0.5 -bottom-0.5 h-2 w-2 rounded-none bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
       </div>
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-right">
         <div className="flex items-center justify-end gap-2">
@@ -96,12 +96,12 @@ export function NavUser() {
             >
               <UserInfo user={user} />
               {state === "expanded" && (
-                <IconDotsVertical className="ml-auto size-3 opacity-30 transition-opacity group-hover:opacity-100" />
+                <IconDotsVertical className="ms-auto size-3 opacity-30 transition-opacity group-hover:opacity-100" />
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="border-foreground bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.05)]"
+            className="border-foreground bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[-8px_8px_0px_0px_rgba(255,255,255,0.05)]"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={12}

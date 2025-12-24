@@ -160,7 +160,7 @@ export function ChartsSection({
             value={tab.id}
             className="data-[state=active]:bg-card data-[state=active]:text-primary h-full flex-1 rounded-none text-[11px] font-black tracking-widest uppercase transition-none"
           >
-            <tab.icon className="ml-2 size-4" />
+            <tab.icon className="ms-2 size-4" />
             {tab.label}
           </TabsTrigger>
         ))}

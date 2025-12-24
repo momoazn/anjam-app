@@ -69,7 +69,7 @@ export function TaskDetailsContent({
           <div className="bg-border/20 h-px flex-1" />
         </div>
         <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-2">
-          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6">
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6">
             <div className="flex items-center justify-end gap-2 opacity-40">
               <span className="text-[8px] font-black tracking-widest uppercase">
                 Assignee_ID
@@ -103,7 +103,7 @@ export function TaskDetailsContent({
             </div>
           </div>
 
-          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6">
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6">
             <div className="flex items-center justify-end gap-2 opacity-40">
               <span className="text-[8px] font-black tracking-widest uppercase">
                 Temporal_Goal
@@ -157,7 +157,7 @@ export function TaskDetailsContent({
                 onClick={onStartTimeEdit}
                 className="border-border/40 hover:bg-primary/10 hover:text-primary h-9 rounded-none border text-[9px] font-black tracking-widest uppercase transition-all"
               >
-                <IconPencil className="ml-2 size-3.5" />
+                <IconPencil className="ms-2 size-3.5" />
                 {tasks.details.timeTracking.editTime}
               </Button>
             )}
@@ -166,7 +166,7 @@ export function TaskDetailsContent({
           {isEditingTime ? (
             <div className="animate-in fade-in slide-in-from-top-2 space-y-6">
               <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px overflow-hidden border">
-                <div className="bg-card border-border/10 space-y-2 border-l p-4 text-right">
+                <div className="bg-card border-border/10 space-y-2 border-s p-4 text-right">
                   <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.3em] uppercase">
                     {tasks.details.timeTracking.hours}
                   </span>
@@ -206,18 +206,18 @@ export function TaskDetailsContent({
                   disabled={isUpdatingTime}
                   className="text-muted-foreground/60 h-10 rounded-none text-[9px] font-black tracking-widest uppercase"
                 >
-                  <IconX className="ml-2 size-3.5" />
+                  <IconX className="ms-2 size-3.5" />
                   {tasks.details.timeTracking.cancelEdit}
                 </Button>
                 <Button
                   onClick={onSaveTime}
                   disabled={isUpdatingTime}
-                  className="h-10 rounded-none px-6 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                  className="h-10 rounded-none px-6 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
                 >
                   {isUpdatingTime ? (
-                    <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <IconDeviceFloppy className="ml-2 size-4" />
+                    <IconDeviceFloppy className="ms-2 size-4" />
                   )}
                   {tasks.details.timeTracking.saveTime}
                 </Button>
@@ -264,9 +264,9 @@ export function TaskDetailsContent({
               value="comments"
               className="data-[state=active]:bg-card data-[state=active]:text-primary h-full flex-1 rounded-none text-[11px] font-black tracking-widest uppercase transition-none"
             >
-              <IconMessages className="ml-2 size-4" />
+              <IconMessages className="ms-2 size-4" />
               {commentsText.title}
-              <span className="bg-muted/20 mr-2 px-1.5 py-0.5 text-[9px] font-black tabular-nums">
+              <span className="bg-muted/20 me-2 px-1.5 py-0.5 text-[9px] font-black tabular-nums">
                 {digitsEnToFa(comments.length)}
               </span>
             </TabsTrigger>
@@ -274,7 +274,7 @@ export function TaskDetailsContent({
               value="history"
               className="data-[state=active]:bg-card data-[state=active]:text-primary h-full flex-1 rounded-none text-[11px] font-black tracking-widest uppercase transition-none"
             >
-              <IconHistory className="ml-2 size-4" />
+              <IconHistory className="ms-2 size-4" />
               {auditLogs.activityStream.title}
             </TabsTrigger>
           </TabsList>

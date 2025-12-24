@@ -54,10 +54,10 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                         e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
-                    className="pl-12 text-right"
+                    className="ps-12 text-right"
                   />
                 </FormControl>
-                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">
+                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-3 flex items-center text-sm">
                   {common.time.hoursShort}
                 </div>
               </div>
@@ -86,10 +86,10 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                         e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
-                    className="pl-12 text-right"
+                    className="ps-12 text-right"
                   />
                 </FormControl>
-                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">
+                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-3 flex items-center text-sm">
                   {common.time.minutesShort}
                 </div>
               </div>

@@ -91,7 +91,7 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
                 ].map((head) => (
                   <div
                     key={head}
-                    className="text-muted-foreground/60 border-border/10 flex items-center justify-center border-l text-[8px] font-black tracking-widest uppercase last:border-l-0"
+                    className="text-muted-foreground/60 border-border/10 flex items-center justify-center border-s text-[8px] font-black tracking-widest uppercase last:border-s-0"
                   >
                     {head}
                   </div>
@@ -104,35 +104,35 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
                   key={row.id}
                   className="group bg-card hover:bg-muted/30 relative grid grid-cols-8 overflow-hidden text-right transition-all"
                 >
-                  <div className="border-border/10 flex items-center justify-end truncate border-l p-4 text-xs font-bold">
+                  <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-xs font-bold">
                     {row.title}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
                     {STATUS_LABELS[row.status as keyof typeof STATUS_LABELS] ||
                       row.status}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
                     {PRIORITY_LABELS[
                       row.priority as keyof typeof PRIORITY_LABELS
                     ] || row.priority}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tabular-nums opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tabular-nums opacity-60">
                     {formatDeadline(row.deadline)}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-l p-4 text-[10px] font-black tabular-nums opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tabular-nums opacity-60">
                     {digitsEnToFa(row.ageDays)}
                   </div>
-                  <div className="border-border/10 flex items-center justify-end truncate border-l p-4 text-[10px] font-black uppercase">
+                  <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-[10px] font-black uppercase">
                     {row.assigneeName}
                   </div>
-                  <div className="border-border/10 flex items-center justify-end truncate border-l p-4 text-[10px] font-black uppercase opacity-60">
+                  <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-[10px] font-black uppercase opacity-60">
                     {row.projectName}
                   </div>
                   <div className="flex items-center justify-end p-4 text-[9px] font-black tracking-widest uppercase opacity-40">
                     {row.tags?.length ? row.tags.join(", ") : "—"}
                   </div>
 
-                  <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+                  <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
                 </div>
               ))}
             </div>

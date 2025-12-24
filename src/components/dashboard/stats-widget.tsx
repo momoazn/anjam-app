@@ -75,8 +75,8 @@ function StatCard({
             <div className={color}>{icon}</div>
           </div>
         </div>
-        <div className="from-primary/20 absolute right-0 bottom-0 h-px w-0 bg-gradient-to-l to-transparent transition-all duration-300 group-hover:w-1/2" />
-        <div className="from-primary/20 absolute bottom-0 left-0 h-px w-0 bg-gradient-to-r to-transparent transition-all duration-300 group-hover:w-1/2" />
+        <div className="from-primary/20 absolute end-0 bottom-0 h-px w-0 bg-gradient-to-l to-transparent transition-all duration-300 group-hover:w-1/2" />
+        <div className="from-primary/20 absolute bottom-0 start-0 h-px w-0 bg-gradient-to-r to-transparent transition-all duration-300 group-hover:w-1/2" />
       </CardContent>
     </Card>
   );
@@ -163,7 +163,7 @@ export function StatsWidget({ stats, isLoading = false }: StatsWidgetProps) {
         icon={<AlertTriangle className="size-5" />}
         color="text-red-600 dark:text-red-400"
         textColor="text-red-700 dark:text-red-300"
-        borderColor="border-red-200 dark:border-red-900"
+        borderColor="border-eed-200 dark:border-eed-900"
       />
     </div>
   );

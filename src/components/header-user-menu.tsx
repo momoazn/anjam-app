@@ -27,7 +27,7 @@ function UserInfo({ user }: UserInfoProps) {
       <div className="relative">
         <UserAvatar user={user} />
         {/* Online status indicator */}
-        <div className="border-background absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 bg-green-500" />
+        <div className="border-background absolute -end-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 bg-green-500" />
       </div>
       <div className="flex flex-1 flex-col gap-0.5 text-right">
         <div className="flex items-center justify-end gap-2">

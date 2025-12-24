@@ -74,7 +74,7 @@ export function FormField<T extends FieldValues>({
           <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
             {label}
             {required && (
-              <span className="text-primary mr-1 opacity-40">*</span>
+              <span className="text-primary me-1 opacity-40">*</span>
             )}
           </FormLabel>
           <FormControl>

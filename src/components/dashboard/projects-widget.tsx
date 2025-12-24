@@ -103,7 +103,7 @@ export function ProjectsWidget({
                     </span>
                     <div className="mt-0.5 text-2xl font-black tracking-tighter">
                       {digitsEnToFa(project.progress)}
-                      <span className="text-muted-foreground/40 ml-0.5 text-sm">
+                      <span className="text-muted-foreground/40 ms-0.5 text-sm">
                         %
                       </span>
                     </div>
@@ -122,7 +122,7 @@ export function ProjectsWidget({
 
                 <div className="bg-muted/60 relative h-2 w-full overflow-hidden rounded-none">
                   <div
-                    className="bg-primary absolute inset-y-0 left-0 transition-all duration-1000 ease-out"
+                    className="bg-primary absolute inset-y-0 start-0 transition-all duration-1000 ease-out"
                     style={{ width: `${project.progress}%` }}
                   >
                     <div className="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -139,7 +139,7 @@ export function ProjectsWidget({
             </CardContent>
 
             {/* Visual Hover Decoration */}
-            <div className="bg-primary absolute right-0 bottom-0 h-1 w-0 transition-all duration-500 group-hover:w-full" />
+            <div className="bg-primary absolute end-0 bottom-0 h-1 w-0 transition-all duration-500 group-hover:w-full" />
           </button>
         ))}
       </div>

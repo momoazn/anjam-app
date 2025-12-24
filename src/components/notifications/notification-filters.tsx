@@ -58,7 +58,7 @@ export function NotificationFilters({
             onClick={onBulkMarkRead}
             className="hover:bg-primary/10 h-8 rounded-none text-[9px] font-black tracking-widest uppercase"
           >
-            <IconCheck className="ml-1.5 size-3.5" />
+            <IconCheck className="ms-1.5 size-3.5" />
             {notificationsText.actions.markAsRead}
           </Button>
           <Button
@@ -68,7 +68,7 @@ export function NotificationFilters({
             disabled={isBulkDeletePending}
             className="h-8 rounded-none text-[9px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
           >
-            <IconTrash className="ml-1.5 size-3.5" />
+            <IconTrash className="ms-1.5 size-3.5" />
             {notificationsText.actions.delete}
           </Button>
           <div className="bg-primary/20 mx-1 h-4 w-px" />
@@ -78,7 +78,7 @@ export function NotificationFilters({
             onClick={onClearSelection}
             className="h-8 rounded-none text-[9px] font-black tracking-widest uppercase opacity-60"
           >
-            <IconX className="ml-1.5 size-3.5" />
+            <IconX className="ms-1.5 size-3.5" />
             {notificationsText.deselectAll}
           </Button>
         </div>
@@ -116,9 +116,9 @@ export function NotificationFilters({
           <Button
             variant="outline"
             size="sm"
-            className="border-foreground bg-card h-10 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+            className="border-foreground bg-card h-10 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
           >
-            <IconSortAscending className="ml-2 size-4" />
+            <IconSortAscending className="ms-2 size-4" />
             {notificationsText.sort[sort]}
           </Button>
         </DropdownMenuTrigger>

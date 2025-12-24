@@ -81,7 +81,7 @@ export function TaskViews() {
                   <SidebarMenuButton
                     tooltip={view.title}
                     className={cn(
-                      "group relative h-10 w-full justify-start gap-4 rounded-none border-l-2 px-4 transition-all duration-100",
+                      "group relative h-10 w-full justify-start gap-4 rounded-none border-s-2 px-4 transition-all duration-100",
                       isActive
                         ? "bg-primary/5 border-primary text-primary"
                         : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground border-transparent",
@@ -107,7 +107,7 @@ export function TaskViews() {
                     {count > 0 && state === "expanded" && (
                       <span
                         className={cn(
-                          "mr-auto font-mono text-[9px] font-black tabular-nums",
+                          "ms-auto font-mono text-[9px] font-black tabular-nums",
                           view.title === navigation.overdue
                             ? "text-rose-500"
                             : "opacity-40",

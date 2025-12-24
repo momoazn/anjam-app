@@ -52,15 +52,15 @@ export function ProjectHeader({
                 disabled={isUpdating}
                 className="text-muted-foreground/60 h-12 rounded-none px-6 text-[10px] font-black tracking-widest uppercase"
               >
-                <IconX className="ml-2 size-4" />
+                <IconX className="ms-2 size-4" />
                 {common.cancel}
               </Button>
               <Button
                 onClick={onSaveEdit}
                 disabled={isUpdating}
-                className="h-12 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
               >
-                <IconDeviceFloppy className="ml-2 size-4" />
+                <IconDeviceFloppy className="ms-2 size-4" />
                 {common.save}
               </Button>
             </>
@@ -68,9 +68,9 @@ export function ProjectHeader({
             <Button
               variant="outline"
               onClick={onStartEdit}
-              className="border-foreground bg-card h-12 rounded-none border-2 px-8 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+              className="border-foreground bg-card h-12 rounded-none border-2 px-8 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
             >
-              <IconPencil className="ml-2 size-4" />
+              <IconPencil className="ms-2 size-4" />
               {common.edit}
             </Button>
           )}
@@ -106,7 +106,7 @@ export function ProjectHeader({
                   className="border-border/40 bg-muted/5 focus:border-primary/40 h-14 rounded-none text-right text-2xl font-black tracking-tight uppercase focus:ring-0"
                 />
               </div>
-              <div className="mr-auto ml-0 w-40 space-y-1.5 text-right">
+              <div className="ms-auto ms-0 w-40 space-y-1.5 text-right">
                 <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.2em] uppercase">
                   Unique_Code
                 </span>

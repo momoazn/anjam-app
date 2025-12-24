@@ -53,7 +53,7 @@ export function TaskDetailsSidebar({
                 getStatusColorVariant(task.status, "badge"),
               )}
             >
-              <StatusIcon className="ml-1.5 h-3.5 w-3.5" />
+              <StatusIcon className="ms-1.5 h-3.5 w-3.5" />
               {tasks.status[task.status]}
             </Badge>
           </div>
@@ -69,7 +69,7 @@ export function TaskDetailsSidebar({
                 priorityColors[task.priority],
               )}
             >
-              <PriorityIcon className="ml-1.5 h-3.5 w-3.5" />
+              <PriorityIcon className="ms-1.5 h-3.5 w-3.5" />
               {tasks.priority[task.priority]}
             </Badge>
           </div>

@@ -55,7 +55,7 @@ const ActiveFilterBadge = ({
 }) => (
   <Badge
     variant="secondary"
-    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-none border pr-1 text-[9px] font-black tracking-widest uppercase transition-all"
+    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-none border pe-1 text-[9px] font-black tracking-widest uppercase transition-all"
     onClick={onClear}
   >
     {label}
@@ -167,7 +167,7 @@ export function TaskFilters({
     <div className="space-y-2">
       {/* Search & Global Reset Segment - Ultra Compact */}
       <div className="bg-border/40 border-border/40 flex items-center gap-px overflow-hidden border">
-        <div className="bg-muted/20 border-border/20 flex h-9 shrink-0 items-center gap-2 border-l px-3">
+        <div className="bg-muted/20 border-border/20 flex h-9 shrink-0 items-center gap-2 border-s px-3">
           <Terminal className="text-primary/60 size-3" />
           <span className="text-muted-foreground/60 text-[8px] font-black tracking-[0.2em] uppercase">
             Search
@@ -175,12 +175,12 @@ export function TaskFilters({
         </div>
 
         <div className="group relative h-9 flex-1">
-          <Search className="text-muted-foreground/30 group-focus-within:text-primary absolute top-1/2 right-3.5 h-3 w-3 -translate-y-1/2 transition-colors" />
+          <Search className="text-muted-foreground/30 group-focus-within:text-primary absolute top-1/2 end-3.5 h-3 w-3 -translate-y-1/2 transition-colors" />
           <Input
             placeholder={tasks.filters.search}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-full rounded-none border-none bg-transparent pr-10 text-xs font-bold tracking-tight transition-all focus:ring-0"
+            className="h-full rounded-none border-none bg-transparent pe-10 text-xs font-bold tracking-tight transition-all focus:ring-0"
           />
         </div>
 
@@ -189,7 +189,7 @@ export function TaskFilters({
             variant="ghost"
             size="sm"
             onClick={clearAllFilters}
-            className="border-border/20 h-9 gap-2 rounded-none border-r px-4 text-[8px] font-black tracking-widest text-rose-500 uppercase transition-all hover:bg-rose-500/10 hover:text-rose-600"
+            className="border-border/20 h-9 gap-2 rounded-none border-e px-4 text-[8px] font-black tracking-widest text-rose-500 uppercase transition-all hover:bg-rose-500/10 hover:text-rose-600"
           >
             <Eraser className="size-3" />
             Reset

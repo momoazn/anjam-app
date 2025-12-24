@@ -57,9 +57,9 @@ export function TaskListHeader({
   return (
     <div
       className={cn(
-        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-sm border-y border-l-2 px-4 py-3 text-right transition-all",
+        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-sm border-y border-s-2 px-4 py-3 text-right transition-all",
         getStatusColorVariant(status, "border")
-          .replace("border-", "border-l-")
+          .replace("border-", "border-s-")
           .replace("/20", ""),
       )}
       onClick={onToggleCollapse}
@@ -101,7 +101,7 @@ export function TaskListHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="border-border/30 flex items-center gap-1 border-r pr-2">
+        <div className="border-border/30 flex items-center gap-1 border-e pe-2">
           <Button
             variant="ghost"
             size="icon"
@@ -168,7 +168,7 @@ export function TaskListHeader({
 
       <div
         className={cn(
-          "absolute bottom-0 left-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
+          "absolute bottom-0 start-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
           statusColor.replace("text", "text"),
         )}
       />

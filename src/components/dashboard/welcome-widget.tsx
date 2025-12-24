@@ -145,8 +145,8 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
         </div>
       </div>
 
-      <div className="from-primary/20 absolute right-0 bottom-0 h-px w-1/3 bg-gradient-to-l to-transparent" />
-      <div className="from-primary/20 absolute bottom-0 left-0 h-px w-1/3 bg-gradient-to-r to-transparent" />
+      <div className="from-primary/20 absolute end-0 bottom-0 h-px w-1/3 bg-gradient-to-l to-transparent" />
+      <div className="from-primary/20 absolute bottom-0 start-0 h-px w-1/3 bg-gradient-to-r to-transparent" />
     </div>
   );
 }

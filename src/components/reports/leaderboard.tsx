@@ -65,7 +65,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
               )}
             >
               {/* Rank Zone */}
-              <div className="border-border/10 bg-muted/5 flex w-14 shrink-0 items-center justify-center border-l">
+              <div className="border-border/10 bg-muted/5 flex w-14 shrink-0 items-center justify-center border-s">
                 <span className="text-xl font-black tracking-tighter opacity-20 transition-opacity group-hover:opacity-40">
                   {digitsEnToFa(index + 1)}
                 </span>
@@ -85,7 +85,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
               </div>
 
               {/* Metrics Cluster */}
-              <div className="border-border/10 bg-muted/5 flex items-center gap-8 border-r px-8">
+              <div className="border-border/10 bg-muted/5 flex items-center gap-8 border-e px-8">
                 <div className="flex flex-col items-end">
                   <div className="mb-1 flex items-center gap-1.5 opacity-40">
                     <span className="text-[8px] font-black tracking-widest uppercase">
@@ -134,7 +134,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
                 </div>
               </div>
 
-              <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+              <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
             </button>
           );
         })}
