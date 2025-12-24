@@ -14,6 +14,7 @@ export enum Collections {
   AuditLogs = "audit_logs",
   Comments = "comments",
   Groups = "groups",
+  Mentions = "mentions",
   Notifications = "notifications",
   OrganizationMembers = "organization_members",
   Organizations = "organizations",
@@ -141,17 +142,21 @@ export type AuditLogsRecord<Tchanges = unknown> = {
   ip_address?: string;
   message?: string;
   organization?: RecordIdString;
+  project?: RecordIdString;
   request_id?: string;
   resource: string;
   resource_id: string;
   result: AuditLogsResultOptions;
 };
 
-export type CommentsRecord = {
+export type CommentsRecord<Treactions = unknown> = {
+  attachments?: FileNameString[];
   content: HTMLString;
   created: IsoAutoDateString;
   deleted_at?: string;
   id: string;
+  parent?: RecordIdString;
+  reactions?: null | Treactions;
   task: RecordIdString;
   updated: IsoAutoDateString;
   user: RecordIdString;
@@ -164,6 +169,16 @@ export type GroupsRecord = {
   id: string;
   manager?: RecordIdString;
   name: string;
+  updated: IsoAutoDateString;
+};
+
+export type MentionsRecord = {
+  comment?: RecordIdString;
+  created: IsoAutoDateString;
+  id: string;
+  mentioned_user: RecordIdString;
+  project?: RecordIdString;
+  task?: RecordIdString;
   updated: IsoAutoDateString;
 };
 
@@ -407,9 +422,13 @@ export type AuditLogsResponse<Tchanges = unknown, Texpand = unknown> = Required<
   AuditLogsRecord<Tchanges>
 > &
   BaseSystemFields<Texpand>;
-export type CommentsResponse<Texpand = unknown> = Required<CommentsRecord> &
-  BaseSystemFields<Texpand>;
+export type CommentsResponse<
+  Treactions = unknown,
+  Texpand = unknown,
+> = Required<CommentsRecord<Treactions>> & BaseSystemFields<Texpand>;
 export type GroupsResponse<Texpand = unknown> = Required<GroupsRecord> &
+  BaseSystemFields<Texpand>;
+export type MentionsResponse<Texpand = unknown> = Required<MentionsRecord> &
   BaseSystemFields<Texpand>;
 export type NotificationsResponse<
   Tdata = unknown,
@@ -451,6 +470,7 @@ export type CollectionRecords = {
   audit_logs: AuditLogsRecord;
   comments: CommentsRecord;
   groups: GroupsRecord;
+  mentions: MentionsRecord;
   notifications: NotificationsRecord;
   organization_members: OrganizationMembersRecord;
   organizations: OrganizationsRecord;
@@ -474,6 +494,7 @@ export type CollectionResponses = {
   audit_logs: AuditLogsResponse;
   comments: CommentsResponse;
   groups: GroupsResponse;
+  mentions: MentionsResponse;
   notifications: NotificationsResponse;
   organization_members: OrganizationMembersResponse;
   organizations: OrganizationsResponse;

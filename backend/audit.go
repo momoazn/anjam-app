@@ -28,6 +28,7 @@ type AuditEntry struct {
 	IPAddress    string               `json:"ip_address"`
 	Client       string               `json:"client"`
 	Organization string               `json:"organization"`
+	Project      string               `json:"project"`
 	Resource     string               `json:"resource"`
 	ResourceID   string               `json:"resource_id"`
 	Action       string               `json:"action"`
@@ -79,6 +80,10 @@ func logAudit(app core.App, entry AuditEntry) {
 
 	if entry.Organization != "" {
 		record.Set("organization", entry.Organization)
+	}
+
+	if entry.Project != "" {
+		record.Set("project", entry.Project)
 	}
 
 	record.Set("resource", entry.Resource)
@@ -137,6 +142,32 @@ func resolveOrganizationID(app core.App, record *core.Record) string {
 				}
 			}
 		}
+	}
+
+	return ""
+}
+
+func resolveProjectID(app core.App, record *core.Record) string {
+	if record == nil {
+		return ""
+	}
+
+	if projectID := record.GetString("project"); projectID != "" {
+		return projectID
+	}
+
+	taskID := record.GetString("task")
+	if taskID != "" {
+		task, err := app.FindRecordById("tasks", taskID)
+		if err == nil && task != nil {
+			if projectID := task.GetString("project"); projectID != "" {
+				return projectID
+			}
+		}
+	}
+
+	if collection := record.Collection(); collection != nil && collection.Name == "projects" {
+		return record.Id
 	}
 
 	return ""
@@ -511,6 +542,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			ActorType:    actorType,
 			RequestID:    getRequestID(e),
 			Organization: resolveOrganizationID(app, e.Record),
+			Project:      resolveProjectID(app, e.Record),
 			Resource:     collectionName,
 			ResourceID:   e.Record.Id,
 			Action:       "create",
@@ -546,6 +578,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			ActorType:    actorType,
 			RequestID:    getRequestID(e),
 			Organization: resolveOrganizationID(app, e.Record),
+			Project:      resolveProjectID(app, e.Record),
 			Resource:     collectionName,
 			ResourceID:   e.Record.Id,
 			Action:       "update",
@@ -569,6 +602,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			ActorType:    actorType,
 			RequestID:    getRequestID(e),
 			Organization: resolveOrganizationID(app, e.Record),
+			Project:      resolveProjectID(app, e.Record),
 			Resource:     collectionName,
 			ResourceID:   e.Record.Id,
 			Action:       "delete",
