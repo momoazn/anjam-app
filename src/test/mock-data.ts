@@ -50,6 +50,7 @@ export const createMockProject = (
   description: "Test project description",
   assets: [],
   group: "group-1",
+  organization: "org-1",
   supervisor: "user123",
   ...overrides,
 });

@@ -65,6 +65,7 @@ describe("useProjects", () => {
         code: "PRJ",
         supervisor: "sup-1",
         group: "grp-1",
+        organization: "org-1",
         assets: [],
         description: "Test project",
         collectionId: Collections.Projects,
@@ -149,6 +150,7 @@ describe("useProject", () => {
       code: "PRJ",
       supervisor: "sup-1",
       group: "grp-1",
+      organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-01T00:00:00Z",
     };
@@ -212,6 +214,7 @@ describe("useProjectWithSupervisor", () => {
       code: "PRJ",
       supervisor: "sup-1",
       group: "grp-1",
+      organization: "org-1",
       expand: {
         supervisor: {
           id: "sup-1",
@@ -260,6 +263,7 @@ describe("useCreateProject", () => {
       code: "NEW",
       supervisor: "sup-1",
       group: "grp-1",
+      organization: "org-1",
     };
 
     const createdProject = {
@@ -292,6 +296,7 @@ describe("useCreateProject", () => {
       code: "TST",
       supervisor: "sup-1",
       group: "grp-1",
+      organization: "org-1",
     };
 
     const createdProject = {
@@ -334,6 +339,7 @@ describe("useCreateProject", () => {
       code: "TST",
       supervisor: "sup-1",
       group: "grp-1",
+      organization: "org-1",
     };
 
     await expect(result.current.mutateAsync(projectData)).rejects.toEqual(
@@ -355,6 +361,7 @@ describe("useUpdateProject", () => {
       code: "UPD",
       supervisor: "sup-1",
       group: "grp-1",
+      organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
     };
@@ -388,6 +395,7 @@ describe("useUpdateProject", () => {
       code: "UPD",
       supervisor: "sup-1",
       group: "grp-1",
+      organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
     };

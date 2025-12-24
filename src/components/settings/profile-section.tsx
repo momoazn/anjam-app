@@ -26,7 +26,7 @@ import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/users";
 import { pb } from "@/lib/pocketbase";
-import type { UsersRecord } from "@/lib/pocketbase-types";
+import type { UsersResponse } from "@/lib/pocketbase-types";
 import { useAuthActions, useAuthUser } from "@/store/auth-store";
 
 const profileSchema = z.object({
@@ -88,7 +88,7 @@ export function ProfileSection() {
 
       const updatedRecord = await pb
         .collection("users")
-        .update<UsersRecord>(user.id, formData);
+        .update<UsersResponse>(user.id, formData);
 
       refetch();
       updateUser(updatedRecord);
@@ -142,7 +142,7 @@ export function ProfileSection() {
 
                 <label
                   htmlFor="avatar-upload"
-                  className="bg-card border-foreground hover:bg-muted absolute -bottom-2 -start-2 cursor-pointer border-2 p-2 shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-1px] active:translate-y-[1px] active:shadow-none"
+                  className="bg-card border-foreground hover:bg-muted absolute -start-2 -bottom-2 cursor-pointer border-2 p-2 shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-1px] active:translate-y-[1px] active:shadow-none"
                 >
                   <IconCamera className="h-4 w-4" />
                   <span className="sr-only">
