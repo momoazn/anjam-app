@@ -961,8 +961,8 @@
   },
   {
     "id": "pbc_533777971",
-    "listRule": "(@request.auth.id != '') && ((deleted_at = \"\" || deleted_at = null))",
-    "viewRule": "(@request.auth.id != '') && ((deleted_at = \"\" || deleted_at = null))",
+    "listRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= task.project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && ((deleted_at = \"\" || deleted_at = null))",
+    "viewRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= task.project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && ((deleted_at = \"\" || deleted_at = null))",
     "createRule": "@request.auth.id != ''",
     "updateRule": "@request.auth.id = user",
     "deleteRule": "@request.auth.id = user",

@@ -10,7 +10,7 @@ import (
 // handleGlobalSearch performs a unified search across tasks and projects
 func handleGlobalSearch(e *core.RequestEvent) error {
 	// Validate authentication
-	authRecord, err := validateAuth(e)
+	_, err := validateAuth(e)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	// Transform tasks to lightweight DTO
 	var taskDTOs []map[string]interface{}
 	for _, t := range tasks {
-		if canViewTask(e.App, t, authRecord) {
+		if canViewTask(e, t) {
 			projectName := ""
 			projectId := t.GetString("project")
 			if projectId != "" {
@@ -87,7 +87,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 
 	var projectDTOs []map[string]interface{}
 	for _, p := range projects {
-		if canViewProject(e.App, p, authRecord) {
+		if canViewProject(e, p) {
 			projectDTOs = append(projectDTOs, map[string]interface{}{
 				"id":          p.Id,
 				"name":        p.GetString("name"),
@@ -107,37 +107,32 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 }
 
 // Helper to check view permission for search results (mirroring the API rule roughly)
-func canViewTask(app core.App, task *core.Record, user *core.Record) bool {
-	if user.GetString("role") == RoleAdmin {
-		return true
-	}
-
-	// Fetch the task's project to check group membership
-	projectId := task.GetString("project")
-	if projectId == "" {
-		return false
-	}
-
-	project, err := app.FindRecordById("projects", projectId)
+func canViewTask(e *core.RequestEvent, task *core.Record) bool {
+	requestInfo, err := e.RequestInfo()
 	if err != nil {
 		return false
 	}
 
-	// Both user and project must be in the same group
-	userGroupId := user.GetString("group")
-	projectGroupId := project.GetString("group")
-
-	return userGroupId != "" && userGroupId == projectGroupId
-}
-
-func canViewProject(app core.App, project *core.Record, user *core.Record) bool {
-	if user.GetString("role") == RoleAdmin {
-		return true
+	rule := task.Collection().ViewRule
+	if rule == nil {
+		return false
 	}
 
-	// Both user and project must be in the same group
-	userGroupId := user.GetString("group")
-	projectGroupId := project.GetString("group")
+	canAccess, _ := e.App.CanAccessRecord(task, requestInfo, rule)
+	return canAccess
+}
 
-	return userGroupId != "" && userGroupId == projectGroupId
+func canViewProject(e *core.RequestEvent, project *core.Record) bool {
+	requestInfo, err := e.RequestInfo()
+	if err != nil {
+		return false
+	}
+
+	rule := project.Collection().ViewRule
+	if rule == nil {
+		return false
+	}
+
+	canAccess, _ := e.App.CanAccessRecord(project, requestInfo, rule)
+	return canAccess
 }
