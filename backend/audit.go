@@ -21,18 +21,19 @@ type FieldDiff struct {
 
 // AuditEntry represents a single audit log entry
 type AuditEntry struct {
-	Actor     string                 `json:"actor"`
-	ActorRole string                 `json:"actor_role"`
-	ActorType string                 `json:"actor_type"`
-	RequestID string                 `json:"request_id"`
-	IPAddress string                 `json:"ip_address"`
-	Client    string                 `json:"client"`
-	Resource  string                 `json:"resource"`
-	ResourceID string                `json:"resource_id"`
-	Action    string                 `json:"action"`
-	Result    string                 `json:"result"`
-	Message   string                 `json:"message"`
-	Changes   map[string]FieldDiff   `json:"changes"`
+	Actor        string               `json:"actor"`
+	ActorRole    string               `json:"actor_role"`
+	ActorType    string               `json:"actor_type"`
+	RequestID    string               `json:"request_id"`
+	IPAddress    string               `json:"ip_address"`
+	Client       string               `json:"client"`
+	Organization string               `json:"organization"`
+	Resource     string               `json:"resource"`
+	ResourceID   string               `json:"resource_id"`
+	Action       string               `json:"action"`
+	Result       string               `json:"result"`
+	Message      string               `json:"message"`
+	Changes      map[string]FieldDiff `json:"changes"`
 }
 
 // Sensitive fields that should never be logged
@@ -76,6 +77,10 @@ func logAudit(app core.App, entry AuditEntry) {
 		record.Set("client", entry.Client)
 	}
 
+	if entry.Organization != "" {
+		record.Set("organization", entry.Organization)
+	}
+
 	record.Set("resource", entry.Resource)
 	record.Set("resource_id", entry.ResourceID)
 	record.Set("action", entry.Action)
@@ -95,6 +100,46 @@ func logAudit(app core.App, entry AuditEntry) {
 		log.Printf("Warning: Failed to write audit log entry (resource=%s, resource_id=%s): %v",
 			entry.Resource, entry.ResourceID, err)
 	}
+}
+
+func resolveOrganizationID(app core.App, record *core.Record) string {
+	if record == nil {
+		return ""
+	}
+
+	if orgID := record.GetString("organization"); orgID != "" {
+		return orgID
+	}
+
+	projectID := record.GetString("project")
+	if projectID != "" {
+		project, err := app.FindRecordById("projects", projectID)
+		if err == nil && project != nil {
+			if orgID := project.GetString("organization"); orgID != "" {
+				return orgID
+			}
+		}
+	}
+
+	taskID := record.GetString("task")
+	if taskID != "" {
+		task, err := app.FindRecordById("tasks", taskID)
+		if err == nil && task != nil {
+			if orgID := task.GetString("organization"); orgID != "" {
+				return orgID
+			}
+			if projectID := task.GetString("project"); projectID != "" {
+				project, err := app.FindRecordById("projects", projectID)
+				if err == nil && project != nil {
+					if orgID := project.GetString("organization"); orgID != "" {
+						return orgID
+					}
+				}
+			}
+		}
+	}
+
+	return ""
 }
 
 // calculateChanges compares old and new records and returns a map of changed fields.
@@ -148,7 +193,7 @@ func areValuesEqual(old, new interface{}) bool {
 
 	oldNormalized := normalizeForComparison(old)
 	newNormalized := normalizeForComparison(new)
-	
+
 	oldJSON, _ := json.Marshal(oldNormalized)
 	newJSON, _ := json.Marshal(newNormalized)
 	return string(oldJSON) == string(newJSON)
@@ -184,24 +229,24 @@ func areMapsEqual(old, new map[string]interface{}) bool {
 	if len(old) != len(new) {
 		return false
 	}
-	
+
 	// Get sorted keys from both maps
 	oldKeys := make([]string, 0, len(old))
 	for k := range old {
 		oldKeys = append(oldKeys, k)
 	}
 	sort.Strings(oldKeys)
-	
+
 	newKeys := make([]string, 0, len(new))
 	for k := range new {
 		newKeys = append(newKeys, k)
 	}
 	sort.Strings(newKeys)
-	
+
 	if len(oldKeys) != len(newKeys) {
 		return false
 	}
-	
+
 	for i, key := range oldKeys {
 		if key != newKeys[i] {
 			return false
@@ -210,7 +255,7 @@ func areMapsEqual(old, new map[string]interface{}) bool {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
@@ -395,7 +440,7 @@ func getRequestID(e *core.RecordEvent) string {
 }
 
 // registerAuditLogsImmutabilityGuards ensures that audit_logs records cannot be modified or deleted.
-// Immutability is enforced at the Go-level handlers to prevent even DAO access 
+// Immutability is enforced at the Go-level handlers to prevent even DAO access
 // from modifying audit logs, ensuring a reliable audit trail.
 func registerAuditLogsImmutabilityGuards(pbApp interface{}) {
 	app, ok := pbApp.(core.App)
@@ -423,7 +468,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		return
 	}
 
-	// Enrich request contexts with actor info so record model hooks can access it 
+	// Enrich request contexts with actor info so record model hooks can access it
 	// via `e.Context` even for background or indirect operations.
 	injectActorIntoRequestContext := func(e *core.RecordRequestEvent) error {
 		if e == nil || e.Request == nil {
@@ -461,16 +506,17 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		actorID, actorRole, actorType := extractActorInfo(e)
 
 		entry := AuditEntry{
-			Actor:      actorID,
-			ActorRole:  actorRole,
-			ActorType:  actorType,
-			RequestID:   getRequestID(e),
-			Resource:   collectionName,
-			ResourceID: e.Record.Id,
-			Action:     "create",
-			Result:     "success",
-			Client:     getClientFromUserAgent(e),
-			IPAddress:  getIPAddress(e),
+			Actor:        actorID,
+			ActorRole:    actorRole,
+			ActorType:    actorType,
+			RequestID:    getRequestID(e),
+			Organization: resolveOrganizationID(app, e.Record),
+			Resource:     collectionName,
+			ResourceID:   e.Record.Id,
+			Action:       "create",
+			Result:       "success",
+			Client:       getClientFromUserAgent(e),
+			IPAddress:    getIPAddress(e),
 		}
 
 		logAudit(app, entry)
@@ -495,17 +541,18 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		actorID, actorRole, actorType := extractActorInfo(e)
 
 		entry := AuditEntry{
-			Actor:      actorID,
-			ActorRole:  actorRole,
-			ActorType:  actorType,
-			RequestID:   getRequestID(e),
-			Resource:   collectionName,
-			ResourceID: e.Record.Id,
-			Action:     "update",
-			Result:     "success",
-			Changes:    changes,
-			Client:     getClientFromUserAgent(e),
-			IPAddress:  getIPAddress(e),
+			Actor:        actorID,
+			ActorRole:    actorRole,
+			ActorType:    actorType,
+			RequestID:    getRequestID(e),
+			Organization: resolveOrganizationID(app, e.Record),
+			Resource:     collectionName,
+			ResourceID:   e.Record.Id,
+			Action:       "update",
+			Result:       "success",
+			Changes:      changes,
+			Client:       getClientFromUserAgent(e),
+			IPAddress:    getIPAddress(e),
 		}
 
 		logAudit(app, entry)
@@ -517,16 +564,17 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 		actorID, actorRole, actorType := extractActorInfo(e)
 
 		entry := AuditEntry{
-			Actor:      actorID,
-			ActorRole:  actorRole,
-			ActorType:  actorType,
-			RequestID:   getRequestID(e),
-			Resource:   collectionName,
-			ResourceID: e.Record.Id,
-			Action:     "delete",
-			Result:     "success",
-			Client:     getClientFromUserAgent(e),
-			IPAddress:  getIPAddress(e),
+			Actor:        actorID,
+			ActorRole:    actorRole,
+			ActorType:    actorType,
+			RequestID:    getRequestID(e),
+			Organization: resolveOrganizationID(app, e.Record),
+			Resource:     collectionName,
+			ResourceID:   e.Record.Id,
+			Action:       "delete",
+			Result:       "success",
+			Client:       getClientFromUserAgent(e),
+			IPAddress:    getIPAddress(e),
 		}
 
 		// Use the record data directly as it's still available in AfterDeleteSuccess
