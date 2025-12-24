@@ -378,7 +378,7 @@ async function seedDatabase() {
       "\n✅ Successfully Seeded Database with mock data",
       `\n- ${createdUsers.length} users created`,
       `\n- ${createdProjects.length} projects created`,
-      `\n- ${createdUserProjects.length} user-project links created`,
+      `\n- ${createdProjectMembers.length} project members created`,
       `\n- ${createdTasks.length} tasks created`,
       `\n- ${createdComments.length} comments created`,
       `\n- ${createdNotifications.length} notifications created`,
