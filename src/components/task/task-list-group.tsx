@@ -81,7 +81,7 @@ function TaskListGroupInner({
       />
       {!isCollapsed && (
         <div
-          className={cn("mt-2 min-h-[30px] space-y-1 rounded-md pe-1")}
+          className={cn("mt-2 min-h-[30px] space-y-1.5 pe-1")}
           data-animate-stagger
           role="list"
         >
@@ -99,7 +99,7 @@ function TaskListGroupInner({
               />
             ))
           ) : (
-            <div className="text-muted-foreground text-center text-sm">
+            <div className="text-muted-foreground/40 py-6 text-center text-xs font-black tracking-widest uppercase">
               {tasksText.list.noTasks}
             </div>
           )}

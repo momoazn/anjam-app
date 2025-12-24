@@ -57,7 +57,7 @@ export function TaskListHeader({
   return (
     <div
       className={cn(
-        "group bg-muted/20 hover:bg-muted/40 relative flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-xl border-l-4 px-4 py-3 text-right transition-all",
+        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-sm border-y border-l-2 px-4 py-3 text-right transition-all",
         getStatusColorVariant(status, "border")
           .replace("border-", "border-l-")
           .replace("/20", ""),
@@ -73,8 +73,18 @@ export function TaskListHeader({
       }}
     >
       <div className="flex items-center gap-4">
-        <div className="bg-card ring-border flex h-8 w-8 items-center justify-center rounded-lg shadow-sm ring-1 transition-transform group-hover:scale-110">
-          <IconComponent className={cn("size-4", statusColor)} />
+        <div
+          className={cn(
+            "bg-card ring-border/50 flex h-8 w-8 items-center justify-center rounded-sm border-2 shadow-sm ring-1 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md",
+            statusColor.replace("text", "ring"),
+          )}
+        >
+          <IconComponent
+            className={cn(
+              "size-4 transition-transform duration-500 group-hover:rotate-180",
+              statusColor,
+            )}
+          />
         </div>
 
         <div>
@@ -82,8 +92,8 @@ export function TaskListHeader({
             {tasks.status[status]}
           </h2>
           <div className="mt-0.5 flex items-center gap-2">
-            <Hash className="text-muted-foreground/50 size-3" />
-            <span className="text-muted-foreground/70 text-[10px] font-bold">
+            <Hash className="text-muted-foreground/30 size-2.5" />
+            <span className="text-muted-foreground/70 text-[9px] font-black tracking-widest uppercase">
               {digitsEnToFa(taskCount)} ITEMS TOTAL
             </span>
           </div>
@@ -91,11 +101,11 @@ export function TaskListHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1 border-r pr-2">
+        <div className="border-border/30 flex items-center gap-1 border-r pr-2">
           <Button
             variant="ghost"
             size="icon"
-            className="hover:bg-background size-8 rounded-lg"
+            className="hover:bg-background size-8 rounded-none transition-transform active:scale-95"
             onClick={handleCreateTask}
           >
             <Plus className="size-4" />
@@ -106,12 +116,15 @@ export function TaskListHeader({
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-background size-8 rounded-lg"
+                className="hover:bg-background size-8 rounded-none transition-transform active:scale-95"
               >
                 <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 rounded-xl">
+            <DropdownMenuContent
+              align="end"
+              className="border-border/50 rounded-sm"
+            >
               <DropdownMenuItem
                 onClick={() =>
                   onSortChange?.(
@@ -144,19 +157,19 @@ export function TaskListHeader({
           </DropdownMenu>
         </div>
 
-        <div className="group-hover:bg-background flex size-8 items-center justify-center rounded-lg transition-transform duration-300">
+        <div className="hover:bg-background border-border/30 flex size-8 items-center justify-center rounded-none border transition-all duration-300 group-hover:scale-105 group-hover:shadow-sm">
           {isCollapsed ? (
-            <ChevronDown className="text-muted-foreground size-4" />
+            <ChevronDown className="text-muted-foreground size-4 transition-transform duration-300 group-hover:translate-y-0.5" />
           ) : (
-            <ChevronUp className="text-muted-foreground size-4" />
+            <ChevronUp className="text-muted-foreground size-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
           )}
         </div>
       </div>
 
       <div
         className={cn(
-          "absolute bottom-0 left-0 h-px w-full opacity-10",
-          statusColor.replace("text", "bg"),
+          "absolute bottom-0 left-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
+          statusColor.replace("text", "text"),
         )}
       />
     </div>
