@@ -49,6 +49,10 @@ const Login = createLazyPage(
   () => import("@/pages/login"),
   errors.pageLoad.login,
 );
+const Landing = createLazyPage(
+  () => import("@/pages/landing"),
+  errors.pageLoad.notFound,
+);
 const PendingActivation = createLazyPage(
   () => import("@/pages/pending-activation"),
   errors.pageLoad.notFound,
@@ -246,6 +250,12 @@ const Title = ({
 
 // Memoized routes configuration
 const routes: RouteType[] = [
+  {
+    path: "/landing",
+    element: <Landing />,
+    protected: false,
+    title: "Anjam Registry",
+  },
   {
     path: "/",
     element: <Dashboard />,
