@@ -1,14 +1,21 @@
 import { PageTransition } from "@/components/page-transition";
 import { HelpCategories } from "@/components/help/help-categories";
-import { HelpHeader } from "@/components/help/help-header";
-import { Separator } from "@/components/ui/separator";
+import { PageHeader } from "@/components/page-header";
+import { IconHelp } from "@tabler/icons-react";
+import { helps } from "@/constants";
 
 export default function Helps() {
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
-      <HelpHeader />
-      <Separator className="mb-6" />
-      <HelpCategories />
+    <PageTransition className="container mx-auto max-w-5xl p-4 md:p-6">
+      <PageHeader
+        title={helps.title}
+        description={helps.description}
+        icon={IconHelp}
+        nodeId="Kernel_Manual :: v1.0"
+      />
+      <div className="space-y-10">
+        <HelpCategories />
+      </div>
     </PageTransition>
   );
 }

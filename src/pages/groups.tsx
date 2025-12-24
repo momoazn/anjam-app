@@ -1,10 +1,15 @@
-import { Loader2, Plus, Building2 } from "lucide-react";
+import {
+  IconPlus,
+  IconBuildingCommunity,
+  IconActivity,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { DeleteGroupDialog } from "@/components/group/delete-group-dialog";
 import { GroupListCard } from "@/components/group/group-list-card";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { groups as groupsText } from "@/constants";
 import {
@@ -38,38 +43,44 @@ export default function Groups() {
 
   const isAdmin = user?.role === UsersRoleOptions.admin;
 
+  const headerActions = isAdmin ? (
+    <Button
+      onClick={() => navigate("/groups/new")}
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+      size="lg"
+    >
+      <IconPlus className="size-5" />
+      <span className="tracking-widest uppercase">
+        {groupsText.create.button}
+      </span>
+    </Button>
+  ) : null;
+
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-            <Building2 className="h-5 w-5 md:h-6 md:w-6" />
-            {groupsText.title}
-          </h1>
-          <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-sm">
-            {groupsText.list.count.replace(
-              "{count}",
-              digitsEnToFa(groupsData?.length ?? 0).toString(),
-            )}
-          </span>
-        </div>
-        {isAdmin && (
-          <Button
-            onClick={() => navigate("/groups/new")}
-            className="w-full gap-2 sm:w-auto"
-          >
-            <Plus className="h-4 w-4" />
-            {groupsText.create.button}
-          </Button>
+      <PageHeader
+        title={groupsText.title}
+        description={groupsText.list.count.replace(
+          "{count}",
+          digitsEnToFa(groupsData?.length ?? 0).toString(),
         )}
-      </div>
+        icon={IconBuildingCommunity}
+        nodeId="Organization_Registry"
+        actions={headerActions}
+      />
 
       {isLoadingGroups ? (
-        <div className="flex h-full items-center justify-center py-12">
-          <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <IconBuildingCommunity className="text-primary size-12 animate-pulse opacity-20" />
+          <h3 className="text-foreground mt-4 text-[10px] font-black tracking-[0.3em] uppercase opacity-40">
+            Syncing_Group_Catalog...
+          </h3>
         </div>
       ) : groupsData && groupsData.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+          data-animate-stagger
+        >
           {groupsData.map((group) => (
             <GroupListCard
               key={group.id}
@@ -81,8 +92,9 @@ export default function Groups() {
           ))}
         </div>
       ) : (
-        <div className="flex h-full items-center justify-center py-12">
-          <p className="text-muted-foreground text-center">
+        <div className="border-border/40 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
+          <IconActivity className="mb-4 size-10 stroke-[1]" />
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase">
             {groupsText.list.empty}
           </p>
         </div>

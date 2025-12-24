@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { IconLoader2, IconPencil } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,16 +9,9 @@ import { z } from "zod";
 
 import { ProjectFields } from "@/components/forms/project-fields";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { Skeleton } from "@/components/ui/skeleton";
 import { common, errors, projects } from "@/constants";
 import { queryKeys } from "@/hooks";
 import { FileWithPreview } from "@/hooks/use-file-upload";
@@ -69,7 +62,6 @@ export default function EditProject() {
       form.reset({
         name: project.name,
         code: project.code,
-        // Convert HTML breaks back to newlines for textarea
         description: (project.description || "").replace(/<br>/g, "\n"),
         assets: [],
         supervisor: project.supervisor || "",
@@ -121,103 +113,60 @@ export default function EditProject() {
     updateProject(values);
   }
 
-  if (isLoading) {
-    return (
-      <PageTransition className="container mx-auto space-y-6 p-6">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-10 w-10 rounded" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-64" />
-          </div>
-        </div>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-32 w-full" />
-          </CardContent>
-        </Card>
-      </PageTransition>
-    );
-  }
-
-  if (!project) {
-    return (
-      <PageTransition className="container mx-auto space-y-6 p-6">
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">{projects.errors.notFound}</p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => navigate("/projects")}
-            >
-              <ArrowLeft className="ml-2 h-4 w-4" />
-              {projects.details.backToProjects}
-            </Button>
-          </CardContent>
-        </Card>
-      </PageTransition>
-    );
-  }
+  const handleCancel = () => {
+    navigate("/projects");
+  };
 
   return (
-    <PageTransition className="container mx-auto space-y-6 p-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/projects")}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">{projects.edit.title}</h1>
-          <p className="text-muted-foreground">
-            {common.buttons.view} {project.name}
-          </p>
-        </div>
-      </div>
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+      <PageHeader
+        title={projects.edit.title}
+        description={`Registry modification protocol for node :: ${project?.name || id}`}
+        icon={IconPencil}
+        nodeId={`Project_Configuration :: ${project?.code || "???"}`}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{projects.edit.title}</CardTitle>
-          <CardDescription>
-            {common.buttons.view} {project.code}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-24 opacity-20">
+            <IconLoader2 className="h-12 w-12 animate-spin" />
+          </div>
+        ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
               <ProjectFields
                 control={form.control}
                 showSupervisor={true}
                 isAdmin={isAdmin}
               />
-              <div className="flex items-center justify-end gap-2 pt-4">
+
+              <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("/projects")}
+                  onClick={handleCancel}
                   disabled={isPending}
+                  className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
                 >
                   {common.cancel}
                 </Button>
-                <Button type="submit" disabled={isPending}>
-                  {isPending ? (
-                    <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
-                  ) : null}
-                  {projects.edit.submit}
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="h-12 gap-3 rounded-none px-8 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                >
+                  {isPending && (
+                    <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  <span className="tracking-widest uppercase">
+                    {projects.edit.submit}
+                  </span>
                 </Button>
               </div>
             </form>
           </Form>
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </PageTransition>
   );
 }

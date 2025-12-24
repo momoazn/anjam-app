@@ -1,12 +1,18 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { History, Loader2, X } from "lucide-react";
+import {
+  IconHistory,
+  IconTerminal,
+  IconX,
+  IconActivity,
+  IconFilter,
+  IconServer,
+  IconHash,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -15,32 +21,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { auditLogs, common } from "@/constants";
+import { auditLogs } from "@/constants";
 import { useAuditLogs } from "@/hooks/audit-logs";
 import type {
   AuditLogsActionOptions,
   AuditLogsClientOptions,
 } from "@/lib/pocketbase-types";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import type { FieldDiff } from "@/lib/audit-log-service";
 import { formatDateTime } from "@/lib/date-utils";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 
 function parseChanges(
   changes: string | Record<string, FieldDiff> | null | undefined,
@@ -83,169 +82,239 @@ export default function AuditLogs() {
   const hasFilters = !!resource || !!action || !!client || !!search;
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-            <History className="h-5 w-5 md:h-6 md:w-6" />
-            {auditLogs.title}
-          </h1>
-          {data && (
-            <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-sm">
-              {digitsEnToFa(data.totalItems)}
-            </span>
-          )}
-        </div>
-      </div>
+    <PageTransition className="container mx-auto max-w-[1600px] p-4 md:p-6">
+      <PageHeader
+        title={auditLogs.title}
+        description={
+          data
+            ? `${digitsEnToFa(data.totalItems)} total entries recorded`
+            : "System-wide activity registry"
+        }
+        icon={IconHistory}
+        nodeId="Security_Audit_Kernel"
+      />
 
-      {/* Filters */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">{auditLogs.filters.clear}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                {auditLogs.filters.resource}
-              </label>
+      <div className="space-y-10">
+        {/* Registry Filter Logic */}
+        <section className="space-y-4">
+          <div className="bg-border/40 border-border/40 flex items-center gap-px overflow-hidden border shadow-sm">
+            <div className="bg-muted/20 border-border/20 flex h-10 shrink-0 items-center gap-2 border-l px-3">
+              <IconTerminal className="text-primary/60 size-3" />
+              <span className="text-muted-foreground/60 text-[9px] font-black tracking-[0.2em] uppercase">
+                Search
+              </span>
+            </div>
+            <div className="group relative h-10 flex-1">
+              <IconTerminal className="text-muted-foreground/30 absolute top-1/2 right-3.5 h-3.5 w-3.5 -translate-y-1/2" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Query_String..."
+                className="h-full w-full rounded-none border-none bg-transparent pr-11 text-xs font-bold tracking-tight transition-all outline-none focus:ring-0"
+              />
+            </div>
+            {hasFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setResource("");
+                  setAction("");
+                  setClient("");
+                  setSearch("");
+                }}
+                className="border-border/20 h-10 gap-2 rounded-none border-r px-4 text-[9px] font-black tracking-widest text-rose-500 uppercase transition-all hover:bg-rose-500/10"
+              >
+                <IconX className="size-3" />
+                Reset_Filters
+              </Button>
+            )}
+          </div>
+
+          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm sm:grid-cols-3">
+            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-l p-3">
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-[0.3em] uppercase">
+                <IconFilter className="size-2" /> {auditLogs.filters.resource}
+              </span>
               <Select value={resource} onValueChange={setResource}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
                   <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">{auditLogs.filters.all}</SelectItem>
-                  <SelectItem value="tasks">
+                <SelectContent className="border-foreground bg-card rounded-none border-2">
+                  <SelectItem
+                    value="all"
+                    className="text-[10px] font-black uppercase"
+                  >
+                    {auditLogs.filters.all}
+                  </SelectItem>
+                  <SelectItem
+                    value="tasks"
+                    className="text-[10px] font-black uppercase"
+                  >
                     {auditLogs.resources.tasks}
                   </SelectItem>
-                  <SelectItem value="projects">
+                  <SelectItem
+                    value="projects"
+                    className="text-[10px] font-black uppercase"
+                  >
                     {auditLogs.resources.projects}
                   </SelectItem>
-                  <SelectItem value="users">
+                  <SelectItem
+                    value="users"
+                    className="text-[10px] font-black uppercase"
+                  >
                     {auditLogs.resources.users}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                {auditLogs.filters.action}
-              </label>
+
+            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-l p-3">
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-[0.3em] uppercase">
+                <IconActivity className="size-2" /> {auditLogs.filters.action}
+              </span>
               <Select
                 value={action}
                 onValueChange={(v) =>
                   setAction(v as AuditLogsActionOptions | "")
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
                   <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">{auditLogs.filters.all}</SelectItem>
-                  <SelectItem value="create">
+                <SelectContent className="border-foreground bg-card rounded-none border-2">
+                  <SelectItem
+                    value="all"
+                    className="text-[10px] font-black uppercase"
+                  >
+                    {auditLogs.filters.all}
+                  </SelectItem>
+                  <SelectItem
+                    value="create"
+                    className="text-[10px] font-black uppercase"
+                  >
                     {auditLogs.actions.create}
                   </SelectItem>
-                  <SelectItem value="update">
+                  <SelectItem
+                    value="update"
+                    className="text-[10px] font-black uppercase"
+                  >
                     {auditLogs.actions.update}
                   </SelectItem>
-                  <SelectItem value="delete">
+                  <SelectItem
+                    value="delete"
+                    className="text-[10px] font-black uppercase"
+                  >
                     {auditLogs.actions.delete}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                {auditLogs.filters.client}
-              </label>
+
+            <div className="bg-card flex h-16 flex-col justify-between p-3">
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-[0.3em] uppercase">
+                <IconServer className="size-2" /> {auditLogs.filters.client}
+              </span>
               <Select
                 value={client}
                 onValueChange={(v) =>
                   setClient(v as AuditLogsClientOptions | "")
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
                   <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">{auditLogs.filters.all}</SelectItem>
-                  <SelectItem value="web">{auditLogs.clients.web}</SelectItem>
-                  <SelectItem value="cli">{auditLogs.clients.cli}</SelectItem>
-                  <SelectItem value="automation">
-                    {auditLogs.clients.automation}
+                <SelectContent className="border-foreground bg-card rounded-none border-2">
+                  <SelectItem
+                    value="all"
+                    className="text-[10px] font-black uppercase"
+                  >
+                    {auditLogs.filters.all}
                   </SelectItem>
-                  <SelectItem value="unknown">
-                    {auditLogs.clients.unknown}
+                  <SelectItem
+                    value="web"
+                    className="text-[10px] font-black uppercase"
+                  >
+                    {auditLogs.clients.web}
+                  </SelectItem>
+                  <SelectItem
+                    value="cli"
+                    className="text-[10px] font-black uppercase"
+                  >
+                    {auditLogs.clients.cli}
+                  </SelectItem>
+                  <SelectItem
+                    value="automation"
+                    className="text-[10px] font-black uppercase"
+                  >
+                    {auditLogs.clients.automation}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                {auditLogs.filters.search}
-              </label>
-              <div className="flex gap-2">
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={auditLogs.filters.search}
-                  className="flex-1"
-                />
-                {hasFilters && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      setResource("");
-                      setAction("");
-                      setClient("");
-                      setSearch("");
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+          </div>
+        </section>
+
+        {/* Registry Console Table */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-4">
+            <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+              02_Event_Registry
+            </span>
+            <div className="bg-border/20 h-px flex-1" />
+          </div>
+
+          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-xl">
+            {/* Table Head Protocol */}
+            <div className="bg-muted/20 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
+              <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+                <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                  {auditLogs.table.timestamp}
+                </span>
+              </div>
+              <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+                <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                  {auditLogs.table.actor}
+                </span>
+              </div>
+              <div className="border-border/10 col-span-1 flex items-center justify-center border-l">
+                <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                  {auditLogs.table.action}
+                </span>
+              </div>
+              <div className="border-border/10 col-span-2 flex items-center justify-end border-l px-4">
+                <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                  {auditLogs.table.resource}
+                </span>
+              </div>
+              <div className="border-border/10 col-span-1 flex items-center justify-center border-l">
+                <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                  {auditLogs.table.client}
+                </span>
+              </div>
+              <div className="col-span-4 flex items-center justify-end px-4">
+                <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                  {auditLogs.table.message}
+                </span>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{auditLogs.table.timestamp}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex h-full items-center justify-center py-12">
-              <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-            </div>
-          ) : error ? (
-            <div className="py-12 text-center">
-              <p className="text-destructive">{auditLogs.errors.loadFailed}</p>
-            </div>
-          ) : !data || data.items.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground">
-                {auditLogs.empty.noResults}
-              </p>
-            </div>
-          ) : (
-            <ScrollArea className="h-[600px]">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{auditLogs.table.timestamp}</TableHead>
-                    <TableHead>{auditLogs.table.actor}</TableHead>
-                    <TableHead>{auditLogs.table.action}</TableHead>
-                    <TableHead>{auditLogs.table.resource}</TableHead>
-                    <TableHead>{auditLogs.table.client}</TableHead>
-                    <TableHead>{auditLogs.table.message}</TableHead>
-                    <TableHead>{auditLogs.table.changes}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+            {/* Registry Modules */}
+            <ScrollArea className="bg-card h-[70vh]">
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-24 opacity-20">
+                  <IconHistory className="size-12 animate-spin" />
+                </div>
+              ) : error ? (
+                <div className="p-12 text-center text-xs font-black text-rose-500 uppercase">
+                  {auditLogs.errors.loadFailed}
+                </div>
+              ) : !data || data.items.length === 0 ? (
+                <div className="text-muted-foreground/40 p-12 text-center text-xs font-black uppercase">
+                  {auditLogs.empty.noResults}
+                </div>
+              ) : (
+                <div className="divide-border/10 divide-y">
                   {data.items.map((log) => {
                     const actor = log.expand?.actor;
                     const actorName = actor
@@ -262,155 +331,156 @@ export default function AuditLogs() {
                       changes && Object.keys(changes).length > 0;
 
                     return (
-                      <TableRow key={log.id}>
-                        <TableCell className="font-mono text-xs">
-                          {log.created
-                            ? (() => {
-                                const dt = formatDateTime(log.created);
-                                return `${dt.date} ${dt.time}`;
-                              })()
-                            : "-"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="font-medium">{actorName}</span>
-                            {log.actor_role && (
-                              <span className="text-muted-foreground text-xs">
-                                {log.actor_role}
-                              </span>
-                            )}
+                      <div
+                        key={log.id}
+                        className="group bg-card hover:bg-muted/20 flex flex-col text-right transition-all"
+                      >
+                        <div className="relative grid grid-cols-12 overflow-hidden">
+                          <div className="border-border/10 col-span-2 flex items-center justify-end border-l p-4 font-mono text-[10px] font-black tracking-widest uppercase opacity-60">
+                            {log.created
+                              ? `${formatDateTime(log.created).date} ${formatDateTime(log.created).time}`
+                              : "—"}
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {auditLogs.actions[
-                              log.action as keyof typeof auditLogs.actions
-                            ] || log.action}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="font-medium">{log.resource}</span>
-                            <span className="text-muted-foreground font-mono text-xs">
-                              {log.resource_id}
+                          <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-l p-4">
+                            <span className="text-[11px] font-black tracking-tight uppercase">
+                              {actorName}
+                            </span>
+                            <span className="text-[8px] font-bold uppercase opacity-40">
+                              {log.actor_role || "External"}
                             </span>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          {log.client ? (
-                            <Badge variant="secondary" className="text-xs">
-                              {auditLogs.clients[
-                                log.client as keyof typeof auditLogs.clients
-                              ] || log.client}
+                          <div className="border-border/10 col-span-1 flex items-center justify-center border-l p-4">
+                            <Badge
+                              variant="outline"
+                              className="border-primary/20 bg-primary/5 text-primary rounded-none text-[8px] font-black tracking-widest uppercase"
+                            >
+                              {auditLogs.actions[
+                                log.action as keyof typeof auditLogs.actions
+                              ] || log.action}
                             </Badge>
-                          ) : (
-                            "-"
-                          )}
-                        </TableCell>
-                        <TableCell className="max-w-xs">
-                          <div className="truncate" title={log.message || ""}>
-                            {log.message || "-"}
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          {hasChanges ? (
-                            <Accordion type="single" collapsible>
-                              <AccordionItem
-                                value={log.id}
-                                className="border-none"
-                              >
-                                <AccordionTrigger className="py-1 text-xs">
-                                  {auditLogs.table.viewChanges}
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <div className="space-y-2 text-xs">
-                                    {Object.entries(changes!).map(
+                          <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-l p-4">
+                            <span className="text-[11px] font-black tracking-tight uppercase">
+                              {log.resource}
+                            </span>
+                            <div className="flex items-center gap-1.5 opacity-40">
+                              <IconHash className="size-2.5" />
+                              <span className="font-mono text-[8px] font-black tracking-widest uppercase">
+                                {log.resource_id.slice(0, 8)}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="border-border/10 col-span-1 flex items-center justify-center border-l p-4 font-mono text-[10px] font-black uppercase opacity-40">
+                            {log.client || "—"}
+                          </div>
+                          <div className="col-span-4 flex items-center justify-end p-4 text-xs leading-relaxed font-medium opacity-80">
+                            {log.message || "—"}
+                          </div>
+
+                          <div className="bg-primary absolute right-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
+                        </div>
+
+                        {/* Expandable Changes Area */}
+                        {hasChanges && (
+                          <Accordion
+                            type="single"
+                            collapsible
+                            className="w-full"
+                          >
+                            <AccordionItem
+                              value={log.id}
+                              className="border-none"
+                            >
+                              <AccordionTrigger className="bg-muted/5 border-border/10 h-8 flex-row-reverse gap-3 border-y px-4 hover:no-underline">
+                                <div className="flex items-center gap-2">
+                                  <IconTerminal className="text-primary/40 size-3" />
+                                  <span className="text-[9px] font-black tracking-[0.3em] uppercase opacity-40">
+                                    {auditLogs.table.viewChanges}
+                                  </span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="p-0">
+                                <div className="bg-muted/10 space-y-4 p-6 text-right font-mono text-[10px]">
+                                  {changes &&
+                                    Object.entries(changes).map(
                                       ([field, diff]) => (
                                         <div
                                           key={field}
-                                          className="border-l-2 pl-2"
+                                          className="group/field border-border/10 grid grid-cols-12 gap-4 border-b pb-4 last:border-0 last:pb-0"
                                         >
-                                          <div className="font-medium">
-                                            {field}:
+                                          <div className="border-border/10 col-span-2 flex flex-col items-end border-l">
+                                            <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                                              Field
+                                            </span>
+                                            <span className="text-primary/80 font-black uppercase">
+                                              {field}
+                                            </span>
                                           </div>
-                                          <div className="text-muted-foreground">
-                                            <div>
-                                              {auditLogs.labels.before}{" "}
-                                              <span className="font-mono">
-                                                {diff.old !== null &&
-                                                diff.old !== undefined
-                                                  ? String(diff.old).substring(
-                                                      0,
-                                                      50,
-                                                    )
-                                                  : auditLogs.empty.empty}
-                                              </span>
-                                            </div>
-                                            <div>
-                                              {auditLogs.labels.after}{" "}
-                                              <span className="font-mono">
-                                                {diff.new !== null &&
-                                                diff.new !== undefined
-                                                  ? String(diff.new).substring(
-                                                      0,
-                                                      50,
-                                                    )
-                                                  : auditLogs.empty.empty}
-                                              </span>
-                                            </div>
+                                          <div className="border-border/10 col-span-5 flex flex-col items-end border-l pr-4">
+                                            <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                                              Before
+                                            </span>
+                                            <span className="w-full truncate opacity-60">
+                                              {String(diff.old || "EMPTY")}
+                                            </span>
+                                          </div>
+                                          <div className="col-span-5 flex flex-col items-end pr-4">
+                                            <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                                              After
+                                            </span>
+                                            <span className="text-foreground w-full truncate font-black">
+                                              {String(diff.new || "EMPTY")}
+                                            </span>
                                           </div>
                                         </div>
                                       ),
                                     )}
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-                            </Accordion>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">
-                              {auditLogs.table.noChanges}
-                            </span>
-                          )}
-                        </TableCell>
-                      </TableRow>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        )}
+                      </div>
                     );
                   })}
-                </TableBody>
-              </Table>
+                </div>
+              )}
             </ScrollArea>
-          )}
 
-          {/* Pagination */}
-          {data && data.totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between border-t pt-4">
-              <div className="text-muted-foreground text-sm">
-                {common.pagination.page} {digitsEnToFa(page)}{" "}
-                {common.pagination.of} {digitsEnToFa(data.totalPages)}
+            {/* Pagination Protocol */}
+            {data && data.totalPages > 1 && (
+              <div className="bg-muted/20 border-border/40 flex items-center justify-between border-t px-6 py-3">
+                <div className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                  Registry_Page_Index :: {digitsEnToFa(page)} /{" "}
+                  {digitsEnToFa(data.totalPages)}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-border/40 h-8 rounded-none text-[9px] font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-20"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                  >
+                    Previous_Block
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-border/40 h-8 rounded-none text-[9px] font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-20"
+                    onClick={() =>
+                      setPage((p) => Math.min(data.totalPages, p + 1))
+                    }
+                    disabled={page === data.totalPages}
+                  >
+                    Next_Block
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
-                  {common.pagination.previous}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setPage((p) => Math.min(data.totalPages, p + 1))
-                  }
-                  disabled={page === data.totalPages}
-                >
-                  {common.pagination.next}
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </div>
+        </section>
+      </div>
     </PageTransition>
   );
 }
