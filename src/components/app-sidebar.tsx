@@ -28,7 +28,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { app, navigation, navigationLabels } from "@/constants";
-import { can, type Permission } from "@/lib/permissions";
+import type { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useAuthUser } from "@/store/auth-store";
 import { Terminal, Cpu } from "lucide-react";
 
@@ -57,31 +58,31 @@ const sidebarData = {
       title: navigation.groups,
       url: "/groups",
       icon: IconBuildingCommunity,
-      permission: "groups.view",
+      permission: "org.view",
     },
     {
       title: navigation.tags,
       url: "/tags",
       icon: IconTag,
-      permission: "tags.view",
+      permission: "project.view",
     },
     {
       title: navigation.reports,
       url: "/reports",
       icon: IconChartBar,
-      permission: "reports.view",
+      permission: "org.view",
     },
     {
       title: navigationLabels.timesheet,
       url: "/timesheet",
       icon: IconClock,
-      permission: "timesheet.view",
+      permission: "time_entry.create",
     },
     {
       title: navigation.users,
       url: "/users",
       icon: IconUsers,
-      permission: "users.view",
+      permission: "org.manage_members",
     },
   ] as NavItem[],
   navSecondary: [
@@ -94,7 +95,7 @@ const sidebarData = {
       title: navigation.settings,
       url: "/settings",
       icon: IconSettings,
-      permission: "settings.view",
+      permission: "org.update",
     },
   ] as NavItem[],
 };
@@ -145,6 +146,7 @@ function AppSidebarHeader() {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthUser();
+  const { can } = usePermissions();
 
   if (!user) {
     return null;
@@ -181,7 +183,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         <NavMain
           items={sidebarData.navAdmin.filter((item) =>
-            item.permission ? can(user.role, item.permission) : true,
+            item.permission ? can(item.permission) : true,
           )}
           title={navigationLabels.admin}
         />
@@ -190,7 +192,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="border-border/40 bg-muted/10 relative z-10 flex flex-col border-t p-0">
         <NavMain
           items={sidebarData.navSecondary.filter((item) =>
-            item.permission ? can(user.role, item.permission) : true,
+            item.permission ? can(item.permission) : true,
           )}
         />
 

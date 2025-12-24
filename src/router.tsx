@@ -18,8 +18,8 @@ import {
   ui,
   users,
 } from "@/constants";
-import { can, Permission } from "./lib/permissions";
-import { UsersRoleOptions } from "./lib/pocketbase-types";
+import type { Permission } from "./lib/permissions";
+import { usePermissions } from "./hooks/usePermissions";
 import { useAuthIsLoggedIn, useAuthUser } from "./store/auth-store";
 
 // Standardized error fallback component for lazy-loaded routes
@@ -191,6 +191,7 @@ const PermissionProtectedRoute = ({
   permission: Permission;
 }) => {
   const user = useAuthUser();
+  const { can } = usePermissions();
   const isLoggedIn = useAuthIsLoggedIn();
 
   if (!isLoggedIn) {
@@ -199,7 +200,7 @@ const PermissionProtectedRoute = ({
 
   // Special case: allow users to edit their own profile
   if (
-    permission === "users.manage" &&
+    permission === "org.manage_members" &&
     window.location.pathname.match(/^\/users\/[^/]+\/edit$/)
   ) {
     const urlParts = window.location.pathname.split("/");
@@ -210,7 +211,7 @@ const PermissionProtectedRoute = ({
     }
   }
 
-  if (!can(user?.role as UsersRoleOptions | null, permission)) {
+  if (!can(permission)) {
     return <Navigate to="/" replace />;
   }
 
@@ -266,21 +267,21 @@ const routes: RouteType[] = [
     path: "/groups",
     element: <Groups />,
     protected: true,
-    permission: "groups.view",
+    permission: "org.view",
     title: groups.title,
   },
   {
     path: "/groups/new",
     element: <CreateGroup />,
     protected: true,
-    permission: "groups.manage",
+    permission: "org.update",
     title: groups.create.title,
   },
   {
     path: "/groups/:id/edit",
     element: <EditGroup />,
     protected: true,
-    permission: "groups.manage",
+    permission: "org.update",
     title: groups.edit.title,
   },
   {
@@ -328,9 +329,7 @@ const routes: RouteType[] = [
   {
     path: "/tasks/board",
     element: (
-      <PermissionProtectedRoute
-        permission="tasks.view" // Assuming a permission for task board
-      >
+      <PermissionProtectedRoute permission="task.view">
         <TaskBoardPage />
       </PermissionProtectedRoute>
     ),
@@ -388,7 +387,7 @@ const routes: RouteType[] = [
   {
     path: "/projects/:id/board",
     element: (
-      <PermissionProtectedRoute permission="tasks.view">
+      <PermissionProtectedRoute permission="task.view">
         <TaskBoardPage />
       </PermissionProtectedRoute>
     ),
@@ -405,21 +404,21 @@ const routes: RouteType[] = [
     path: "/users",
     element: <Users />,
     protected: true,
-    permission: "users.view",
+    permission: "org.manage_members",
     title: users.title,
   },
   {
     path: "/users/new",
     element: <CreateUser />,
     protected: true,
-    permission: "users.manage",
+    permission: "org.manage_members",
     title: users.create.title,
   },
   {
     path: "/users/:id/edit",
     element: <EditUser />,
     protected: true,
-    permission: "users.manage",
+    permission: "org.manage_members",
     title: users.edit.title,
   },
   {
@@ -455,7 +454,7 @@ const routes: RouteType[] = [
   {
     path: "/audit-logs",
     element: (
-      <PermissionProtectedRoute permission="users.manage">
+      <PermissionProtectedRoute permission="org.manage_members">
         <AuditLogs />
       </PermissionProtectedRoute>
     ),
