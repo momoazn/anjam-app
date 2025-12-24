@@ -1,7 +1,8 @@
-import { CheckSquare, Plus, User } from "lucide-react";
+import { Plus, User, CheckSquare, Layers } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { common, myTasks as myTasksText, tasks } from "@/constants";
+import { common, myTasks as myTasksText, tasks, app } from "@/constants";
+import { cn } from "@/lib/utils";
 
 type MyTasksHeaderProps = {
   selectionMode: boolean;
@@ -15,32 +16,66 @@ export function MyTasksHeader({
   onCreateTask,
 }: MyTasksHeaderProps) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
-          <User className="h-5 w-5 md:h-6 md:w-6" />
-          {myTasksText.title}
-        </h1>
-        <p className="text-muted-foreground mt-2">{myTasksText.description}</p>
+    <div className="bg-card relative mb-8 overflow-hidden rounded-3xl border p-8 shadow-xl">
+      {/* Blueprint Grid Background */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-start gap-5">
+          <div className="bg-primary/10 text-primary ring-primary/20 flex size-14 items-center justify-center rounded-2xl ring-1">
+            <User className="size-7" />
+          </div>
+          <div>
+            <div className="text-primary flex items-center gap-2">
+              <Layers className="size-3" />
+              <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                {app.name} / Workspace / Index
+              </span>
+            </div>
+            <h1 className="mt-1 text-3xl font-black tracking-tight md:text-4xl">
+              {myTasksText.title}
+            </h1>
+            <p className="text-muted-foreground mt-2 text-sm leading-relaxed font-medium">
+              {myTasksText.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant={selectionMode ? "secondary" : "outline"}
+            size="lg"
+            onClick={onToggleSelection}
+            className={cn(
+              "border-primary/10 h-12 gap-3 rounded-xl px-6 font-bold transition-all",
+              selectionMode && "bg-primary/10 text-primary border-primary/30",
+            )}
+          >
+            <CheckSquare className="size-4" />
+            {selectionMode
+              ? common.buttons.cancelSelection
+              : common.buttons.multiSelect}
+          </Button>
+          <Button
+            className="shadow-primary/20 h-12 gap-3 rounded-xl px-6 font-black shadow-lg transition-all hover:scale-105 active:scale-95"
+            size="lg"
+            onClick={onCreateTask}
+          >
+            <Plus className="size-5" />
+            {tasks.addTask.buttons.newTask}
+          </Button>
+        </div>
       </div>
 
-      <div className="flex gap-2">
-        <Button
-          variant={selectionMode ? "secondary" : "outline"}
-          size="lg"
-          onClick={onToggleSelection}
-          className="gap-2"
-        >
-          <CheckSquare className="h-4 w-4" />
-          {selectionMode
-            ? common.buttons.cancelSelection
-            : common.buttons.multiSelect}
-        </Button>
-        <Button className="gap-2" size="lg" onClick={onCreateTask}>
-          <Plus className="h-4 w-4" />
-          {tasks.addTask.buttons.newTask}
-        </Button>
-      </div>
+      {/* Structural Accent */}
+      <div className="bg-primary/20 absolute right-0 bottom-0 h-1 w-32" />
+      <div className="bg-primary/20 absolute right-0 bottom-0 h-8 w-1" />
     </div>
   );
 }

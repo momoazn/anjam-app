@@ -5,10 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserAvatar } from "@/components/user-avatar";
-import { task as taskLabels, tasks } from "@/constants";
+import { task as taskLabels } from "@/constants";
 import { formatDateShort } from "@/lib/date-utils";
-import { TaskWithProject } from "@/lib/pocketbase";
-import { UsersResponse } from "@/lib/pocketbase-types";
+import type { TaskWithProject } from "@/lib/pocketbase";
+import type { UsersResponse } from "@/lib/pocketbase-types";
 import {
   priorityColors,
   priorityIcons,
@@ -17,6 +17,7 @@ import {
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type TaskListItemProps = {
   task: TaskWithProject;
@@ -59,11 +60,10 @@ function TaskListItemInner({
   return (
     <div
       className={cn(
-        "group hover:bg-muted/30 focus-within:ring-ring border-border/50 flex cursor-pointer items-center justify-between border-b px-3 py-2 text-sm transition-colors duration-150 ease-in-out focus-within:ring-1 focus-within:ring-offset-0",
-        isSelected && "bg-blue-50/50 dark:bg-blue-400/5",
+        "group border-border/40 bg-card hover:bg-muted/30 relative flex cursor-pointer items-stretch border-b transition-all duration-300 hover:z-10",
+        isSelected && "bg-primary/5",
         className,
       )}
-      data-interactive-item
       role="button"
       tabIndex={0}
       onClick={handleClick}
@@ -75,115 +75,132 @@ function TaskListItemInner({
       }}
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
-      {/* Left side: Checkbox, Icon, ID, Title (fixed layout) */}
-      <div className="flex min-w-0 grow items-center gap-1">
-        {isSelectable && (
-          <div className="flex items-center justify-center">
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={(checked) =>
-                onSelectionChange?.(checked as boolean)
-              }
-              className="shrink-0 transition-transform hover:scale-110"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-        )}
-        <PriorityIcon className={cn(`h-4 w-4 shrink-0`, priorityIconColor)} />
-        <span className="text-muted-foreground group-hover:text-foreground w-16 shrink-0 text-center font-mono text-xs transition-all duration-200 ease-in-out">
-          {task.display_id}
-        </span>
-        <StatusIcon className={cn(`h-3.5 w-3.5 shrink-0`, statusIconColor)} />
-        <span
-          className="text-foreground truncate text-[13px] leading-snug font-medium transition-colors duration-200"
-          title={task.title}
-        >
-          {task.title}
-        </span>
-        {showProject && task.expand?.project?.name && (
-          <Badge
-            variant="outline"
-            className="border-border bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded px-1.5 py-0.5 text-xs font-medium transition-all duration-200"
-          >
-            {task.expand.project.name}
-          </Badge>
-        )}
-      </div>
-
-      {/* Right side: Tags, Date, Assignee */}
-      <div className="flex shrink-0 items-center gap-2">
-        {/* Tags */}
-        {task.tags && task.tags.length > 0 && (
-          <div className="hidden items-center gap-1 md:flex">
-            {task.tags.slice(0, 2).map((tag) => {
-              // Limit tags shown
-              // Simple color logic for tags
-              let tagColor = "bg-muted text-muted-foreground border-border";
-              if (tag === tasks.tags.bug)
-                tagColor =
-                  "bg-destructive/10 text-destructive border-destructive/20";
-              if (tag === tasks.tags.feature)
-                tagColor = "bg-primary/10 text-primary border-primary/20";
-              if (tag === tasks.tags.improvement)
-                tagColor = "bg-accent/10 text-accent border-accent/20";
-              return (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-all duration-200 hover:scale-105 ${tagColor}`}
-                >
-                  {tag}
-                </Badge>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Date */}
-        <div className="flex w-[70px] shrink-0 items-end">
-          <span
+      {/* Selection & Priority Zone */}
+      <div className="border-border/30 bg-muted/10 flex w-14 shrink-0 flex-col items-center justify-center gap-2 border-l py-3">
+        {isSelectable ? (
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) =>
+              onSelectionChange?.(checked as boolean)
+            }
+            className="size-4 rounded-md transition-transform hover:scale-110"
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : (
+          <div
             className={cn(
-              "inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium",
-              !task.deadline &&
-                "border-muted-foreground/15 text-muted-foreground/80",
-              task.deadline &&
-                !isOverdue &&
-                !isDeadlineToday &&
-                "border-muted-foreground/20 text-muted-foreground/80",
-              isDeadlineToday &&
-                "border-amber-500/20 bg-amber-500/3 text-amber-600/70 dark:border-amber-400/20 dark:bg-amber-400/3 dark:text-amber-300/70",
-              isOverdue &&
-                "border-destructive/20 bg-destructive/3 text-destructive/70 dark:border-destructive/20 dark:bg-destructive/5 dark:text-destructive/70",
+              "flex size-8 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110",
+              priorityColors[task.priority]
+                .replace("text", "bg-")
+                .replace("700", "500/10")
+                .replace("300", "400/10"),
             )}
           >
-            {formatDateShort(task.deadline)}
+            <PriorityIcon className={cn("size-4.5", priorityIconColor)} />
+          </div>
+        )}
+        <div className="flex h-1 flex-col gap-px opacity-20">
+          <div className="bg-foreground h-full w-4" />
+        </div>
+      </div>
+
+      {/* Main Content Zone */}
+      <div className="flex min-w-0 grow flex-col justify-center px-4 py-3">
+        <div className="flex items-center gap-3">
+          <span className="text-muted-foreground/50 text-[10px] font-black tracking-widest uppercase">
+            {task.display_id}
+          </span>
+          <div className="bg-border/50 h-px w-4" />
+          {showProject && task.expand?.project?.name && (
+            <span className="text-primary/70 text-[10px] font-black tracking-tight uppercase">
+              {task.expand.project.name}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-1 flex items-center gap-3">
+          <StatusIcon className={cn("size-4 shrink-0", statusIconColor)} />
+          <span className="text-foreground group-hover:text-primary truncate text-base font-bold tracking-tight transition-colors">
+            {task.title}
           </span>
         </div>
 
-        {/* Assignee Avatar */}
-        <div className="flex items-center gap-1.5">
-          <UserAvatar
-            user={
-              assigneeRecord
-                ? {
-                    first_name: assigneeRecord.first_name,
-                    last_name: assigneeRecord.last_name,
-                    username: assigneeRecord.username,
-                    avatar: assigneeRecord.avatar,
-                    id: assigneeRecord.id,
-                    collectionId: assigneeRecord.collectionId,
-                    collectionName: assigneeRecord.collectionName,
-                  }
-                : undefined
-            }
-            username={
-              !assigneeRecord && task.assignee ? task.assignee : undefined
-            }
-            showUnassigned={!assigneeRecord && !task.assignee}
-            className="h-7 w-7"
-          />
+        {task.tags && task.tags.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {task.tags.map((tag) => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="border-border/50 bg-muted/50 text-muted-foreground rounded-sm px-1.5 py-0 text-[9px] font-black tracking-wider uppercase"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Meta & Assignee Zone */}
+      <div className="flex items-center gap-6 px-6">
+        {/* Deadline Indicator */}
+        <div className="hidden flex-col items-end sm:flex">
+          <span className="text-muted-foreground/40 text-[9px] font-black tracking-widest uppercase">
+            Deadline
+          </span>
+          <span
+            className={cn(
+              "mt-0.5 text-xs font-black tracking-tighter",
+              !task.deadline && "text-muted-foreground/30",
+              task.deadline &&
+                !isOverdue &&
+                !isDeadlineToday &&
+                "text-muted-foreground",
+              isDeadlineToday && "text-amber-600 dark:text-amber-400",
+              isOverdue && "text-rose-600 dark:text-rose-400",
+            )}
+          >
+            {task.deadline
+              ? digitsEnToFa(formatDateShort(task.deadline))
+              : "---"}
+          </span>
+        </div>
+
+        {/* Assignee */}
+        <div className="flex flex-col items-center">
+          <div className="relative">
+            <UserAvatar
+              user={
+                assigneeRecord
+                  ? {
+                      first_name: assigneeRecord.first_name,
+                      last_name: assigneeRecord.last_name,
+                      username: assigneeRecord.username,
+                      avatar: assigneeRecord.avatar,
+                      id: assigneeRecord.id,
+                      collectionId: assigneeRecord.collectionId,
+                      collectionName: assigneeRecord.collectionName,
+                    }
+                  : undefined
+              }
+              showUnassigned={!assigneeRecord && !task.assignee}
+              className="border-background size-10 rounded-xl border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
+            />
+            {assigneeRecord && (
+              <div className="border-background absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 bg-emerald-500">
+                <div className="size-1 rounded-full bg-white" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Active Indicator Bar */}
+      <div
+        className={cn(
+          "absolute inset-y-0 right-0 w-1 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
+          statusIconColor.replace("text", "bg"),
+        )}
+      />
     </div>
   );
 }
