@@ -364,7 +364,7 @@ const LandingPage = () => {
             {
               icon: <Layers className="h-4 w-4" />,
               title: "مدیریت ثبتی (Registry)",
-              desc: "فراتر از یک لیست ساده؛ تسک‌ها در انجام به عنوان رکوردهای صنعتی با متادیتای غمیق و تاریخچه غیرقابل تغییر ثبت می‌شوند.",
+              desc: "فراتر از یک لیست ساده؛ تسک‌ها در انجام به عنوان رکوردهای صنعتی با متادیتای عمیق و تاریخچه غیرقابل تغییر ثبت می‌شوند.",
               id: "feature-1",
             },
             {
@@ -472,18 +472,18 @@ const LandingPage = () => {
           </div>
 
           <div className="font-vazirmatn text-muted-foreground flex flex-wrap justify-center gap-x-8 gap-y-4 font-mono text-[9px] tracking-[0.2em] uppercase">
-            <a href="#doc" className="hover:text-primary transition-colors">
+            <span className="hover:text-primary transition-colors">
               مستندات گره‌ها
-            </a>
-            <a href="#privacy" className="hover:text-primary transition-colors">
+            </span>
+            <span className="hover:text-primary transition-colors">
               پروتکل امنیت
-            </a>
-            <a href="#terms" className="hover:text-primary transition-colors">
+            </span>
+            <span className="hover:text-primary transition-colors">
               توافق‌نامه
-            </a>
-            <a href="#status" className="hover:text-primary transition-colors">
+            </span>
+            <span className="hover:text-primary transition-colors">
               مانیتورینگ
-            </a>
+            </span>
           </div>
 
           <div className="border-border/40 bg-muted/20 flex items-center gap-3 border px-4 py-2 shadow-inner">
