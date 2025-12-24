@@ -4,6 +4,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormField as ShadcnFormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type FieldType = "input" | "textarea" | "select" | "file-upload";
 
@@ -46,14 +48,11 @@ type FormFieldProps<T extends FieldValues> = {
 };
 
 /**
- * Generic FormField wrapper component that eliminates duplicate FormField patterns
- * Supports common input types: input, textarea, select, date, file-upload
+ * Generic FormField wrapper component industrialized for Anjam
  */
 export function FormField<T extends FieldValues>({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  control: _control,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  name: _name,
+  control,
+  name,
   label,
   type,
   placeholder,
@@ -66,78 +65,100 @@ export function FormField<T extends FieldValues>({
   accept,
   children,
 }: FormFieldProps<T>) {
-  const renderInput = () => {
-    // If custom children provided, use them
-    if (children) {
-      return <>{children}</>;
-    }
-
-    switch (type) {
-      case "input":
-        return (
-          <Input
-            placeholder={placeholder}
-            className={className}
-            autoFocus={autoFocus}
-            disabled={disabled}
-          />
-        );
-
-      case "textarea":
-        return (
-          <Textarea
-            placeholder={placeholder}
-            className={className}
-            disabled={disabled}
-          />
-        );
-
-      case "select":
-        return (
-          <Select disabled={disabled}>
-            <SelectTrigger className={className}>
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {options?.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
-
-      case "file-upload":
-        return (
-          <Input
-            type="file"
-            multiple={multiple}
-            accept={accept}
-            disabled={disabled}
-            className={className}
-          />
-        );
-
-      default:
-        return (
-          <Input
-            placeholder={placeholder}
-            className={className}
-            disabled={disabled}
-          />
-        );
-    }
-  };
-
   return (
-    <FormItem>
-      <FormLabel>
-        {label}
-        {required && <span className="text-destructive mr-1">*</span>}
-      </FormLabel>
-      <FormControl>{renderInput()}</FormControl>
-      <FormMessage />
-    </FormItem>
+    <ShadcnFormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className="space-y-1.5">
+          <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+            {label}
+            {required && (
+              <span className="text-primary mr-1 opacity-40">*</span>
+            )}
+          </FormLabel>
+          <FormControl>
+            {children ? (
+              children
+            ) : type === "input" ? (
+              <Input
+                {...field}
+                placeholder={placeholder}
+                autoFocus={autoFocus}
+                disabled={disabled}
+                className={cn(
+                  "border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0",
+                  className,
+                )}
+              />
+            ) : type === "textarea" ? (
+              <Textarea
+                {...field}
+                placeholder={placeholder}
+                disabled={disabled}
+                className={cn(
+                  "border-border/40 bg-muted/5 focus:border-primary/40 min-h-[120px] rounded-none leading-relaxed font-medium focus:ring-0",
+                  className,
+                )}
+              />
+            ) : type === "select" ? (
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                disabled={disabled}
+              >
+                <SelectTrigger
+                  className={cn(
+                    "border-border/40 bg-muted/5 h-11 rounded-none text-right text-[11px] font-black tracking-widest uppercase focus:ring-0",
+                    className,
+                  )}
+                >
+                  <SelectValue placeholder={placeholder} />
+                </SelectTrigger>
+                <SelectContent className="border-foreground bg-card rounded-none border-2">
+                  {options?.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      className="text-[10px] font-black uppercase"
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : type === "file-upload" ? (
+              <Input
+                type="file"
+                multiple={multiple}
+                accept={accept}
+                disabled={disabled}
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files) {
+                    field.onChange(multiple ? Array.from(files) : files[0]);
+                  }
+                }}
+                className={cn(
+                  "border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none pt-2 focus:ring-0",
+                  className,
+                )}
+              />
+            ) : (
+              <Input
+                {...field}
+                placeholder={placeholder}
+                disabled={disabled}
+                className={cn(
+                  "border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0",
+                  className,
+                )}
+              />
+            )}
+          </FormControl>
+          <FormMessage className="text-[10px] font-bold" />
+        </FormItem>
+      )}
+    />
   );
 }

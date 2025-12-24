@@ -1,21 +1,6 @@
 import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { auth, common, users } from "@/constants";
 import { useGroups } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
@@ -48,7 +33,6 @@ export function UserFields({
   const isEditingSelf = editingUserId === user?.id;
   const isManager = user?.role === UsersRoleOptions.manager;
 
-  // Fetch groups for dropdown
   const { data: groups } = useGroups({
     enabled: showGroup,
   });
@@ -58,127 +42,109 @@ export function UserFields({
 
     if (user.role === UsersRoleOptions.admin) {
       return [
-        UsersRoleOptions.admin,
-        UsersRoleOptions.manager,
-        UsersRoleOptions.supervisor,
-        UsersRoleOptions.employee,
+        { value: UsersRoleOptions.admin, label: users.table.roles.admin },
+        { value: UsersRoleOptions.manager, label: users.table.roles.manager },
+        {
+          value: UsersRoleOptions.supervisor,
+          label: users.table.roles.supervisor,
+        },
+        { value: UsersRoleOptions.employee, label: users.table.roles.employee },
       ];
     }
 
     if (user.role === UsersRoleOptions.manager) {
-      return [UsersRoleOptions.supervisor, UsersRoleOptions.employee];
+      return [
+        {
+          value: UsersRoleOptions.supervisor,
+          label: users.table.roles.supervisor,
+        },
+        { value: UsersRoleOptions.employee, label: users.table.roles.employee },
+      ];
     }
 
     if (user.role === UsersRoleOptions.supervisor) {
-      return [UsersRoleOptions.supervisor, UsersRoleOptions.employee];
+      return [
+        {
+          value: UsersRoleOptions.supervisor,
+          label: users.table.roles.supervisor,
+        },
+        { value: UsersRoleOptions.employee, label: users.table.roles.employee },
+      ];
     }
 
-    return [UsersRoleOptions.employee];
+    return [
+      { value: UsersRoleOptions.employee, label: users.table.roles.employee },
+    ];
   }, [user]);
 
-  return (
-    <>
-      <GenericFormField
-        control={control}
-        name="username"
-        label={auth.login.username}
-        type="input"
-        required
-      />
+  const groupOptions = useMemo(() => {
+    if (!groups) return [];
+    return groups.map((g) => ({ value: g.id, label: g.name }));
+  }, [groups]);
 
-      {!isEdit && (
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <GenericFormField
           control={control}
-          name="password"
-          label={auth.login.password}
+          name="first_name"
+          label={users.form.firstName}
           type="input"
-          placeholder={auth.login.password}
           required
-        >
-          <Input type="password" />
-        </GenericFormField>
-      )}
-
-      <GenericFormField
-        control={control}
-        name="first_name"
-        label={users.form.firstName}
-        type="input"
-        required
-      />
-
-      <GenericFormField
-        control={control}
-        name="last_name"
-        label={users.form.lastName}
-        type="input"
-        required
-      />
-
-      {/* Only show role field if user has permission to change roles or if not editing self */}
-      {(!isEditingSelf || user?.role === UsersRoleOptions.admin) && (
-        <FormField<UserFieldsFormValues>
-          control={control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{users.table.columns.role}</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger aria-label={users.table.columns.role}>
-                    <SelectValue placeholder={users.form.selectRole} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {availableRoles.map((role) => (
-                    <SelectItem key={role} value={role}>
-                      {users.table.roles[role]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
         />
-      )}
-
-      {showGroup && (
-        <FormField<UserFieldsFormValues>
+        <GenericFormField
           control={control}
-          name="group"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{users.form.group}</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-                disabled={isManager} // Managers can only create users in their group
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={users.form.selectGroup} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {groups && groups.length > 0 ? (
-                    groups.map((group) => (
-                      <SelectItem key={group.id} value={group.id}>
-                        {group.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="__empty" disabled>
-                      {common.messages.noData}
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          name="last_name"
+          label={users.form.lastName}
+          type="input"
+          required
         />
-      )}
-    </>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <GenericFormField
+          control={control}
+          name="username"
+          label={auth.login.username}
+          type="input"
+          required
+        />
+        {!isEdit && (
+          <GenericFormField
+            control={control}
+            name="password"
+            label={auth.login.password}
+            type="input"
+            required
+            placeholder="••••••••"
+          />
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {(!isEditingSelf || user?.role === UsersRoleOptions.admin) && (
+          <GenericFormField
+            control={control}
+            name="role"
+            label={users.table.columns.role}
+            type="select"
+            options={availableRoles}
+            required
+          />
+        )}
+
+        {showGroup && (
+          <GenericFormField
+            control={control}
+            name="group"
+            label={users.form.group}
+            type="select"
+            options={groupOptions}
+            disabled={isManager}
+            placeholder={common.messages.noData}
+          />
+        )}
+      </div>
+    </div>
   );
 }
