@@ -42,6 +42,9 @@ const createMockTask = (
   time_spent_minutes: 0,
   deleted_at: "",
   status_ref: "",
+  story_points: 0,
+  task_type: "task",
+  watchers: [],
   ...overrides,
 });
 
