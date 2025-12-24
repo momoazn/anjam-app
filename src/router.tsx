@@ -376,6 +376,16 @@ const routes: RouteType[] = [
     title: projects.projectTasks,
   },
   {
+    path: "/projects/:id/board",
+    element: (
+      <PermissionProtectedRoute permission="tasks.view">
+        <TaskBoardPage />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    title: tasks.board.title,
+  },
+  {
     path: "/projects/:id/tasks/new",
     element: <CreateTask />,
     protected: true,

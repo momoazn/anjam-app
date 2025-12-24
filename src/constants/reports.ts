@@ -343,12 +343,12 @@ export const dashboard = {
     noDeadline: "ندارد",
   },
   welcome: {
-    employee: "خوش آمدید {firstName} {lastName} عزیز!",
-    supervisor: "خوش آمدید سرپرست {firstName} {lastName}!",
-    admin: "خوش آمدید ادمین {firstName} {lastName}!",
-    employeeSubtitle: "وضعیت تسک‌ها و پروژه‌های شما را مشاهده کنید",
-    supervisorSubtitle: "وضعیت تیم و پروژه‌ها را نظارت کنید",
-    adminSubtitle: "نمای کلی سیستم و گزارش‌ها را مشاهده کنید",
+    employee: "داشبورد من",
+    supervisor: "داشبورد سرپرست",
+    admin: "داشبورد مدیریت",
+    employeeSubtitle: "نظارت بر تسک‌ها و پروژه‌های شما",
+    supervisorSubtitle: "مدیریت تیم و نظارت بر پروژه‌ها",
+    adminSubtitle: "کنترل و مدیریت سیستم",
   },
   cards: {
     todayDue: "امروز سررسید",
