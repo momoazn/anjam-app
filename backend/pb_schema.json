@@ -769,6 +769,130 @@
     "system": false
   },
   {
+    "id": "pbc_4024472791",
+    "listRule": "@request.auth.id != '' && (project.organization.id = @collection.organization_members.organization.id && @collection.organization_members.user.id = @request.auth.id)",
+    "viewRule": "@request.auth.id != '' && (project.organization.id = @collection.organization_members.organization.id && @collection.organization_members.user.id = @request.auth.id)",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "project_members",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "pbc_484305853",
+        "hidden": false,
+        "id": "relation5177312088",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "project",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation2632917373",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "user",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "select1303115606",
+        "maxSelect": 1,
+        "name": "role",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": ["owner", "admin", "member", "viewer"]
+      },
+      {
+        "hidden": false,
+        "id": "bool1141551293",
+        "name": "notifications",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool",
+        "options": {}
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation6423034415",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "added_by",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "date7201523937",
+        "max": "",
+        "min": "",
+        "name": "added_at",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "date"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_project_member_unique ON project_members (project, user)",
+      "CREATE INDEX idx_pm_user ON project_members (user)",
+      "CREATE INDEX idx_pm_project ON project_members (project)",
+      "CREATE INDEX idx_pm_project_role ON project_members (project, role)"
+    ],
+    "system": false
+  },
+  {
     "id": "pbc_groups",
     "listRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && manager.id = @request.auth.id)",
     "viewRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && manager.id = @request.auth.id)",
