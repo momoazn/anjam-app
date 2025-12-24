@@ -17,6 +17,7 @@ export enum Collections {
   Notifications = "notifications",
   OrganizationMembers = "organization_members",
   Organizations = "organizations",
+  ProjectMembers = "project_members",
   Projects = "projects",
   Tags = "tags",
   Tasks = "tasks",
@@ -225,6 +226,24 @@ export type OrganizationsRecord<Tsettings = unknown> = {
   updated: IsoAutoDateString;
 };
 
+export enum ProjectMembersRoleOptions {
+  "owner" = "owner",
+  "admin" = "admin",
+  "member" = "member",
+  "viewer" = "viewer",
+}
+export type ProjectMembersRecord = {
+  added_at?: IsoDateString;
+  added_by?: RecordIdString;
+  created: IsoAutoDateString;
+  id: string;
+  notifications?: boolean;
+  project: RecordIdString;
+  role: ProjectMembersRoleOptions;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
+};
+
 export type ProjectsRecord = {
   assets?: FileNameString[];
   code: string;
@@ -363,6 +382,8 @@ export type OrganizationsResponse<
   Tsettings = unknown,
   Texpand = unknown,
 > = Required<OrganizationsRecord<Tsettings>> & BaseSystemFields<Texpand>;
+export type ProjectMembersResponse<Texpand = unknown> =
+  Required<ProjectMembersRecord> & BaseSystemFields<Texpand>;
 export type ProjectsResponse<Texpand = unknown> = Required<ProjectsRecord> &
   BaseSystemFields<Texpand>;
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> &
@@ -390,6 +411,7 @@ export type CollectionRecords = {
   notifications: NotificationsRecord;
   organization_members: OrganizationMembersRecord;
   organizations: OrganizationsRecord;
+  project_members: ProjectMembersRecord;
   projects: ProjectsRecord;
   tags: TagsRecord;
   tasks: TasksRecord;
@@ -410,6 +432,7 @@ export type CollectionResponses = {
   notifications: NotificationsResponse;
   organization_members: OrganizationMembersResponse;
   organizations: OrganizationsResponse;
+  project_members: ProjectMembersResponse;
   projects: ProjectsResponse;
   tags: TagsResponse;
   tasks: TasksResponse;
