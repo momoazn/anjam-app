@@ -1,31 +1,33 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconBell,
-  IconBellOff,
   IconCheck,
   IconTrash,
   IconTrashX,
+  IconActivity,
+  IconCircleCheck,
+  IconClock,
+  IconStack2,
 } from "@tabler/icons-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { NotificationFilters } from "@/components/notifications/notification-filters";
-import {
-  type NotificationFilter,
-  type NotificationSort,
+import type {
+  NotificationFilter,
+  NotificationSort,
 } from "@/components/notifications/notification-filters";
 import { NotificationList } from "@/components/notifications/notification-list";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { common, notifications as notificationsText } from "@/constants";
+import { common, notifications as notificationsText, app } from "@/constants";
 import {
   useClearAll,
   useClearRead,
@@ -35,6 +37,7 @@ import {
   useNotifications,
 } from "@/hooks/notifications";
 import { useAuthUser } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
 
 export default function Notifications() {
   const user = useAuthUser();
@@ -78,23 +81,21 @@ export default function Notifications() {
     }
 
     return [...filtered].sort((a, b) => {
-      switch (sort) {
-        case "oldest":
-          return (
-            new Date(a.created || "").getTime() -
-            new Date(b.created || "").getTime()
-          );
-        case "newest":
-        default:
-          return (
-            new Date(b.created || "").getTime() -
-            new Date(a.created || "").getTime()
-          );
+      if (sort === "oldest") {
+        return (
+          new Date(a.created || "").getTime() -
+          new Date(b.created || "").getTime()
+        );
       }
+      return (
+        new Date(b.created || "").getTime() -
+        new Date(a.created || "").getTime()
+      );
     });
   }, [notificationsData, filter, sort]);
 
   const unreadCount = notificationsData.filter((n) => !n.read).length;
+  const readCount = notificationsData.filter((n) => n.read).length;
 
   const handleDelete = (id: string) => {
     const existing = pendingDeletesRef.current.get(id);
@@ -131,185 +132,187 @@ export default function Notifications() {
   };
 
   const bulkMarkRead = () => {
-    selectedIds.forEach((id) => markAsRead.mutate(id));
+    selectedIds.forEach((id) => {
+      markAsRead.mutate(id);
+    });
     setSelectedIds([]);
   };
 
   const bulkDelete = () => {
-    selectedIds.forEach((id) => handleDelete(id));
+    selectedIds.forEach((id) => {
+      handleDelete(id);
+    });
     setSelectedIds([]);
   };
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-right">
-          <h1 className="text-foreground flex items-center gap-2 text-xl font-bold md:text-2xl">
-            <IconBell className="h-5 w-5 md:h-6 md:w-6" />
-            {notificationsText.pageTitle}
-          </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {notificationsText.pageDescription}
-          </p>
-        </div>
-        <TooltipProvider>
-          <div className="flex items-center gap-1">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => user?.id && markAllAsRead.mutate(user.id)}
-                    disabled={unreadCount === 0}
-                    className="h-8 w-8 p-0"
-                    aria-label={notificationsText.markAllAsRead}
-                  >
-                    <IconCheck className="h-4 w-4" />
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{notificationsText.markAllAsRead}</p>
-              </TooltipContent>
-            </Tooltip>
+      {/* Registry Header Console */}
+      <div className="border-border/40 bg-card relative mb-8 overflow-hidden rounded-none border p-8 shadow-xl">
+        {/* Blueprint Grid Backdrop */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
+            backgroundSize: "40px 40px",
+          }}
+        />
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => user?.id && clearRead.mutate(user.id)}
-                    disabled={
-                      notificationsData.filter((n) => n.read).length === 0
-                    }
-                    className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                    aria-label={notificationsText.actions.clearRead}
-                  >
-                    <IconTrashX className="h-4 w-4" />
-                  </Button>
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-5">
+            <div className="bg-primary/10 text-primary border-primary/20 flex size-14 items-center justify-center rounded-none border">
+              <IconBell className="size-7" />
+            </div>
+            <div>
+              <div className="text-primary flex items-center gap-2">
+                <IconStack2 className="size-3" />
+                <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                  {app.name} / Alert_Central
                 </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{notificationsText.actions.clearRead}</p>
-              </TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => user?.id && clearAll.mutate(user.id)}
-                    disabled={notificationsData.length === 0}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
-                    aria-label={notificationsText.clearAll}
-                  >
-                    <IconTrash className="h-4 w-4" />
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{notificationsText.clearAll}</p>
-              </TooltipContent>
-            </Tooltip>
+              </div>
+              <h1 className="mt-1 text-right text-3xl font-black tracking-tight uppercase md:text-4xl">
+                {notificationsText.pageTitle}
+              </h1>
+              <p className="text-muted-foreground mt-2 text-right text-sm leading-relaxed font-medium">
+                {notificationsText.pageDescription}
+              </p>
+            </div>
           </div>
-        </TooltipProvider>
+
+          <div className="flex flex-wrap gap-2">
+            <TooltipProvider>
+              <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => user?.id && markAllAsRead.mutate(user.id)}
+                      disabled={unreadCount === 0}
+                      className="hover:bg-primary/10 hover:text-primary size-10 rounded-none transition-all disabled:opacity-20"
+                    >
+                      <IconCheck className="size-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+                    {notificationsText.markAllAsRead}
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => user?.id && clearRead.mutate(user.id)}
+                      disabled={readCount === 0}
+                      className="size-10 rounded-none text-amber-500 transition-all hover:bg-amber-500/10 disabled:opacity-20"
+                    >
+                      <IconTrashX className="size-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+                    {notificationsText.actions.clearRead}
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => user?.id && clearAll.mutate(user.id)}
+                      disabled={notificationsData.length === 0}
+                      className="size-10 rounded-none text-rose-500 transition-all hover:bg-rose-500/10 disabled:opacity-20"
+                    >
+                      <IconTrash className="size-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+                    {notificationsText.clearAll}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
+          </div>
+        </div>
       </div>
 
+      {/* Telemetry Bar */}
       <div
-        className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4"
+        className="bg-border/40 border-border/40 mb-8 grid grid-cols-2 gap-px border sm:grid-cols-4"
         data-animate-stagger
       >
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <IconBell className="text-primary h-5 w-5" />
-              <div className="text-right">
-                <p className="text-muted-foreground text-sm">
-                  {notificationsText.stats.total}
-                </p>
-                <p className="text-2xl font-bold">
-                  {digitsEnToFa(notificationsData.length)}
-                </p>
-              </div>
+        {[
+          {
+            label: notificationsText.stats.total,
+            value: notificationsData.length,
+            icon: IconActivity,
+            color: "text-primary",
+          },
+          {
+            label: notificationsText.stats.unread,
+            value: unreadCount,
+            icon: IconClock,
+            color: "text-amber-500",
+          },
+          {
+            label: notificationsText.stats.read,
+            value: readCount,
+            icon: IconCircleCheck,
+            color: "text-emerald-500",
+          },
+          {
+            label: notificationsText.stats.deletable,
+            value: readCount,
+            icon: IconTrash,
+            color: "text-rose-500",
+          },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
+          >
+            <div className="mb-2 flex items-center justify-end gap-3">
+              <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+                {stat.label}
+              </span>
+              <stat.icon className={cn("size-4", stat.color)} />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <IconBellOff className="h-5 w-5 text-blue-500" />
-              <div className="text-right">
-                <p className="text-muted-foreground text-sm">
-                  {notificationsText.stats.unread}
-                </p>
-                <p className="text-2xl font-bold">
-                  {digitsEnToFa(unreadCount)}
-                </p>
-              </div>
+            <div className="text-3xl font-black tracking-tighter">
+              {digitsEnToFa(stat.value)}
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <IconCheck className="h-5 w-5 text-green-500" />
-              <div className="text-right">
-                <p className="text-muted-foreground text-sm">
-                  {notificationsText.stats.read}
-                </p>
-                <p className="text-2xl font-bold">
-                  {digitsEnToFa(notificationsData.filter((n) => n.read).length)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <IconTrash className="h-5 w-5 text-orange-500" />
-              <div className="text-right">
-                <p className="text-muted-foreground text-sm">
-                  {notificationsText.stats.deletable}
-                </p>
-                <p className="text-2xl font-bold">
-                  {digitsEnToFa(notificationsData.filter((n) => n.read).length)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        ))}
       </div>
 
-      <NotificationFilters
-        filter={filter}
-        sort={sort}
-        selectedIds={selectedIds}
-        onFilterChange={(value) => {
-          void setFilter(value);
-        }}
-        onSortChange={(value) => {
-          void setSort(value);
-        }}
-        onBulkMarkRead={bulkMarkRead}
-        onBulkDelete={bulkDelete}
-        onClearSelection={() => setSelectedIds([])}
-        isBulkDeletePending={deleteNotification.isPending}
-      />
+      <div className="bg-muted/5 border-border/40 border p-6">
+        <NotificationFilters
+          filter={filter}
+          sort={sort}
+          selectedIds={selectedIds}
+          onFilterChange={(value) => {
+            void setFilter(value);
+          }}
+          onSortChange={(value) => {
+            void setSort(value);
+          }}
+          onBulkMarkRead={bulkMarkRead}
+          onBulkDelete={bulkDelete}
+          onClearSelection={() => setSelectedIds([])}
+          isBulkDeletePending={deleteNotification.isPending}
+        />
 
-      <NotificationList
-        notifications={filteredNotifications}
-        isLoading={isLoading}
-        error={error}
-        selectedIds={selectedIds}
-        onToggleSelect={toggleSelect}
-        onMarkAsRead={(id) => markAsRead.mutate(id)}
-        onDelete={handleDelete}
-      />
+        <NotificationList
+          notifications={filteredNotifications}
+          isLoading={isLoading}
+          error={error}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onMarkAsRead={(id) => markAsRead.mutate(id)}
+          onDelete={handleDelete}
+        />
+      </div>
     </PageTransition>
   );
 }

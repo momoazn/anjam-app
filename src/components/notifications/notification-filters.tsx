@@ -1,5 +1,10 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconSortAscending } from "@tabler/icons-react";
+import {
+  IconSortAscending,
+  IconCheck,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,26 +44,41 @@ export function NotificationFilters({
 }: NotificationFiltersProps) {
   return (
     <div
-      className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      className="border-border/40 mb-8 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between"
       data-animate-stagger
     >
       {selectedIds.length > 0 ? (
-        <div className="bg-muted flex flex-wrap items-center gap-2 rounded-lg p-2">
-          <span className="text-sm font-medium">
+        <div className="bg-primary/5 border-primary/20 flex flex-wrap items-center gap-2 rounded-none border p-1.5">
+          <div className="bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black tracking-widest uppercase">
             {digitsEnToFa(selectedIds.length)} {notificationsText.selected}
-          </span>
-          <Button size="sm" variant="outline" onClick={onBulkMarkRead}>
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onBulkMarkRead}
+            className="hover:bg-primary/10 h-8 rounded-none text-[9px] font-black tracking-widest uppercase"
+          >
+            <IconCheck className="ml-1.5 size-3.5" />
             {notificationsText.actions.markAsRead}
           </Button>
           <Button
             size="sm"
-            variant="destructive"
+            variant="ghost"
             onClick={onBulkDelete}
             disabled={isBulkDeletePending}
+            className="h-8 rounded-none text-[9px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
           >
+            <IconTrash className="ml-1.5 size-3.5" />
             {notificationsText.actions.delete}
           </Button>
-          <Button size="sm" variant="ghost" onClick={onClearSelection}>
+          <div className="bg-primary/20 mx-1 h-4 w-px" />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onClearSelection}
+            className="h-8 rounded-none text-[9px] font-black tracking-widest uppercase opacity-60"
+          >
+            <IconX className="ml-1.5 size-3.5" />
             {notificationsText.deselectAll}
           </Button>
         </div>
@@ -66,15 +86,25 @@ export function NotificationFilters({
         <Tabs
           value={filter}
           onValueChange={(value) => onFilterChange(value as NotificationFilter)}
+          className="bg-muted/20 border-border/40 rounded-none border p-1"
         >
-          <TabsList>
-            <TabsTrigger value="all">
+          <TabsList className="h-9 gap-1 bg-transparent p-0">
+            <TabsTrigger
+              value="all"
+              className="data-[state=active]:bg-card data-[state=active]:border-border/40 h-full rounded-none border border-transparent text-[10px] font-black tracking-widest uppercase data-[state=active]:shadow-sm"
+            >
               {notificationsText.filters.all}
             </TabsTrigger>
-            <TabsTrigger value="unread">
+            <TabsTrigger
+              value="unread"
+              className="data-[state=active]:bg-card data-[state=active]:border-border/40 h-full rounded-none border border-transparent text-[10px] font-black tracking-widest uppercase data-[state=active]:shadow-sm"
+            >
               {notificationsText.filters.unread}
             </TabsTrigger>
-            <TabsTrigger value="read">
+            <TabsTrigger
+              value="read"
+              className="data-[state=active]:bg-card data-[state=active]:border-border/40 h-full rounded-none border border-transparent text-[10px] font-black tracking-widest uppercase data-[state=active]:shadow-sm"
+            >
               {notificationsText.filters.read}
             </TabsTrigger>
           </TabsList>
@@ -83,16 +113,29 @@ export function NotificationFilters({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
-            <IconSortAscending className="ml-1 h-4 w-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-foreground bg-card h-10 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+          >
+            <IconSortAscending className="ml-2 size-4" />
             {notificationsText.sort[sort]}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onSortChange("newest")}>
+        <DropdownMenuContent
+          align="end"
+          className="border-foreground bg-card rounded-none border-2"
+        >
+          <DropdownMenuItem
+            onClick={() => onSortChange("newest")}
+            className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
+          >
             {notificationsText.sort.newest}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onSortChange("oldest")}>
+          <DropdownMenuItem
+            onClick={() => onSortChange("oldest")}
+            className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
+          >
             {notificationsText.sort.oldest}
           </DropdownMenuItem>
         </DropdownMenuContent>

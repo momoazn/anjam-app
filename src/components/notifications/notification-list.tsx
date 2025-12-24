@@ -1,4 +1,4 @@
-import { IconBell, IconBellOff } from "@tabler/icons-react";
+import { IconBell, IconBellOff, IconTerminal } from "@tabler/icons-react";
 import { isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 
 import { NotificationItem } from "@/components/notifications/notification-item";
@@ -34,19 +34,16 @@ const getGroupTitle = (group: string) => {
 
 const EmptyState = () => (
   <div
-    className="flex flex-col items-center justify-center py-12 text-center"
+    className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale"
     data-animate-stagger
   >
-    <div
-      className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-      data-interactive-pulse
-    >
-      <IconBellOff className="text-muted-foreground/50 h-8 w-8" />
+    <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2 border-dashed">
+      <IconBellOff className="size-10 stroke-[1]" />
     </div>
-    <h3 className="text-foreground mb-2 text-lg font-semibold">
+    <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
       {notificationsText.emptyState.title}
     </h3>
-    <p className="text-muted-foreground text-sm">
+    <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
       {notificationsText.emptyState.description}
     </p>
   </div>
@@ -87,39 +84,27 @@ export function NotificationList({
 
   if (isLoading) {
     return (
-      <div
-        className="flex flex-col items-center justify-center py-12 text-center"
-        data-animate-stagger
-      >
-        <div
-          className="bg-muted/50 mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-          data-interactive-pulse
-        >
-          <IconBell className="text-muted-foreground/50 h-8 w-8 animate-pulse" />
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center">
+          <IconBell className="text-primary size-10 animate-pulse opacity-20" />
         </div>
-        <h3 className="text-foreground mb-2 text-lg font-semibold">
-          Loading notificationsText...
+        <h3 className="text-foreground mb-2 text-xs font-black tracking-[0.3em] uppercase opacity-40">
+          Syncing_Alert_Index...
         </h3>
-        <p className="text-muted-foreground text-sm">
-          Please wait while we fetch your notifications
-        </p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        className="flex flex-col items-center justify-center py-12 text-center"
-        data-animate-stagger
-      >
-        <div className="bg-destructive/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-          <IconBell className="text-destructive h-8 w-8" />
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center border-2 border-rose-500/20 bg-rose-500/10">
+          <IconBell className="size-10 text-rose-500" />
         </div>
-        <h3 className="text-foreground mb-2 text-lg font-semibold">
-          Failed to load notifications
+        <h3 className="mb-2 text-lg font-black tracking-widest text-rose-500 uppercase">
+          Telemetry_Link_Failed
         </h3>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase opacity-60">
           {error instanceof Error ? error.message : "An error occurred"}
         </p>
       </div>
@@ -131,18 +116,26 @@ export function NotificationList({
   }
 
   return (
-    <ScrollArea className="h-[600px]">
-      <div className="space-y-6" data-animate-stagger>
+    <ScrollArea className="h-[calc(100vh-24rem)]">
+      <div className="space-y-10" data-animate-stagger>
         {Object.entries(groupedNotifications).map(
           ([group, groupNotifications]) => {
             if (groupNotifications.length === 0) return null;
 
             return (
-              <div key={group}>
-                <h3 className="text-foreground mb-3 text-right text-sm font-semibold">
-                  {getGroupTitle(group)}
-                </h3>
-                <div className="space-y-2" data-animate-stagger>
+              <div key={group} className="relative">
+                <div className="bg-muted/5 border-border/20 sticky top-0 z-10 mb-4 flex items-center gap-4 border-y px-4 py-2 backdrop-blur-sm">
+                  <IconTerminal className="text-primary/60 size-3" />
+                  <h3 className="text-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+                    Log_Group :: {getGroupTitle(group)}
+                  </h3>
+                  <div className="bg-border/20 h-px flex-1" />
+                </div>
+
+                <div
+                  className="border-border/20 border shadow-sm"
+                  data-animate-stagger
+                >
                   {groupNotifications.map((notification) => (
                     <NotificationItem
                       key={notification.id}

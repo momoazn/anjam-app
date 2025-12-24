@@ -1,5 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconEye, IconTrash } from "@tabler/icons-react";
+import { IconEye, IconTrash, IconClock, IconHash } from "@tabler/icons-react";
 import { format } from "date-fns-jalali";
 
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ const formatNotificationTime = (dateString?: string | null) => {
   if (!dateString) return "-";
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return "-";
-  return digitsEnToFa(format(date, "dd MMMM HH:mm"));
+  return digitsEnToFa(format(date, "MM/dd HH:mm"));
 };
 
 type NotificationItemProps = {
@@ -34,74 +34,92 @@ export function NotificationItem({
   return (
     <div
       className={cn(
-        "group hover:bg-muted/50 flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors",
-        !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
+        "group border-border/20 bg-card hover:bg-muted/30 relative flex items-stretch border-b transition-all duration-200",
+        selected && "bg-primary/5",
+        !notification.read && "border-r-primary border-r-2",
       )}
-      data-interactive-item
     >
-      <div className="pt-1">
+      {/* Selection Zone */}
+      <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-l">
         <Checkbox
           checked={selected}
           onCheckedChange={() => onToggleSelect(notification.id)}
+          className="size-4 rounded-none transition-transform hover:scale-110"
           aria-label={notificationsText.selected}
         />
       </div>
-      <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-        {!notification.read && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onMarkAsRead(notification.id)}
-            className="h-7 w-7 p-0"
-            title={notificationsText.actions.markAsRead}
-            aria-label={notificationsText.actions.markAsRead}
+
+      {/* Main Content Zone */}
+      <div className="flex min-w-0 grow flex-col justify-center px-6 py-4 text-right">
+        <div className="mb-1 flex items-center justify-end gap-3">
+          {!notification.read && (
+            <div className="bg-primary size-1.5 rounded-none shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+          )}
+          <h4
+            className={cn(
+              "truncate text-sm font-black tracking-tight uppercase",
+              !notification.read
+                ? "text-foreground"
+                : "text-muted-foreground/60",
+            )}
           >
-            <IconEye className="h-3 w-3" />
-          </Button>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onDelete(notification.id)}
-          className="text-destructive hover:text-destructive h-7 w-7 p-0"
-          title={notificationsText.actions.delete}
-          aria-label={notificationsText.actions.delete}
-        >
-          <IconTrash className="h-3 w-3" />
-        </Button>
+            {notification.title}
+          </h4>
+        </div>
+
+        <p className="text-muted-foreground/80 line-clamp-2 text-xs leading-relaxed">
+          {notification.message}
+        </p>
+
+        <div className="mt-3 flex items-center justify-end gap-4 opacity-40 transition-opacity group-hover:opacity-100">
+          <div className="flex items-center gap-1.5">
+            <IconHash className="size-3" />
+            <span className="text-[9px] font-black tracking-widest uppercase">
+              {notification.id.slice(0, 8)}
+            </span>
+          </div>
+          <Badge
+            variant="outline"
+            className="border-border/40 bg-muted/30 text-muted-foreground rounded-none px-1.5 py-0 text-[8px] font-black tracking-widest uppercase"
+          >
+            {notificationsText.types[notification.type]}
+          </Badge>
+        </div>
       </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="text-right">
-          <div className="mb-1 flex items-center justify-end gap-2">
-            {!notification.read && (
-              <div className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
-            )}
-            <h4
-              className={cn(
-                "truncate text-sm font-medium",
-                !notification.read
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              {notification.title}
-            </h4>
+      {/* Protocol & Actions Zone */}
+      <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-r px-4">
+        <div className="flex flex-col items-center">
+          <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-[0.2em] uppercase">
+            Event_Time
+          </span>
+          <div className="text-foreground/60 flex items-center gap-1.5 text-[10px] font-black tabular-nums">
+            <IconClock className="text-primary/40 size-3" />
+            {formatNotificationTime(notification.created)}
           </div>
-          <p className="text-muted-foreground mb-2 line-clamp-2 text-right text-xs">
-            {notification.message}
-          </p>
-          <div className="flex items-center justify-end gap-2">
-            <Badge variant="outline" className="text-xs">
-              {notificationsText.types[notification.type]}
-            </Badge>
-            <time
-              dateTime={notification.created || ""}
-              className="text-muted-foreground text-xs"
+        </div>
+
+        <div className="flex translate-y-1 items-center gap-1 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+          {!notification.read && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onMarkAsRead(notification.id)}
+              className="hover:bg-primary/10 hover:text-primary size-8 rounded-none transition-all"
+              title={notificationsText.actions.markAsRead}
             >
-              {formatNotificationTime(notification.created)}
-            </time>
-          </div>
+              <IconEye className="size-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onDelete(notification.id)}
+            className="size-8 rounded-none text-rose-500/80 transition-all hover:bg-rose-500/10"
+            title={notificationsText.actions.delete}
+          >
+            <IconTrash className="size-4" />
+          </Button>
         </div>
       </div>
     </div>
