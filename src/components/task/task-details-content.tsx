@@ -1,22 +1,23 @@
 import {
-  Clock,
-  History,
-  Loader2,
-  MessageSquare,
-  Pencil,
-  Save,
-  X,
-} from "lucide-react";
+  IconClock,
+  IconHistory,
+  IconLoader2,
+  IconMessages,
+  IconPencil,
+  IconDeviceFloppy,
+  IconX,
+  IconTerminal,
+  IconUser,
+  IconTarget,
+  IconCalendar,
+} from "@tabler/icons-react";
 
 import { ActivityStream } from "@/components/audit/activity-stream";
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
 import { TimeComparison } from "@/components/task/time-comparison";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auditLogs, comments as commentsText, tasks } from "@/constants";
 import type { CommentWithUser } from "@/hooks/comments";
@@ -58,75 +59,117 @@ export function TaskDetailsContent({
   onCancelTimeEdit,
 }: TaskDetailsContentProps) {
   return (
-    <div className="space-y-6 lg:col-span-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>{tasks.details.detailsCardTitle}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-muted-foreground">
-              {tasks.details.assigneeLabel}
-            </span>{" "}
-            {task.expand?.assignee ? (
-              <span>
-                {formatUserName(
+    <div className="space-y-10 lg:col-span-2">
+      {/* Registry Metadata Module */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            01_Registry_Metadata
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-2">
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Assignee_ID
+              </span>
+              <IconUser className="size-3" />
+            </div>
+            <div className="text-right text-sm font-black tracking-tight uppercase">
+              {task.expand?.assignee ? (
+                formatUserName(
                   task.expand.assignee.first_name,
                   task.expand.assignee.last_name,
                   task.expand.assignee.username,
-                )}
-              </span>
-            ) : (
-              <span className="text-muted-foreground">
-                {tasks.addTask.unassigned}
-              </span>
-            )}
+                )
+              ) : (
+                <span className="text-muted-foreground/40">
+                  {tasks.addTask.unassigned}
+                </span>
+              )}
+            </div>
           </div>
-          <div>
-            <span className="text-muted-foreground">
-              {tasks.details.projectLabel}
-            </span>{" "}
-            {task.expand?.project?.name || tasks.details.unknownProject}
-          </div>
-          <div>
-            <span className="text-muted-foreground">
-              {tasks.details.deadlineLabel}
-            </span>{" "}
-            {formatTaskDate(task.deadline)}
-          </div>
-          <div>
-            <span className="text-muted-foreground">
-              {tasks.details.displayIdLabel}
-            </span>{" "}
-            {task.display_id || task.id}
-          </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="text-primary h-5 w-5" />
-              <h3 className="font-medium">
+          <div className="bg-card flex h-24 flex-col justify-between p-6">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Project_Node
+              </span>
+              <IconTarget className="size-3" />
+            </div>
+            <div className="truncate text-right text-sm font-black tracking-tight uppercase">
+              {task.expand?.project?.name || tasks.details.unknownProject}
+            </div>
+          </div>
+
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Temporal_Goal
+              </span>
+              <IconCalendar className="size-3" />
+            </div>
+            <div className="text-right text-sm font-black tabular-nums">
+              {task.deadline ? (
+                digitsEnToFa(formatTaskDate(task.deadline))
+              ) : (
+                <span className="opacity-20">—</span>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-card flex h-24 flex-col justify-between p-6">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Internal_Serial
+              </span>
+              <IconTerminal className="size-3" />
+            </div>
+            <div className="text-right font-mono text-xs font-black tracking-widest uppercase opacity-60">
+              {task.display_id || task.id}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Telemetry Log (Time Tracking) */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            02_Telemetry_Log
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="bg-muted/5 border-border/40 border p-8">
+          <div className="mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <IconClock className="text-primary size-5" />
+              <h3 className="text-sm font-black tracking-widest uppercase">
                 {tasks.details.timeTracking.title}
               </h3>
             </div>
             {!isEditingTime && canEditTime && (
-              <Button size="sm" variant="ghost" onClick={onStartTimeEdit}>
-                <Pencil className="mr-2 h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onStartTimeEdit}
+                className="border-border/40 hover:bg-primary/10 hover:text-primary h-9 rounded-none border text-[9px] font-black tracking-widest uppercase transition-all"
+              >
+                <IconPencil className="ml-2 size-3.5" />
                 {tasks.details.timeTracking.editTime}
               </Button>
             )}
           </div>
 
           {isEditingTime ? (
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <label className="mb-2 block text-sm font-medium">
+            <div className="animate-in fade-in slide-in-from-top-2 space-y-6">
+              <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px overflow-hidden border">
+                <div className="bg-card border-border/10 space-y-2 border-l p-4 text-right">
+                  <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.3em] uppercase">
                     {tasks.details.timeTracking.hours}
-                  </label>
+                  </span>
                   <Input
                     type="number"
                     min="0"
@@ -135,12 +178,13 @@ export function TaskDetailsContent({
                       onHoursChange(Number(event.target.value))
                     }
                     disabled={isUpdatingTime}
+                    className="bg-muted/10 h-10 rounded-none border-none text-right text-lg font-black tabular-nums focus:ring-0"
                   />
                 </div>
-                <div className="flex-1">
-                  <label className="mb-2 block text-sm font-medium">
+                <div className="bg-card space-y-2 p-4 text-right">
+                  <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.3em] uppercase">
                     {tasks.details.timeTracking.minutes}
-                  </label>
+                  </span>
                   <Input
                     type="number"
                     min="0"
@@ -150,99 +194,114 @@ export function TaskDetailsContent({
                       onMinutesChange(Number(event.target.value))
                     }
                     disabled={isUpdatingTime}
+                    className="bg-muted/10 h-10 rounded-none border-none text-right text-lg font-black tabular-nums focus:ring-0"
                   />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+
+              <div className="border-border/10 flex items-center justify-end gap-3 border-t pt-4">
                 <Button
-                  size="sm"
-                  onClick={onSaveTime}
-                  disabled={isUpdatingTime}
-                >
-                  {isUpdatingTime ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
-                  {tasks.details.timeTracking.saveTime}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
+                  variant="ghost"
                   onClick={onCancelTimeEdit}
                   disabled={isUpdatingTime}
+                  className="text-muted-foreground/60 h-10 rounded-none text-[9px] font-black tracking-widest uppercase"
                 >
-                  <X className="mr-2 h-4 w-4" />
+                  <IconX className="ml-2 size-3.5" />
                   {tasks.details.timeTracking.cancelEdit}
+                </Button>
+                <Button
+                  onClick={onSaveTime}
+                  disabled={isUpdatingTime}
+                  className="h-10 rounded-none px-6 text-[10px] font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:scale-95 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                >
+                  {isUpdatingTime ? (
+                    <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <IconDeviceFloppy className="ml-2 size-4" />
+                  )}
+                  {tasks.details.timeTracking.saveTime}
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="mt-2 space-y-2">
-              <p className="text-primary text-2xl font-semibold">
-                {formatTimeSpent(task.time_spent_minutes) ||
-                  tasks.details.timeTracking.noTimeTracked}
-              </p>
-              <TimeComparison
-                estimatedMinutes={task.estimated_minutes || 0}
-                actualMinutes={task.time_spent_minutes}
-              />
+            <div className="flex flex-col items-baseline justify-between gap-6 md:flex-row md:items-center">
+              <div className="text-right">
+                <div className="text-muted-foreground/40 mb-1 text-[10px] font-black tracking-[0.3em] uppercase">
+                  Elapsed_Resource
+                </div>
+                <p className="text-primary text-5xl font-black tracking-tighter">
+                  {formatTimeSpent(task.time_spent_minutes) ||
+                    digitsEnToFa("0h 0m")}
+                </p>
+              </div>
+
+              <div className="w-full max-w-sm flex-1">
+                <div className="text-muted-foreground/40 mb-3 text-right text-[10px] font-black tracking-[0.3em] uppercase">
+                  Burn_Rate_Comparison
+                </div>
+                <TimeComparison
+                  estimatedMinutes={task.estimated_minutes || 0}
+                  actualMinutes={task.time_spent_minutes}
+                />
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      {task.description && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{tasks.details.descriptionCardTitle}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="prose prose-sm max-w-none">
-              <p className="whitespace-pre-wrap">{task.description}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Functional Context (Tabs) */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            03_Functional_Context
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
 
-      <Separator />
+        <Tabs defaultValue="comments" className="w-full" dir="rtl">
+          <TabsList className="bg-border/40 border-border/40 h-14 w-full justify-start gap-px overflow-hidden rounded-none border p-0">
+            <TabsTrigger
+              value="comments"
+              className="data-[state=active]:bg-card data-[state=active]:text-primary h-full flex-1 rounded-none text-[11px] font-black tracking-widest uppercase transition-none"
+            >
+              <IconMessages className="ml-2 size-4" />
+              {commentsText.title}
+              <span className="bg-muted/20 mr-2 px-1.5 py-0.5 text-[9px] font-black tabular-nums">
+                {digitsEnToFa(comments.length)}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="history"
+              className="data-[state=active]:bg-card data-[state=active]:text-primary h-full flex-1 rounded-none text-[11px] font-black tracking-widest uppercase transition-none"
+            >
+              <IconHistory className="ml-2 size-4" />
+              {auditLogs.activityStream.title}
+            </TabsTrigger>
+          </TabsList>
 
-      <Card>
-        <CardHeader>
-          <Tabs defaultValue="comments" className="w-full">
-            <TabsList>
-              <TabsTrigger value="comments" className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                {commentsText.title}
-                <Badge variant="secondary" className="ml-1 text-xs">
-                  {digitsEnToFa(comments.length)}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="history" className="flex items-center gap-2">
-                <History className="h-4 w-4" />
-                {auditLogs.activityStream.title}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="comments" className="mt-4">
-              <div className="space-y-4">
+          <div className="border-border/40 bg-muted/5 mt-6 border p-8">
+            <TabsContent value="comments" className="m-0 outline-none">
+              <div className="space-y-10">
                 {commentsLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin" />
+                  <div className="flex justify-center py-12 opacity-20">
+                    <IconLoader2 className="h-10 w-10 animate-spin" />
                   </div>
                 ) : (
                   <>
                     <CommentsList comments={comments} />
-                    <CommentComposer taskId={task.id} />
+                    <div className="border-border/20 border-t pt-8">
+                      <CommentComposer taskId={task.id} />
+                    </div>
                   </>
                 )}
               </div>
             </TabsContent>
-            <TabsContent value="history" className="mt-4">
+            <TabsContent value="history" className="m-0 outline-none">
               <ActivityStream resource="tasks" resourceId={task.id} />
             </TabsContent>
-          </Tabs>
-        </CardHeader>
-      </Card>
+          </div>
+        </Tabs>
+      </section>
     </div>
   );
 }

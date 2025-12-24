@@ -1,25 +1,25 @@
 import {
-  Calendar,
-  FileText,
-  History,
-  Trash2,
-  Upload,
-  User,
-} from "lucide-react";
+  IconCalendar,
+  IconFileText,
+  IconHistory,
+  IconTrash,
+  IconUpload,
+  IconUser,
+  IconTerminal,
+} from "@tabler/icons-react";
 
 import { ActivityStream } from "@/components/audit/activity-stream";
 import { ProjectAssets } from "@/components/project/project-assets";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpload } from "@/components/ui/file-upload";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { auditLogs, projects } from "@/constants";
+import { projects } from "@/constants";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { formatDateLocale } from "@/lib/date-utils";
 import { stripHtml } from "@/lib/excel-export";
 import type { ProjectWithSupervisor } from "@/lib/pocketbase";
 import { formatUserName } from "@/lib/utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type ProjectDetailsSectionsProps = {
   project: ProjectWithSupervisor;
@@ -45,141 +45,161 @@ export function ProjectDetailsSections({
   const supervisor = project.expand?.supervisor;
 
   return (
-    <div className="space-y-6 lg:col-span-2">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            {projects.details.information}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3" data-animate-stagger>
-            <User className="text-muted-foreground h-5 w-5" />
-            <div className="flex-1">
-              <p className="text-sm font-medium">
-                {projects.details.supervisor}
-              </p>
+    <div className="space-y-10 lg:col-span-2">
+      {/* Identity Log Module */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            01_Identity_Log
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-2">
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6 text-right">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Supervisor_ID
+              </span>
+              <IconUser className="size-3" />
+            </div>
+            <div className="text-sm font-black tracking-tight uppercase">
               {supervisor ? (
-                <span className="text-muted-foreground text-sm">
-                  {formatUserName(
-                    supervisor.first_name,
-                    supervisor.last_name,
-                    supervisor.username,
-                  )}
-                </span>
+                formatUserName(
+                  supervisor.first_name,
+                  supervisor.last_name,
+                  supervisor.username,
+                )
               ) : (
-                <span className="text-muted-foreground text-sm">-</span>
+                <span className="text-muted-foreground/40">—</span>
               )}
             </div>
           </div>
 
-          <Separator />
-
-          <div className="grid grid-cols-2 gap-4" data-animate-stagger>
-            <div className="flex items-start gap-3">
-              <Calendar className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {projects.details.createdAt}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {formatDateLocale(project.created)}
-                </p>
-              </div>
+          <div className="bg-card flex h-24 flex-col justify-between p-6 text-right">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Temporal_Start
+              </span>
+              <IconCalendar className="size-3" />
             </div>
-            <div className="flex items-start gap-3">
-              <Calendar className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {projects.details.updatedAt}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {formatDateLocale(project.updated)}
-                </p>
-              </div>
+            <div className="text-sm font-black tabular-nums">
+              {digitsEnToFa(formatDateLocale(project.created))}
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{projects.details.description}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isEditing ? (
-            <Textarea
-              value={editedDescription.replace(/<br>/g, "\n")}
-              onChange={(event) => onDescriptionChange(event.target.value)}
-              placeholder={projects.create.form.descriptionPlaceholder}
-              className="min-h-32"
-            />
-          ) : project.description ? (
-            <p className="max-w-none whitespace-pre-wrap">
-              {stripHtml(project.description)}
-            </p>
-          ) : (
-            <p className="text-muted-foreground py-6 text-center">
-              {projects.details.noDescription}
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{projects.details.files}</span>
-            {!isEditing && project.assets && project.assets.length > 0 && (
-              <span className="text-muted-foreground text-sm font-normal">
-                {projects.details.filesCount.replace(
-                  "{count}",
-                  String(project.assets.length),
-                )}
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-l p-6 text-right">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Internal_Hash
               </span>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+              <IconTerminal className="size-3" />
+            </div>
+            <div className="font-mono text-xs font-black tracking-widest uppercase opacity-60">
+              {project.id}
+            </div>
+          </div>
+
+          <div className="bg-card flex h-24 flex-col justify-between p-6 text-right">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[8px] font-black tracking-widest uppercase">
+                Latest_Sync
+              </span>
+              <IconHistory className="size-3" />
+            </div>
+            <div className="text-sm font-black tabular-nums">
+              {digitsEnToFa(formatDateLocale(project.updated))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Description Protocol Section */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            02_Project_Brief
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="bg-muted/5 border-border/40 border p-8">
           {isEditing ? (
-            <>
+            <div className="space-y-2 text-right">
+              <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.2em] uppercase">
+                Input_Buffer
+              </span>
+              <Textarea
+                value={editedDescription.replace(/<br>/g, "\n")}
+                onChange={(event) => onDescriptionChange(event.target.value)}
+                placeholder={projects.create.form.descriptionPlaceholder}
+                className="border-border/40 bg-muted/5 focus:border-primary/40 min-h-32 rounded-none text-right leading-relaxed font-medium focus:ring-0"
+              />
+            </div>
+          ) : project.description ? (
+            <div className="prose prose-sm max-w-none text-right">
+              <p className="text-sm leading-relaxed font-medium whitespace-pre-wrap opacity-80">
+                {stripHtml(project.description)}
+              </p>
+            </div>
+          ) : (
+            <div className="py-12 text-center opacity-20 grayscale">
+              <IconFileText className="mx-auto mb-4 size-10 stroke-[1]" />
+              <p className="text-[10px] font-black tracking-widest uppercase">
+                {projects.details.noDescription}
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Asset Registry Section */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            03_Asset_Registry
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="bg-card border-border/40 overflow-hidden border p-0">
+          {isEditing ? (
+            <div className="space-y-10 p-8 text-right">
               {project.assets && project.assets.length > 0 && (
-                <div className="space-y-2" data-animate-stagger>
-                  <h4 className="text-sm font-medium">
+                <div className="space-y-4">
+                  <h4 className="text-muted-foreground/60 border-border/10 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
                     {projects.files.existingFiles}
                   </h4>
-                  <div className="grid grid-cols-1 gap-2" data-animate-stagger>
+                  <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm">
                     {project.assets
                       .filter((filename) => !filesToDelete.includes(filename))
                       .map((filename) => (
                         <div
                           key={filename}
-                          className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
-                          data-interactive-item
+                          className="bg-card hover:bg-muted/30 group flex items-center justify-between p-4 transition-all"
                         >
-                          <span className="flex-1 truncate text-sm">
-                            {filename}
-                          </span>
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon"
                             onClick={() => onDeleteFile(filename)}
-                            className="text-destructive h-8 w-8 shrink-0"
+                            className="h-8 w-8 shrink-0 rounded-none text-rose-500 hover:bg-rose-500/10"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <IconTrash className="size-4" />
                           </Button>
+                          <span className="flex-1 truncate pr-4 text-right font-mono text-xs font-bold tracking-widest uppercase opacity-60">
+                            {filename}
+                          </span>
                         </div>
                       ))}
                   </div>
                 </div>
               )}
 
-              <div className="space-y-2" data-animate-stagger>
-                <h4 className="flex items-center gap-2 text-sm font-medium">
-                  <Upload className="h-4 w-4" />
+              <div className="space-y-4">
+                <h4 className="text-muted-foreground/60 border-border/10 flex items-center justify-end gap-2 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
                   {projects.files.addNewFiles}
+                  <IconUpload className="size-3.5" />
                 </h4>
                 <FileUpload
                   value={newFiles}
@@ -187,24 +207,28 @@ export function ProjectDetailsSections({
                   maxSize={52428800}
                 />
               </div>
-            </>
+            </div>
           ) : (
-            <ProjectAssets project={project} />
+            <div className="p-0">
+              <ProjectAssets project={project} />
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5" />
-            {auditLogs.activityStream.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Operation Log Section */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            06_Operation_Log
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="bg-muted/5 border-border/40 border p-0">
           <ActivityStream resource="projects" resourceId={project.id} />
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }

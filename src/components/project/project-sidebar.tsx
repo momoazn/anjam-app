@@ -1,8 +1,16 @@
+import {
+  IconChartBar,
+  IconList,
+  IconUsers,
+  IconClock,
+  IconActivity,
+  IconCircleCheck,
+} from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { common, projects } from "@/constants";
+import { projects } from "@/constants";
 import { formatTimeSpent } from "@/lib/time-utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type ProjectSidebarProps = {
   tasksLoading: boolean;
@@ -24,89 +32,108 @@ export function ProjectSidebar({
   onViewUsers,
 }: ProjectSidebarProps) {
   return (
-    <div className="space-y-6" data-animate-stagger>
-      <Card>
-        <CardHeader>
-          <CardTitle>{projects.details.statistics}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <div className="space-y-10" data-animate-stagger>
+      {/* Project Telemetry Registry */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            04_Project_Telemetry
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div
+          className="bg-card border-border/40 overflow-hidden border"
+          data-animate-stagger
+        >
           {tasksLoading ? (
-            <div className="space-y-3" data-animate-stagger>
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
+            <div className="space-y-4 p-6">
+              <Skeleton className="h-12 w-full rounded-none" />
+              <Skeleton className="h-12 w-full rounded-none" />
+              <Skeleton className="h-12 w-full rounded-none" />
             </div>
           ) : (
-            <>
-              <div
-                className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
-                data-interactive-item
-              >
-                <span className="text-sm font-medium">
-                  {projects.details.totalTasks}
-                </span>
-                <span className="text-2xl font-bold">{totalTasks}</span>
-              </div>
-              <div
-                className="flex items-center justify-between rounded-lg bg-green-500/10 p-3"
-                data-interactive-item
-              >
-                <span className="text-sm font-medium">
-                  {projects.details.completedTasks}
-                </span>
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {completedTasks}
+            <div className="divide-border/10 grid grid-cols-1 divide-y">
+              <div className="hover:bg-muted/30 group flex items-center justify-between p-4 transition-all">
+                <div className="flex items-center gap-3">
+                  <IconActivity className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                    {projects.details.totalTasks}
+                  </span>
+                </div>
+                <span className="text-right text-xl font-black tabular-nums">
+                  {digitsEnToFa(totalTasks)}
                 </span>
               </div>
-              <div
-                className="flex items-center justify-between rounded-lg bg-blue-500/10 p-3"
-                data-interactive-item
-              >
-                <span className="text-sm font-medium">
-                  {projects.details.inProgressTasks}
-                </span>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {inProgressTasks}
-                </span>
-              </div>
-              <div
-                className="flex items-center justify-between rounded-lg bg-purple-500/10 p-3"
-                data-interactive-item
-              >
-                <span className="text-sm font-medium">
-                  {projects.details.totalTimeSpent}
-                </span>
-                <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                  {formatTimeSpent(totalTimeSpent)}
-                </span>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{common.messages.quickActions}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2" data-animate-stagger>
+              <div className="hover:bg-muted/30 group flex items-center justify-between p-4 text-right transition-all">
+                <div className="flex items-center gap-3">
+                  <IconCircleCheck className="size-4 text-emerald-500/40 transition-colors group-hover:text-emerald-500" />
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                    {projects.details.completedTasks}
+                  </span>
+                </div>
+                <span className="text-xl font-black text-emerald-500/80 tabular-nums">
+                  {digitsEnToFa(completedTasks)}
+                </span>
+              </div>
+
+              <div className="hover:bg-muted/30 group flex items-center justify-between p-4 text-right transition-all">
+                <div className="flex items-center gap-3">
+                  <IconClock className="size-4 text-amber-500/40 transition-colors group-hover:text-amber-500" />
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                    {projects.details.inProgressTasks}
+                  </span>
+                </div>
+                <span className="text-xl font-black text-amber-500/80 tabular-nums">
+                  {digitsEnToFa(inProgressTasks)}
+                </span>
+              </div>
+
+              <div className="bg-muted/5 group flex items-center justify-between p-4 text-right">
+                <div className="flex items-center gap-3">
+                  <IconChartBar className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                    {projects.details.totalTimeSpent}
+                  </span>
+                </div>
+                <span className="text-primary/80 text-sm font-black tabular-nums">
+                  {digitsEnToFa(formatTimeSpent(totalTimeSpent))}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Protocol Actions Block */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-4">
+          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+            05_Protocol_Access
+          </span>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="bg-muted/10 border-border/40 space-y-2 border p-4">
           <Button
-            variant="outline"
-            className="w-full justify-start"
+            variant="ghost"
+            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-widest uppercase"
             onClick={onViewTasks}
           >
             {projects.list.viewTasks}
+            <IconList className="size-4 opacity-40" />
           </Button>
           <Button
-            variant="outline"
-            className="w-full justify-start"
+            variant="ghost"
+            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-widest uppercase"
             onClick={onViewUsers}
           >
             {projects.users.title}
+            <IconUsers className="size-4 opacity-40" />
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   );
 }
