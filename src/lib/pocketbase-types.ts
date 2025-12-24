@@ -18,9 +18,12 @@ export enum Collections {
   OrganizationMembers = "organization_members",
   Organizations = "organizations",
   ProjectMembers = "project_members",
+  ProjectStatuses = "project_statuses",
   Projects = "projects",
+  Subtasks = "subtasks",
   Tags = "tags",
   Tasks = "tasks",
+  TimeEntries = "time_entries",
   UserLoginLogs = "user_login_logs",
   Users = "users",
 }
@@ -243,6 +246,18 @@ export type ProjectMembersRecord = {
   user: RecordIdString;
 };
 
+export type ProjectStatusesRecord = {
+  color?: string;
+  created: IsoAutoDateString;
+  id: string;
+  is_default?: boolean;
+  is_done?: boolean;
+  name: string;
+  order?: number;
+  project: RecordIdString;
+  updated: IsoAutoDateString;
+};
+
 export type ProjectsRecord = {
   assets?: FileNameString[];
   code: string;
@@ -253,6 +268,17 @@ export type ProjectsRecord = {
   name: string;
   organization: RecordIdString;
   supervisor?: RecordIdString;
+  updated: IsoAutoDateString;
+};
+
+export type SubtasksRecord = {
+  assignee?: RecordIdString;
+  created: IsoAutoDateString;
+  id: string;
+  is_done?: boolean;
+  order?: number;
+  task: RecordIdString;
+  title: string;
   updated: IsoAutoDateString;
 };
 
@@ -285,6 +311,13 @@ export enum TasksStatusOptions {
   "testing" = "testing",
   "on_hold" = "on_hold",
 }
+
+export enum TasksTaskTypeOptions {
+  "task" = "task",
+  "bug" = "bug",
+  "feature" = "feature",
+  "chore" = "chore",
+}
 export type TasksRecord = {
   assignee?: RecordIdString;
   created: IsoAutoDateString;
@@ -299,10 +332,25 @@ export type TasksRecord = {
   priority: TasksPriorityOptions;
   project: RecordIdString;
   status: TasksStatusOptions;
+  status_ref?: RecordIdString;
+  story_points?: number;
   tags?: RecordIdString[];
+  task_type?: TasksTaskTypeOptions;
   time_spent_minutes?: number;
   title: string;
   updated: IsoAutoDateString;
+  watchers?: RecordIdString[];
+};
+
+export type TimeEntriesRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  minutes: number;
+  note?: string;
+  started_at?: IsoDateString;
+  task: RecordIdString;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
 };
 
 export type UserLoginLogsRecord = {
@@ -375,12 +423,18 @@ export type OrganizationsResponse<
 > = Required<OrganizationsRecord<Tsettings>> & BaseSystemFields<Texpand>;
 export type ProjectMembersResponse<Texpand = unknown> =
   Required<ProjectMembersRecord> & BaseSystemFields<Texpand>;
+export type ProjectStatusesResponse<Texpand = unknown> =
+  Required<ProjectStatusesRecord> & BaseSystemFields<Texpand>;
 export type ProjectsResponse<Texpand = unknown> = Required<ProjectsRecord> &
+  BaseSystemFields<Texpand>;
+export type SubtasksResponse<Texpand = unknown> = Required<SubtasksRecord> &
   BaseSystemFields<Texpand>;
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> &
   BaseSystemFields<Texpand>;
 export type TasksResponse<Texpand = unknown> = Required<TasksRecord> &
   BaseSystemFields<Texpand>;
+export type TimeEntriesResponse<Texpand = unknown> =
+  Required<TimeEntriesRecord> & BaseSystemFields<Texpand>;
 export type UserLoginLogsResponse<Texpand = unknown> =
   Required<UserLoginLogsRecord> & BaseSystemFields<Texpand>;
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> &
@@ -401,9 +455,12 @@ export type CollectionRecords = {
   organization_members: OrganizationMembersRecord;
   organizations: OrganizationsRecord;
   project_members: ProjectMembersRecord;
+  project_statuses: ProjectStatusesRecord;
   projects: ProjectsRecord;
+  subtasks: SubtasksRecord;
   tags: TagsRecord;
   tasks: TasksRecord;
+  time_entries: TimeEntriesRecord;
   user_login_logs: UserLoginLogsRecord;
   users: UsersRecord;
 };
@@ -421,9 +478,12 @@ export type CollectionResponses = {
   organization_members: OrganizationMembersResponse;
   organizations: OrganizationsResponse;
   project_members: ProjectMembersResponse;
+  project_statuses: ProjectStatusesResponse;
   projects: ProjectsResponse;
+  subtasks: SubtasksResponse;
   tags: TagsResponse;
   tasks: TasksResponse;
+  time_entries: TimeEntriesResponse;
   user_login_logs: UserLoginLogsResponse;
   users: UsersResponse;
 };
