@@ -15,6 +15,8 @@ export enum Collections {
   Comments = "comments",
   Groups = "groups",
   Notifications = "notifications",
+  OrganizationMembers = "organization_members",
+  Organizations = "organizations",
   Projects = "projects",
   Tags = "tags",
   Tasks = "tasks",
@@ -135,6 +137,7 @@ export type AuditLogsRecord<Tchanges = unknown> = {
   id: string;
   ip_address?: string;
   message?: string;
+  organization?: RecordIdString;
   request_id?: string;
   resource: string;
   resource_id: string;
@@ -179,6 +182,49 @@ export type NotificationsRecord<Tdata = unknown> = {
   user: RecordIdString;
 };
 
+export enum OrganizationMembersRoleOptions {
+  "owner" = "owner",
+  "admin" = "admin",
+  "member" = "member",
+}
+
+export enum OrganizationMembersStatusOptions {
+  "invited" = "invited",
+  "active" = "active",
+  "suspended" = "suspended",
+}
+export type OrganizationMembersRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  invited_at?: IsoDateString;
+  invited_by?: RecordIdString;
+  joined_at?: IsoDateString;
+  last_active_at?: IsoDateString;
+  organization: RecordIdString;
+  role: OrganizationMembersRoleOptions;
+  status?: OrganizationMembersStatusOptions;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
+};
+
+export enum OrganizationsPlanOptions {
+  "free" = "free",
+  "pro" = "pro",
+  "enterprise" = "enterprise",
+}
+export type OrganizationsRecord<Tsettings = unknown> = {
+  active?: boolean;
+  created: IsoAutoDateString;
+  description?: HTMLString;
+  id: string;
+  logo?: FileNameString;
+  name: string;
+  plan?: OrganizationsPlanOptions;
+  settings?: null | Tsettings;
+  slug: string;
+  updated: IsoAutoDateString;
+};
+
 export type ProjectsRecord = {
   assets?: FileNameString[];
   code: string;
@@ -187,6 +233,7 @@ export type ProjectsRecord = {
   group: RecordIdString;
   id: string;
   name: string;
+  organization: RecordIdString;
   supervisor?: RecordIdString;
   updated: IsoAutoDateString;
 };
@@ -194,9 +241,11 @@ export type ProjectsRecord = {
 export type TagsRecord = {
   color?: string;
   created: IsoAutoDateString;
+  creator: RecordIdString;
   group: RecordIdString;
   id: string;
   name: string;
+  organization: RecordIdString;
   updated: IsoAutoDateString;
 };
 
@@ -308,6 +357,12 @@ export type NotificationsResponse<
   Tdata = unknown,
   Texpand = unknown,
 > = Required<NotificationsRecord<Tdata>> & BaseSystemFields<Texpand>;
+export type OrganizationMembersResponse<Texpand = unknown> =
+  Required<OrganizationMembersRecord> & BaseSystemFields<Texpand>;
+export type OrganizationsResponse<
+  Tsettings = unknown,
+  Texpand = unknown,
+> = Required<OrganizationsRecord<Tsettings>> & BaseSystemFields<Texpand>;
 export type ProjectsResponse<Texpand = unknown> = Required<ProjectsRecord> &
   BaseSystemFields<Texpand>;
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> &
@@ -333,6 +388,8 @@ export type CollectionRecords = {
   comments: CommentsRecord;
   groups: GroupsRecord;
   notifications: NotificationsRecord;
+  organization_members: OrganizationMembersRecord;
+  organizations: OrganizationsRecord;
   projects: ProjectsRecord;
   tags: TagsRecord;
   tasks: TasksRecord;
@@ -351,6 +408,8 @@ export type CollectionResponses = {
   comments: CommentsResponse;
   groups: GroupsResponse;
   notifications: NotificationsResponse;
+  organization_members: OrganizationMembersResponse;
+  organizations: OrganizationsResponse;
   projects: ProjectsResponse;
   tags: TagsResponse;
   tasks: TasksResponse;
@@ -366,7 +425,8 @@ type ProcessCreateAndUpdateFields<T> = Omit<
     // Omit AutoDate fields
     [K in keyof T as Extract<T[K], IsoAutoDateString> extends never
       ? K
-      : never]: T[K] extends infer U // Convert FileNameString to File
+      : never]: // Convert FileNameString to File
+    T[K] extends infer U
       ? U extends FileNameString | FileNameString[]
         ? U extends any[]
           ? File[]

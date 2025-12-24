@@ -40,6 +40,8 @@ interface AuthState {
   isLoadingOrgs: boolean;
 
   // Actions
+  login: (user: UsersResponse, token?: string) => void;
+  updateUser: (user: UsersResponse) => void;
   setUser: (user: UsersResponse | null) => void;
   setCurrentOrganization: (
     org: OrganizationsResponse | null,
@@ -62,6 +64,19 @@ export const useAuthStore = create<AuthState>()(
       userOrganizations: [],
       isLoading: false,
       isLoadingOrgs: false,
+
+      login: (user) => {
+        set({
+          user,
+          isAuthenticated: true,
+        });
+
+        get().fetchUserOrganizations();
+      },
+
+      updateUser: (user) => {
+        set({ user });
+      },
 
       // Set user after login
       setUser: (user) => {
@@ -177,12 +192,19 @@ export const useAuthStore = create<AuthState>()(
 export const useAuthUser = () => useAuthStore((state) => state.user);
 export const useAuthIsAuthenticated = () =>
   useAuthStore((state) => state.isAuthenticated);
+export const useAuthIsLoggedIn = () =>
+  useAuthStore((state) => state.isAuthenticated);
 export const useCurrentOrganization = () =>
   useAuthStore((state) => state.currentOrganization);
 export const useCurrentOrgRole = () =>
   useAuthStore((state) => state.currentOrgRole);
+export const useAuthRole = () =>
+  useAuthStore((state) => state.user?.role ?? null);
 export const useUserOrganizations = () =>
   useAuthStore((state) => state.userOrganizations);
+export const useAuthLogin = () => useAuthStore((state) => state.login);
+export const useAuthUpdateUser = () =>
+  useAuthStore((state) => state.updateUser);
 export const useAuthSetUser = () => useAuthStore((state) => state.setUser);
 export const useAuthSetCurrentOrganization = () =>
   useAuthStore((state) => state.setCurrentOrganization);
@@ -192,3 +214,11 @@ export const useAuthSwitchOrganization = () =>
   useAuthStore((state) => state.switchOrganization);
 export const useAuthLogout = () => useAuthStore((state) => state.logout);
 export const useAuthClear = () => useAuthStore((state) => state.clear);
+
+export const useAuthActions = () => {
+  const login = useAuthLogin();
+  const logout = useAuthLogout();
+  const updateUser = useAuthUpdateUser();
+
+  return { login, logout, updateUser };
+};

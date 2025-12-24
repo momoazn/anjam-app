@@ -17,11 +17,11 @@ import { Label } from "@/components/ui/label";
 import { auth, app } from "@/constants";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
-import type { UsersRecord } from "@/lib/pocketbase-types";
+import type { UsersResponse } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
-function isUsersRecord(record: object | null): record is UsersRecord {
+function isUsersRecord(record: object | null): record is UsersResponse {
   return (
     record !== null &&
     typeof record === "object" &&
@@ -97,7 +97,7 @@ export default function Login() {
         </div>
 
         <div className="relative">
-          <div className="text-primary/5 absolute -top-24 -start-12 text-[180px] leading-none font-black uppercase select-none">
+          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-black uppercase select-none">
             ANJAM
           </div>
           <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
