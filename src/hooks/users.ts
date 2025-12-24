@@ -13,6 +13,7 @@ import {
   UsersRecord,
   GroupsResponse,
   ProjectMembersResponse,
+  ProjectMembersRoleOptions,
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
@@ -155,8 +156,13 @@ export function useProjectUsers({
           member: pm.expand?.user,
           role: pm.role,
         }))
-        .filter((item): item is { member: UsersResponse; role: string } =>
-          Boolean(item.member),
+        .filter(
+          (
+            item,
+          ): item is {
+            member: UsersResponse;
+            role: ProjectMembersRoleOptions;
+          } => Boolean(item.member),
         )
         .map(({ member, role }) => ({
           id: member.id,

@@ -2,10 +2,10 @@ import PocketBase from "pocketbase";
 import type {
   CommentsRecord,
   NotificationsRecord,
+  ProjectMembersRecord,
   ProjectsRecord,
   TasksRecord,
   TypedPocketBase,
-  UsersProjectsRecord,
   UsersRecord,
 } from "@/lib/pocketbase-types";
 
@@ -69,8 +69,10 @@ async function truncateCollections(pb: TypedPocketBase) {
     "comments",
     "notifications",
     "tasks",
-    "users_projects",
+    "project_members",
     "projects",
+    "organization_members",
+    "organizations",
     "groups", // Must come before users since groups have required manager reference
     "users",
   ] as const;
@@ -138,7 +140,53 @@ async function seedDatabase() {
     userIdMap.set("manager.main", managerId);
     console.log("Manager user created.");
 
-    // 6. Create Groups (after users exist)
+    // 6. Create Organizations (after users exist)
+    console.log("Inserting default organization...");
+    let defaultOrgId = "";
+    try {
+      const orgResult = await pb.collection("organizations").create({
+        name: "Default Organization",
+        slug: "default-organization",
+        description: "Default organization for projects",
+        active: true,
+        plan: "free",
+      });
+      defaultOrgId = orgResult.id;
+      console.log("Default organization created.");
+    } catch (orgError: unknown) {
+      if (isPocketBaseError(orgError)) {
+        console.error(
+          "Organization creation error:",
+          JSON.stringify(orgError.originalError, null, 2),
+        );
+      } else {
+        console.error("Organization creation error:", orgError);
+      }
+      throw orgError;
+    }
+
+    // 6.1 Assign organization memberships
+    console.log("Assigning users to default organization...");
+    for (const [username, userId] of userIdMap) {
+      const user = createdUsers.find((u) => u.id === userId);
+      const role =
+        user?.role === "admin" || user?.role === "manager" ? "admin" : "member";
+      if (defaultOrgId) {
+        try {
+          await pb.collection("organization_members").create({
+            organization: defaultOrgId,
+            user: userId,
+            role,
+            status: "active",
+            joined_at: new Date().toISOString(),
+          });
+        } catch (err) {
+          console.warn(`Failed to assign org membership for ${username}:`, err);
+        }
+      }
+    }
+
+    // 7. Create Groups (after users exist)
     console.log("Inserting 1 default group...");
     let defaultGroupId = "";
     if (managerId) {
@@ -191,16 +239,17 @@ async function seedDatabase() {
       }
     }
 
-    // 7. Insert Projects
+    // 8. Insert Projects
     console.log(`Inserting ${mockProjects.length} projects...`);
     batch = pb.createBatch();
     mockProjects.forEach((project: MockProject) => {
       const supervisorId = userIdMap.get(project.supervisor);
-      if (supervisorId && defaultGroupId) {
+      if (supervisorId && defaultGroupId && defaultOrgId) {
         batch.collection("projects").create({
           ...project,
           supervisor: supervisorId,
           group: defaultGroupId,
+          organization: defaultOrgId,
         });
       }
     });
@@ -216,18 +265,18 @@ async function seedDatabase() {
     );
     console.log(`${createdProjects.length} projects inserted.`);
 
-    // 8. Insert User-Project Links
-    console.log(`Inserting ${mockUserProjects.length} user-project links...`);
+    // 9. Insert Project Members
+    console.log(`Inserting ${mockUserProjects.length} project members...`);
     batch = pb.createBatch();
     mockUserProjects.forEach((userProject: MockUserProject) => {
       const userId = userIdMap.get(userProject.user);
       const projectId = projectIdMap.get(userProject.project);
       if (userId && projectId) {
-        batch.collection("users_projects").create({
-          // Ensure structure matches UsersProjectsRecord
+        batch.collection("project_members").create({
           user: userId,
           project: projectId,
-          created: userProject.created, // Keep original creation date if needed
+          role: "member",
+          added_at: userProject.created,
         });
       } else {
         console.warn(
@@ -237,12 +286,12 @@ async function seedDatabase() {
     });
     result = await batch.send();
     console.log(`Insert user-project links result: ${result[0].status}`);
-    const createdUserProjects = await pb
-      .collection("users_projects")
-      .getFullList<UsersProjectsRecord>();
-    console.log(`${createdUserProjects.length} user-project links inserted.`);
+    const createdProjectMembers = await pb
+      .collection("project_members")
+      .getFullList<ProjectMembersRecord>();
+    console.log(`${createdProjectMembers.length} project members inserted.`);
 
-    // 9. Insert Tasks
+    // 10. Insert Tasks
     console.log(`Inserting ${mockTasks.length} tasks...`);
     batch = pb.createBatch();
     mockTasks.forEach((task: MockTask) => {
