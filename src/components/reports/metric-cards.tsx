@@ -1,7 +1,7 @@
 import { CheckCircle, Clock, ListTodo, TrendingUp } from "lucide-react";
 
 import { MetricCard } from "@/components/ui/metric-card";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 
 type Props = {
   totals: {
@@ -19,31 +19,27 @@ export function MetricCards({ totals }: Props) {
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
       <MetricCard
-        title={fa.reports.totalTasksCard}
+        title={reports.totalTasksCard}
         value={totals.total}
         icon={ListTodo}
       />
 
       <MetricCard
-        title={fa.reports.taskCompleted}
+        title={reports.taskCompleted}
         value={totals.completed}
         icon={CheckCircle}
       />
 
       <MetricCard
-        title={fa.reports.inProgressTasks}
+        title={reports.inProgressTasks}
         value={totals.wip}
         icon={Clock}
       />
 
-      <MetricCard
-        title={fa.reports.overdue}
-        value={totals.overdue}
-        icon={Clock}
-      />
+      <MetricCard title={reports.overdue} value={totals.overdue} icon={Clock} />
 
       <MetricCard
-        title={fa.reports.onTimeRate}
+        title={reports.onTimeRate}
         value={onTimeRatePercent}
         icon={TrendingUp}
         suffix="%"

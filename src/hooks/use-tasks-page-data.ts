@@ -20,13 +20,11 @@ import { useTasks } from "./tasks";
  * Makes only 2 requests: tasks + users
  */
 export function useTasksPageData() {
-  // Get tasks with expanded project and assignee data
   const tasksQuery = useTasks({
     expandFields: "project,assignee",
     mode: "full",
   });
 
-  // Get all users for the filter dropdown
   const usersQuery = useQuery({
     queryKey: queryKeys.users.list({ batch: 100, sort: "-created" }),
     queryFn: () =>

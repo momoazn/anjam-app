@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { text } from "@/constants/text";
+import { common, tasks } from "@/constants";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { TaskWithProject } from "@/lib/pocketbase";
@@ -119,7 +119,6 @@ export default function TaskCalendar() {
     return grouped;
   }, [tasksWithDeadlines]);
 
-  // Calculate calendar days
   const calendarDays = useMemo(() => {
     const start = startOfWeek(startOfMonth(currentMonth));
     const end = endOfWeek(endOfMonth(currentMonth));
@@ -127,21 +126,17 @@ export default function TaskCalendar() {
     return eachDayOfInterval({ start, end });
   }, [currentMonth]);
 
-  // Navigate months
   const goToPreviousMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToToday = () => setCurrentMonth(new Date());
 
-  // Get tasks for a specific day
   const getTasksForDay = (day: Date): TaskWithProject[] => {
     const dateKey = format(day, "yyyy-MM-dd");
     return tasksByDate.get(dateKey) || [];
   };
 
-  // Persian weekday names (short) from centralized constants
-  const weekdayNames = text.tasks.calendar.weekdayShort;
+  const weekdayNames = tasks.calendar.weekdayShort;
 
-  // Count tasks by status for current month
   const monthStats = useMemo(() => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
@@ -166,10 +161,10 @@ export default function TaskCalendar() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <CalendarIcon className="h-5 w-5 md:h-6 md:w-6" />
-            {text.tasks.calendar.title}
+            {tasks.calendar.title}
           </h1>
           <p className="text-muted-foreground mt-2">
-            {text.tasks.calendar.description}
+            {tasks.calendar.description}
           </p>
         </div>
 
@@ -177,21 +172,19 @@ export default function TaskCalendar() {
         <div className="flex gap-2">
           <Badge variant="outline" className="gap-1">
             <span className="font-semibold">{monthStats.total}</span>
-            <span className="text-muted-foreground">{text.common.total}</span>
+            <span className="text-muted-foreground">{common.total}</span>
           </Badge>
           <Badge variant="outline" className="gap-1 border-green-500">
             <span className="font-semibold text-green-600">
               {monthStats.completed}
             </span>
-            <span className="text-muted-foreground">
-              {text.common.completed}
-            </span>
+            <span className="text-muted-foreground">{common.completed}</span>
           </Badge>
           <Badge variant="outline" className="gap-1 border-orange-500">
             <span className="font-semibold text-orange-600">
               {monthStats.pending}
             </span>
-            <span className="text-muted-foreground">{text.common.pending}</span>
+            <span className="text-muted-foreground">{common.pending}</span>
           </Badge>
         </div>
       </div>
@@ -204,7 +197,7 @@ export default function TaskCalendar() {
               variant="outline"
               size="icon"
               onClick={goToPreviousMonth}
-              title={text.common.previous}
+              title={common.previous}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -214,7 +207,7 @@ export default function TaskCalendar() {
                 {format(currentMonth, "MMMM yyyy", { locale: undefined })}
               </h2>
               <Button variant="ghost" size="sm" onClick={goToToday}>
-                {text.common.today}
+                {common.today}
               </Button>
             </div>
 
@@ -222,7 +215,7 @@ export default function TaskCalendar() {
               variant="outline"
               size="icon"
               onClick={goToNextMonth}
-              title={text.common.next}
+              title={common.next}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -296,8 +289,7 @@ export default function TaskCalendar() {
                       ))}
                       {dayTasks.length > 3 && (
                         <div className="text-muted-foreground bg-muted rounded px-1 py-0.5 text-center text-[10px]">
-                          +{digitsEnToFa(dayTasks.length - 3)}{" "}
-                          {text.common.more}
+                          +{digitsEnToFa(dayTasks.length - 3)} {common.more}
                         </div>
                       )}
                     </div>
@@ -315,10 +307,10 @@ export default function TaskCalendar() {
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <CalendarIcon className="text-muted-foreground mb-4 h-12 w-12" />
             <h3 className="mb-2 text-lg font-semibold">
-              {text.tasks.calendar.noTasks}
+              {tasks.calendar.noTasks}
             </h3>
             <p className="text-muted-foreground max-w-md">
-              {text.tasks.calendar.noTasksDescription}
+              {tasks.calendar.noTasksDescription}
             </p>
           </CardContent>
         </Card>

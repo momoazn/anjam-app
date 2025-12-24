@@ -1,5 +1,5 @@
 import { DeleteDialog } from "@/components/ui/delete-dialog";
-import { fa } from "@/constants/text";
+import { groups } from "@/constants";
 import { GroupsResponse } from "@/lib/pocketbase-types";
 
 type DeleteGroupDialogProps = {
@@ -14,15 +14,15 @@ export function DeleteGroupDialog({
   group,
 }: DeleteGroupDialogProps) {
   const description = group
-    ? fa.groups.delete.description.replace("{name}", group.name)
-    : fa.groups.delete.description;
+    ? groups.delete.description.replace("{name}", group.name)
+    : groups.delete.description;
 
   return (
     <DeleteDialog
       open={open}
       onOpenChange={onOpenChange}
       entityId={group?.id || null}
-      title={fa.groups.delete.title}
+      title={groups.delete.title}
       description={description}
       collection="groups"
     />

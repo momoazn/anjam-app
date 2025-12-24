@@ -25,7 +25,6 @@ import {
   createBulkOperations,
 } from "./factories/use-crud-factory";
 
-// Create CRUD hooks using the factory
 const crudHooks = createCrudHooks<TasksRecord, TasksResponse>({
   collection: "tasks",
   queryKeys: queryKeys.tasks,

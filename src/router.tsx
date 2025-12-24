@@ -3,7 +3,21 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { PageErrorBoundary } from "@/components/error/page-error-boundary";
 import { RouteSuspense } from "@/components/suspense/route-suspense";
-import { fa } from "@/constants";
+import {
+  app,
+  auth,
+  errors,
+  groups,
+  myTasks,
+  navigation,
+  navigationLabels,
+  notFound,
+  projects,
+  tagsManagement,
+  tasks,
+  ui,
+  users,
+} from "@/constants";
 import { can, Permission } from "./lib/permissions";
 import { UsersRoleOptions } from "./lib/pocketbase-types";
 import { useAuthIsLoggedIn, useAuthUser } from "./store/auth-store";
@@ -14,7 +28,7 @@ const PageLoadError = ({ message }: { message: string }) => (
     <div className="text-center">
       <p className="text-destructive text-lg font-medium">{message}</p>
       <p className="text-muted-foreground mt-2 text-sm">
-        {fa.ui.pageLoadError.refreshMessage}
+        {ui.pageLoadError.refreshMessage}
       </p>
     </div>
   </div>
@@ -33,126 +47,126 @@ const createLazyPage = (
 
 const Login = createLazyPage(
   () => import("@/pages/login"),
-  fa.errors.pageLoad.login,
+  errors.pageLoad.login,
 );
 const PendingActivation = createLazyPage(
   () => import("@/pages/pending-activation"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const Dashboard = createLazyPage(
   () => import("@/pages/dashboard"),
-  fa.errors.pageLoad.dashboard,
+  errors.pageLoad.dashboard,
 );
 const Groups = createLazyPage(
   () => import("@/pages/groups"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const CreateGroup = createLazyPage(
   () => import("@/pages/create-group"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const EditGroup = createLazyPage(
   () => import("@/pages/edit-group"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const Projects = createLazyPage(
   () => import("@/pages/projects"),
-  fa.errors.pageLoad.projects,
+  errors.pageLoad.projects,
 );
 const ProjectDetails = createLazyPage(
   () => import("@/pages/project-details"),
-  fa.errors.pageLoad.projects,
+  errors.pageLoad.projects,
 );
 const CreateProject = createLazyPage(
   () => import("@/pages/create-project"),
-  fa.errors.pageLoad.projects,
+  errors.pageLoad.projects,
 );
 const EditProject = createLazyPage(
   () => import("@/pages/edit-project"),
-  fa.errors.pageLoad.projects,
+  errors.pageLoad.projects,
 );
 const TaskBoardPage = createLazyPage(
   () =>
     import("@/pages/task-board").then((module) => ({
       default: module.TaskBoardPage,
     })),
-  fa.errors.pageLoad.tasks,
+  errors.pageLoad.tasks,
 );
 const Tasks = createLazyPage(
   () => import("@/pages/tasks"),
-  fa.errors.pageLoad.tasks,
+  errors.pageLoad.tasks,
 );
 const CreateTask = createLazyPage(
   () => import("@/pages/create-task"),
-  fa.errors.pageLoad.tasks,
+  errors.pageLoad.tasks,
 );
 const TaskDetails = createLazyPage(
   () => import("@/pages/task-details"),
-  fa.errors.pageLoad.tasks,
+  errors.pageLoad.tasks,
 );
 const EditTask = createLazyPage(
   () => import("@/pages/edit-task"),
-  fa.errors.pageLoad.tasks,
+  errors.pageLoad.tasks,
 );
 const Tags = createLazyPage(
   () => import("@/pages/tags"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const TaskCalendar = createLazyPage(
   () => import("@/pages/task-calendar"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const MyTasks = createLazyPage(
   () => import("@/pages/my-tasks"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const Timesheet = createLazyPage(
   () => import("@/pages/timesheet"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const ProjectTasks = createLazyPage(
   () => import("@/pages/project-tasks"),
-  fa.errors.pageLoad.projectTasks,
+  errors.pageLoad.projectTasks,
 );
 const Users = createLazyPage(
   () => import("@/pages/users"),
-  fa.errors.pageLoad.users,
+  errors.pageLoad.users,
 );
 const CreateUser = createLazyPage(
   () => import("@/pages/create-user"),
-  fa.errors.pageLoad.users,
+  errors.pageLoad.users,
 );
 const ProjectUsers = createLazyPage(
   () => import("@/pages/project-users"),
-  fa.errors.pageLoad.projectUsers,
+  errors.pageLoad.projectUsers,
 );
 const EditUser = createLazyPage(
   () => import("@/pages/edit-user"),
-  fa.errors.pageLoad.users,
+  errors.pageLoad.users,
 );
 const Reports = createLazyPage(
   () => import("@/pages/reports"),
-  fa.errors.pageLoad.reports,
+  errors.pageLoad.reports,
 );
 const Helps = createLazyPage(
   () => import("@/pages/helps"),
-  fa.errors.pageLoad.helps,
+  errors.pageLoad.helps,
 );
 const Settings = createLazyPage(
   () => import("@/pages/settings"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const Notifications = createLazyPage(
   () => import("@/pages/notifications"),
-  fa.errors.pageLoad.notifications,
+  errors.pageLoad.notifications,
 );
 const AuditLogs = createLazyPage(
   () => import("@/pages/audit-logs"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 const NotFound = createLazyPage(
   () => import("@/pages/not-found"),
-  fa.errors.pageLoad.notFound,
+  errors.pageLoad.notFound,
 );
 
 // ProtectedRoute component
@@ -216,7 +230,6 @@ type RouteType = {
   title?: string;
 };
 
-// Sets document.title when mounted
 const Title = ({
   title,
   children,
@@ -225,8 +238,8 @@ const Title = ({
   children: React.ReactNode;
 }) => {
   useEffect(() => {
-    if (title) document.title = `${title} • ${fa.app.name}`;
-    else document.title = fa.app.name;
+    if (title) document.title = `${title} • ${app.name}`;
+    else document.title = app.name;
   }, [title]);
   return <>{children}</>;
 };
@@ -237,70 +250,70 @@ const routes: RouteType[] = [
     path: "/",
     element: <Dashboard />,
     protected: true,
-    title: fa.navigation.dashboard,
+    title: navigation.dashboard,
   },
   {
     path: "/groups",
     element: <Groups />,
     protected: true,
     permission: "groups.view",
-    title: fa.groups.title,
+    title: groups.title,
   },
   {
     path: "/groups/new",
     element: <CreateGroup />,
     protected: true,
     permission: "groups.manage",
-    title: fa.groups.create.title,
+    title: groups.create.title,
   },
   {
     path: "/groups/:id/edit",
     element: <EditGroup />,
     protected: true,
     permission: "groups.manage",
-    title: fa.groups.edit.title,
+    title: groups.edit.title,
   },
   {
     path: "/projects",
     element: <Projects />,
     protected: true,
-    title: fa.navigation.projects,
+    title: navigation.projects,
   },
   {
     path: "/projects/new",
     element: <CreateProject />,
     protected: true,
-    title: fa.projects.create.title,
+    title: projects.create.title,
   },
   {
     path: "/projects/:id/details",
     element: <ProjectDetails />,
     protected: true,
-    title: fa.projects.details.title,
+    title: projects.details.title,
   },
   {
     path: "/projects/:id/edit",
     element: <EditProject />,
     protected: true,
-    title: fa.projects.edit.title,
+    title: projects.edit.title,
   },
   {
     path: "/login",
     element: <Login />,
     protected: false,
-    title: fa.auth.login.title,
+    title: auth.login.title,
   },
   {
     path: "/pending-activation",
     element: <PendingActivation />,
     protected: false,
-    title: fa.users.pendingActivation.title,
+    title: users.pendingActivation.title,
   },
   {
     path: "/tasks",
     element: <Tasks />,
     protected: true,
-    title: fa.tasks.title,
+    title: tasks.title,
   },
   {
     path: "/tasks/board",
@@ -312,112 +325,112 @@ const routes: RouteType[] = [
       </PermissionProtectedRoute>
     ),
     protected: true,
-    title: fa.tasks.board.title, // Assuming a title for task board
+    title: tasks.board.title, // Assuming a title for task board
   },
   {
     path: "/tasks/new",
     element: <CreateTask />,
     protected: true,
-    title: fa.tasks.addTask.title,
+    title: tasks.addTask.title,
   },
   {
     path: "/tasks/:id",
     element: <TaskDetails />,
     protected: true,
-    title: fa.tasks.details.title,
+    title: tasks.details.title,
   },
   {
     path: "/tasks/:id/edit",
     element: <EditTask />,
     protected: true,
-    title: fa.tasks.edit.title,
+    title: tasks.edit.title,
   },
   {
     path: "/tags",
     element: <Tags />,
     protected: true,
-    title: fa.tagsManagement.title,
+    title: tagsManagement.title,
   },
   {
     path: "/tasks/calendar",
     element: <TaskCalendar />,
     protected: true,
-    title: fa.tasks.calendar.title,
+    title: tasks.calendar.title,
   },
   {
     path: "/my-tasks",
     element: <MyTasks />,
     protected: true,
-    title: fa.myTasks.title,
+    title: myTasks.title,
   },
   {
     path: "/timesheet",
     element: <Timesheet />,
     protected: true,
-    title: fa.navigationLabels.timesheet,
+    title: navigationLabels.timesheet,
   },
   {
     path: "/projects/:id/tasks",
     element: <ProjectTasks />,
     protected: true,
-    title: fa.projects.projectTasks,
+    title: projects.projectTasks,
   },
   {
     path: "/projects/:id/tasks/new",
     element: <CreateTask />,
     protected: true,
-    title: fa.tasks.addTask.title,
+    title: tasks.addTask.title,
   },
   {
     path: "/users",
     element: <Users />,
     protected: true,
     permission: "users.view",
-    title: fa.users.title,
+    title: users.title,
   },
   {
     path: "/users/new",
     element: <CreateUser />,
     protected: true,
     permission: "users.manage",
-    title: fa.users.create.title,
+    title: users.create.title,
   },
   {
     path: "/users/:id/edit",
     element: <EditUser />,
     protected: true,
     permission: "users.manage",
-    title: fa.users.edit.title,
+    title: users.edit.title,
   },
   {
     path: "/projects/:id/users",
     element: <ProjectUsers />,
     protected: true,
-    title: fa.projects.users.title,
+    title: projects.users.title,
   },
   {
     path: "/reports",
     element: <Reports />,
     protected: true,
-    title: fa.navigation.reports,
+    title: navigation.reports,
   },
   {
     path: "/helps",
     element: <Helps />,
     protected: true,
-    title: fa.navigation.helps,
+    title: navigation.helps,
   },
   {
     path: "/settings",
     element: <Settings />,
     protected: true,
-    title: fa.navigation.settings,
+    title: navigation.settings,
   },
   {
     path: "/notifications",
     element: <Notifications />,
     protected: true,
-    title: fa.navigation.notifications,
+    title: navigation.notifications,
   },
   {
     path: "/audit-logs",
@@ -427,13 +440,13 @@ const routes: RouteType[] = [
       </PermissionProtectedRoute>
     ),
     protected: true,
-    title: fa.navigation.auditLogs,
+    title: navigation.auditLogs,
   },
   {
     path: "*",
     element: <NotFound />,
     protected: false,
-    title: fa.notFound.title,
+    title: notFound.title,
   },
 ];
 

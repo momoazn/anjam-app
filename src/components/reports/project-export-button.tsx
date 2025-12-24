@@ -2,7 +2,7 @@ import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { fa } from "@/constants/text";
+import { projects, reports } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { exportProjectToExcel } from "@/lib/excel-export";
 import type { ProjectsResponse, UsersResponse } from "@/lib/pocketbase-types";
@@ -29,13 +29,13 @@ export function ProjectExportButton({
 
     // Validate data before export
     if (!project) {
-      toast.error(fa.projects.errors.projectNotFound);
+      toast.error(projects.errors.projectNotFound);
       return;
     }
 
     // Warn user about empty export
     if (taskCount === 0) {
-      const confirmed = window.confirm(fa.reports.exportProjectNoTasks);
+      const confirmed = window.confirm(reports.exportProjectNoTasks);
       if (!confirmed) return;
     }
 
@@ -46,17 +46,17 @@ export function ProjectExportButton({
       // Show success message with task count if available
       const successMessage =
         taskCount > 0
-          ? fa.reports.exportProjectSuccessWithCount.replace(
+          ? reports.exportProjectSuccessWithCount.replace(
               "{count}",
               digitsEnToFa(taskCount),
             )
-          : fa.reports.exportProjectSuccess;
+          : reports.exportProjectSuccess;
 
       toast.success(successMessage, { duration: 3000 });
     } catch (error) {
       // Show specific error message if available
       const errorMessage =
-        error instanceof Error ? error.message : fa.reports.exportProjectError;
+        error instanceof Error ? error.message : reports.exportProjectError;
 
       toast.error(errorMessage, { duration: 5000 });
     } finally {
@@ -75,12 +75,12 @@ export function ProjectExportButton({
       {isExporting ? (
         <>
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span>{fa.reports.exportingProject}</span>
+          <span>{reports.exportingProject}</span>
         </>
       ) : (
         <>
           <Download className="h-4 w-4" />
-          <span>{fa.reports.exportProject}</span>
+          <span>{reports.exportProject}</span>
         </>
       )}
       {taskCount > 0 && (

@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useTaskCounts } from "@/hooks/use-task-counts";
 import { SidebarBadge } from "./sidebar-badge";
-import { fa } from "@/constants/text";
+import { navigation } from "@/constants";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -21,7 +21,7 @@ import {
 
 const baseViews = [
   {
-    title: fa.navigation.allTasks,
+    title: navigation.allTasks,
     url: "/tasks",
     icon: IconList,
     getCount: () => 0,
@@ -31,7 +31,7 @@ const baseViews = [
 
 const ownershipViews = [
   {
-    title: fa.navigation.myTasks,
+    title: navigation.myTasks,
     url: "/tasks?assigned=me&status=todo,in_progress,pending",
     icon: IconChecklist,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
@@ -41,14 +41,14 @@ const ownershipViews = [
 
 const timeViews = [
   {
-    title: fa.navigation.dueToday,
+    title: navigation.dueToday,
     url: "/tasks?due=today",
     icon: IconClock,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.dueToday,
     badgeVariant: "overdue" as const,
   },
   {
-    title: fa.navigation.overdue,
+    title: navigation.overdue,
     url: "/tasks?due=overdue",
     icon: IconAlertTriangle,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.overdue,
@@ -58,7 +58,7 @@ const timeViews = [
 
 const statusViews = [
   {
-    title: fa.navigation.inProgress,
+    title: navigation.inProgress,
     url: "/tasks?status=in_progress",
     icon: IconLoader,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.inProgress,
@@ -80,7 +80,7 @@ export function TaskViews() {
   return (
     <SidebarGroup>
       {state === "expanded" && (
-        <SidebarGroupLabel>{fa.navigation.taskViews}</SidebarGroupLabel>
+        <SidebarGroupLabel>{navigation.taskViews}</SidebarGroupLabel>
       )}
       <SidebarGroupContent>
         <SidebarMenu>

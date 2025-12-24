@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { fa } from "@/constants/text";
+import { auth } from "@/constants";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
 import { UsersRecord } from "@/lib/pocketbase-types";
@@ -39,11 +39,11 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { username?: string; password?: string } = {};
-    if (!username.trim()) newErrors.username = fa.auth.errors.usernameRequired;
-    if (!password.trim()) newErrors.password = fa.auth.errors.passwordRequired;
+    if (!username.trim()) newErrors.username = auth.errors.usernameRequired;
+    if (!password.trim()) newErrors.password = auth.errors.passwordRequired;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      toast.error(fa.auth.login.errors.credentialsRequired);
+      toast.error(auth.login.errors.credentialsRequired);
       return;
     }
 
@@ -74,7 +74,7 @@ export default function Login() {
         disableStagger
       >
         <h2 className="text-foreground text-center text-3xl font-bold">
-          {fa.auth.login.title}
+          {auth.login.title}
         </h2>
         <form
           onSubmit={handleSubmit}
@@ -84,7 +84,7 @@ export default function Login() {
         >
           <div>
             <Label className="text-foreground block text-sm font-medium">
-              {fa.auth.login.username}
+              {auth.login.username}
             </Label>
             <Input
               type="text"
@@ -110,7 +110,7 @@ export default function Login() {
           </div>
           <div>
             <Label className="text-foreground block text-sm font-medium">
-              {fa.auth.login.password}
+              {auth.login.password}
             </Label>
             <Input
               type="password"
@@ -135,7 +135,7 @@ export default function Login() {
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? fa.auth.login.loggingIn : fa.auth.login.loginButton}
+            {submitting ? auth.login.loggingIn : auth.login.loginButton}
           </Button>
         </form>
       </PageTransition>

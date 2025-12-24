@@ -101,7 +101,7 @@ This document provides an overview of what's currently implemented vs. what's pl
 
 ## Known Issues & Limitations
 
-See [Bugs, Issues, and Shortcomings](./BUGS_ISSUES_AND_SHORTCOMINGS.md) for a comprehensive list, including:
+See [Codebase Issues](./CODEBASE_ISSUES.md) for a comprehensive list, including:
 
 ### Bugs
 
@@ -161,7 +161,7 @@ See [Bugs, Issues, and Shortcomings](./BUGS_ISSUES_AND_SHORTCOMINGS.md) for a co
 
 ## Next Steps
 
-1. Address bugs and issues from [BUGS_ISSUES_AND_SHORTCOMINGS.md](./BUGS_ISSUES_AND_SHORTCOMINGS.md)
+1. Address bugs and issues from [Codebase Issues](./CODEBASE_ISSUES.md)
 2. Implement short-term priorities from [Development Roadmap](./DEVELOPMENT_ROADMAP.md)
 3. Expand test coverage
 4. Improve documentation
@@ -171,6 +171,6 @@ See [Bugs, Issues, and Shortcomings](./BUGS_ISSUES_AND_SHORTCOMINGS.md) for a co
 ## Related Documentation
 
 - [Development Roadmap](./DEVELOPMENT_ROADMAP.md) - Future plans
-- [Bugs, Issues, and Shortcomings](./BUGS_ISSUES_AND_SHORTCOMINGS.md) - Known problems
+- [Codebase Issues](./CODEBASE_ISSUES.md) - Known problems
 - [Development Guide](./DEVELOPMENT_GUIDE.md) - Technical guidance
 - [Project Overview](./PROJECT_OVERVIEW.md) - High-level introduction

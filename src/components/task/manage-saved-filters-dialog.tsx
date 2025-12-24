@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Trash2, Edit2, Check, X } from "lucide-react";
-import { text } from "@/constants/text";
+import { common, savedFilters as savedFiltersText } from "@/constants";
 import type { SavedFilter } from "@/hooks/use-saved-filters";
 import {
   AlertDialog,
@@ -89,21 +89,21 @@ export function ManageSavedFiltersDialog({
   const getFilterSummary = (filter: SavedFilter) => {
     const active: string[] = [];
     if (filter.filters.searchTerm)
-      active.push(text.savedFilters.criteria.search);
+      active.push(savedFiltersText.criteria.search);
     if (filter.filters.selectedStatus !== "all")
-      active.push(text.savedFilters.criteria.status);
+      active.push(savedFiltersText.criteria.status);
     if (filter.filters.selectedPriority !== "all")
-      active.push(text.savedFilters.criteria.priority);
+      active.push(savedFiltersText.criteria.priority);
     if (filter.filters.selectedAssignee !== "all")
-      active.push(text.savedFilters.criteria.assignee);
+      active.push(savedFiltersText.criteria.assignee);
     if (filter.filters.selectedDateRange !== "all")
-      active.push(text.savedFilters.criteria.date);
+      active.push(savedFiltersText.criteria.date);
     if (filter.filters.selectedTag !== "all")
-      active.push(text.savedFilters.criteria.tag);
+      active.push(savedFiltersText.criteria.tag);
 
     return active.length > 0
       ? active.join(" • ")
-      : text.savedFilters.criteria.noFilter;
+      : savedFiltersText.criteria.noFilter;
   };
 
   return (
@@ -111,16 +111,16 @@ export function ManageSavedFiltersDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{text.savedFilters.manageDialog.title}</DialogTitle>
+            <DialogTitle>{savedFiltersText.manageDialog.title}</DialogTitle>
             <DialogDescription>
-              {text.savedFilters.manageDialog.description}
+              {savedFiltersText.manageDialog.description}
             </DialogDescription>
           </DialogHeader>
 
           <div className="max-h-[60vh] space-y-3 overflow-y-auto py-4">
             {savedFilters.length === 0 ? (
               <div className="text-muted-foreground py-12 text-center">
-                {text.savedFilters.noSavedFilters}
+                {savedFiltersText.noSavedFilters}
               </div>
             ) : (
               savedFilters.map((filter) => (
@@ -169,7 +169,7 @@ export function ManageSavedFiltersDialog({
                                 className="gap-1 text-xs"
                               >
                                 <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                {text.savedFilters.default}
+                                {savedFiltersText.default}
                               </Badge>
                             )}
                           </div>
@@ -182,7 +182,7 @@ export function ManageSavedFiltersDialog({
 
                         {/* Created date */}
                         <p className="text-muted-foreground text-xs">
-                          {text.savedFilters.createdAt}:{" "}
+                          {savedFiltersText.createdAt}:{" "}
                           {new Date(filter.createdAt).toLocaleDateString(
                             "fa-IR",
                           )}
@@ -197,8 +197,8 @@ export function ManageSavedFiltersDialog({
                           onClick={() => handleToggleDefault(filter.id)}
                           title={
                             defaultFilterId === filter.id
-                              ? text.savedFilters.removeDefault
-                              : text.savedFilters.setAsDefault
+                              ? savedFiltersText.removeDefault
+                              : savedFiltersText.setAsDefault
                           }
                         >
                           <Star
@@ -239,22 +239,22 @@ export function ManageSavedFiltersDialog({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {text.savedFilters.deleteDialog.title}
+              {savedFiltersText.deleteDialog.title}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {text.savedFilters.deleteDialog.description.replace(
+              {savedFiltersText.deleteDialog.description.replace(
                 "{name}",
                 filterToDelete?.name || "",
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{text.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{common.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {text.common.delete}
+              {common.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

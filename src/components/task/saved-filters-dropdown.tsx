@@ -17,7 +17,7 @@ import {
   Check,
   Save,
 } from "lucide-react";
-import { text } from "@/constants/text";
+import { common, savedFilters as savedFiltersText } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { SavedFilter } from "@/hooks/use-saved-filters";
 import {
@@ -94,7 +94,7 @@ export function SavedFiltersDropdown({
               </>
             ) : (
               <>
-                {text.savedFilters.title}
+                {savedFiltersText.title}
                 {savedFilters.length > 0 && (
                   <Badge variant="secondary" className="ml-1 h-5 px-1.5">
                     {digitsEnToFa(savedFilters.length)}
@@ -105,20 +105,20 @@ export function SavedFiltersDropdown({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel>{text.savedFilters.title}</DropdownMenuLabel>
+          <DropdownMenuLabel>{savedFiltersText.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
           {/* Save current filter option */}
           <DropdownMenuItem onClick={onOpenSaveDialog} className="gap-2">
             <Save className="h-4 w-4" />
-            {text.savedFilters.saveCurrentFilter}
+            {savedFiltersText.saveCurrentFilter}
           </DropdownMenuItem>
 
           {savedFilters.length > 0 && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
-                {text.savedFilters.myFilters}
+                {savedFiltersText.myFilters}
               </DropdownMenuLabel>
 
               {savedFilters.map((filter) => (
@@ -139,8 +139,8 @@ export function SavedFiltersDropdown({
                       className="hover:bg-accent rounded p-1 transition-colors"
                       title={
                         defaultFilterId === filter.id
-                          ? text.savedFilters.removeDefault
-                          : text.savedFilters.setAsDefault
+                          ? savedFiltersText.removeDefault
+                          : savedFiltersText.setAsDefault
                       }
                     >
                       <Star
@@ -154,7 +154,7 @@ export function SavedFiltersDropdown({
                     <button
                       onClick={(e) => handleDeleteClick(filter, e)}
                       className="hover:bg-destructive/10 rounded p-1 transition-colors"
-                      title={text.common.delete}
+                      title={common.delete}
                     >
                       <Trash2 className="text-muted-foreground hover:text-destructive h-3.5 w-3.5" />
                     </button>
@@ -165,14 +165,14 @@ export function SavedFiltersDropdown({
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onOpenManageDialog} className="gap-2">
                 <Settings className="h-4 w-4" />
-                {text.savedFilters.manage}
+                {savedFiltersText.manage}
               </DropdownMenuItem>
             </>
           )}
 
           {savedFilters.length === 0 && (
             <div className="text-muted-foreground px-2 py-6 text-center text-sm">
-              {text.savedFilters.noSavedFilters}
+              {savedFiltersText.noSavedFilters}
             </div>
           )}
         </DropdownMenuContent>
@@ -183,19 +183,19 @@ export function SavedFiltersDropdown({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {text.savedFilters.deleteDialog.title}
+              {savedFiltersText.deleteDialog.title}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {text.savedFilters.deleteDialog.description.replace(
+              {savedFiltersText.deleteDialog.description.replace(
                 "{name}",
                 filterToDelete?.name || "",
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{text.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{common.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmDelete}>
-              {text.common.delete}
+              {common.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

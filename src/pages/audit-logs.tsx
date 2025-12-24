@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/accordion";
 import { PageTransition } from "@/components/page-transition";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { fa } from "@/constants/text";
+import { auditLogs, common } from "@/constants";
 import { useAuditLogs } from "@/hooks/audit-logs";
 import type {
   AuditLogsActionOptions,
@@ -88,7 +88,7 @@ export default function AuditLogs() {
         <div className="flex items-center gap-3">
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <History className="h-5 w-5 md:h-6 md:w-6" />
-            {fa.auditLogs.title}
+            {auditLogs.title}
           </h1>
           {data && (
             <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-sm">
@@ -101,39 +101,35 @@ export default function AuditLogs() {
       {/* Filters */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-lg">
-            {fa.auditLogs.filters.clear}
-          </CardTitle>
+          <CardTitle className="text-lg">{auditLogs.filters.clear}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div>
               <label className="mb-2 block text-sm font-medium">
-                {fa.auditLogs.filters.resource}
+                {auditLogs.filters.resource}
               </label>
               <Select value={resource} onValueChange={setResource}>
                 <SelectTrigger>
-                  <SelectValue
-                    placeholder={fa.auditLogs.filters.allPlaceholder}
-                  />
+                  <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
+                  <SelectItem value="">{auditLogs.filters.all}</SelectItem>
                   <SelectItem value="tasks">
-                    {fa.auditLogs.resources.tasks}
+                    {auditLogs.resources.tasks}
                   </SelectItem>
                   <SelectItem value="projects">
-                    {fa.auditLogs.resources.projects}
+                    {auditLogs.resources.projects}
                   </SelectItem>
                   <SelectItem value="users">
-                    {fa.auditLogs.resources.users}
+                    {auditLogs.resources.users}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium">
-                {fa.auditLogs.filters.action}
+                {auditLogs.filters.action}
               </label>
               <Select
                 value={action}
@@ -142,27 +138,25 @@ export default function AuditLogs() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue
-                    placeholder={fa.auditLogs.filters.allPlaceholder}
-                  />
+                  <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
+                  <SelectItem value="">{auditLogs.filters.all}</SelectItem>
                   <SelectItem value="create">
-                    {fa.auditLogs.actions.create}
+                    {auditLogs.actions.create}
                   </SelectItem>
                   <SelectItem value="update">
-                    {fa.auditLogs.actions.update}
+                    {auditLogs.actions.update}
                   </SelectItem>
                   <SelectItem value="delete">
-                    {fa.auditLogs.actions.delete}
+                    {auditLogs.actions.delete}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium">
-                {fa.auditLogs.filters.client}
+                {auditLogs.filters.client}
               </label>
               <Select
                 value={client}
@@ -171,36 +165,30 @@ export default function AuditLogs() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue
-                    placeholder={fa.auditLogs.filters.allPlaceholder}
-                  />
+                  <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{fa.auditLogs.filters.all}</SelectItem>
-                  <SelectItem value="web">
-                    {fa.auditLogs.clients.web}
-                  </SelectItem>
-                  <SelectItem value="cli">
-                    {fa.auditLogs.clients.cli}
-                  </SelectItem>
+                  <SelectItem value="">{auditLogs.filters.all}</SelectItem>
+                  <SelectItem value="web">{auditLogs.clients.web}</SelectItem>
+                  <SelectItem value="cli">{auditLogs.clients.cli}</SelectItem>
                   <SelectItem value="automation">
-                    {fa.auditLogs.clients.automation}
+                    {auditLogs.clients.automation}
                   </SelectItem>
                   <SelectItem value="unknown">
-                    {fa.auditLogs.clients.unknown}
+                    {auditLogs.clients.unknown}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium">
-                {fa.auditLogs.filters.search}
+                {auditLogs.filters.search}
               </label>
               <div className="flex gap-2">
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder={fa.auditLogs.filters.search}
+                  placeholder={auditLogs.filters.search}
                   className="flex-1"
                 />
                 {hasFilters && (
@@ -226,7 +214,7 @@ export default function AuditLogs() {
       {/* Table */}
       <Card>
         <CardHeader>
-          <CardTitle>{fa.auditLogs.table.timestamp}</CardTitle>
+          <CardTitle>{auditLogs.table.timestamp}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -235,14 +223,12 @@ export default function AuditLogs() {
             </div>
           ) : error ? (
             <div className="py-12 text-center">
-              <p className="text-destructive">
-                {fa.auditLogs.errors.loadFailed}
-              </p>
+              <p className="text-destructive">{auditLogs.errors.loadFailed}</p>
             </div>
           ) : !data || data.items.length === 0 ? (
             <div className="py-12 text-center">
               <p className="text-muted-foreground">
-                {fa.auditLogs.empty.noResults}
+                {auditLogs.empty.noResults}
               </p>
             </div>
           ) : (
@@ -250,13 +236,13 @@ export default function AuditLogs() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{fa.auditLogs.table.timestamp}</TableHead>
-                    <TableHead>{fa.auditLogs.table.actor}</TableHead>
-                    <TableHead>{fa.auditLogs.table.action}</TableHead>
-                    <TableHead>{fa.auditLogs.table.resource}</TableHead>
-                    <TableHead>{fa.auditLogs.table.client}</TableHead>
-                    <TableHead>{fa.auditLogs.table.message}</TableHead>
-                    <TableHead>{fa.auditLogs.table.changes}</TableHead>
+                    <TableHead>{auditLogs.table.timestamp}</TableHead>
+                    <TableHead>{auditLogs.table.actor}</TableHead>
+                    <TableHead>{auditLogs.table.action}</TableHead>
+                    <TableHead>{auditLogs.table.resource}</TableHead>
+                    <TableHead>{auditLogs.table.client}</TableHead>
+                    <TableHead>{auditLogs.table.message}</TableHead>
+                    <TableHead>{auditLogs.table.changes}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -269,8 +255,8 @@ export default function AuditLogs() {
                           actor.username,
                         )
                       : log.actor_type === "system"
-                        ? fa.auditLogs.actorTypes.system
-                        : fa.auditLogs.actorTypes.unknown;
+                        ? auditLogs.actorTypes.system
+                        : auditLogs.actorTypes.unknown;
                     const changes = parseChanges(log.changes);
                     const hasChanges =
                       changes && Object.keys(changes).length > 0;
@@ -297,8 +283,8 @@ export default function AuditLogs() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {fa.auditLogs.actions[
-                              log.action as keyof typeof fa.auditLogs.actions
+                            {auditLogs.actions[
+                              log.action as keyof typeof auditLogs.actions
                             ] || log.action}
                           </Badge>
                         </TableCell>
@@ -313,8 +299,8 @@ export default function AuditLogs() {
                         <TableCell>
                           {log.client ? (
                             <Badge variant="secondary" className="text-xs">
-                              {fa.auditLogs.clients[
-                                log.client as keyof typeof fa.auditLogs.clients
+                              {auditLogs.clients[
+                                log.client as keyof typeof auditLogs.clients
                               ] || log.client}
                             </Badge>
                           ) : (
@@ -334,7 +320,7 @@ export default function AuditLogs() {
                                 className="border-none"
                               >
                                 <AccordionTrigger className="py-1 text-xs">
-                                  {fa.auditLogs.table.viewChanges}
+                                  {auditLogs.table.viewChanges}
                                 </AccordionTrigger>
                                 <AccordionContent>
                                   <div className="space-y-2 text-xs">
@@ -349,7 +335,7 @@ export default function AuditLogs() {
                                           </div>
                                           <div className="text-muted-foreground">
                                             <div>
-                                              {fa.auditLogs.labels.before}{" "}
+                                              {auditLogs.labels.before}{" "}
                                               <span className="font-mono">
                                                 {diff.old !== null &&
                                                 diff.old !== undefined
@@ -357,11 +343,11 @@ export default function AuditLogs() {
                                                       0,
                                                       50,
                                                     )
-                                                  : fa.auditLogs.empty.empty}
+                                                  : auditLogs.empty.empty}
                                               </span>
                                             </div>
                                             <div>
-                                              {fa.auditLogs.labels.after}{" "}
+                                              {auditLogs.labels.after}{" "}
                                               <span className="font-mono">
                                                 {diff.new !== null &&
                                                 diff.new !== undefined
@@ -369,7 +355,7 @@ export default function AuditLogs() {
                                                       0,
                                                       50,
                                                     )
-                                                  : fa.auditLogs.empty.empty}
+                                                  : auditLogs.empty.empty}
                                               </span>
                                             </div>
                                           </div>
@@ -382,7 +368,7 @@ export default function AuditLogs() {
                             </Accordion>
                           ) : (
                             <span className="text-muted-foreground text-xs">
-                              {fa.auditLogs.table.noChanges}
+                              {auditLogs.table.noChanges}
                             </span>
                           )}
                         </TableCell>
@@ -398,8 +384,8 @@ export default function AuditLogs() {
           {data && data.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="text-muted-foreground text-sm">
-                {fa.common.pagination.page} {digitsEnToFa(page)}{" "}
-                {fa.common.pagination.of} {digitsEnToFa(data.totalPages)}
+                {common.pagination.page} {digitsEnToFa(page)}{" "}
+                {common.pagination.of} {digitsEnToFa(data.totalPages)}
               </div>
               <div className="flex gap-2">
                 <Button
@@ -408,7 +394,7 @@ export default function AuditLogs() {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
-                  {fa.common.pagination.previous}
+                  {common.pagination.previous}
                 </Button>
                 <Button
                   variant="outline"
@@ -418,7 +404,7 @@ export default function AuditLogs() {
                   }
                   disabled={page === data.totalPages}
                 >
-                  {fa.common.pagination.next}
+                  {common.pagination.next}
                 </Button>
               </div>
             </div>

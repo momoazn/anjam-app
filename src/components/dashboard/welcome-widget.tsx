@@ -1,15 +1,9 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  BarChart3,
-  LayoutDashboard,
-  Plus,
-  Target,
-  Users,
-} from "lucide-react";
+import { BarChart3, LayoutDashboard, Plus, Target, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants";
+import { dashboard, users } from "@/constants";
 import { useAuthRole, useAuthUser } from "@/store/auth-store";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 
@@ -28,50 +22,50 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
     const isEmployee = userRole === UsersRoleOptions.employee;
 
     const welcomeMessage = isEmployee
-      ? fa.dashboard.welcome.employee
+      ? dashboard.welcome.employee
           .replace("{firstName}", user?.first_name || "")
           .replace("{lastName}", user?.last_name || "")
           .trim()
       : isSupervisor
-        ? fa.dashboard.welcome.supervisor
+        ? dashboard.welcome.supervisor
             .replace("{firstName}", user?.first_name || "")
             .replace("{lastName}", user?.last_name || "")
             .trim()
-        : fa.dashboard.welcome.admin
+        : dashboard.welcome.admin
             .replace("{firstName}", user?.first_name || "")
             .replace("{lastName}", user?.last_name || "")
             .trim();
 
     const subtitle = isEmployee
-      ? fa.dashboard.welcome.employeeSubtitle
+      ? dashboard.welcome.employeeSubtitle
       : isSupervisor
-        ? fa.dashboard.welcome.supervisorSubtitle
-        : fa.dashboard.welcome.adminSubtitle;
+        ? dashboard.welcome.supervisorSubtitle
+        : dashboard.welcome.adminSubtitle;
 
     const quickActions = [
       {
-        title: fa.dashboard.newTask,
+        title: dashboard.newTask,
         icon: <Plus className="h-4 w-4" />,
         action: () => navigate("/tasks/new"),
         variant: "default" as const,
         show: true,
       },
       {
-        title: fa.dashboard.viewReports,
+        title: dashboard.viewReports,
         icon: <BarChart3 className="h-4 w-4" />,
         action: () => navigate("/reports"),
         variant: "outline" as const,
         show: isSupervisor || isAdmin,
       },
       {
-        title: fa.dashboard.manageProjects,
+        title: dashboard.manageProjects,
         icon: <Target className="h-4 w-4" />,
         action: () => navigate("/projects"),
         variant: "outline" as const,
         show: true,
       },
       {
-        title: fa.users.title,
+        title: users.title,
         icon: <Users className="h-4 w-4" />,
         action: () => navigate("/users"),
         variant: "outline" as const,

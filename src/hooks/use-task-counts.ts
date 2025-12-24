@@ -11,7 +11,6 @@ export function useTaskCounts() {
   const user = useAuthUser();
 
   const tasks = useMemo(() => {
-    // Get tasks from React Query cache
     const tasksData = queryClient.getQueryData<TaskWithProject[]>(
       queryKeys.tasks.list({
         projectId: undefined,

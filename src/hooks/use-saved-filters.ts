@@ -1,18 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
-import { fa } from "@/constants/text";
-import { ALL_FILTER_VALUE } from "./use-task-filters";
+import { savedFilters as savedFiltersText } from "@/constants";
+import {
+  DEFAULT_TASK_FILTERS,
+  type TaskFilterValues,
+} from "./use-task-filters";
 
 export interface SavedFilter {
   id: string;
   name: string;
-  filters: {
-    searchTerm: string;
-    selectedStatus: string;
-    selectedPriority: string;
-    selectedAssignee: string;
-    selectedDateRange: string;
-    selectedTag: string;
-  };
+  filters: TaskFilterValues;
   createdAt: string;
   isDefault?: boolean;
 }
@@ -50,23 +46,12 @@ export function useSavedFilters() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
       setSavedFilters(filters);
     } catch {
-      throw new Error(fa.savedFilters.toast.saveError);
+      throw new Error(savedFiltersText.toast.saveError);
     }
   }, []);
 
-  // Create a new saved filter
   const saveFilter = useCallback(
-    (
-      name: string,
-      filters: {
-        searchTerm: string;
-        selectedStatus: string;
-        selectedPriority: string;
-        selectedAssignee: string;
-        selectedDateRange: string;
-        selectedTag: string;
-      },
-    ): SavedFilter => {
+    (name: string, filters: TaskFilterValues): SavedFilter => {
       const newFilter: SavedFilter = {
         id: `filter_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         name,
@@ -82,7 +67,6 @@ export function useSavedFilters() {
     [savedFilters, persistFilters],
   );
 
-  // Update an existing filter
   const updateFilter = useCallback(
     (id: string, updates: Partial<Omit<SavedFilter, "id" | "createdAt">>) => {
       const updatedFilters = savedFilters.map((filter) =>
@@ -93,7 +77,6 @@ export function useSavedFilters() {
     [savedFilters, persistFilters],
   );
 
-  // Delete a saved filter
   const deleteFilter = useCallback(
     (id: string) => {
       const updatedFilters = savedFilters.filter((filter) => filter.id !== id);
@@ -108,7 +91,6 @@ export function useSavedFilters() {
     [savedFilters, defaultFilterId, persistFilters],
   );
 
-  // Set a filter as default
   const setAsDefault = useCallback((id: string | null) => {
     if (id) {
       localStorage.setItem(DEFAULT_FILTER_KEY, id);
@@ -118,22 +100,13 @@ export function useSavedFilters() {
     setDefaultFilterId(id);
   }, []);
 
-  // Get the default filter
   const getDefaultFilter = useCallback((): SavedFilter | null => {
     if (!defaultFilterId) return null;
     return savedFilters.find((f) => f.id === defaultFilterId) ?? null;
   }, [defaultFilterId, savedFilters]);
 
-  // Check if current filters match any saved filter
   const getCurrentFilterMatch = useCallback(
-    (currentFilters: {
-      searchTerm: string;
-      selectedStatus: string;
-      selectedPriority: string;
-      selectedAssignee: string;
-      selectedDateRange: string;
-      selectedTag: string;
-    }): SavedFilter | null => {
+    (currentFilters: TaskFilterValues): SavedFilter | null => {
       return (
         savedFilters.find((saved) => {
           return (
@@ -153,27 +126,16 @@ export function useSavedFilters() {
     [savedFilters],
   );
 
-  // Check if filters are default (all filters cleared)
-  const isDefaultFilters = useCallback(
-    (filters: {
-      searchTerm: string;
-      selectedStatus: string;
-      selectedPriority: string;
-      selectedAssignee: string;
-      selectedDateRange: string;
-      selectedTag: string;
-    }): boolean => {
-      return (
-        filters.searchTerm === "" &&
-        filters.selectedStatus === ALL_FILTER_VALUE &&
-        filters.selectedPriority === ALL_FILTER_VALUE &&
-        filters.selectedAssignee === ALL_FILTER_VALUE &&
-        filters.selectedDateRange === "all" &&
-        filters.selectedTag === "all"
-      );
-    },
-    [],
-  );
+  const isDefaultFilters = useCallback((filters: TaskFilterValues): boolean => {
+    return (
+      filters.searchTerm === DEFAULT_TASK_FILTERS.searchTerm &&
+      filters.selectedStatus === DEFAULT_TASK_FILTERS.selectedStatus &&
+      filters.selectedPriority === DEFAULT_TASK_FILTERS.selectedPriority &&
+      filters.selectedAssignee === DEFAULT_TASK_FILTERS.selectedAssignee &&
+      filters.selectedDateRange === DEFAULT_TASK_FILTERS.selectedDateRange &&
+      filters.selectedTag === DEFAULT_TASK_FILTERS.selectedTag
+    );
+  }, []);
 
   return {
     savedFilters,

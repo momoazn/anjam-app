@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { fa } from "@/constants";
+import { tasks } from "@/constants";
 
 type TaskEmptyStateProps = {
   hasFilters: boolean;
@@ -21,10 +21,10 @@ export function TaskEmptyState({ hasFilters }: TaskEmptyStateProps) {
         >
           <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="mb-2 text-lg font-semibold">
-            {fa.tasks.emptyState.noTasksFound}
+            {tasks.emptyState.noTasksFound}
           </h3>
           <p className="text-muted-foreground mb-4 max-w-md">
-            {fa.tasks.emptyState.noTasksFoundDescription}
+            {tasks.emptyState.noTasksFoundDescription}
           </p>
         </CardContent>
       </Card>
@@ -44,14 +44,14 @@ export function TaskEmptyState({ hasFilters }: TaskEmptyStateProps) {
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">
-          {fa.tasks.emptyState.noTasksYet}
+          {tasks.emptyState.noTasksYet}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-md">
-          {fa.tasks.emptyState.noTasksYetDescription}
+          {tasks.emptyState.noTasksYetDescription}
         </p>
         <Button className="gap-2" onClick={() => navigate("/tasks/new")}>
           <Plus className="h-4 w-4" />
-          {fa.tasks.emptyState.createFirstTask}
+          {tasks.emptyState.createFirstTask}
         </Button>
       </CardContent>
     </Card>

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants/text";
+import { common, errors, projects } from "@/constants";
 import { queryKeys } from "@/hooks";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { handlePocketBaseError } from "@/lib/error-handler";
@@ -28,9 +28,9 @@ import { ProjectsResponse } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
-  name: z.string().min(1, { message: fa.projects.create.form.nameRequired }),
+  name: z.string().min(1, { message: projects.create.form.nameRequired }),
   code: z.string().min(1, {
-    message: fa.projects.create.form.codeRequired,
+    message: projects.create.form.codeRequired,
   }),
   description: z.string().optional(),
   assets: z.array(z.instanceof(File)).optional(),
@@ -47,7 +47,7 @@ export default function EditProject() {
   const { data: project, isLoading } = useQuery({
     queryKey: queryKeys.projects.detail(id ?? ""),
     queryFn: async () => {
-      if (!id) throw new Error(fa.errors.validation.projectIdRequired);
+      if (!id) throw new Error(errors.validation.projectIdRequired);
       return pb.collection("projects").getOne<ProjectsResponse>(id);
     },
     enabled: !!id,
@@ -79,7 +79,7 @@ export default function EditProject() {
 
   const { mutate: updateProject, isPending } = useMutation({
     mutationFn: async (data: z.infer<typeof projectFormSchema>) => {
-      if (!project) throw new Error(fa.errors.notFound.projectNotFound);
+      if (!project) throw new Error(errors.notFound.projectNotFound);
 
       const formData = new FormData();
       formData.append("name", data.name);
@@ -90,12 +90,10 @@ export default function EditProject() {
       }
 
       if (data.description !== undefined) {
-        // Convert line breaks to HTML
         const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
         formData.append("description", descriptionWithBreaks);
       }
 
-      // Handle new file uploads
       if (data.assets && data.assets.length > 0) {
         data.assets.forEach((file: FileWithPreview) => {
           formData.append("assets", file);
@@ -111,7 +109,7 @@ export default function EditProject() {
           queryKey: queryKeys.projects.detail(project.id),
         });
       }
-      toast.success(fa.projects.edit.success);
+      toast.success(projects.edit.success);
       navigate("/projects");
     },
     onError: (error) => {
@@ -152,16 +150,14 @@ export default function EditProject() {
       <PageTransition className="container mx-auto space-y-6 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">
-              {fa.projects.errors.notFound}
-            </p>
+            <p className="text-muted-foreground">{projects.errors.notFound}</p>
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => navigate("/projects")}
             >
               <ArrowLeft className="ml-2 h-4 w-4" />
-              {fa.projects.details.backToProjects}
+              {projects.details.backToProjects}
             </Button>
           </CardContent>
         </Card>
@@ -180,18 +176,18 @@ export default function EditProject() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.projects.edit.title}</h1>
+          <h1 className="text-3xl font-bold">{projects.edit.title}</h1>
           <p className="text-muted-foreground">
-            {fa.common.buttons.view} {project.name}
+            {common.buttons.view} {project.name}
           </p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.projects.edit.title}</CardTitle>
+          <CardTitle>{projects.edit.title}</CardTitle>
           <CardDescription>
-            {fa.common.buttons.view} {project.code}
+            {common.buttons.view} {project.code}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -209,13 +205,13 @@ export default function EditProject() {
                   onClick={() => navigate("/projects")}
                   disabled={isPending}
                 >
-                  {fa.common.cancel}
+                  {common.cancel}
                 </Button>
                 <Button type="submit" disabled={isPending}>
                   {isPending ? (
                     <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                   ) : null}
-                  {fa.projects.edit.submit}
+                  {projects.edit.submit}
                 </Button>
               </div>
             </form>

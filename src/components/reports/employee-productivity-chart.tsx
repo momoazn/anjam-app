@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 import type { EmployeeBucket } from "@/lib/reports-utils";
 import {
   ChartContainer,
@@ -26,7 +26,7 @@ type Props = {
 
 const chartConfig = {
   count: {
-    label: fa.reports.completedTasksCount,
+    label: reports.completedTasksCount,
     color: "hsl(var(--chart-1))",
   },
 };
@@ -43,7 +43,7 @@ export function EmployeeProductivityChart({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="text-base font-semibold md:text-lg">
-          {fa.reports.charts.employee.productivityChart.title}
+          {reports.charts.employee.productivityChart.title}
         </CardTitle>
         <Select value={bucket} onValueChange={onBucketChange}>
           <SelectTrigger className="w-32">
@@ -51,19 +51,19 @@ export function EmployeeProductivityChart({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="daily">
-              {fa.reports.charts.employee.productivityChart.periods.daily}
+              {reports.charts.employee.productivityChart.periods.daily}
             </SelectItem>
             <SelectItem value="weekly">
-              {fa.reports.charts.employee.productivityChart.periods.weekly}
+              {reports.charts.employee.productivityChart.periods.weekly}
             </SelectItem>
             <SelectItem value="monthly">
-              {fa.reports.charts.employee.productivityChart.periods.monthly}
+              {reports.charts.employee.productivityChart.periods.monthly}
             </SelectItem>
             <SelectItem value="quarterly">
-              {fa.reports.charts.employee.productivityChart.periods.quarterly}
+              {reports.charts.employee.productivityChart.periods.quarterly}
             </SelectItem>
             <SelectItem value="annual">
-              {fa.reports.charts.employee.productivityChart.periods.annual}
+              {reports.charts.employee.productivityChart.periods.annual}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -93,7 +93,7 @@ export function EmployeeProductivityChart({
                 content={
                   <ChartTooltipContent
                     formatter={(value, name) => [
-                      `${value} ${fa.reports.completedTasks}`,
+                      `${value} ${reports.completedTasks}`,
                       name,
                     ]}
                   />
@@ -110,7 +110,7 @@ export function EmployeeProductivityChart({
           </ChartContainer>
         ) : (
           <div className="text-muted-foreground flex h-full w-full items-center justify-center rounded-md border border-dashed text-sm">
-            {fa.reports.charts.employee.productivityChart.noData}
+            {reports.charts.employee.productivityChart.noData}
           </div>
         )}
       </CardContent>

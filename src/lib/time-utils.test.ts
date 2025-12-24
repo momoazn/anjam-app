@@ -4,7 +4,7 @@ import {
   parseTimeInput,
   minutesToHoursAndMinutes,
 } from "./time-utils";
-import { fa } from "@/constants/text";
+import { task } from "@/constants";
 
 // Mock the persian-tools module
 vi.mock("@persian-tools/persian-tools", () => ({
@@ -25,29 +25,27 @@ describe("formatTimeSpent", () => {
   });
 
   it("should format only minutes when less than 60", () => {
-    expect(formatTimeSpent(30)).toBe(`30 ${fa.task.minutes}`);
+    expect(formatTimeSpent(30)).toBe(`30 ${task.minutes}`);
   });
 
   it("should format only hours when minutes are exactly divisible by 60", () => {
-    expect(formatTimeSpent(120)).toBe(`2 ${fa.task.hours}`);
+    expect(formatTimeSpent(120)).toBe(`2 ${task.hours}`);
   });
 
   it("should format hours and minutes", () => {
-    expect(formatTimeSpent(150)).toBe(
-      `2 ${fa.task.hours} 30 ${fa.task.minutes}`,
-    );
+    expect(formatTimeSpent(150)).toBe(`2 ${task.hours} 30 ${task.minutes}`);
   });
 
   it("should handle single minute", () => {
-    expect(formatTimeSpent(1)).toBe(`1 ${fa.task.minutes}`);
+    expect(formatTimeSpent(1)).toBe(`1 ${task.minutes}`);
   });
 
   it("should handle single hour", () => {
-    expect(formatTimeSpent(60)).toBe(`1 ${fa.task.hours}`);
+    expect(formatTimeSpent(60)).toBe(`1 ${task.hours}`);
   });
 
   it("should handle large values", () => {
-    expect(formatTimeSpent(1500)).toBe(`25 ${fa.task.hours}`);
+    expect(formatTimeSpent(1500)).toBe(`25 ${task.hours}`);
   });
 });
 

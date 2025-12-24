@@ -1,21 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle } from "lucide-react";
-import { fa } from "@/constants";
+import { dashboard, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { UserAvatar } from "@/components/user-avatar";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns-jalali";
 import type { TasksPriorityOptions } from "@/lib/pocketbase-types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AssigneePreview = {
+  id?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  avatar?: string;
+  collectionId?: string;
+  collectionName?: string;
+};
+
 type Task = {
   id: string;
   title: string;
   priority: TasksPriorityOptions;
   deadline?: string;
   expand?: {
-    assignee?: any;
+    assignee?: AssigneePreview;
   };
 };
 
@@ -23,7 +32,9 @@ type OverdueTasksWidgetProps = {
   overdueTasks?: Task[];
 };
 
-export function OverdueTasksWidget({ overdueTasks = [] }: OverdueTasksWidgetProps) {
+export function OverdueTasksWidget({
+  overdueTasks = [],
+}: OverdueTasksWidgetProps) {
   const navigate = useNavigate();
 
   if (overdueTasks.length === 0) {
@@ -35,7 +46,7 @@ export function OverdueTasksWidget({ overdueTasks = [] }: OverdueTasksWidgetProp
       <CardHeader>
         <CardTitle className="text-destructive flex items-center gap-2">
           <AlertTriangle className="h-5 w-5" />
-          {fa.dashboard.cards.overdueTasks}{" "}
+          {dashboard.cards.overdueTasks}{" "}
           <span className="text-muted-foreground text-sm font-normal">
             {overdueTasks.length > 4
               ? `(${digitsEnToFa(4)} / ${digitsEnToFa(overdueTasks.length)})`
@@ -60,17 +71,14 @@ export function OverdueTasksWidget({ overdueTasks = [] }: OverdueTasksWidgetProp
               role="button"
             >
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <UserAvatar
-                  user={task.expand?.assignee as any}
-                  className="h-7 w-7"
-                />
+                <UserAvatar user={task.expand?.assignee} className="h-7 w-7" />
                 <span className="truncate text-sm font-medium">
                   {task.title}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
-                  {fa.tasks.priority[task.priority]}
+                  {tasks.priority[task.priority]}
                 </Badge>
                 <span className="text-destructive text-xs font-medium">
                   {task.deadline

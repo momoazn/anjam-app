@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 import type { WorkloadDistribution } from "@/lib/reports-utils";
 import {
   ChartContainer,
@@ -14,8 +14,7 @@ type Props = {
 
 const chartConfig = {
   capacityUtilization: {
-    label:
-      fa.reports.charts.employee.overtimeAnalysis.columns.capacityUtilization,
+    label: reports.charts.employee.overtimeAnalysis.columns.capacityUtilization,
     color: "hsl(var(--chart-1))",
   },
 };
@@ -34,7 +33,7 @@ export function WorkloadDistributionChart({ data }: Props) {
     <Card>
       <CardHeader className="pb-4">
         <CardTitle className="text-base font-semibold md:text-lg">
-          {fa.reports.charts.employee.overtimeAnalysis.workloadChartTitle}
+          {reports.charts.employee.overtimeAnalysis.workloadChartTitle}
         </CardTitle>
       </CardHeader>
       <CardContent className="h-80 w-full p-4 pt-0">
@@ -71,8 +70,9 @@ export function WorkloadDistributionChart({ data }: Props) {
                         | "high"
                         | "critical";
                       const levelLabel =
-                        fa.reports.charts.employee.overtimeAnalysis
-                          .workloadLevels[workloadLevel] || workloadLevel;
+                        reports.charts.employee.overtimeAnalysis.workloadLevels[
+                          workloadLevel
+                        ] || workloadLevel;
                       return [`${value}% (${levelLabel})`, name];
                     }}
                   />
@@ -87,7 +87,7 @@ export function WorkloadDistributionChart({ data }: Props) {
           </ChartContainer>
         ) : (
           <div className="text-muted-foreground flex h-full w-full items-center justify-center rounded-md border border-dashed text-sm">
-            {fa.reports.charts.employee.overtimeAnalysis.noData}
+            {reports.charts.employee.overtimeAnalysis.noData}
           </div>
         )}
       </CardContent>

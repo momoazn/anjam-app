@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { fa } from "@/constants/text";
+import { comments } from "@/constants";
 import { useCreateComment } from "@/hooks/comments";
 import { useAuthUser } from "@/store/auth-store";
 
@@ -52,8 +52,8 @@ export function CommentComposer({
             onChange={(e) => setContent(e.target.value)}
             placeholder={
               currentUser
-                ? fa.comments.composer.placeholder
-                : fa.comments.composer.placeholderDisabled
+                ? comments.composer.placeholder
+                : comments.composer.placeholderDisabled
             }
             className="min-h-[80px] resize-none"
             disabled={isDisabled}
@@ -74,7 +74,7 @@ export function CommentComposer({
             className="h-10 px-3"
           >
             <Send className="h-4 w-4" />
-            <span className="sr-only">{fa.comments.composer.send}</span>
+            <span className="sr-only">{comments.composer.send}</span>
           </Button>
         </div>
       </div>

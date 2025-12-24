@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { fa } from "@/constants";
+import { common, tasks } from "@/constants";
 import { useProjects, useProjectUsers, useUsers } from "@/hooks";
 import {
   TasksPriorityOptions,
@@ -74,9 +74,9 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
         <GenericFormField
           control={control}
           name="title"
-          label={fa.tasks.addTask.issueTitle}
+          label={tasks.addTask.issueTitle}
           type="input"
-          placeholder={fa.tasks.addTask.issueTitle}
+          placeholder={tasks.addTask.issueTitle}
           autoFocus
           className="text-lg font-medium"
           required
@@ -85,9 +85,9 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
         <GenericFormField
           control={control}
           name="description"
-          label={fa.tasks.addTask.description}
+          label={tasks.addTask.description}
           type="textarea"
-          placeholder={fa.tasks.addTask.description}
+          placeholder={tasks.addTask.description}
           className="min-h-[120px] resize-y"
         />
       </div>
@@ -99,13 +99,11 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             name="project"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{fa.tasks.addTask.selectProject}</FormLabel>
+                <FormLabel>{tasks.addTask.selectProject}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue
-                        placeholder={fa.tasks.addTask.selectProject}
-                      />
+                      <SelectValue placeholder={tasks.addTask.selectProject} />
                     </SelectTrigger>
                     <SelectContent>
                       {projects && projects.length > 0 ? (
@@ -116,7 +114,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                         ))
                       ) : (
                         <SelectItem value="__empty" disabled>
-                          {fa.common.messages.noData}
+                          {common.messages.noData}
                         </SelectItem>
                       )}
                     </SelectContent>
@@ -136,13 +134,13 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
             return (
               <FormItem>
-                <FormLabel>{fa.tasks.addTask.assignee}</FormLabel>
+                <FormLabel>{tasks.addTask.assignee}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder={fa.tasks.addTask.unassigned}>
+                      <SelectValue placeholder={tasks.addTask.unassigned}>
                         {field.value &&
-                        field.value !== fa.tasks.addTask.unassigned &&
+                        field.value !== tasks.addTask.unassigned &&
                         selectedUser ? (
                           <span>
                             {formatUserName(
@@ -152,13 +150,13 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                             )}
                           </span>
                         ) : (
-                          <span>{fa.tasks.addTask.unassigned}</span>
+                          <span>{tasks.addTask.unassigned}</span>
                         )}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={fa.tasks.addTask.unassigned}>
-                        <span>{fa.tasks.addTask.unassigned}</span>
+                      <SelectItem value={tasks.addTask.unassigned}>
+                        <span>{tasks.addTask.unassigned}</span>
                       </SelectItem>
                       {assignees && assignees.length > 0 ? (
                         assignees.map((u) => (
@@ -174,7 +172,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                         ))
                       ) : (
                         <SelectItem value="__empty" disabled>
-                          {fa.common.messages.noData}
+                          {common.messages.noData}
                         </SelectItem>
                       )}
                     </SelectContent>
@@ -196,7 +194,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
             return (
               <FormItem>
-                <FormLabel>{fa.tasks.addTask.status}</FormLabel>
+                <FormLabel>{tasks.addTask.status}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
@@ -237,13 +235,13 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
             return (
               <FormItem>
-                <FormLabel>{fa.tasks.addTask.priority}</FormLabel>
+                <FormLabel>{tasks.addTask.priority}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
                       <div className="flex items-center gap-2">
                         <PriorityIcon className={`size-4 ${priorityColor}`} />
-                        <span>{fa.tasks.priority[field.value]}</span>
+                        <span>{tasks.priority[field.value]}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
@@ -254,7 +252,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                           <SelectItem key={priority} value={priority}>
                             <div className="flex items-center gap-2">
                               <ItemIcon className={`size-4 ${itemColor}`} />
-                              <span>{fa.tasks.priority[priority]}</span>
+                              <span>{tasks.priority[priority]}</span>
                             </div>
                           </SelectItem>
                         );
@@ -273,7 +271,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           name="deadline"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{fa.tasks.addTask.deadline}</FormLabel>
+              <FormLabel>{tasks.addTask.deadline}</FormLabel>
               <FormControl>
                 <DatePicker
                   date={field.value}

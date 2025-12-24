@@ -1,4 +1,4 @@
-import { fa } from "@/constants/text";
+import { reports, tasks } from "@/constants";
 import {
   format,
   isWithinInterval,
@@ -56,10 +56,10 @@ import { TASK_STATUS_CONFIG } from "./status-utils";
 
 // Priority labels mapping
 const PRIORITY_LABELS = {
-  urgent: fa.tasks.priority.urgent,
-  high: fa.reports.high,
-  medium: fa.reports.medium,
-  low: fa.reports.low,
+  urgent: tasks.priority.urgent,
+  high: reports.high,
+  medium: reports.medium,
+  low: reports.low,
 } as const;
 
 // Priority options in order

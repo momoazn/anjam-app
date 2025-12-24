@@ -47,7 +47,6 @@ export function createCrudHooks<TRecord, TResponse, TQueryKeys = unknown>(
 ) {
   const { collection, invalidators, relatedInvalidators } = config;
 
-  // Create mutation
   const useCreateMutation = createMutation<
     TResponse,
     Error,
@@ -64,7 +63,6 @@ export function createCrudHooks<TRecord, TResponse, TQueryKeys = unknown>(
     },
   );
 
-  // Update mutation
   const useUpdateMutation = createMutation<
     TResponse,
     Error,
@@ -79,17 +77,14 @@ export function createCrudHooks<TRecord, TResponse, TQueryKeys = unknown>(
     (client, _data, variables) => {
       invalidators.update(client, variables?.id);
 
-      // Apply related invalidators
       relatedInvalidators?.forEach(({ invalidator }) => {
         invalidator(client, variables?.id);
       });
     },
   );
 
-  // Delete mutation (soft delete for most collections)
   const useDeleteMutation = createMutation<TResponse, Error, string>(
     async (id: string) => {
-      // Check if collection supports soft delete
       const supportsSoftDelete = ["tasks", "projects", "comments"].includes(
         collection,
       );

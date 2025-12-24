@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fa } from "@/constants/text";
+import { auth, common, users } from "@/constants";
 import { useGroups } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
@@ -53,7 +53,6 @@ export function UserFields({
     enabled: showGroup,
   });
 
-  // Get available roles based on current user's role
   const availableRoles = useMemo(() => {
     if (!user) return [];
 
@@ -82,7 +81,7 @@ export function UserFields({
       <GenericFormField
         control={control}
         name="username"
-        label={fa.auth.login.username}
+        label={auth.login.username}
         type="input"
         required
       />
@@ -91,9 +90,9 @@ export function UserFields({
         <GenericFormField
           control={control}
           name="password"
-          label={fa.auth.login.password}
+          label={auth.login.password}
           type="input"
-          placeholder={fa.auth.login.password}
+          placeholder={auth.login.password}
           required
         >
           <Input type="password" />
@@ -103,7 +102,7 @@ export function UserFields({
       <GenericFormField
         control={control}
         name="first_name"
-        label={fa.users.form.firstName}
+        label={users.form.firstName}
         type="input"
         required
       />
@@ -111,7 +110,7 @@ export function UserFields({
       <GenericFormField
         control={control}
         name="last_name"
-        label={fa.users.form.lastName}
+        label={users.form.lastName}
         type="input"
         required
       />
@@ -123,17 +122,17 @@ export function UserFields({
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{fa.users.table.columns.role}</FormLabel>
+              <FormLabel>{users.table.columns.role}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger aria-label={fa.users.table.columns.role}>
-                    <SelectValue placeholder={fa.users.form.selectRole} />
+                  <SelectTrigger aria-label={users.table.columns.role}>
+                    <SelectValue placeholder={users.form.selectRole} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {availableRoles.map((role) => (
                     <SelectItem key={role} value={role}>
-                      {fa.users.table.roles[role]}
+                      {users.table.roles[role]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -150,7 +149,7 @@ export function UserFields({
           name="group"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{fa.users.form.group}</FormLabel>
+              <FormLabel>{users.form.group}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
@@ -158,7 +157,7 @@ export function UserFields({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={fa.users.form.selectGroup} />
+                    <SelectValue placeholder={users.form.selectGroup} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -170,7 +169,7 @@ export function UserFields({
                     ))
                   ) : (
                     <SelectItem value="__empty" disabled>
-                      {fa.common.messages.noData}
+                      {common.messages.noData}
                     </SelectItem>
                   )}
                 </SelectContent>

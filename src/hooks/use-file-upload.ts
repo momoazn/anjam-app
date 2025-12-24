@@ -1,4 +1,4 @@
-import { fa } from "@/constants/text";
+import { projects } from "@/constants";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -33,6 +33,70 @@ const DEFAULT_ALLOWED_TYPES = [
   "text/xml",
 ];
 
+const getFileIcon = (file: File): string => {
+  const type = file.type;
+  const name = file.name.toLowerCase();
+
+  if (type.startsWith("image/")) return "🖼️";
+  if (type === "application/pdf") return "📄";
+  if (
+    type === "application/msword" ||
+    type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  )
+    return "📝";
+  if (
+    type === "application/vnd.ms-excel" ||
+    type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    type === "text/csv" ||
+    type === "application/csv" ||
+    name.endsWith(".csv")
+  )
+    return "📊";
+  if (
+    type === "application/vnd.ms-powerpoint" ||
+    type ===
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  )
+    return "📽️";
+  if (type === "application/json" || name.endsWith(".json")) return "📋";
+  if (
+    type === "application/xml" ||
+    type === "text/xml" ||
+    name.endsWith(".xml")
+  )
+    return "📰";
+  if (type.startsWith("text/")) return "📃";
+  return "📎";
+};
+
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+};
+
+const isAllowedType = (fileType: string, allowedTypes: string[]) => {
+  return allowedTypes.some((allowedType) => {
+    if (allowedType.endsWith("/*")) {
+      const baseType = allowedType.split("/")[0];
+      return fileType.startsWith(baseType + "/");
+    }
+    return fileType === allowedType;
+  });
+};
+
+const addPreviewIfNeeded = (file: File): FileWithPreview => {
+  const fileWithPreview = file as FileWithPreview;
+  if (file.type.startsWith("image/")) {
+    fileWithPreview.preview = URL.createObjectURL(file);
+  }
+  return fileWithPreview;
+};
+
 export function useFileUpload(options?: FileUploadOptions) {
   const {
     maxSize = DEFAULT_MAX_SIZE,
@@ -48,32 +112,24 @@ export function useFileUpload(options?: FileUploadOptions) {
 
   const validateFile = useCallback(
     (file: File): { valid: boolean; error?: string } => {
-      // Check file size
       if (file.size > maxSize) {
         const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(0);
         return {
           valid: false,
-          error: fa.projects.files.validation.tooLarge.replace(
+          error: projects.files.validation.tooLarge.replace(
             "{max}",
             `${maxSizeMB}MB`,
           ),
         };
       }
 
-      // Check file type
       const fileType = file.type;
-      const isAllowed = allowedTypes.some((allowedType) => {
-        if (allowedType.endsWith("/*")) {
-          const baseType = allowedType.split("/")[0];
-          return fileType.startsWith(baseType + "/");
-        }
-        return fileType === allowedType;
-      });
+      const isAllowed = isAllowedType(fileType, allowedTypes);
 
       if (!isAllowed) {
         return {
           valid: false,
-          error: fa.projects.files.validation.invalidType.replace(
+          error: projects.files.validation.invalidType.replace(
             "{fileName}",
             file.name,
           ),
@@ -89,9 +145,8 @@ export function useFileUpload(options?: FileUploadOptions) {
     (newFiles: FileList | File[]) => {
       const fileArray = Array.from(newFiles);
 
-      // Check max files limit
       if (maxFiles && files.length + fileArray.length > maxFiles) {
-        const error = fa.projects.files.validation.maxFiles.replace(
+        const error = projects.files.validation.maxFiles.replace(
           "{maxFiles}",
           maxFiles.toString(),
         );
@@ -106,12 +161,7 @@ export function useFileUpload(options?: FileUploadOptions) {
       fileArray.forEach((file) => {
         const validation = validateFile(file);
         if (validation.valid) {
-          // Create preview for images
-          const fileWithPreview = file as FileWithPreview;
-          if (file.type.startsWith("image/")) {
-            fileWithPreview.preview = URL.createObjectURL(file);
-          }
-          validFiles.push(fileWithPreview);
+          validFiles.push(addPreviewIfNeeded(file));
         } else {
           errors.push(`${file.name}: ${validation.error}`);
         }
@@ -151,52 +201,6 @@ export function useFileUpload(options?: FileUploadOptions) {
     });
     setFiles([]);
   }, [files]);
-
-  const formatFileSize = useCallback((bytes: number): string => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
-  }, []);
-
-  const getFileIcon = useCallback((file: File): string => {
-    const type = file.type;
-    const name = file.name.toLowerCase();
-
-    if (type.startsWith("image/")) return "🖼️";
-    if (type === "application/pdf") return "📄";
-    if (
-      type === "application/msword" ||
-      type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
-      return "📝";
-    if (
-      type === "application/vnd.ms-excel" ||
-      type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-      type === "text/csv" ||
-      type === "application/csv" ||
-      name.endsWith(".csv")
-    )
-      return "📊";
-    if (
-      type === "application/vnd.ms-powerpoint" ||
-      type ===
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-    )
-      return "📽️";
-    if (type === "application/json" || name.endsWith(".json")) return "📋";
-    if (
-      type === "application/xml" ||
-      type === "text/xml" ||
-      name.endsWith(".xml")
-    )
-      return "📰";
-    if (type.startsWith("text/")) return "📃";
-    return "📎";
-  }, []);
 
   return {
     files,

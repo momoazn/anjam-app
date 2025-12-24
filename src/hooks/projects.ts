@@ -12,7 +12,6 @@ import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createCrudHooks } from "./factories/use-crud-factory";
 
-// Create CRUD hooks using the factory
 const {
   useCreate: useCreateProjectMutation,
   useUpdate: useUpdateProjectMutation,

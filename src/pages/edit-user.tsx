@@ -12,16 +12,16 @@ import {
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fa } from "@/constants/text";
+import { auth, common, users } from "@/constants";
 import { useUpdateUser, useUser } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({
-  username: z.string().min(1, { message: fa.auth.errors.usernameRequired }),
-  first_name: z.string().min(1, { message: fa.auth.errors.firstNameRequired }),
-  last_name: z.string().min(1, { message: fa.auth.errors.lastNameRequired }),
+  username: z.string().min(1, { message: auth.errors.usernameRequired }),
+  first_name: z.string().min(1, { message: auth.errors.firstNameRequired }),
+  last_name: z.string().min(1, { message: auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
   password: z.string().optional(),
   group: z.string().optional(),
@@ -105,13 +105,13 @@ export default function EditUser() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.users.edit.title}</h1>
+          <h1 className="text-3xl font-bold">{users.edit.title}</h1>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.users.edit.title}</CardTitle>
+          <CardTitle>{users.edit.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -128,13 +128,13 @@ export default function EditUser() {
                 onClick={() => navigate("/users")}
                 disabled={isPending}
               >
-                {fa.common.cancel}
+                {common.cancel}
               </Button>
               <Button type="submit" disabled={isPending || isLoading}>
                 {isPending ? (
                   <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                 ) : null}
-                {fa.users.edit.button}
+                {users.edit.button}
               </Button>
             </div>
           </form>

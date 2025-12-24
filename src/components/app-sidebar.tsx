@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { fa } from "@/constants/text";
+import { app, navigation, navigationLabels } from "@/constants";
 import { can, type Permission } from "@/lib/permissions";
 import { useAuthUser } from "@/store/auth-store";
 import {
@@ -41,43 +41,43 @@ type NavItem = {
 const data = {
   navMain: [
     {
-      title: fa.navigation.dashboard,
+      title: navigation.dashboard,
       url: "/",
       icon: IconDashboard,
     },
     {
-      title: fa.navigation.notifications,
+      title: navigation.notifications,
       url: "/notifications",
       icon: IconBell,
     },
   ] as NavItem[],
   navAdmin: [
     {
-      title: fa.navigation.groups,
+      title: navigation.groups,
       url: "/groups",
       icon: IconBuildingCommunity,
       permission: "groups.view",
     },
     {
-      title: fa.navigation.tags,
+      title: navigation.tags,
       url: "/tags",
       icon: IconTag,
       permission: "tags.view",
     },
     {
-      title: fa.navigation.reports,
+      title: navigation.reports,
       url: "/reports",
       icon: IconChartBar,
       permission: "reports.view",
     },
     {
-      title: fa.navigationLabels.timesheet,
+      title: navigationLabels.timesheet,
       url: "/timesheet",
       icon: IconClock,
       permission: "timesheet.view",
     },
     {
-      title: fa.navigation.users,
+      title: navigation.users,
       url: "/users",
       icon: IconUsers,
       permission: "users.view",
@@ -85,12 +85,12 @@ const data = {
   ] as NavItem[],
   navSecondary: [
     {
-      title: fa.navigation.helps,
+      title: navigation.helps,
       url: "/helps",
       icon: IconHelp,
     },
     {
-      title: fa.navigation.settings,
+      title: navigation.settings,
       url: "/settings",
       icon: IconSettings,
       permission: "settings.view",
@@ -118,7 +118,7 @@ function AppSidebarHeader() {
               }}
             >
               <IconInnerShadowTop className="!size-5" />
-              <span className="text-base font-semibold">{fa.app.name}</span>
+              <span className="text-base font-semibold">{app.name}</span>
             </NavLink>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -146,7 +146,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           items={data.navAdmin.filter((item) =>
             item.permission ? can(user.role, item.permission) : true,
           )}
-          title={fa.navigationLabels.admin}
+          title={navigationLabels.admin}
         />
       </SidebarContent>
       <SidebarFooter>

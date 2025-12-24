@@ -25,7 +25,6 @@ type UsersListOptions = {
   filter?: string;
 };
 
-// Create CRUD hooks using the factory
 const {
   useCreate: useCreateUserMutation,
   useUpdate: useUpdateUserMutation,
@@ -141,7 +140,6 @@ export function useProjectUsers({
         return Promise.resolve([]);
       }
 
-      // Get all user-project relationships for this project
       const userProjects = await pb
         .collection("users_projects")
         .getFullList<

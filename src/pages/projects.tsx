@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ProjectListGroup } from "@/components/project/project-list-group";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { fa } from "@/constants/text";
+import { projects } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useProjects } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
@@ -33,10 +33,10 @@ export default function Projects() {
         <div className="flex items-center gap-3">
           <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
             <Target className="h-5 w-5 md:h-6 md:w-6" />
-            {fa.projects.title}
+            {projects.title}
           </h1>
           <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-sm">
-            {fa.projects.list.count.replace(
+            {projects.list.count.replace(
               "{count}",
               digitsEnToFa(userProjects?.length ?? 0).toString(),
             )}
@@ -48,7 +48,7 @@ export default function Projects() {
             className="w-full gap-2 sm:w-auto"
           >
             <Plus className="h-4 w-4" />
-            {fa.projects.create.button}
+            {projects.create.button}
           </Button>
         )}
       </div>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { DeleteUserDialog } from "@/components/user/delete-user-dialog";
 import { UserListTable } from "@/components/user/user-list-table";
-import { fa } from "@/constants/text";
+import { users as usersText } from "@/constants";
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useUsers } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
@@ -19,7 +19,7 @@ export default function Users() {
   const [selectedUser, setSelectedUser] = useState<UsersResponse | null>(null);
 
   const {
-    data: users,
+    data: usersData,
     isPending: isLoadingUsers,
     refetch,
   } = useUsers({
@@ -57,12 +57,12 @@ export default function Users() {
           <div className="flex items-center gap-3">
             <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
               <UsersIcon className="h-5 w-5 md:h-6 md:w-6" />
-              {fa.users.title}
+              {usersText.title}
             </h1>
             <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-sm">
-              {fa.users.list.count.replace(
+              {usersText.list.count.replace(
                 "{count}",
-                digitsEnToFa(users?.length ?? 0).toString(),
+                digitsEnToFa(usersData?.length ?? 0).toString(),
               )}
             </span>
           </div>
@@ -72,7 +72,7 @@ export default function Users() {
               className="w-full gap-2 sm:w-auto"
             >
               <Plus className="h-4 w-4" />
-              {fa.users.create.button}
+              {usersText.create.button}
             </Button>
           )}
         </div>
@@ -82,7 +82,7 @@ export default function Users() {
           </div>
         ) : (
           <UserListTable
-            users={users ?? []}
+            users={usersData ?? []}
             onEdit={handleEdit}
             onDelete={handleDelete}
             isAdmin={isAdmin}

@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fa } from "@/constants/text";
+import { reports } from "@/constants";
 
 type Props = {
   rows: Array<{
@@ -26,7 +26,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
   if (rows.length === 0) {
     return (
       <div className="text-muted-foreground flex h-48 items-center justify-center">
-        {fa.reports.noData}
+        {reports.noData}
       </div>
     );
   }
@@ -35,23 +35,21 @@ export function Leaderboard({ rows, onRowClick }: Props) {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Trophy className="h-4 w-4 text-yellow-500" />
-        <h3 className="text-sm font-medium">{fa.reports.topPerformers}</h3>
+        <h3 className="text-sm font-medium">{reports.topPerformers}</h3>
       </div>
 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">{fa.reports.rank}</TableHead>
-            <TableHead>{fa.reports.name}</TableHead>
+            <TableHead className="w-12">{reports.rank}</TableHead>
+            <TableHead>{reports.name}</TableHead>
             <TableHead className="text-center">
-              {fa.reports.taskCompleted}
+              {reports.taskCompleted}
             </TableHead>
             <TableHead className="text-center">
-              {fa.reports.completionRate}
+              {reports.completionRate}
             </TableHead>
-            <TableHead className="text-center">
-              {fa.reports.onTimeRate}
-            </TableHead>
+            <TableHead className="text-center">{reports.onTimeRate}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

@@ -33,7 +33,6 @@ type CreateGroupWithManagerResponse = {
   data: { groupId: string; managerId: string };
 };
 
-// Create CRUD hooks using the factory
 const {
   useCreate: useCreateGroupMutation,
   useUpdate: useUpdateGroupMutation,

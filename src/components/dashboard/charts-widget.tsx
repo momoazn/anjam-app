@@ -6,11 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  BarChart3,
-  Clock,
-  TrendingUp,
-} from "lucide-react";
+import { BarChart3, Clock, TrendingUp } from "lucide-react";
 import {
   Cell,
   Line,
@@ -21,13 +17,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { fa } from "@/constants";
+import { dashboard, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { UserAvatar } from "@/components/user-avatar";
 import { getStatusColorVariant } from "@/lib/status-utils";
 import { useNavigate } from "react-router-dom";
 import { format, isPast, isToday } from "date-fns-jalali";
-import type { TasksPriorityOptions, TasksStatusOptions } from "@/lib/pocketbase-types";
+import type {
+  TasksPriorityOptions,
+  TasksStatusOptions,
+} from "@/lib/pocketbase-types";
 
 type PieChartData = {
   name: string;
@@ -40,7 +39,16 @@ type ProductivityTrendData = {
   completed: number;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AssigneePreview = {
+  id?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  avatar?: string;
+  collectionId?: string;
+  collectionName?: string;
+};
+
 type Task = {
   id: string;
   title: string;
@@ -50,7 +58,7 @@ type Task = {
   deadline?: string;
   expand?: {
     project?: { name: string };
-    assignee?: any;
+    assignee?: AssigneePreview;
   };
 };
 
@@ -96,14 +104,14 @@ export function ChartsWidget({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <BarChart3 className="h-4 w-4" />
-            {fa.dashboard.cards.taskStatusDistribution}
+            {dashboard.cards.taskStatusDistribution}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <ChartContainer
             config={{
               count: {
-                label: fa.dashboard.chart.count,
+                label: dashboard.chart.count,
               },
             }}
             className="mx-auto h-[250px] w-full"
@@ -138,14 +146,14 @@ export function ChartsWidget({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <TrendingUp className="h-4 w-4" />
-            {fa.dashboard.cards.productivityTrend}
+            {dashboard.cards.productivityTrend}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <ChartContainer
             config={{
               completed: {
-                label: fa.dashboard.cards.completed,
+                label: dashboard.cards.completed,
               },
             }}
             className="h-[250px] w-full"
@@ -157,7 +165,7 @@ export function ChartsWidget({
                 <ChartTooltip
                   content={<ChartTooltipContent />}
                   labelFormatter={(label) =>
-                    fa.dashboard.cards.dayLabel.replace("{label}", label)
+                    dashboard.cards.dayLabel.replace("{label}", label)
                   }
                 />
                 <Line
@@ -178,7 +186,7 @@ export function ChartsWidget({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Clock className="h-4 w-4" />
-            {fa.dashboard.cards.recentActivity}
+            {dashboard.cards.recentActivity}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -203,16 +211,12 @@ export function ChartsWidget({
                     "background",
                   )}`}
                 />
-                <UserAvatar
-                  user={task.expand?.assignee as any}
-                  className="h-7 w-7"
-                />
+                <UserAvatar user={task.expand?.assignee} className="h-7 w-7" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{task.title}</p>
                   <p className="text-muted-foreground text-xs">
-                    {task?.expand?.project?.name ||
-                      fa.dashboard.cards.noProject}{" "}
-                    • {digitsEnToFa(format(new Date(task.created), "MM/dd"))}
+                    {task?.expand?.project?.name || dashboard.cards.noProject} •{" "}
+                    {digitsEnToFa(format(new Date(task.created), "MM/dd"))}
                     {task.deadline ? (
                       <>
                         {" "}
@@ -227,7 +231,7 @@ export function ChartsWidget({
                                 : ""
                           }
                         >
-                          {fa.tasks.addTask.deadline}:{" "}
+                          {tasks.addTask.deadline}:{" "}
                           {digitsEnToFa(
                             format(new Date(task.deadline), "MM/dd"),
                           )}
@@ -238,17 +242,17 @@ export function ChartsWidget({
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="text-xs">
-                    {fa.tasks.priority[task.priority]}
+                    {tasks.priority[task.priority]}
                   </Badge>
                   <Badge variant="outline" className="text-xs">
-                    {fa.tasks.status[task.status]}
+                    {tasks.status[task.status]}
                   </Badge>
                 </div>
               </div>
             ))}
             {recentTasks.length === 0 && (
               <p className="text-muted-foreground py-4 text-center text-sm">
-                {fa.dashboard.cards.noActivityFound}
+                {dashboard.cards.noActivityFound}
               </p>
             )}
           </div>

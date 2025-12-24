@@ -235,7 +235,7 @@ These aspects matter to maintainability and team confidence.
 **How to implement / validate**
 
 1. **Align README**
-   - Update README testing commands as described in `BUGS_ISSUES_AND_SHORTCOMINGS.md`.
+   - Update README testing commands as described in `docs/CODEBASE_ISSUES.md`.
 2. **Add core docs**
    - Create `docs/PROJECT_OVERVIEW.md` and `docs/DEVELOPMENT_GUIDE.md`:
      - Overview: target users, main features, high‑level architecture.

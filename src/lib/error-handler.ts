@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { fa } from "@/constants/text";
+import { auth, errors } from "@/constants";
 import { logError, logDebug } from "./logger";
 
 type ValidationError = {
@@ -34,7 +34,7 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
   logError("PocketBase error", error);
 
   if (!isPocketBaseError(error)) {
-    toast.error(fa.auth.errors.serverError);
+    toast.error(auth.errors.serverError);
     return;
   }
 
@@ -46,38 +46,38 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
 
     // Check for specific field validation errors
     if (validationErrors.password?.code === "validation_min_text_constraint") {
-      toast.error(fa.auth.errors.passwordMinLength);
+      toast.error(auth.errors.passwordMinLength);
     } else if (
       validationErrors.username?.code === "validation_min_text_constraint"
     ) {
-      toast.error(fa.auth.errors.usernameMinLength);
+      toast.error(auth.errors.usernameMinLength);
     } else if (
       validationErrors.username?.code === "validation_max_text_constraint"
     ) {
-      toast.error(fa.auth.errors.usernameMaxLength);
+      toast.error(auth.errors.usernameMaxLength);
     } else if (
       validationErrors.password?.code === "validation_max_text_constraint"
     ) {
-      toast.error(fa.auth.errors.passwordMaxLength);
+      toast.error(auth.errors.passwordMaxLength);
     } else if (
       validationErrors.username?.code === "validation_invalid_username"
     ) {
-      toast.error(fa.auth.errors.usernameInvalid);
+      toast.error(auth.errors.usernameInvalid);
     } else if (
       validationErrors.password?.code === "validation_invalid_password"
     ) {
-      toast.error(fa.auth.errors.passwordInvalid);
+      toast.error(auth.errors.passwordInvalid);
     } else if (
       validationErrors.username?.code === "validation_unique_constraint"
     ) {
-      toast.error(fa.auth.errors.userAlreadyExists);
+      toast.error(auth.errors.userAlreadyExists);
     } else {
       // Display the first validation error message if available
       const firstError = Object.values(validationErrors)[0];
       if (firstError?.message) {
         toast.error(firstError.message);
       } else {
-        toast.error(fa.auth.errors.serverError);
+        toast.error(auth.errors.serverError);
       }
     }
   } else {
@@ -90,14 +90,14 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     if (errorMessage) {
       // Check if this is an inactive user error
       const message = errorMessage.toLowerCase();
-      const inactiveKeywords = fa.errors.validation.keywords.inactive;
-      const blockedKeywords = fa.errors.validation.keywords.blocked;
+      const inactiveKeywords = errors.validation.keywords.inactive;
+      const blockedKeywords = errors.validation.keywords.blocked;
 
       if (
         inactiveKeywords.some((kw: string) => message.includes(kw)) ||
         message.includes("inactive")
       ) {
-        toast.error(fa.auth.errors.userInactive);
+        toast.error(auth.errors.userInactive);
       }
       // Check if this is a blocked user error
       else if (
@@ -105,11 +105,11 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
         message.includes("blocked") ||
         message.includes("user account")
       ) {
-        toast.error(fa.auth.errors.userBlocked);
+        toast.error(auth.errors.userBlocked);
       }
       // Check if this is a superuser permission error
       else if (message.includes("only superusers can perform this action")) {
-        toast.error(fa.errors.permission.onlySuperusers);
+        toast.error(errors.permission.onlySuperusers);
       } else {
         // Display the specific error message from the backend
         toast.error(errorMessage);
@@ -117,10 +117,10 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     } else if (pbError?.status === 400) {
       // Fallback for authentication failures without a message
       logDebug("No error message found, using generic invalidCredentials");
-      toast.error(fa.auth.errors.invalidCredentials);
+      toast.error(auth.errors.invalidCredentials);
     } else {
       logDebug("No error message found, using generic serverError");
-      toast.error(fa.auth.errors.serverError);
+      toast.error(auth.errors.serverError);
     }
   }
 }

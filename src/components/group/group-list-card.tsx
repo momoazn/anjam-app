@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fa } from "@/constants/text";
+import { groups } from "@/constants";
 import { GroupsResponse, UsersResponse } from "@/lib/pocketbase-types";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
@@ -51,7 +51,7 @@ export function GroupListCard({
                 ) : (
                   <XCircle className="h-3 w-3" />
                 )}
-                {isActive ? fa.groups.status.active : fa.groups.status.inactive}
+                {isActive ? groups.status.active : groups.status.inactive}
               </Badge>
             </div>
           </div>
@@ -98,7 +98,7 @@ export function GroupListCard({
                 {digitsEnToFa(stats.users)}
               </span>
               <span className="text-muted-foreground text-xs">
-                {fa.groups.stats.users}
+                {groups.stats.users}
               </span>
             </div>
             <div className="flex flex-col items-center">
@@ -107,7 +107,7 @@ export function GroupListCard({
                 {digitsEnToFa(stats.projects)}
               </span>
               <span className="text-muted-foreground text-xs">
-                {fa.groups.stats.projects}
+                {groups.stats.projects}
               </span>
             </div>
             <div className="flex flex-col items-center">
@@ -116,7 +116,7 @@ export function GroupListCard({
                 {digitsEnToFa(stats.tasks)}
               </span>
               <span className="text-muted-foreground text-xs">
-                {fa.groups.stats.tasks}
+                {groups.stats.tasks}
               </span>
             </div>
           </div>
@@ -124,7 +124,7 @@ export function GroupListCard({
 
         {group.expand?.manager && (
           <div className="text-muted-foreground text-sm">
-            <span className="font-medium">{fa.groups.form.manager}:</span>{" "}
+            <span className="font-medium">{groups.form.manager}:</span>{" "}
             {group.expand.manager.first_name && group.expand.manager.last_name
               ? `${group.expand.manager.first_name} ${group.expand.manager.last_name}`
               : group.expand.manager.username}

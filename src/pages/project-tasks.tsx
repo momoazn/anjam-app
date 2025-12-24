@@ -4,7 +4,7 @@ import { TaskListGroup } from "@/components/task/task-list-group";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants/text";
+import { projects, reports, tasks as tasksText } from "@/constants";
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { TaskWithProject } from "@/lib/pocketbase";
@@ -74,10 +74,10 @@ const ProjectEmptyState = ({
         >
           <FilterX className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="mb-2 text-lg font-semibold">
-            {fa.tasks.emptyState.noTasksInProject}
+            {tasksText.emptyState.noTasksInProject}
           </h3>
           <p className="text-muted-foreground mb-4 max-w-md">
-            {fa.tasks.emptyState.noTasksInProjectDescription.replace(
+            {tasksText.emptyState.noTasksInProjectDescription.replace(
               "{projectName}",
               projectName,
             )}
@@ -100,10 +100,10 @@ const ProjectEmptyState = ({
           <Plus className="text-primary h-6 w-6" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">
-          {fa.tasks.emptyState.projectNoTasksYet}
+          {tasksText.emptyState.projectNoTasksYet}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-md">
-          {fa.tasks.emptyState.projectNoTasksYetDescription.replace(
+          {tasksText.emptyState.projectNoTasksYetDescription.replace(
             "{projectName}",
             projectName,
           )}
@@ -113,7 +113,7 @@ const ProjectEmptyState = ({
           onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
         >
           <Plus className="h-4 w-4" />
-          {fa.tasks.emptyState.createFirstTask}
+          {tasksText.emptyState.createFirstTask}
         </Button>
       </CardContent>
     </Card>
@@ -124,8 +124,13 @@ export default function ProjectTasks() {
   const { id: projectId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { project, tasks, users, isLoadingTasks, isLoadingUsers } =
-    useProjectTasksPageData(projectId as string);
+  const {
+    project,
+    tasks: tasksData,
+    users,
+    isLoadingTasks,
+    isLoadingUsers,
+  } = useProjectTasksPageData(projectId as string);
 
   const {
     searchTerm,
@@ -141,7 +146,7 @@ export default function ProjectTasks() {
     setSelectedDateRange,
     setSelectedTag,
     filteredTasks,
-  } = useTaskFilters(tasks);
+  } = useTaskFilters(tasksData);
 
   const groupedTasks = useMemo(() => {
     // Prevent grouping during load state to avoid brief flash of unfiltered/empty groups
@@ -216,16 +221,16 @@ export default function ProjectTasks() {
             <div className="mb-2 flex items-center gap-2">
               <FolderOpen className="text-muted-foreground h-6 w-6" />
               <h1 className="text-3xl font-bold tracking-tight">
-                {project?.name || fa.projects.fallbacks.name}
+                {project?.name || projects.fallbacks.name}
               </h1>
             </div>
             <p className="text-muted-foreground">
               {totalTasks > 0
-                ? fa.tasks.header.tasksInProject.replace(
+                ? tasksText.header.tasksInProject.replace(
                     "{count}",
                     totalTasks.toString(),
                   )
-                : fa.tasks.header.manageProjectTasks}
+                : tasksText.header.manageProjectTasks}
             </p>
           </div>
           <div className="flex gap-2">
@@ -235,7 +240,7 @@ export default function ProjectTasks() {
               onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
             >
               <Plus className="h-4 w-4" />
-              {fa.tasks.addTask.buttons.newTaskForProject}
+              {tasksText.addTask.buttons.newTaskForProject}
             </Button>
           </div>
         </div>
@@ -247,7 +252,7 @@ export default function ProjectTasks() {
           <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
             <div className="flex flex-col">
               <span className="text-muted-foreground text-xs">
-                {fa.projects.details.totalTasks}
+                {projects.details.totalTasks}
               </span>
               <span className="text-foreground text-xl font-semibold">
                 {digitsEnToFa(totalTasks)}
@@ -259,7 +264,7 @@ export default function ProjectTasks() {
           <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
             <div className="flex flex-col">
               <span className="text-muted-foreground text-xs">
-                {fa.projects.activeTasks}
+                {projects.activeTasks}
               </span>
               <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
                 {digitsEnToFa(taskStats.active)}
@@ -271,7 +276,7 @@ export default function ProjectTasks() {
           <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
             <div className="flex flex-col">
               <span className="text-muted-foreground text-xs">
-                {fa.projects.details.completedTasks}
+                {projects.details.completedTasks}
               </span>
               <span className="text-xl font-semibold text-emerald-600 dark:text-emerald-400">
                 {digitsEnToFa(taskStats.completed)}
@@ -283,7 +288,7 @@ export default function ProjectTasks() {
           <CardContent className="flex items-center justify-between gap-2 p-3 sm:p-4">
             <div className="flex flex-col">
               <span className="text-muted-foreground text-xs">
-                {fa.reports.overdue}
+                {reports.overdue}
               </span>
               <span className="text-xl font-semibold text-red-600 dark:text-red-400">
                 {digitsEnToFa(taskStats.overdue)}
@@ -320,7 +325,7 @@ export default function ProjectTasks() {
         ) : !filteredTasks || filteredTasks.length === 0 ? (
           <ProjectEmptyState
             hasFilters={hasActiveFilters}
-            projectName={project?.name || fa.projects.fallbacks.thisProject}
+            projectName={project?.name || projects.fallbacks.thisProject}
             projectId={projectId || ""}
           />
         ) : (

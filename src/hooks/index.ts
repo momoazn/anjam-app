@@ -89,7 +89,7 @@ export { useToast } from "./use-toast";
 export {
   useTaskFilters,
   ALL_FILTER_VALUE,
-  type TaskFiltersState,
+  type TaskFilterValues,
 } from "./use-task-filters";
 export { useSavedFilters, type SavedFilter } from "./use-saved-filters";
 

@@ -1,4 +1,4 @@
-import { fa } from "@/constants/text";
+import { charts, reports } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -12,7 +12,7 @@ import {
 
 const chartConfig = {
   completed: {
-    label: fa.reports.completedTasks,
+    label: reports.completedTasks,
     color: "var(--chart-1)",
   },
 };
@@ -65,7 +65,7 @@ export function ThroughputChart({ data, onBarClick }: Props) {
                 digitsEnToFa(value as number),
                 chartConfig.completed.label,
               ]}
-              labelFormatter={(label) => `${fa.charts.dateLabel} ${label}`}
+              labelFormatter={(label) => `${charts.dateLabel} ${label}`}
             />
           }
         />

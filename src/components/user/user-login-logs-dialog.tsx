@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fa } from "@/constants/text";
+import { common, settings, users } from "@/constants";
 import { formatDateTime } from "@/lib/date-utils";
 import { pb } from "@/lib/pocketbase";
 import { UsersResponse } from "@/lib/pocketbase-types";
@@ -68,7 +68,7 @@ export function UserLoginLogsDialog({
         );
 
         if (!response.ok) {
-          throw new Error(fa.users.actions.fetchLogsError);
+          throw new Error(users.actions.fetchLogsError);
         }
 
         const data = await response.json();
@@ -76,7 +76,7 @@ export function UserLoginLogsDialog({
         setPage(data.page);
         setTotalPages(data.totalPages);
       } catch {
-        toast.error(fa.settings.security.toast.fetchLogsError);
+        toast.error(settings.security.toast.fetchLogsError);
       } finally {
         setLoading(false);
       }
@@ -101,15 +101,15 @@ export function UserLoginLogsDialog({
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>
-            {fa.users.loginLogs.title.replace(
+            {users.loginLogs.title.replace(
               "{name}",
               `${user.first_name} ${user.last_name}`,
             )}
           </DialogTitle>
           <DialogDescription>
-            {fa.users.loginLogs.columns.ip} {fa.common.connectors.and}{" "}
-            {fa.users.loginLogs.columns.status}{" "}
-            {fa.common.pagination.loginAttemptsLabel}
+            {users.loginLogs.columns.ip} {common.connectors.and}{" "}
+            {users.loginLogs.columns.status}{" "}
+            {common.pagination.loginAttemptsLabel}
           </DialogDescription>
         </DialogHeader>
 
@@ -120,26 +120,26 @@ export function UserLoginLogsDialog({
             </div>
           ) : logs.length === 0 ? (
             <div className="text-muted-foreground py-12 text-center">
-              {fa.users.loginLogs.empty}
+              {users.loginLogs.empty}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-right">
-                    {fa.users.loginLogs.columns.date}
+                    {users.loginLogs.columns.date}
                   </TableHead>
                   <TableHead className="text-right">
-                    {fa.users.loginLogs.columns.time}
+                    {users.loginLogs.columns.time}
                   </TableHead>
                   <TableHead className="text-right">
-                    {fa.users.loginLogs.columns.ip}
+                    {users.loginLogs.columns.ip}
                   </TableHead>
                   <TableHead className="text-center">
-                    {fa.users.loginLogs.columns.status}
+                    {users.loginLogs.columns.status}
                   </TableHead>
                   <TableHead className="text-right">
-                    {fa.users.loginLogs.columns.reason}
+                    {users.loginLogs.columns.reason}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -163,12 +163,12 @@ export function UserLoginLogsDialog({
                           {log.success ? (
                             <>
                               <CheckCircle className="size-3" />
-                              {fa.users.loginLogs.status.success}
+                              {users.loginLogs.status.success}
                             </>
                           ) : (
                             <>
                               <XCircle className="size-3" />
-                              {fa.users.loginLogs.status.failed}
+                              {users.loginLogs.status.failed}
                             </>
                           )}
                         </Badge>
@@ -187,8 +187,8 @@ export function UserLoginLogsDialog({
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t pt-4">
             <div className="text-muted-foreground text-sm">
-              {fa.common.pagination.page} {digitsEnToFa(page)}{" "}
-              {fa.common.pagination.of} {digitsEnToFa(totalPages)}
+              {common.pagination.page} {digitsEnToFa(page)}{" "}
+              {common.pagination.of} {digitsEnToFa(totalPages)}
             </div>
             <div className="flex gap-2">
               <Button
@@ -197,7 +197,7 @@ export function UserLoginLogsDialog({
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1 || loading}
               >
-                {fa.common.pagination.previous}
+                {common.pagination.previous}
               </Button>
               <Button
                 variant="outline"
@@ -205,7 +205,7 @@ export function UserLoginLogsDialog({
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === totalPages || loading}
               >
-                {fa.common.pagination.next}
+                {common.pagination.next}
               </Button>
             </div>
           </div>

@@ -202,4 +202,4 @@ Used for:
 - [Development Roadmap](./DEVELOPMENT_ROADMAP.md) - Strategic planning
 - [Implementation Status](./IMPLEMENTATION_STATUS.md) - Current state
 - [QA Testing Guide](./QA_TESTING_GUIDE_SLIM.md) - Testing procedures
-- [Root Structure](./ROOT_STRUCTURE.md) - Repository organization
+- [Improvements Plan](./IMPROVEMENTS_PLAN.md) - Refactoring and improvement roadmap

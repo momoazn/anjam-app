@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTags } from "@/hooks/tags";
 import type { TagsResponse } from "@/lib/pocketbase-types";
-import { text } from "@/constants/text";
+import { tagsManagement, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface TagPickerProps {
@@ -29,7 +29,7 @@ interface TagPickerProps {
 export function TagPicker({
   selectedTagIds,
   onChange,
-  placeholder = text.tasks.filters.tag,
+  placeholder = tasks.filters.tag,
 }: TagPickerProps) {
   const [open, setOpen] = useState(false);
   const { data: tags, isLoading } = useTags();
@@ -62,7 +62,7 @@ export function TagPicker({
           >
             <span className="truncate">
               {selectedTags.length > 0
-                ? `${digitsEnToFa(selectedTags.length)} ${text.tasks.filters.tag}`
+                ? `${digitsEnToFa(selectedTags.length)} ${tasks.filters.tag}`
                 : placeholder}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -70,14 +70,9 @@ export function TagPicker({
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command>
-            <CommandInput
-              placeholder={text.tasks.filters.search}
-              className="h-9"
-            />
+            <CommandInput placeholder={tasks.filters.search} className="h-9" />
             <CommandEmpty>
-              {isLoading
-                ? text.tagsManagement.loading
-                : text.tagsManagement.noTags}
+              {isLoading ? tagsManagement.loading : tagsManagement.noTags}
             </CommandEmpty>
             <CommandGroup className="max-h-64 overflow-auto">
               {tags?.map((tag) => {

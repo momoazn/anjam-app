@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { fa } from "@/constants/text";
+import { tasks } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { cn, getUserInitials } from "@/lib/utils";
 
@@ -36,7 +36,6 @@ function getAvatarUrl(user: UserAvatarProps["user"]) {
   // If we have a PocketBase record shape, build the file URL
   if (user.id && (user.collectionId || user.collectionName)) {
     try {
-      // Create a minimal record shape that pb.files.getUrl expects
       const record = {
         id: user.id,
         collectionId: user.collectionId || "",
@@ -94,7 +93,7 @@ export function UserAvatar({
     return (
       <Avatar className={avatarClassName}>
         <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
-          {fa.tasks.addTask.unassigned}
+          {tasks.addTask.unassigned}
         </AvatarFallback>
       </Avatar>
     );

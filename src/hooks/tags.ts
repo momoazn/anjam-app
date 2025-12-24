@@ -1,68 +1,42 @@
-import {
-  useQuery,
-  type UseQueryOptions,
-  type UseMutationOptions,
-} from "@tanstack/react-query";
+import { useQuery, type UseMutationOptions } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import type { TagsResponse, TagsRecord } from "@/lib/pocketbase-types";
+import { mutationInvalidators } from "@/lib/query-invalidators";
+import { createCrudHooks } from "./factories/use-crud-factory";
+import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
-// Query keys for tags
-export const tagQueryKeys = {
-  all: ["tags"] as const,
-  lists: () => [...tagQueryKeys.all, "list"] as const,
-  list: (filters?: string) => [...tagQueryKeys.lists(), { filters }] as const,
-};
+const { useUpdate: useUpdateTagMutation, useDelete: useDeleteTagMutation } =
+  createCrudHooks<TagsRecord, TagsResponse>({
+    collection: "tags",
+    queryKeys: queryKeys.tags,
+    invalidators: mutationInvalidators.crud.tags,
+  });
+
+type CreateTagInput = Pick<TagsRecord, "name" | "color">;
 
 const useCreateTagMutation = createMutation<
   TagsResponse,
   Error,
-  Partial<TagsRecord>
+  CreateTagInput
 >(
   (data) => pb.collection("tags").create<TagsResponse>(data),
   (client) => {
-    client.invalidateQueries({ queryKey: tagQueryKeys.all });
-  },
-);
-
-const useUpdateTagMutation = createMutation<
-  TagsResponse,
-  Error,
-  { id: string; data: Partial<TagsRecord> }
->(
-  ({ id, data }) => pb.collection("tags").update<TagsResponse>(id, data),
-  (client) => {
-    client.invalidateQueries({ queryKey: tagQueryKeys.all });
-  },
-);
-
-const useDeleteTagMutation = createMutation<void, Error, string>(
-  async (id) => {
-    await pb.collection("tags").delete(id);
-  },
-  (client) => {
-    client.invalidateQueries({ queryKey: tagQueryKeys.all });
+    mutationInvalidators.crud.tags.create(client);
   },
 );
 
 /**
  * Fetch all tags
  */
-export function useTags(
-  options?: Omit<
-    UseQueryOptions<TagsResponse[], Error>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function useTags() {
   return useQuery({
-    queryKey: tagQueryKeys.lists(),
+    queryKey: queryKeys.tags.list(),
     queryFn: async () => {
-      const records = await pb.collection("tags").getFullList<TagsResponse>({
+      return await pb.collection("tags").getFullList<TagsResponse>({
         sort: "name",
       });
-      return records;
     },
-    ...options,
   });
 }
 
@@ -70,20 +44,23 @@ export function useTags(
  * Create a new tag
  */
 export function useCreateTag(
-  options?: UseMutationOptions<TagsResponse, Error, Partial<TagsRecord>>,
+  options?: UseMutationOptions<TagsResponse, Error, CreateTagInput>,
 ) {
   return useCreateTagMutation({
     ...options,
     mutationFn: (data) => {
-      // Get the current user and set as creator
       const currentUser = pb.authStore.record;
       if (!currentUser) {
         throw new Error("User must be logged in to create a tag");
+      }
+      if (!currentUser.group) {
+        throw new Error("User must belong to a group to create a tag");
       }
 
       // Merge the creator field with the provided data
       const tagData = {
         ...data,
+        group: currentUser.group,
         creator: currentUser.id,
       };
 
@@ -99,7 +76,7 @@ export function useUpdateTag(
   options?: UseMutationOptions<
     TagsResponse,
     Error,
-    { id: string; data: Partial<TagsRecord> }
+    { id: string; updates: Partial<TagsRecord> }
   >,
 ) {
   return useUpdateTagMutation(options);
@@ -109,7 +86,7 @@ export function useUpdateTag(
  * Delete a tag
  */
 export function useDeleteTag(
-  options?: UseMutationOptions<void, Error, string>,
+  options?: UseMutationOptions<TagsResponse, Error, string>,
 ) {
   return useDeleteTagMutation(options);
 }

@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { fa } from "@/constants/text";
+import { common } from "@/constants";
 import {
   useDeleteTask,
   useDeleteProject,
@@ -94,7 +94,7 @@ export function DeleteDialog({
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
           <AlertDialogCancel className="order-2">
-            {fa.common.cancel}
+            {common.cancel}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
@@ -104,7 +104,7 @@ export function DeleteDialog({
             {isPending ? (
               <Loader2 className="text-muted-foreground ml-2 size-4 animate-spin" />
             ) : null}
-            {fa.common.delete}
+            {common.delete}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

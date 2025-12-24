@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fa } from "@/constants/text";
+import { common, tasks } from "@/constants";
 import type {
   TasksPriorityOptions,
   TasksStatusOptions,
@@ -32,7 +32,7 @@ type TimeEstimateFieldsProps = {
 export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
   return (
     <FormItem>
-      <FormLabel>{fa.tasks.timeEstimate}</FormLabel>
+      <FormLabel>{tasks.timeEstimate}</FormLabel>
       <div className="flex gap-4">
         <FormField
           control={control}
@@ -58,7 +58,7 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                   />
                 </FormControl>
                 <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">
-                  {fa.common.time.hoursShort}
+                  {common.time.hoursShort}
                 </div>
               </div>
               <FormMessage />
@@ -90,7 +90,7 @@ export function TimeEstimateFields({ control }: TimeEstimateFieldsProps) {
                   />
                 </FormControl>
                 <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">
-                  {fa.common.time.minutesShort}
+                  {common.time.minutesShort}
                 </div>
               </div>
               <FormMessage />

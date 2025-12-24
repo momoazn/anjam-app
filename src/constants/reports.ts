@@ -1,7 +1,9 @@
-// Reports module constants
-import { shared } from "./shared";
+// Reports & dashboard constants
+
+import { shared } from "./core";
 import { tasks } from "./tasks";
 
+// Reports module constants
 export const reports = {
   title: "گزارش‌ها",
   dashboardTitle: "گزارش‌ها",
@@ -79,6 +81,17 @@ export const reports = {
       overdue: "گذشته مهلت",
       noDeadline: "بدون مهلت",
     },
+    priority: {
+      low: tasks.priority.low,
+      medium: tasks.priority.medium,
+      high: tasks.priority.high,
+      urgent: tasks.priority.urgent,
+    },
+    productivity: {
+      title: "بهره‌وری",
+      average: "میانگین",
+      trend: "روند",
+    },
   },
   fallbacks: {
     taskTitle: "بدون عنوان",
@@ -127,6 +140,13 @@ export const reports = {
   projectTasks: "تسک‌های پروژه",
   noTasksInProject: "این پروژه تسکی ندارد",
   charts: {
+    status: "نمودار وضعیت تسک‌ها",
+    priority: "نمودار اولویت تسک‌ها",
+    productivity: "نمودار بهره‌وری",
+    timeliness: {
+      title: "توزیع به‌موقعی تکمیل",
+      noData: "تکمیل ثبت‌شده‌ای برای این بازه وجود ندارد",
+    },
     throughput: {
       title: "روند تکمیل تسک‌ها",
       periods: {
@@ -135,10 +155,6 @@ export const reports = {
       },
       drilldownTitle: "تسک‌های تکمیل شده در {label}",
       noData: "داده‌ای برای این بازه وجود ندارد",
-    },
-    timeliness: {
-      title: "توزیع به‌موقعی تکمیل",
-      noData: "تکمیل ثبت‌شده‌ای برای این بازه وجود ندارد",
     },
     priorities: {
       title: "توزیع اولویت‌ها",
@@ -171,6 +187,20 @@ export const reports = {
         },
         drilldownTitle: "تسک‌های تکمیل شده در {label}",
         noData: "داده‌ای برای این بازه وجود ندارد",
+      },
+      productivityTrends: {
+        title: "روند بهره‌وری",
+        description: "تحلیل روند بهره‌وری در طول زمان",
+        chartTitle: "روند بهره‌وری",
+        projectedNextPeriod: "پیش‌بینی دوره بعد",
+        trendLabels: {
+          improving: "رو به بهبود",
+          declining: "رو به کاهش",
+          increasing: "رو به بهبود",
+          decreasing: "رو به کاهش",
+          stable: "پایدار",
+        },
+        noData: "داده‌ای برای نمایش روند وجود ندارد",
       },
       performanceTable: {
         title: "عملکرد کارکنان",
@@ -218,43 +248,138 @@ export const reports = {
         columns: {
           name: shared.name,
           totalTasks: "کل تسک‌ها",
-          completedTasks: shared.completed,
-          overdueTasks: "گذشته‌موعد",
-          avgCompletionTime: "میانگین زمان تکمیل",
-          workloadScore: "امتیاز بار کاری",
+          workloadScore: "شاخص بار کاری",
           overtimeIndicator: "شاخص اضافه‌کاری",
-          activeTasks: "تسک‌های فعال",
-          upcomingTasks: "تسک‌های پیش رو",
           capacityUtilization: "استفاده از ظرفیت",
-          workloadLevel: "سطح بار کاری",
         },
         workloadLevels: {
-          low: "کم",
+          light: "سبک",
+          moderate: "متوسط",
+          heavy: "سنگین",
+          low: "سبک",
           medium: "متوسط",
-          high: "زیاد",
-          critical: "بحرانی",
+          high: "سنگین",
+          critical: "خیلی سنگین",
         },
-        tooltips: {
-          workloadScore:
-            "امتیاز بار کاری بر اساس تسک‌های فعال، گذشته‌موعد و نرخ تکمیل",
-          overtimeIndicator: "برآورد ساعات اضافه‌کاری مورد نیاز",
-          capacityUtilization: "درصد استفاده از ظرفیت کاری",
-          workloadLevel: "سطح بار کاری بر اساس استفاده از ظرفیت",
-        },
-        noData: "داده‌ای برای تحلیل وجود ندارد",
-      },
-      productivityTrends: {
-        title: "روندهای بهره‌وری",
-        description: "تحلیل روندهای بهره‌وری با پیش‌بینی",
-        chartTitle: "روند بهره‌وری با پیش‌بینی",
-        trendLabels: {
-          increasing: "افزایشی",
-          decreasing: "کاهشی",
-          stable: "پایدار",
-        },
-        projectedNextPeriod: "پیش‌بینی دوره بعدی",
-        noData: "داده‌ای برای تحلیل روندها وجود ندارد",
+        noData: "داده‌ای برای نمایش وجود ندارد",
       },
     },
+  },
+  filters: {
+    search: shared.search,
+    status: shared.status,
+    priority: shared.priority,
+    assignee: shared.assignee,
+    project: shared.project,
+    dateRange: "بازه زمانی",
+    all: shared.all,
+  },
+  tables: {
+    performance: {
+      title: "عملکرد افراد",
+      columns: {
+        name: shared.name,
+        completed: shared.completed,
+        total: shared.total,
+        onTime: "به‌موقع",
+        overdue: "گذشته مهلت",
+        completionRate: "نرخ تکمیل",
+      },
+    },
+    projects: {
+      title: "گزارش پروژه‌ها",
+      columns: {
+        name: shared.name,
+        code: shared.code,
+        description: shared.description,
+        createdAt: shared.createdAt,
+        updatedAt: shared.updatedAt,
+        taskStatus: shared.status,
+        taskPriority: shared.priority,
+        taskAssignee: shared.assignee,
+        taskDeadline: shared.deadline,
+        taskDescription: shared.description,
+      },
+      fallbackProjectName: shared.noName,
+    },
+  },
+  cards: {
+    statusDistribution: "توزیع وضعیت تسک‌ها",
+    priorityDistribution: "توزیع اولویت‌ها",
+    productivityTrend: "روند بهره‌وری",
+    performanceLeaderboard: "جدول عملکرد",
+    teamPerformance: "عملکرد تیم",
+    projectComparison: "مقایسه پروژه‌ها",
+  },
+} as const;
+
+// Dashboard module constants
+export const dashboard = {
+  taskStatus: "وضعیت تسک‌ها",
+  title: "داشبورد",
+  newTask: "تسک جدید",
+  taskShort: shared.task,
+  projectSummary: "خلاصه پروژه‌ها",
+  recentTasks: "تسک‌های اخیر",
+  overdueTasks: "گذشته‌موعد",
+  quickActions: "اقدامات سریع",
+  viewAllTasks: "مشاهده همه تسک‌ها",
+  manageProjects: "مدیریت پروژه‌ها",
+  viewReports: "مشاهده گزارش‌ها",
+  tasksCompleted: "٪{percentage} تکمیل شده",
+  of: "از",
+  stats: {
+    totalTasks: "کل تسک‌ها",
+    completed: shared.completed,
+    inProgress: shared.inProgress,
+    pending: shared.pending,
+    overdue: "گذشته‌موعد",
+  },
+  chart: {
+    count: "تعداد",
+  },
+  fallbacks: {
+    noDate: "بدون تاریخ",
+    noDeadline: "ندارد",
+  },
+  welcome: {
+    employee: "خوش آمدید {firstName} {lastName} عزیز!",
+    supervisor: "خوش آمدید سرپرست {firstName} {lastName}!",
+    admin: "خوش آمدید ادمین {firstName} {lastName}!",
+    employeeSubtitle: "وضعیت تسک‌ها و پروژه‌های شما را مشاهده کنید",
+    supervisorSubtitle: "وضعیت تیم و پروژه‌ها را نظارت کنید",
+    adminSubtitle: "نمای کلی سیستم و گزارش‌ها را مشاهده کنید",
+  },
+  cards: {
+    todayDue: "امروز سررسید",
+    completionRate: "نرخ تکمیل",
+    completedThisWeek: "تکمیل این هفته",
+    recentNotifications: "اعلان‌های اخیر",
+    noNewNotifications: "اعلان جدیدی وجود ندارد",
+    quickActions: "اقدامات سریع",
+    myTasks: "تسک‌های من",
+    tasksCalendar: "تقویم تسک‌ها",
+    reviewOverdue: "بررسی گذشته‌موعدها",
+    createTask: "ساخت تسک جدید",
+    notifications: "اعلان‌ها",
+    viewAll: "مشاهده همه",
+    progress: "پیشرفت",
+    completed: shared.completed,
+    remaining: "باقی مانده",
+    taskStatusDistribution: "توزیع وضعیت تسک‌ها",
+    productivityTrend: "روند بهره‌وری (۷ روز)",
+    dayLabel: "روز: {label}",
+    recentActivity: "فعالیت‌های اخیر",
+    noProject: "بدون پروژه",
+    noActivityFound: "فعالیتی یافت نشد",
+    overdueTasks: "تسک‌های سررسید گذشته",
+  },
+  statDescriptions: {
+    totalTasks: "تعداد کل تسک‌های قابل دسترسی شما",
+    completed: "تسک‌های با وضعیت «انجام‌شده»",
+    inProgress: "تسک‌های با وضعیت «در حال انجام»",
+    pending: "تسک‌های با وضعیت «در انتظار» و «برای انجام»",
+    todayDue: "تسک‌های دارای موعد امروز و انجام‌نشده",
+    overdue: "تسک‌های دارای موعد گذشته و انجام‌نشده",
   },
 } as const;

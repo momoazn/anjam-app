@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fa } from "@/constants/text";
+import { common, errors, tasks } from "@/constants";
 import { useTask, useUpdateTask } from "@/hooks";
 import {
   TasksPriorityOptions,
@@ -27,38 +27,38 @@ import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
 
 const taskFormSchema = z.object({
   title: z
-    .string({ required_error: fa.common.validation.required })
-    .min(1, { message: fa.tasks.addTask.issueTitle }),
-  description: z.string({ required_error: fa.common.validation.required }),
-  assignee: z.string({ required_error: fa.common.validation.required }),
+    .string({ required_error: common.validation.required })
+    .min(1, { message: tasks.addTask.issueTitle }),
+  description: z.string({ required_error: common.validation.required }),
+  assignee: z.string({ required_error: common.validation.required }),
   priority: z.nativeEnum(TasksPriorityOptions, {
-    required_error: fa.errors.validation.invalidOption,
-    invalid_type_error: fa.errors.validation.invalidOption,
+    required_error: errors.validation.invalidOption,
+    invalid_type_error: errors.validation.invalidOption,
   }),
   status: z.nativeEnum(TasksStatusOptions, {
-    required_error: fa.errors.validation.invalidOption,
-    invalid_type_error: fa.errors.validation.invalidOption,
+    required_error: errors.validation.invalidOption,
+    invalid_type_error: errors.validation.invalidOption,
   }),
   project: z
     .string()
-    .min(1, { message: fa.errors.validation.projectIdRequired })
+    .min(1, { message: errors.validation.projectIdRequired })
     .optional(),
   deadline: z
-    .date({ invalid_type_error: fa.errors.validation.invalidDate })
+    .date({ invalid_type_error: errors.validation.invalidDate })
     .optional(),
   estimated_hours: z.coerce
     .number({
-      invalid_type_error: fa.errors.validation.numberInvalid,
+      invalid_type_error: errors.validation.numberInvalid,
     })
-    .min(0, { message: fa.errors.validation.estimatedHoursRange })
-    .max(999, { message: fa.errors.validation.estimatedHoursRange })
+    .min(0, { message: errors.validation.estimatedHoursRange })
+    .max(999, { message: errors.validation.estimatedHoursRange })
     .optional(),
   estimated_minutes: z.coerce
     .number({
-      invalid_type_error: fa.errors.validation.numberInvalid,
+      invalid_type_error: errors.validation.numberInvalid,
     })
-    .min(0, { message: fa.errors.validation.estimatedMinutesRange })
-    .max(59, { message: fa.errors.validation.estimatedMinutesRange })
+    .min(0, { message: errors.validation.estimatedMinutesRange })
+    .max(59, { message: errors.validation.estimatedMinutesRange })
     .optional(),
 });
 
@@ -76,7 +76,7 @@ export default function EditTask() {
     defaultValues: {
       title: "",
       description: "",
-      assignee: fa.tasks.addTask.unassigned,
+      assignee: tasks.addTask.unassigned,
       priority: TasksPriorityOptions.medium,
       status: TasksStatusOptions.todo,
       project: "",
@@ -94,7 +94,7 @@ export default function EditTask() {
       form.reset({
         title: task.title,
         description: task.description,
-        assignee: task.assignee ?? fa.tasks.addTask.unassigned,
+        assignee: task.assignee ?? tasks.addTask.unassigned,
         priority: task.priority,
         status: task.status,
         project: task.project,
@@ -132,7 +132,7 @@ export default function EditTask() {
         // Only include project if present (not in project context or changed)
         project: values.project ?? task.project,
         assignee:
-          values.assignee !== fa.tasks.addTask.unassigned
+          values.assignee !== tasks.addTask.unassigned
             ? values.assignee
             : undefined,
         deadline: values.deadline?.toISOString(),
@@ -173,14 +173,14 @@ export default function EditTask() {
       <PageTransition className="container mx-auto space-y-6 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">{fa.tasks.errors.notFound}</p>
+            <p className="text-muted-foreground">{tasks.errors.notFound}</p>
             <Button
               variant="outline"
               className="mt-4"
               onClick={() => navigate("/tasks")}
             >
               <ArrowLeft className="ml-2 h-4 w-4" />
-              {fa.common.buttons.backToList}
+              {common.buttons.backToList}
             </Button>
           </CardContent>
         </Card>
@@ -195,16 +195,16 @@ export default function EditTask() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{fa.tasks.edit.title}</h1>
+          <h1 className="text-3xl font-bold">{tasks.edit.title}</h1>
           <p className="text-muted-foreground">{task.title}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{fa.tasks.edit.title}</CardTitle>
+          <CardTitle>{tasks.edit.title}</CardTitle>
           <CardDescription>
-            {fa.common.buttons.view} {task.display_id || task.id}
+            {common.buttons.view} {task.display_id || task.id}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -219,15 +219,15 @@ export default function EditTask() {
                   onClick={handleCancel}
                   disabled={isPending}
                 >
-                  {fa.tasks.details.buttons.cancel}
+                  {tasks.details.buttons.cancel}
                 </Button>
                 <Button type="submit" disabled={isPending}>
                   {isPending ? (
                     <Loader2 className="text-muted-foreground mr-2 size-4 animate-spin" />
                   ) : null}
                   {isPending
-                    ? fa.tasks.edit.buttons.saving
-                    : fa.tasks.edit.buttons.save}
+                    ? tasks.edit.buttons.saving
+                    : tasks.edit.buttons.save}
                 </Button>
               </div>
             </form>

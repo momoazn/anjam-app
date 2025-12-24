@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { fa } from "@/constants/text";
+import { projects } from "@/constants";
 import { FileWithPreview, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
 import { Upload, X } from "lucide-react";
@@ -32,10 +32,9 @@ export function FileUpload({
     (fileList: FileList) => {
       const fileArray = Array.from(fileList);
 
-      // Check max files limit
       if (maxFiles && value.length + fileArray.length > maxFiles) {
         toast.error(
-          fa.projects.files.validation.maxFiles.replace(
+          projects.files.validation.maxFiles.replace(
             "{maxFiles}",
             String(maxFiles),
           ),
@@ -145,17 +144,14 @@ export function FileUpload({
           <Upload className="text-muted-foreground h-10 w-10" />
           <div className="text-muted-foreground text-sm">
             <span className="text-foreground font-medium">
-              {fa.projects.files.dropzone}
+              {projects.files.dropzone}
             </span>
           </div>
           <div className="text-muted-foreground text-xs">
-            {fa.projects.files.maxSize.replace(
-              "{size}",
-              formatFileSize(maxSize),
-            )}
+            {projects.files.maxSize.replace("{size}", formatFileSize(maxSize))}
           </div>
           <div className="text-muted-foreground text-xs">
-            {fa.projects.files.allowedTypes}
+            {projects.files.allowedTypes}
           </div>
         </label>
       </div>

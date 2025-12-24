@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { fa } from "@/constants";
+import { common, reports, task, timesheet } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
@@ -23,12 +23,10 @@ export default function TimesheetPage() {
   const { user } = useAuthStore();
   const selectedDate = new Date();
 
-  // Get current week
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 6 }); // Saturday
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 6 });
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  // Fetch tasks with time tracking for the current user
   const { data: tasks, isLoading } = useQuery({
     queryKey: [
       "timesheet",
@@ -51,7 +49,6 @@ export default function TimesheetPage() {
     enabled: !!user?.id,
   });
 
-  // Group tasks by day
   const tasksByDay = weekDays.map((day) => {
     const dayTasks =
       tasks?.filter((task) => {
@@ -85,10 +82,10 @@ export default function TimesheetPage() {
     // Header
     rows.push(
       [
-        fa.timesheet.headers.date,
-        fa.timesheet.headers.taskTitle,
-        fa.timesheet.headers.project,
-        fa.timesheet.headers.minutesSpent,
+        timesheet.headers.date,
+        timesheet.headers.taskTitle,
+        timesheet.headers.project,
+        timesheet.headers.minutesSpent,
       ].join(","),
     );
 
@@ -99,7 +96,7 @@ export default function TimesheetPage() {
       dayTasks.forEach((task) => {
         const projectName = (
           (task.expand as { project?: { name?: string } })?.project?.name ||
-          fa.reports.fallbacks.projectName
+          reports.fallbacks.projectName
         ).replace(/"/g, '""');
         const title = (task.title || "").replace(/"/g, '""');
         const minutes = task.time_spent_minutes || 0;
@@ -157,7 +154,7 @@ export default function TimesheetPage() {
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold">
             <Calendar className="h-6 w-6" />
-            {fa.reports.title} - {fa.task.timeSpent}
+            {reports.title} - {task.timeSpent}
           </h1>
           <p className="text-muted-foreground">
             {format(weekStart, "yyyy/MM/dd")} - {format(weekEnd, "yyyy/MM/dd")}
@@ -167,7 +164,7 @@ export default function TimesheetPage() {
         <div className="flex items-center gap-4">
           <div className="text-right">
             <div className="text-muted-foreground text-sm">
-              {fa.common.total} {fa.task.timeSpent}
+              {common.total} {task.timeSpent}
             </div>
             <div className="text-lg font-semibold">
               {weeklyTotalTime.hours}h {weeklyTotalTime.minutes}m
@@ -176,7 +173,7 @@ export default function TimesheetPage() {
 
           <Button onClick={handleExport} variant="outline" size="sm">
             <Download className="mr-2 h-4 w-4" />
-            {fa.common.buttons.export}
+            {common.buttons.export}
           </Button>
         </div>
       </div>
@@ -187,18 +184,16 @@ export default function TimesheetPage() {
             <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
               <Clock className="text-muted-foreground h-6 w-6" />
             </div>
-            <h2 className="text-lg font-semibold">
-              {fa.timesheet.noTimeSpent}
-            </h2>
+            <h2 className="text-lg font-semibold">{timesheet.noTimeSpent}</h2>
             <p className="text-muted-foreground max-w-md text-sm">
-              {fa.timesheet.emptyStateDescription}
+              {timesheet.emptyStateDescription}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2">
               <Button asChild size="sm">
-                <Link to="/tasks/create">{fa.timesheet.createTaskCta}</Link>
+                <Link to="/tasks/create">{timesheet.createTaskCta}</Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link to="/tasks/calendar">{fa.timesheet.calendarCta}</Link>
+                <Link to="/tasks/calendar">{timesheet.calendarCta}</Link>
               </Button>
             </div>
           </CardContent>
@@ -241,8 +236,7 @@ export default function TimesheetPage() {
                           </div>
                           <div className="text-muted-foreground">
                             {(task.expand as { project?: { name?: string } })
-                              ?.project?.name ||
-                              fa.reports.fallbacks.projectName}
+                              ?.project?.name || reports.fallbacks.projectName}
                           </div>
                           <div className="mt-1 flex items-center gap-1">
                             <Clock className="h-3 w-3" />
@@ -259,7 +253,7 @@ export default function TimesheetPage() {
                   </div>
                 ) : (
                   <div className="text-muted-foreground py-4 text-center text-xs">
-                    {fa.timesheet.noTimeSpent} {fa.task.timeSpent}
+                    {timesheet.noTimeSpent} {task.timeSpent}
                   </div>
                 )}
               </CardContent>

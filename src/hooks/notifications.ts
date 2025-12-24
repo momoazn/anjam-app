@@ -4,12 +4,11 @@ import { useCallback, useEffect } from "react";
 import { pb } from "@/lib/pocketbase";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
+import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
-const getNotificationsQueryKey = (userId?: string) => [
-  "notifications",
-  userId ?? "",
-];
+const getNotificationsQueryKey = (userId?: string) =>
+  userId ? queryKeys.notifications.byUser(userId) : queryKeys.notifications.all;
 
 export function useNotifications() {
   const user = useAuthUser();

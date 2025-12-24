@@ -1,13 +1,11 @@
 import { Slot } from "@radix-ui/react-slot";
 import { ChevronLeft, MoreHorizontal } from "lucide-react";
 import type * as React from "react";
-import { fa } from "@/constants/text";
+import { ui } from "@/constants";
 import { cn } from "@/lib/utils";
 
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-  return (
-    <nav aria-label={fa.ui.breadcrumb} data-slot="breadcrumb" {...props} />
-  );
+  return <nav aria-label={ui.breadcrumb} data-slot="breadcrumb" {...props} />;
 }
 
 function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {

@@ -35,7 +35,6 @@ const PERMISSIONS = {
   // Timesheet
   "timesheet.view": ["admin", "manager", "supervisor", "employee"],
 
-  // Settings
   "settings.view": ["admin", "manager", "supervisor", "employee"],
 
   // System permissions

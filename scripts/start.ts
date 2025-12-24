@@ -21,7 +21,6 @@ function getBinaryPathForPlatform(): string {
 function runBinary(binaryPath: string) {
   console.log(`Starting binary: ${binaryPath}`);
 
-  // Check if binary exists
   if (!fs.existsSync(binaryPath)) {
     throw new Error(
       `Binary not found at ${binaryPath}. Please run 'bun run build' first.`,

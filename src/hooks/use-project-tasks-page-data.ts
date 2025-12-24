@@ -21,7 +21,6 @@ import { useTasks } from "./tasks";
  * Makes only 3 requests: project + tasks + users
  */
 export function useProjectTasksPageData(projectId: string) {
-  // Get the specific project data
   const projectQuery = useQuery({
     queryKey: queryKeys.projects.detail(projectId),
     queryFn: () =>
@@ -29,14 +28,12 @@ export function useProjectTasksPageData(projectId: string) {
     enabled: Boolean(projectId),
   });
 
-  // Get tasks for the specific project with expanded assignee data
   const tasksQuery = useTasks({
     projectId,
     expandFields: "project,assignee",
     mode: "full", // ensure we fetch all tasks in the project so new items always appear
   });
 
-  // Get all users for the filter dropdown
   const usersQuery = useQuery({
     queryKey: queryKeys.users.list({ batch: 100, sort: "-created" }),
     queryFn: () =>

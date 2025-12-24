@@ -39,7 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fa } from "@/constants/text";
+import { common, notifications, users as usersText } from "@/constants";
 import { UsersResponse, GroupsResponse } from "@/lib/pocketbase-types";
 import { useDeleteUser, useToggleUserActive, useUnblockUser } from "@/hooks";
 import { UserAvatar } from "../user-avatar";
@@ -75,7 +75,7 @@ export function UserListTable({
       toast.error(
         error instanceof Error
           ? error.message
-          : fa.users.actions.toggleStatusError,
+          : usersText.actions.toggleStatusError,
       );
     },
   });
@@ -87,7 +87,7 @@ export function UserListTable({
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : fa.users.actions.unblockError,
+        error instanceof Error ? error.message : usersText.actions.unblockError,
       );
     },
   });
@@ -98,7 +98,7 @@ export function UserListTable({
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : fa.users.actions.deleteError,
+        error instanceof Error ? error.message : usersText.actions.deleteError,
       );
     },
   });
@@ -133,10 +133,10 @@ export function UserListTable({
       await Promise.all(
         selectedIds.map((id) => toggleActiveMutation.mutateAsync(id)),
       );
-      toast.success(fa.users.bulk.updated);
+      toast.success(usersText.bulk.updated);
       setSelectedIds([]);
     } catch {
-      toast.error(fa.users.bulk.error);
+      toast.error(usersText.bulk.error);
     }
   };
 
@@ -146,10 +146,10 @@ export function UserListTable({
       await Promise.all(
         selectedIds.map((id) => unblockUserMutation.mutateAsync(id)),
       );
-      toast.success(fa.users.bulk.updated);
+      toast.success(usersText.bulk.updated);
       setSelectedIds([]);
     } catch {
-      toast.error(fa.users.bulk.error);
+      toast.error(usersText.bulk.error);
     }
   };
 
@@ -159,11 +159,11 @@ export function UserListTable({
       await Promise.all(
         selectedIds.map((id) => deleteUserMutation.mutateAsync(id)),
       );
-      toast.success(fa.users.bulk.deleted);
+      toast.success(usersText.bulk.deleted);
       setSelectedIds([]);
       setBulkDeleteOpen(false);
     } catch {
-      toast.error(fa.users.bulk.error);
+      toast.error(usersText.bulk.error);
     }
   };
 
@@ -182,23 +182,23 @@ export function UserListTable({
       {isAdmin && selectedIds.length > 0 ? (
         <div className="bg-muted mb-3 flex flex-wrap items-center gap-2 rounded-lg p-2">
           <span className="text-sm font-medium">
-            {digitsEnToFa(selectedIds.length)} {fa.notifications.selected}
+            {digitsEnToFa(selectedIds.length)} {notifications.selected}
           </span>
           <Button size="sm" variant="outline" onClick={bulkToggleActive}>
-            {fa.users.bulk.toggleActive}
+            {usersText.bulk.toggleActive}
           </Button>
           <Button size="sm" variant="outline" onClick={bulkUnblock}>
-            {fa.users.bulk.unblock}
+            {usersText.bulk.unblock}
           </Button>
           <Button
             size="sm"
             variant="destructive"
             onClick={() => setBulkDeleteOpen(true)}
           >
-            {fa.users.bulk.delete}
+            {usersText.bulk.delete}
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>
-            {fa.notifications.deselectAll}
+            {notifications.deselectAll}
           </Button>
         </div>
       ) : null}
@@ -210,35 +210,35 @@ export function UserListTable({
                 <Checkbox
                   checked={allSelected}
                   onCheckedChange={toggleSelectAll}
-                  aria-label={fa.notifications.selectAll}
+                  aria-label={notifications.selectAll}
                 />
               </TableHead>
             ) : null}
             <TableHead className="text-right">
-              {fa.users.table.columns.user}
+              {usersText.table.columns.user}
             </TableHead>
             <TableHead className="text-right">
-              {fa.users.table.columns.username}
+              {usersText.table.columns.username}
             </TableHead>
             <TableHead className="text-right">
-              {fa.users.table.columns.role}
+              {usersText.table.columns.role}
             </TableHead>
             <TableHead className="text-right">
-              {fa.users.table.columns.group}
+              {usersText.table.columns.group}
             </TableHead>
             {isAdmin && (
               <>
                 <TableHead className="text-center">
-                  {fa.users.table.columns.status}
+                  {usersText.table.columns.status}
                 </TableHead>
                 <TableHead className="text-center">
-                  {fa.users.table.columns.accountStatus}
+                  {usersText.table.columns.accountStatus}
                 </TableHead>
                 <TableHead className="text-center">
-                  {fa.users.table.columns.failedAttempts}
+                  {usersText.table.columns.failedAttempts}
                 </TableHead>
                 <TableHead className="w-[150px] text-center">
-                  {fa.users.table.columns.actions}
+                  {usersText.table.columns.actions}
                 </TableHead>
               </>
             )}
@@ -252,7 +252,7 @@ export function UserListTable({
                   <Checkbox
                     checked={selectedIds.includes(user.id)}
                     onCheckedChange={() => toggleSelect(user.id)}
-                    aria-label={fa.notifications.selected}
+                    aria-label={notifications.selected}
                     disabled={user.role === "admin"}
                   />
                 </TableCell>
@@ -269,7 +269,7 @@ export function UserListTable({
               </TableCell>
               <TableCell className="text-right">{user.username}</TableCell>
               <TableCell className="text-right capitalize">
-                {fa.users.table.roles[user.role]}
+                {usersText.table.roles[user.role]}
               </TableCell>
               <TableCell className="text-right">
                 {user.expand?.group?.name ? user.expand.group.name : "-"}
@@ -283,8 +283,8 @@ export function UserListTable({
                     >
                       <Power className="size-3" />
                       {user.active
-                        ? fa.users.table.status.active
-                        : fa.users.table.status.inactive}
+                        ? usersText.table.status.active
+                        : usersText.table.status.inactive}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
@@ -295,12 +295,12 @@ export function UserListTable({
                       {user.blocked ? (
                         <>
                           <Lock className="size-3" />
-                          {fa.users.table.status.blocked}
+                          {usersText.table.status.blocked}
                         </>
                       ) : (
                         <>
                           <ShieldAlert className="size-3" />
-                          {fa.users.table.status.ok}
+                          {usersText.table.status.ok}
                         </>
                       )}
                     </Badge>
@@ -339,8 +339,8 @@ export function UserListTable({
                           >
                             <Power className="ml-2 size-4" />
                             {user.active
-                              ? fa.users.actions.deactivate
-                              : fa.users.actions.activate}
+                              ? usersText.actions.deactivate
+                              : usersText.actions.activate}
                           </DropdownMenuItem>
                           {user.blocked && (
                             <DropdownMenuItem
@@ -348,7 +348,7 @@ export function UserListTable({
                               disabled={unblockUserMutation.isPending}
                             >
                               <Unlock className="ml-2 size-4" />
-                              {fa.users.actions.unblock}
+                              {usersText.actions.unblock}
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
@@ -356,7 +356,7 @@ export function UserListTable({
                             onClick={() => setSelectedUserForLogs(user)}
                           >
                             <History className="ml-2 size-4" />
-                            {fa.users.actions.viewLogs}
+                            {usersText.actions.viewLogs}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -365,7 +365,7 @@ export function UserListTable({
                         size="icon"
                         className="text-destructive"
                         onClick={() => onDelete(user)}
-                        aria-label={fa.users.delete.title}
+                        aria-label={usersText.delete.title}
                       >
                         <Trash className="size-4" />
                       </Button>
@@ -389,21 +389,21 @@ export function UserListTable({
       <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
         <AlertDialogContent className="text-right">
           <AlertDialogHeader>
-            <AlertDialogTitle>{fa.users.bulk.delete}</AlertDialogTitle>
+            <AlertDialogTitle>{usersText.bulk.delete}</AlertDialogTitle>
             <AlertDialogDescription>
-              {fa.users.bulk.deleteConfirm.replace(
+              {usersText.bulk.deleteConfirm.replace(
                 "{count}",
                 digitsEnToFa(selectedIds.length).toString(),
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-row-reverse gap-2 sm:flex-row-reverse sm:justify-start">
-            <AlertDialogCancel>{fa.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>{common.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmBulkDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {fa.users.delete.title}
+              {usersText.delete.title}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

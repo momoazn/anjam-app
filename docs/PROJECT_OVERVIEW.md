@@ -71,4 +71,4 @@ See the [README](../README.md) for installation and quick start instructions, or
 - [Development Roadmap](./DEVELOPMENT_ROADMAP.md) - Strategic planning and future features
 - [Implementation Status](./IMPLEMENTATION_STATUS.md) - Current state of the application
 - [QA Testing Guide](./QA_TESTING_GUIDE_SLIM.md) - Testing procedures and guidelines
-- [Root Structure](./ROOT_STRUCTURE.md) - Repository organization overview
+- [Improvements Plan](./IMPROVEMENTS_PLAN.md) - Refactoring and improvement roadmap

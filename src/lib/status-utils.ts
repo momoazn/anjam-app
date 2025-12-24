@@ -26,7 +26,7 @@ import {
   IconPlayerPause,
 } from "@tabler/icons-react";
 
-import { fa } from "@/constants/text";
+import { tasks } from "@/constants";
 import {
   TasksPriorityOptions,
   TasksResponse,
@@ -55,7 +55,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
   {
     todo: {
       key: TasksStatusOptions.todo,
-      name: fa.tasks.status.todo,
+      name: tasks.status.todo,
       color: "slate",
       icon: "circle",
       isCompleted: false,
@@ -65,7 +65,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     in_progress: {
       key: TasksStatusOptions.in_progress,
-      name: fa.tasks.status.in_progress,
+      name: tasks.status.in_progress,
       color: "blueSubtle",
       icon: "circle-half-2",
       isCompleted: false,
@@ -75,7 +75,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     review: {
       key: TasksStatusOptions.review,
-      name: fa.tasks.status.review,
+      name: tasks.status.review,
       color: "purpleSubtle",
       icon: "eye",
       isCompleted: false,
@@ -85,7 +85,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     testing: {
       key: TasksStatusOptions.testing,
-      name: fa.tasks.status.testing,
+      name: tasks.status.testing,
       color: "slateSubtle",
       icon: "flask",
       isCompleted: false,
@@ -95,7 +95,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     pending: {
       key: TasksStatusOptions.pending,
-      name: fa.tasks.status.pending,
+      name: tasks.status.pending,
       color: "amberSubtle",
       icon: "clock",
       isCompleted: false,
@@ -105,7 +105,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     blocked: {
       key: TasksStatusOptions.blocked,
-      name: fa.tasks.status.blocked,
+      name: tasks.status.blocked,
       color: "redSubtle",
       icon: "alert-circle",
       isCompleted: false,
@@ -115,7 +115,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     on_hold: {
       key: TasksStatusOptions.on_hold,
-      name: fa.tasks.status.on_hold,
+      name: tasks.status.on_hold,
       color: "slateSubtle",
       icon: "pause",
       isCompleted: false,
@@ -125,7 +125,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     done: {
       key: TasksStatusOptions.done,
-      name: fa.tasks.status.done,
+      name: tasks.status.done,
       color: "greenSubtle",
       icon: "check-circle-2",
       isCompleted: true,
@@ -135,7 +135,7 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
     },
     canceled: {
       key: TasksStatusOptions.canceled,
-      name: fa.tasks.status.canceled,
+      name: tasks.status.canceled,
       color: "graySubtle",
       icon: "x-circle",
       isCompleted: false,
@@ -173,42 +173,22 @@ export function getTaskStatus(task: TasksResponse): TaskStatusConfig {
   return TASK_STATUS_CONFIG[TasksStatusOptions.todo];
 }
 
-/**
- * Color class mappings for consistent styling across light/dark themes
- * Includes both bold and subtle variants for different use cases
- */
-export const STATUS_COLOR_CLASSES: Record<string, string> = {
-  // Bold colors (existing)
-  slate: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200",
-  emerald:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
-  blue: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  purple:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  indigo:
-    "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  yellow:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  red: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  orange:
-    "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-  green: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  gray: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+const STATUS_COLOR_SUFFIX = "Subtle";
 
-  // Subtle colors with hints of color (dimmed but distinguishable)
-  slateSubtle:
-    "bg-slate-50 text-slate-700 dark:bg-slate-900 dark:text-slate-300",
-  blueSubtle: "bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  greenSubtle:
-    "bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-300",
-  purpleSubtle:
-    "bg-purple-50 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-  amberSubtle:
-    "bg-amber-50 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
-  redSubtle: "bg-red-50 text-red-700 dark:bg-red-900 dark:text-red-300",
-  neutralSubtle:
-    "bg-neutral-50 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300",
-  graySubtle: "bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
+const getStatusColorBase = (color: string) =>
+  color.endsWith(STATUS_COLOR_SUFFIX)
+    ? color.slice(0, -STATUS_COLOR_SUFFIX.length)
+    : color;
+
+const isSubtleStatusColor = (color: string) =>
+  color.endsWith(STATUS_COLOR_SUFFIX);
+
+const getStatusColorClassName = (color: string) => {
+  const base = getStatusColorBase(color);
+  if (isSubtleStatusColor(color)) {
+    return `bg-${base}-50 text-${base}-700 dark:bg-${base}-900 dark:text-${base}-300`;
+  }
+  return `bg-${base}-100 text-${base}-800 dark:bg-${base}-800 dark:text-${base}-200`;
 };
 
 /**
@@ -232,7 +212,7 @@ export function isTaskCanceled(task: TasksResponse): boolean {
  */
 export function getStatusColorClass(task: TasksResponse): string {
   const status = getTaskStatus(task);
-  return STATUS_COLOR_CLASSES[status.color] || STATUS_COLOR_CLASSES.slate;
+  return getStatusColorClassName(status.color);
 }
 
 /**
@@ -257,11 +237,7 @@ export function getStatusColorVariant(
   variant: "icon" | "background" | "badge",
 ): string {
   const config = TASK_STATUS_CONFIG[status];
-  const baseColor = config.color;
-
-  // Map base colors to their variants
-  // Remove "Subtle" suffix if present to get the base color name
-  const colorName = baseColor.replace("Subtle", "");
+  const colorName = getStatusColorBase(config.color);
 
   switch (variant) {
     case "icon":
