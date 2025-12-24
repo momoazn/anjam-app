@@ -87,7 +87,7 @@ export function ChartsWidget({
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {["ske-1", "ske-2", "ske-3"].map((key) => (
-          <Card key={key} className="border-border/50 rounded-3xl">
+          <Card key={key} className="border-border/50 rounded-sm">
             <CardHeader>
               <Skeleton className="h-5 w-40" />
             </CardHeader>
@@ -106,10 +106,10 @@ export function ChartsWidget({
       data-animate-stagger
     >
       {/* Task Status Distribution */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-3xl shadow-xl transition-all hover:shadow-2xl">
+      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
-            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
               <BarChart3 className="size-4" />
             </div>
             {dashboard.cards.taskStatusDistribution}
@@ -147,7 +147,7 @@ export function ChartsWidget({
                     if (active && payload && payload.length) {
                       const value = payload[0].value;
                       return (
-                        <div className="bg-card rounded-xl border p-3 shadow-xl">
+                        <div className="bg-card rounded-sm border p-3 shadow-xl">
                           <p className="text-muted-foreground/60 text-xs font-black tracking-widest uppercase">
                             {payload[0].name}
                           </p>
@@ -167,10 +167,10 @@ export function ChartsWidget({
             {pieChartData.map((entry) => (
               <div
                 key={entry.name}
-                className="border-border/40 bg-muted/10 flex items-center gap-2 rounded-lg border p-2"
+                className="border-border/40 bg-muted/10 flex items-center gap-2 rounded-sm border p-2"
               >
                 <div
-                  className="size-2 rounded-full"
+                  className="size-2 rounded-none"
                   style={{ backgroundColor: entry.fill }}
                 />
                 <span className="text-muted-foreground/80 text-[10px] font-black tracking-tight uppercase">
@@ -186,10 +186,10 @@ export function ChartsWidget({
       </Card>
 
       {/* Productivity Trend */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-3xl shadow-xl transition-all hover:shadow-2xl">
+      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
-            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
               <TrendingUp className="size-4" />
             </div>
             {dashboard.cards.productivityTrend}
@@ -225,7 +225,7 @@ export function ChartsWidget({
                     if (active && payload && payload.length) {
                       const value = payload[0].value;
                       return (
-                        <div className="bg-card rounded-xl border p-3 shadow-xl">
+                        <div className="bg-card rounded-sm border p-3 shadow-xl">
                           <p className="text-muted-foreground/60 text-xs font-black tracking-widest uppercase">
                             {label}
                           </p>
@@ -243,7 +243,6 @@ export function ChartsWidget({
                     return null;
                   }}
                 />
-
                 <Line
                   type="stepAfter"
                   dataKey="completed"
@@ -264,16 +263,16 @@ export function ChartsWidget({
       </Card>
 
       {/* Recent Activity Feed */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-3xl shadow-xl transition-all hover:shadow-2xl lg:col-span-2 xl:col-span-1">
+      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl lg:col-span-2 xl:col-span-1">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-lg font-black tracking-tight">
-              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
                 <Clock className="size-4" />
               </div>
               {dashboard.cards.recentActivity}
             </div>
-            <Badge variant="secondary" className="rounded-lg font-black">
+            <Badge variant="secondary" className="rounded-none font-black">
               {digitsEnToFa(recentTasks.length)} TOTAL
             </Badge>
           </CardTitle>
@@ -290,7 +289,7 @@ export function ChartsWidget({
                 {/* Visual Status Bar */}
                 <div
                   className={cn(
-                    "w-1.5 shrink-0 transition-opacity group-hover:opacity-100",
+                    "w-1 shrink-0 transition-opacity group-hover:opacity-100",
                     getStatusColorVariant(task.status, "icon").replace(
                       "text",
                       "bg",
@@ -298,10 +297,10 @@ export function ChartsWidget({
                   )}
                 />
 
-                <div className="flex min-w-0 flex-1 items-center gap-4 px-4 py-4">
+                <div className="flex min-w-0 flex-1 items-center gap-4 px-4 py-4 text-right">
                   <UserAvatar
                     user={task.expand?.assignee}
-                    className="border-background size-10 rounded-xl border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
+                    className="border-background size-10 rounded-sm border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
                   />
 
                   <div className="min-w-0 flex-1 text-right">
@@ -329,14 +328,14 @@ export function ChartsWidget({
                     <Badge
                       variant="outline"
                       className={cn(
-                        "rounded-md border-transparent text-[9px] font-black tracking-wider uppercase",
+                        "rounded-none border-transparent text-[9px] font-black tracking-wider uppercase",
                         getStatusColorVariant(task.status, "badge"),
                       )}
                     >
                       {tasks.status[task.status]}
                     </Badge>
                     {task.deadline && (
-                      <div className="bg-muted/50 flex items-center gap-1.5 rounded-md px-1.5 py-0.5">
+                      <div className="bg-muted/50 flex items-center gap-1.5 rounded-none px-1.5 py-0.5">
                         <Calendar
                           className={cn(
                             "size-2.5",

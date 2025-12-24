@@ -1,4 +1,4 @@
-import { Target, Hash, ChevronLeft } from "lucide-react";
+import { ChevronLeft, Target, Hash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,15 +30,15 @@ export function ProjectsWidget({
   if (isLoading) {
     return (
       <div className="mb-10">
-        <Skeleton className="mb-6 h-8 w-48 rounded-xl" />
+        <Skeleton className="mb-6 h-8 w-48 rounded-sm" />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {["ske-proj-1", "ske-proj-2", "ske-proj-3"].map((key) => (
-            <Card key={key} className="border-border/50 rounded-3xl">
+            <Card key={key} className="border-border/50 rounded-sm">
               <CardHeader className="pb-3">
                 <Skeleton className="h-5 w-32" />
               </CardHeader>
               <CardContent>
-                <Skeleton className="mb-3 h-3 w-full rounded-full" />
+                <Skeleton className="mb-3 h-3 w-full rounded-none" />
                 <div className="flex justify-between">
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="h-4 w-16" />
@@ -55,7 +55,7 @@ export function ProjectsWidget({
     <div className="mb-10" data-animate-stagger>
       <div className="mb-6 flex items-center justify-between px-2">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
             <Target className="size-4" />
           </div>
           <h2 className="text-xl font-black tracking-tight uppercase">
@@ -81,7 +81,7 @@ export function ProjectsWidget({
           <button
             key={project.id}
             type="button"
-            className="group border-border/50 bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-3xl border text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-2xl active:scale-[0.98]"
+            className="group border-border/50 bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-sm border text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-2xl active:scale-[0.98]"
             onClick={() => navigate(`/projects/${project.id}/details`)}
           >
             <CardHeader className="bg-muted/20 border-b p-6">
@@ -89,7 +89,7 @@ export function ProjectsWidget({
                 <CardTitle className="text-lg font-black tracking-tight">
                   {project.name}
                 </CardTitle>
-                <Badge variant="secondary" className="rounded-lg font-black">
+                <Badge variant="secondary" className="rounded-sm font-black">
                   {digitsEnToFa(project.taskCount)} ITEMS
                 </Badge>
               </div>
@@ -120,7 +120,7 @@ export function ProjectsWidget({
                   </div>
                 </div>
 
-                <div className="bg-muted/60 relative h-2 w-full overflow-hidden rounded-full">
+                <div className="bg-muted/60 relative h-2 w-full overflow-hidden rounded-none">
                   <div
                     className="bg-primary absolute inset-y-0 left-0 transition-all duration-1000 ease-out"
                     style={{ width: `${project.progress}%` }}

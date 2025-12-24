@@ -140,13 +140,13 @@ export function DashboardHeader({
   ];
 
   return (
-    <div className="bg-card hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-3xl border shadow-2xl transition-all duration-500">
+    <div className="bg-card hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-sm border shadow-2xl transition-all duration-500">
       {/* Blueprint Grid Background */}
       <div
         className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.07]"
         style={{
-          backgroundImage: `radial-gradient(var(--primary) 1px, transparent 1px), linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
-          backgroundSize: "40px 40px, 20px 20px, 20px 20px",
+          backgroundImage: `radial-gradient(var(--primary) 0.0625rem, transparent 0.0625rem), linear-gradient(to right, var(--primary) 0.0625rem, transparent 0.0625rem), linear-gradient(to bottom, var(--primary) 0.0625rem, transparent 0.0625rem)`,
+          backgroundSize: "2.5rem 2.5rem, 1.25rem 1.25rem, 1.25rem 1.25rem",
           backgroundPosition: "0 0, 0 0, 0 0",
         }}
       />
@@ -159,7 +159,7 @@ export function DashboardHeader({
         {/* Main Welcome Section */}
         <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-b-0 lg:border-l lg:p-10">
           <div className="text-primary flex items-center gap-3">
-            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-xl backdrop-blur-sm">
+            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-sm backdrop-blur-sm">
               <LayoutDashboard className="h-5 w-5" />
             </div>
             <span className="text-muted-foreground/80 text-xs font-bold tracking-[0.2em] uppercase">
@@ -169,7 +169,7 @@ export function DashboardHeader({
 
           <h1 className="mt-6 text-3xl font-black tracking-tight md:text-5xl lg:text-6xl">
             {isLoading ? (
-              <div className="bg-muted h-16 w-3/4 animate-pulse rounded-lg" />
+              <div className="bg-muted h-16 w-3/4 animate-pulse rounded-sm" />
             ) : (
               digitsEnToFa(config.welcomeMessage)
             )}
@@ -186,7 +186,7 @@ export function DashboardHeader({
                 onClick={action.action}
                 variant={action.variant}
                 className={cn(
-                  "group h-12 gap-3 rounded-xl px-6 transition-all duration-300",
+                  "group h-12 gap-3 rounded-sm px-6 transition-all duration-300",
                   action.variant === "default"
                     ? "shadow-primary/20 hover:shadow-primary/30 shadow-lg hover:scale-105 hover:shadow-xl active:scale-95"
                     : "hover:border-primary/30 hover:bg-primary/5",
@@ -216,7 +216,7 @@ export function DashboardHeader({
                 <div className="flex items-center gap-4">
                   <div
                     className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[360deg]",
+                      "flex h-12 w-12 items-center justify-center rounded-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[360deg]",
                       item.bg,
                     )}
                   >
@@ -241,7 +241,7 @@ export function DashboardHeader({
                       <div
                         key={`${item.label}-bar-${j}`}
                         className={cn(
-                          "w-full rounded-t-[1px]",
+                          "w-full rounded-t-sm",
                           item.color.replace("text", "bg"),
                         )}
                         style={{ height: `${h}%`, opacity: (j + 1) / 6 }}

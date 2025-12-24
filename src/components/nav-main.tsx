@@ -1,4 +1,3 @@
-import { type Icon } from "@tabler/icons-react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import {
@@ -12,10 +11,10 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
-type NavMainItem = {
+export type NavMainItem = {
   title: string;
   url: string;
-  icon?: Icon;
+  icon?: React.ComponentType<{ className?: string }>;
   badge?: React.ReactNode;
   children?: NavMainItem[];
 };

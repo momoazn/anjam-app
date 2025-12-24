@@ -58,14 +58,13 @@ function TaskListItemInner({
   };
 
   return (
-    <div
+    <button
+      type="button"
       className={cn(
-        "group border-border/40 bg-card hover:bg-muted/30 relative flex cursor-pointer items-stretch border-b transition-all duration-300 hover:z-10",
+        "group border-border/40 bg-card hover:bg-muted/30 relative flex w-full cursor-pointer items-stretch border-b text-right transition-all duration-300 hover:z-10",
         isSelected && "bg-primary/5",
         className,
       )}
-      role="button"
-      tabIndex={0}
       onClick={handleClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -76,24 +75,24 @@ function TaskListItemInner({
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Selection & Priority Zone */}
-      <div className="border-border/30 bg-muted/10 flex w-14 shrink-0 flex-col items-center justify-center gap-2 border-l py-3">
+      <div className="border-border/30 bg-muted/10 flex w-14 shrink-0 flex-col items-center justify-center gap-2 border-l py-3 text-right">
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
             onCheckedChange={(checked) =>
               onSelectionChange?.(checked as boolean)
             }
-            className="size-4 rounded-md transition-transform hover:scale-110"
+            className="size-4 rounded-none transition-transform hover:scale-110"
             onClick={(e) => e.stopPropagation()}
           />
         ) : (
           <div
             className={cn(
-              "flex size-8 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110",
+              "flex size-8 items-center justify-center rounded-none transition-transform duration-300 group-hover:scale-110",
               priorityColors[task.priority]
                 .replace("text", "bg-")
-                .replace("700", "500/10")
-                .replace("300", "400/10"),
+                .replace("600", "500/10")
+                .replace("400", "400/10"),
             )}
           >
             <PriorityIcon className={cn("size-4.5", priorityIconColor)} />
@@ -126,12 +125,12 @@ function TaskListItemInner({
         </div>
 
         {task.tags && task.tags.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2 flex flex-wrap gap-1.5 text-right">
             {task.tags.map((tag) => (
               <Badge
                 key={tag}
                 variant="outline"
-                className="border-border/50 bg-muted/50 text-muted-foreground rounded-sm px-1.5 py-0 text-[9px] font-black tracking-wider uppercase"
+                className="border-border/50 bg-muted/50 text-muted-foreground rounded-none px-1.5 py-0 text-[9px] font-black tracking-wider uppercase"
               >
                 {tag}
               </Badge>
@@ -143,7 +142,7 @@ function TaskListItemInner({
       {/* Meta & Assignee Zone */}
       <div className="flex items-center gap-6 px-6">
         {/* Deadline Indicator */}
-        <div className="hidden flex-col items-end sm:flex">
+        <div className="hidden flex-col items-end text-right sm:flex">
           <span className="text-muted-foreground/40 text-[9px] font-black tracking-widest uppercase">
             Deadline
           </span>
@@ -183,7 +182,7 @@ function TaskListItemInner({
                   : undefined
               }
               showUnassigned={!assigneeRecord && !task.assignee}
-              className="border-background size-10 rounded-xl border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
+              className="border-background size-10 rounded-sm border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
             />
             {assigneeRecord && (
               <div className="border-background absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 bg-emerald-500">
@@ -201,7 +200,7 @@ function TaskListItemInner({
           statusIconColor.replace("text", "bg"),
         )}
       />
-    </div>
+    </button>
   );
 }
 
