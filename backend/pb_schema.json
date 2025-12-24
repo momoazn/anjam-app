@@ -992,8 +992,8 @@
   },
   {
     "id": "pbc_484305853",
-    "listRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id",
-    "viewRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id",
+    "listRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= id && @collection.project_members.user.id ?= @request.auth.id))",
+    "viewRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= id && @collection.project_members.user.id ?= @request.auth.id))",
     "createRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= @request.body.organization && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")",
     "updateRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")",
     "deleteRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id && @collection.organization_members.role = \"owner\"",
@@ -1148,11 +1148,11 @@
   },
   {
     "id": "pbc_2602490748",
-    "listRule": "(@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || assignee.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
-    "viewRule": "(@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || assignee.id = @request.auth.id || (@collection.users_projects.project.id ?= project && @collection.users_projects.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
-    "createRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id)",
-    "updateRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id) || (assignee.id = @request.auth.id && @request.body.status:isset = true)",
-    "deleteRule": "@request.auth.role = \"admin\" || (@request.auth.role = \"manager\" && project.group.manager.id = @request.auth.id) || (@request.auth.role = \"supervisor\" && project.supervisor.id = @request.auth.id)",
+    "listRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= project && @collection.project_members.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
+    "viewRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= project && @collection.project_members.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
+    "createRule": "@request.auth.id != '' && @collection.project_members.project.id ?= @request.body.project && @collection.project_members.user.id ?= @request.auth.id && (@collection.project_members.role = \"owner\" || @collection.project_members.role = \"admin\" || @collection.project_members.role = \"member\")",
+    "updateRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= project && @collection.project_members.user.id ?= @request.auth.id && (@collection.project_members.role = \"owner\" || @collection.project_members.role = \"admin\")) || (assignee.id = @request.auth.id && @request.body.status:isset = true))",
+    "deleteRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= project && @collection.project_members.user.id ?= @request.auth.id && (@collection.project_members.role = \"owner\" || @collection.project_members.role = \"admin\")))",
     "name": "tasks",
     "type": "base",
     "fields": [
@@ -1382,8 +1382,8 @@
   },
   {
     "id": "pbc_533777971",
-    "listRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= task.project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && ((deleted_at = \"\" || deleted_at = null))",
-    "viewRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= task.project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && ((deleted_at = \"\" || deleted_at = null))",
+    "listRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= task.project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= task.project && @collection.project_members.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
+    "viewRule": "@request.auth.id != '' && ((@collection.organization_members.organization.id ?= task.project.organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")) || (@collection.project_members.project.id ?= task.project && @collection.project_members.user.id ?= @request.auth.id)) && ((deleted_at = \"\" || deleted_at = null))",
     "createRule": "@request.auth.id != ''",
     "updateRule": "@request.auth.id = user",
     "deleteRule": "@request.auth.id = user",
