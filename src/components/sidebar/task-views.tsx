@@ -1,6 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import { SidebarBadge } from "./sidebar-badge";
 import { navigation } from "@/constants";
 import {
   SidebarGroup,
@@ -18,100 +17,110 @@ import {
   IconLoader,
   IconList,
 } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
-const baseViews = [
+const viewItems = [
   {
     title: navigation.allTasks,
     url: "/tasks",
     icon: IconList,
     getCount: () => 0,
-    badgeVariant: undefined,
   },
-] as const;
-
-const ownershipViews = [
   {
     title: navigation.myTasks,
     url: "/tasks?assigned=me&status=todo,in_progress,pending",
     icon: IconChecklist,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
-    badgeVariant: undefined,
   },
-] as const;
-
-const timeViews = [
   {
     title: navigation.dueToday,
     url: "/tasks?due=today",
     icon: IconClock,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.dueToday,
-    badgeVariant: "overdue" as const,
   },
   {
     title: navigation.overdue,
     url: "/tasks?due=overdue",
     icon: IconAlertTriangle,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.overdue,
-    badgeVariant: "overdue" as const,
   },
-] as const;
-
-const statusViews = [
   {
     title: navigation.inProgress,
     url: "/tasks?status=in_progress",
     icon: IconLoader,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.inProgress,
-    badgeVariant: "info" as const,
   },
 ] as const;
 
 export function TaskViews() {
   const counts = useTaskCounts();
   const { state, isMobile, setOpenMobile } = useSidebar();
-
-  const allViews = [
-    ...baseViews,
-    ...ownershipViews,
-    ...timeViews,
-    ...statusViews,
-  ];
+  const location = useLocation();
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="py-2">
       {state === "expanded" && (
-        <SidebarGroupLabel>{navigation.taskViews}</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-[0.3em] uppercase">
+          {navigation.taskViews}
+        </SidebarGroupLabel>
       )}
       <SidebarGroupContent>
-        <SidebarMenu>
-          {allViews.map((view) => (
-            <SidebarMenuItem key={view.url}>
-              <SidebarMenuButton asChild tooltip={view.title}>
+        <SidebarMenu className="gap-0.5">
+          {viewItems.map((view) => {
+            const isActive = location.pathname + location.search === view.url;
+            const count = view.getCount(counts);
+
+            return (
+              <SidebarMenuItem key={view.url}>
                 <NavLink
                   to={view.url}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : ""
-                  }
-                  onClick={() => {
-                    if (isMobile) {
-                      setOpenMobile(false);
-                    }
-                  }}
+                  onClick={() => isMobile && setOpenMobile(false)}
+                  className="block"
                 >
-                  <view.icon />
-                  <span>{view.title}</span>
-                  {state === "expanded" && (
-                    <SidebarBadge
-                      count={view.getCount(counts)}
-                      variant={view.badgeVariant || "default"}
+                  <SidebarMenuButton
+                    tooltip={view.title}
+                    className={cn(
+                      "group relative h-10 w-full justify-start gap-4 rounded-none border-l-2 px-4 transition-all duration-100",
+                      isActive
+                        ? "bg-primary/5 border-primary text-primary"
+                        : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground border-transparent",
+                    )}
+                  >
+                    <view.icon
+                      className={cn(
+                        "size-4.5 transition-transform duration-200 group-hover:scale-110",
+                        isActive ? "text-primary" : "text-foreground/70",
+                      )}
                     />
-                  )}
+                    <span
+                      className={cn(
+                        "text-[13px] font-black tracking-tight uppercase",
+                        isActive
+                          ? "text-primary opacity-100"
+                          : "text-foreground opacity-100",
+                      )}
+                    >
+                      {view.title}
+                    </span>
+
+                    {count > 0 && state === "expanded" && (
+                      <span
+                        className={cn(
+                          "mr-auto font-mono text-[9px] font-black tabular-nums",
+                          view.title === navigation.overdue
+                            ? "text-rose-500"
+                            : "opacity-40",
+                        )}
+                      >
+                        {digitsEnToFa(count)}
+                      </span>
+                    )}
+                  </SidebarMenuButton>
                 </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

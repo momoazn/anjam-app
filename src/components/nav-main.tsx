@@ -31,12 +31,12 @@ export function NavMain({ items, title }: NavMainProps) {
   return (
     <SidebarGroup className="py-2">
       {title && state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/50 mb-2 px-4 text-[10px] font-black tracking-[0.2em] uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-[0.3em] uppercase">
           {title}
         </SidebarGroupLabel>
       )}
       <SidebarGroupContent>
-        <SidebarMenu className="gap-1 px-2">
+        <SidebarMenu className="gap-0.5">
           {items.map((item) => {
             const path = location.pathname;
             const active = path === item.url || path.startsWith(item.url + "/");
@@ -55,32 +55,34 @@ export function NavMain({ items, title }: NavMainProps) {
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={cn(
-                      "group relative h-10 w-full justify-start gap-3 rounded-lg border border-transparent px-3 transition-all duration-200",
+                      "group relative h-10 w-full justify-start gap-4 rounded-none border-l-2 px-4 transition-all transition-none duration-100",
                       active
-                        ? "bg-primary/5 border-primary/20 text-primary shadow-sm"
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                        ? "bg-primary/5 border-primary text-primary"
+                        : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground border-transparent",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
                     {item.icon && (
                       <item.icon
                         className={cn(
-                          "size-4.5 transition-transform duration-300 group-hover:scale-110",
-                          active ? "text-primary" : "text-muted-foreground/70",
+                          "size-4.5 transition-transform duration-200 group-hover:scale-110",
+                          active ? "text-primary" : "text-muted-foreground/40",
                         )}
                       />
                     )}
                     <span
                       className={cn(
-                        "text-sm font-bold tracking-tight",
-                        active ? "font-black" : "font-medium",
+                        "text-[13px] font-black tracking-tight uppercase",
+                        active
+                          ? "text-primary opacity-100"
+                          : "text-foreground opacity-100",
                       )}
                     >
                       {item.title}
                     </span>
 
-                    {active && (
-                      <div className="bg-primary absolute inset-y-2 left-0 w-1 rounded-full" />
+                    {active && state === "expanded" && (
+                      <div className="bg-primary/20 absolute top-1 right-0 bottom-1 w-[1px]" />
                     )}
 
                     <div className="mr-auto">{item.badge}</div>

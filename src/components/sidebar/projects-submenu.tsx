@@ -1,10 +1,8 @@
 import { useMemo } from "react";
-import { IconStarFilled, IconFolder } from "@tabler/icons-react";
-import { NavLink } from "react-router-dom";
+import { IconHash, IconLayoutGrid } from "@tabler/icons-react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useProjects } from "@/hooks/projects";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import { useSidebarActions } from "@/store/sidebar-store";
-import { SidebarBadge } from "./sidebar-badge";
 import { navigation } from "@/constants";
 import {
   SidebarGroup,
@@ -13,134 +11,121 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export function ProjectsSubmenu() {
   const { data: projects = [] } = useProjects();
   const { byProject } = useTaskCounts();
-  const { toggleStar, isStarred } = useSidebarActions();
   const { state, isMobile, setOpenMobile } = useSidebar();
-
-  const starredProjects = useMemo(() => {
-    return projects.filter((project) => isStarred(project.id));
-  }, [projects, isStarred]);
+  const location = useLocation();
 
   const recentProjects = useMemo(() => {
-    // For now, just return the first 5 projects as "recent"
-    // In a real implementation, this would track actual recent visits
     return projects.slice(0, 5);
   }, [projects]);
 
+  const isProjectsActive = location.pathname === "/projects";
+
   return (
-    <SidebarGroup>
+    <SidebarGroup className="py-2">
       {state === "expanded" && (
-        <SidebarGroupLabel>{navigation.projectsSection}</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-[0.3em] uppercase">
+          {navigation.projectsSection}
+        </SidebarGroupLabel>
       )}
       <SidebarGroupContent>
-        <SidebarMenu>
-          {/* All Projects */}
+        <SidebarMenu className="gap-0.5">
+          {/* All Projects Module */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip={navigation.allProjects}>
-              <NavLink
-                to="/projects"
-                onClick={() => {
-                  if (isMobile) {
-                    setOpenMobile(false);
-                  }
-                }}
+            <NavLink
+              to="/projects"
+              onClick={() => isMobile && setOpenMobile(false)}
+              className="block"
+            >
+              <SidebarMenuButton
+                tooltip={navigation.allProjects}
+                className={cn(
+                  "group relative h-10 w-full justify-start gap-4 rounded-none border-l-2 px-4 transition-all duration-100",
+                  isProjectsActive
+                    ? "bg-primary/5 border-primary text-primary"
+                    : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground border-transparent",
+                )}
               >
-                <IconFolder />
-                <span>{navigation.allProjects}</span>
-              </NavLink>
-            </SidebarMenuButton>
+                <IconLayoutGrid
+                  className={cn(
+                    "size-4.5 transition-transform duration-200 group-hover:scale-110",
+                    isProjectsActive
+                      ? "text-primary"
+                      : "text-muted-foreground/60",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "text-[13px] font-black tracking-tight uppercase",
+                    isProjectsActive
+                      ? "text-primary opacity-100"
+                      : "text-foreground opacity-100",
+                  )}
+                >
+                  {navigation.allProjects}
+                </span>
+              </SidebarMenuButton>
+            </NavLink>
           </SidebarMenuItem>
 
-          {/* Recent Projects - Only show when expanded */}
-          {state === "expanded" && recentProjects.length > 0 && (
-            <>
-              <SidebarMenuItem>
-                <SidebarGroupLabel className="text-muted-foreground px-2 py-1 text-xs">
-                  {navigation.recentProjects}
-                </SidebarGroupLabel>
-              </SidebarMenuItem>
-              {recentProjects.map((project) => (
-                <SidebarMenuItem key={project.id}>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton asChild>
-                        <NavLink
-                          to={`/projects/${project.id}/tasks`}
-                          onClick={() => {
-                            if (isMobile) {
-                              setOpenMobile(false);
-                            }
-                          }}
-                        >
-                          <span className="truncate">
-                            {project.code} - {project.name}
-                          </span>
-                          <SidebarBadge
-                            count={byProject.get(project.id) || 0}
-                          />
-                        </NavLink>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </SidebarMenuItem>
-              ))}
-            </>
-          )}
+          {/* Individual Projects - Registry Style */}
+          {state === "expanded" &&
+            recentProjects.map((project) => {
+              const isActive =
+                location.pathname === `/projects/${project.id}/tasks`;
+              const count = byProject.get(project.id) || 0;
 
-          {/* Starred Projects - Only show when expanded */}
-          {state === "expanded" && starredProjects.length > 0 && (
-            <>
-              <SidebarMenuItem>
-                <SidebarGroupLabel className="text-muted-foreground px-2 py-1 text-xs">
-                  {navigation.starredProjects}
-                </SidebarGroupLabel>
-              </SidebarMenuItem>
-              {starredProjects.map((project) => (
+              return (
                 <SidebarMenuItem key={project.id}>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton asChild>
-                        <NavLink
-                          to={`/projects/${project.id}/tasks`}
-                          onClick={() => {
-                            if (isMobile) {
-                              setOpenMobile(false);
-                            }
-                          }}
+                  <NavLink
+                    to={`/projects/${project.id}/tasks`}
+                    onClick={() => isMobile && setOpenMobile(false)}
+                    className="block"
+                  >
+                    <SidebarMenuButton
+                      className={cn(
+                        "group hover:bg-muted/20 relative h-9 w-full justify-start gap-4 rounded-none border-l-2 border-transparent px-4 pl-2 transition-all",
+                        isActive
+                          ? "bg-muted/30 border-primary/40"
+                          : "text-foreground",
+                      )}
+                    >
+                      <div className="flex size-4 items-center justify-center">
+                        <IconHash
+                          className={cn(
+                            "size-3.5 opacity-60",
+                            isActive && "text-primary opacity-100",
+                          )}
+                        />
+                      </div>
+                      <div className="flex min-w-0 flex-1 items-center justify-between">
+                        <span
+                          className={cn(
+                            "truncate text-[11px] font-bold tracking-wide uppercase opacity-100",
+                            isActive ? "text-foreground" : "text-foreground/80",
+                          )}
                         >
-                          <span className="truncate">
-                            {project.code} - {project.name}
+                          {project.name}
+                        </span>
+
+                        {count > 0 && (
+                          <span className="font-mono text-[9px] font-black tabular-nums opacity-40">
+                            {digitsEnToFa(count)}
                           </span>
-                          <SidebarBadge
-                            count={byProject.get(project.id) || 0}
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleStar(project.id);
-                            }}
-                            className="ml-auto cursor-pointer opacity-50 transition-opacity hover:opacity-100"
-                          >
-                            <IconStarFilled className="h-3 w-3 text-yellow-500" />
-                          </button>
-                        </NavLink>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
+                        )}
+                      </div>
+                    </SidebarMenuButton>
+                  </NavLink>
                 </SidebarMenuItem>
-              ))}
-            </>
-          )}
+              );
+            })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
