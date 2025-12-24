@@ -7,6 +7,8 @@ package main
 const (
 	CollectionUsers         = "users"
 	CollectionGroups        = "groups"
+	CollectionOrganizations = "organizations"
+	CollectionOrgMembers    = "organization_members"
 	CollectionProjects      = "projects"
 	CollectionTasks         = "tasks"
 	CollectionNotifications = "notifications"
@@ -34,6 +36,72 @@ const (
 	RoleSupervisor = "supervisor"
 	RoleEmployee   = "employee"
 )
+
+// =============================================================================
+// NEW: Organization-based Role System
+// =============================================================================
+
+// Organization Roles
+const (
+	OrgRoleOwner  = "owner"
+	OrgRoleAdmin  = "admin"
+	OrgRoleMember = "member"
+)
+
+// Project Roles
+const (
+	ProjectRoleOwner  = "owner"
+	ProjectRoleAdmin  = "admin"
+	ProjectRoleMember = "member"
+	ProjectRoleViewer = "viewer"
+)
+
+// Member Status
+const (
+	MemberStatusInvited   = "invited"
+	MemberStatusActive    = "active"
+	MemberStatusSuspended = "suspended"
+)
+
+// IsValidOrgRole checks if the given role is a valid organization role
+func IsValidOrgRole(role string) bool {
+	switch role {
+	case OrgRoleOwner, OrgRoleAdmin, OrgRoleMember:
+		return true
+	default:
+		return false
+	}
+}
+
+// IsValidProjectRole checks if the given role is a valid project role
+func IsValidProjectRole(role string) bool {
+	switch role {
+	case ProjectRoleOwner, ProjectRoleAdmin, ProjectRoleMember, ProjectRoleViewer:
+		return true
+	default:
+		return false
+	}
+}
+
+// CanOrgRoleManageMembers checks if an org role can add/remove members
+func CanOrgRoleManageMembers(role string) bool {
+	return role == OrgRoleOwner || role == OrgRoleAdmin
+}
+
+// CanOrgRoleCreateProjects checks if an org role can create new projects
+func CanOrgRoleCreateProjects(role string) bool {
+	return role == OrgRoleOwner || role == OrgRoleAdmin
+}
+
+// CanProjectRoleManageTasks checks if a project role can create/edit/delete tasks
+func CanProjectRoleManageTasks(role string) bool {
+	return role == ProjectRoleOwner || role == ProjectRoleAdmin || role == ProjectRoleMember
+}
+
+// CanProjectRoleManageMembers checks if a project role can add/remove project members
+func CanProjectRoleManageMembers(role string) bool {
+	return role == ProjectRoleOwner || role == ProjectRoleAdmin
+}
 
 // Task status constants
 const (

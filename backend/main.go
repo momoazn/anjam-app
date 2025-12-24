@@ -76,6 +76,7 @@ func main() {
 	app.OnServe().BindFunc(ensureSuperuserExists)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 	app.OnServe().BindFunc(registerAuditHooksHandler)
+	registerOrganizationEndpoints(app)
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
