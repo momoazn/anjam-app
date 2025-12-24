@@ -105,12 +105,12 @@ function Calendar({
   });
   const _buttonNextClassName = cn(
     buttonNavClassName,
-    "right-0",
+    "end-0",
     props.buttonNextClassName,
   );
   const _buttonPreviousClassName = cn(
     buttonNavClassName,
-    "left-0",
+    "start-0",
     props.buttonPreviousClassName,
   );
   const _navClassName = cn("flex items-start", props.navClassName);
@@ -193,7 +193,7 @@ function Calendar({
       }}
       components={{
         Chevron: ({ orientation }) => {
-          const Icon = orientation === "left" ? ChevronLeft : ChevronRight;
+          const Icon = orientation === "left" ? ChevronRight : ChevronLeft;
           return <Icon className="h-4 w-4" />;
         },
         Nav: ({ className }) => (
@@ -354,7 +354,7 @@ function Nav({
     <nav className={cn("flex items-center", className)}>
       <Button
         variant="outline"
-        className="absolute left-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
+        className="absolute start-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
         type="button"
         tabIndex={isPreviousDisabled ? undefined : -1}
         disabled={isPreviousDisabled}
@@ -367,12 +367,12 @@ function Nav({
         }
         onClick={handlePreviousClick}
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronRight className="h-4 w-4" />
       </Button>
 
       <Button
         variant="outline"
-        className="absolute right-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
+        className="absolute end-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
         type="button"
         tabIndex={isNextDisabled ? undefined : -1}
         disabled={isNextDisabled}
@@ -383,7 +383,7 @@ function Nav({
         }
         onClick={handleNextClick}
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronLeft className="h-4 w-4" />
       </Button>
     </nav>
   );

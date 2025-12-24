@@ -102,7 +102,7 @@ export function DeleteDialog({
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
           >
             {isPending ? (
-              <Loader2 className="text-muted-foreground ml-2 size-4 animate-spin" />
+              <Loader2 className="text-muted-foreground ms-2 size-4 animate-spin" />
             ) : null}
             {common.delete}
           </AlertDialogAction>
