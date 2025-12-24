@@ -1,17 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertTriangle,
   Bell,
   Calendar,
   Plus,
-  TrendingUp,
   Zap,
+  Activity,
 } from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { dashboard } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 type ProductivityWidgetProps = {
   stats?: {
@@ -37,8 +40,8 @@ export function ProductivityWidget({
   if (isLoading) {
     return (
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={`productivity-skeleton-${i}`}>
+        {["ske-prod-1", "ske-prod-2", "ske-prod-3"].map((key) => (
+          <Card key={key} className="border-border/50 rounded-3xl">
             <CardHeader className="pb-3">
               <Skeleton className="h-5 w-32" />
             </CardHeader>
@@ -54,109 +57,140 @@ export function ProductivityWidget({
 
   return (
     <div
-      className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+      className="mb-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
       data-animate-stagger
     >
       {/* Completion Rate Card */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <TrendingUp className="h-4 w-4" />
+      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-3xl shadow-xl transition-all hover:shadow-2xl">
+        <CardHeader className="bg-muted/20 border-b pb-4">
+          <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <Activity className="size-4" />
+            </div>
             {dashboard.cards.completionRate}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-primary text-3xl font-bold">
-            {digitsEnToFa(stats?.completionRate ?? 0)}%
+        <CardContent className="p-6">
+          <div className="flex items-baseline gap-2">
+            <span className="text-primary text-5xl font-black tracking-tighter">
+              {digitsEnToFa(stats?.completionRate ?? 0)}
+            </span>
+            <span className="text-muted-foreground/40 text-xl font-bold">
+              %
+            </span>
           </div>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <div className="text-muted-foreground mt-4 flex items-center gap-2 text-sm leading-relaxed font-bold">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 block" />
             {digitsEnToFa(stats?.thisWeekCompleted ?? 0)}{" "}
             {dashboard.cards.completedThisWeek}
-          </p>
+          </div>
+
+          <div className="mt-6 flex h-1 gap-1">
+            <div className="bg-primary h-full flex-1 rounded-full" />
+            <div className="bg-primary/40 h-full flex-1 rounded-full" />
+            <div className="bg-primary/10 h-full flex-1 rounded-full" />
+          </div>
         </CardContent>
       </Card>
 
       {/* Recent Notifications */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Bell className="h-4 w-4" />
-            {dashboard.cards.recentNotifications}
+      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-3xl shadow-xl transition-all hover:shadow-2xl">
+        <CardHeader className="bg-muted/20 border-b pb-4">
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-3 text-lg font-black tracking-tight">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+                <Bell className="size-4" />
+              </div>
+              {dashboard.cards.recentNotifications}
+            </div>
+            <div className="bg-primary size-2 animate-pulse rounded-full" />
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          {recentNotifications.length > 0 ? (
-            recentNotifications.slice(0, 3).map((notification) => (
-              <div
-                key={notification.id}
-                className={`flex items-center gap-2 rounded p-2 text-sm ${
-                  notification.read === false
-                    ? "bg-primary/5 border-primary/20 border"
-                    : ""
-                }`}
-              >
-                {notification.read === false && (
-                  <div className="bg-primary h-2 w-2 flex-shrink-0 rounded-full" />
-                )}
-                <span className="truncate">{notification.title}</span>
+        <CardContent className="p-0">
+          <div className="divide-border/40 divide-y">
+            {recentNotifications.length > 0 ? (
+              recentNotifications.slice(0, 3).map((notification) => (
+                <button
+                  key={notification.id}
+                  type="button"
+                  className={cn(
+                    "hover:bg-muted/30 flex w-full items-center gap-4 px-6 py-4 text-right transition-colors",
+                    notification.read === false && "bg-primary/5",
+                  )}
+                  onClick={() => navigate("/notifications")}
+                >
+                  <div
+                    className={cn(
+                      "size-2 shrink-0 rounded-full",
+                      notification.read === false
+                        ? "bg-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]"
+                        : "bg-muted-foreground/20",
+                    )}
+                  />
+                  <span className="truncate text-sm font-bold tracking-tight">
+                    {notification.title}
+                  </span>
+                </button>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 opacity-20 grayscale">
+                <Bell className="size-8 stroke-[1.5]" />
+                <p className="mt-2 text-[10px] font-black tracking-widest uppercase">
+                  {dashboard.cards.noNewNotifications}
+                </p>
               </div>
-            ))
-          ) : (
-            <p className="text-muted-foreground text-sm">
-              {dashboard.cards.noNewNotifications}
-            </p>
-          )}
+            )}
+          </div>
         </CardContent>
       </Card>
 
       {/* Quick Actions Card */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Zap className="h-4 w-4" />
+      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-3xl shadow-xl transition-all hover:shadow-2xl">
+        <CardHeader className="bg-muted/20 border-b pb-4">
+          <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+              <Zap className="size-4" />
+            </div>
             {dashboard.cards.quickActions}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          {stats && stats.overdue > 0 ? (
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 gap-3">
+            {stats && stats.overdue > 0 ? (
+              <Button
+                variant="outline"
+                className="h-12 w-full justify-start gap-3 rounded-xl border-rose-500/20 bg-rose-500/5 font-bold text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
+                onClick={() => navigate("/tasks?due=overdue")}
+              >
+                <AlertTriangle className="size-4" />
+                {dashboard.cards.reviewOverdue}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="border-primary/10 hover:bg-primary/5 h-12 w-full justify-start gap-3 rounded-xl font-bold transition-all"
+                onClick={() => navigate("/tasks/new")}
+              >
+                <Plus className="size-4" />
+                {dashboard.cards.createTask}
+              </Button>
+            )}
             <Button
               variant="outline"
-              size="sm"
-              className="w-full justify-start gap-2"
-              onClick={() => navigate("/tasks?due=overdue")}
+              className="border-primary/10 hover:bg-primary/5 h-12 w-full justify-start gap-3 rounded-xl font-bold transition-all"
+              onClick={() => navigate("/tasks/calendar")}
             >
-              <AlertTriangle className="h-4 w-4" />
-              {dashboard.cards.reviewOverdue}
+              <Calendar className="size-4" />
+              {dashboard.cards.tasksCalendar}
             </Button>
-          ) : (
             <Button
-              variant="outline"
-              size="sm"
-              className="w-full justify-start gap-2"
-              onClick={() => navigate("/tasks/new")}
+              className="shadow-primary/20 h-12 w-full justify-start gap-3 rounded-xl font-black shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+              onClick={() => navigate("/notifications")}
             >
-              <Plus className="h-4 w-4" />
-              {dashboard.cards.createTask}
+              <Bell className="size-4" />
+              {dashboard.cards.notifications}
             </Button>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start gap-2"
-            onClick={() => navigate("/tasks/calendar")}
-          >
-            <Calendar className="h-4 w-4" />
-            {dashboard.cards.tasksCalendar}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start gap-2"
-            onClick={() => navigate("/notifications")}
-          >
-            <Bell className="h-4 w-4" />
-            {dashboard.cards.notifications}
-          </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
