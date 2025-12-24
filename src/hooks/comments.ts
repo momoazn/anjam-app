@@ -16,9 +16,12 @@ import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
-export type CommentWithUser = CommentsResponse<{
-  user: UsersResponse;
-}>;
+export type CommentWithUser = CommentsResponse<
+  unknown,
+  {
+    user: UsersResponse;
+  }
+>;
 
 type CreateCommentVariables = Omit<
   CommentsRecord,
