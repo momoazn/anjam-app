@@ -263,7 +263,7 @@ export function SiteHeader() {
           queryKey: queryKeys.tasks.all,
         });
         for (const [, data] of listQueries) {
-          if (data) {
+          if (Array.isArray(data)) {
             const task = data.find((t) => t.id === taskId);
             if (task?.title) {
               taskTitle = task.title as string;
@@ -297,7 +297,7 @@ export function SiteHeader() {
           queryKey: queryKeys.tasks.all,
         });
         for (const [, data] of listQueries) {
-          if (data) {
+          if (Array.isArray(data)) {
             const task = data.find((t) => t.id === taskId);
             if (task?.title) {
               taskTitle = task.title as string;
