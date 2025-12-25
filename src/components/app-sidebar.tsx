@@ -17,10 +17,14 @@ import { QuickCreate } from "@/components/sidebar/quick-create";
 import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";
 import { TaskViews } from "@/components/sidebar/task-views";
 import { NavUser } from "@/components/nav-user";
+import { OrgSwitcher } from "@/components/organization/org-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -29,8 +33,9 @@ import {
 } from "@/components/ui/sidebar";
 import { app, navigation, navigationLabels } from "@/constants";
 import type { Permission } from "@/lib/permissions";
+import { isOrgAdmin } from "@/lib/permissions";
 import { usePermissions } from "@/hooks/usePermissions";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
 import { Terminal, Cpu } from "lucide-react";
 
 type NavItem = {
@@ -147,6 +152,8 @@ function AppSidebarHeader() {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthUser();
   const { can } = usePermissions();
+  const currentOrgRole = useCurrentOrgRole();
+  const showAdminItems = isOrgAdmin(currentOrgRole);
 
   if (!user) {
     return null;
@@ -170,6 +177,44 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <AppSidebarHeader />
 
       <SidebarContent className="scrollbar-none relative z-10 p-0">
+        {/* Organization Switcher */}
+        <div className="border-border/20 border-b py-3">
+          <OrgSwitcher />
+        </div>
+
+        {/* Organization Admin Navigation */}
+        {showAdminItems && (
+          <SidebarGroup className="py-2">
+            <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-[0.3em] uppercase">
+              Organization
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-0.5">
+                <SidebarMenuItem>
+                  <NavLink to="/settings/organization">
+                    <SidebarMenuButton tooltip="Organization Settings">
+                      <IconSettings className="size-4.5" />
+                      <span className="text-[13px] font-black tracking-tight uppercase">
+                        Settings
+                      </span>
+                    </SidebarMenuButton>
+                  </NavLink>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <NavLink to="/settings/members">
+                    <SidebarMenuButton tooltip="Members">
+                      <IconUsers className="size-4.5" />
+                      <span className="text-[13px] font-black tracking-tight uppercase">
+                        Members
+                      </span>
+                    </SidebarMenuButton>
+                  </NavLink>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         <div className="border-border/20 bg-muted/5 border-b p-4">
           <QuickCreate />
         </div>
