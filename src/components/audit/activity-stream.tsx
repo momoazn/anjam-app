@@ -10,7 +10,8 @@ import {
   IconTerminal,
   IconHistory,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ import { formatUserName } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
+import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "@/hooks/query-keys";
 
 type AuditLog = AuditLogsResponse<
   Record<string, FieldDiff> | null,
@@ -223,6 +226,31 @@ export function ActivityStream({
   resourceId,
   className,
 }: ActivityStreamProps) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!resourceId) return;
+
+    const filter = `resource = "${resource}" && resource_id = "${resourceId}"`;
+    const subscribePromise = pb.collection("audit_logs").subscribe(
+      "*",
+      () => {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.auditLogs.resource(resource, resourceId),
+        });
+      },
+      { filter },
+    );
+
+    return () => {
+      subscribePromise
+        .then((unsubscribeFn) => unsubscribeFn())
+        .catch(() => {
+          // Ignore cleanup errors
+        });
+    };
+  }, [queryClient, resource, resourceId]);
+
   const { data, isLoading, error } = useResourceAuditLogs(
     resource,
     resourceId,

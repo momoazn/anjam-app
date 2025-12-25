@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { parseTimeInput, minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { common, task, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
@@ -29,6 +30,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 const timeEntrySchema = z.object({
   hours: z.coerce.number().min(0).max(999),
   minutes: z.coerce.number().min(0).max(59),
+  note: z.string().max(500).optional(),
 });
 
 type TimeEntryForm = z.infer<typeof timeEntrySchema>;
@@ -38,7 +40,7 @@ interface TimeEntryDialogProps {
   onOpenChange: (open: boolean) => void;
   currentMinutes: number;
   estimatedMinutes?: number;
-  onSave: (minutes: number) => Promise<void>;
+  onSave: (payload: { minutes: number; note?: string }) => Promise<void>;
   taskTitle: string;
 }
 
@@ -59,6 +61,7 @@ export function TimeEntryDialog({
     defaultValues: {
       hours: currentHours,
       minutes: currentMins,
+      note: "",
     },
   });
 
@@ -66,7 +69,7 @@ export function TimeEntryDialog({
     setIsSubmitting(true);
     try {
       const totalMinutes = parseTimeInput(data.hours, data.minutes);
-      await onSave(totalMinutes);
+      await onSave({ minutes: totalMinutes, note: data.note?.trim() });
       onOpenChange(false);
     } catch {
       // Error handling is done by the parent component via onSave callback
@@ -185,6 +188,25 @@ export function TimeEntryDialog({
                 </Button>
               </div>
             </div>
+
+            <FormField
+              control={form.control}
+              name="note"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{tasks.details.timeEntries.noteLabel}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="یادداشت کوتاه درباره این ثبت"
+                      rows={3}
+                      className="bg-muted/10 placeholder:text-muted-foreground text-sm"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {willExceedEstimate && (
               <Alert className="border-orange-200 bg-orange-50">

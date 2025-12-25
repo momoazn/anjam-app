@@ -3245,7 +3245,15 @@ Due to length constraints, I'll summarize the remaining phases. Each follows the
 
 - [x] Preferences tab now exposes `user_preferences`, letting users toggle the activity feed and notification settings.
 - [x] Additional rate limiting/error feedback refinements implemented (rate limit toast + handler).
-- [ ] Batch operations API and final security audit work remain to be completed.
+- [x] Batch operations API wired into bulk task updates/deletes to avoid per-record calls.
+- [ ] Final security audit work remains to be completed.
+
+### Recent Issues & Changes
+
+- **Commenting UX** – Threaded comments, attachments, reactions, and reply state were missing; tackled by rewriting the composer, list, and item components plus new React Query hooks to keep caches in sync and surface replies within task detail tabs.
+- **Mentions visibility** – Mentions existed but had no surface area; added a `useMentions` hook plus a dedicated notifications panel with task links and snippet previews so users can review references.
+- **Preferences and rate limiting** – Settings lacked a dedicated preferences section and rate-limiter errors were generic; introduced the new preferences component, wired it to user preference hooks, and display a localized toast when the global 429 guard fires.
+- **Batch operations** – Bulk task actions now use the `/api/v1/tasks/batch-update` endpoint for updates and deletes so bulk flows are a single backend call.
 
 ### Phase 4: Collaboration Engine
 

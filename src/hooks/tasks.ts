@@ -20,10 +20,7 @@ import {
 } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
-import {
-  createCrudHooks,
-  createBulkOperations,
-} from "./factories/use-crud-factory";
+import { createCrudHooks } from "./factories/use-crud-factory";
 
 const crudHooks = createCrudHooks<TasksRecord, TasksResponse>({
   collection: "tasks",
@@ -37,22 +34,54 @@ const crudHooks = createCrudHooks<TasksRecord, TasksResponse>({
   ],
 });
 
-const bulkOps = createBulkOperations<TasksRecord, TasksResponse>({
-  collection: "tasks",
-  queryKeys: queryKeys.tasks,
-  invalidators: mutationInvalidators.crud.tasks,
-});
-
 // Export CRUD hooks
 const {
   useCreate: useCreateTaskMutation,
   useUpdate: useUpdateTaskMutation,
   useDelete: useDeleteTaskMutation,
 } = crudHooks;
-const {
-  useBulkUpdate: useBulkUpdateTasksMutation,
-  useBulkDelete: useBulkDeleteTasksMutation,
-} = bulkOps;
+
+type BatchUpdateResponse = {
+  updated: number;
+};
+
+const useBulkUpdateTasksMutation = createMutation<
+  BatchUpdateResponse,
+  Error,
+  { ids: string[]; updates: Partial<TasksRecord> }
+>(
+  ({ ids, updates }) =>
+    pb.send("/api/v1/tasks/batch-update", {
+      method: "POST",
+      body: {
+        task_ids: ids,
+        updates,
+      },
+    }),
+  (client) => {
+    mutationInvalidators.crud.tasks.bulk(client);
+  },
+);
+
+const useBulkDeleteTasksMutation = createMutation<
+  BatchUpdateResponse,
+  Error,
+  string[]
+>(
+  (ids) =>
+    pb.send("/api/v1/tasks/batch-update", {
+      method: "POST",
+      body: {
+        task_ids: ids,
+        updates: {
+          deleted_at: new Date().toISOString(),
+        },
+      },
+    }),
+  (client) => {
+    mutationInvalidators.crud.tasks.bulk(client);
+  },
+);
 
 type ReorderTaskVariables = {
   taskId: string;
@@ -257,7 +286,7 @@ export function useDeleteTask(
  */
 export function useBulkUpdateTasks(
   options?: UseMutationOptions<
-    TasksResponse[],
+    BatchUpdateResponse,
     Error,
     { ids: string[]; updates: Partial<TasksRecord> }
   >,
@@ -269,7 +298,7 @@ export function useBulkUpdateTasks(
  * Bulk delete multiple tasks at once
  */
 export function useBulkDeleteTasks(
-  options?: UseMutationOptions<void, Error, string[]>,
+  options?: UseMutationOptions<BatchUpdateResponse, Error, string[]>,
 ) {
   return useBulkDeleteTasksMutation(options);
 }
