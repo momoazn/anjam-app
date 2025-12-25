@@ -1,5 +1,3 @@
-import { queryKeys } from "@/hooks/query-keys";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   IconLoader2,
   IconPlus,
@@ -37,16 +35,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { common, projects, users as usersText } from "@/constants";
-import { useProjectUsers, useProjectWithSupervisor, useUsers } from "@/hooks";
+import {
+  useProjectUsers,
+  useProjectWithSupervisor,
+  useUsers,
+  useAddProjectMember,
+  useRemoveProjectMember,
+} from "@/hooks";
 import { pb } from "@/lib/pocketbase";
 import { usePermissions } from "@/hooks/usePermissions";
 import { formatUserName } from "@/lib/utils";
-import { handlePocketBaseError } from "@/lib/error-handler";
 import { UserAvatar } from "@/components/user-avatar";
 
 export default function ProjectUsers() {
   const { id } = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
   const { can } = usePermissions(id);
   const canManageUsers = can("project.manage_members");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
@@ -69,72 +71,34 @@ export default function ProjectUsers() {
 
   const { data: allUsers } = useUsers({ enabled: canManageUsers });
 
-  const { mutate: addUserToProject, isPending: isAddingUser } = useMutation({
-    mutationFn: async (userId: string) => {
-      return pb.collection("project_members").create({
-        user: userId,
-        project: id,
-        role: "member",
-        notifications: true,
-        added_at: new Date().toISOString(),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.users.allProjectUsers(),
-      });
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-      if (id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.projects.detail(id),
-        });
-      }
-      setIsAddUserOpen(false);
-      toast.success(projects.users.addSuccess);
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
+  const { mutate: addUserToProject, isPending: isAddingUser } =
+    useAddProjectMember();
+  const { mutate: removeMember, isPending: isRemovingUser } =
+    useRemoveProjectMember();
 
-  const { mutate: removeUserFromProject, isPending: isRemovingUser } =
-    useMutation({
-      mutationFn: async (userId: string) => {
-        const tasks = await pb.collection("tasks").getFullList({
-          filter: `project = "${id}" && assignee = "${userId}"`,
-        });
-
-        await Promise.all(
+  const handleRemoveUser = async (memberId: string) => {
+    // First unassign all tasks from this user in the project
+    await pb
+      .collection("tasks")
+      .getFullList({
+        filter: `project = "${id}" && assignee = "${userToRemove?.id}"`,
+      })
+      .then((tasks) =>
+        Promise.all(
           tasks.map((task) =>
             pb.collection("tasks").update(task.id, { assignee: "" }),
           ),
-        );
-
-        const records = await pb.collection("project_members").getFullList({
-          filter: `user = "${userId}" && project = "${id}"`,
-        });
-        if (records.length > 0) {
-          return pb.collection("project_members").delete(records[0].id);
-        }
-      },
+        ),
+      );
+    // Then remove the member
+    removeMember(memberId, {
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.users.allProjectUsers(),
-        });
-        queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-        if (id) {
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.projects.detail(id),
-          });
-        }
         setIsRemoveDialogOpen(false);
         setUserToRemove(null);
         toast.success(projects.users.removeSuccess);
       },
-      onError: (error) => {
-        handlePocketBaseError(error);
-      },
     });
+  };
 
   const availableUsers = allUsers?.filter(
     (u) => !projectUsers?.some((pu) => pu.id === u.id),
@@ -305,7 +269,15 @@ export default function ProjectUsers() {
               </span>
               <Select
                 onValueChange={(value) => {
-                  addUserToProject(value);
+                  addUserToProject(
+                    { projectId: id as string, userId: value, role: "member" },
+                    {
+                      onSuccess: () => {
+                        setIsAddUserOpen(false);
+                        toast.success(projects.users.addSuccess);
+                      },
+                    },
+                  );
                 }}
                 disabled={isAddingUser}
               >
@@ -371,9 +343,7 @@ export default function ProjectUsers() {
               {common.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() =>
-                userToRemove && removeUserFromProject(userToRemove.id)
-              }
+              onClick={() => userToRemove && handleRemoveUser(userToRemove.id)}
               disabled={isRemovingUser}
               className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none"
             >
