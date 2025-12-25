@@ -6,7 +6,23 @@ import type {
   UserPreferencesResponse,
 } from "@/lib/pocketbase-types";
 
-export const DEFAULT_USER_PREFERENCES = {
+export type UserPreferences = {
+  ui: {
+    showActivityFeed: boolean;
+  };
+  display: {
+    theme: "light" | "dark" | "system";
+    timezone:
+      | "auto"
+      | "UTC"
+      | "Asia/Tehran"
+      | "Europe/London"
+      | "America/New_York";
+    dateFormat: "locale" | "yyyy/MM/dd" | "dd/MM/yyyy" | "MM/dd/yyyy";
+  };
+};
+
+export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   ui: {
     showActivityFeed: true,
   },
@@ -15,7 +31,7 @@ export const DEFAULT_USER_PREFERENCES = {
     timezone: "auto",
     dateFormat: "locale",
   },
-} as const;
+};
 
 export const DEFAULT_NOTIFICATION_PREFERENCES = {
   taskAssigned: true,
