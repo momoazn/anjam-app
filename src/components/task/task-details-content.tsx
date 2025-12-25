@@ -381,6 +381,7 @@ export function TaskDetailsContent({
                   <>
                     <CommentsList
                       comments={comments}
+                      projectId={task.project}
                       onReply={(comment) => setReplyTarget(comment)}
                     />
                     <div className="border-border/20 border-t pt-8">

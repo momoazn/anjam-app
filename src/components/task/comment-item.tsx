@@ -10,6 +10,10 @@ import {
   IconLoader2,
   IconCornerUpLeft,
   IconPaperclip,
+  IconPhoto,
+  IconFileTypePdf,
+  IconFile,
+  IconDownload,
 } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -46,9 +50,11 @@ type ReactionMap = Record<string, string[]>;
 
 const reactionOptions = [
   { key: "thumbs_up", label: "👍" },
+  { key: "thumbs_down", label: "👎" },
   { key: "heart", label: "❤️" },
-  { key: "sparkles", label: "✨" },
-  { key: "fire", label: "🔥" },
+  { key: "party", label: "🎉" },
+  { key: "smile", label: "😄" },
+  { key: "think", label: "🤔" },
 ];
 
 const parseReactions = (value: unknown): ReactionMap => {
@@ -63,10 +69,32 @@ const parseReactions = (value: unknown): ReactionMap => {
   return value as ReactionMap;
 };
 
+const imageExtensions = new Set([
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "webp",
+  "bmp",
+  "svg",
+]);
+
+const getFileIcon = (filename: string) => {
+  const ext = filename.split(".").pop()?.toLowerCase();
+  if (!ext) return IconFile;
+  if (ext === "pdf") return IconFileTypePdf;
+  if (imageExtensions.has(ext)) return IconPhoto;
+  return IconFile;
+};
+
 type CommentItemProps = {
   comment: CommentWithUser;
   onDeleted?: (id: string) => void;
   onReply?: (comment: CommentWithUser) => void;
+  onToggleThread?: () => void;
+  replyCount?: number;
+  isCollapsed?: boolean;
+  resolveUserName?: (id: string) => string;
   depth?: number;
 };
 
@@ -74,6 +102,10 @@ export function CommentItem({
   comment,
   onDeleted,
   onReply,
+  onToggleThread,
+  replyCount = 0,
+  isCollapsed = false,
+  resolveUserName,
   depth = 0,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -269,6 +301,17 @@ export function CommentItem({
                   {commentsConst.item.reply}
                 </Button>
               )}
+              {replyCount > 0 && onToggleThread && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="border-border/40 rounded-none text-[10px] font-black tracking-widest uppercase"
+                  onClick={onToggleThread}
+                >
+                  {isCollapsed ? "نمایش" : "پنهان‌سازی"} (
+                  {digitsEnToFa(replyCount)})
+                </Button>
+              )}
             </div>
 
             <div className="flex items-center gap-4">
@@ -365,19 +408,58 @@ export function CommentItem({
                   <div className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
                     {commentsConst.item.attachments}
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {attachments.map((filename) => (
-                      <a
-                        key={filename}
-                        href={pb.files.getUrl(comment, filename)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-black tracking-tight uppercase transition-colors"
-                      >
-                        <IconPaperclip className="size-4" />
-                        {filename}
-                      </a>
-                    ))}
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {attachments.map((filename) => {
+                      const fileUrl = pb.files.getUrl(comment, filename);
+                      const FileIcon = getFileIcon(filename);
+                      const isImage = imageExtensions.has(
+                        filename.split(".").pop()?.toLowerCase() ?? "",
+                      );
+                      return (
+                        <div
+                          key={filename}
+                          className="border-border/30 bg-muted/5 flex items-center justify-between gap-3 rounded-none border p-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            {isImage ? (
+                              <img
+                                src={fileUrl}
+                                alt={filename}
+                                className="border-border/30 h-10 w-10 rounded-none border object-cover"
+                              />
+                            ) : (
+                              <div className="border-border/30 bg-card flex h-10 w-10 items-center justify-center rounded-none border">
+                                <FileIcon className="size-5" />
+                              </div>
+                            )}
+                            <div className="text-xs font-black tracking-tight uppercase">
+                              {filename}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              download
+                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-colors"
+                            >
+                              <IconDownload className="size-3" />
+                              Download
+                            </a>
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-colors"
+                            >
+                              <IconPaperclip className="size-3" />
+                              View
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -387,6 +469,10 @@ export function CommentItem({
                   const hasReacted =
                     currentUser &&
                     reactionMap[reaction.key]?.includes(currentUser.id);
+                  const reactionNames =
+                    reactionMap[reaction.key]
+                      ?.map((id) => resolveUserName?.(id) ?? id)
+                      .join("، ") ?? "";
                   return (
                     <Button
                       key={reaction.key}
@@ -400,6 +486,7 @@ export function CommentItem({
                       )}
                       onClick={() => toggleReaction(reaction.key)}
                       disabled={!currentUser || updateComment.isPending}
+                      title={reactionNames}
                     >
                       <span className="text-lg">{reaction.label}</span>
                       {count > 0 && (
