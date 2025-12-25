@@ -187,21 +187,22 @@ This is the **Anjam (انجام)** task and project management application with 
 PocketBase lifecycle hooks registered in `backend/main.go`:
 
 - `OnRecordCreateExecute`: Runs **before** record creation (can modify record before saving)
-  - `handleUserCreation`: Sets default values for new users
-  - `handleTaskCreation`: Auto-generates task display IDs
-  - `handleProjectCreationWithGroup`: Validates group membership and generates project codes
-  - `handleGroupCreation`: Validates group creation
-  - `handleUsersProjectsValidation`: Ensures user and project belong to same group
+  - `handleUserCreation`: Sets default values for new users and enforces admin-only mutations
+  - `handleTaskCreation`: Auto-generates task display IDs and ensures defaults
+  - PocketBase validation hooks also verify task status transitions and project/task references via `validateTaskStatusTransition`
 
 - `OnRecordAfterCreateSuccess`: Runs **after** successful creation (for side effects)
   - `handleTaskAssignmentNotification`: Notifies assigned user
+  - `handleProjectCreatedStatuses`: Fires after project creation to seed statuses
   - `handleCommentNotification`: Notifies task owner and participants
-  - `handleUsersProjectsCreatedNotify`: Notifies user of project assignment
-  - `handleGroupCreatedNotification`: Notifies group creator
+  - `handleCommentMentions`: Extracts and records mention events
+  - `handleProjectMembersCreatedNotify`: Alerts members when they join a project
+  - `handleTimeEntryCreated`: Records side effects for new time entries
 
 - `OnRecordAfterUpdateSuccess`: Runs **after** successful updates
   - `handleTaskUpdateNotification`: Notifies on task status/assignment changes
   - `handleProjectUpdateNotification`: Notifies on project updates
+  - `handleTimeEntryUpdated`: Refreshes aggregates when time entries change
 
 - `OnRecordAuthWithPasswordRequest`: Runs on authentication attempts
   - `handleAuthRequest`: Tracks login attempts and blocks after 5 failures

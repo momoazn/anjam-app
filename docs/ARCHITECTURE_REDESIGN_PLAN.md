@@ -28,6 +28,12 @@
 
 ---
 
+## Implementation Alignment (Dec 25, 2025)
+
+- `POST /api/v1/organizations` is still the only path that writes the `organizations` collection. The route in `backend/organizations.go` runs inside a transaction, generates a slug, sets `plan`/`active`, and creates the owner entry in `organization_members`, so `organizations.createRule` and `deleteRule` can remain `null` in `backend/pb_schema.json` to guarantee only trusted system code mutates tenants.
+- The canonical permission resolver lives in `backend/permissions.go` (`PermissionContext`) and propagates through `src/hooks/usePermissions.ts` so the UI always gates actions exactly the same way the backend does.
+- The legacy `groups` collection and the `projects.group` relation have been removed; the tenant model now consistently uses `organizations` + the `organization_members` / `project_members` junction tables, and there is no bootstrap code that touches `groups`.
+
 ## PocketBase Built-in Features
 
 ### Overview
