@@ -81,6 +81,20 @@ export { useTaskCounts } from "./use-task-counts";
 // Tag hooks
 export { useTags, useCreateTag, useUpdateTag, useDeleteTag } from "./tags";
 
+export {
+  useSubtasks,
+  useCreateSubtask,
+  useUpdateSubtask,
+  useDeleteSubtask,
+} from "./subtasks";
+
+export {
+  useTimeEntries,
+  useCreateTimeEntry,
+  useUpdateTimeEntry,
+  useDeleteTimeEntry,
+} from "./time-entries";
+
 // Utility hooks
 export { useFileUpload, type FileWithPreview } from "./use-file-upload";
 export { useTheme } from "./use-theme";
@@ -97,3 +111,11 @@ export { useSavedFilters, type SavedFilter } from "./use-saved-filters";
 
 // Audit log hooks
 export { useAuditLogs, useResourceAuditLogs } from "./audit-logs";
+
+export {
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  DEFAULT_USER_PREFERENCES,
+  useUserPreferences,
+  useUpdateUserPreferences,
+} from "./user-preferences";
+export { useMentions } from "./mentions";

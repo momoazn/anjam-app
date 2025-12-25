@@ -3227,6 +3227,26 @@ Due to length constraints, I'll summarize the remaining phases. Each follows the
 4. **Add status transition validation** - Prevent invalid status changes
 5. **Update tasks schema** - Add task_type, story_points, watchers, etc.
 
+### Phase 3 Completion Checklist
+
+- [x] Added `subtasks` and `time_entries` collections in the schema plus PocketBase hooks to keep task totals in sync.
+- [x] Implemented status transition validation and automatic linking to `project_statuses` so only valid workflows are permitted.
+- [x] Delivered frontend support: subtasks list + creation, time-entry dialog with notes, and aggregated totals on the detail page.
+- [x] Tied the task detail activity tab to the audit log feed, exposing real-time status/history data alongside the new UX.
+
+### Phase 4 Progress
+
+- [x] Activity stream subscribes to `audit_logs` via SSE and invalidates React Query caches for the current resource.
+- [x] Task history tab now respects user preferences and hides the feed when the toggle is off.
+- [x] `mentions` entries now have a surfaced section in the notifications page so users can review direct references.
+- [x] Comments now support threading, attachments, and reactions directly within the task view.
+
+### Phase 5 Progress
+
+- [x] Preferences tab now exposes `user_preferences`, letting users toggle the activity feed and notification settings.
+- [x] Additional rate limiting/error feedback refinements implemented (rate limit toast + handler).
+- [ ] Batch operations API and final security audit work remain to be completed.
+
 ### Phase 4: Collaboration Engine
 
 > **RECOMMENDATION**: Leverage PocketBase built-in features instead of recreating them:

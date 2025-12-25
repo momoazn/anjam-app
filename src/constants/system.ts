@@ -115,6 +115,14 @@ export const notifications = {
   deselectAll: "لغو انتخاب",
   deleteSelected: "حذف انتخاب‌شده‌ها",
   cancel: shared.cancel,
+  mentions: {
+    title: "اشاره‌ها",
+    description: "در این بخش اشاره‌های مستقیم به شما نمایش داده می‌شود",
+    empty: "هنوز کسی شما را مورد اشاره قرار نداده",
+    loading: "در حال بارگذاری اشاره‌ها...",
+    viewTask: "مشاهده تسک",
+    byTask: "در تسک {task}",
+  },
 } as const;
 
 export const auditLogs = {
@@ -196,6 +204,7 @@ export const settings = {
     profile: "پروفایل کاربری",
     appearance: "ظاهر و تم",
     security: "امنیت و ورود",
+    preferences: "ترجیحات کاربری",
     about: "درباره برنامه",
   },
   profile: {
@@ -245,6 +254,26 @@ export const settings = {
     },
     validation: {
       oldPasswordRequired: "رمز عبور فعلی " + shared.required,
+    },
+  },
+  preferences: {
+    title: "ترجیحات کاربری",
+    description: "تنظیمات نمایش فید فعالیت و اعلان‌های شخصی",
+    activityDisabled: "نمایش فید فعالیت برای شما غیرفعال شده است",
+    signinRequired: "برای مدیریت این قسمت ابتدا وارد حساب کاربری‌تان شوید",
+    toggles: {
+      activityFeed: {
+        label: "فید فعالیت",
+        description: "نمایش تاریخچه فعالیت‌ها در صفحات تسک‌ها و پروژه‌ها",
+      },
+      taskAssigned: {
+        label: "اعلان‌های تسک",
+        description: "اعلان درباره تخصیص یا تغییر وضعیت تسک‌ها",
+      },
+      projectUpdated: {
+        label: "اعلان‌های پروژه",
+        description: "اعلان درباره تغییرات کلی پروژه‌ها",
+      },
     },
   },
   about: {

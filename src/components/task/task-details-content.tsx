@@ -11,21 +11,38 @@ import {
   IconTarget,
   IconCalendar,
 } from "@tabler/icons-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { ActivityStream } from "@/components/audit/activity-stream";
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
 import { TimeComparison } from "@/components/task/time-comparison";
+import { TaskSubtasksSection } from "@/components/task/task-subtasks-section";
+import { TimeEntryDialog } from "@/components/task/time-entry-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { auditLogs, comments as commentsText, tasks } from "@/constants";
+import {
+  auditLogs,
+  comments as commentsText,
+  settings,
+  tasks,
+} from "@/constants";
 import type { CommentWithUser } from "@/hooks/comments";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { formatTaskDate } from "@/lib/date-utils";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { formatUserName } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { handlePocketBaseError } from "@/lib/error-handler";
+import { useAuthUser } from "@/store/auth-store";
+import {
+  useCreateTimeEntry,
+  useTimeEntries,
+  useUserPreferences,
+  DEFAULT_USER_PREFERENCES,
+} from "@/hooks";
 
 export type TaskDetailsContentProps = {
   task: TaskWithProject;
@@ -41,6 +58,7 @@ export type TaskDetailsContentProps = {
   onMinutesChange: (value: number) => void;
   onSaveTime: () => void;
   onCancelTimeEdit: () => void;
+  onTaskRefresh?: () => void;
 };
 
 export function TaskDetailsContent({
@@ -57,7 +75,55 @@ export function TaskDetailsContent({
   onMinutesChange,
   onSaveTime,
   onCancelTimeEdit,
+  onTaskRefresh,
 }: TaskDetailsContentProps) {
+  const [isTimeEntryDialogOpen, setIsTimeEntryDialogOpen] = useState(false);
+  const authUser = useAuthUser();
+  const { data: userPreferences } = useUserPreferences();
+  const userPreferencesData: typeof DEFAULT_USER_PREFERENCES = {
+    ...DEFAULT_USER_PREFERENCES,
+    ...(userPreferences?.preferences as
+      | typeof DEFAULT_USER_PREFERENCES
+      | undefined),
+  };
+
+  const showActivityFeed = userPreferencesData.ui.showActivityFeed;
+
+  const { data: timeEntriesData = [], isLoading: isLoadingTimeEntries } =
+    useTimeEntries(task.id);
+
+  const timeEntryMutation = useCreateTimeEntry();
+  const [replyTarget, setReplyTarget] = useState<CommentWithUser | null>(null);
+
+  const handleCommentAdded = () => {
+    onTaskRefresh?.();
+    setReplyTarget(null);
+  };
+
+  const handleTimeEntrySave = async (payload: {
+    minutes: number;
+    note?: string;
+  }) => {
+    if (!authUser?.id) {
+      toast.error("برای ثبت زمان باید وارد شوید");
+      return;
+    }
+
+    try {
+      await timeEntryMutation.mutateAsync({
+        task: task.id,
+        user: authUser.id,
+        minutes: payload.minutes,
+        note: payload.note,
+      });
+      toast.success("زمان با موفقیت ثبت شد");
+      onTaskRefresh?.();
+      setIsTimeEntryDialogOpen(false);
+    } catch (error: unknown) {
+      handlePocketBaseError(error as Error);
+    }
+  };
+
   return (
     <div className="space-y-10 lg:col-span-2">
       {/* Registry Metadata Module */}
@@ -129,6 +195,64 @@ export function TaskDetailsContent({
             <div className="text-right font-mono text-xs font-black tracking-widest uppercase opacity-60">
               {task.display_id || task.id}
             </div>
+          </div>
+
+          <div className="mt-8 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col text-right">
+                <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+                  {tasks.details.timeEntries.title}
+                </span>
+                <span className="text-muted-foreground text-[11px] font-black tracking-tight uppercase">
+                  {tasks.details.timeEntries.entriesLabel}
+                </span>
+              </div>
+              <Button
+                onClick={() => setIsTimeEntryDialogOpen(true)}
+                className="border-border/40 h-9 rounded-none border text-[10px] font-black tracking-[0.3em] uppercase"
+                disabled={timeEntryMutation.isPending}
+              >
+                {tasks.details.timeEntries.logButton}
+              </Button>
+            </div>
+
+            {isLoadingTimeEntries ? (
+              <p className="text-muted-foreground text-right text-sm">
+                در حال بارگذاری ورودی‌های زمانی...
+              </p>
+            ) : timeEntriesData.length > 0 ? (
+              timeEntriesData.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="border-border/10 bg-card rounded-none border px-4 py-3 text-right shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-black">
+                        {formatTimeSpent(entry.minutes)}
+                      </p>
+                      <p className="text-muted-foreground text-[12px]">
+                        {entry.expand?.user
+                          ? formatUserName(
+                              entry.expand.user.first_name,
+                              entry.expand.user.last_name,
+                              entry.expand.user.username,
+                            )
+                          : tasks.details.unknownUser}
+                        {entry.note ? ` · ${entry.note}` : ""}
+                      </p>
+                    </div>
+                    <span className="text-muted-foreground text-[10px] uppercase">
+                      {formatTaskDate(entry.started_at || entry.created)}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-muted-foreground text-right text-sm">
+                {tasks.details.timeEntries.empty}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -249,6 +373,8 @@ export function TaskDetailsContent({
         </div>
       </section>
 
+      <TaskSubtasksSection task={task} />
+
       {/* Functional Context (Tabs) */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
@@ -288,20 +414,45 @@ export function TaskDetailsContent({
                   </div>
                 ) : (
                   <>
-                    <CommentsList comments={comments} />
+                    <CommentsList
+                      comments={comments}
+                      onReply={(comment) => setReplyTarget(comment)}
+                    />
                     <div className="border-border/20 border-t pt-8">
-                      <CommentComposer taskId={task.id} />
+                      <CommentComposer
+                        taskId={task.id}
+                        replyTarget={replyTarget}
+                        onCancelReply={() => setReplyTarget(null)}
+                        onCommentAdded={handleCommentAdded}
+                      />
                     </div>
                   </>
                 )}
               </div>
             </TabsContent>
             <TabsContent value="history" className="m-0 outline-none">
-              <ActivityStream resource="tasks" resourceId={task.id} />
+              {showActivityFeed ? (
+                <ActivityStream resource="tasks" resourceId={task.id} />
+              ) : (
+                <div
+                  className="text-muted-foreground/40 py-12 text-center text-xs font-black uppercase opacity-30 grayscale"
+                  dir="rtl"
+                >
+                  {settings.preferences.activityDisabled}
+                </div>
+              )}
             </TabsContent>
           </div>
         </Tabs>
       </section>
+      <TimeEntryDialog
+        open={isTimeEntryDialogOpen}
+        onOpenChange={setIsTimeEntryDialogOpen}
+        currentMinutes={task.time_spent_minutes ?? 0}
+        estimatedMinutes={task.estimated_minutes}
+        onSave={handleTimeEntrySave}
+        taskTitle={task.title}
+      />
     </div>
   );
 }

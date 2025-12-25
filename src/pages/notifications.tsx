@@ -1,3 +1,4 @@
+import { formatDistanceToNow } from "date-fns-jalali";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconActivity,
@@ -10,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import { NotificationFilters } from "@/components/notifications/notification-filters";
@@ -36,12 +38,29 @@ import {
   useMarkAsRead,
   useNotifications,
 } from "@/hooks/notifications";
+import { useMentions } from "@/hooks";
+import { stripHtml } from "@/lib/excel-export";
+import type {
+  CommentsResponse,
+  MentionsResponse,
+  ProjectsResponse,
+  TasksResponse,
+} from "@/lib/pocketbase-types";
+
+type MentionWithExpand = MentionsResponse & {
+  expand?: {
+    comment?: CommentsResponse;
+    task?: TasksResponse;
+    project?: ProjectsResponse;
+  };
+};
 import { useAuthUser } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 
 export default function Notifications() {
   const user = useAuthUser();
   const { data: notificationsData = [], isLoading, error } = useNotifications();
+  const { data: mentionsData = [], isLoading: mentionsLoading } = useMentions();
   const markAsRead = useMarkAsRead();
 
   const markAllAsRead = useMarkAllAsRead();
@@ -287,6 +306,87 @@ export default function Notifications() {
           onDelete={handleDelete}
         />
       </div>
+
+      <section className="border-border/40 bg-card mt-10 space-y-4 border p-6 text-right">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+              {notificationsText.mentions.title}
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {notificationsText.mentions.description}
+            </p>
+          </div>
+          <span className="text-[11px] font-black tracking-tight uppercase">
+            {digitsEnToFa(mentionsData.length)}
+          </span>
+        </div>
+
+        {mentionsLoading ? (
+          <p className="text-muted-foreground text-center text-xs font-black uppercase">
+            {notificationsText.mentions.loading}
+          </p>
+        ) : mentionsData.length === 0 ? (
+          <div className="text-muted-foreground text-center text-xs font-black uppercase opacity-70">
+            {notificationsText.mentions.empty}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {mentionsData.map((mention) => {
+              const mentionWithExpand = mention as MentionWithExpand;
+              const taskName =
+                mentionWithExpand.expand?.task?.title ||
+                mentionWithExpand.expand?.task?.display_id ||
+                "-";
+              const rawSnippet = stripHtml(
+                mentionWithExpand.expand?.comment?.content ?? "",
+              );
+              const snippet =
+                rawSnippet.length > 140
+                  ? `${rawSnippet.slice(0, 140)}...`
+                  : rawSnippet;
+              const timeAgo = mention.created
+                ? formatDistanceToNow(new Date(mention.created), {
+                    addSuffix: true,
+                  })
+                : "";
+              return (
+                <article
+                  key={mention.id}
+                  className="border-border/30 bg-muted/10 rounded-xl border p-4 text-right"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <p className="text-sm font-black tracking-[0.3em] uppercase">
+                        {notificationsText.mentions.byTask.replace(
+                          "{task}",
+                          taskName,
+                        )}
+                      </p>
+                      <p className="text-muted-foreground text-[10px] font-black uppercase">
+                        {timeAgo ? digitsEnToFa(timeAgo) : "—"}
+                      </p>
+                    </div>
+                    {mentionWithExpand.task && (
+                      <Link
+                        to={`/tasks/${mentionWithExpand.task}`}
+                        className="text-primary text-[10px] font-black tracking-[0.3em] uppercase"
+                      >
+                        {notificationsText.mentions.viewTask}
+                      </Link>
+                    )}
+                  </div>
+                  {snippet && (
+                    <p className="text-muted-foreground mt-3 text-sm">
+                      {snippet}
+                    </p>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </PageTransition>
   );
 }

@@ -5,6 +5,7 @@ import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
 import { AboutSection } from "@/components/settings/about-section";
 import { AppearanceSection } from "@/components/settings/appearance-section";
+import { PreferencesSection } from "@/components/settings/preferences-section";
 import { ProfileSection } from "@/components/settings/profile-section";
 import { SecuritySection } from "@/components/settings/security-section";
 import { SettingsSidebar } from "@/components/settings/settings-sidebar";
@@ -31,6 +32,7 @@ export default function SettingsPage() {
           {activeTab === "profile" && <ProfileSection />}
           {activeTab === "appearance" && <AppearanceSection />}
           {activeTab === "security" && <SecuritySection />}
+          {activeTab === "preferences" && <PreferencesSection />}
           {activeTab === "about" && <AboutSection />}
         </div>
       </div>

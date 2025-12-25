@@ -241,12 +241,12 @@ export const mutationInvalidators = {
           : compositeInvalidators.userChange(client),
     },
     comments: {
-      create: (client: QueryClient, taskId?: string) =>
-        compositeInvalidators.commentChange(client, taskId),
-      update: (client: QueryClient, taskId?: string) =>
-        compositeInvalidators.commentChange(client, taskId),
-      delete: (client: QueryClient, taskId?: string) =>
-        compositeInvalidators.commentChange(client, taskId),
+      create: (client: QueryClient, data?: { task?: string }) =>
+        compositeInvalidators.commentChange(client, data?.task),
+      update: (client: QueryClient, data?: { task?: string }) =>
+        compositeInvalidators.commentChange(client, data?.task),
+      delete: (client: QueryClient, data?: { task?: string }) =>
+        compositeInvalidators.commentChange(client, data?.task),
     },
     tags: {
       create: (client: QueryClient) => collectionInvalidators.tags(client),

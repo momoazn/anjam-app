@@ -132,4 +132,12 @@ export const queryKeys = {
     byProject: (projectId: string) =>
       ["project_statuses", "project", projectId] as const,
   },
+  subtasks: {
+    listByTask: (taskId: string) => ["subtasks", "task", taskId] as const,
+    all: ["subtasks"] as const,
+  },
+  timeEntries: {
+    listByTask: (taskId: string) => ["time_entries", "task", taskId] as const,
+    all: ["time_entries"] as const,
+  },
 } as const;

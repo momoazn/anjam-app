@@ -1,4 +1,5 @@
 import {
+  IconAdjustmentsHorizontal,
   IconInfoCircle,
   IconPalette,
   IconShield,
@@ -14,6 +15,11 @@ const menuItems = [
   { id: "profile", label: settings.tabs.profile, icon: IconUser },
   { id: "appearance", label: settings.tabs.appearance, icon: IconPalette },
   { id: "security", label: settings.tabs.security, icon: IconShield },
+  {
+    id: "preferences",
+    label: settings.tabs.preferences,
+    icon: IconAdjustmentsHorizontal,
+  },
   { id: "about", label: settings.tabs.about, icon: IconInfoCircle },
 ];
 
