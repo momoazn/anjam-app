@@ -64,7 +64,6 @@ describe("useProjects", () => {
         name: "Project 1",
         code: "PRJ",
         supervisor: "sup-1",
-        group: "grp-1",
         organization: "org-1",
         assets: [],
         description: "Test project",
@@ -149,7 +148,6 @@ describe("useProject", () => {
       name: "Project 1",
       code: "PRJ",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-01T00:00:00Z",
@@ -213,7 +211,6 @@ describe("useProjectWithSupervisor", () => {
       name: "Project 1",
       code: "PRJ",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
       expand: {
         supervisor: {
@@ -262,7 +259,6 @@ describe("useCreateProject", () => {
       name: "New Project",
       code: "NEW",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
     };
 
@@ -295,7 +291,6 @@ describe("useCreateProject", () => {
       name: "Test",
       code: "TST",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
     };
 
@@ -338,7 +333,6 @@ describe("useCreateProject", () => {
       name: "Test",
       code: "TST",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
     };
 
@@ -360,7 +354,6 @@ describe("useUpdateProject", () => {
       name: "Updated Project",
       code: "UPD",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
@@ -394,7 +387,6 @@ describe("useUpdateProject", () => {
       name: "Updated",
       code: "UPD",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
@@ -452,7 +444,6 @@ describe("useDeleteProject", () => {
       name: "Project 1",
       code: "PRJ",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
@@ -483,7 +474,6 @@ describe("useDeleteProject", () => {
       name: "Project 1",
       code: "PRJ",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
@@ -522,7 +512,6 @@ describe("useDeleteProject", () => {
       name: "Project 1",
       code: "PRJ",
       supervisor: "sup-1",
-      group: "grp-1",
       organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
