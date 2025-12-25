@@ -40,7 +40,11 @@ const {
 export function useSubtasks(taskId: string, options?: { enabled?: boolean }) {
   const enabled = taskId !== "" && (options?.enabled ?? true);
 
-  return useQuery({
+  return useQuery<
+    SubtasksResponse<{
+      assignee?: UsersResponse;
+    }>[]
+  >({
     queryKey: queryKeys.subtasks.listByTask(taskId),
     queryFn: () =>
       pb.collection("subtasks").getFullList<
