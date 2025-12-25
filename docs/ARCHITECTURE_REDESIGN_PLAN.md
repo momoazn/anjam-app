@@ -3256,6 +3256,7 @@ Due to length constraints, I'll summarize the remaining phases. Each follows the
 - **Batch operations** – Bulk task actions now use the `/api/v1/tasks/batch-update` endpoint for updates and deletes so bulk flows are a single backend call.
 - **Access rules tightening** – Comments, time entries, and mentions now require org/project membership on update/create/delete to reduce cross-tenant exposure.
 - **Comment creation rules** – Comment create rules now enforce membership + author match (prevents cross-tenant comment injection).
+- **System-owned records** – Notifications and mentions are now server-only on create (client create disabled).
 
 ### Phase 4: Collaboration Engine
 
