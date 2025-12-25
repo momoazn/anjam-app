@@ -1,5 +1,12 @@
 import { toast } from "sonner";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { settings } from "@/constants";
 import {
@@ -8,12 +15,35 @@ import {
   useUpdateUserPreferences,
   useUserPreferences,
 } from "@/hooks";
+import { useTheme } from "@/hooks/use-theme";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { useAuthUser } from "@/store/auth-store";
 
 type NotificationKey = keyof typeof DEFAULT_NOTIFICATION_PREFERENCES;
 type PreferencesPayload = typeof DEFAULT_USER_PREFERENCES;
 type NotificationPayload = typeof DEFAULT_NOTIFICATION_PREFERENCES;
+type DisplayPayload = PreferencesPayload["display"];
+
+const timezoneOptions = [
+  { value: "auto", label: "خودکار" },
+  { value: "UTC", label: "UTC" },
+  { value: "Asia/Tehran", label: "Asia/Tehran" },
+  { value: "Europe/London", label: "Europe/London" },
+  { value: "America/New_York", label: "America/New_York" },
+];
+
+const dateFormatOptions = [
+  { value: "locale", label: "مطابق تنظیمات دستگاه" },
+  { value: "yyyy/MM/dd", label: "YYYY/MM/DD" },
+  { value: "dd/MM/yyyy", label: "DD/MM/YYYY" },
+  { value: "MM/dd/yyyy", label: "MM/DD/YYYY" },
+];
+
+const themeOptions = [
+  { value: "light", label: settings.appearance.light },
+  { value: "dark", label: settings.appearance.dark },
+  { value: "system", label: settings.appearance.system },
+];
 
 type ToggleRowProps = {
   label: string;
@@ -51,12 +81,14 @@ export function PreferencesSection() {
   const { data, isLoading } = useUserPreferences();
   const updatePreferences = useUpdateUserPreferences();
   const [isSaving, setIsSaving] = useState(false);
+  const { setTheme } = useTheme();
 
   const preferencesData: PreferencesPayload = {
     ...DEFAULT_USER_PREFERENCES,
     ...(data?.preferences as PreferencesPayload | undefined),
   };
   const uiPreferences = preferencesData.ui;
+  const displayPreferences = preferencesData.display;
   const notificationPrefs: NotificationPayload = {
     ...DEFAULT_NOTIFICATION_PREFERENCES,
     ...(data?.notifications as NotificationPayload | undefined),
@@ -90,6 +122,31 @@ export function PreferencesSection() {
           },
         },
       });
+      toast.success("ترجیحات ذخیره شد");
+    } catch (error) {
+      handlePocketBaseError(error as Error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDisplayUpdate = async (updates: Partial<DisplayPayload>) => {
+    if (!data) return;
+    setIsSaving(true);
+    try {
+      const nextDisplay = { ...displayPreferences, ...updates };
+      await updatePreferences.mutateAsync({
+        id: data.id,
+        updates: {
+          preferences: {
+            ...preferencesData,
+            display: nextDisplay,
+          },
+        },
+      });
+      if (updates.theme) {
+        setTheme(updates.theme);
+      }
       toast.success("ترجیحات ذخیره شد");
     } catch (error) {
       handlePocketBaseError(error as Error);
@@ -149,6 +206,97 @@ export function PreferencesSection() {
             disabled={isBusy || !data}
             onChange={handleActivityToggle}
           />
+        </div>
+      </section>
+
+      <section className="border-border/40 bg-muted/5 rounded-xl border p-6 shadow-sm">
+        <div className="border-border/20 mb-4 border-b pb-3">
+          <p className="text-muted-foreground text-xs font-black tracking-[0.4em] uppercase">
+            تنظیمات نمایش
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+              تم
+            </span>
+            <Select
+              value={displayPreferences.theme}
+              onValueChange={(value) => handleDisplayUpdate({ theme: value })}
+              disabled={isBusy || !data}
+            >
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent className="border-foreground bg-card rounded-none border-2">
+                {themeOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="text-right text-[10px] font-black uppercase"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+              منطقه زمانی
+            </span>
+            <Select
+              value={displayPreferences.timezone}
+              onValueChange={(value) =>
+                handleDisplayUpdate({ timezone: value })
+              }
+              disabled={isBusy || !data}
+            >
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+                <SelectValue placeholder="Timezone" />
+              </SelectTrigger>
+              <SelectContent className="border-foreground bg-card rounded-none border-2">
+                {timezoneOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="text-right text-[10px] font-black uppercase"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+              فرمت تاریخ
+            </span>
+            <Select
+              value={displayPreferences.dateFormat}
+              onValueChange={(value) =>
+                handleDisplayUpdate({ dateFormat: value })
+              }
+              disabled={isBusy || !data}
+            >
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+                <SelectValue placeholder="Date format" />
+              </SelectTrigger>
+              <SelectContent className="border-foreground bg-card rounded-none border-2">
+                {dateFormatOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="text-right text-[10px] font-black uppercase"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </section>
 

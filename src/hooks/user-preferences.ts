@@ -10,6 +10,11 @@ export const DEFAULT_USER_PREFERENCES = {
   ui: {
     showActivityFeed: true,
   },
+  display: {
+    theme: "system",
+    timezone: "auto",
+    dateFormat: "locale",
+  },
 } as const;
 
 export const DEFAULT_NOTIFICATION_PREFERENCES = {

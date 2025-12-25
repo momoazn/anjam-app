@@ -13,6 +13,7 @@ import {
   notFound,
   organization,
   projects,
+  settings,
   tagsManagement,
   tasks,
   ui,
@@ -151,6 +152,10 @@ const Helps = createLazyPage(
 );
 const Settings = createLazyPage(
   () => import("@/pages/settings"),
+  errors.pageLoad.notFound,
+);
+const PreferencesPage = createLazyPage(
+  () => import("@/pages/settings/preferences"),
   errors.pageLoad.notFound,
 );
 const Notifications = createLazyPage(
@@ -511,6 +516,13 @@ const routes: RouteType[] = [
     element: <Settings />,
     protected: true,
     title: navigation.settings,
+  },
+  {
+    path: "/settings/preferences",
+    element: <PreferencesPage />,
+    protected: true,
+    requiresOrg: false,
+    title: settings.preferences.title,
   },
   {
     path: "/notifications",
