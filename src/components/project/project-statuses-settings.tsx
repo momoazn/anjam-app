@@ -117,7 +117,7 @@ function SortableStatusRow({
         <Input
           value={draft.name}
           onChange={(event) => onDraftChange({ name: event.target.value })}
-          className="border-border/40 bg-muted/5 h-10 rounded-none text-right text-xs font-black tracking-widest uppercase"
+          className="border-border/40 bg-muted/5 h-10 rounded-none text-right text-xs font-black tracking-tight uppercase"
           disabled={disabled}
         />
       </div>
@@ -127,10 +127,10 @@ function SortableStatusRow({
           onValueChange={(value) => onDraftChange({ color: value })}
           disabled={disabled}
         >
-          <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-none border text-right text-[10px] font-black tracking-widest uppercase focus:ring-0">
+          <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-none border text-right text-[10px] font-black tracking-tight uppercase focus:ring-0">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="border-foreground bg-card rounded-none border-2">
+          <SelectContent className="border-border bg-card rounded-none border">
             {colorOptions.map((option) => (
               <SelectItem
                 key={option.value}
@@ -401,13 +401,13 @@ export function ProjectStatusesSettings({
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <div className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+        <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
           Project_Statuses
         </div>
       </div>
 
       <div className="bg-muted/5 border-border/40 border p-4">
-        <div className="border-border/20 grid grid-cols-12 items-center gap-3 border-b pb-3 text-right text-[9px] font-black tracking-widest uppercase opacity-60">
+        <div className="border-border/20 grid grid-cols-12 items-center gap-3 border-b pb-3 text-right text-[9px] font-black tracking-tight uppercase opacity-60">
           <div className="col-span-1" />
           <div className="col-span-3">نام</div>
           <div className="col-span-2">رنگ</div>
@@ -458,7 +458,7 @@ export function ProjectStatusesSettings({
 
       {canManageStatuses && (
         <div className="border-border/40 bg-muted/5 border p-4">
-          <div className="mb-3 text-[10px] font-black tracking-widest uppercase opacity-60">
+          <div className="mb-3 text-[10px] font-black tracking-tight uppercase opacity-60">
             افزودن وضعیت
           </div>
           <div className="grid grid-cols-12 items-center gap-3">
@@ -467,7 +467,7 @@ export function ProjectStatusesSettings({
                 value={newName}
                 onChange={(event) => setNewName(event.target.value)}
                 placeholder="نام وضعیت"
-                className="border-border/40 bg-muted/5 h-10 rounded-none text-right text-xs font-black tracking-widest uppercase"
+                className="border-border/40 bg-muted/5 h-10 rounded-none text-right text-xs font-black tracking-tight uppercase"
                 disabled={isSaving}
               />
             </div>
@@ -477,10 +477,10 @@ export function ProjectStatusesSettings({
                 onValueChange={setNewColor}
                 disabled={isSaving}
               >
-                <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-none border text-right text-[10px] font-black tracking-widest uppercase focus:ring-0">
+                <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-none border text-right text-[10px] font-black tracking-tight uppercase focus:ring-0">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="border-foreground bg-card rounded-none border-2">
+                <SelectContent className="border-border bg-card rounded-none border">
                   {colorOptions.map((option) => (
                     <SelectItem
                       key={option.value}
@@ -493,7 +493,7 @@ export function ProjectStatusesSettings({
                 </SelectContent>
               </Select>
             </div>
-            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-black tracking-widest uppercase">
+            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-black tracking-tight uppercase">
               <Switch
                 checked={newIsDefault}
                 onCheckedChange={(value) => setNewIsDefault(Boolean(value))}
@@ -501,7 +501,7 @@ export function ProjectStatusesSettings({
               />
               پیش‌فرض
             </div>
-            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-black tracking-widest uppercase">
+            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-black tracking-tight uppercase">
               <Switch
                 checked={newIsDone}
                 onCheckedChange={(value) => setNewIsDone(Boolean(value))}

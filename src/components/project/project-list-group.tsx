@@ -83,7 +83,7 @@ export function ProjectListGroup({
               <div className="bg-muted/20 relative border-b p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary text-primary-foreground shadow-primary/20 flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg transition-transform group-hover:rotate-12">
+                    <div className="bg-primary text-primary-foreground shadow-primary/20 flex h-12 w-12 items-center justify-center rounded-none shadow-sm transition-transform group-hover:rotate-12">
                       <Layers className="size-6" />
                     </div>
                     <div>
@@ -92,7 +92,7 @@ export function ProjectListGroup({
                       </h3>
                       <div className="mt-1 flex items-center gap-2">
                         <Hash className="text-muted-foreground/40 size-3" />
-                        <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                        <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                           {project.code}
                         </span>
                       </div>
@@ -104,7 +104,7 @@ export function ProjectListGroup({
                       <Button
                         variant="secondary"
                         size="icon"
-                        className="h-8 w-8 rounded-lg"
+                        className="h-8 w-8 rounded-none"
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(project.id);
@@ -115,7 +115,7 @@ export function ProjectListGroup({
                       <Button
                         variant="secondary"
                         size="icon"
-                        className="h-8 w-8 rounded-lg text-rose-500 hover:bg-rose-500/10 hover:text-rose-600"
+                        className="h-8 w-8 rounded-none text-rose-500 hover:bg-rose-500/10 hover:text-rose-600"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(project);
@@ -132,7 +132,7 @@ export function ProjectListGroup({
               <div className="p-6">
                 <div className="flex items-end justify-between">
                   <div>
-                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-[0.2em] uppercase">
+                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
                       {projectLabels.progress}
                     </span>
                     <div className="mt-1 flex items-baseline gap-1">
@@ -145,7 +145,7 @@ export function ProjectListGroup({
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-[0.2em] uppercase">
+                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
                       Tasks Completed
                     </span>
                     <div className="mt-1 text-sm font-bold">

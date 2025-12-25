@@ -99,14 +99,14 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <IconUsers className="text-primary size-4" />
-          <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+          <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
             Project_Members
           </span>
         </div>
         {canManageMembers && (
           <Button
             onClick={() => setIsAddOpen(true)}
-            className="h-10 rounded-none px-6 text-[10px] font-black tracking-widest uppercase"
+            className="h-10 rounded-none px-6 text-[10px] font-black tracking-tight uppercase"
           >
             {projects.users.add}
           </Button>
@@ -119,18 +119,18 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
       >
         <div className="bg-muted/20 border-border/40 grid h-10 grid-cols-12 border-b">
           <div className="border-border/10 col-span-6 flex items-center justify-end border-s px-6">
-            <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+            <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
               {projects.users.table.user}
             </span>
           </div>
           <div className="border-border/10 col-span-4 flex items-center justify-end border-s px-6">
-            <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+            <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
               {projects.users.table.role}
             </span>
           </div>
           {canManageMembers && (
             <div className="col-span-2 flex items-center justify-center px-4">
-              <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
                 {projects.users.table.actions}
               </span>
             </div>
@@ -157,7 +157,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                   </span>
                   <div className="flex items-center gap-1.5">
                     <IconHash className="size-2.5 opacity-20" />
-                    <span className="font-mono text-[8px] font-black tracking-widest uppercase opacity-40">
+                    <span className="font-mono text-[8px] font-black tracking-tight uppercase opacity-40">
                       {user.id.slice(0, 8)}
                     </span>
                   </div>
@@ -177,10 +177,10 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                     }
                     disabled={isUpdatingRole}
                   >
-                    <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-full rounded-none border text-right text-[9px] font-black tracking-widest uppercase focus:ring-0">
+                    <SelectTrigger className="border-border/40 bg-muted/5 h-10 w-full rounded-none border text-right text-[9px] font-black tracking-tight uppercase focus:ring-0">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="border-foreground bg-card rounded-none border-2">
+                    <SelectContent className="border-border bg-card rounded-none border">
                       {projectRoles.map((role) => (
                         <SelectItem
                           key={role}
@@ -195,7 +195,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                 ) : (
                   <Badge
                     variant="outline"
-                    className="border-border/40 bg-muted/30 text-muted-foreground rounded-none text-[9px] font-black tracking-widest uppercase"
+                    className="border-border/40 bg-muted/30 text-muted-foreground rounded-none text-[9px] font-black tracking-tight uppercase"
                   >
                     {member.role}
                   </Badge>
@@ -243,7 +243,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
         open={Boolean(memberToRemove)}
         onOpenChange={(open) => !open && setMemberToRemove(null)}
       >
-        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <AlertDialogContent className="border-border rounded-none border shadow-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl font-black tracking-tight uppercase">
               {projects.users.remove.title}
@@ -253,13 +253,13 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="border-foreground rounded-none border-2 text-[10px] font-black tracking-widest uppercase">
+            <AlertDialogCancel className="border-border rounded-none border text-[10px] font-black tracking-tight uppercase">
               {common.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmRemove}
               disabled={isRemoving}
-              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none"
+              className="border-border rounded-none border bg-rose-500 text-[10px] font-black tracking-tight text-white uppercase shadow-md hover:bg-rose-600   active:shadow-none"
             >
               {isRemoving && (
                 <IconLoader2 className="me-2 h-4 w-4 animate-spin" />

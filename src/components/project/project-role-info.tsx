@@ -21,12 +21,12 @@ type ProjectRoleInfoProps = {
 export function ProjectRoleInfo({ role }: ProjectRoleInfoProps) {
   return (
     <div className="bg-muted/5 border-border/40 flex items-center justify-between gap-4 border p-3">
-      <div className="text-muted-foreground text-[10px] font-black tracking-widest uppercase">
+      <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
         {roleLabels[role]}
       </div>
       <Badge
         variant="outline"
-        className="border-border/40 bg-muted/30 text-muted-foreground rounded-none text-[9px] font-black tracking-widest uppercase"
+        className="border-border/40 bg-muted/30 text-muted-foreground rounded-none text-[9px] font-black tracking-tight uppercase"
       >
         {roleLabels[role]}
       </Badge>

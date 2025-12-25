@@ -68,11 +68,11 @@ export function AddProjectMemberModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-foreground bg-card overflow-hidden rounded-none border-2 p-0 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <DialogContent className="border-border bg-card overflow-hidden rounded-none border p-0 shadow-sm">
         <div className="bg-muted/20 border-border/40 flex items-center justify-between border-b px-6 py-4">
           <div className="flex items-center gap-3">
             <IconTerminal className="text-primary size-4" />
-            <DialogTitle className="text-sm font-black tracking-widest uppercase">
+            <DialogTitle className="text-sm font-black tracking-tight uppercase">
               {projects.users.addDialog.title}
             </DialogTitle>
           </div>
@@ -87,7 +87,7 @@ export function AddProjectMemberModal({
 
         <div className="space-y-6 p-8 text-right">
           <div className="space-y-2">
-            <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+            <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
               {projects.users.addDialog.selectPlaceholder}
             </span>
             <Select
@@ -95,12 +95,12 @@ export function AddProjectMemberModal({
               value={selectedUserId}
               disabled={isPending || isLoading}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
                 <SelectValue
                   placeholder={projects.users.addDialog.selectPlaceholder}
                 />
               </SelectTrigger>
-              <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectContent className="border-border bg-card rounded-none border">
                 {availableUsers.length > 0 ? (
                   availableUsers.map((user) => (
                     <SelectItem
@@ -129,7 +129,7 @@ export function AddProjectMemberModal({
           </div>
 
           <div className="space-y-2">
-            <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+            <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
               {projects.users.table.role}
             </span>
             <Select
@@ -137,10 +137,10 @@ export function AddProjectMemberModal({
               value={selectedRole}
               disabled={isPending}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
                 <SelectValue placeholder={projects.users.table.role} />
               </SelectTrigger>
-              <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectContent className="border-border bg-card rounded-none border">
                 {projectRoles.map((role) => (
                   <SelectItem
                     key={role}
@@ -155,7 +155,7 @@ export function AddProjectMemberModal({
           </div>
 
           <div className="space-y-3">
-            <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+            <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
               Role Matrix
             </span>
             <div className="space-y-2">
