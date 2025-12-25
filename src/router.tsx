@@ -12,6 +12,7 @@ import {
   navigation,
   navigationLabels,
   notFound,
+  organization,
   projects,
   tagsManagement,
   tasks,
@@ -20,7 +21,12 @@ import {
 } from "@/constants";
 import type { Permission } from "./lib/permissions";
 import { usePermissions } from "./hooks/usePermissions";
-import { useAuthIsLoggedIn, useAuthUser } from "./store/auth-store";
+import {
+  useAuthIsLoggedIn,
+  useAuthUser,
+  useCurrentOrganization,
+  useAuthStore,
+} from "./store/auth-store";
 
 // Standardized error fallback component for lazy-loaded routes
 const PageLoadError = ({ message }: { message: string }) => (
@@ -173,12 +179,69 @@ const NotFound = createLazyPage(
   errors.pageLoad.notFound,
 );
 
+// Organization pages (lazy loaded)
+const SelectOrganization = createLazyPage(
+  () =>
+    import("@/pages/select-organization").then((module) => ({
+      default: module.SelectOrganizationPage,
+    })),
+  errors.pageLoad.notFound,
+);
+const CreateOrganization = createLazyPage(
+  () =>
+    import("@/pages/organizations/create").then((module) => ({
+      default: module.CreateOrganizationPage,
+    })),
+  errors.pageLoad.notFound,
+);
+const OrgSettings = createLazyPage(
+  () =>
+    import("@/pages/settings/organization").then((module) => ({
+      default: module.OrgSettingsPage,
+    })),
+  errors.pageLoad.notFound,
+);
+const OrgMembers = createLazyPage(
+  () =>
+    import("@/pages/settings/members").then((module) => ({
+      default: module.OrgMembersPage,
+    })),
+  errors.pageLoad.notFound,
+);
+
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
+  return <>{children}</>;
+};
+
+// RequireOrganization component - ensures user has an organization selected
+const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
+  const isLoggedIn = useAuthIsLoggedIn();
+  const currentOrg = useCurrentOrganization();
+  const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Don't redirect while loading organizations
+  if (isLoadingOrgs) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  // Redirect to organization selection if no organization is selected
+  if (!currentOrg) {
+    return <Navigate to="/select-organization" replace />;
+  }
+
   return <>{children}</>;
 };
 
@@ -233,6 +296,7 @@ type RouteType = {
   protected: boolean;
   permission?: string;
   title?: string;
+  requiresOrg?: boolean; // If true, requires organization to be selected
 };
 
 const Title = ({
@@ -256,6 +320,43 @@ const routes: RouteType[] = [
     element: <Landing />,
     protected: false,
     title: "Anjam Registry",
+  },
+  // Organization routes (public - no RequireOrganization needed)
+  {
+    path: "/select-organization",
+    element: <SelectOrganization />,
+    protected: true,
+    requiresOrg: false,
+    title: "Select Organization",
+  },
+  {
+    path: "/organizations/new",
+    element: <CreateOrganization />,
+    protected: true,
+    requiresOrg: false,
+    title: organization.create.title,
+  },
+  {
+    path: "/settings/organization",
+    element: (
+      <PermissionProtectedRoute permission="org.update">
+        <OrgSettings />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    requiresOrg: true,
+    title: organization.settings.title,
+  },
+  {
+    path: "/settings/members",
+    element: (
+      <PermissionProtectedRoute permission="org.manage_members">
+        <OrgMembers />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    requiresOrg: true,
+    title: organization.members.title,
   },
   {
     path: "/",
@@ -508,6 +609,11 @@ export const AppRoutes = () => {
               );
             } else {
               element = <ProtectedRoute>{content}</ProtectedRoute>;
+            }
+
+            // Wrap with RequireOrganization if route requires an org
+            if (route.requiresOrg) {
+              element = <RequireOrganization>{element}</RequireOrganization>;
             }
           } else if (
             route.path === "/login" ||
