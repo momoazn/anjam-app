@@ -25,7 +25,6 @@ const formSchema = z.object({
   last_name: z.string().min(1, { message: auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
   password: z.string().optional(),
-  group: z.string().optional(),
 });
 
 export default function EditUser() {
@@ -49,7 +48,6 @@ export default function EditUser() {
       last_name: "",
       role: UsersRoleOptions.employee,
       password: "",
-      group: "",
     },
   });
 
@@ -62,7 +60,6 @@ export default function EditUser() {
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         role: user.role as UsersRoleOptions,
-        group: user.group || "",
         password: "",
       });
     }
@@ -123,7 +120,6 @@ export default function EditUser() {
                 control={userFieldsControl}
                 isEdit
                 editingUserId={id}
-                showGroup={isAdmin || isManager}
               />
 
               <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">

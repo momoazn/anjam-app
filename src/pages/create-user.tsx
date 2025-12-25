@@ -23,7 +23,6 @@ const formSchema = z.object({
   first_name: z.string().min(1, { message: auth.errors.firstNameRequired }),
   last_name: z.string().min(1, { message: auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
-  group: z.string().optional(),
 });
 
 export default function CreateUser() {
@@ -41,7 +40,6 @@ export default function CreateUser() {
       first_name: "",
       last_name: "",
       role: UsersRoleOptions.employee,
-      group: isManager && user?.group ? user.group : "",
     },
   });
 
@@ -85,10 +83,7 @@ export default function CreateUser() {
       <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-            <UserFields
-              control={userFieldsControl}
-              showGroup={isAdmin || isManager}
-            />
+            <UserFields control={userFieldsControl} />
 
             <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
               <Button

@@ -80,17 +80,6 @@ export const queryKeys = {
     byUser: (userId: string) => ["notifications", "user", userId] as const,
   },
 
-  groups: {
-    all: ["groups"] as const,
-    lists: () => ["groups", "list"] as const,
-    details: () => ["groups", "detail"] as const,
-    detail: (id: string) => ["groups", "detail", id] as const,
-    users: (groupId: string) => ["groups", "detail", groupId, "users"] as const,
-    projects: (groupId: string) =>
-      ["groups", "detail", groupId, "projects"] as const,
-    stats: (groupId: string) => ["groups", "detail", groupId, "stats"] as const,
-  },
-
   auditLogs: {
     all: ["audit_logs"] as const,
     lists: () => ["audit_logs", "list"] as const,

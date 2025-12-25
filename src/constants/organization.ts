@@ -1,4 +1,4 @@
-// Organization domain constants (users, groups, projects)
+// Organization domain constants (users, projects)
 
 import { shared } from "./core";
 
@@ -14,7 +14,6 @@ export const users = {
       username: "نام کاربری",
       email: "ایمیل",
       role: "نقش",
-      group: "گروه",
       status: "وضعیت",
       accountStatus: "وضعیت حساب",
       failedAttempts: "تلاش ناموفق",
@@ -38,8 +37,6 @@ export const users = {
     lastName: "نام خانوادگی",
     selectRole: "انتخاب نقش",
     password: "رمز عبور",
-    group: shared.group,
-    selectGroup: "انتخاب گروه",
   },
   actions: {
     activate: "فعال‌سازی",
@@ -118,59 +115,6 @@ export const users = {
   },
 } as const;
 
-// Groups module constants
-export const groups = {
-  title: "گروه‌ها",
-  code: "کد گروه",
-  create: {
-    title: "ایجاد گروه جدید",
-    button: "ایجاد گروه",
-    description: "گروه جدیدی را برای مدیریت پروژه‌ها و کاربران ایجاد کنید",
-    success: "گروه با موفقیت ایجاد شد",
-    error: "نتوانستیم گروه را ایجاد کنیم",
-    formDescription: "اطلاعات گروه را وارد کنید",
-  },
-  edit: {
-    title: "ویرایش گروه",
-    button: "ذخیره تغییرات",
-    success: "گروه با موفقیت به‌روزرسانی شد",
-    error: "نتوانستیم گروه را به‌روزرسانی کنیم",
-  },
-  delete: {
-    title: "حذف گروه",
-    description:
-      "آیا از حذف گروه {name} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
-  },
-  list: {
-    count: "{count} گروه",
-    empty: "هیچ گروهی یافت نشد",
-  },
-  form: {
-    name: "نام گروه",
-    namePlaceholder: "نام گروه را وارد کنید",
-    description: shared.description,
-    descriptionPlaceholder: "توضیحات گروه (اختیاری)",
-    manager: "مدیر گروه",
-    selectManager: "انتخاب مدیر",
-    managerModeLabel: "روش تعیین مدیر گروه",
-    selectExisting: "انتخاب مدیر موجود",
-    createNew: "ساخت مدیر جدید",
-  },
-  status: {
-    active: shared.active,
-    inactive: shared.inactive,
-  },
-  actions: {
-    activate: "فعال‌سازی",
-    deactivate: "غیرفعال‌سازی",
-  },
-  stats: {
-    users: shared.user,
-    projects: shared.project,
-    tasks: shared.task,
-  },
-} as const;
-
 // Projects module constants
 export const projects = {
   title: "پروژه‌ها",
@@ -223,8 +167,6 @@ export const projects = {
       descriptionPlaceholder: "درباره این پروژه بنویسید...",
       assets: "فایل‌های پیوست",
       assetsPlaceholder: "فایل‌های مرتبط را اینجا بکشید یا کلیک کنید",
-      group: shared.group,
-      selectGroup: "انتخاب گروه",
       supervisor: "سرپرست",
       selectSupervisor: "سرپرست را انتخاب کنید",
     },

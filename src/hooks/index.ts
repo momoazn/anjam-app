@@ -58,19 +58,6 @@ export {
   useClearRead,
 } from "./notifications";
 
-// Group hooks
-export {
-  useGroups,
-  useGroup,
-  useGroupUsers,
-  useGroupProjects,
-  useCreateGroup,
-  useCreateGroupWithManager,
-  useUpdateGroup,
-  useDeleteGroup,
-  useToggleGroupActive,
-} from "./groups";
-
 export { useProjectStatuses } from "./project-statuses";
 
 // Page-specific optimized hooks

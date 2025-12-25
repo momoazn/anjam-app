@@ -36,7 +36,6 @@ const projectFormSchema = z.object({
   description: z.string().optional(),
   assets: z.array(z.instanceof(File)).optional(),
   supervisor: z.string().optional(),
-  group: z.string().optional(),
 });
 
 export default function CreateProject() {
@@ -44,7 +43,6 @@ export default function CreateProject() {
   const user = useAuthUser();
   const queryClient = useQueryClient();
   const isAdmin = user?.role === "admin";
-  const isManager = user?.role === "manager";
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
@@ -54,7 +52,6 @@ export default function CreateProject() {
       description: "",
       assets: [],
       supervisor: undefined,
-      group: isManager && user?.group ? user.group : undefined,
     },
   });
 
@@ -64,10 +61,6 @@ export default function CreateProject() {
       formData.append("name", data.name);
       formData.append("code", data.code.toUpperCase());
       formData.append("supervisor", data.supervisor || user?.id || "");
-
-      if (data.group) {
-        formData.append("group", data.group);
-      }
 
       if (data.description) {
         const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
@@ -115,9 +108,7 @@ export default function CreateProject() {
             <ProjectFields
               control={form.control}
               showSupervisor={true}
-              showGroup={true}
               isAdmin={isAdmin}
-              isManager={isManager}
             />
 
             <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">

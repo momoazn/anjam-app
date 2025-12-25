@@ -11,7 +11,6 @@ import { mutationInvalidators } from "../lib/query-invalidators";
 import {
   UsersResponse,
   UsersRecord,
-  GroupsResponse,
   ProjectMembersResponse,
   ProjectMembersRoleOptions,
 } from "../lib/pocketbase-types";
@@ -86,7 +85,6 @@ export function useUsers(options: UsersListOptions = {}) {
     batch,
     sort,
     filter: filter ?? undefined,
-    expand: "group",
   };
 
   return useQuery({
@@ -96,9 +94,7 @@ export function useUsers(options: UsersListOptions = {}) {
       filter: filter ?? null,
     }),
     queryFn: () =>
-      pb
-        .collection("users")
-        .getFullList<UsersResponse<{ group: GroupsResponse }>>(queryParams),
+      pb.collection("users").getFullList<UsersResponse>(queryParams),
     enabled,
   });
 }

@@ -12,7 +12,7 @@ export {
 } from "./core";
 export { auth } from "./auth";
 export { navigation } from "./navigation";
-export { users, groups, projects, organization } from "./organization";
+export { users, projects, organization } from "./organization";
 export { tasks, comments, tagsManagement, savedFilters } from "./tasks";
 export { reports, dashboard } from "./reports";
 export {

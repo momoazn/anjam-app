@@ -9,7 +9,6 @@ import {
   IconTerminal,
   IconX,
   IconHash,
-  IconBuildingCommunity,
 } from "@tabler/icons-react";
 
 import { useMemo, useState } from "react";
@@ -36,16 +35,16 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { common, notifications, users as usersText } from "@/constants";
-import { UsersResponse, GroupsResponse } from "@/lib/pocketbase-types";
+import { UsersResponse } from "@/lib/pocketbase-types";
 import { useDeleteUser, useToggleUserActive, useUnblockUser } from "@/hooks";
 import { UserAvatar } from "../user-avatar";
 import { UserLoginLogsDialog } from "./user-login-logs-dialog";
 import { cn } from "@/lib/utils";
 
 type UserListTableProps = {
-  users: UsersResponse<{ group: GroupsResponse }>[];
-  onEdit: (user: UsersResponse<{ group: GroupsResponse }>) => void;
-  onDelete: (user: UsersResponse<{ group: GroupsResponse }>) => void;
+  users: UsersResponse[];
+  onEdit: (user: UsersResponse) => void;
+  onDelete: (user: UsersResponse) => void;
   isAdmin: boolean;
   onUpdate?: () => void;
 };
@@ -57,9 +56,8 @@ export function UserListTable({
   isAdmin,
   onUpdate,
 }: UserListTableProps) {
-  const [selectedUserForLogs, setSelectedUserForLogs] = useState<UsersResponse<{
-    group: GroupsResponse;
-  }> | null>(null);
+  const [selectedUserForLogs, setSelectedUserForLogs] =
+    useState<UsersResponse | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
@@ -243,26 +241,31 @@ export function UserListTable({
           <div
             className={cn(
               "border-border/10 flex items-center justify-end border-s px-4",
-              isAdmin ? "col-span-3" : "col-span-4",
+              isAdmin ? "col-span-4" : "col-span-5",
             )}
           >
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {usersText.table.columns.user}
             </span>
           </div>
-          <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
+          <div
+            className={cn(
+              "border-border/10 flex items-center justify-end border-s px-4",
+              isAdmin ? "col-span-3" : "col-span-4",
+            )}
+          >
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {usersText.table.columns.username}
             </span>
           </div>
-          <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
+          <div
+            className={cn(
+              "border-border/10 flex items-center justify-end border-s px-4",
+              isAdmin ? "col-span-2" : "col-span-3",
+            )}
+          >
             <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
               {usersText.table.columns.role}
-            </span>
-          </div>
-          <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
-            <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
-              {usersText.table.columns.group}
             </span>
           </div>
           {isAdmin && (
@@ -295,7 +298,7 @@ export function UserListTable({
             <div
               className={cn(
                 "border-border/10 flex items-center justify-end gap-3 border-s px-4 py-3",
-                isAdmin ? "col-span-3" : "col-span-4",
+                isAdmin ? "col-span-4" : "col-span-5",
               )}
             >
               <div className="flex flex-col items-end">
@@ -323,30 +326,27 @@ export function UserListTable({
               </div>
             </div>
 
-            <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4 py-3 font-mono text-[10px] font-black tracking-widest uppercase opacity-60">
+            <div
+              className={cn(
+                "border-border/10 flex items-center justify-end border-s px-4 py-3 font-mono text-[10px] font-black tracking-widest uppercase opacity-60",
+                isAdmin ? "col-span-3" : "col-span-4",
+              )}
+            >
               {u.username}
             </div>
 
-            <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4 py-3">
+            <div
+              className={cn(
+                "border-border/10 flex items-center justify-end border-s px-4 py-3",
+                isAdmin ? "col-span-2" : "col-span-3",
+              )}
+            >
               <Badge
                 variant="outline"
                 className="border-primary/20 bg-primary/5 text-primary rounded-none text-[9px] font-black tracking-widest uppercase"
               >
                 {usersText.table.roles[u.role]}
               </Badge>
-            </div>
-
-            <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4 py-3">
-              {u.expand?.group?.name ? (
-                <div className="text-muted-foreground/60 flex items-center gap-2">
-                  <span className="text-[10px] font-bold tracking-tight uppercase">
-                    {u.expand.group.name}
-                  </span>
-                  <IconBuildingCommunity className="size-3 opacity-40" />
-                </div>
-              ) : (
-                <span className="text-muted-foreground/20 font-black">—</span>
-              )}
             </div>
 
             {isAdmin && (

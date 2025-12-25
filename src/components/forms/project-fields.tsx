@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { projects } from "@/constants";
-import { useUsers, useGroups } from "@/hooks";
+import { useUsers } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
@@ -24,14 +24,11 @@ type ProjectFieldsProps = {
     description?: string;
     assets?: FileWithPreview[];
     supervisor?: string;
-    group?: string;
   }>;
   showDescription?: boolean;
   showAssets?: boolean;
   showSupervisor?: boolean;
-  showGroup?: boolean;
   isAdmin?: boolean;
-  isManager?: boolean;
 };
 
 export function ProjectFields({
@@ -39,16 +36,10 @@ export function ProjectFields({
   showDescription = true,
   showAssets = true,
   showSupervisor = false,
-  showGroup = false,
   isAdmin = false,
-  isManager = false,
 }: ProjectFieldsProps) {
   const { data: allUsers } = useUsers({
     enabled: showSupervisor && isAdmin,
-  });
-
-  const { data: groups } = useGroups({
-    enabled: showGroup,
   });
 
   const supervisors = useMemo(() => {
@@ -64,11 +55,6 @@ export function ProjectFields({
         label: formatUserName(u.first_name, u.last_name, u.username),
       }));
   }, [allUsers]);
-
-  const groupOptions = useMemo(() => {
-    if (!groups) return [];
-    return groups.map((g) => ({ value: g.id, label: g.name }));
-  }, [groups]);
 
   return (
     <div className="space-y-8 text-right">
@@ -100,18 +86,6 @@ export function ProjectFields({
             type="select"
             options={supervisors}
             placeholder={projects.create.form.selectSupervisor}
-          />
-        )}
-
-        {showGroup && (
-          <GenericFormField
-            control={control}
-            name="group"
-            label={projects.create.form.group}
-            type="select"
-            options={groupOptions}
-            disabled={isManager}
-            placeholder={projects.create.form.selectGroup}
           />
         )}
       </div>

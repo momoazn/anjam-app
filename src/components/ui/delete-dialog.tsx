@@ -9,12 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { common } from "@/constants";
-import {
-  useDeleteTask,
-  useDeleteProject,
-  useDeleteUser,
-  useDeleteGroup,
-} from "@/hooks";
+import { useDeleteTask, useDeleteProject, useDeleteUser } from "@/hooks";
 import { Loader2 } from "lucide-react";
 
 type DeleteDialogProps = {
@@ -23,7 +18,7 @@ type DeleteDialogProps = {
   entityId: string | null;
   title: string;
   description: string;
-  collection: "tasks" | "projects" | "users" | "groups";
+  collection: "tasks" | "projects" | "users";
 };
 
 export function DeleteDialog({
@@ -52,12 +47,6 @@ export function DeleteDialog({
     },
   });
 
-  const deleteGroupMutation = useDeleteGroup({
-    onSuccess: () => {
-      onOpenChange(false);
-    },
-  });
-
   const getMutationForCollection = () => {
     switch (collection) {
       case "tasks":
@@ -66,8 +55,6 @@ export function DeleteDialog({
         return deleteProjectMutation;
       case "users":
         return deleteUserMutation;
-      case "groups":
-        return deleteGroupMutation;
       default:
         throw new Error(`Unsupported collection: ${collection}`);
     }

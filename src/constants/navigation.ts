@@ -3,7 +3,6 @@
 export const navigation = {
   allTasks: "همه تسک‌ها",
   dashboard: "داشبورد",
-  groups: "گروه‌ها",
   projects: "پروژه‌ها",
   tasks: "تسک‌ها",
   users: "کاربران",

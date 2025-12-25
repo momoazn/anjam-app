@@ -44,11 +44,6 @@ export const collectionInvalidators = {
     queryKeys.users.lists,
     [queryKeys.users.allProjectUsers],
   ),
-  groups: createCollectionInvalidator(
-    "groups",
-    queryKeys.groups.all,
-    queryKeys.groups.lists,
-  ),
   comments: createCollectionInvalidator(
     "comments",
     queryKeys.comments.all,
@@ -252,29 +247,6 @@ export const mutationInvalidators = {
       create: (client: QueryClient) => collectionInvalidators.tags(client),
       update: (client: QueryClient) => collectionInvalidators.tags(client),
       delete: (client: QueryClient) => collectionInvalidators.tags(client),
-    },
-    groups: {
-      ...createCrudInvalidatorsWithExtras(
-        collectionInvalidators.groups,
-        (client, id) => {
-          collectionInvalidators.groups(client);
-          client.invalidateQueries({
-            queryKey: queryKeys.groups.detail(id),
-          });
-        },
-        (client) => {
-          collectionInvalidators.groups(client);
-          collectionInvalidators.projects(client);
-        },
-        (client, id) => {
-          collectionInvalidators.projects(client);
-          if (id) {
-            client.invalidateQueries({
-              queryKey: queryKeys.groups.detail(id),
-            });
-          }
-        },
-      ),
     },
   },
 };
