@@ -67,28 +67,19 @@ export function CreateOrganizationPage() {
     }
 
     try {
-      // Create the organization
-      const org = await pb.collection("organizations").create({
-        name: data.name,
-        slug: data.slug,
-        description: data.description || "",
-        owner: currentUser.id,
-      });
-
-      // Create the membership (owner)
-      await pb.collection("organization_members").create({
-        organization: org.id,
-        user: currentUser.id,
-        role: "owner",
-        status: "active",
-        joined_at: new Date().toISOString(),
-      });
+      const response = (await pb.send("/api/v1/organizations", {
+        method: "POST",
+        body: {
+          name: data.name,
+          description: data.description || "",
+        },
+      })) as { organization: { id: string } };
 
       // Refresh user's organizations
       await fetchUserOrganizations();
 
       // Switch to the new organization
-      await switchOrganization(org.id);
+      await switchOrganization(response.organization.id);
 
       toast.success(organization.create.success);
       navigate("/");
