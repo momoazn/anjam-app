@@ -90,6 +90,7 @@ func main() {
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
 	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
+	app.OnRecordEnrich("audit_logs").BindFunc(handleAuditLogEnrich)
 
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
