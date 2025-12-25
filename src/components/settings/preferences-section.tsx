@@ -222,7 +222,11 @@ export function PreferencesSection() {
             </span>
             <Select
               value={displayPreferences.theme}
-              onValueChange={(value) => handleDisplayUpdate({ theme: value })}
+              onValueChange={(value) =>
+                handleDisplayUpdate({
+                  theme: value as DisplayPayload["theme"],
+                })
+              }
               disabled={isBusy || !data}
             >
               <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
@@ -249,7 +253,9 @@ export function PreferencesSection() {
             <Select
               value={displayPreferences.timezone}
               onValueChange={(value) =>
-                handleDisplayUpdate({ timezone: value })
+                handleDisplayUpdate({
+                  timezone: value as DisplayPayload["timezone"],
+                })
               }
               disabled={isBusy || !data}
             >
@@ -277,7 +283,9 @@ export function PreferencesSection() {
             <Select
               value={displayPreferences.dateFormat}
               onValueChange={(value) =>
-                handleDisplayUpdate({ dateFormat: value })
+                handleDisplayUpdate({
+                  dateFormat: value as DisplayPayload["dateFormat"],
+                })
               }
               disabled={isBusy || !data}
             >
