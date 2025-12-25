@@ -43,7 +43,11 @@ export function useTimeEntries(
 ) {
   const enabled = taskId !== "" && (options?.enabled ?? true);
 
-  return useQuery({
+  return useQuery<
+    TimeEntriesResponse<{
+      user?: UsersResponse;
+    }>[]
+  >({
     queryKey: queryKeys.timeEntries.listByTask(taskId),
     queryFn: () =>
       pb.collection("time_entries").getFullList<

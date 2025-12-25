@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -42,6 +42,7 @@ interface TimeEntryDialogProps {
   estimatedMinutes?: number;
   onSave: (payload: { minutes: number; note?: string }) => Promise<void>;
   taskTitle: string;
+  defaultNote?: string;
 }
 
 export function TimeEntryDialog({
@@ -51,6 +52,7 @@ export function TimeEntryDialog({
   estimatedMinutes,
   onSave,
   taskTitle,
+  defaultNote,
 }: TimeEntryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { hours: currentHours, minutes: currentMins } =
@@ -61,9 +63,19 @@ export function TimeEntryDialog({
     defaultValues: {
       hours: currentHours,
       minutes: currentMins,
-      note: "",
+      note: defaultNote ?? "",
     },
   });
+
+  useEffect(() => {
+    if (!open) return;
+    const { hours, minutes } = minutesToHoursAndMinutes(currentMinutes);
+    form.reset({
+      hours,
+      minutes,
+      note: defaultNote ?? "",
+    });
+  }, [open, currentMinutes, defaultNote, form]);
 
   const handleSubmit = async (data: TimeEntryForm) => {
     setIsSubmitting(true);

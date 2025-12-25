@@ -19,6 +19,7 @@ import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
 import { TimeComparison } from "@/components/task/time-comparison";
 import { TaskSubtasksSection } from "@/components/task/task-subtasks-section";
+import { TimeEntries } from "@/components/task/time-entries";
 import { TimeEntryDialog } from "@/components/task/time-entry-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,7 +40,6 @@ import { handlePocketBaseError } from "@/lib/error-handler";
 import { useAuthUser } from "@/store/auth-store";
 import {
   useCreateTimeEntry,
-  useTimeEntries,
   useUserPreferences,
   DEFAULT_USER_PREFERENCES,
 } from "@/hooks";
@@ -88,9 +88,6 @@ export function TaskDetailsContent({
   };
 
   const showActivityFeed = userPreferencesData.ui.showActivityFeed;
-
-  const { data: timeEntriesData = [], isLoading: isLoadingTimeEntries } =
-    useTimeEntries(task.id);
 
   const timeEntryMutation = useCreateTimeEntry();
   const [replyTarget, setReplyTarget] = useState<CommentWithUser | null>(null);
@@ -216,43 +213,11 @@ export function TaskDetailsContent({
               </Button>
             </div>
 
-            {isLoadingTimeEntries ? (
-              <p className="text-muted-foreground text-right text-sm">
-                در حال بارگذاری ورودی‌های زمانی...
-              </p>
-            ) : timeEntriesData.length > 0 ? (
-              timeEntriesData.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="border-border/10 bg-card rounded-none border px-4 py-3 text-right shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-black">
-                        {formatTimeSpent(entry.minutes)}
-                      </p>
-                      <p className="text-muted-foreground text-[12px]">
-                        {entry.expand?.user
-                          ? formatUserName(
-                              entry.expand.user.first_name,
-                              entry.expand.user.last_name,
-                              entry.expand.user.username,
-                            )
-                          : tasks.details.unknownUser}
-                        {entry.note ? ` · ${entry.note}` : ""}
-                      </p>
-                    </div>
-                    <span className="text-muted-foreground text-[10px] uppercase">
-                      {formatTaskDate(entry.started_at || entry.created)}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-muted-foreground text-right text-sm">
-                {tasks.details.timeEntries.empty}
-              </p>
-            )}
+            <TimeEntries
+              taskId={task.id}
+              taskTitle={task.title}
+              estimatedMinutes={task.estimated_minutes}
+            />
           </div>
         </div>
       </section>
