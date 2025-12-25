@@ -33,7 +33,7 @@ export class PageErrorBoundary extends React.Component<Props, State> {
             <button
               type="button"
               onClick={this.handleRetry}
-              className="bg-primary text-primary-foreground mt-4 inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium"
+              className="bg-primary text-primary-foreground mt-4 inline-flex h-10 items-center justify-center rounded-none px-4 text-sm font-medium"
             >
               Retry
             </button>

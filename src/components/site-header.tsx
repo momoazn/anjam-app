@@ -79,18 +79,18 @@ export function SiteHeader() {
             </BreadcrumbItem>
             {crumbs.map((c, idx) => (
               <Fragment key={`${c.label}-${idx}`}>
-                <BreadcrumbItem className="flex-shrink-0">
+                <BreadcrumbItem className="shrink-0">
                   {c.to ? (
                     <BreadcrumbLink asChild>
                       <Link
                         to={c.to}
-                        className="text-muted-foreground/40 hover:text-primary text-[10px] font-black tracking-[0.2em] uppercase transition-colors"
+                        className="text-muted-foreground/40 hover:text-primary text-[10px] font-black tracking-tight uppercase transition-colors"
                       >
                         {c.label}
                       </Link>
                     </BreadcrumbLink>
                   ) : (
-                    <BreadcrumbPage className="text-foreground decoration-primary/30 text-[10px] font-black tracking-[0.2em] uppercase underline underline-offset-4">
+                    <BreadcrumbPage className="text-foreground decoration-primary/30 text-[10px] font-black tracking-tight uppercase underline underline-offset-4">
                       {c.label}
                     </BreadcrumbPage>
                   )}
@@ -110,12 +110,12 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Right Segment: Telemetry & Actions */}
+      {/* Right Segment:  & Actions */}
       <div className="bg-muted/5 flex h-full items-center gap-4 border-e px-4 lg:px-8">
-        {/* Telemetry Console */}
+        {/*  Console */}
         <div className="border-border/40 me-4 hidden h-full items-center gap-8 border-e pe-8 lg:flex">
           <div className="flex flex-col items-end justify-center">
-            <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-tight uppercase">
               Status
             </span>
             <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-500/80 uppercase">
@@ -125,7 +125,7 @@ export function SiteHeader() {
           </div>
 
           <div className="flex flex-col items-end justify-center">
-            <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-tight uppercase">
               Time_UTC
             </span>
             <div className="text-foreground/60 flex items-center gap-2 text-[10px] font-black tabular-nums">
@@ -135,7 +135,7 @@ export function SiteHeader() {
           </div>
 
           <div className="flex flex-col items-end justify-center">
-            <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-tight uppercase">
               Region
             </span>
             <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-black uppercase">
@@ -167,7 +167,7 @@ export function SiteHeader() {
               </TooltipTrigger>
               <TooltipContent
                 sideOffset={10}
-                className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase"
+                className="border-border bg-card text-foreground rounded-none border text-[9px] font-black tracking-tight uppercase"
               >
                 {resolvedTheme === "dark"
                   ? themeLabels.dark

@@ -52,7 +52,7 @@ function UserInfo({ user }: UserInfoProps) {
           </span>
         </div>
         <div className="flex items-center justify-end gap-1.5">
-          <span className="text-muted-foreground/40 truncate font-mono text-[8px] leading-none tracking-widest uppercase">
+          <span className="text-muted-foreground/40 truncate font-mono text-[8px] leading-none tracking-tight uppercase">
             {
               usersText.table.roles[
                 user.role as keyof typeof usersText.table.roles
@@ -101,7 +101,7 @@ export function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="border-foreground bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[-8px_8px_0px_0px_rgba(255,255,255,0.05)]"
+            className="border-border bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border shadow-sm "
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={12}
@@ -114,7 +114,7 @@ export function NavUser() {
             <DropdownMenuSeparator className="bg-border/40 h-px" />
             <DropdownMenuGroup className="p-1">
               <DropdownMenuItem
-                className="hover:bg-primary/10 hover:text-primary flex cursor-pointer items-center gap-3 rounded-none p-3 text-right text-[9px] font-black tracking-widest uppercase transition-colors"
+                className="hover:bg-primary/10 hover:text-primary flex cursor-pointer items-center gap-3 rounded-none p-3 text-right text-[9px] font-black tracking-tight uppercase transition-colors"
                 onClick={handleEditProfile}
               >
                 <IconUserCircle className="size-4 opacity-40" />
@@ -124,7 +124,7 @@ export function NavUser() {
             <DropdownMenuSeparator className="bg-border/40 h-px" />
             <div className="p-1">
               <DropdownMenuItem
-                className="flex cursor-pointer items-center gap-3 rounded-none p-3 text-right text-[9px] font-black tracking-widest text-rose-500/80 uppercase transition-colors hover:bg-rose-500/10"
+                className="flex cursor-pointer items-center gap-3 rounded-none p-3 text-right text-[9px] font-black tracking-tight text-rose-500/80 uppercase transition-colors hover:bg-rose-500/10"
                 onClick={handleLogout}
               >
                 <IconLogout className="size-4 opacity-40" />

@@ -31,7 +31,7 @@ export function ProjectsSubmenu() {
   return (
     <SidebarGroup className="py-2">
       {state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-[0.3em] uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
           {navigation.projectsSection}
         </SidebarGroupLabel>
       )}
@@ -75,7 +75,7 @@ export function ProjectsSubmenu() {
             </NavLink>
           </SidebarMenuItem>
 
-          {/* Individual Projects - Registry Style */}
+          {/* Individual Projects -  Style */}
           {state === "expanded" &&
             recentProjects.map((project) => {
               const isActive =

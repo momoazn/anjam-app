@@ -31,7 +31,7 @@ export function NavMain({ items, title }: NavMainProps) {
   return (
     <SidebarGroup className="py-2">
       {title && state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-[0.3em] uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
           {title}
         </SidebarGroupLabel>
       )}

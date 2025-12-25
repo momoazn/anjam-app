@@ -1,13 +1,11 @@
 import { ReactNode } from "react";
-import { Icon as TablerIcon, IconStack2 } from "@tabler/icons-react";
+import { Icon as TablerIcon } from "@tabler/icons-react";
 import { LucideIcon } from "lucide-react";
-import { app } from "@/constants";
 
 type PageHeaderProps = {
   title: string;
   description: string;
   icon: TablerIcon | LucideIcon;
-  nodeId: string;
   actions?: ReactNode;
 };
 
@@ -15,12 +13,11 @@ export function PageHeader({
   title,
   description,
   icon: Icon,
-  nodeId,
   actions,
 }: PageHeaderProps) {
   return (
-    <div className="border-border/40 bg-card relative mb-8 overflow-hidden rounded-none border p-8 shadow-xl">
-      {/* Blueprint Grid Backdrop */}
+    <div className="border-border/40 bg-card relative mb-8 overflow-hidden rounded-none border p-8 shadow-md">
+      {/* Refined Grid Backdrop */}
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
         style={{
@@ -35,12 +32,6 @@ export function PageHeader({
             <Icon className="size-7" />
           </div>
           <div>
-            <div className="text-primary flex items-center justify-end gap-2">
-              <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
-                {app.name} / {nodeId}
-              </span>
-              <IconStack2 className="size-3" />
-            </div>
             <h1 className="mt-1 text-right text-3xl font-black tracking-tight uppercase md:text-4xl">
               {title}
             </h1>

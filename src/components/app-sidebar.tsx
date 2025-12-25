@@ -35,7 +35,6 @@ import type { Permission } from "@/lib/permissions";
 import { isOrgAdmin } from "@/lib/permissions";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
-import { Terminal, Cpu } from "lucide-react";
 
 type NavItem = {
   title: string;
@@ -118,7 +117,7 @@ function AppSidebarHeader() {
                 }
               }}
             >
-              <div className="bg-primary text-primary-foreground border-primary/30 flex size-8 items-center justify-center rounded-none border shadow-[-2px_2px_0px_0px_rgba(var(--primary),0.2)]">
+              <div className="bg-primary text-primary-foreground border-primary/30 flex size-8 items-center justify-center rounded-none border shadow-sm">
                 <IconInnerShadowTop className="size-4.5" />
               </div>
               {state === "expanded" && (
@@ -126,12 +125,6 @@ function AppSidebarHeader() {
                   <span className="text-xs leading-none font-black tracking-tight uppercase">
                     {app.name}
                   </span>
-                  <div className="mt-1 flex items-center gap-1.5 opacity-40">
-                    <Terminal className="text-foreground size-2" />
-                    <span className="text-[8px] leading-none font-black tracking-[0.2em] uppercase">
-                      System_ID :: ANJ-90
-                    </span>
-                  </div>
                 </div>
               )}
             </NavLink>
@@ -178,7 +171,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* Organization Admin Navigation */}
         {showAdminItems && (
           <SidebarGroup className="py-2">
-            <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-[0.3em] uppercase">
+            <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
               Organization
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -235,17 +228,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
 
         <div className="border-border/20 border-t p-4 group-data-[state=collapsed]:hidden">
-          <div className="mb-4 flex items-center justify-between px-2">
-            <div className="flex flex-col">
-              <span className="text-muted-foreground/40 mb-1 text-[7px] leading-none font-black tracking-[0.3em] uppercase">
-                Kernel_Ver
-              </span>
-              <span className="text-foreground/60 text-[9px] leading-none font-black tabular-nums">
-                node-alpha-central :: 1.04
-              </span>
-            </div>
-            <Cpu className="text-primary/30 size-3" />
-          </div>
           <NavUser />
         </div>
 
