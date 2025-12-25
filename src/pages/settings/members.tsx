@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,11 +29,13 @@ import {
 } from "@/components/ui/select";
 import { organization } from "@/constants";
 import { pb } from "@/lib/pocketbase";
-import { useCurrentOrganization, useAuthUser } from "@/store/auth-store";
-import type {
-  OrganizationMembersResponse,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
+import { useAuthUser } from "@/store/auth-store";
+import {
+  useOrganizationMembers,
+  useInviteOrgMember,
+  useRemoveOrgMember,
+} from "@/hooks";
+import type { UsersResponse } from "@/lib/pocketbase-types";
 
 function getUserInitials(name: string): string {
   return name
@@ -55,114 +56,33 @@ function getUserDisplayName(user: UsersResponse): string {
   return user.username;
 }
 
-interface OrgMemberWithUser extends OrganizationMembersResponse {
-  expand?: {
-    user?: UsersResponse;
-  };
-}
-
 export function OrgMembersPage() {
-  const currentOrg = useCurrentOrganization();
   const currentUser = useAuthUser();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"admin" | "member">("member");
-  const [isLoading, setIsLoading] = useState(false);
-  const [members, setMembers] = useState<OrgMemberWithUser[]>([]);
 
-  // Fetch members on mount
-  const fetchMembers = useCallback(async () => {
-    if (!currentOrg) return;
-    try {
-      const records = await pb
-        .collection("organization_members")
-        .getFullList<OrgMemberWithUser>({
-          filter: `organization = "${currentOrg.id}"`,
-          expand: "user",
-          sort: "role,-created",
-        });
-      setMembers(records);
-    } catch (error) {
-      console.error("Error fetching members:", error);
-    }
-  }, [currentOrg]);
+  const { data: members, isLoading: isLoadingMembers } =
+    useOrganizationMembers();
+  const { mutate: inviteMember, isPending: isInviting } = useInviteOrgMember();
+  const { mutate: removeMember, isPending: isRemoving } = useRemoveOrgMember();
 
-  useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers]);
-
-  const handleInvite = async () => {
-    if (!currentOrg || !currentUser) return;
-
-    setIsLoading(true);
-    try {
-      // Find user by email
-      let user: UsersResponse;
-      try {
-        user = await pb
-          .collection("users")
-          .getFirstListItem<UsersResponse>(`email = "${inviteEmail}"`);
-      } catch {
-        toast.error("کاربری با این ایمیل یافت نشد");
-        setIsLoading(false);
-        return;
-      }
-
-      // Check if already a member
-      try {
-        await pb
-          .collection("organization_members")
-          .getFirstListItem(
-            `organization = "${currentOrg.id}" && user = "${user.id}"`,
-          );
-        toast.error("این کاربر قبلاً عضو سازمان است");
-        setIsLoading(false);
-        return;
-      } catch {
-        // User is not a member yet
-      }
-
-      // Create membership
-      await pb.collection("organization_members").create({
-        organization: currentOrg.id,
-        user: user.id,
-        role: inviteRole,
-        status: "invited",
-        invited_by: currentUser.id,
-        invited_at: new Date().toISOString(),
-      });
-
-      toast.success(organization.members.inviteDialog.sendSuccess);
-      setIsInviteOpen(false);
-      setInviteEmail("");
-      setInviteRole("member");
-      fetchMembers();
-    } catch (error) {
-      console.error("Error inviting member:", error);
-      toast.error(organization.members.inviteDialog.sendError);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRemoveMember = async (memberId: string) => {
-    try {
-      await pb.collection("organization_members").delete(memberId);
-      toast.success(organization.members.remove.success);
-      fetchMembers();
-    } catch (error) {
-      console.error("Error removing member:", error);
-      toast.error(organization.members.remove.error);
-    }
-  };
-
-  if (!currentOrg) {
-    return (
-      <div className="container mx-auto py-12">
-        <p className="text-muted-foreground text-center">سازمان یافت نشد</p>
-      </div>
+  const handleInvite = () => {
+    inviteMember(
+      { email: inviteEmail, role: inviteRole },
+      {
+        onSuccess: () => {
+          setIsInviteOpen(false);
+          setInviteEmail("");
+          setInviteRole("member");
+        },
+      },
     );
-  }
+  };
+
+  const handleRemoveMember = (memberId: string) => {
+    removeMember(memberId);
+  };
 
   return (
     <div className="container mx-auto py-8">
@@ -192,7 +112,13 @@ export function OrgMembersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.length === 0 ? (
+            {isLoadingMembers ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-8 text-center">
+                  در حال بارگذاری...
+                </TableCell>
+              </TableRow>
+            ) : !members || members.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="py-8 text-center">
                   {organization.members.empty}
@@ -255,6 +181,7 @@ export function OrgMembersPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRemoveMember(member.id)}
+                          disabled={isRemoving}
                         >
                           حذف
                         </Button>
@@ -315,8 +242,11 @@ export function OrgMembersPage() {
             <Button variant="outline" onClick={() => setIsInviteOpen(false)}>
               انصراف
             </Button>
-            <Button onClick={handleInvite} disabled={isLoading || !inviteEmail}>
-              {isLoading
+            <Button
+              onClick={handleInvite}
+              disabled={isInviting || !inviteEmail}
+            >
+              {isInviting
                 ? "در حال ارسال..."
                 : organization.members.inviteDialog.send}
             </Button>
