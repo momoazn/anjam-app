@@ -26,4 +26,17 @@ export const navigation = {
   dueToday: "سررسید امروز",
   overdue: "گذشته‌موعد",
   inProgress: "در حال انجام",
+  organizationSection: "سازمان",
+  workspaceSection: "فضای کاری",
+  managementSection: "مدیریت",
+  helpSection: "راهنما و تنظیمات",
+} as const;
+
+export const navigationSectionLabels = {
+  organization: "سازمان",
+  workspace: "فضای کاری",
+  tasks: "تسک‌ها",
+  projects: "پروژه‌ها",
+  management: "مدیریت",
+  help: "راهنما و تنظیمات",
 } as const;

@@ -11,7 +11,7 @@ export {
   themeLabels,
 } from "./core";
 export { auth } from "./auth";
-export { navigation } from "./navigation";
+export { navigation, navigationSectionLabels } from "./navigation";
 export { users, projects, organization } from "./organization";
 export { tasks, comments, tagsManagement, savedFilters } from "./tasks";
 export { reports, dashboard } from "./reports";

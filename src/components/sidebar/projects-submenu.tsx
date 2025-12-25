@@ -3,7 +3,7 @@ import { IconHash, IconLayoutGrid } from "@tabler/icons-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useProjects } from "@/hooks/projects";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import { navigation } from "@/constants";
+import { navigation, navigationSectionLabels } from "@/constants";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -32,7 +32,7 @@ export function ProjectsSubmenu() {
     <SidebarGroup className="py-2">
       {state === "expanded" && (
         <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
-          {navigation.projectsSection}
+          {navigationSectionLabels.projects}
         </SidebarGroupLabel>
       )}
       <SidebarGroupContent>

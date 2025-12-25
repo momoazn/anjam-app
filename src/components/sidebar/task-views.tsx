@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import { navigation } from "@/constants";
+import { navigation, navigationSectionLabels } from "@/constants";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -62,7 +62,7 @@ export function TaskViews() {
     <SidebarGroup className="py-2">
       {state === "expanded" && (
         <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
-          {navigation.taskViews}
+          {navigationSectionLabels.tasks}
         </SidebarGroupLabel>
       )}
       <SidebarGroupContent>

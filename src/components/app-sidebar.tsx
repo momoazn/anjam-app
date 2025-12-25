@@ -9,6 +9,7 @@ import {
   IconUsers,
   IconHelp,
   IconSettings,
+  IconFileDescription,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -44,7 +45,7 @@ type NavItem = {
 };
 
 const sidebarData = {
-  navMain: [
+  navWorkspace: [
     {
       title: navigation.dashboard,
       url: "/",
@@ -56,18 +57,18 @@ const sidebarData = {
       icon: IconBell,
     },
   ] as NavItem[],
-  navAdmin: [
-    {
-      title: navigation.tags,
-      url: "/tags",
-      icon: IconTag,
-      permission: "project.view",
-    },
+  navManagement: [
     {
       title: navigation.reports,
       url: "/reports",
       icon: IconChartBar,
       permission: "org.view",
+    },
+    {
+      title: navigation.tags,
+      url: "/tags",
+      icon: IconTag,
+      permission: "project.view",
     },
     {
       title: navigationLabels.timesheet,
@@ -80,6 +81,12 @@ const sidebarData = {
       url: "/users",
       icon: IconUsers,
       permission: "org.manage_members",
+    },
+    {
+      title: navigation.auditLogs,
+      url: "/audit-logs",
+      icon: IconFileDescription,
+      permission: "org.view",
     },
   ] as NavItem[],
   navSecondary: [
@@ -168,30 +175,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <OrgSwitcher />
         </div>
 
-        {/* Organization Admin Navigation */}
+        {/* Organization Section - Admin Only */}
         {showAdminItems && (
           <SidebarGroup className="py-2">
             <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
-              Organization
+              {navigation.organizationSection}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="gap-0.5">
                 <SidebarMenuItem>
                   <NavLink to="/settings/organization">
-                    <SidebarMenuButton tooltip="Organization Settings">
+                    <SidebarMenuButton tooltip={navigation.settings}>
                       <IconSettings className="size-4.5" />
                       <span className="text-[13px] font-black tracking-tight uppercase">
-                        Settings
+                        {navigation.settings}
                       </span>
                     </SidebarMenuButton>
                   </NavLink>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <NavLink to="/settings/members">
-                    <SidebarMenuButton tooltip="Members">
+                    <SidebarMenuButton tooltip={navigation.users}>
                       <IconUsers className="size-4.5" />
                       <span className="text-[13px] font-black tracking-tight uppercase">
-                        Members
+                        {navigation.users}
                       </span>
                     </SidebarMenuButton>
                   </NavLink>
@@ -201,22 +208,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         )}
 
+        {/* Quick Create */}
         <div className="border-border/20 bg-muted/5 border-b p-4">
           <QuickCreate />
         </div>
 
-        <div className="mt-2">
-          <NavMain items={sidebarData.navMain} />
-        </div>
+        {/* Workspace Section */}
+        <NavMain
+          items={sidebarData.navWorkspace}
+          title={navigation.workspaceSection}
+        />
 
+        {/* Projects Section */}
         <ProjectsSubmenu />
+
+        {/* Task Views Section */}
         <TaskViews />
 
+        {/* Management Section */}
         <NavMain
-          items={sidebarData.navAdmin.filter((item) =>
+          items={sidebarData.navManagement.filter((item) =>
             item.permission ? can(item.permission) : true,
           )}
-          title={navigationLabels.admin}
+          title={navigation.managementSection}
         />
       </SidebarContent>
 
@@ -225,6 +239,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           items={sidebarData.navSecondary.filter((item) =>
             item.permission ? can(item.permission) : true,
           )}
+          title={navigation.helpSection}
         />
 
         <div className="border-border/20 border-t p-4 group-data-[state=collapsed]:hidden">
