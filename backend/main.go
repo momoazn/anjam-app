@@ -190,63 +190,6 @@ func generateRandomCode() string {
 }
 
 // handleGroupCreation validates manager assignment and ensures status defaults.
-func handleGroupCreation(e *core.RecordEvent) error {
-	record := e.Record
-
-	// Validate that only managers or admins can be assigned as group managers
-	managerId := record.GetString("manager")
-	if managerId != "" {
-		manager, err := e.App.FindRecordById(CollectionUsers, managerId)
-		if err != nil {
-			return fmt.Errorf("manager not found: %w", err)
-		}
-
-		managerRole := manager.GetString("role")
-		if managerRole != RoleManager && managerRole != RoleAdmin {
-			return errors.New(ErrOnlyManagersCanBeGroupManagers)
-		}
-	}
-
-	// Set default active status
-	record.Set("active", true)
-
-	return e.Next()
-}
-
-// handleProjectCreationWithGroup validates that the project's supervisor
-// belongs to the same group as the project
-func handleProjectCreationWithGroup(e *core.RecordEvent) error {
-	record := e.Record
-
-	// FIRST: Run the existing project creation logic (generates project code)
-	if err := handleProjectCreation(e); err != nil {
-		return err
-	}
-
-	// Get the group and supervisor IDs from the new project
-	groupId := record.GetString("group")
-	supervisorId := record.GetString("supervisor")
-
-	// Skip validation if either is missing (will be caught by required field validation)
-	if groupId == "" || supervisorId == "" {
-		return e.Next()
-	}
-
-	// Fetch the supervisor user record
-	supervisor, err := e.App.FindRecordById(CollectionUsers, supervisorId)
-	if err != nil {
-		return fmt.Errorf("supervisor not found: %w", err)
-	}
-
-	// Check if supervisor belongs to the same group
-	supervisorGroupId := supervisor.GetString("group")
-	if supervisorGroupId != groupId {
-		return errors.New(ErrSupervisorMustBeInSameGroup)
-	}
-
-	return e.Next()
-}
-
 // NOTE: Tag creation now expects organization to be provided by the client.
 
 func startApp(app *pocketbase.PocketBase) {
@@ -429,10 +372,9 @@ func handleUserCreation(e *core.RecordEvent) error {
 	newUserRole := e.Record.GetString("role")
 
 	// RBAC validations are handled by schema rules:
-	// - Only admin and managers can create users (enforced by createRule)
-	// - Managers cannot create admin/manager roles (enforced by createRule)
-	// - Managers can only create users in groups they manage (enforced by createRule)
-	// - Supervisors cannot create users (enforced by createRule)
+	// - Only admins can list/create/delete users (enforced by list/create/delete rules)
+	// - Users can update their own record (enforced by updateRule)
+	// - Organization membership controls visibility, so even org admins cannot read users from other tenants
 	// This handler focuses on setting defaults and data integrity.
 
 	// Set new users as inactive by default, except admins
@@ -501,7 +443,7 @@ func handleTaskCreation(e *core.RecordEvent) error {
 	setTaskDefaults(e)
 	setTaskStatusRef(e)
 
-	// Validate that all tags belong to the same group as the project
+	// Validate that all tags belong to the same organization as the project
 	if err := validateTaskTags(e); err != nil {
 		log.Printf("Error validating task tags: %v", err)
 		return err
@@ -583,7 +525,7 @@ func validateTaskTags(e *core.RecordEvent) error {
 		return nil // No project, skip validation
 	}
 
-	// Get project to find its group
+	// Get project to find its organization
 	project, err := e.App.FindRecordById(CollectionProjects, projectId)
 	if err != nil {
 		return fmt.Errorf("failed to find project: %w", err)
@@ -591,7 +533,7 @@ func validateTaskTags(e *core.RecordEvent) error {
 
 	projectOrgId := project.GetString("organization")
 	if projectOrgId == "" {
-		return nil // Project has no group, skip validation
+		return nil // Project has no organization, skip validation
 	}
 
 	// Get tags from the task
@@ -600,7 +542,7 @@ func validateTaskTags(e *core.RecordEvent) error {
 		return nil // No tags, nothing to validate
 	}
 
-	// Check each tag belongs to the same group
+	// Check each tag belongs to the same organization
 	for _, tagId := range tagIds {
 		tag, err := e.App.FindRecordById(CollectionTags, tagId)
 		if err != nil {
@@ -609,7 +551,7 @@ func validateTaskTags(e *core.RecordEvent) error {
 
 		tagOrgId := tag.GetString("organization")
 		if tagOrgId != projectOrgId {
-			return errors.New(ErrTagsMustBeInSameGroup)
+			return errors.New(ErrTagsMustBeInSameOrganization)
 		}
 	}
 
