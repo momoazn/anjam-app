@@ -38,9 +38,11 @@ import {
 import { pb } from "@/lib/pocketbase";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/hooks/query-keys";
-import type { SubtasksResponse } from "@/lib/pocketbase-types";
+import type { SubtasksResponse, UsersResponse } from "@/lib/pocketbase-types";
 
-const getSubtaskOrder = (subtask: SubtasksResponse) => subtask.order ?? 0;
+type SubtaskWithAssignee = SubtasksResponse<{ assignee?: UsersResponse }>;
+
+const getSubtaskOrder = (subtask: SubtaskWithAssignee) => subtask.order ?? 0;
 
 type SubtasksProps = {
   taskId: string;
@@ -48,7 +50,7 @@ type SubtasksProps = {
 };
 
 type SortableSubtaskRowProps = {
-  subtask: SubtasksResponse;
+  subtask: SubtaskWithAssignee;
   onToggle: () => void;
   onDelete: () => void;
   assigneeName: string;
@@ -142,7 +144,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     useSubtasks(taskId);
   const { data: users } = useProjectUsers({ projectId });
 
-  const [ordered, setOrdered] = useState<SubtasksResponse[]>([]);
+  const [ordered, setOrdered] = useState<SubtaskWithAssignee[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [newAssignee, setNewAssignee] = useState<string>("");
 
@@ -209,7 +211,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     });
   };
 
-  const persistOrder = async (nextOrder: SubtasksResponse[]) => {
+  const persistOrder = async (nextOrder: SubtaskWithAssignee[]) => {
     await Promise.all(
       nextOrder.map((subtask, index) =>
         pb.collection("subtasks").update(subtask.id, { order: index + 1 }),
