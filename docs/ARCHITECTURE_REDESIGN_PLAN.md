@@ -3247,7 +3247,7 @@ Due to length constraints, I'll summarize the remaining phases. Each follows the
 - [x] Additional rate limiting/error feedback refinements implemented (rate limit toast + handler).
 - [x] Batch operations API wired into bulk task updates/deletes to avoid per-record calls.
 - [x] Organization/member access rules now require owner/admin permissions for membership management.
-- [ ] Final security audit work remains to be completed (access rules review continues).
+- [x] Final security audit completed (reviewed remaining collection rules; legacy group/user rules retained with auth-only access).
 
 ### Recent Issues & Changes
 
@@ -3259,6 +3259,7 @@ Due to length constraints, I'll summarize the remaining phases. Each follows the
 - **Comment creation rules** – Comment create rules now enforce membership + author match (prevents cross-tenant comment injection).
 - **System-owned records** – Notifications and mentions are now server-only on create (client create disabled).
 - **Membership safeguards** – Organizations, organization members, and project members now enforce owner/admin rules for create/update/delete to prevent unauthorized access changes.
+- **Final audit note** – Legacy `groups` and `users` rules remain role-based until old flows are fully removed; no unauthenticated access remains in current rules.
 
 ### Phase 4: Collaboration Engine
 
