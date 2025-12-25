@@ -1,7 +1,8 @@
-import { IconBell, IconBellOff, IconTerminal } from "@tabler/icons-react";
+import { IconBell, IconTerminal } from "@tabler/icons-react";
 import { isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 
 import { NotificationItem } from "@/components/notifications/notification-item";
+import { EmptyStateNoNotifications } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { notifications as notificationsText } from "@/constants";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
@@ -31,23 +32,6 @@ const getGroupTitle = (group: string) => {
       return group;
   }
 };
-
-const EmptyState = () => (
-  <div
-    className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale"
-    data-animate-stagger
-  >
-    <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2 border-dashed">
-      <IconBellOff className="size-10 stroke-[1]" />
-    </div>
-    <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
-      {notificationsText.emptyState.title}
-    </h3>
-    <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-      {notificationsText.emptyState.description}
-    </p>
-  </div>
-);
 
 type NotificationListProps = {
   notifications: NotificationsRecord[];
@@ -112,7 +96,7 @@ export function NotificationList({
   }
 
   if (notifications.length === 0) {
-    return <EmptyState />;
+    return <EmptyStateNoNotifications />;
   }
 
   return (
