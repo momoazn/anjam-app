@@ -49,7 +49,7 @@ export function useSubtasks(taskId: string, options?: { enabled?: boolean }) {
         }>
       >({
         filter: `task = "${taskId}"`,
-        sort: "created",
+        sort: "order",
         expand: "assignee",
       }),
     enabled,
