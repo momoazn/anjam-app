@@ -268,6 +268,7 @@ export type ProjectStatusesRecord = {
   id: string;
   is_default?: boolean;
   is_done?: boolean;
+  key: string;
   name: string;
   order?: number;
   project: RecordIdString;

@@ -86,6 +86,7 @@ func main() {
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
+	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectCreatedStatuses)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
 	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
@@ -489,6 +490,7 @@ func handleTaskCreation(e *core.RecordEvent) error {
 		return err
 	}
 	setTaskDefaults(e)
+	setTaskStatusRef(e)
 
 	// Validate that all tags belong to the same group as the project
 	if err := validateTaskTags(e); err != nil {
@@ -578,8 +580,8 @@ func validateTaskTags(e *core.RecordEvent) error {
 		return fmt.Errorf("failed to find project: %w", err)
 	}
 
-	projectGroupId := project.GetString("group")
-	if projectGroupId == "" {
+	projectOrgId := project.GetString("organization")
+	if projectOrgId == "" {
 		return nil // Project has no group, skip validation
 	}
 
@@ -596,8 +598,8 @@ func validateTaskTags(e *core.RecordEvent) error {
 			return fmt.Errorf("failed to find tag %s: %w", tagId, err)
 		}
 
-		tagGroupId := tag.GetString("group")
-		if tagGroupId != projectGroupId {
+		tagOrgId := tag.GetString("organization")
+		if tagOrgId != projectOrgId {
 			return errors.New(ErrTagsMustBeInSameGroup)
 		}
 	}

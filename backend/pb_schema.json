@@ -2801,6 +2801,20 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
+        "id": "text7552240018",
+        "max": 50,
+        "min": 1,
+        "name": "key",
+        "pattern": "^[a-z0-9_]+$",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
         "id": "text7121952172",
         "max": 100,
         "min": 1,
@@ -2885,7 +2899,8 @@
     ],
     "indexes": [
       "CREATE INDEX idx_project_statuses_project ON project_statuses (project)",
-      "CREATE INDEX idx_project_statuses_order ON project_statuses (project, \"order\")"
+      "CREATE INDEX idx_project_statuses_order ON project_statuses (project, \"order\")",
+      "CREATE UNIQUE INDEX idx_project_statuses_key ON project_statuses (project, key)"
     ],
     "system": false
   },
