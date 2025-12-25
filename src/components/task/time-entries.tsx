@@ -98,7 +98,7 @@ export function TimeEntries({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <IconClock className="text-primary/60 size-4" />
-          <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+          <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
             {tasks.details.timeEntries.title}
           </span>
         </div>
@@ -115,7 +115,7 @@ export function TimeEntries({
         <div className="space-y-6">
           {groupedEntries.map(([dateKey, entries]) => (
             <div key={dateKey} className="space-y-3">
-              <div className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+              <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
                 {dateKey}
               </div>
               <div className="space-y-3">

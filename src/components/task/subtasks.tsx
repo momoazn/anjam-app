@@ -241,8 +241,8 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-4">
-        <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-          03_Work_Breakdown
+        <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+          Work_Breakdown
         </span>
         <div className="bg-border/20 h-px flex-1" />
       </div>
@@ -251,7 +251,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
         <div className="border-border/20 space-y-4 border-b pb-4">
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <label className="text-muted-foreground/40 text-[10px] font-black tracking-[0.3em] uppercase">
+              <label className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
                 {tasks.details.subtasks.title}
               </label>
               <Input
@@ -262,7 +262,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
               />
             </div>
             <div className="w-56">
-              <div className="text-muted-foreground/40 flex items-center justify-end gap-1 text-[10px] font-black tracking-[0.3em] uppercase">
+              <div className="text-muted-foreground/40 flex items-center justify-end gap-1 text-[10px] font-black tracking-tight uppercase">
                 <IconUser className="size-3" />
                 {tasks.details.subtasks.assigneeLabel}
               </div>
@@ -280,7 +280,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
                         : tasks.addTask.unassigned}
                     </span>
                   </SelectTrigger>
-                  <SelectContent className="border-foreground bg-card rounded-none border-2">
+                  <SelectContent className="border-border bg-card rounded-none border">
                     <SelectItem
                       value=""
                       className="text-[10px] font-black uppercase"
@@ -303,7 +303,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
             <Button
               onClick={handleCreate}
               disabled={createSubtask.isPending}
-              className="border-border/40 h-10 rounded-none text-[10px] font-black tracking-widest uppercase"
+              className="border-border/40 h-10 rounded-none text-[10px] font-black tracking-tight uppercase"
             >
               <IconPlus className="size-4" />
               {tasks.details.subtasks.addButton}

@@ -46,7 +46,7 @@ export function BoardCard({ task }: BoardCardProps) {
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-primary/5 border-primary/20 h-32 rounded-none border-2 border-dashed opacity-50"
+        className="bg-primary/5 border-primary/20 h-32 rounded-none border border-dashed opacity-50"
       />
     );
   }
@@ -71,7 +71,7 @@ export function BoardCard({ task }: BoardCardProps) {
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-1.5 opacity-40">
           <IconHash className="size-2.5" />
-          <span className="font-mono text-[9px] leading-none font-black tracking-widest uppercase">
+          <span className="font-mono text-[9px] leading-none font-black tracking-tight uppercase">
             {task.display_id}
           </span>
         </div>
@@ -119,14 +119,14 @@ export function BoardCard({ task }: BoardCardProps) {
         )}
       </div>
 
-      {/* Tags Protocol */}
+      {/* Tags  */}
       {task.tags && task.tags.length > 0 && (
         <div className="mt-1 flex w-full flex-wrap justify-end gap-1">
           {task.tags.map((tag) => (
             <Badge
               key={tag}
               variant="outline"
-              className="border-border/40 bg-muted/30 text-muted-foreground rounded-none px-1.5 py-0 text-[7px] font-black tracking-widest uppercase"
+              className="border-border/40 bg-muted/30 text-muted-foreground rounded-none px-1.5 py-0 text-[7px] font-black tracking-tight uppercase"
             >
               {tag}
             </Badge>

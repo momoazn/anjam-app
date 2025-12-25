@@ -93,7 +93,7 @@ export function SaveFilterDialog({
 
         <div className="space-y-4 py-4">
           {/* Filter summary */}
-          <div className="bg-muted rounded-md p-3">
+          <div className="bg-muted rounded-none p-3">
             <p className="text-muted-foreground mb-1 text-xs">
               {savedFilters.activeFilters}
             </p>

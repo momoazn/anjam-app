@@ -138,7 +138,7 @@ export function CommentComposer({
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       {replyTarget && (
-        <div className="border-border/40 bg-muted/10 flex items-center justify-between rounded-lg border px-4 py-2 text-right text-[11px] font-black tracking-[0.3em] uppercase">
+        <div className="border-border/40 bg-muted/10 flex items-center justify-between rounded-none border px-4 py-2 text-right text-[11px] font-black tracking-tight uppercase">
           <span>
             {comments.item.replyingTo}
             {replyTarget.expand?.user?.first_name ||
@@ -229,7 +229,7 @@ export function CommentComposer({
         <Button
           type="submit"
           size="sm"
-          className="h-10 rounded-none px-4 text-[10px] font-black tracking-widest uppercase"
+          className="h-10 rounded-none px-4 text-[10px] font-black tracking-tight uppercase"
           disabled={isDisabled || !trimmedContent}
         >
           {comments.composer.send}

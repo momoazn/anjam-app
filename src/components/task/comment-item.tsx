@@ -213,14 +213,14 @@ export function CommentItem({
           />
           <div className="flex-1 space-y-1">
             <div className="flex items-center justify-end gap-3">
-              <span className="text-[10px] leading-none font-black tracking-widest uppercase">
+              <span className="text-[10px] leading-none font-black tracking-tight uppercase">
                 {comment.user
                   ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
                     comment.expand.user.username
                   : tasks.details.unknownUser}
               </span>
             </div>
-            <p className="text-xs font-bold tracking-widest uppercase italic">
+            <p className="text-xs font-bold tracking-tight uppercase italic">
               {commentsConst.item.deleted}
             </p>
           </div>
@@ -262,14 +262,14 @@ export function CommentItem({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="border-foreground bg-card rounded-none border-2"
+                    className="border-border bg-card rounded-none border"
                   >
                     <DropdownMenuItem
                       onSelect={(e) => {
                         e.preventDefault();
                         handleEdit();
                       }}
-                      className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
+                      className="rounded-none p-3 text-[9px] font-black tracking-tight uppercase"
                     >
                       <IconPencil className="ms-2 size-3.5 opacity-40" />
                       {commentsConst.item.edit}
@@ -279,7 +279,7 @@ export function CommentItem({
                         e.preventDefault();
                         handleSoftDelete();
                       }}
-                      className="rounded-none p-3 text-[9px] font-black tracking-widest text-rose-500 uppercase focus:text-rose-500"
+                      className="rounded-none p-3 text-[9px] font-black tracking-tight text-rose-500 uppercase focus:text-rose-500"
                       disabled={softDeleteComment.isPending}
                     >
                       <IconTrash className="ms-2 size-3.5 opacity-40" />
@@ -294,7 +294,7 @@ export function CommentItem({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="border-border/40 rounded-none text-[10px] font-black tracking-widest uppercase"
+                  className="border-border/40 rounded-none text-[10px] font-black tracking-tight uppercase"
                   onClick={() => onReply(comment)}
                 >
                   <IconCornerUpLeft className="ms-2 size-3" />
@@ -305,7 +305,7 @@ export function CommentItem({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="border-border/40 rounded-none text-[10px] font-black tracking-widest uppercase"
+                  className="border-border/40 rounded-none text-[10px] font-black tracking-tight uppercase"
                   onClick={onToggleThread}
                 >
                   {isCollapsed ? "نمایش" : "پنهان‌سازی"} (
@@ -361,7 +361,7 @@ export function CommentItem({
                   size="sm"
                   onClick={handleCancelEdit}
                   disabled={updateComment.isPending}
-                  className="text-muted-foreground/60 h-9 rounded-none text-[9px] font-black tracking-widest uppercase"
+                  className="text-muted-foreground/60 h-9 rounded-none text-[9px] font-black tracking-tight uppercase"
                 >
                   <IconX className="ms-2 size-3.5" />
                   {commentsConst.item.cancel}
@@ -370,7 +370,7 @@ export function CommentItem({
                   size="sm"
                   onClick={handleSaveEdit}
                   disabled={!editContent.trim() || updateComment.isPending}
-                  className="h-9 rounded-none px-6 text-[9px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                  className="h-9 rounded-none px-6 text-[9px] font-black tracking-tight uppercase shadow-md transition-all active:scale-95 "
                 >
                   {updateComment.isPending ? (
                     <IconLoader2 className="me-2 h-3.5 w-3.5 animate-spin" />
@@ -394,7 +394,7 @@ export function CommentItem({
               {!deleted && wasEdited && (
                 <div className="mt-2 flex items-center justify-end gap-1 opacity-20 transition-opacity group-hover/content:opacity-40">
                   <IconPencil className="size-2.5" />
-                  <span className="text-[8px] font-black tracking-widest uppercase">
+                  <span className="text-[8px] font-black tracking-tight uppercase">
                     {commentsConst.item.edited}
                   </span>
                 </div>
@@ -405,7 +405,7 @@ export function CommentItem({
             <div className="border-border/10 space-y-3 border-t pt-3 text-right">
               {hasAttachments && (
                 <div className="space-y-2">
-                  <div className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+                  <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
                     {commentsConst.item.attachments}
                   </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -442,7 +442,7 @@ export function CommentItem({
                               target="_blank"
                               rel="noreferrer"
                               download
-                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-colors"
+                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-tight uppercase transition-colors"
                             >
                               <IconDownload className="size-3" />
                               Download
@@ -451,7 +451,7 @@ export function CommentItem({
                               href={fileUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-colors"
+                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-tight uppercase transition-colors"
                             >
                               <IconPaperclip className="size-3" />
                               View

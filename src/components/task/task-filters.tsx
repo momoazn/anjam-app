@@ -55,7 +55,7 @@ const ActiveFilterBadge = ({
 }) => (
   <Badge
     variant="secondary"
-    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-none border pe-1 text-[9px] font-black tracking-widest uppercase transition-all"
+    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-none border pe-1 text-[9px] font-black tracking-tight uppercase transition-all"
     onClick={onClear}
   >
     {label}
@@ -169,7 +169,7 @@ export function TaskFilters({
       <div className="bg-border/40 border-border/40 flex items-center gap-px overflow-hidden border">
         <div className="bg-muted/20 border-border/20 flex h-9 shrink-0 items-center gap-2 border-s px-3">
           <Terminal className="text-primary/60 size-3" />
-          <span className="text-muted-foreground/60 text-[8px] font-black tracking-[0.2em] uppercase">
+          <span className="text-muted-foreground/60 text-[8px] font-black tracking-tight uppercase">
             Search
           </span>
         </div>
@@ -189,7 +189,7 @@ export function TaskFilters({
             variant="ghost"
             size="sm"
             onClick={clearAllFilters}
-            className="border-border/20 h-9 gap-2 rounded-none border-e px-4 text-[8px] font-black tracking-widest text-rose-500 uppercase transition-all hover:bg-rose-500/10 hover:text-rose-600"
+            className="border-border/20 h-9 gap-2 rounded-none border-e px-4 text-[8px] font-black tracking-tight text-rose-500 uppercase transition-all hover:bg-rose-500/10 hover:text-rose-600"
           >
             <Eraser className="size-3" />
             Reset
@@ -202,7 +202,7 @@ export function TaskFilters({
         {/* Status Gate */}
         <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[7px] font-black tracking-tight uppercase">
               {tasks.filters.status}
             </span>
             <Filter className="size-2" />
@@ -218,7 +218,7 @@ export function TaskFilters({
             <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
               <SelectValue placeholder={tasks.filters.status} />
             </SelectTrigger>
-            <SelectContent className="border-foreground bg-card rounded-none border-2">
+            <SelectContent className="border-border bg-card rounded-none border">
               <SelectItem
                 value={ALL_FILTER_VALUE}
                 className="text-[10px] font-black uppercase"
@@ -241,7 +241,7 @@ export function TaskFilters({
         {/* Priority Gate */}
         <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[7px] font-black tracking-tight uppercase">
               {tasks.filters.priority}
             </span>
             <Hash className="size-2" />
@@ -257,7 +257,7 @@ export function TaskFilters({
             <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
               <SelectValue placeholder={tasks.filters.priority} />
             </SelectTrigger>
-            <SelectContent className="border-foreground bg-card rounded-none border-2">
+            <SelectContent className="border-border bg-card rounded-none border">
               <SelectItem
                 value={ALL_FILTER_VALUE}
                 className="text-[10px] font-black uppercase"
@@ -280,7 +280,7 @@ export function TaskFilters({
         {/* Assignee Gate */}
         <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[7px] font-black tracking-tight uppercase">
               Operator_ID
             </span>
             <User className="size-2" />
@@ -295,7 +295,7 @@ export function TaskFilters({
             <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
               <SelectValue placeholder={tasks.filters.assignee} />
             </SelectTrigger>
-            <SelectContent className="border-foreground bg-card rounded-none border-2">
+            <SelectContent className="border-border bg-card rounded-none border">
               <SelectItem
                 value={ALL_FILTER_VALUE}
                 className="text-[10px] font-black uppercase"
@@ -322,7 +322,7 @@ export function TaskFilters({
         {/* Date Gate */}
         <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[7px] font-black tracking-tight uppercase">
               Time_Frame
             </span>
             <Calendar className="size-2" />
@@ -334,7 +334,7 @@ export function TaskFilters({
             <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
               <SelectValue placeholder={tasks.filters.date} />
             </SelectTrigger>
-            <SelectContent className="border-foreground bg-card rounded-none border-2">
+            <SelectContent className="border-border bg-card rounded-none border">
               <SelectItem
                 value="all"
                 className="text-[10px] font-black uppercase"
@@ -372,7 +372,7 @@ export function TaskFilters({
         {/* Tag Gate */}
         <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[7px] font-black tracking-tight uppercase">
               Tag_Index
             </span>
             <Tag className="size-2" />
@@ -385,7 +385,7 @@ export function TaskFilters({
             <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
               <SelectValue placeholder={tasks.filters.tag} />
             </SelectTrigger>
-            <SelectContent className="border-foreground bg-card rounded-none border-2">
+            <SelectContent className="border-border bg-card rounded-none border">
               <SelectItem
                 value="all"
                 className="text-[10px] font-black uppercase"
@@ -411,7 +411,7 @@ export function TaskFilters({
         <div className="bg-primary/5 border-primary/20 flex items-center gap-3 overflow-hidden border p-2 shadow-sm">
           <div className="flex shrink-0 items-center gap-2">
             <Terminal className="text-primary/60 size-2.5" />
-            <span className="text-primary/60 text-[8px] font-black tracking-widest uppercase">
+            <span className="text-primary/60 text-[8px] font-black tracking-tight uppercase">
               Gates_Open
             </span>
           </div>

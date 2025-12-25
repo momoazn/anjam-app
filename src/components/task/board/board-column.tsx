@@ -44,7 +44,7 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
 
   return (
     <div className="bg-muted/5 border-border/40 flex h-full w-[300px] min-w-[300px] flex-col rounded-none border transition-all">
-      {/* Column Protocol Header */}
+      {/* Column  Header */}
       <div
         className={cn(
           "border-border/40 bg-muted/10 flex flex-col border-b p-4 text-right",
@@ -63,7 +63,7 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
         </div>
 
         <div className="flex items-center justify-end gap-3">
-          <span className="text-foreground text-xs font-black tracking-widest uppercase">
+          <span className="text-foreground text-xs font-black tracking-tight uppercase">
             {status.name}
           </span>
           {Icon && <Icon className={cn("size-4", iconColor)} />}
@@ -93,9 +93,9 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
         </div>
       </ScrollArea>
 
-      {/* Column Footer Protocol */}
+      {/* Column Footer  */}
       <div className="bg-muted/5 border-border/20 flex items-center justify-between border-t px-4 py-1.5 opacity-30">
-        <span className="text-[7px] font-black tracking-[0.3em] uppercase">
+        <span className="text-[7px] font-black tracking-tight uppercase">
           Sector_Active
         </span>
         <div className="bg-foreground size-1 rounded-full" />

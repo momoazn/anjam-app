@@ -106,7 +106,7 @@ function TaskListItemInner({
       {/* Main Content Zone */}
       <div className="flex min-w-0 grow flex-col justify-center px-4 py-3">
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground/50 text-[10px] font-black tracking-widest uppercase">
+          <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
             {task.display_id}
           </span>
           <div className="bg-border/50 h-px w-4" />
@@ -143,7 +143,7 @@ function TaskListItemInner({
       <div className="flex items-center gap-6 px-6">
         {/* Deadline Indicator */}
         <div className="hidden flex-col items-end text-right sm:flex">
-          <span className="text-muted-foreground/40 text-[9px] font-black tracking-widest uppercase">
+          <span className="text-muted-foreground/40 text-[9px] font-black tracking-tight uppercase">
             Deadline
           </span>
           <span
@@ -182,10 +182,10 @@ function TaskListItemInner({
                   : undefined
               }
               showUnassigned={!assigneeRecord && !task.assignee}
-              className="border-background size-10 rounded-sm border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
+              className="border-background size-10 rounded-none border shadow-sm transition-transform duration-300 group-hover:scale-110"
             />
             {assigneeRecord && (
-              <div className="border-background absolute -end-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 bg-emerald-500">
+              <div className="border-background absolute -end-1 -bottom-1 flex size-4 items-center justify-center rounded-full border bg-emerald-500">
                 <div className="size-1 rounded-full bg-white" />
               </div>
             )}

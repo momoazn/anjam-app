@@ -101,7 +101,7 @@ function TaskListGroupInner({
               </li>
             ))
           ) : (
-            <div className="text-muted-foreground/40 py-12 text-center text-[10px] font-black tracking-[0.3em] uppercase">
+            <div className="text-muted-foreground/40 py-12 text-center text-[10px] font-black tracking-tight uppercase">
               {tasksText.list.noTasks}
             </div>
           )}
