@@ -119,3 +119,30 @@ export {
   useUpdateUserPreferences,
 } from "./user-preferences";
 export { useMentions } from "./mentions";
+
+// Organization member hooks
+export {
+  useOrganizationMembers,
+  useOrganizationMember,
+  useInviteOrgMember,
+  useUpdateOrgMemberRole,
+  useRemoveOrgMember,
+  useAcceptOrgInvitation,
+  useOrgMemberCount,
+  usePendingInvitationsCount,
+} from "./organization-members";
+
+// Project member hooks
+export {
+  useProjectMembers,
+  useProjectMember,
+  useIsProjectMember,
+  useMyProjectRole,
+  useAddProjectMember,
+  useUpdateProjectMemberRole,
+  useRemoveProjectMember,
+  useProjectMemberCount,
+  useProjectMembersByRole,
+  useProjectOwners,
+  useProjectAdmins,
+} from "./project-members";
