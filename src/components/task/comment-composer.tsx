@@ -1,17 +1,21 @@
 import { IconX } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
+import { MentionAutocomplete } from "@/components/comments/mention-autocomplete";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/ui/file-upload";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { comments } from "@/constants";
+import { useProjectMembers } from "@/hooks/project-members";
 import { useCreateComment } from "@/hooks/comments";
 import type { CommentWithUser } from "@/hooks/comments";
 import { useAuthUser } from "@/store/auth-store";
+import { formatUserName } from "@/lib/utils";
 
 type CommentComposerProps = {
   taskId: string;
+  projectId: string;
   replyTarget?: CommentWithUser | null;
   onCommentAdded?: () => void;
   onCancelReply?: () => void;
@@ -19,17 +23,87 @@ type CommentComposerProps = {
 
 export function CommentComposer({
   taskId,
+  projectId,
   replyTarget = null,
   onCommentAdded,
   onCancelReply,
 }: CommentComposerProps) {
   const [content, setContent] = useState("");
   const [attachments, setAttachments] = useState<FileWithPreview[]>([]);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionStart, setMentionStart] = useState<number | null>(null);
+  const [mentionCursor, setMentionCursor] = useState<number>(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const createComment = useCreateComment();
   const currentUser = useAuthUser();
+  const { data: projectMembers } = useProjectMembers(projectId, {
+    enabled: Boolean(projectId),
+  });
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const trimmedContent = useMemo(() => content.trim(), [content]);
   const isDisabled = !currentUser || createComment.isPending;
+
+  const mentionOptions = useMemo(() => {
+    if (!projectMembers) return [];
+    const normalized = mentionQuery.toLowerCase();
+    return projectMembers
+      .map((member) => member.expand?.user)
+      .filter((user): user is NonNullable<typeof user> => Boolean(user))
+      .filter((user) => {
+        if (!normalized) return true;
+        const fullName = formatUserName(
+          user.first_name,
+          user.last_name,
+          user.username,
+        ).toLowerCase();
+        return (
+          user.username.toLowerCase().includes(normalized) ||
+          fullName.includes(normalized)
+        );
+      })
+      .map((user) => ({
+        id: user.id,
+        username: user.username,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        avatar: user.avatar,
+      }));
+  }, [projectMembers, mentionQuery]);
+
+  const isMentionOpen = mentionStart !== null && mentionOptions.length > 0;
+
+  const updateMentionState = (value: string, cursor: number) => {
+    const textBefore = value.slice(0, cursor);
+    const match = /(?:^|\s)@([\w.-]*)$/.exec(textBefore);
+    if (!match) {
+      setMentionStart(null);
+      setMentionQuery("");
+      return;
+    }
+    const query = match[1] ?? "";
+    const startIndex = textBefore.lastIndexOf("@");
+    setMentionStart(startIndex);
+    setMentionQuery(query);
+    setSelectedIndex(0);
+  };
+
+  const handleMentionSelect = (index: number) => {
+    const option = mentionOptions[index];
+    if (!option || mentionStart === null) return;
+    const before = content.slice(0, mentionStart);
+    const after = content.slice(mentionCursor);
+    const mentionText = `@${option.username} `;
+    const nextValue = `${before}${mentionText}${after}`;
+    setContent(nextValue);
+    setMentionStart(null);
+    setMentionQuery("");
+    requestAnimationFrame(() => {
+      const nextCursor = before.length + mentionText.length;
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(nextCursor, nextCursor);
+    });
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -84,8 +158,15 @@ export function CommentComposer({
 
       <div className="space-y-3">
         <Textarea
+          ref={textareaRef}
           value={content}
-          onChange={(event) => setContent(event.target.value)}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            const cursor = event.target.selectionStart ?? nextValue.length;
+            setContent(nextValue);
+            setMentionCursor(cursor);
+            updateMentionState(nextValue, cursor);
+          }}
           placeholder={
             currentUser
               ? comments.composer.placeholder
@@ -94,10 +175,46 @@ export function CommentComposer({
           className="min-h-[100px] rounded-none text-right"
           disabled={isDisabled}
           onKeyDown={(event) => {
+            if (isMentionOpen) {
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                setSelectedIndex((prev) =>
+                  Math.min(prev + 1, mentionOptions.length - 1),
+                );
+                return;
+              }
+              if (event.key === "ArrowUp") {
+                event.preventDefault();
+                setSelectedIndex((prev) => Math.max(prev - 1, 0));
+                return;
+              }
+              if (event.key === "Enter" || event.key === "Tab") {
+                event.preventDefault();
+                handleMentionSelect(selectedIndex);
+                return;
+              }
+              if (event.key === "Escape") {
+                event.preventDefault();
+                setMentionStart(null);
+                setMentionQuery("");
+                return;
+              }
+            }
             if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
               handleSubmit(event);
             }
           }}
+        />
+
+        <MentionAutocomplete
+          items={mentionOptions}
+          selectedIndex={selectedIndex}
+          onSelect={(item) => {
+            const index = mentionOptions.findIndex((i) => i.id === item.id);
+            handleMentionSelect(index);
+          }}
+          onHover={(index) => setSelectedIndex(index)}
+          visible={isMentionOpen}
         />
 
         <FileUpload

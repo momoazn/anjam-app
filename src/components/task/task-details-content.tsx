@@ -386,6 +386,7 @@ export function TaskDetailsContent({
                     <div className="border-border/20 border-t pt-8">
                       <CommentComposer
                         taskId={task.id}
+                        projectId={task.project}
                         replyTarget={replyTarget}
                         onCancelReply={() => setReplyTarget(null)}
                         onCommentAdded={handleCommentAdded}
