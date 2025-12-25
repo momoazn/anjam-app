@@ -175,7 +175,7 @@ export function TaskFilters({
         </div>
 
         <div className="group relative h-9 flex-1">
-          <Search className="text-muted-foreground/30 group-focus-within:text-primary absolute top-1/2 end-3.5 h-3 w-3 -translate-y-1/2 transition-colors" />
+          <Search className="text-muted-foreground/30 group-focus-within:text-primary absolute end-3.5 top-1/2 h-3 w-3 -translate-y-1/2 transition-colors" />
           <Input
             placeholder={tasks.filters.search}
             value={searchTerm}

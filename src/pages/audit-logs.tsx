@@ -105,7 +105,7 @@ export default function AuditLogs() {
               </span>
             </div>
             <div className="group relative h-10 flex-1">
-              <IconTerminal className="text-muted-foreground/30 absolute top-1/2 end-3.5 h-3.5 w-3.5 -translate-y-1/2" />
+              <IconTerminal className="text-muted-foreground/30 absolute end-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

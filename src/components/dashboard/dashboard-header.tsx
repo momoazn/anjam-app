@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { dashboard, users } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
-import { useAuthRole, useAuthUser } from "@/store/auth-store";
+import { useAuthRole } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type DashboardHeaderProps = {
@@ -42,7 +42,6 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const navigate = useNavigate();
   const userRole = useAuthRole();
-  const user = useAuthUser();
 
   const config = useMemo(() => {
     const isAdmin = userRole === UsersRoleOptions.admin;
@@ -97,7 +96,7 @@ export function DashboardHeader({
       welcomeSubtitle,
       quickActions,
     };
-  }, [userRole, user, navigate]);
+  }, [userRole, navigate]);
 
   const statItems = [
     {
@@ -150,12 +149,12 @@ export function DashboardHeader({
       />
 
       {/* Decorative Accents */}
-      <div className="bg-primary/10 absolute top-0 end-0 h-32 w-32 translate-x-16 -translate-y-16 rounded-full blur-3xl" />
-      <div className="bg-primary/5 absolute bottom-0 start-0 h-32 w-32 -translate-x-16 translate-y-16 rounded-full blur-3xl" />
+      <div className="bg-primary/10 absolute end-0 top-0 h-32 w-32 translate-x-16 -translate-y-16 rounded-full blur-3xl" />
+      <div className="bg-primary/5 absolute start-0 bottom-0 h-32 w-32 -translate-x-16 translate-y-16 rounded-full blur-3xl" />
 
       <div className="relative z-10 flex flex-col lg:flex-row">
         {/* Main Welcome Section */}
-        <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-b-0 lg:border-s lg:p-10">
+        <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-s lg:border-b-0 lg:p-10">
           <div className="text-primary flex items-center gap-3">
             <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-sm backdrop-blur-sm">
               <LayoutDashboard className="h-5 w-5" />
@@ -208,8 +207,8 @@ export function DashboardHeader({
                 className="group bg-card hover:bg-muted/50 relative flex items-center justify-between overflow-hidden p-6 transition-all duration-300"
               >
                 {/* Corner Accents */}
-                <div className="bg-border absolute top-0 start-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
-                <div className="bg-border absolute top-0 end-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="bg-border absolute start-0 top-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="bg-border absolute end-0 top-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
 
                 <div className="flex items-center gap-4">
                   <div

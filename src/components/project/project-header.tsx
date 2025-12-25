@@ -106,7 +106,7 @@ export function ProjectHeader({
                   className="border-border/40 bg-muted/5 focus:border-primary/40 h-14 rounded-none text-right text-2xl font-black tracking-tight uppercase focus:ring-0"
                 />
               </div>
-              <div className="ms-auto ms-0 w-40 space-y-1.5 text-right">
+              <div className="ms-0 ms-auto w-40 space-y-1.5 text-right">
                 <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.2em] uppercase">
                   Unique_Code
                 </span>

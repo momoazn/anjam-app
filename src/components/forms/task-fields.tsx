@@ -11,7 +11,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { tasks } from "@/constants";
-import { useProjects, useProjectUsers, useUsers } from "@/hooks";
+import {
+  useProjectStatuses,
+  useProjects,
+  useProjectUsers,
+  useUsers,
+} from "@/hooks";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
@@ -63,6 +68,10 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
     projectId: projectId || "",
   });
   const { data: users } = useUsers({ enabled: !projectId });
+  const { data: projectStatuses } = useProjectStatuses({
+    projectId: projectId || "",
+    enabled: Boolean(projectId),
+  });
 
   const assignees = projectId ? projectUsers : users;
 
@@ -84,6 +93,20 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
     }
     return opts;
   }, [assignees]);
+
+  const statusOptions = useMemo(() => {
+    if (projectStatuses && projectStatuses.length > 0) {
+      return projectStatuses.map((status) => ({
+        value: status.key as TasksStatusOptions,
+        label: status.name || status.key,
+      }));
+    }
+
+    return Object.values(TasksStatusOptions).map((status) => ({
+      value: status,
+      label: TASK_STATUS_CONFIG[status].name,
+    }));
+  }, [projectStatuses]);
 
   return (
     <div className="space-y-10 text-right">
@@ -175,26 +198,34 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="bg-muted/5 h-8 rounded-none border-none px-1 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
                         <div className="flex items-center justify-end gap-2">
-                          <span>{TASK_STATUS_CONFIG[field.value].name}</span>
+                          <span>
+                            {TASK_STATUS_CONFIG[field.value]?.name ??
+                              field.value?.toUpperCase() ??
+                              "Status"}
+                          </span>
                           <StatusIcon className={cn("size-3.5", statusColor)} />
                         </div>
                       </SelectTrigger>
                       <SelectContent className="border-foreground bg-card rounded-none border-2">
-                        {Object.values(TasksStatusOptions).map((s) => {
+                        {statusOptions.map((option) => {
                           const ItemIcon =
-                            taskStatusIcons[s] || taskStatusIcons.todo;
-                          const itemColor = getStatusColorVariant(s, "icon");
+                            taskStatusIcons[option.value] ||
+                            taskStatusIcons.todo;
+                          const itemColor = getStatusColorVariant(
+                            option.value,
+                            "icon",
+                          );
                           return (
                             <SelectItem
-                              key={s}
-                              value={s}
+                              key={option.value}
+                              value={option.value}
                               className="text-[10px] font-black uppercase"
                             >
                               <div className="flex items-center gap-2">
                                 <ItemIcon
                                   className={cn("size-3.5", itemColor)}
                                 />
-                                <span>{TASK_STATUS_CONFIG[s].name}</span>
+                                <span>{option.label}</span>
                               </div>
                             </SelectItem>
                           );

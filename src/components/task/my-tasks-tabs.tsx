@@ -109,7 +109,7 @@ export function MyTasksTabs({
 
       <div className="relative">
         {/* Sidebar vertical line accent */}
-        <div className="bg-border/40 absolute top-0 -end-6 bottom-0 w-px" />
+        <div className="bg-border/40 absolute -end-6 top-0 bottom-0 w-px" />
 
         <TabsContent value="active" className="mt-0 space-y-8 outline-none">
           {isLoading ? (

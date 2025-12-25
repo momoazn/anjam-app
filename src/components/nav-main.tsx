@@ -82,7 +82,7 @@ export function NavMain({ items, title }: NavMainProps) {
                     </span>
 
                     {active && state === "expanded" && (
-                      <div className="bg-primary/20 absolute top-1 end-0 bottom-1 w-[1px]" />
+                      <div className="bg-primary/20 absolute end-0 top-1 bottom-1 w-[1px]" />
                     )}
 
                     <div className="ms-auto">{item.badge}</div>

@@ -64,7 +64,7 @@ export function GlobalSearch() {
           <Search className="h-3 w-3 opacity-40" />
           <span className="hidden lg:inline-flex">{search.placeholder}</span>
         </span>
-        <kbd className="bg-primary/10 text-primary border-primary/20 pointer-events-none absolute top-[0.35rem] start-[0.35rem] hidden h-4 items-center gap-1 rounded-none border px-1 font-mono text-[8px] font-black tracking-tighter uppercase opacity-100 select-none sm:flex">
+        <kbd className="bg-primary/10 text-primary border-primary/20 pointer-events-none absolute start-[0.35rem] top-[0.35rem] hidden h-4 items-center gap-1 rounded-none border px-1 font-mono text-[8px] font-black tracking-tighter uppercase opacity-100 select-none sm:flex">
           <span className="text-[10px]">⌘</span>K
         </kbd>
       </Button>

@@ -126,4 +126,10 @@ export const queryKeys = {
         perPage,
       ] as const,
   },
+  projectStatuses: {
+    list: (projectId: string) =>
+      ["project_statuses", "project", projectId] as const,
+    byProject: (projectId: string) =>
+      ["project_statuses", "project", projectId] as const,
+  },
 } as const;

@@ -76,7 +76,7 @@ function StatCard({
           </div>
         </div>
         <div className="from-primary/20 absolute end-0 bottom-0 h-px w-0 bg-gradient-to-l to-transparent transition-all duration-300 group-hover:w-1/2" />
-        <div className="from-primary/20 absolute bottom-0 start-0 h-px w-0 bg-gradient-to-r to-transparent transition-all duration-300 group-hover:w-1/2" />
+        <div className="from-primary/20 absolute start-0 bottom-0 h-px w-0 bg-gradient-to-r to-transparent transition-all duration-300 group-hover:w-1/2" />
       </CardContent>
     </Card>
   );

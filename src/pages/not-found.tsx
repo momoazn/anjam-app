@@ -62,7 +62,7 @@ export default function NotFound() {
         </div>
       </div>
 
-      <div className="absolute top-12 start-12 hidden font-mono text-[8px] font-black tracking-[0.5em] uppercase opacity-10 lg:block">
+      <div className="absolute start-12 top-12 hidden font-mono text-[8px] font-black tracking-[0.5em] uppercase opacity-10 lg:block">
         SECTOR_REGISTRY : CORRUPT
       </div>
       <div className="absolute end-12 bottom-12 hidden font-mono text-[8px] font-black tracking-[0.5em] uppercase opacity-10 lg:block">

@@ -158,7 +158,7 @@ export function ProductivityWidget({
             {stats && stats.overdue > 0 ? (
               <Button
                 variant="outline"
-                className="h-12 w-full justify-start gap-3 rounded-sm border-eose-500/20 bg-rose-500/5 font-bold text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
+                className="border-eose-500/20 h-12 w-full justify-start gap-3 rounded-sm bg-rose-500/5 font-bold text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
                 onClick={() => navigate("/tasks?due=overdue")}
               >
                 <AlertTriangle className="size-4" />

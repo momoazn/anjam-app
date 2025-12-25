@@ -168,7 +168,7 @@ export function TaskListHeader({
 
       <div
         className={cn(
-          "absolute bottom-0 start-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
+          "absolute start-0 bottom-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
           statusColor.replace("text", "text"),
         )}
       />

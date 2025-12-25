@@ -71,6 +71,8 @@ export {
   useToggleGroupActive,
 } from "./groups";
 
+export { useProjectStatuses } from "./project-statuses";
+
 // Page-specific optimized hooks
 export { useTasksPageData } from "./use-tasks-page-data";
 export { useProjectTasksPageData } from "./use-project-tasks-page-data";

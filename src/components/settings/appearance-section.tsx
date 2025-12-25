@@ -49,7 +49,7 @@ export function AppearanceSection() {
               {settings.appearance.light}
             </span>
             {theme === "light" && (
-              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
+              <div className="bg-primary absolute start-0 end-0 bottom-0 h-1" />
             )}
           </Button>
 
@@ -71,7 +71,7 @@ export function AppearanceSection() {
               {settings.appearance.dark}
             </span>
             {theme === "dark" && (
-              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
+              <div className="bg-primary absolute start-0 end-0 bottom-0 h-1" />
             )}
           </Button>
 
@@ -88,7 +88,7 @@ export function AppearanceSection() {
               {settings.appearance.system}
             </span>
             {theme === "system" && (
-              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
+              <div className="bg-primary absolute start-0 end-0 bottom-0 h-1" />
             )}
           </Button>
         </div>

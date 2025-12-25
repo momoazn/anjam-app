@@ -147,7 +147,7 @@ export function NotificationDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={align}
-        className="mt-1 ms-4 w-[28rem] max-w-[90vw] p-0"
+        className="ms-4 mt-1 w-[28rem] max-w-[90vw] p-0"
         aria-label={notificationText.notificationsPanel}
       >
         {/* Header */}

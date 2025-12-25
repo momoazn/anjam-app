@@ -227,7 +227,7 @@ export function CommentItem({ comment, onDeleted }: CommentItemProps) {
                 }}
                 disabled={updateComment.isPending}
               />
-              <div className="bg-primary/40 absolute top-0 end-0 h-0.5 w-8" />
+              <div className="bg-primary/40 absolute end-0 top-0 h-0.5 w-8" />
             </div>
             <div className="flex items-center justify-end gap-3">
               <Button
