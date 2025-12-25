@@ -3,7 +3,6 @@ import {
   IconDashboard,
   IconInnerShadowTop,
   IconBell,
-  IconBuildingCommunity,
   IconTag,
   IconChartBar,
   IconClock,
@@ -59,12 +58,6 @@ const sidebarData = {
     },
   ] as NavItem[],
   navAdmin: [
-    {
-      title: navigation.groups,
-      url: "/groups",
-      icon: IconBuildingCommunity,
-      permission: "org.view",
-    },
     {
       title: navigation.tags,
       url: "/tags",

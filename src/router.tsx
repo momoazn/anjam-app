@@ -7,7 +7,6 @@ import {
   app,
   auth,
   errors,
-  groups,
   myTasks,
   navigation,
   navigationLabels,
@@ -66,18 +65,6 @@ const PendingActivation = createLazyPage(
 const Dashboard = createLazyPage(
   () => import("@/pages/dashboard"),
   errors.pageLoad.dashboard,
-);
-const Groups = createLazyPage(
-  () => import("@/pages/groups"),
-  errors.pageLoad.notFound,
-);
-const CreateGroup = createLazyPage(
-  () => import("@/pages/create-group"),
-  errors.pageLoad.notFound,
-);
-const EditGroup = createLazyPage(
-  () => import("@/pages/edit-group"),
-  errors.pageLoad.notFound,
 );
 const Projects = createLazyPage(
   () => import("@/pages/projects"),
@@ -363,27 +350,6 @@ const routes: RouteType[] = [
     element: <Dashboard />,
     protected: true,
     title: navigation.dashboard,
-  },
-  {
-    path: "/groups",
-    element: <Groups />,
-    protected: true,
-    permission: "org.view",
-    title: groups.title,
-  },
-  {
-    path: "/groups/new",
-    element: <CreateGroup />,
-    protected: true,
-    permission: "org.update",
-    title: groups.create.title,
-  },
-  {
-    path: "/groups/:id/edit",
-    element: <EditGroup />,
-    protected: true,
-    permission: "org.update",
-    title: groups.edit.title,
   },
   {
     path: "/projects",
