@@ -32,7 +32,6 @@ import { formatUserName } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import { FormField as GenericFormField } from "./form-field";
 import {
-  IconTerminal,
   IconFilter,
   IconHash,
   IconUser,
@@ -113,8 +112,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
       {/* Primary Input Zone */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            01_Primary_Directives
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            General Information
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -125,7 +124,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             name="title"
             label={tasks.addTask.issueTitle}
             type="input"
-            placeholder="Issue_Name_Protocol"
+            placeholder="Task Title"
             autoFocus
             required
           />
@@ -135,7 +134,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             name="description"
             label={tasks.addTask.description}
             type="textarea"
-            placeholder="Detailed_Context_Dump"
+            placeholder="Detailed Description"
           />
         </div>
       </section>
@@ -143,8 +142,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
       {/* Logic Gates Zone */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            02_Protocol_Logic
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            Task Details
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -152,8 +151,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
         <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm sm:grid-cols-2 lg:grid-cols-3">
           {!actualIsInProject && (
             <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
-              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
-                <IconStack2 className="size-2.5" /> Project_Node
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+                <IconStack2 className="size-2.5" /> Project
               </span>
               <GenericFormField
                 control={control}
@@ -168,8 +167,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           )}
 
           <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
-              <IconUser className="size-2.5" /> Operator_Assignment
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+              <IconUser className="size-2.5" /> Assignee
             </span>
             <GenericFormField
               control={control}
@@ -183,8 +182,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
-              <IconFilter className="size-2.5" /> Status_Mode
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+              <IconFilter className="size-2.5" /> Status
             </span>
             <ShadcnFormField
               control={control}
@@ -206,7 +205,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                           <StatusIcon className={cn("size-3.5", statusColor)} />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="border-foreground bg-card rounded-none border-2">
+                      <SelectContent className="border-border bg-card rounded-none border">
                         {statusOptions.map((option) => {
                           const ItemIcon =
                             taskStatusIcons[option.value] ||
@@ -239,8 +238,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
-              <IconHash className="size-2.5" /> Priority_Level
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+              <IconHash className="size-2.5" /> Priority
             </span>
             <ShadcnFormField
               control={control}
@@ -259,7 +258,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                           />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="border-foreground bg-card rounded-none border-2">
+                      <SelectContent className="border-border bg-card rounded-none border">
                         {Object.values(TasksPriorityOptions).map((p) => {
                           const ItemIcon = priorityIcons[p];
                           const itemColor = priorityColors[p];
@@ -287,8 +286,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card border-border/10 flex h-20 flex-col justify-between border-s p-4">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
-              <IconCalendar className="size-2.5" /> Temporal_Deadline
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+              <IconCalendar className="size-2.5" /> Deadline
             </span>
             <ShadcnFormField
               control={control}
@@ -312,8 +311,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card flex h-20 flex-col justify-between p-4">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-[0.3em] uppercase">
-              <IconClock className="size-2.5" /> Resource_Estimate
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+              <IconClock className="size-2.5" /> Time Estimate
             </span>
             <div className="flex items-center justify-end gap-4">
               <div className="flex items-center gap-2">
@@ -350,14 +349,6 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
         </div>
       </section>
-
-      <div className="flex items-center gap-4 pt-10 opacity-20 grayscale">
-        <IconTerminal className="size-4" />
-        <span className="text-[9px] font-black tracking-[0.4em] uppercase">
-          Validation_Kernel :: Operational
-        </span>
-        <div className="bg-border h-px flex-1" />
-      </div>
     </div>
   );
 }

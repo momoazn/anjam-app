@@ -106,7 +106,7 @@ export function ProjectFields({
           name="assets"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-muted-foreground/60 flex items-center justify-end gap-2 text-[10px] font-black tracking-[0.2em] uppercase">
+              <FormLabel className="text-muted-foreground/60 flex items-center justify-end gap-2 text-[10px] font-black tracking-tight uppercase">
                 {projects.create.form.assets}
                 <IconUpload className="size-3.5" />
               </FormLabel>

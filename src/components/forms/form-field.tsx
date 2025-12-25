@@ -71,7 +71,7 @@ export function FormField<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className="space-y-1.5">
-          <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+          <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
             {label}
             {required && (
               <span className="text-primary me-1 opacity-40">*</span>
@@ -109,13 +109,13 @@ export function FormField<T extends FieldValues>({
               >
                 <SelectTrigger
                   className={cn(
-                    "border-border/40 bg-muted/5 h-11 rounded-none text-right text-[11px] font-black tracking-widest uppercase focus:ring-0",
+                    "border-border/40 bg-muted/5 h-11 rounded-none text-right text-[11px] font-black tracking-tight uppercase focus:ring-0",
                     className,
                   )}
                 >
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
-                <SelectContent className="border-foreground bg-card rounded-none border-2">
+                <SelectContent className="border-border bg-card rounded-none border">
                   {options?.map((option) => (
                     <SelectItem
                       key={option.value}
