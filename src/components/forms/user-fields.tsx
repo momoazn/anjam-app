@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
-import { auth, common, users } from "@/constants";
-import { useGroups } from "@/hooks";
+import { auth, users } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 import { FormField as GenericFormField } from "./form-field";
@@ -13,29 +12,21 @@ export type UserFieldsFormValues = {
   first_name: string;
   last_name: string;
   role: UsersRoleOptions;
-  group?: string;
 };
 
 type UserFieldsProps = {
   control: Control<UserFieldsFormValues>;
   isEdit?: boolean;
   editingUserId?: string;
-  showGroup?: boolean;
 };
 
 export function UserFields({
   control,
   isEdit = false,
   editingUserId,
-  showGroup = false,
 }: UserFieldsProps) {
   const user = useAuthUser();
   const isEditingSelf = editingUserId === user?.id;
-  const isManager = user?.role === UsersRoleOptions.manager;
-
-  const { data: groups } = useGroups({
-    enabled: showGroup,
-  });
 
   const availableRoles = useMemo(() => {
     if (!user) return [];
@@ -76,11 +67,6 @@ export function UserFields({
       { value: UsersRoleOptions.employee, label: users.table.roles.employee },
     ];
   }, [user]);
-
-  const groupOptions = useMemo(() => {
-    if (!groups) return [];
-    return groups.map((g) => ({ value: g.id, label: g.name }));
-  }, [groups]);
 
   return (
     <div className="space-y-6">
@@ -130,18 +116,6 @@ export function UserFields({
             type="select"
             options={availableRoles}
             required
-          />
-        )}
-
-        {showGroup && (
-          <GenericFormField
-            control={control}
-            name="group"
-            label={users.form.group}
-            type="select"
-            options={groupOptions}
-            disabled={isManager}
-            placeholder={common.messages.noData}
           />
         )}
       </div>

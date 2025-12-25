@@ -35,21 +35,21 @@ export function TaskDetailsSidebar({
       {/* Quick Status Block */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            04_Signal_Status
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            Signal_Status
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
         <div className="bg-card border-border/40 space-y-6 border p-6">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+            <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
               {tasks.details.statusLabel}
             </span>
             <Badge
               variant="outline"
               className={cn(
-                "rounded-none border-transparent text-[10px] font-black tracking-widest uppercase",
+                "rounded-none border-transparent text-[10px] font-black tracking-tight uppercase",
                 getStatusColorVariant(task.status, "badge"),
               )}
             >
@@ -59,13 +59,13 @@ export function TaskDetailsSidebar({
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+            <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
               {tasks.details.priorityLabel}
             </span>
             <Badge
               variant="outline"
               className={cn(
-                "rounded-none border-transparent text-[10px] font-black tracking-widest uppercase",
+                "rounded-none border-transparent text-[10px] font-black tracking-tight uppercase",
                 priorityColors[task.priority],
               )}
             >
@@ -78,7 +78,7 @@ export function TaskDetailsSidebar({
 
           <div className="space-y-3 text-right">
             <div className="flex flex-col items-end">
-              <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-[0.2em] uppercase">
+              <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
                 {tasks.details.createdLabel}
               </span>
               <span className="text-xs font-black tabular-nums">
@@ -86,7 +86,7 @@ export function TaskDetailsSidebar({
               </span>
             </div>
             <div className="flex flex-col items-end">
-              <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-[0.2em] uppercase">
+              <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
                 {tasks.details.updatedLabel}
               </span>
               <span className="text-xs font-black tabular-nums">
@@ -100,8 +100,8 @@ export function TaskDetailsSidebar({
       {/* Operator Actions Block */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            05_Operator_Actions
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            Operator_Actions
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -109,7 +109,7 @@ export function TaskDetailsSidebar({
         <div className="bg-muted/10 border-border/40 space-y-2 border p-4">
           <Button
             variant="ghost"
-            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-widest uppercase"
+            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-tight uppercase"
             onClick={onEdit}
           >
             {tasks.details.editTaskButton}
@@ -117,7 +117,7 @@ export function TaskDetailsSidebar({
           </Button>
           <Button
             variant="ghost"
-            className="h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-widest text-rose-500/60 uppercase hover:bg-rose-500/10 hover:text-rose-500"
+            className="h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-tight text-rose-500/60 uppercase hover:bg-rose-500/10 hover:text-rose-500"
             onClick={onDelete}
             disabled={isDeleting}
           >
@@ -128,9 +128,9 @@ export function TaskDetailsSidebar({
       </section>
 
       {/* System Integrity Block */}
-      <div className="bg-muted/20 border-border/20 flex flex-col items-center gap-3 border-2 border-dashed p-6 opacity-30 grayscale">
+      <div className="bg-muted/20 border-border/20 flex flex-col items-center gap-3 border border-dashed p-6 opacity-30 grayscale">
         <IconInfoCircle className="size-8 stroke-[1]" />
-        <p className="text-center text-[9px] font-black tracking-[0.3em] uppercase">
+        <p className="text-center text-[9px] font-black tracking-tight uppercase">
           Data_Grid :: Integrity_Verified
         </p>
       </div>

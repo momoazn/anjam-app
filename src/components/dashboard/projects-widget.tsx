@@ -30,10 +30,10 @@ export function ProjectsWidget({
   if (isLoading) {
     return (
       <div className="mb-10">
-        <Skeleton className="mb-6 h-8 w-48 rounded-sm" />
+        <Skeleton className="mb-6 h-8 w-48 rounded-none" />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {["ske-proj-1", "ske-proj-2", "ske-proj-3"].map((key) => (
-            <Card key={key} className="border-border/50 rounded-sm">
+            <Card key={key} className="border-border/50 rounded-none">
               <CardHeader className="pb-3">
                 <Skeleton className="h-5 w-32" />
               </CardHeader>
@@ -55,7 +55,7 @@ export function ProjectsWidget({
     <div className="mb-10" data-animate-stagger>
       <div className="mb-6 flex items-center justify-between px-2">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
+          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
             <Target className="size-4" />
           </div>
           <h2 className="text-xl font-black tracking-tight uppercase">
@@ -66,7 +66,7 @@ export function ProjectsWidget({
           variant="ghost"
           size="sm"
           onClick={() => navigate("/projects")}
-          className="text-muted-foreground hover:text-primary gap-2 font-bold tracking-widest uppercase"
+          className="text-muted-foreground hover:text-primary gap-2 font-bold tracking-tight uppercase"
         >
           {dashboard.cards.viewAll}
           <ChevronLeft className="size-4" />
@@ -81,7 +81,7 @@ export function ProjectsWidget({
           <button
             key={project.id}
             type="button"
-            className="group border-border/50 bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-sm border text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-2xl active:scale-[0.98]"
+            className="group border-border/50 bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-none border text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-sm active:scale-[0.98]"
             onClick={() => navigate(`/projects/${project.id}/details`)}
           >
             <CardHeader className="bg-muted/20 border-b p-6">
@@ -89,7 +89,7 @@ export function ProjectsWidget({
                 <CardTitle className="text-lg font-black tracking-tight">
                   {project.name}
                 </CardTitle>
-                <Badge variant="secondary" className="rounded-sm font-black">
+                <Badge variant="secondary" className="rounded-none font-black">
                   {digitsEnToFa(project.taskCount)} ITEMS
                 </Badge>
               </div>
@@ -98,7 +98,7 @@ export function ProjectsWidget({
               <div className="mb-4">
                 <div className="mb-2 flex items-end justify-between">
                   <div>
-                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-[0.2em] uppercase">
+                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
                       {dashboard.cards.progress}
                     </span>
                     <div className="mt-0.5 text-2xl font-black tracking-tighter">
@@ -109,7 +109,7 @@ export function ProjectsWidget({
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-[0.2em] uppercase">
+                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
                       Completed
                     </span>
                     <div className="mt-0.5 text-sm font-bold">
@@ -132,7 +132,7 @@ export function ProjectsWidget({
 
               <div className="border-border/40 flex items-center gap-2 border-t pt-4 opacity-40 transition-opacity group-hover:opacity-100">
                 <Hash className="text-muted-foreground size-3" />
-                <span className="text-muted-foreground text-[9px] font-black tracking-widest uppercase">
+                <span className="text-muted-foreground text-[9px] font-black tracking-tight uppercase">
                   PRJ-{project.id.slice(0, 4).toUpperCase()}
                 </span>
               </div>

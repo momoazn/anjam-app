@@ -49,8 +49,8 @@ export function ProjectDetailsSections({
       {/* Identity Log Module */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            01_Identity_Log
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            Identity_Log
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -58,7 +58,7 @@ export function ProjectDetailsSections({
         <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-2">
           <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6 text-right">
             <div className="flex items-center justify-end gap-2 opacity-40">
-              <span className="text-[8px] font-black tracking-widest uppercase">
+              <span className="text-[8px] font-black tracking-tight uppercase">
                 Supervisor_ID
               </span>
               <IconUser className="size-3" />
@@ -78,7 +78,7 @@ export function ProjectDetailsSections({
 
           <div className="bg-card flex h-24 flex-col justify-between p-6 text-right">
             <div className="flex items-center justify-end gap-2 opacity-40">
-              <span className="text-[8px] font-black tracking-widest uppercase">
+              <span className="text-[8px] font-black tracking-tight uppercase">
                 Temporal_Start
               </span>
               <IconCalendar className="size-3" />
@@ -90,19 +90,19 @@ export function ProjectDetailsSections({
 
           <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6 text-right">
             <div className="flex items-center justify-end gap-2 opacity-40">
-              <span className="text-[8px] font-black tracking-widest uppercase">
+              <span className="text-[8px] font-black tracking-tight uppercase">
                 Internal_Hash
               </span>
               <IconTerminal className="size-3" />
             </div>
-            <div className="font-mono text-xs font-black tracking-widest uppercase opacity-60">
+            <div className="font-mono text-xs font-black tracking-tight uppercase opacity-60">
               {project.id}
             </div>
           </div>
 
           <div className="bg-card flex h-24 flex-col justify-between p-6 text-right">
             <div className="flex items-center justify-end gap-2 opacity-40">
-              <span className="text-[8px] font-black tracking-widest uppercase">
+              <span className="text-[8px] font-black tracking-tight uppercase">
                 Latest_Sync
               </span>
               <IconHistory className="size-3" />
@@ -114,11 +114,11 @@ export function ProjectDetailsSections({
         </div>
       </section>
 
-      {/* Description Protocol Section */}
+      {/* Description  Section */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            02_Project_Brief
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            Project_Brief
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -126,7 +126,7 @@ export function ProjectDetailsSections({
         <div className="bg-muted/5 border-border/40 border p-8">
           {isEditing ? (
             <div className="space-y-2 text-right">
-              <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.2em] uppercase">
+              <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
                 Input_Buffer
               </span>
               <Textarea
@@ -145,7 +145,7 @@ export function ProjectDetailsSections({
           ) : (
             <div className="py-12 text-center opacity-20 grayscale">
               <IconFileText className="mx-auto mb-4 size-10 stroke-[1]" />
-              <p className="text-[10px] font-black tracking-widest uppercase">
+              <p className="text-[10px] font-black tracking-tight uppercase">
                 {projects.details.noDescription}
               </p>
             </div>
@@ -153,11 +153,11 @@ export function ProjectDetailsSections({
         </div>
       </section>
 
-      {/* Asset Registry Section */}
+      {/* Asset  Section */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            03_Asset_Registry
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            Asset_
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -167,7 +167,7 @@ export function ProjectDetailsSections({
             <div className="space-y-10 p-8 text-right">
               {project.assets && project.assets.length > 0 && (
                 <div className="space-y-4">
-                  <h4 className="text-muted-foreground/60 border-border/10 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+                  <h4 className="text-muted-foreground/60 border-border/10 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
                     {projects.files.existingFiles}
                   </h4>
                   <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm">
@@ -187,7 +187,7 @@ export function ProjectDetailsSections({
                           >
                             <IconTrash className="size-4" />
                           </Button>
-                          <span className="flex-1 truncate pe-4 text-right font-mono text-xs font-bold tracking-widest uppercase opacity-60">
+                          <span className="flex-1 truncate pe-4 text-right font-mono text-xs font-bold tracking-tight uppercase opacity-60">
                             {filename}
                           </span>
                         </div>
@@ -197,7 +197,7 @@ export function ProjectDetailsSections({
               )}
 
               <div className="space-y-4">
-                <h4 className="text-muted-foreground/60 border-border/10 flex items-center justify-end gap-2 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+                <h4 className="text-muted-foreground/60 border-border/10 flex items-center justify-end gap-2 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
                   {projects.files.addNewFiles}
                   <IconUpload className="size-3.5" />
                 </h4>
@@ -219,7 +219,7 @@ export function ProjectDetailsSections({
       {/* Operation Log Section */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
             06_Operation_Log
           </span>
           <div className="bg-border/20 h-px flex-1" />

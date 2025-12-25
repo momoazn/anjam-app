@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IconLoader2, IconPencil, IconTerminal } from "@tabler/icons-react";
+import { IconLoader2, IconPencil, IconCheck } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -153,9 +153,9 @@ export default function EditTask() {
   if (!task) {
     return (
       <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
-        <div className="bg-card border-border/40 border-2 border-dashed p-12 text-center opacity-30 grayscale">
-          <IconTerminal className="mx-auto mb-4 size-12 stroke-1" />
-          <p className="text-sm font-black tracking-widest uppercase">
+        <div className="bg-card border-border/40 border border-dashed p-12 text-center opacity-30 grayscale">
+          <IconPencil className="mx-auto mb-4 size-12 stroke-1" />
+          <p className="text-sm font-black tracking-tight uppercase">
             {tasks.errors.notFound}
           </p>
           <Button
@@ -174,9 +174,8 @@ export default function EditTask() {
     <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
       <PageHeader
         title={tasks.edit.title}
-        description={`Modify registry parameters for node :: ${task.display_id || task.id}`}
+        description={`Update details for task :: ${task.display_id || task.id}`}
         icon={IconPencil}
-        nodeId={`Task_Modification :: ${task.display_id}`}
       />
 
       <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
@@ -190,21 +189,21 @@ export default function EditTask() {
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isPending}
-                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
+                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
               >
                 {tasks.details.buttons.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
               >
                 {isPending ? (
                   <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <IconTerminal className="ms-2 size-4" />
+                  <IconCheck className="ms-2 size-4" />
                 )}
-                <span className="tracking-widest uppercase">
+                <span className="tracking-tight uppercase">
                   {isPending
                     ? tasks.edit.buttons.saving
                     : tasks.edit.buttons.save}

@@ -17,6 +17,7 @@ type PocketBaseError = {
   response?: {
     message?: string;
     data?: Record<string, ValidationError>;
+    status?: number;
   };
 };
 
@@ -38,7 +39,13 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     return;
   }
 
-  const pbError = error;
+  const pbError = error as PocketBaseError;
+
+  const statusCode = pbError?.status ?? pbError?.response?.status;
+  if (statusCode === 429) {
+    toast.error(auth.errors.rateLimited);
+    return;
+  }
 
   // Handle PocketBase validation errors
   if (pbError?.data?.data) {

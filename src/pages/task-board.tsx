@@ -188,13 +188,13 @@ export function TaskBoardPage() {
         className="hover:bg-primary/5 hover:text-primary border-border/40 bg-muted/20 h-12 gap-3 rounded-none border px-6 font-bold transition-all"
       >
         <IconList className="size-4" />
-        <span className="text-[11px] font-black tracking-widest uppercase">
-          List_View
+        <span className="text-[11px] font-black tracking-tight uppercase">
+          List View
         </span>
       </Button>
 
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
         size="lg"
         onClick={() =>
           navigate(
@@ -203,7 +203,7 @@ export function TaskBoardPage() {
         }
       >
         <IconPlus className="size-5" />
-        <span className="tracking-widest uppercase">
+        <span className="tracking-tight uppercase">
           {tasksText.addTask.buttons.newTask}
         </span>
       </Button>
@@ -231,9 +231,6 @@ export function TaskBoardPage() {
           digitsEnToFa(tasksData.length).toString(),
         )}
         icon={IconLayoutGrid}
-        nodeId={
-          projectId ? `Project_Board :: ${project?.code}` : "Global_Task_Board"
-        }
         actions={headerActions}
       />
 
@@ -255,7 +252,7 @@ export function TaskBoardPage() {
         {createPortal(
           <DragOverlay dropAnimation={dropAnimation}>
             {activeTask && (
-              <div className="ring-primary border-foreground w-[300px] border-2 opacity-80 shadow-2xl ring-2">
+              <div className="ring-primary border-border w-[300px] border opacity-80 shadow-2xl ring-2">
                 <BoardCard task={activeTask} />
               </div>
             )}

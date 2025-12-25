@@ -13,14 +13,20 @@ export enum Collections {
   Superusers = "_superusers",
   AuditLogs = "audit_logs",
   Comments = "comments",
-  Groups = "groups",
+  Mentions = "mentions",
   Notifications = "notifications",
+  OrganizationMembers = "organization_members",
+  Organizations = "organizations",
+  ProjectMembers = "project_members",
+  ProjectStatuses = "project_statuses",
   Projects = "projects",
+  Subtasks = "subtasks",
   Tags = "tags",
   Tasks = "tasks",
+  TimeEntries = "time_entries",
   UserLoginLogs = "user_login_logs",
+  UserPreferences = "user_preferences",
   Users = "users",
-  UsersProjects = "users_projects",
 }
 
 // Alias types for improved usability
@@ -135,29 +141,34 @@ export type AuditLogsRecord<Tchanges = unknown> = {
   id: string;
   ip_address?: string;
   message?: string;
+  organization?: RecordIdString;
+  project?: RecordIdString;
   request_id?: string;
   resource: string;
   resource_id: string;
   result: AuditLogsResultOptions;
 };
 
-export type CommentsRecord = {
+export type CommentsRecord<Treactions = unknown> = {
+  attachments?: FileNameString[];
   content: HTMLString;
   created: IsoAutoDateString;
   deleted_at?: string;
   id: string;
+  parent?: RecordIdString;
+  reactions?: null | Treactions;
   task: RecordIdString;
   updated: IsoAutoDateString;
   user: RecordIdString;
 };
 
-export type GroupsRecord = {
-  active?: boolean;
+export type MentionsRecord = {
+  comment?: RecordIdString;
   created: IsoAutoDateString;
-  description?: HTMLString;
   id: string;
-  manager?: RecordIdString;
-  name: string;
+  mentioned_user: RecordIdString;
+  project?: RecordIdString;
+  task?: RecordIdString;
   updated: IsoAutoDateString;
 };
 
@@ -179,24 +190,110 @@ export type NotificationsRecord<Tdata = unknown> = {
   user: RecordIdString;
 };
 
+export enum OrganizationMembersRoleOptions {
+  "owner" = "owner",
+  "admin" = "admin",
+  "member" = "member",
+}
+
+export enum OrganizationMembersStatusOptions {
+  "invited" = "invited",
+  "active" = "active",
+  "suspended" = "suspended",
+}
+export type OrganizationMembersRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  invited_at?: IsoDateString;
+  invited_by?: RecordIdString;
+  joined_at?: IsoDateString;
+  last_active_at?: IsoDateString;
+  organization: RecordIdString;
+  role: OrganizationMembersRoleOptions;
+  status?: OrganizationMembersStatusOptions;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
+};
+
+export enum OrganizationsPlanOptions {
+  "free" = "free",
+  "pro" = "pro",
+  "enterprise" = "enterprise",
+}
+export type OrganizationsRecord<Tsettings = unknown> = {
+  active?: boolean;
+  created: IsoAutoDateString;
+  description?: HTMLString;
+  id: string;
+  logo?: FileNameString;
+  name: string;
+  plan?: OrganizationsPlanOptions;
+  settings?: null | Tsettings;
+  slug: string;
+  updated: IsoAutoDateString;
+};
+
+export enum ProjectMembersRoleOptions {
+  "owner" = "owner",
+  "admin" = "admin",
+  "member" = "member",
+  "viewer" = "viewer",
+}
+export type ProjectMembersRecord = {
+  added_at?: IsoDateString;
+  added_by?: RecordIdString;
+  created: IsoAutoDateString;
+  id: string;
+  notifications?: boolean;
+  project: RecordIdString;
+  role: ProjectMembersRoleOptions;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
+};
+
+export type ProjectStatusesRecord = {
+  color?: string;
+  created: IsoAutoDateString;
+  id: string;
+  is_default?: boolean;
+  is_done?: boolean;
+  key: string;
+  name: string;
+  order?: number;
+  project: RecordIdString;
+  updated: IsoAutoDateString;
+};
+
 export type ProjectsRecord = {
   assets?: FileNameString[];
   code: string;
   created: IsoAutoDateString;
   description?: HTMLString;
-  group: RecordIdString;
   id: string;
   name: string;
+  organization: RecordIdString;
   supervisor?: RecordIdString;
+  updated: IsoAutoDateString;
+};
+
+export type SubtasksRecord = {
+  assignee?: RecordIdString;
+  created: IsoAutoDateString;
+  id: string;
+  is_done?: boolean;
+  order?: number;
+  task: RecordIdString;
+  title: string;
   updated: IsoAutoDateString;
 };
 
 export type TagsRecord = {
   color?: string;
   created: IsoAutoDateString;
-  group: RecordIdString;
+  creator: RecordIdString;
   id: string;
   name: string;
+  organization: RecordIdString;
   updated: IsoAutoDateString;
 };
 
@@ -218,6 +315,13 @@ export enum TasksStatusOptions {
   "testing" = "testing",
   "on_hold" = "on_hold",
 }
+
+export enum TasksTaskTypeOptions {
+  "task" = "task",
+  "bug" = "bug",
+  "feature" = "feature",
+  "chore" = "chore",
+}
 export type TasksRecord = {
   assignee?: RecordIdString;
   created: IsoAutoDateString;
@@ -232,10 +336,25 @@ export type TasksRecord = {
   priority: TasksPriorityOptions;
   project: RecordIdString;
   status: TasksStatusOptions;
+  status_ref?: RecordIdString;
+  story_points?: number;
   tags?: RecordIdString[];
+  task_type?: TasksTaskTypeOptions;
   time_spent_minutes?: number;
   title: string;
   updated: IsoAutoDateString;
+  watchers?: RecordIdString[];
+};
+
+export type TimeEntriesRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  minutes: number;
+  note?: string;
+  started_at?: IsoDateString;
+  task: RecordIdString;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
 };
 
 export type UserLoginLogsRecord = {
@@ -247,6 +366,18 @@ export type UserLoginLogsRecord = {
   updated: IsoAutoDateString;
   user: RecordIdString;
   user_agent?: string;
+};
+
+export type UserPreferencesRecord<
+  Tnotifications = unknown,
+  Tpreferences = unknown,
+> = {
+  created: IsoAutoDateString;
+  id: string;
+  notifications?: null | Tnotifications;
+  preferences?: null | Tpreferences;
+  updated: IsoAutoDateString;
+  user: RecordIdString;
 };
 
 export enum UsersRoleOptions {
@@ -266,7 +397,6 @@ export type UsersRecord = {
   emailVisibility?: boolean;
   failed_login_attempts?: number;
   first_name?: string;
-  group?: RecordIdString;
   id: string;
   last_name?: string;
   password: string;
@@ -275,14 +405,6 @@ export type UsersRecord = {
   updated: IsoAutoDateString;
   username: string;
   verified?: boolean;
-};
-
-export type UsersProjectsRecord = {
-  created: IsoAutoDateString;
-  id: string;
-  project: RecordIdString;
-  updated: IsoAutoDateString;
-  user: RecordIdString;
 };
 
 // Response types include system fields and match responses from the PocketBase API
@@ -300,26 +422,46 @@ export type AuditLogsResponse<Tchanges = unknown, Texpand = unknown> = Required<
   AuditLogsRecord<Tchanges>
 > &
   BaseSystemFields<Texpand>;
-export type CommentsResponse<Texpand = unknown> = Required<CommentsRecord> &
-  BaseSystemFields<Texpand>;
-export type GroupsResponse<Texpand = unknown> = Required<GroupsRecord> &
+export type CommentsResponse<
+  Treactions = unknown,
+  Texpand = unknown,
+> = Required<CommentsRecord<Treactions>> & BaseSystemFields<Texpand>;
+export type MentionsResponse<Texpand = unknown> = Required<MentionsRecord> &
   BaseSystemFields<Texpand>;
 export type NotificationsResponse<
   Tdata = unknown,
   Texpand = unknown,
 > = Required<NotificationsRecord<Tdata>> & BaseSystemFields<Texpand>;
+export type OrganizationMembersResponse<Texpand = unknown> =
+  Required<OrganizationMembersRecord> & BaseSystemFields<Texpand>;
+export type OrganizationsResponse<
+  Tsettings = unknown,
+  Texpand = unknown,
+> = Required<OrganizationsRecord<Tsettings>> & BaseSystemFields<Texpand>;
+export type ProjectMembersResponse<Texpand = unknown> =
+  Required<ProjectMembersRecord> & BaseSystemFields<Texpand>;
+export type ProjectStatusesResponse<Texpand = unknown> =
+  Required<ProjectStatusesRecord> & BaseSystemFields<Texpand>;
 export type ProjectsResponse<Texpand = unknown> = Required<ProjectsRecord> &
+  BaseSystemFields<Texpand>;
+export type SubtasksResponse<Texpand = unknown> = Required<SubtasksRecord> &
   BaseSystemFields<Texpand>;
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> &
   BaseSystemFields<Texpand>;
 export type TasksResponse<Texpand = unknown> = Required<TasksRecord> &
   BaseSystemFields<Texpand>;
+export type TimeEntriesResponse<Texpand = unknown> =
+  Required<TimeEntriesRecord> & BaseSystemFields<Texpand>;
 export type UserLoginLogsResponse<Texpand = unknown> =
   Required<UserLoginLogsRecord> & BaseSystemFields<Texpand>;
+export type UserPreferencesResponse<
+  Tnotifications = unknown,
+  Tpreferences = unknown,
+  Texpand = unknown,
+> = Required<UserPreferencesRecord<Tnotifications, Tpreferences>> &
+  BaseSystemFields<Texpand>;
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> &
   AuthSystemFields<Texpand>;
-export type UsersProjectsResponse<Texpand = unknown> =
-  Required<UsersProjectsRecord> & BaseSystemFields<Texpand>;
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
@@ -331,14 +473,20 @@ export type CollectionRecords = {
   _superusers: SuperusersRecord;
   audit_logs: AuditLogsRecord;
   comments: CommentsRecord;
-  groups: GroupsRecord;
+  mentions: MentionsRecord;
   notifications: NotificationsRecord;
+  organization_members: OrganizationMembersRecord;
+  organizations: OrganizationsRecord;
+  project_members: ProjectMembersRecord;
+  project_statuses: ProjectStatusesRecord;
   projects: ProjectsRecord;
+  subtasks: SubtasksRecord;
   tags: TagsRecord;
   tasks: TasksRecord;
+  time_entries: TimeEntriesRecord;
   user_login_logs: UserLoginLogsRecord;
+  user_preferences: UserPreferencesRecord;
   users: UsersRecord;
-  users_projects: UsersProjectsRecord;
 };
 
 export type CollectionResponses = {
@@ -349,14 +497,20 @@ export type CollectionResponses = {
   _superusers: SuperusersResponse;
   audit_logs: AuditLogsResponse;
   comments: CommentsResponse;
-  groups: GroupsResponse;
+  mentions: MentionsResponse;
   notifications: NotificationsResponse;
+  organization_members: OrganizationMembersResponse;
+  organizations: OrganizationsResponse;
+  project_members: ProjectMembersResponse;
+  project_statuses: ProjectStatusesResponse;
   projects: ProjectsResponse;
+  subtasks: SubtasksResponse;
   tags: TagsResponse;
   tasks: TasksResponse;
+  time_entries: TimeEntriesResponse;
   user_login_logs: UserLoginLogsResponse;
+  user_preferences: UserPreferencesResponse;
   users: UsersResponse;
-  users_projects: UsersProjectsResponse;
 };
 
 // Utility types for create/update operations
@@ -366,7 +520,8 @@ type ProcessCreateAndUpdateFields<T> = Omit<
     // Omit AutoDate fields
     [K in keyof T as Extract<T[K], IsoAutoDateString> extends never
       ? K
-      : never]: T[K] extends infer U // Convert FileNameString to File
+      : never]: // Convert FileNameString to File
+    T[K] extends infer U
       ? U extends FileNameString | FileNameString[]
         ? U extends any[]
           ? File[]

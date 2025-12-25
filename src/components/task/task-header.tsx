@@ -31,7 +31,7 @@ export function TaskHeader({
           className="hover:bg-primary/5 hover:text-primary h-12 gap-3 rounded-none px-6 font-bold transition-all"
         >
           <LayoutGrid className="size-4" />
-          <span className="text-[11px] font-black tracking-widest uppercase">
+          <span className="text-[11px] font-black tracking-tight uppercase">
             {tasks.board.title}
           </span>
         </Button>
@@ -48,7 +48,7 @@ export function TaskHeader({
           )}
         >
           <CheckSquare className="size-4" />
-          <span className="text-[11px] font-black tracking-widest uppercase">
+          <span className="text-[11px] font-black tracking-tight uppercase">
             {selectionMode
               ? common.buttons.cancelSelection
               : common.buttons.multiSelect}
@@ -57,12 +57,12 @@ export function TaskHeader({
       </div>
 
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
         size="lg"
         onClick={onCreateTask}
       >
         <Plus className="size-5" />
-        <span className="tracking-widest uppercase">
+        <span className="tracking-tight uppercase">
           {tasks.addTask.buttons.newTask}
         </span>
       </Button>
@@ -81,7 +81,6 @@ export function TaskHeader({
           : tasks.header.manageTasks
       }
       icon={ListTodo}
-      nodeId="Task_Registry"
       actions={headerActions}
     />
   );

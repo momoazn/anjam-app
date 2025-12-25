@@ -199,16 +199,17 @@ All checks must pass before committing.
 
 ```bash
 # Generate mock data
-bun run data:generate
+bun run setup
 
 # Seed database with test data
 bun run data:seed
 
-# Reset database (truncate + seed)
-bun run data:reset
+# Setup database (clear + seed)
+bun run setup
 
-# Clear all data
-bun run data:truncate
+# Or use aliases
+bun run data:reset       # Same as setup
+bun run data:seed        # Same as setup
 ```
 
 ### Default Test Accounts

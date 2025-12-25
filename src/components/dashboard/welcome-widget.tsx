@@ -82,7 +82,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
 
   if (isLoading) {
     return (
-      <div className="border-border/50 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-sm border bg-gradient-to-r to-transparent p-6 shadow-xl">
+      <div className="border-border/50 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-none border bg-gradient-to-r to-transparent p-6 shadow-md">
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
           <div
             className="h-full w-full"
@@ -98,8 +98,8 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
             <Skeleton className="h-4 w-96" />
           </div>
           <div className="flex gap-2">
-            <Skeleton className="h-10 w-24 rounded-sm" />
-            <Skeleton className="h-10 w-24 rounded-sm" />
+            <Skeleton className="h-10 w-24 rounded-none" />
+            <Skeleton className="h-10 w-24 rounded-none" />
           </div>
         </div>
       </div>
@@ -107,7 +107,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
   }
 
   return (
-    <div className="border-border/50 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-sm border bg-gradient-to-r to-transparent p-6 shadow-xl">
+    <div className="border-border/50 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-none border bg-gradient-to-r to-transparent p-6 shadow-md">
       <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
         <div
           className="h-full w-full"
@@ -121,7 +121,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
       <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-3 text-2xl font-black tracking-tight md:text-3xl">
-            <div className="bg-primary/10 text-primary border-primary/20 flex size-10 items-center justify-center rounded-sm border-2 shadow-lg">
+            <div className="bg-primary/10 text-primary border-primary/20 flex size-10 items-center justify-center rounded-none border shadow-sm">
               <LayoutDashboard className="size-5" />
             </div>
             {dashboardConfig.welcomeMessage}
@@ -146,7 +146,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
       </div>
 
       <div className="from-primary/20 absolute end-0 bottom-0 h-px w-1/3 bg-gradient-to-l to-transparent" />
-      <div className="from-primary/20 absolute bottom-0 start-0 h-px w-1/3 bg-gradient-to-r to-transparent" />
+      <div className="from-primary/20 absolute start-0 bottom-0 h-px w-1/3 bg-gradient-to-r to-transparent" />
     </div>
   );
 }

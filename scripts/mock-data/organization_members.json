@@ -1,0 +1,65 @@
+[
+  {
+    "organization": "org1",
+    "user": "admin",
+    "role": "owner",
+    "status": "active",
+    "joined_at": "2023-12-01T08:30:00.000Z"
+  },
+  {
+    "organization": "org1",
+    "user": "manager",
+    "role": "admin",
+    "status": "active",
+    "joined_at": "2023-12-05T10:15:00.000Z"
+  },
+  {
+    "organization": "org1",
+    "user": "employee1",
+    "role": "member",
+    "status": "active",
+    "joined_at": "2023-12-10T09:00:00.000Z"
+  },
+  {
+    "organization": "org1",
+    "user": "employee2",
+    "role": "member",
+    "status": "active",
+    "joined_at": "2023-12-12T11:20:00.000Z"
+  },
+  {
+    "organization": "org2",
+    "user": "admin",
+    "role": "owner",
+    "status": "active",
+    "joined_at": "2023-11-15T14:00:00.000Z"
+  },
+  {
+    "organization": "org2",
+    "user": "supervisor",
+    "role": "admin",
+    "status": "active",
+    "joined_at": "2023-11-20T09:30:00.000Z"
+  },
+  {
+    "organization": "org2",
+    "user": "employee3",
+    "role": "member",
+    "status": "active",
+    "joined_at": "2023-11-25T10:45:00.000Z"
+  },
+  {
+    "organization": "org2",
+    "user": "employee4",
+    "role": "member",
+    "status": "active",
+    "joined_at": "2023-11-28T13:15:00.000Z"
+  },
+  {
+    "organization": "org2",
+    "user": "employee5",
+    "role": "member",
+    "status": "active",
+    "joined_at": "2023-11-30T13:15:00.000Z"
+  }
+]

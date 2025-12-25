@@ -19,14 +19,14 @@ export function AppearanceSection() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <IconTerminal className="text-primary/60 size-4" />
-            <h3 className="text-sm font-black tracking-widest uppercase">
+            <h3 className="text-sm font-black tracking-tight uppercase">
               {settings.appearance.title}
             </h3>
           </div>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <p className="text-muted-foreground/60 text-right text-xs leading-relaxed font-bold tracking-widest uppercase">
+        <p className="text-muted-foreground/60 text-right text-xs leading-relaxed font-bold tracking-tight uppercase">
           {settings.appearance.description}
         </p>
 
@@ -45,11 +45,11 @@ export function AppearanceSection() {
                 theme === "light" && "rotate-12",
               )}
             />
-            <span className="text-[11px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[11px] font-black tracking-tight uppercase">
               {settings.appearance.light}
             </span>
             {theme === "light" && (
-              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
+              <div className="bg-primary absolute start-0 end-0 bottom-0 h-1" />
             )}
           </Button>
 
@@ -67,11 +67,11 @@ export function AppearanceSection() {
                 theme === "dark" && "-rotate-12",
               )}
             />
-            <span className="text-[11px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[11px] font-black tracking-tight uppercase">
               {settings.appearance.dark}
             </span>
             {theme === "dark" && (
-              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
+              <div className="bg-primary absolute start-0 end-0 bottom-0 h-1" />
             )}
           </Button>
 
@@ -84,11 +84,11 @@ export function AppearanceSection() {
             onClick={() => setTheme("system")}
           >
             <IconDeviceDesktop className="h-6 w-6" />
-            <span className="text-[11px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[11px] font-black tracking-tight uppercase">
               {settings.appearance.system}
             </span>
             {theme === "system" && (
-              <div className="bg-primary absolute end-0 bottom-0 start-0 h-1" />
+              <div className="bg-primary absolute start-0 end-0 bottom-0 h-1" />
             )}
           </Button>
         </div>

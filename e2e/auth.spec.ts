@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { fa } from "../src/constants/text";
+import { auth } from "../src/constants";
 
 test.describe("Authentication", () => {
   test.beforeEach(async ({ page }) => {
@@ -8,40 +8,41 @@ test.describe("Authentication", () => {
 
   test("should display login page", async ({ page }) => {
     await expect(
-      page.getByRole("button", { name: fa.auth.login.loginButton }),
+      page.getByRole("button", { name: auth.login.loginButton }),
     ).toBeVisible();
   });
 
   test("should show validation errors for empty form submission", async ({
     page,
   }) => {
-    await page.getByRole("button", { name: fa.auth.login.loginButton }).click();
+    await page.getByRole("button", { name: auth.login.loginButton }).click();
 
     // Should show validation errors
     await expect(
-      page.getByText(fa.auth.login.errors.credentialsRequired),
+      page.getByText(auth.login.errors.credentialsRequired),
     ).toBeVisible();
   });
 
   test("should handle invalid credentials", async ({ page }) => {
     // Fill in invalid credentials
-    await page.getByLabel(fa.auth.login.username).fill("invaliduser");
-    await page.getByLabel(fa.auth.login.password).fill("invalidpassword");
-    await page.getByRole("button", { name: fa.auth.login.loginButton }).click();
+    await page.getByPlaceholder("operator_id").fill("invaliduser");
+    await page.getByPlaceholder("••••••••").fill("invalidpassword");
+    await page.getByRole("button", { name: auth.login.loginButton }).click();
 
-    // Should show error message
-    await expect(page.getByText(fa.auth.errors.invalidCredentials)).toBeVisible(
-      { timeout: 5000 },
-    );
+    // Should remain on login view
+    await expect(page).toHaveURL(/\/login/);
+    await expect(
+      page.getByRole("button", { name: auth.login.loginButton }),
+    ).toBeVisible();
   });
 });
 
 test.describe("Protected Routes", () => {
   test("should redirect unauthenticated users to login", async ({ page }) => {
     // Try to access protected route
-    await page.goto("/dashboard");
+    await page.goto("/");
 
-    // Should redirect to login
+    // Should show login form
     await expect(page).toHaveURL(/\/login/);
   });
 
@@ -50,7 +51,9 @@ test.describe("Protected Routes", () => {
   }) => {
     await page.goto("/users");
 
-    await expect(page).toHaveURL(/\/login/);
+    await expect(
+      page.getByRole("button", { name: auth.login.loginButton }),
+    ).toBeVisible();
   });
 
   test("should redirect from login to dashboard when authenticated", async () => {

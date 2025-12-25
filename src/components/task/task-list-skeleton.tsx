@@ -19,7 +19,7 @@ export function TaskListSkeleton() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="flex items-center justify-between rounded-md p-2"
+                className="flex items-center justify-between rounded-none p-2"
               >
                 <div className="flex flex-1 items-center gap-2">
                   <Skeleton className="h-4 w-4 rounded" />

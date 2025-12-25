@@ -24,10 +24,10 @@ export function Leaderboard({ rows, onRowClick }: Props) {
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale">
-        <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2">
+        <div className="border-border/40 mb-6 flex h-20 w-20 items-center justify-center border">
           <IconTrophy className="size-10 stroke-[1]" />
         </div>
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase">
+        <p className="text-[10px] font-black tracking-tight uppercase">
           {reports.noData}
         </p>
       </div>
@@ -39,7 +39,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
       <div className="mb-2 flex items-center gap-4">
         <div className="flex items-center gap-2">
           <IconTrophy className="size-4 text-amber-500" />
-          <h3 className="text-sm font-black tracking-widest uppercase">
+          <h3 className="text-sm font-black tracking-tight uppercase">
             {reports.topPerformers}
           </h3>
         </div>
@@ -74,8 +74,8 @@ export function Leaderboard({ rows, onRowClick }: Props) {
               {/* Identity Zone */}
               <div className="flex-1 px-6 py-4">
                 <div className="mb-1 flex items-center justify-end gap-2">
-                  <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.2em] uppercase">
-                    Operator_Protocol
+                  <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+                    Operator_
                   </span>
                   <IconActivity className="text-primary/40 size-2.5" />
                 </div>
@@ -88,7 +88,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
               <div className="border-border/10 bg-muted/5 flex items-center gap-8 border-e px-8">
                 <div className="flex flex-col items-end">
                   <div className="mb-1 flex items-center gap-1.5 opacity-40">
-                    <span className="text-[8px] font-black tracking-widest uppercase">
+                    <span className="text-[8px] font-black tracking-tight uppercase">
                       Completed
                     </span>
                     <IconCircleCheck className="size-2.5" />
@@ -100,7 +100,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
 
                 <div className="flex flex-col items-end">
                   <div className="mb-1 flex items-center gap-1.5 opacity-40">
-                    <span className="text-[8px] font-black tracking-widest uppercase">
+                    <span className="text-[8px] font-black tracking-tight uppercase">
                       Efficiency
                     </span>
                     <IconClock className="size-2.5" />
@@ -115,7 +115,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
 
                 <div className="flex min-w-[80px] flex-col items-end">
                   <div className="mb-1 flex items-center gap-1.5 opacity-40">
-                    <span className="text-[8px] font-black tracking-widest uppercase">
+                    <span className="text-[8px] font-black tracking-tight uppercase">
                       Timeliness
                     </span>
                     <IconActivity className="size-2.5" />

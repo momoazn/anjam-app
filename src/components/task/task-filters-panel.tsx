@@ -76,8 +76,8 @@ export function TaskFiltersPanel({
       <div className="border-border/20 flex items-center justify-between border-b pb-4">
         <div className="flex items-center gap-2">
           <Layers className="text-primary/60 size-3.5" />
-          <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            Registry_Filter_Logic
+          <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+            _Filter_Logic
           </span>
         </div>
 

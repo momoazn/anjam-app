@@ -67,7 +67,7 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
           className="bg-card hover:bg-muted/10 group relative overflow-hidden p-6 text-right transition-colors"
         >
           <div className="mb-2 flex items-center justify-end gap-3">
-            <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+            <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
               {stat.label}
             </span>
             <stat.icon

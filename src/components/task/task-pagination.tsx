@@ -37,7 +37,7 @@ export function TaskPagination({
     <div className="border-border/40 bg-card flex flex-col gap-6 rounded-none border p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <Hash className="text-primary/40 size-4" />
-        <div className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+        <div className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
           {tasks.pagination.range
             .replace("{start}", digitsEnToFa(pageStart))
             .replace("{end}", digitsEnToFa(pageEnd))
@@ -47,17 +47,17 @@ export function TaskPagination({
 
       <div className="flex flex-wrap items-center gap-6">
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.3em] uppercase">
+          <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
             Page_Size
           </span>
           <Select
             value={currentPerPage.toString()}
             onValueChange={onPerPageChange}
           >
-            <SelectTrigger className="border-border/40 bg-muted/5 h-8 w-[120px] rounded-none text-[10px] font-black tracking-widest uppercase focus:ring-0">
+            <SelectTrigger className="border-border/40 bg-muted/5 h-8 w-[120px] rounded-none text-[10px] font-black tracking-tight uppercase focus:ring-0">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="border-foreground rounded-none border-2">
+            <SelectContent className="border-border rounded-none border">
               {[25, 50, 100, 200, 500].map((size) => (
                 <SelectItem
                   key={size}
@@ -85,7 +85,7 @@ export function TaskPagination({
           </Button>
 
           <div className="flex flex-col items-center">
-            <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
               Index
             </span>
             <span className="text-xs font-black tabular-nums">

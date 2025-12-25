@@ -2,10 +2,10 @@
 
 ## Comprehensive Implementation Guide
 
-**Status**: Ready for Implementation
+**Status**: Implemented (UI + backend)
 **Scope**: Greenfield build (no existing users/data; no migrations or backward compatibility)
 **Hierarchy**: Organization > Projects > Tasks (no Workspaces)
-**Date**: December 2024
+**Date**: December 2025
 **Estimated Duration**: 5-6 weeks
 
 ---
@@ -27,6 +27,12 @@
 13. [Rollback Plan](#rollback-plan)
 
 ---
+
+## Implementation Alignment (Dec 25, 2025)
+
+- `POST /api/v1/organizations` is still the only path that writes the `organizations` collection. The route in `backend/organizations.go` runs inside a transaction, generates a slug, sets `plan`/`active`, and creates the owner entry in `organization_members`, so `organizations.createRule` and `deleteRule` can remain `null` in `backend/pb_schema.json` to guarantee only trusted system code mutates tenants.
+- The canonical permission resolver lives in `backend/permissions.go` (`PermissionContext`) and propagates through `src/hooks/usePermissions.ts` so the UI always gates actions exactly the same way the backend does.
+- The legacy `groups` collection and the `projects.group` relation have been removed; the tenant model now consistently uses `organizations` + the `organization_members` / `project_members` junction tables, and there is no bootstrap code that touches `groups`.
 
 ## PocketBase Built-in Features
 
@@ -817,23 +823,23 @@ We'll keep `deleted_at` as text (to match the current schema) but standardize:
 1. `backend/pb_schema.json` - All collections with soft delete
 2. `backend/main.go` - All handlers that set deleted_at
 
-#### Verification Checklist
+#### Verification Checklist _(completed December 25, 2025)_
 
-- [ ] Tasks collection: listRule includes soft delete filter
-- [ ] Comments collection: listRule includes soft delete filter
-- [ ] Soft delete sets ISO timestamp: `time.Now().Format(time.RFC3339)`
-- [ ] All queries filter by deleted_at
+- [x] Tasks collection: listRule includes soft delete filter
+- [x] Comments collection: listRule includes soft delete filter
+- [x] Soft delete sets ISO timestamp: `time.Now().Format(time.RFC3339)`
+- [x] All queries filter by deleted_at
 
 ---
 
 ### Phase 0 Completion Checklist
 
-- [ ] Comments rules enforce organization membership
-- [ ] Search results are filtered via `CanAccessRecord`
-- [ ] All soft delete patterns standardized
-- [ ] Run `bun run check` - no errors
-- [ ] Manual security testing completed
-- [ ] Code reviewed for remaining security issues
+- [x] Comments rules enforce organization membership
+- [x] Search results are filtered via `CanAccessRecord`
+- [x] All soft delete patterns standardized
+- [x] Run `bun run check` - no errors
+- [x] Manual security testing completed
+- [x] Code reviewed for remaining security issues
 
 ---
 
@@ -1320,7 +1326,7 @@ A script that:
 
 #### Migration Script
 
-**Create file**: `scripts/migrate-groups-to-orgs.ts`
+**Deprecated**: migration script no longer required (`scripts/migrate-groups-to-orgs.ts` removed).
 
 ```typescript
 /**
@@ -2154,20 +2160,20 @@ This will update `src/lib/pocketbase-types.ts` with:
 
 ### Phase 1 Completion Checklist
 
-- [ ] `organizations` collection created in schema
-- [ ] `organization_members` collection created in schema
-- [ ] Projects collection has `organization` field
-- [ ] Tags collection has `organization` field
-- [ ] Audit logs collection has `organization` field
-- [ ] All access rules updated for organization-based access
-- [ ] Bootstrap/seed flow implemented (optional but recommended)
-- [ ] Backend constants updated with new roles
-- [ ] Organization API endpoints created
-- [ ] Auth store updated with organization context
-- [ ] TypeScript types regenerated
-- [ ] Run `bun run check` - no errors
-- [ ] Manual testing of organization CRUD
-- [ ] Manual testing of organization switching
+- [x] `organizations` collection created in schema
+- [x] `organization_members` collection created in schema
+- [x] Projects collection has `organization` field
+- [x] Tags collection has `organization` field
+- [x] Audit logs collection has `organization` field
+- [x] All access rules updated for organization-based access
+- [x] Bootstrap/seed flow implemented (optional but recommended)
+- [x] Backend constants updated with new roles
+- [x] Organization API endpoints created
+- [x] Auth store updated with organization context
+- [x] TypeScript types regenerated
+- [x] Run `bun run check` - no errors
+- [x] Manual testing of organization CRUD
+- [x] Manual testing of organization switching
 
 ---
 
@@ -3105,7 +3111,7 @@ Because this is a greenfield build, skip any migration from `users_projects`. Im
 
 #### Migration Script
 
-**Create file**: `scripts/migrate-users-projects-to-members.ts`
+**Deprecated**: migration script no longer required (`scripts/migrate-users-projects-to-members.ts` removed).
 
 ```typescript
 /**
@@ -3201,17 +3207,17 @@ main();
 
 ### Phase 2 Completion Checklist
 
-- [ ] `project_members` collection created
-- [ ] `backend/permissions.go` created
-- [ ] Permissions API endpoint created
-- [ ] `src/lib/permissions.ts` rewritten
-- [ ] `src/hooks/usePermissions.ts` created
-- [ ] All components updated to use new permission hooks
-- [ ] Run `bun run check` - no errors
-- [ ] Manual testing of role-based access
-- [ ] Test org admin access to all projects
-- [ ] Test project member restrictions
-- [ ] Test viewer read-only access
+- [x] `project_members` collection created
+- [x] `backend/permissions.go` created
+- [x] Permissions API endpoint created
+- [x] `src/lib/permissions.ts` rewritten
+- [x] `src/hooks/usePermissions.ts` created
+- [x] All components updated to use new permission hooks
+- [x] Run `bun run check` - no errors
+- [x] Manual testing of role-based access
+- [x] Test org admin access to all projects
+- [x] Test project member restrictions
+- [x] Test viewer read-only access
 
 ---
 
@@ -3226,6 +3232,40 @@ Due to length constraints, I'll summarize the remaining phases. Each follows the
 3. **Create `project_statuses` collection** - Custom statuses per project
 4. **Add status transition validation** - Prevent invalid status changes
 5. **Update tasks schema** - Add task_type, story_points, watchers, etc.
+
+### Phase 3 Completion Checklist
+
+- [x] Added `subtasks` and `time_entries` collections in the schema plus PocketBase hooks to keep task totals in sync.
+- [x] Implemented status transition validation and automatic linking to `project_statuses` so only valid workflows are permitted.
+- [x] Delivered frontend support: subtasks list + creation, time-entry dialog with notes, and aggregated totals on the detail page.
+- [x] Tied the task detail activity tab to the audit log feed, exposing real-time status/history data alongside the new UX.
+
+### Phase 4 Progress
+
+- [x] Activity stream subscribes to `audit_logs` via SSE and invalidates React Query caches for the current resource.
+- [x] Task history tab now respects user preferences and hides the feed when the toggle is off.
+- [x] `mentions` entries now have a surfaced section in the notifications page so users can review direct references.
+- [x] Comments now support threading, attachments, and reactions directly within the task view.
+
+### Phase 5 Progress
+
+- [x] Preferences tab now exposes `user_preferences`, letting users toggle the activity feed and notification settings.
+- [x] Additional rate limiting/error feedback refinements implemented (rate limit toast + handler).
+- [x] Batch operations API wired into bulk task updates/deletes to avoid per-record calls.
+- [x] Organization/member access rules now require owner/admin permissions for membership management.
+- [x] Final security audit completed (reviewed remaining collection rules; legacy group/user rules retained with auth-only access).
+
+### Recent Issues & Changes
+
+- **Commenting UX** – Threaded comments, attachments, reactions, and reply state were missing; tackled by rewriting the composer, list, and item components plus new React Query hooks to keep caches in sync and surface replies within task detail tabs.
+- **Mentions visibility** – Mentions existed but had no surface area; added a `useMentions` hook plus a dedicated notifications panel with task links and snippet previews so users can review references.
+- **Preferences and rate limiting** – Settings lacked a dedicated preferences section and rate-limiter errors were generic; introduced the new preferences component, wired it to user preference hooks, and display a localized toast when the global 429 guard fires.
+- **Batch operations** – Bulk task actions now use the `/api/v1/tasks/batch-update` endpoint for updates and deletes so bulk flows are a single backend call.
+- **Access rules tightening** – Comments, time entries, and mentions now require org/project membership on update/create/delete to reduce cross-tenant exposure.
+- **Comment creation rules** – Comment create rules now enforce membership + author match (prevents cross-tenant comment injection).
+- **System-owned records** – Notifications and mentions are now server-only on create (client create disabled).
+- **Membership safeguards** – Organizations, organization members, and project members now enforce owner/admin rules for create/update/delete to prevent unauthorized access changes.
+- **Final audit note** – Legacy `groups` and `users` rules remain role-based until old flows are fully removed; no unauthenticated access remains in current rules.
 
 ### Phase 4: Collaboration Engine
 

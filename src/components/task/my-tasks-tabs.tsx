@@ -55,7 +55,7 @@ export function MyTasksTabs({
         <TabsTrigger
           value="active"
           className={cn(
-            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-2xl border transition-all duration-300 data-[state=active]:shadow-lg lg:flex-none lg:px-10",
+            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-none border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
             "hover:bg-muted/50",
           )}
         >
@@ -63,7 +63,7 @@ export function MyTasksTabs({
           <span className="font-black tracking-tight uppercase">
             {myTasksText.tabs.active}
           </span>
-          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-lg px-2 text-[10px] font-black">
+          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-none px-2 text-[10px] font-black">
             {digitsEnToFa(stats.active)}
           </div>
           {activeTab === "active" && (
@@ -74,7 +74,7 @@ export function MyTasksTabs({
         <TabsTrigger
           value="completed"
           className={cn(
-            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-2xl border transition-all duration-300 data-[state=active]:shadow-lg lg:flex-none lg:px-10",
+            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-none border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
             "hover:bg-muted/50",
           )}
         >
@@ -82,7 +82,7 @@ export function MyTasksTabs({
           <span className="font-black tracking-tight uppercase">
             {myTasksText.tabs.completed}
           </span>
-          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-lg px-2 text-[10px] font-black">
+          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-none px-2 text-[10px] font-black">
             {digitsEnToFa(stats.completed)}
           </div>
           {activeTab === "completed" && (
@@ -93,7 +93,7 @@ export function MyTasksTabs({
         <TabsTrigger
           value="by-project"
           className={cn(
-            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-2xl border transition-all duration-300 data-[state=active]:shadow-lg lg:flex-none lg:px-10",
+            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-none border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
             "hover:bg-muted/50",
           )}
         >
@@ -109,7 +109,7 @@ export function MyTasksTabs({
 
       <div className="relative">
         {/* Sidebar vertical line accent */}
-        <div className="bg-border/40 absolute top-0 -end-6 bottom-0 w-px" />
+        <div className="bg-border/40 absolute -end-6 top-0 bottom-0 w-px" />
 
         <TabsContent value="active" className="mt-0 space-y-8 outline-none">
           {isLoading ? (
@@ -191,7 +191,7 @@ export function MyTasksTabs({
                     </h3>
                     <Badge
                       variant="secondary"
-                      className="rounded-lg font-black"
+                      className="rounded-none font-black"
                     >
                       {digitsEnToFa(project.tasks.length)}{" "}
                       {tasks.list.noTasks === "تسکی وجود ندارد"
@@ -216,7 +216,7 @@ export function MyTasksTabs({
                         </h4>
                         {task.deadline && (
                           <div className="mt-2 flex items-center gap-2">
-                            <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+                            <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
                               {tasks.addTask.deadline}
                             </span>
                             <span className="text-muted-foreground text-xs font-bold">
@@ -232,13 +232,13 @@ export function MyTasksTabs({
                       <div className="flex items-center gap-3">
                         <Badge
                           variant="outline"
-                          className="border-primary/20 bg-primary/5 text-primary rounded-md text-[10px] font-black tracking-wider uppercase"
+                          className="border-primary/20 bg-primary/5 text-primary rounded-none text-[10px] font-black tracking-wider uppercase"
                         >
                           {tasks.priority[task.priority]}
                         </Badge>
                         <Badge
                           variant="outline"
-                          className="border-border/60 bg-muted/50 text-muted-foreground rounded-md text-[10px] font-black tracking-wider uppercase"
+                          className="border-border/60 bg-muted/50 text-muted-foreground rounded-none text-[10px] font-black tracking-wider uppercase"
                         >
                           {tasks.status[task.status]}
                         </Badge>

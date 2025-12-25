@@ -16,24 +16,47 @@ import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
-export type CommentWithUser = CommentsResponse<{
-  user: UsersResponse;
-}>;
-
-type CreateCommentVariables = Omit<
-  CommentsRecord,
-  "id" | "created" | "updated"
+export type CommentWithUser = CommentsResponse<
+  unknown,
+  {
+    user: UsersResponse;
+  }
 >;
+
+type CreateCommentPayload = Omit<CommentsRecord, "id" | "created" | "updated">;
+
+type CreateCommentFormPayload = {
+  formData: FormData;
+  task: string;
+};
+
+type CreateCommentVariables = CreateCommentPayload | CreateCommentFormPayload;
 type UpdateCommentVariables = { id: string; updates: Partial<CommentsRecord> };
+
+const isFormPayload = (
+  variables: CreateCommentVariables,
+): variables is CreateCommentFormPayload => {
+  return (
+    typeof variables === "object" &&
+    variables !== null &&
+    "formData" in variables &&
+    variables.formData instanceof FormData
+  );
+};
 
 const useCreateCommentMutation = createMutation<
   CommentsResponse,
   Error,
   CreateCommentVariables
 >(
-  (commentData) => pb.collection("comments").create(commentData),
-  (client, _data, variables) => {
-    mutationInvalidators.crud.comments.create(client, variables?.task);
+  (commentData) => {
+    if (isFormPayload(commentData)) {
+      return pb.collection("comments").create(commentData.formData);
+    }
+    return pb.collection("comments").create(commentData);
+  },
+  (client, data) => {
+    mutationInvalidators.crud.comments.create(client, data);
   },
 );
 
@@ -43,8 +66,8 @@ const useUpdateCommentMutation = createMutation<
   UpdateCommentVariables
 >(
   ({ id, updates }) => pb.collection("comments").update(id, updates),
-  (client, _data, variables) => {
-    mutationInvalidators.crud.comments.update(client, variables?.updates?.task);
+  (client, data) => {
+    mutationInvalidators.crud.comments.update(client, data);
   },
 );
 
@@ -57,8 +80,8 @@ const useDeleteCommentMutation = createMutation<
     pb.collection("comments").update<CommentsResponse>(id, {
       deleted_at: new Date().toISOString(),
     }),
-  (client) => {
-    mutationInvalidators.crud.comments.delete(client);
+  (client, data) => {
+    mutationInvalidators.crud.comments.delete(client, data);
   },
 );
 

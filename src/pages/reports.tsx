@@ -315,14 +315,13 @@ export default function Reports() {
           title={reports.dashboardTitle}
           description={`${reports.range.label} ${digitsEnToFa(rangeLabel)}`}
           icon={IconChartBar}
-          nodeId="Analytics_Core"
         />
 
         <div className="space-y-16">
           <section className="space-y-6">
             <div className="flex items-center gap-4">
-              <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-                01_Configuration
+              <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+                Configuration
               </span>
               <div className="bg-border/20 h-px flex-1" />
             </div>
@@ -331,8 +330,8 @@ export default function Reports() {
 
           <section className="space-y-8">
             <div className="flex items-center gap-4">
-              <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-                02_Telemetry_Summary
+              <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+                Statistics Summary
               </span>
               <div className="bg-border/20 h-px flex-1" />
             </div>
@@ -356,14 +355,13 @@ export default function Reports() {
         title={reports.dashboardTitle}
         description={`${reports.range.label} ${digitsEnToFa(rangeLabel)}`}
         icon={IconChartBar}
-        nodeId="Analytics_Core"
       />
 
       <div className="space-y-16">
         <section className="space-y-6">
           <div className="flex items-center gap-4">
-            <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-              01_Configuration
+            <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+              Configuration
             </span>
             <div className="bg-border/20 h-px flex-1" />
           </div>
@@ -380,8 +378,8 @@ export default function Reports() {
 
         <section className="space-y-8">
           <div className="flex items-center gap-4">
-            <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-              02_Telemetry_Summary
+            <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+              Statistics Summary
             </span>
             <div className="bg-border/20 h-px flex-1" />
           </div>
@@ -433,10 +431,10 @@ export default function Reports() {
             ].map((stat) => (
               <div
                 key={stat.id}
-                className="bg-card border-border/40 hover:shadow-primary/5 border p-8 text-right shadow-sm transition-all hover:translate-y-[-2px] hover:shadow-xl"
+                className="bg-card border-border/40 hover:shadow-primary/5 border p-8 text-right shadow-sm transition-all  hover:shadow-md"
               >
                 <div className="mb-4 flex items-center justify-end gap-4 opacity-60">
-                  <span className="text-muted-foreground text-[11px] font-black tracking-widest uppercase">
+                  <span className="text-muted-foreground text-[11px] font-black tracking-tight uppercase">
                     {stat.label}
                   </span>
                   <stat.icon className={cn("size-5", stat.color)} />
@@ -454,8 +452,8 @@ export default function Reports() {
 
         <section className="space-y-8">
           <div className="flex items-center gap-4">
-            <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-              03_Visual_Analytics
+            <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+              Visual Analytics
             </span>
             <div className="bg-border/20 h-px flex-1" />
           </div>

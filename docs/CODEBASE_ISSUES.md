@@ -681,42 +681,10 @@ parts := strings.Split(lastTask.DisplayID, "-")  // ❌ Magic string
 
 ## Backend Issues - Detailed
 
-### 20. Group Managers Must Be Role “manager” (Admins Rejected)
+### 20. Legacy group-manager validation (obsolete)
 
-**File**: `backend/main.go` (lines 178-200), `backend/pb_schema.json` (`groups` collection rules)  
-**Severity**: LOW  
-**Type**: Validation Strictness
-
-**Problem**:
-
-- Only admins may create groups (schema `createRule`), but `handleGroupCreation` enforces that the assigned `manager` relation must belong to a user whose role exactly equals `"manager"`
-- This prevents an admin from simply managing a group themselves—they must create a separate manager user first
-- When seed data or migrations assign an admin to `manager`, the handler rejects the record with `ErrOnlyManagersCanBeGroupManagers`
-
-**Code**:
-
-```go
-func handleGroupCreation(e *core.RecordEvent) error {
-	managerId := record.GetString("manager")
-	if managerId != "" {
-		manager, err := e.App.FindRecordById(CollectionUsers, managerId)
-		if err != nil {
-			return fmt.Errorf("manager not found: %w", err)
-		}
-		managerRole := manager.GetString("role")
-		if managerRole != "manager" {  // ❌ Rejects admin users
-			return errors.New(ErrOnlyManagersCanBeGroupManagers)
-		}
-	}
-	// ...
-}
-```
-
-**Impact**:
-
-- Adds unnecessary friction when bootstrapping environments (an admin must create a “manager” user just to own groups)
-- Makes it impossible to have a unified “admin equals manager” workflow in small deployments
-- Confuses admins because the schema allows them to submit the form, but the handler rejects it downstream
+**Status**: OBSOLETE  
+**Resolution**: The `groups` collection and its associated handlers have been removed. Tenant isolation now uses `organizations`/`organization_members`, so the group-manager validation described here no longer exists.
 
 **Recommendation**:
 
@@ -735,7 +703,6 @@ func handleGroupCreation(e *core.RecordEvent) error {
 | Search lookup errors silently ignored        | MEDIUM   | Error Handling        | search.go                     | 44-55   |
 | Unsafe display ID parsing                    | MEDIUM   | Data Integrity        | main.go                       | 583-595 |
 | Code generation weak validation              | MEDIUM   | Validation            | main.go                       | 514-527 |
-| Group-manager cascade delete risk            | MEDIUM   | Referential Integrity | pb_schema.json                | N/A     |
 | Permission system mismatch                   | MEDIUM   | Architecture          | permissions.ts                | N/A     |
 | Missing database indexes                     | MEDIUM   | Performance           | search.go, main.go            | N/A     |
 | No rate limiting                             | HIGH     | Security              | N/A                           | N/A     |
@@ -746,7 +713,6 @@ func handleGroupCreation(e *core.RecordEvent) error {
 | Inconsistent logging                         | LOW      | Maintainability       | main.go                       | Various |
 | Input validation doesn’t match backend rules | MEDIUM   | UX/Data Integrity     | src/pages/create-project.tsx  | N/A     |
 | No advanced search                           | LOW      | Feature               | search.go                     | N/A     |
-| Group managers must be role “manager” only   | LOW      | Validation            | main.go, pb_schema.json       | 178-200 |
 | No webhook system                            | LOW      | Feature               | N/A                           | N/A     |
 
 ---

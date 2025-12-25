@@ -1,290 +1,114 @@
 [
   {
     "user": "admin",
-    "title": "خوش آمدید به سیستم مدیریت وظایف",
-    "message": "حساب کاربری ادمین سیستم شما با موفقیت ایجاد شد. شما دسترسی کامل به تمام بخش‌های سیستم دارید.",
-    "type": "system",
-    "read": false,
-    "created": "2025-01-15T09:00:00.000Z"
+    "type": "task_assigned",
+    "title": "وظیفه جدید به شما اختصاص داده شد",
+    "message": "وظیفه 'بهینه‌سازی سرعت بارگذاری' در پروژه 'پروژه وب سایت' به شما اختصاص داده شد",
+    "read": false
   },
   {
     "user": "admin",
-    "title": "گزارش هفتگی سیستم",
-    "message": "گزارش عملکرد هفتگی سیستم آماده است. 15 وظیفه جدید، 8 وظیفه تکمیل شده و 3 وظیفه با تاخیر.",
-    "type": "system",
-    "read": false,
-    "created": "2025-01-22T08:30:00.000Z"
-  },
-  {
-    "user": "admin",
-    "title": "هشدار امنیتی",
-    "message": "تلاش ورود ناموفق از IP غیرمجاز شناسایی شد. لطفاً امنیت سیستم را بررسی کنید.",
-    "type": "system",
-    "read": false,
-    "created": "2025-01-25T14:15:00.000Z"
-  },
-  {
-    "user": "admin",
-    "title": "پشتیبان‌گیری خودکار",
-    "message": "پشتیبان‌گیری روزانه با موفقیت انجام شد. فایل پشتیبان در سرور ذخیره شد.",
-    "type": "system",
-    "read": true,
-    "created": "2025-01-26T02:00:00.000Z"
-  },
-  {
-    "user": "supervisor.hassan",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'طراحی رابط کاربری صفحه اصلی' به محمد علیزاده اختصاص یافت.",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-01T09:00:00.000Z"
-  },
-  {
-    "user": "supervisor.hassan",
-    "title": "وظیفه تکمیل شد",
-    "message": "وظیفه 'توسعه سیستم گزارش‌گیری فروش' توسط نرگس کریمی تکمیل شد.",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-10T14:20:00.000Z"
-  },
-  {
-    "user": "supervisor.hassan",
-    "title": "هشدار مهلت وظیفه",
-    "message": "وظیفه 'بهینه‌سازی عملکرد دیتابیس' تا 3 روز دیگر مهلت دارد.",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-12T10:00:00.000Z"
-  },
-  {
-    "user": "supervisor.hassan",
-    "title": "گزارش عملکرد پروژه SMS",
-    "message": "پروژه سیستم مدیریت فروش 75% پیشرفت داشته است. 6 وظیفه از 8 وظیفه تکمیل شده.",
     "type": "project_updated",
-    "read": true,
-    "created": "2025-05-15T16:00:00.000Z"
+    "title": "پروژه به‌روزرسانی شد",
+    "message": "تغییراتی در پروژه 'پروژه وب سایت' ایجاد شده است",
+    "read": true
   },
   {
-    "user": "supervisor.zahra",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'پیاده‌سازی سیستم احراز هویت' به سارا احمدی اختصاص یافت.",
+    "user": "manager",
+    "type": "comment",
+    "title": "نظر جدید",
+    "message": "employee1 روی وظیفه 'طراحی رابط کاربری صفحه اصلی' نظر جدیدی گذاشته است",
+    "read": false
+  },
+  {
+    "user": "manager",
     "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-02T10:15:00.000Z"
+    "title": "وظیفه جدید به کاربر اختصاص داده شد",
+    "message": "وظیفه جدید در پروژه 'پروژه وب سایت' به employee1 اختصاص داده شد",
+    "read": true
   },
   {
-    "user": "supervisor.zahra",
-    "title": "وظیفه در حال انجام",
-    "message": "وظیفه 'پیاده‌سازی سیستم اعلان‌ها' توسط سارا احمدی شروع شد.",
+    "user": "employee1",
     "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-18T09:30:00.000Z"
+    "title": "وظیفه جدید به شما اختصاص داده شد",
+    "message": "وظیفه 'طراحی رابط کاربری صفحه اصلی' در پروژه 'پروژه وب سایت' به شما اختصاص داده شد",
+    "read": false
   },
   {
-    "user": "supervisor.zahra",
-    "title": "هشدار مهلت فوری",
-    "message": "وظیفه 'پیاده‌سازی سیستم پرداخت' تا 7 روز دیگر مهلت دارد و اولویت فوری دارد.",
+    "user": "employee1",
+    "type": "comment",
+    "title": "پاسخ به نظر شما",
+    "message": "manager روی وظیفه 'طراحی رابط کاربری صفحه اصلی' به نظر شما پاسخ داد",
+    "read": false
+  },
+  {
+    "user": "employee2",
     "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-08T14:20:00.000Z"
+    "title": "وظیفه جدید به شما اختصاص داده شد",
+    "message": "وظیفه 'پیاده‌سازی کامپوننت منوی اصلی' در پروژه 'پروژه وب سایت' به شما اختصاص داده شد",
+    "read": false
   },
   {
-    "user": "supervisor.zahra",
-    "title": "گزارش عملکرد پروژه ECO",
-    "message": "پروژه پلتفرم تجارت الکترونیک 60% پیشرفت داشته است. 3 وظیفه از 8 وظیفه تکمیل شده.",
-    "type": "project_updated",
-    "read": true,
-    "created": "2025-05-20T11:30:00.000Z"
+    "user": "employee2",
+    "type": "comment",
+    "title": "نظر جدید",
+    "message": "manager روی وظیفه 'پیاده‌سازی کامپوننت منوی اصلی' نظر جدیدی گذاشته است",
+    "read": true
   },
   {
-    "user": "supervisor.mahmoud",
-    "title": "وظیفه تکمیل شد",
-    "message": "وظیفه 'توسعه API مدیریت محصولات' توسط امیر حسینی تکمیل شد.",
+    "user": "supervisor",
+    "type": "comment",
+    "title": "نظر جدید",
+    "message": "employee3 روی وظیفه 'مستندسازی API endpoints' نظر جدیدی گذاشته است",
+    "read": false
+  },
+  {
+    "user": "supervisor",
     "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-18T14:20:00.000Z"
+    "title": "وظیفه جدید به کاربر اختصاص داده شد",
+    "message": "وظیفه جدید در پروژه 'پروژه API' به employee4 اختصاص داده شد",
+    "read": true
   },
   {
-    "user": "supervisor.mahmoud",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'پیاده‌سازی سیستم بارکدخوانی' به نرگس کریمی اختصاص یافت.",
+    "user": "employee3",
     "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-02T14:20:00.000Z"
+    "title": "وظیفه جدید به شما اختصاص داده شد",
+    "message": "وظیفه 'مستندسازی API endpoints' در پروژه 'پروژه API' به شما اختصاص داده شد",
+    "read": false
   },
   {
-    "user": "supervisor.mahmoud",
-    "title": "هشدار مهلت وظیفه",
-    "message": "وظیفه 'تست واحد و یکپارچگی' تا 5 روز دیگر مهلت دارد.",
+    "user": "employee3",
+    "type": "comment",
+    "title": "پاسخ به نظر شما",
+    "message": "supervisor روی وظیفه 'بررسی امنیتی کد' به نظر شما پاسخ داد",
+    "read": true
+  },
+  {
+    "user": "employee4",
     "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-20T10:15:00.000Z"
+    "title": "وظیفه جدید به شما اختصاص داده شد",
+    "message": "وظیفه 'پیاده‌سازی احراز هویت JWT' در پروژه 'پروژه API' به شما اختصاص داده شد",
+    "read": false
   },
   {
-    "user": "supervisor.mahmoud",
-    "title": "گزارش عملکرد پروژه WMS",
-    "message": "پروژه سیستم مدیریت انبار 40% پیشرفت داشته است. 1 وظیفه از 8 وظیفه تکمیل شده.",
-    "type": "project_updated",
-    "read": true,
-    "created": "2025-05-25T09:00:00.000Z"
+    "user": "employee4",
+    "type": "comment",
+    "title": "نظر جدید",
+    "message": "supervisor روی وظیفه 'پیاده‌سازی احراز هویت JWT' نظر جدیدی گذاشته است",
+    "read": false
   },
   {
-    "user": "dev.mohammad",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'طراحی رابط کاربری صفحه اصلی' به شما اختصاص یافت. مهلت: 30 آوریل 2025",
+    "user": "employee5",
     "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-01T09:00:00.000Z"
+    "title": "وظیفه جدید به شما اختصاص داده شد",
+    "message": "وظیفه 'اضافه کردن Rate Limiting' در پروژه 'پروژه API' به شما اختصاص داده شد",
+    "read": false
   },
   {
-    "user": "dev.mohammad",
-    "title": "وظیفه تکمیل شد",
-    "message": "وظیفه 'پیاده‌سازی سیستم مدیریت بازخورد' با موفقیت تکمیل شد. عالی کار کردید!",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-14T11:30:00.000Z"
-  },
-  {
-    "user": "dev.mohammad",
-    "title": "هشدار مهلت وظیفه",
-    "message": "وظیفه 'طراحی رابط کاربری صفحه اصلی' تا 16 روز دیگر مهلت دارد.",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-14T15:30:00.000Z"
-  },
-  {
-    "user": "dev.mohammad",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'توسعه سیستم مدیریت سفارشات' به شما اختصاص یافت. مهلت: 5 ژوئن 2025",
-    "type": "task_assigned",
-    "read": true,
-    "created": "2025-05-12T09:15:00.000Z"
-  },
-  {
-    "user": "dev.sara",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'بهینه‌سازی عملکرد دیتابیس' به شما اختصاص یافت. مهلت: 15 مه 2025",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-16T13:20:00.000Z"
-  },
-  {
-    "user": "dev.sara",
-    "title": "وظیفه در حال انجام",
-    "message": "وظیفه 'توسعه سیستم مدیریت مشتریان' شروع شد. پیشرفت: 45%",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-15T16:45:00.000Z"
-  },
-  {
-    "user": "dev.sara",
-    "title": "هشدار مهلت وظیفه",
-    "message": "وظیفه 'پیاده‌سازی سیستم احراز هویت' تا 3 روز دیگر مهلت دارد.",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-22T08:00:00.000Z"
-  },
-  {
-    "user": "dev.sara",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'پیاده‌سازی سیستم ارزیابی و نظرات' به شما اختصاص یافت. مهلت: 10 ژوئن 2025",
-    "type": "task_assigned",
-    "read": true,
-    "created": "2025-05-15T11:30:00.000Z"
-  },
-  {
-    "user": "dev.amir",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'پیاده‌سازی سیستم مدیریت موجودی' به شما اختصاص یافت. مهلت: 20 مه 2025",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-30T10:00:00.000Z"
-  },
-  {
-    "user": "dev.amir",
-    "title": "وظیفه تکمیل شد",
-    "message": "وظیفه 'توسعه API مدیریت محصولات' با موفقیت تکمیل شد. کار عالی!",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-18T14:20:00.000Z"
-  },
-  {
-    "user": "dev.amir",
-    "title": "هشدار مهلت وظیفه",
-    "message": "وظیفه 'تست واحد و یکپارچگی' تا 5 روز دیگر مهلت دارد.",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-04-20T10:15:00.000Z"
-  },
-  {
-    "user": "dev.amir",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'توسعه سیستم ردیابی محصولات' به شما اختصاص یافت. مهلت: 20 ژوئن 2025",
-    "type": "task_assigned",
-    "read": true,
-    "created": "2025-05-28T16:20:00.000Z"
-  },
-  {
-    "user": "dev.narges",
-    "title": "وظیفه تکمیل شد",
-    "message": "وظیفه 'توسعه سیستم گزارش‌گیری فروش' با موفقیت تکمیل شد. عالی کار کردید!",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-10T14:20:00.000Z"
-  },
-  {
-    "user": "dev.narges",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'پیاده‌سازی سیستم بارکدخوانی' به شما اختصاص یافت. مهلت: 12 مه 2025",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-02T14:20:00.000Z"
-  },
-  {
-    "user": "dev.narges",
-    "title": "وظیفه در حال انجام",
-    "message": "وظیفه 'پیاده‌سازی سیستم مدیریت فروشنده' شروع شد. پیشرفت: 30%",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-20T16:20:00.000Z"
-  },
-  {
-    "user": "dev.narges",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'توسعه سیستم گزارش‌گیری انبار' به شما اختصاص یافت. مهلت: 25 ژوئن 2025",
-    "type": "task_assigned",
-    "read": true,
-    "created": "2025-06-01T09:45:00.000Z"
-  },
-  {
-    "user": "dev.hooman",
-    "title": "وظیفه تکمیل شد",
-    "message": "وظیفه 'پیاده‌سازی سیستم مدیریت کوپن' با موفقیت تکمیل شد. کار عالی!",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-10T14:20:00.000Z"
-  },
-  {
-    "user": "dev.hooman",
-    "title": "وظیفه جدید اختصاص یافت",
-    "message": "وظیفه 'پیاده‌سازی سیستم هشدار انقضا' به شما اختصاص یافت. مهلت: 22 مه 2025",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-10T12:00:00.000Z"
-  },
-  {
-    "user": "dev.hooman",
-    "title": "وظیفه در حال انجام",
-    "message": "وظیفه 'پیاده‌سازی سیستم هشدار انقضا' شروع شد. پیشرفت: 60%",
-    "type": "task_assigned",
-    "read": false,
-    "created": "2025-05-11T09:30:00.000Z"
-  },
-  {
-    "user": "dev.hooman",
-    "title": "هشدار مهلت وظیفه",
-    "message": "وظیفه 'پیاده‌سازی سیستم پرداخت' تا 7 روز دیگر مهلت دارد.",
-    "type": "task_assigned",
-    "read": true,
-    "created": "2025-05-08T14:20:00.000Z"
+    "user": "employee5",
+    "type": "comment",
+    "title": "نظر جدید",
+    "message": "supervisor روی وظیفه 'رمزنگاری داده‌های حساس' نظر جدیدی گذاشته است",
+    "read": true
   }
 ]

@@ -59,8 +59,8 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
 
   if (summaries.length === 0) {
     return (
-      <div className="border-border/40 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase">
+      <div className="border-border/40 flex flex-col items-center justify-center border border-dashed py-24 text-center opacity-30 grayscale">
+        <p className="text-[10px] font-black tracking-tight uppercase">
           {reports.charts.employee.emptyStates.noData}
         </p>
       </div>
@@ -70,14 +70,14 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
   return (
     <div className="space-y-6">
       <div className="border-border/20 flex items-center justify-between border-b pb-4">
-        <h3 className="text-sm font-black tracking-widest uppercase">
+        <h3 className="text-sm font-black tracking-tight uppercase">
           {reports.charts.employee.performanceTable.title}
         </h3>
         <Button
           variant="outline"
           size="sm"
           onClick={handleExportCsv}
-          className="border-foreground bg-card h-10 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+          className="border-border bg-card h-10 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md transition-all   active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
         >
           <IconDownload className="ms-2 size-4" />
           {reports.charts.employee.performanceTable.exportCsv}
@@ -88,7 +88,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
         className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border"
         data-animate-stagger
       >
-        {/* Table Head Protocol */}
+        {/* Table Head  */}
         <div className="bg-muted/20 border-border/40 grid h-10 grid-cols-6 border-b">
           {[
             {
@@ -134,7 +134,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
               className="hover:bg-muted/30 border-border/10 flex items-center justify-center gap-2 border-s transition-colors last:border-s-0"
             >
               <col.icon className="text-primary/40 size-3" />
-              <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
                 {col.label}
               </span>
               <IconArrowsSort

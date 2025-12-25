@@ -25,7 +25,6 @@ const formSchema = z.object({
   last_name: z.string().min(1, { message: auth.errors.lastNameRequired }),
   role: z.nativeEnum(UsersRoleOptions),
   password: z.string().optional(),
-  group: z.string().optional(),
 });
 
 export default function EditUser() {
@@ -49,7 +48,6 @@ export default function EditUser() {
       last_name: "",
       role: UsersRoleOptions.employee,
       password: "",
-      group: "",
     },
   });
 
@@ -62,7 +60,6 @@ export default function EditUser() {
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         role: user.role as UsersRoleOptions,
-        group: user.group || "",
         password: "",
       });
     }
@@ -106,9 +103,8 @@ export default function EditUser() {
     <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
       <PageHeader
         title={users.edit.title}
-        description={`Modifying protocol for operator node :: ${user?.username || id}`}
+        description={`Update information for user :: ${user?.username || id}`}
         icon={IconUserEdit}
-        nodeId="Operator_Configuration"
       />
 
       <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
@@ -123,7 +119,6 @@ export default function EditUser() {
                 control={userFieldsControl}
                 isEdit
                 editingUserId={id}
-                showGroup={isAdmin || isManager}
               />
 
               <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
@@ -132,19 +127,19 @@ export default function EditUser() {
                   variant="outline"
                   onClick={handleCancel}
                   disabled={isPending}
-                  className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
+                  className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
                 >
                   {common.cancel}
                 </Button>
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                  className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
                 >
                   {isPending && (
                     <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                   )}
-                  <span className="tracking-widest uppercase">
+                  <span className="tracking-tight uppercase">
                     {users.edit.button}
                   </span>
                 </Button>

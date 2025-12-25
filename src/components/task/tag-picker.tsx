@@ -121,7 +121,7 @@ export function TagPicker({
               <button
                 type="button"
                 onClick={() => handleRemove(tag.id)}
-                className="ms-1 rounded-sm p-0.5 transition-colors hover:bg-black/20"
+                className="ms-1 rounded-none p-0.5 transition-colors hover:bg-black/20"
               >
                 <X className="h-3 w-3" />
               </button>

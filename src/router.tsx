@@ -7,20 +7,26 @@ import {
   app,
   auth,
   errors,
-  groups,
   myTasks,
   navigation,
   navigationLabels,
   notFound,
+  organization,
   projects,
+  settings,
   tagsManagement,
   tasks,
   ui,
   users,
 } from "@/constants";
-import { can, Permission } from "./lib/permissions";
-import { UsersRoleOptions } from "./lib/pocketbase-types";
-import { useAuthIsLoggedIn, useAuthUser } from "./store/auth-store";
+import type { Permission } from "./lib/permissions";
+import { usePermissions } from "./hooks/usePermissions";
+import {
+  useAuthIsLoggedIn,
+  useAuthUser,
+  useCurrentOrganization,
+  useAuthStore,
+} from "./store/auth-store";
 
 // Standardized error fallback component for lazy-loaded routes
 const PageLoadError = ({ message }: { message: string }) => (
@@ -60,18 +66,6 @@ const PendingActivation = createLazyPage(
 const Dashboard = createLazyPage(
   () => import("@/pages/dashboard"),
   errors.pageLoad.dashboard,
-);
-const Groups = createLazyPage(
-  () => import("@/pages/groups"),
-  errors.pageLoad.notFound,
-);
-const CreateGroup = createLazyPage(
-  () => import("@/pages/create-group"),
-  errors.pageLoad.notFound,
-);
-const EditGroup = createLazyPage(
-  () => import("@/pages/edit-group"),
-  errors.pageLoad.notFound,
 );
 const Projects = createLazyPage(
   () => import("@/pages/projects"),
@@ -160,6 +154,10 @@ const Settings = createLazyPage(
   () => import("@/pages/settings"),
   errors.pageLoad.notFound,
 );
+const PreferencesPage = createLazyPage(
+  () => import("@/pages/settings/preferences"),
+  errors.pageLoad.notFound,
+);
 const Notifications = createLazyPage(
   () => import("@/pages/notifications"),
   errors.pageLoad.notifications,
@@ -173,12 +171,69 @@ const NotFound = createLazyPage(
   errors.pageLoad.notFound,
 );
 
+// Organization pages (lazy loaded)
+const SelectOrganization = createLazyPage(
+  () =>
+    import("@/pages/select-organization").then((module) => ({
+      default: module.SelectOrganizationPage,
+    })),
+  errors.pageLoad.notFound,
+);
+const CreateOrganization = createLazyPage(
+  () =>
+    import("@/pages/organizations/create").then((module) => ({
+      default: module.CreateOrganizationPage,
+    })),
+  errors.pageLoad.notFound,
+);
+const OrgSettings = createLazyPage(
+  () =>
+    import("@/pages/settings/organization").then((module) => ({
+      default: module.OrgSettingsPage,
+    })),
+  errors.pageLoad.notFound,
+);
+const OrgMembers = createLazyPage(
+  () =>
+    import("@/pages/settings/members").then((module) => ({
+      default: module.OrgMembersPage,
+    })),
+  errors.pageLoad.notFound,
+);
+
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
+  return <>{children}</>;
+};
+
+// RequireOrganization component - ensures user has an organization selected
+const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
+  const isLoggedIn = useAuthIsLoggedIn();
+  const currentOrg = useCurrentOrganization();
+  const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Don't redirect while loading organizations
+  if (isLoadingOrgs) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  // Redirect to organization selection if no organization is selected
+  if (!currentOrg) {
+    return <Navigate to="/select-organization" replace />;
+  }
+
   return <>{children}</>;
 };
 
@@ -191,6 +246,7 @@ const PermissionProtectedRoute = ({
   permission: Permission;
 }) => {
   const user = useAuthUser();
+  const { can } = usePermissions();
   const isLoggedIn = useAuthIsLoggedIn();
 
   if (!isLoggedIn) {
@@ -199,7 +255,7 @@ const PermissionProtectedRoute = ({
 
   // Special case: allow users to edit their own profile
   if (
-    permission === "users.manage" &&
+    permission === "org.manage_members" &&
     window.location.pathname.match(/^\/users\/[^/]+\/edit$/)
   ) {
     const urlParts = window.location.pathname.split("/");
@@ -210,7 +266,7 @@ const PermissionProtectedRoute = ({
     }
   }
 
-  if (!can(user?.role as UsersRoleOptions | null, permission)) {
+  if (!can(permission)) {
     return <Navigate to="/" replace />;
   }
 
@@ -232,6 +288,7 @@ type RouteType = {
   protected: boolean;
   permission?: string;
   title?: string;
+  requiresOrg?: boolean; // If true, requires organization to be selected
 };
 
 const Title = ({
@@ -254,34 +311,50 @@ const routes: RouteType[] = [
     path: "/landing",
     element: <Landing />,
     protected: false,
-    title: "Anjam Registry",
+    title: "Anjam Dashboard",
+  },
+  // Organization routes (public - no RequireOrganization needed)
+  {
+    path: "/select-organization",
+    element: <SelectOrganization />,
+    protected: true,
+    requiresOrg: false,
+    title: "Select Organization",
+  },
+  {
+    path: "/organizations/new",
+    element: <CreateOrganization />,
+    protected: true,
+    requiresOrg: false,
+    title: organization.create.title,
+  },
+  {
+    path: "/settings/organization",
+    element: (
+      <PermissionProtectedRoute permission="org.update">
+        <OrgSettings />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    requiresOrg: true,
+    title: organization.settings.title,
+  },
+  {
+    path: "/settings/members",
+    element: (
+      <PermissionProtectedRoute permission="org.manage_members">
+        <OrgMembers />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    requiresOrg: true,
+    title: organization.members.title,
   },
   {
     path: "/",
     element: <Dashboard />,
     protected: true,
     title: navigation.dashboard,
-  },
-  {
-    path: "/groups",
-    element: <Groups />,
-    protected: true,
-    permission: "groups.view",
-    title: groups.title,
-  },
-  {
-    path: "/groups/new",
-    element: <CreateGroup />,
-    protected: true,
-    permission: "groups.manage",
-    title: groups.create.title,
-  },
-  {
-    path: "/groups/:id/edit",
-    element: <EditGroup />,
-    protected: true,
-    permission: "groups.manage",
-    title: groups.edit.title,
   },
   {
     path: "/projects",
@@ -328,9 +401,7 @@ const routes: RouteType[] = [
   {
     path: "/tasks/board",
     element: (
-      <PermissionProtectedRoute
-        permission="tasks.view" // Assuming a permission for task board
-      >
+      <PermissionProtectedRoute permission="task.view">
         <TaskBoardPage />
       </PermissionProtectedRoute>
     ),
@@ -388,7 +459,7 @@ const routes: RouteType[] = [
   {
     path: "/projects/:id/board",
     element: (
-      <PermissionProtectedRoute permission="tasks.view">
+      <PermissionProtectedRoute permission="task.view">
         <TaskBoardPage />
       </PermissionProtectedRoute>
     ),
@@ -402,24 +473,30 @@ const routes: RouteType[] = [
     title: tasks.addTask.title,
   },
   {
+    path: "/tasks/new",
+    element: <CreateTask />,
+    protected: true,
+    title: tasks.addTask.title,
+  },
+  {
     path: "/users",
     element: <Users />,
     protected: true,
-    permission: "users.view",
+    permission: "org.manage_members",
     title: users.title,
   },
   {
     path: "/users/new",
     element: <CreateUser />,
     protected: true,
-    permission: "users.manage",
+    permission: "org.manage_members",
     title: users.create.title,
   },
   {
     path: "/users/:id/edit",
     element: <EditUser />,
     protected: true,
-    permission: "users.manage",
+    permission: "org.manage_members",
     title: users.edit.title,
   },
   {
@@ -447,6 +524,13 @@ const routes: RouteType[] = [
     title: navigation.settings,
   },
   {
+    path: "/settings/preferences",
+    element: <PreferencesPage />,
+    protected: true,
+    requiresOrg: false,
+    title: settings.preferences.title,
+  },
+  {
     path: "/notifications",
     element: <Notifications />,
     protected: true,
@@ -455,7 +539,7 @@ const routes: RouteType[] = [
   {
     path: "/audit-logs",
     element: (
-      <PermissionProtectedRoute permission="users.manage">
+      <PermissionProtectedRoute permission="org.manage_members">
         <AuditLogs />
       </PermissionProtectedRoute>
     ),
@@ -509,6 +593,11 @@ export const AppRoutes = () => {
               );
             } else {
               element = <ProtectedRoute>{content}</ProtectedRoute>;
+            }
+
+            // Wrap with RequireOrganization if route requires an org
+            if (route.requiresOrg) {
+              element = <RequireOrganization>{element}</RequireOrganization>;
             }
           } else if (
             route.path === "/login" ||

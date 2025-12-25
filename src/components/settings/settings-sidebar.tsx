@@ -1,4 +1,5 @@
 import {
+  IconAdjustmentsHorizontal,
   IconInfoCircle,
   IconPalette,
   IconShield,
@@ -14,6 +15,11 @@ const menuItems = [
   { id: "profile", label: settings.tabs.profile, icon: IconUser },
   { id: "appearance", label: settings.tabs.appearance, icon: IconPalette },
   { id: "security", label: settings.tabs.security, icon: IconShield },
+  {
+    id: "preferences",
+    label: settings.tabs.preferences,
+    icon: IconAdjustmentsHorizontal,
+  },
   { id: "about", label: settings.tabs.about, icon: IconInfoCircle },
 ];
 
@@ -29,7 +35,7 @@ export function SettingsSidebar({
   return (
     <nav className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
       <div className="mb-4 hidden px-4 lg:block">
-        <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.3em] uppercase">
+        <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
           Config_Modules
         </span>
       </div>

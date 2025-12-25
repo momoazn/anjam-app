@@ -16,7 +16,7 @@ export function MyTasksHeader({
   onCreateTask,
 }: MyTasksHeaderProps) {
   return (
-    <div className="bg-card relative mb-8 overflow-hidden rounded-3xl border p-8 shadow-xl">
+    <div className="bg-card relative mb-8 overflow-hidden rounded-3xl border p-8 shadow-md">
       {/* Blueprint Grid Background */}
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
@@ -28,13 +28,13 @@ export function MyTasksHeader({
 
       <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-start gap-5">
-          <div className="bg-primary/10 text-primary ring-primary/20 flex size-14 items-center justify-center rounded-2xl ring-1">
+          <div className="bg-primary/10 text-primary ring-primary/20 flex size-14 items-center justify-center rounded-none ring-1">
             <User className="size-7" />
           </div>
           <div>
             <div className="text-primary flex items-center gap-2">
               <Layers className="size-3" />
-              <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+              <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                 {app.name} / Workspace / Index
               </span>
             </div>
@@ -53,7 +53,7 @@ export function MyTasksHeader({
             size="lg"
             onClick={onToggleSelection}
             className={cn(
-              "border-primary/10 h-12 gap-3 rounded-xl px-6 font-bold transition-all",
+              "border-primary/10 h-12 gap-3 rounded-none px-6 font-bold transition-all",
               selectionMode && "bg-primary/10 text-primary border-primary/30",
             )}
           >
@@ -63,7 +63,7 @@ export function MyTasksHeader({
               : common.buttons.multiSelect}
           </Button>
           <Button
-            className="shadow-primary/20 h-12 gap-3 rounded-xl px-6 font-black shadow-lg transition-all hover:scale-105 active:scale-95"
+            className="shadow-primary/20 h-12 gap-3 rounded-none px-6 font-black shadow-sm transition-all hover:scale-105 active:scale-95"
             size="lg"
             onClick={onCreateTask}
           >

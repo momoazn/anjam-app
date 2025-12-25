@@ -5,8 +5,6 @@ import {
   IconFingerprint,
   IconShieldLock,
   IconUserBolt,
-  IconActivity,
-  IconCpu,
   IconServer,
 } from "@tabler/icons-react";
 
@@ -17,11 +15,11 @@ import { Label } from "@/components/ui/label";
 import { auth, app } from "@/constants";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
-import type { UsersRecord } from "@/lib/pocketbase-types";
+import type { UsersResponse } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
-function isUsersRecord(record: object | null): record is UsersRecord {
+function isUsersRecord(record: object | null): record is UsersResponse {
   return (
     record !== null &&
     typeof record === "object" &&
@@ -76,28 +74,28 @@ export default function Login() {
 
   return (
     <div className="bg-background relative flex min-h-screen items-stretch overflow-hidden">
-      {/* Structural Background Decor */}
+      {/* Background Decor */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.02]"
         style={{
-          backgroundImage: `radial-gradient(var(--primary) 1px, transparent 1px), linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
-          backgroundSize: "80px 80px, 40px 40px, 40px 40px",
+          backgroundImage: `radial-gradient(var(--primary) 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
         }}
       />
 
-      {/* Left Side: Visual/Technical Content (Desktop Only) */}
+      {/* Left Side: Visual Content (Desktop Only) */}
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
-          <div className="bg-primary/10 flex size-10 items-center justify-center rounded-xl">
+          <div className="bg-primary/10 flex size-10 items-center justify-center rounded-none">
             <IconFingerprint className="size-6" />
           </div>
-          <span className="text-sm font-black tracking-[0.3em] uppercase opacity-70">
-            {app.name} / Core Auth
+          <span className="text-sm font-black tracking-tight uppercase opacity-70">
+            {app.name} / Secure Access
           </span>
         </div>
 
         <div className="relative">
-          <div className="text-primary/5 absolute -top-24 -start-12 text-[180px] leading-none font-black uppercase select-none">
+          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-black uppercase select-none">
             ANJAM
           </div>
           <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
@@ -107,40 +105,19 @@ export default function Login() {
           </h2>
           <p className="text-muted-foreground/80 mt-8 max-w-md text-xl leading-relaxed font-medium">
             {digitsEnToFa(
-              "ورود به درگاه عملیاتی سیستم انجام برای مدیریت یکپارچه تسک‌ها و پروژه‌های سازمانی.",
+              "ورود به سامانه انجام برای مدیریت یکپارچه تسک‌ها و پروژه‌های سازمانی.",
             )}
           </p>
         </div>
 
-        <div className="border-primary/10 grid grid-cols-2 gap-8 border-t pt-12">
-          <div className="flex items-start gap-4">
-            <IconCpu className="text-primary/60 mt-1 size-5" />
-            <div>
-              <span className="text-muted-foreground/50 block text-[10px] font-black tracking-widest uppercase">
-                Processor
-              </span>
-              <span className="text-sm font-bold">Node-PB-8090</span>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <IconActivity className="text-primary/60 mt-1 size-5" />
-            <div>
-              <span className="text-muted-foreground/50 block text-[10px] font-black tracking-widest uppercase">
-                Network Status
-              </span>
-              <span className="text-sm font-bold text-emerald-500">
-                Operational
-              </span>
-            </div>
-          </div>
-        </div>
+        <div className="opacity-0">{/* Bottom spacer */}</div>
       </div>
 
       {/* Right Side: Login Form */}
       <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
         <PageTransition className="w-full" disableStagger>
           <div className="mb-10 lg:hidden">
-            <div className="bg-primary text-primary-foreground shadow-primary/20 mb-6 flex size-12 items-center justify-center rounded-2xl shadow-xl">
+            <div className="bg-primary text-primary-foreground shadow-primary/20 mb-6 flex size-12 items-center justify-center rounded-none shadow-md">
               <IconFingerprint className="size-7" />
             </div>
             <h2 className="text-4xl font-black tracking-tight">
@@ -148,14 +125,14 @@ export default function Login() {
             </h2>
           </div>
 
-          <div className="bg-card relative rounded-3xl border p-8 shadow-2xl lg:p-10">
+          <div className="bg-card relative rounded-none border p-8 shadow-2xl lg:p-10">
             <div className="mb-8 flex items-center justify-between border-b pb-6">
               <div>
                 <h3 className="text-xl font-black tracking-tight">
                   {auth.login.title}
                 </h3>
                 <p className="text-muted-foreground mt-1 text-xs font-medium">
-                  Please provide operator credentials
+                  Please provide your credentials
                 </p>
               </div>
               <IconShieldLock className="text-primary/20 size-8" />
@@ -164,7 +141,7 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                     {auth.login.username}
                   </Label>
                   <IconUserBolt className="text-muted-foreground/40 size-3" />
@@ -172,9 +149,10 @@ export default function Login() {
                 <Input
                   type="text"
                   value={username}
+                  dir="ltr"
                   onChange={(e) => setUsername(e.target.value)}
-                  className="border-primary/10 bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 px-4 font-bold transition-all"
-                  placeholder="operator_id"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  placeholder="username"
                   required
                   autoFocus
                   disabled={submitting}
@@ -188,7 +166,7 @@ export default function Login() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                     {auth.login.password}
                   </Label>
                   <IconServer className="text-muted-foreground/40 size-3" />
@@ -197,9 +175,10 @@ export default function Login() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-primary/10 bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
                   placeholder="••••••••"
                   required
+                  dir="ltr"
                   disabled={submitting}
                 />
                 {errors.password && (
@@ -211,7 +190,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="group shadow-primary/20 h-14 w-full rounded-2xl text-base font-black shadow-lg transition-all active:scale-95"
+                className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
                 disabled={submitting}
               >
                 <span className="flex items-center gap-2">
@@ -222,14 +201,6 @@ export default function Login() {
                 </span>
               </Button>
             </form>
-
-            <div className="mt-8 flex items-center justify-center gap-2 opacity-30 grayscale">
-              <div className="bg-border h-px flex-1" />
-              <span className="text-[9px] font-black tracking-widest uppercase">
-                Encryption: AES-256 Enabled
-              </span>
-              <div className="bg-border h-px flex-1" />
-            </div>
           </div>
 
           <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">

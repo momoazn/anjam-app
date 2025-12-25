@@ -119,7 +119,7 @@ export function FileUpload({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         className={cn(
-          "rounded-lg border-2 border-dashed p-8 text-center transition-colors",
+          "rounded-none border border-dashed p-8 text-center transition-colors",
           disabled
             ? "border-muted bg-muted/20 cursor-not-allowed"
             : "border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer",
@@ -162,7 +162,7 @@ export function FileUpload({
           {value.map((file, index) => (
             <div
               key={`${file.name}-${index}`}
-              className="bg-muted/50 flex items-center gap-3 rounded-lg p-3"
+              className="bg-muted/50 flex items-center gap-3 rounded-none p-3"
             >
               {/* Preview or Icon */}
               {file.preview ? (

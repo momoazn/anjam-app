@@ -1,4 +1,4 @@
-import type { UsersResponse } from "@/lib/pocketbase-types";
+import type { UsersResponse, FileNameString } from "@/lib/pocketbase-types";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { render } from "@/test/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -70,14 +70,14 @@ describe("Users page edit permissions", () => {
       first_name: "Test",
       last_name: "User",
       active: true,
-      group: "",
       blocked: false,
       blocked_at: "",
       blocked_reason: "",
       failed_login_attempts: 0,
-      avatar: "",
+      avatar: "" as unknown as FileNameString,
       id,
       role,
+      tokenKey: "",
       ...rest,
     } as UsersResponse;
   }

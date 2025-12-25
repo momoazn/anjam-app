@@ -52,11 +52,11 @@ export default function Users() {
   const headerActions = canCreateUsers ? (
     <Button
       onClick={() => navigate("/users/new")}
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
       size="lg"
     >
       <IconPlus className="size-5" />
-      <span className="tracking-widest uppercase">
+      <span className="tracking-tight uppercase">
         {usersText.create.button}
       </span>
     </Button>
@@ -72,7 +72,6 @@ export default function Users() {
             digitsEnToFa(usersData?.length ?? 0).toString(),
           )}
           icon={IconUsers}
-          nodeId="Operator_Registry"
           actions={headerActions}
         />
 
@@ -80,8 +79,8 @@ export default function Users() {
           {isLoadingUsers ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <IconUsers className="text-primary size-12 animate-pulse opacity-20" />
-              <h3 className="text-foreground mt-4 text-[10px] font-black tracking-[0.3em] uppercase opacity-40">
-                Syncing_Operator_Index...
+              <h3 className="text-foreground mt-4 text-[10px] font-black tracking-tight uppercase opacity-40">
+                Loading users...
               </h3>
             </div>
           ) : (

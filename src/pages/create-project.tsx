@@ -36,7 +36,6 @@ const projectFormSchema = z.object({
   description: z.string().optional(),
   assets: z.array(z.instanceof(File)).optional(),
   supervisor: z.string().optional(),
-  group: z.string().optional(),
 });
 
 export default function CreateProject() {
@@ -44,7 +43,6 @@ export default function CreateProject() {
   const user = useAuthUser();
   const queryClient = useQueryClient();
   const isAdmin = user?.role === "admin";
-  const isManager = user?.role === "manager";
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
@@ -54,7 +52,6 @@ export default function CreateProject() {
       description: "",
       assets: [],
       supervisor: undefined,
-      group: isManager && user?.group ? user.group : undefined,
     },
   });
 
@@ -64,10 +61,6 @@ export default function CreateProject() {
       formData.append("name", data.name);
       formData.append("code", data.code.toUpperCase());
       formData.append("supervisor", data.supervisor || user?.id || "");
-
-      if (data.group) {
-        formData.append("group", data.group);
-      }
 
       if (data.description) {
         const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
@@ -106,7 +99,6 @@ export default function CreateProject() {
         title={projects.create.title}
         description={projects.create.description}
         icon={IconStack2}
-        nodeId="Project_Initiation"
       />
 
       <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
@@ -115,9 +107,7 @@ export default function CreateProject() {
             <ProjectFields
               control={form.control}
               showSupervisor={true}
-              showGroup={true}
               isAdmin={isAdmin}
-              isManager={isManager}
             />
 
             <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
@@ -126,19 +116,19 @@ export default function CreateProject() {
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isPending}
-                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
+                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
               >
                 {common.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
               >
                 {isPending && (
                   <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                 )}
-                <span className="tracking-widest uppercase">
+                <span className="tracking-tight uppercase">
                   {projects.create.submit}
                 </span>
               </Button>

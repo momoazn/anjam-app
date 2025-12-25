@@ -1,7 +1,8 @@
-import { IconBell, IconBellOff, IconTerminal } from "@tabler/icons-react";
+import { IconBell, IconTerminal } from "@tabler/icons-react";
 import { isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 
 import { NotificationItem } from "@/components/notifications/notification-item";
+import { EmptyStateNoNotifications } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { notifications as notificationsText } from "@/constants";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
@@ -31,23 +32,6 @@ const getGroupTitle = (group: string) => {
       return group;
   }
 };
-
-const EmptyState = () => (
-  <div
-    className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale"
-    data-animate-stagger
-  >
-    <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2 border-dashed">
-      <IconBellOff className="size-10 stroke-[1]" />
-    </div>
-    <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
-      {notificationsText.emptyState.title}
-    </h3>
-    <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-      {notificationsText.emptyState.description}
-    </p>
-  </div>
-);
 
 type NotificationListProps = {
   notifications: NotificationsRecord[];
@@ -88,7 +72,7 @@ export function NotificationList({
         <div className="mb-6 flex h-20 w-20 items-center justify-center">
           <IconBell className="text-primary size-10 animate-pulse opacity-20" />
         </div>
-        <h3 className="text-foreground mb-2 text-xs font-black tracking-[0.3em] uppercase opacity-40">
+        <h3 className="text-foreground mb-2 text-xs font-black tracking-tight uppercase opacity-40">
           Syncing_Alert_Index...
         </h3>
       </div>
@@ -98,13 +82,13 @@ export function NotificationList({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center border-2 border-eose-500/20 bg-rose-500/10">
+        <div className="border-eose-500/20 mb-6 flex h-20 w-20 items-center justify-center border bg-rose-500/10">
           <IconBell className="size-10 text-rose-500" />
         </div>
-        <h3 className="mb-2 text-lg font-black tracking-widest text-rose-500 uppercase">
-          Telemetry_Link_Failed
+        <h3 className="mb-2 text-lg font-black tracking-tight text-rose-500 uppercase">
+          _Link_Failed
         </h3>
-        <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase opacity-60">
+        <p className="text-muted-foreground text-xs font-bold tracking-tight uppercase opacity-60">
           {error instanceof Error ? error.message : "An error occurred"}
         </p>
       </div>
@@ -112,7 +96,7 @@ export function NotificationList({
   }
 
   if (notifications.length === 0) {
-    return <EmptyState />;
+    return <EmptyStateNoNotifications />;
   }
 
   return (
@@ -126,7 +110,7 @@ export function NotificationList({
               <div key={group} className="relative">
                 <div className="bg-muted/5 border-border/20 sticky top-0 z-10 mb-4 flex items-center gap-4 border-y px-4 py-2 backdrop-blur-sm">
                   <IconTerminal className="text-primary/60 size-3" />
-                  <h3 className="text-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+                  <h3 className="text-foreground text-[10px] font-black tracking-tight uppercase">
                     Log_Group :: {getGroupTitle(group)}
                   </h3>
                   <div className="bg-border/20 h-px flex-1" />

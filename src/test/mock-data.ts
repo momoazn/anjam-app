@@ -8,6 +8,7 @@ import {
   UsersRoleOptions,
   TasksStatusOptions,
   TasksPriorityOptions,
+  TasksTaskTypeOptions,
 } from "@/lib/pocketbase-types";
 
 export const createMockUser = (
@@ -26,7 +27,6 @@ export const createMockUser = (
   emailVisibility: false,
   failed_login_attempts: 0,
   first_name: "Test",
-  group: "",
   last_name: "User",
   password: "password",
   role: UsersRoleOptions.employee,
@@ -49,7 +49,7 @@ export const createMockProject = (
   code: "TST",
   description: "Test project description",
   assets: [],
-  group: "group-1",
+  organization: "org-1",
   supervisor: "user123",
   ...overrides,
 });
@@ -76,6 +76,10 @@ export const createMockTask = (
   order: 0,
   time_spent_minutes: 0,
   deleted_at: "",
+  status_ref: "",
+  story_points: 0,
+  task_type: TasksTaskTypeOptions.task,
+  watchers: [],
   ...overrides,
 });
 

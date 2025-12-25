@@ -40,7 +40,7 @@ export function ProductivityWidget({
     return (
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {["ske-prod-1", "ske-prod-2", "ske-prod-3"].map((key) => (
-          <Card key={key} className="border-border/50 rounded-sm">
+          <Card key={key} className="border-border/50 rounded-none">
             <CardHeader className="pb-3">
               <Skeleton className="h-5 w-32" />
             </CardHeader>
@@ -60,10 +60,10 @@ export function ProductivityWidget({
       data-animate-stagger
     >
       {/* Completion Rate Card */}
-      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
+      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b pb-4">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
-            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm text-right">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none text-right">
               <Activity className="size-4" />
             </div>
             {dashboard.cards.completionRate}
@@ -93,11 +93,11 @@ export function ProductivityWidget({
       </Card>
 
       {/* Recent Notifications */}
-      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
+      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b pb-4">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-lg font-black tracking-tight">
-              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
                 <Bell className="size-4" />
               </div>
               {dashboard.cards.recentNotifications}
@@ -134,7 +134,7 @@ export function ProductivityWidget({
             ) : (
               <div className="flex flex-col items-center justify-center py-10 text-right opacity-20 grayscale">
                 <Bell className="size-8 stroke-[1.5]" />
-                <p className="text-muted-foreground mt-2 text-right text-[10px] font-black tracking-widest uppercase">
+                <p className="text-muted-foreground mt-2 text-right text-[10px] font-black tracking-tight uppercase">
                   {dashboard.cards.noNewNotifications}
                 </p>
               </div>
@@ -144,10 +144,10 @@ export function ProductivityWidget({
       </Card>
 
       {/* Quick Actions Card */}
-      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
+      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b pb-4">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
-            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
               <Zap className="size-4" />
             </div>
             {dashboard.cards.quickActions}
@@ -158,7 +158,7 @@ export function ProductivityWidget({
             {stats && stats.overdue > 0 ? (
               <Button
                 variant="outline"
-                className="h-12 w-full justify-start gap-3 rounded-sm border-eose-500/20 bg-rose-500/5 font-bold text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
+                className="border-eose-500/20 h-12 w-full justify-start gap-3 rounded-none bg-rose-500/5 font-bold text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
                 onClick={() => navigate("/tasks?due=overdue")}
               >
                 <AlertTriangle className="size-4" />
@@ -167,7 +167,7 @@ export function ProductivityWidget({
             ) : (
               <Button
                 variant="outline"
-                className="border-primary/10 hover:bg-primary/5 h-12 w-full justify-start gap-3 rounded-sm font-bold transition-all"
+                className="border-primary/10 hover:bg-primary/5 h-12 w-full justify-start gap-3 rounded-none font-bold transition-all"
                 onClick={() => navigate("/tasks/new")}
               >
                 <Plus className="size-4" />
@@ -176,14 +176,14 @@ export function ProductivityWidget({
             )}
             <Button
               variant="outline"
-              className="border-primary/10 hover:bg-primary/5 h-12 w-full justify-start gap-3 rounded-sm font-bold transition-all"
+              className="border-primary/10 hover:bg-primary/5 h-12 w-full justify-start gap-3 rounded-none font-bold transition-all"
               onClick={() => navigate("/tasks/calendar")}
             >
               <Calendar className="size-4" />
               {dashboard.cards.tasksCalendar}
             </Button>
             <Button
-              className="shadow-primary/20 h-12 w-full justify-start gap-3 rounded-sm font-black shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="shadow-primary/20 h-12 w-full justify-start gap-3 rounded-none font-black shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
               onClick={() => navigate("/notifications")}
             >
               <Bell className="size-4" />

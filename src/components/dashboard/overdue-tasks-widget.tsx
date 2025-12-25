@@ -42,10 +42,10 @@ export function OverdueTasksWidget({
   }
 
   return (
-    <Card className="border-destructive/40 bg-destructive/5 shadow-destructive/5 mt-6 shadow-xl">
+    <Card className="border-destructive/40 bg-destructive/5 shadow-destructive/5 mt-6 shadow-md">
       <CardHeader className="border-destructive/20 bg-destructive/10 border-b">
-        <CardTitle className="text-destructive flex items-center gap-3 text-sm font-black tracking-widest uppercase">
-          <div className="bg-destructive/10 text-destructive border-destructive/20 flex h-7 w-7 items-center justify-center rounded-sm border">
+        <CardTitle className="text-destructive flex items-center gap-3 text-sm font-black tracking-tight uppercase">
+          <div className="bg-destructive/10 text-destructive border-destructive/20 flex h-7 w-7 items-center justify-center rounded-none border">
             <AlertTriangle className="size-3.5" />
           </div>
           <span className="flex-1">{dashboard.cards.overdueTasks}</span>
@@ -65,7 +65,7 @@ export function OverdueTasksWidget({
             <button
               key={task.id}
               type="button"
-              className="group hover:bg-destructive/10 bg-background/80 border-border/50 hover:border-destructive/30 flex cursor-pointer items-center justify-between rounded-sm border-2 p-3 transition-all"
+              className="group hover:bg-destructive/10 bg-background/80 border-border/50 hover:border-destructive/30 flex cursor-pointer items-center justify-between rounded-none border p-3 transition-all"
               onClick={() => navigate(`/tasks/${task.id}`)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -79,7 +79,7 @@ export function OverdueTasksWidget({
                 <div className="border-destructive/20 bg-destructive/5 group-hover:bg-destructive/40 flex h-1 w-1 shrink-0 rounded-none transition-colors" />
                 <UserAvatar
                   user={task.expand?.assignee}
-                  className="border-border size-7 rounded-sm border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
+                  className="border-border size-7 rounded-none border shadow-sm transition-transform duration-300 group-hover:scale-110"
                 />
                 <div className="min-w-0 flex-1 text-right">
                   <p className="text-foreground truncate text-xs font-black tracking-tight">
@@ -96,7 +96,7 @@ export function OverdueTasksWidget({
               <div className="flex flex-col items-end gap-1.5">
                 <Badge
                   variant="secondary"
-                  className="border-border/50 bg-muted/50 rounded-none border-2 text-[9px] font-black uppercase"
+                  className="border-border/50 bg-muted/50 rounded-none border text-[9px] font-black uppercase"
                 >
                   {tasks.priority[task.priority]}
                 </Badge>

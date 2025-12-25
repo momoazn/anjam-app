@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { dashboard, users } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
-import { useAuthRole, useAuthUser } from "@/store/auth-store";
+import { useAuthRole } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type DashboardHeaderProps = {
@@ -42,7 +42,6 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const navigate = useNavigate();
   const userRole = useAuthRole();
-  const user = useAuthUser();
 
   const config = useMemo(() => {
     const isAdmin = userRole === UsersRoleOptions.admin;
@@ -97,7 +96,7 @@ export function DashboardHeader({
       welcomeSubtitle,
       quickActions,
     };
-  }, [userRole, user, navigate]);
+  }, [userRole, navigate]);
 
   const statItems = [
     {
@@ -138,7 +137,7 @@ export function DashboardHeader({
   ];
 
   return (
-    <div className="bg-card hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-sm border shadow-2xl transition-all duration-500">
+    <div className="bg-card hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-none border shadow-sm transition-all duration-500">
       {/* Blueprint Grid Background */}
       <div
         className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.07]"
@@ -150,24 +149,24 @@ export function DashboardHeader({
       />
 
       {/* Decorative Accents */}
-      <div className="bg-primary/10 absolute top-0 end-0 h-32 w-32 translate-x-16 -translate-y-16 rounded-full blur-3xl" />
-      <div className="bg-primary/5 absolute bottom-0 start-0 h-32 w-32 -translate-x-16 translate-y-16 rounded-full blur-3xl" />
+      <div className="bg-primary/10 absolute end-0 top-0 h-32 w-32 translate-x-16 -translate-y-16 rounded-full blur-3xl" />
+      <div className="bg-primary/5 absolute start-0 bottom-0 h-32 w-32 -translate-x-16 translate-y-16 rounded-full blur-3xl" />
 
       <div className="relative z-10 flex flex-col lg:flex-row">
         {/* Main Welcome Section */}
-        <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-b-0 lg:border-s lg:p-10">
+        <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-s lg:border-b-0 lg:p-10">
           <div className="text-primary flex items-center gap-3">
-            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-sm backdrop-blur-sm">
+            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-none backdrop-blur-sm">
               <LayoutDashboard className="h-5 w-5" />
             </div>
-            <span className="text-muted-foreground/80 text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-muted-foreground/80 text-xs font-bold tracking-tight uppercase">
               {appName} / {dashboard.title}
             </span>
           </div>
 
           <h1 className="mt-6 text-3xl font-black tracking-tight md:text-5xl lg:text-6xl">
             {isLoading ? (
-              <div className="bg-muted h-16 w-3/4 animate-pulse rounded-sm" />
+              <div className="bg-muted h-16 w-3/4 animate-pulse rounded-none" />
             ) : (
               digitsEnToFa(config.welcomeMessage)
             )}
@@ -184,9 +183,9 @@ export function DashboardHeader({
                 onClick={action.action}
                 variant={action.variant}
                 className={cn(
-                  "group h-12 gap-3 rounded-sm px-6 transition-all duration-300",
+                  "group h-12 gap-3 rounded-none px-6 transition-all duration-300",
                   action.variant === "default"
-                    ? "shadow-primary/20 hover:shadow-primary/30 shadow-lg hover:scale-105 hover:shadow-xl active:scale-95"
+                    ? "shadow-primary/20 hover:shadow-primary/30 shadow-sm hover:scale-105 hover:shadow-md active:scale-95"
                     : "hover:border-primary/30 hover:bg-primary/5",
                 )}
               >
@@ -208,20 +207,20 @@ export function DashboardHeader({
                 className="group bg-card hover:bg-muted/50 relative flex items-center justify-between overflow-hidden p-6 transition-all duration-300"
               >
                 {/* Corner Accents */}
-                <div className="bg-border absolute top-0 start-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
-                <div className="bg-border absolute top-0 end-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="bg-border absolute start-0 top-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="bg-border absolute end-0 top-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
 
                 <div className="flex items-center gap-4">
                   <div
                     className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[360deg]",
+                      "flex h-12 w-12 items-center justify-center rounded-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[360deg]",
                       item.bg,
                     )}
                   >
                     <item.icon className={cn("h-6 w-6", item.color)} />
                   </div>
                   <div>
-                    <p className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                    <p className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                       {item.label}
                     </p>
                     <div className="mt-0.5 flex items-baseline gap-1">

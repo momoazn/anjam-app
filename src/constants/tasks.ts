@@ -253,6 +253,23 @@ export const tasks = {
       exceedsEstimate:
         "زمان وارد شده از برآورد زمانی ({hours}h {minutes}m) بیشتر است",
     },
+    subtasks: {
+      title: "چک‌لیست",
+      addPlaceholder: "عنوان مورد جدید",
+      addButton: "افزودن مورد",
+      empty: "هیچ موردی ثبت نشده",
+      markDone: "علامت‌گذاری انجام‌شده",
+      reopen: "بازگشایی",
+      delete: "حذف مورد",
+      assigneeLabel: "مسئول:",
+    },
+    timeEntries: {
+      title: "ورودی‌های زمانی",
+      logButton: "ثبت زمان",
+      empty: "ورودی زمانی ثبت نشده",
+      entriesLabel: "آخرین ثبت‌ها",
+      noteLabel: "یادداشت اختیاری",
+    },
     buttons: {
       save: shared.save,
       saving: shared.saving,
@@ -402,6 +419,9 @@ export const comments = {
     save: shared.save,
     cancel: shared.cancel,
     edited: "· ویرایش شده",
+    reply: "پاسخ",
+    replyingTo: "در حال پاسخ به ",
+    attachments: "پیوست‌ها",
   },
 } as const;
 

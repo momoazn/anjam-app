@@ -27,7 +27,7 @@ function UserInfo({ user }: UserInfoProps) {
       <div className="relative">
         <UserAvatar user={user} />
         {/* Online status indicator */}
-        <div className="border-background absolute -end-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 bg-green-500" />
+        <div className="border-background absolute -end-0.5 -bottom-0.5 h-3 w-3 rounded-full border bg-green-500" />
       </div>
       <div className="flex flex-1 flex-col gap-0.5 text-right">
         <div className="flex items-center justify-end gap-2">
@@ -79,14 +79,14 @@ export function HeaderUserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="p-0 font-normal">
-          <div className="bg-muted/30 flex items-center gap-3 rounded-lg p-3 text-right">
+          <div className="bg-muted/30 flex items-center gap-3 rounded-none p-3 text-right">
             <UserInfo user={user} />
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
-            className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg text-right transition-colors"
+            className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-none text-right transition-colors"
             onClick={handleEditProfile}
           >
             <IconUserCircle className="size-4" />
@@ -95,7 +95,7 @@ export function HeaderUserMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="my-1" />
         <DropdownMenuItem
-          className="text-destructive hover:bg-destructive/5 hover:text-destructive flex cursor-pointer items-center gap-3 rounded-lg text-right transition-colors"
+          className="text-destructive hover:bg-destructive/5 hover:text-destructive flex cursor-pointer items-center gap-3 rounded-none text-right transition-colors"
           onClick={handleLogout}
         >
           <IconLogout className="size-4" />

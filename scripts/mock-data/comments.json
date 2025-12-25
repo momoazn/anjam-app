@@ -1,290 +1,182 @@
 [
   {
-    "task": "SMS-001",
-    "user": "dev.mohammad",
-    "content": "رابط کاربری صفحه اصلی تکمیل شد. لطفاً بررسی کنید.",
-    "created": "2025-04-10T14:30:00.000Z"
+    "task": "WEB-001",
+    "user": "employee1",
+    "content": "شروع به کار روی طراحی کردم. سوال: آیا باید اول روی نسخه موبایل تمرکز کنم یا دسکتاپ؟"
   },
   {
-    "task": "SMS-001",
-    "user": "supervisor.hassan",
-    "content": "عالی! طراحی خیلی خوب شده. فقط رنگ‌بندی منو را کمی تغییر دهید.",
-    "created": "2025-04-10T16:45:00.000Z"
+    "task": "WEB-001",
+    "user": "manager",
+    "content": "بله، بهتر است با رویکرد Mobile-first شروع کنیم. بعداً راحت‌تر می‌توانیم برای دسکتاپ توسعه بدهیم."
   },
   {
-    "task": "SMS-002",
-    "user": "dev.sara",
-    "content": "بهینه‌سازی دیتابیس شروع شد. ایندکس‌های جدید اضافه شدند.",
-    "created": "2025-04-18T08:15:00.000Z"
+    "task": "WEB-001",
+    "user": "employee1",
+    "content": "باشه، پس از همین الان با موبایل شروع می‌کنم."
   },
   {
-    "task": "SMS-002",
-    "user": "supervisor.hassan",
-    "content": "عالی! سرعت کوئری‌ها بهبود یافته.",
-    "created": "2025-04-18T10:30:00.000Z"
+    "task": "WEB-002",
+    "user": "employee2",
+    "content": "منوی اصلی تقریباً آماده است. فقط باید چند استایل نهایی را تکمیل کنم."
   },
   {
-    "task": "SMS-003",
-    "user": "dev.amir",
-    "content": "سیستم مدیریت موجودی شروع شد. الگوریتم هشدار کمبود کالا پیاده‌سازی می‌شود.",
-    "created": "2025-05-02T09:30:00.000Z"
+    "task": "WEB-002",
+    "user": "manager",
+    "content": "عالی! وقتی تمام شد به من اطلاع بده تا بررسی کنم."
   },
   {
-    "task": "SMS-003",
-    "user": "supervisor.hassan",
-    "content": "عالی! این قابلیت خیلی مهم است برای مدیریت انبار.",
-    "created": "2025-05-02T11:15:00.000Z"
+    "task": "WEB-003",
+    "user": "employee2",
+    "content": "صفحه درباره ما کامل شد. محتوا آماده است و همه چیز کار می‌کند."
   },
   {
-    "task": "SMS-004",
-    "user": "dev.narges",
-    "content": "سیستم گزارش‌گیری فروش تکمیل شد. انواع مختلف گزارش پشتیبانی می‌شود.",
-    "created": "2025-05-11T08:30:00.000Z"
+    "task": "WEB-004",
+    "user": "employee1",
+    "content": "برای بهینه‌سازی، من تصاویر را فشرده کردم و از lazy loading استفاده کردم. سرعت بارگذاری خیلی بهتر شده."
   },
   {
-    "task": "SMS-004",
-    "user": "supervisor.hassan",
-    "content": "عالی! این سیستم فروش را افزایش می‌دهد.",
-    "created": "2025-05-11T10:15:00.000Z"
+    "task": "WEB-004",
+    "user": "admin",
+    "content": "خوب است! CDN را هم اضافه کن تا برای کاربران مختلف سریع‌تر شود."
   },
   {
-    "task": "SMS-005",
-    "user": "dev.hooman",
-    "content": "سیستم مدیریت کوپن تکمیل شد. انواع مختلف کوپن پشتیبانی می‌شود.",
-    "created": "2025-05-11T11:30:00.000Z"
+    "task": "WEB-005",
+    "user": "employee2",
+    "content": "Jest و React Testing Library نصب شدند. الان دارم تست‌های اولیه را می‌نویسم."
   },
   {
-    "task": "SMS-005",
-    "user": "supervisor.hassan",
-    "content": "عالی! این سیستم فروش را افزایش می‌دهد.",
-    "created": "2025-05-11T13:15:00.000Z"
+    "task": "MOB-001",
+    "user": "employee1",
+    "content": "طراحی صفحات ورود و ثبت‌نام آماده است. می‌خواهی نگاهی بیندازی قبل از شروع پیاده‌سازی؟"
   },
   {
-    "task": "SMS-006",
-    "user": "dev.mohammad",
-    "content": "سیستم مدیریت بازخورد تکمیل شد. تحلیل احساسات پیاده‌سازی شده.",
-    "created": "2025-05-21T08:15:00.000Z"
+    "task": "MOB-001",
+    "user": "manager",
+    "content": "بله لطفاً، فایل‌های طراحی را بفرست تا بررسی کنم."
   },
   {
-    "task": "SMS-006",
-    "user": "supervisor.hassan",
-    "content": "عالی! این سیستم کیفیت خدمات را بهبود می‌دهد.",
-    "created": "2025-05-21T10:00:00.000Z"
+    "task": "MOB-002",
+    "user": "employee2",
+    "content": "در حال کار روی صفحه پروفایل هستم. فرم ویرایش اطلاعات کاربری تقریباً آماده است."
   },
   {
-    "task": "SMS-007",
-    "user": "dev.sara",
-    "content": "سیستم مدیریت مشتریان در حال توسعه است. پنل مشتریان پیاده‌سازی می‌شود.",
-    "created": "2025-05-16T14:20:00.000Z"
+    "task": "MOB-002",
+    "user": "employee1",
+    "content": "مطمئن شو که validation به درستی کار می‌کند."
   },
   {
-    "task": "SMS-007",
-    "user": "supervisor.hassan",
-    "content": "عالی! این سیستم مدیریت مشتریان را بهبود می‌دهد.",
-    "created": "2025-05-16T16:00:00.000Z"
+    "task": "MOB-003",
+    "user": "employee1",
+    "content": "Firebase Analytics اضافه شد و در حال تست است. به نظر می‌رسد همه چیز خوب کار می‌کند."
   },
   {
-    "task": "SMS-008",
-    "user": "dev.amir",
-    "content": "سیستم امنیت شروع شد. لایه‌های امنیتی پیاده‌سازی می‌شود.",
-    "created": "2025-05-11T09:30:00.000Z"
+    "task": "MOB-004",
+    "user": "employee2",
+    "content": "این قابلیت آفلاین خیلی پیچیده است. باید Service Worker و IndexedDB را پیاده‌سازی کنم."
   },
   {
-    "task": "SMS-008",
-    "user": "supervisor.hassan",
-    "content": "عالی! امنیت سیستم بسیار مهم است.",
-    "created": "2025-05-11T11:15:00.000Z"
+    "task": "MOB-004",
+    "user": "admin",
+    "content": "درست است، این کار زمان‌بر است. اگر سوالی داشتی بگو."
   },
   {
-    "task": "ECO-001",
-    "user": "dev.sara",
-    "content": "سیستم احراز هویت پیاده‌سازی شد. نیاز به تست امنیتی دارد.",
-    "created": "2025-04-12T09:15:00.000Z"
+    "task": "MOB-005",
+    "user": "employee1",
+    "content": "تست‌ها روی 8 دستگاه مختلف انجام شد. فقط یک مشکل کوچک روی iPhone 12 پیدا شد که در حال رفع است."
   },
   {
-    "task": "ECO-001",
-    "user": "supervisor.zahra",
-    "content": "لطفاً تست‌های امنیتی را انجام دهید و گزارش دهید.",
-    "created": "2025-04-12T11:20:00.000Z"
+    "task": "API-001",
+    "user": "employee3",
+    "content": "مستندات API کامل شد. از Swagger استفاده کردم و همه endpoints مستندسازی شدند."
   },
   {
-    "task": "ECO-002",
-    "user": "dev.sara",
-    "content": "سیستم اعلان‌ها پیاده‌سازی شد. push notification فعال است.",
-    "created": "2025-04-22T13:20:00.000Z"
+    "task": "API-001",
+    "user": "supervisor",
+    "content": "عالی! کار خوبی انجام دادی. لینک Swagger را برای تیم بفرست."
   },
   {
-    "task": "ECO-002",
-    "user": "supervisor.zahra",
-    "content": "عالی! اعلان‌های email هم اضافه کنید.",
-    "created": "2025-04-22T15:45:00.000Z"
+    "task": "API-002",
+    "user": "employee4",
+    "content": "JWT implementation شروع شد. الان دارم روی refresh token کار می‌کنم."
   },
   {
-    "task": "ECO-003",
-    "user": "dev.mohammad",
-    "content": "الگوریتم پیشنهاد محصولات در حال توسعه است. از machine learning استفاده می‌کنیم.",
-    "created": "2025-05-03T14:20:00.000Z"
+    "task": "API-002",
+    "user": "supervisor",
+    "content": "حتماً security best practices را رعایت کن. Token expiration را هم تنظیم کن."
   },
   {
-    "task": "ECO-003",
-    "user": "supervisor.zahra",
-    "content": "عالی! این قابلیت تجربه کاربری را بهبود می‌دهد.",
-    "created": "2025-05-03T16:45:00.000Z"
+    "task": "API-002",
+    "user": "employee4",
+    "content": "حتماً، expiration time را 15 دقیقه برای access token و 7 روز برای refresh token تنظیم کردم."
   },
   {
-    "task": "ECO-004",
-    "user": "dev.amir",
-    "content": "سیستم مقایسه محصولات شروع شد. جدول مقایسه پیاده‌سازی می‌شود.",
-    "created": "2025-05-12T13:45:00.000Z"
+    "task": "API-003",
+    "user": "employee5",
+    "content": "Rate limiting با استفاده از Redis پیاده‌سازی شد. الان 100 request در دقیقه محدودیت داریم."
   },
   {
-    "task": "ECO-004",
-    "user": "supervisor.zahra",
-    "content": "عالی! این قابلیت تصمیم‌گیری مشتریان را آسان‌تر می‌کند.",
-    "created": "2025-05-12T15:30:00.000Z"
+    "task": "API-004",
+    "user": "employee3",
+    "content": "بررسی Query‌ها انجام شد. 3 Query پیدا کردم که کند هستند و باید بهینه شوند."
   },
   {
-    "task": "ECO-005",
-    "user": "dev.narges",
-    "content": "سیستم مدیریت فروشنده پیاده‌سازی شد. پنل تایید محصولات آماده است.",
-    "created": "2025-05-22T12:30:00.000Z"
+    "task": "API-004",
+    "user": "supervisor",
+    "content": "خوب است. Index‌ها را هم بررسی کن و در صورت نیاز اضافه کن."
   },
   {
-    "task": "ECO-005",
-    "user": "supervisor.zahra",
-    "content": "عالی! این سیستم مدیریت فروشندگان را بهبود می‌دهد.",
-    "created": "2025-05-22T14:15:00.000Z"
+    "task": "API-005",
+    "user": "employee4",
+    "content": "Redis cache اضافه شد. الان داده‌های پرتکرار Cache می‌شوند و عملکرد خیلی بهتر شده."
   },
   {
-    "task": "ECO-006",
-    "user": "dev.hooman",
-    "content": "سیستم پرداخت شروع شد. درگاه‌های مختلف پیاده‌سازی می‌شود.",
-    "created": "2025-05-09T15:20:00.000Z"
+    "task": "API-005",
+    "user": "supervisor",
+    "content": "Cache invalidation را هم بررسی کن تا داده‌های منسوخ نشوند."
   },
   {
-    "task": "ECO-006",
-    "user": "supervisor.zahra",
-    "content": "عالی! این قابلیت خیلی مهم است.",
-    "created": "2025-05-09T17:05:00.000Z"
+    "task": "SEC-001",
+    "user": "employee3",
+    "content": "بررسی امنیتی انجام شد. 2 آسیب‌پذیری متوسط پیدا شد که در حال رفع هستند."
   },
   {
-    "task": "ECO-007",
-    "user": "dev.mohammad",
-    "content": "سیستم مدیریت سفارشات شروع شد. فرآیند سفارش پیاده‌سازی می‌شود.",
-    "created": "2025-05-13T10:45:00.000Z"
+    "task": "SEC-001",
+    "user": "supervisor",
+    "content": "این آسیب‌پذیری‌ها چقدر جدی هستند؟ لطفاً اولویت‌بندی کن."
   },
   {
-    "task": "ECO-007",
-    "user": "supervisor.zahra",
-    "content": "عالی! این سیستم تجربه کاربری را بهبود می‌دهد.",
-    "created": "2025-05-13T12:30:00.000Z"
+    "task": "SEC-001",
+    "user": "employee3",
+    "content": "یکی مربوط به SQL Injection است که باید فوری رفع شود. دیگری XSS است که متوسط است."
   },
   {
-    "task": "ECO-008",
-    "user": "dev.sara",
-    "content": "سیستم ارزیابی و نظرات شروع شد. پنل نظرات پیاده‌سازی می‌شود.",
-    "created": "2025-05-16T12:00:00.000Z"
+    "task": "SEC-002",
+    "user": "employee4",
+    "content": "2FA با Google Authenticator پیاده‌سازی شد. الان در حال تست هستم."
   },
   {
-    "task": "ECO-008",
-    "user": "supervisor.zahra",
-    "content": "عالی! این سیستم اعتماد مشتریان را افزایش می‌دهد.",
-    "created": "2025-05-16T14:30:00.000Z"
+    "task": "SEC-003",
+    "user": "employee5",
+    "content": "رمزنگاری داده‌ها با AES-256 انجام شد. همه پسوردها hash می‌شوند."
   },
   {
-    "task": "WMS-001",
-    "user": "dev.amir",
-    "content": "API مدیریت محصولات آماده شد. تمام عملیات CRUD پیاده‌سازی شده.",
-    "created": "2025-04-15T13:45:00.000Z"
+    "task": "SEC-003",
+    "user": "supervisor",
+    "content": "مطمئن شو که salt به درستی استفاده می‌شود و کلیدها به صورت امن ذخیره می‌شوند."
   },
   {
-    "task": "WMS-001",
-    "user": "supervisor.mahmoud",
-    "content": "بسیار عالی! عملکرد API بهینه است.",
-    "created": "2025-04-15T15:30:00.000Z"
+    "task": "SEC-004",
+    "user": "employee3",
+    "content": "Security Policy نوشته شد و آماده بررسی است. شامل تمام موارد مهم امنیتی است."
   },
   {
-    "task": "WMS-002",
-    "user": "dev.amir",
-    "content": "تست‌های واحد نوشته شدند. coverage بالای 90% است.",
-    "created": "2025-04-25T11:30:00.000Z"
+    "task": "SEC-005",
+    "user": "employee5",
+    "content": "کارگاه آموزشی برگزار شد. تیم خیلی راضی بودند و سوالات خوبی پرسیدند."
   },
   {
-    "task": "WMS-002",
-    "user": "supervisor.mahmoud",
-    "content": "عالی! کیفیت کد بالا رفته.",
-    "created": "2025-04-25T13:15:00.000Z"
-  },
-  {
-    "task": "WMS-003",
-    "user": "dev.narges",
-    "content": "سیستم بارکدخوانی پیاده‌سازی شد. API برای اسکن بارکد آماده است.",
-    "created": "2025-05-04T10:15:00.000Z"
-  },
-  {
-    "task": "WMS-003",
-    "user": "supervisor.mahmoud",
-    "content": "عالی! این سیستم سرعت کار را خیلی بالا می‌برد.",
-    "created": "2025-05-04T12:30:00.000Z"
-  },
-  {
-    "task": "WMS-004",
-    "user": "dev.hooman",
-    "content": "سیستم هشدار انقضا پیاده‌سازی شد. اعلان‌های خودکار فعال است.",
-    "created": "2025-05-13T09:20:00.000Z"
-  },
-  {
-    "task": "WMS-004",
-    "user": "supervisor.mahmoud",
-    "content": "عالی! این سیستم از ضایعات جلوگیری می‌کند.",
-    "created": "2025-05-13T11:05:00.000Z"
-  },
-  {
-    "task": "WMS-005",
-    "user": "dev.mohammad",
-    "content": "سیستم مدیریت تامین‌کننده شروع شد. سفارشات خودکار پیاده‌سازی می‌شود.",
-    "created": "2025-05-23T16:45:00.000Z"
-  },
-  {
-    "task": "WMS-005",
-    "user": "supervisor.mahmoud",
-    "content": "عالی! این سیستم زنجیره تامین را بهبود می‌دهد.",
-    "created": "2025-05-23T18:30:00.000Z"
-  },
-  {
-    "task": "WMS-006",
-    "user": "dev.sara",
-    "content": "سیستم مدیریت انبار هوشمند شروع شد. الگوریتم‌های AI پیاده‌سازی می‌شود.",
-    "created": "2025-05-26T11:15:00.000Z"
-  },
-  {
-    "task": "WMS-006",
-    "user": "supervisor.mahmoud",
-    "content": "عالی! این سیستم مدیریت انبار را هوشمند می‌کند.",
-    "created": "2025-05-26T13:00:00.000Z"
-  },
-  {
-    "task": "WMS-007",
-    "user": "dev.amir",
-    "content": "سیستم ردیابی محصولات شروع شد. فرآیند ردیابی پیاده‌سازی می‌شود.",
-    "created": "2025-05-29T17:45:00.000Z"
-  },
-  {
-    "task": "WMS-007",
-    "user": "supervisor.mahmoud",
-    "content": "عالی! این سیستم شفافیت انبار را افزایش می‌دهد.",
-    "created": "2025-05-29T19:30:00.000Z"
-  },
-  {
-    "task": "WMS-008",
-    "user": "dev.narges",
-    "content": "سیستم گزارش‌گیری انبار شروع شد. گزارش‌های جامع پیاده‌سازی می‌شود.",
-    "created": "2025-06-02T10:30:00.000Z"
-  },
-  {
-    "task": "WMS-008",
-    "user": "supervisor.mahmoud",
-    "content": "عالی! این سیستم مدیریت انبار را کامل می‌کند.",
-    "created": "2025-06-02T12:15:00.000Z"
+    "task": "SEC-005",
+    "user": "supervisor",
+    "content": "خوب است. مطمئن شو که مطالب ارائه شده مستندسازی شده‌اند."
   }
 ]

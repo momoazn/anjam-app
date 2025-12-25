@@ -5,17 +5,18 @@ package main
 
 // Collection name constants
 const (
-	CollectionUsers         = "users"
-	CollectionGroups        = "groups"
-	CollectionProjects      = "projects"
-	CollectionTasks         = "tasks"
-	CollectionNotifications = "notifications"
-	CollectionUserLoginLogs = "user_login_logs"
-	CollectionAuditLogs     = "audit_logs"
-	CollectionSuperusers    = "_superusers"
-	CollectionUsersProjects = "users_projects"
-	CollectionComments      = "comments"
-	CollectionTags          = "tags"
+	CollectionUsers          = "users"
+	CollectionOrganizations  = "organizations"
+	CollectionOrgMembers     = "organization_members"
+	CollectionProjects       = "projects"
+	CollectionTasks          = "tasks"
+	CollectionNotifications  = "notifications"
+	CollectionUserLoginLogs  = "user_login_logs"
+	CollectionAuditLogs      = "audit_logs"
+	CollectionSuperusers     = "_superusers"
+	CollectionProjectMembers = "project_members"
+	CollectionComments       = "comments"
+	CollectionTags           = "tags"
 )
 
 // Configuration constants
@@ -35,6 +36,72 @@ const (
 	RoleEmployee   = "employee"
 )
 
+// =============================================================================
+// NEW: Organization-based Role System
+// =============================================================================
+
+// Organization Roles
+const (
+	OrgRoleOwner  = "owner"
+	OrgRoleAdmin  = "admin"
+	OrgRoleMember = "member"
+)
+
+// Project Roles
+const (
+	ProjectRoleOwner  = "owner"
+	ProjectRoleAdmin  = "admin"
+	ProjectRoleMember = "member"
+	ProjectRoleViewer = "viewer"
+)
+
+// Member Status
+const (
+	MemberStatusInvited   = "invited"
+	MemberStatusActive    = "active"
+	MemberStatusSuspended = "suspended"
+)
+
+// IsValidOrgRole checks if the given role is a valid organization role
+func IsValidOrgRole(role string) bool {
+	switch role {
+	case OrgRoleOwner, OrgRoleAdmin, OrgRoleMember:
+		return true
+	default:
+		return false
+	}
+}
+
+// IsValidProjectRole checks if the given role is a valid project role
+func IsValidProjectRole(role string) bool {
+	switch role {
+	case ProjectRoleOwner, ProjectRoleAdmin, ProjectRoleMember, ProjectRoleViewer:
+		return true
+	default:
+		return false
+	}
+}
+
+// CanOrgRoleManageMembers checks if an org role can add/remove members
+func CanOrgRoleManageMembers(role string) bool {
+	return role == OrgRoleOwner || role == OrgRoleAdmin
+}
+
+// CanOrgRoleCreateProjects checks if an org role can create new projects
+func CanOrgRoleCreateProjects(role string) bool {
+	return role == OrgRoleOwner || role == OrgRoleAdmin
+}
+
+// CanProjectRoleManageTasks checks if a project role can create/edit/delete tasks
+func CanProjectRoleManageTasks(role string) bool {
+	return role == ProjectRoleOwner || role == ProjectRoleAdmin || role == ProjectRoleMember
+}
+
+// CanProjectRoleManageMembers checks if a project role can add/remove project members
+func CanProjectRoleManageMembers(role string) bool {
+	return role == ProjectRoleOwner || role == ProjectRoleAdmin
+}
+
 // Task status constants
 const (
 	TaskStatusTodo       = "todo"
@@ -53,13 +120,7 @@ const (
 
 const (
 	// Validation errors
-	ErrSupervisorMustBeInSameGroup     = "منتور (supervisor) باید عضو همان گروه پروژه باشد"
-	ErrUserAndProjectMustBeInSameGroup = "کاربر و پروژه باید در یک گروه باشند"
-	ErrTagsMustBeInSameGroup           = "تگ‌ها باید عضو همان گروه پروژه باشند"
-	ErrOnlyAdminCanCreateManagers      = "فقط ادمین می‌تواند مدیر (manager) ایجاد کند"
-	ErrOnlyManagersCanBeGroupManagers  = "فقط کاربران با نقش مدیر (manager) می‌توانند مدیر گروه باشند"
-	ErrManagerCanOnlyCreateInOwnGroup  = "مدیران فقط می‌توانند کاربران را در گروه خود ایجاد کنند"
-	ErrSupervisorsCannotCreateUsers    = "سرپرستان نمی‌توانند کاربر ایجاد کنند"
+	ErrTagsMustBeInSameOrganization = "تگ‌ها باید متعلق به همان سازمان باشند"
 
 	// Authentication errors
 	ErrAuthRequired                  = "احراز هویت انجام نشده است"
@@ -83,6 +144,8 @@ const (
 	ErrFailedToUpdateUserStatus     = "خطا در به‌روزرسانی وضعیت کاربر"
 	ErrFailedToUnblockUser          = "خطا در رفع مسدودی کاربر"
 	ErrFailedToGetLoginLogs         = "خطا در دریافت سوابق ورود"
+	ErrInvalidTaskStatus            = "وضعیت انتخاب‌شده برای این پروژه معتبر نیست"
+	ErrCannotReopenFinalStatus      = "نمی‌توان یک فعالیت بسته‌شده را دوباره باز کرد"
 
 	// User management success messages
 	MsgUserActivated   = "حساب کاربری فعال شد"

@@ -50,7 +50,7 @@ export function NotificationBadge({
       {unreadCount > 0 && (
         <Badge
           variant="destructive"
-          className="absolute -top-1 -end-1 flex size-5 items-center justify-center p-0 text-xs font-medium shadow-sm"
+          className="absolute -end-1 -top-1 flex size-5 items-center justify-center p-0 text-xs font-medium shadow-sm"
           aria-label={`${unreadCount} ${notification.unreadCount}`}
         >
           {unreadCount > 99

@@ -39,7 +39,7 @@ export function TaskDetailsHeader({
         <Badge
           variant="outline"
           className={cn(
-            "rounded-none border-transparent text-[10px] font-black tracking-widest uppercase",
+            "rounded-none border-transparent text-[10px] font-black tracking-tight uppercase",
             getStatusColorVariant(task.status, "badge"),
           )}
         >
@@ -52,7 +52,7 @@ export function TaskDetailsHeader({
         <Badge
           variant="outline"
           className={cn(
-            "rounded-none border-transparent text-[10px] font-black tracking-widest uppercase",
+            "rounded-none border-transparent text-[10px] font-black tracking-tight uppercase",
             priorityColors[task.priority],
           )}
         >
@@ -65,7 +65,7 @@ export function TaskDetailsHeader({
         <Button
           variant="outline"
           onClick={onEdit}
-          className="border-foreground bg-card h-12 rounded-none border-2 px-6 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+          className="border-border bg-card h-12 rounded-none border px-6 text-[10px] font-black tracking-tight uppercase shadow-md transition-all   active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
         >
           <IconPencil className="ms-2 size-4" />
           {tasks.details.editButton}
@@ -75,7 +75,7 @@ export function TaskDetailsHeader({
           variant="ghost"
           onClick={onDelete}
           disabled={isDeleting}
-          className="h-12 rounded-none px-6 text-[10px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
+          className="h-12 rounded-none px-6 text-[10px] font-black tracking-tight text-rose-500 uppercase hover:bg-rose-500/10"
         >
           <IconTrash className="ms-2 size-4" />
           {isDeleting
@@ -92,21 +92,20 @@ export function TaskDetailsHeader({
         variant="ghost"
         size="sm"
         onClick={onBack}
-        className="group text-muted-foreground/40 hover:text-primary gap-2 p-0 text-[10px] font-black tracking-[0.3em] uppercase transition-all"
+        className="group text-muted-foreground/40 hover:text-primary gap-2 p-0 text-[10px] font-black tracking-tight uppercase transition-all"
       >
         <IconChevronRight className="size-3" />
-        Back_To_Registry
+        Back to Tasks
       </Button>
 
       <PageHeader
         title={task.title}
         description={
           task.expand?.creator
-            ? `Registry entry authorized by ${formatUserName(task.expand.creator.first_name, task.expand.creator.last_name, task.expand.creator.username)} on ${digitsEnToFa(formatTaskDate(task.created))}`
-            : `Registry entry initiated on ${digitsEnToFa(formatTaskDate(task.created))}`
+            ? `Task created by ${formatUserName(task.expand.creator.first_name, task.expand.creator.last_name, task.expand.creator.username)} on ${digitsEnToFa(formatTaskDate(task.created))}`
+            : `Task created on ${digitsEnToFa(formatTaskDate(task.created))}`
         }
         icon={StatusIcon}
-        nodeId={`Task_Record :: ${task.display_id || task.id.slice(0, 8)}`}
         actions={headerActions}
       />
     </div>

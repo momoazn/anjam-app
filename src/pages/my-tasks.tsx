@@ -180,19 +180,19 @@ export default function MyTasks() {
         )}
       >
         <IconChecklist className="size-4" />
-        <span className="text-[11px] font-black tracking-widest uppercase">
+        <span className="text-[11px] font-black tracking-tight uppercase">
           {selectionMode
             ? common.buttons.cancelSelection
             : common.buttons.multiSelect}
         </span>
       </Button>
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
         size="lg"
         onClick={() => navigate("/tasks/new")}
       >
         <IconPlus className="size-5" />
-        <span className="tracking-widest uppercase">
+        <span className="tracking-tight uppercase">
           {tasks.addTask.buttons.newTask}
         </span>
       </Button>
@@ -205,7 +205,6 @@ export default function MyTasks() {
         title={myTasksText.title}
         description={myTasksText.description}
         icon={IconUser}
-        nodeId="Operator_Workspace :: Index"
         actions={headerActions}
       />
 

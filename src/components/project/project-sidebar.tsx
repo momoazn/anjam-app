@@ -33,11 +33,11 @@ export function ProjectSidebar({
 }: ProjectSidebarProps) {
   return (
     <div className="space-y-10" data-animate-stagger>
-      {/* Project Telemetry Registry */}
+      {/* Project   */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            04_Project_Telemetry
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            Project_
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -57,7 +57,7 @@ export function ProjectSidebar({
               <div className="hover:bg-muted/30 group flex items-center justify-between p-4 transition-all">
                 <div className="flex items-center gap-3">
                   <IconActivity className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
-                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                     {projects.details.totalTasks}
                   </span>
                 </div>
@@ -69,7 +69,7 @@ export function ProjectSidebar({
               <div className="hover:bg-muted/30 group flex items-center justify-between p-4 text-right transition-all">
                 <div className="flex items-center gap-3">
                   <IconCircleCheck className="size-4 text-emerald-500/40 transition-colors group-hover:text-emerald-500" />
-                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                     {projects.details.completedTasks}
                   </span>
                 </div>
@@ -81,7 +81,7 @@ export function ProjectSidebar({
               <div className="hover:bg-muted/30 group flex items-center justify-between p-4 text-right transition-all">
                 <div className="flex items-center gap-3">
                   <IconClock className="size-4 text-amber-500/40 transition-colors group-hover:text-amber-500" />
-                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                     {projects.details.inProgressTasks}
                   </span>
                 </div>
@@ -93,7 +93,7 @@ export function ProjectSidebar({
               <div className="bg-muted/5 group flex items-center justify-between p-4 text-right">
                 <div className="flex items-center gap-3">
                   <IconChartBar className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
-                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+                  <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                     {projects.details.totalTimeSpent}
                   </span>
                 </div>
@@ -106,11 +106,11 @@ export function ProjectSidebar({
         </div>
       </section>
 
-      {/* Protocol Actions Block */}
+      {/*  Actions Block */}
       <section className="space-y-4">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-[0.3em] uppercase">
-            05_Protocol_Access
+          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            _Access
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -118,7 +118,7 @@ export function ProjectSidebar({
         <div className="bg-muted/10 border-border/40 space-y-2 border p-4">
           <Button
             variant="ghost"
-            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-widest uppercase"
+            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-tight uppercase"
             onClick={onViewTasks}
           >
             {projects.list.viewTasks}
@@ -126,7 +126,7 @@ export function ProjectSidebar({
           </Button>
           <Button
             variant="ghost"
-            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-widest uppercase"
+            className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-tight uppercase"
             onClick={onViewUsers}
           >
             {projects.users.title}

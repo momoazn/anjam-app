@@ -56,12 +56,12 @@ export default function TagsManagement() {
 
   const headerActions = (
     <Button
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
       size="lg"
       onClick={() => setCreateDialogOpen(true)}
     >
       <IconPlus className="size-5" />
-      <span className="tracking-widest uppercase">{tagsManagement.addTag}</span>
+      <span className="tracking-tight uppercase">{tagsManagement.addTag}</span>
     </Button>
   );
 
@@ -78,7 +78,6 @@ export default function TagsManagement() {
             : tagsManagement.description
         }
         icon={IconTag}
-        nodeId="Tag_Index"
         actions={headerActions}
       />
 

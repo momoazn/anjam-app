@@ -58,18 +58,7 @@ export {
   useClearRead,
 } from "./notifications";
 
-// Group hooks
-export {
-  useGroups,
-  useGroup,
-  useGroupUsers,
-  useGroupProjects,
-  useCreateGroup,
-  useCreateGroupWithManager,
-  useUpdateGroup,
-  useDeleteGroup,
-  useToggleGroupActive,
-} from "./groups";
+export { useProjectStatuses } from "./project-statuses";
 
 // Page-specific optimized hooks
 export { useTasksPageData } from "./use-tasks-page-data";
@@ -78,6 +67,20 @@ export { useTaskCounts } from "./use-task-counts";
 
 // Tag hooks
 export { useTags, useCreateTag, useUpdateTag, useDeleteTag } from "./tags";
+
+export {
+  useSubtasks,
+  useCreateSubtask,
+  useUpdateSubtask,
+  useDeleteSubtask,
+} from "./subtasks";
+
+export {
+  useTimeEntries,
+  useCreateTimeEntry,
+  useUpdateTimeEntry,
+  useDeleteTimeEntry,
+} from "./time-entries";
 
 // Utility hooks
 export { useFileUpload, type FileWithPreview } from "./use-file-upload";
@@ -95,3 +98,38 @@ export { useSavedFilters, type SavedFilter } from "./use-saved-filters";
 
 // Audit log hooks
 export { useAuditLogs, useResourceAuditLogs } from "./audit-logs";
+
+export {
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  DEFAULT_USER_PREFERENCES,
+  useUserPreferences,
+  useUpdateUserPreferences,
+} from "./user-preferences";
+export { useMentions } from "./mentions";
+
+// Organization member hooks
+export {
+  useOrganizationMembers,
+  useOrganizationMember,
+  useInviteOrgMember,
+  useUpdateOrgMemberRole,
+  useRemoveOrgMember,
+  useAcceptOrgInvitation,
+  useOrgMemberCount,
+  usePendingInvitationsCount,
+} from "./organization-members";
+
+// Project member hooks
+export {
+  useProjectMembers,
+  useProjectMember,
+  useIsProjectMember,
+  useMyProjectRole,
+  useAddProjectMember,
+  useUpdateProjectMemberRole,
+  useRemoveProjectMember,
+  useProjectMemberCount,
+  useProjectMembersByRole,
+  useProjectOwners,
+  useProjectAdmins,
+} from "./project-members";

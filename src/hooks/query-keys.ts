@@ -80,17 +80,6 @@ export const queryKeys = {
     byUser: (userId: string) => ["notifications", "user", userId] as const,
   },
 
-  groups: {
-    all: ["groups"] as const,
-    lists: () => ["groups", "list"] as const,
-    details: () => ["groups", "detail"] as const,
-    detail: (id: string) => ["groups", "detail", id] as const,
-    users: (groupId: string) => ["groups", "detail", groupId, "users"] as const,
-    projects: (groupId: string) =>
-      ["groups", "detail", groupId, "projects"] as const,
-    stats: (groupId: string) => ["groups", "detail", groupId, "stats"] as const,
-  },
-
   auditLogs: {
     all: ["audit_logs"] as const,
     lists: () => ["audit_logs", "list"] as const,
@@ -125,5 +114,37 @@ export const queryKeys = {
         page,
         perPage,
       ] as const,
+  },
+  projectStatuses: {
+    list: (projectId: string) =>
+      ["project_statuses", "project", projectId] as const,
+    byProject: (projectId: string) =>
+      ["project_statuses", "project", projectId] as const,
+  },
+  subtasks: {
+    listByTask: (taskId: string) => ["subtasks", "task", taskId] as const,
+    all: ["subtasks"] as const,
+  },
+  timeEntries: {
+    listByTask: (taskId: string) => ["time_entries", "task", taskId] as const,
+    all: ["time_entries"] as const,
+  },
+
+  orgMembers: {
+    all: ["organization_members"] as const,
+    lists: () => ["organization_members", "list"] as const,
+    list: (
+      orgId: string | undefined,
+      options?: { status?: string; role?: string },
+    ) => ["organization_members", "list", orgId, options] as const,
+    detail: (id: string) => ["organization_members", "detail", id] as const,
+  },
+
+  projectMembers: {
+    all: ["project_members"] as const,
+    lists: () => ["project_members", "list"] as const,
+    list: (projectId: string | undefined) =>
+      ["project_members", "list", projectId] as const,
+    detail: (id: string) => ["project_members", "detail", id] as const,
   },
 } as const;

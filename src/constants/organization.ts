@@ -1,4 +1,4 @@
-// Organization domain constants (users, groups, projects)
+// Organization domain constants (users, projects)
 
 import { shared } from "./core";
 
@@ -14,7 +14,6 @@ export const users = {
       username: "نام کاربری",
       email: "ایمیل",
       role: "نقش",
-      group: "گروه",
       status: "وضعیت",
       accountStatus: "وضعیت حساب",
       failedAttempts: "تلاش ناموفق",
@@ -38,8 +37,6 @@ export const users = {
     lastName: "نام خانوادگی",
     selectRole: "انتخاب نقش",
     password: "رمز عبور",
-    group: shared.group,
-    selectGroup: "انتخاب گروه",
   },
   actions: {
     activate: "فعال‌سازی",
@@ -118,59 +115,6 @@ export const users = {
   },
 } as const;
 
-// Groups module constants
-export const groups = {
-  title: "گروه‌ها",
-  code: "کد گروه",
-  create: {
-    title: "ایجاد گروه جدید",
-    button: "ایجاد گروه",
-    description: "گروه جدیدی را برای مدیریت پروژه‌ها و کاربران ایجاد کنید",
-    success: "گروه با موفقیت ایجاد شد",
-    error: "نتوانستیم گروه را ایجاد کنیم",
-    formDescription: "اطلاعات گروه را وارد کنید",
-  },
-  edit: {
-    title: "ویرایش گروه",
-    button: "ذخیره تغییرات",
-    success: "گروه با موفقیت به‌روزرسانی شد",
-    error: "نتوانستیم گروه را به‌روزرسانی کنیم",
-  },
-  delete: {
-    title: "حذف گروه",
-    description:
-      "آیا از حذف گروه {name} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
-  },
-  list: {
-    count: "{count} گروه",
-    empty: "هیچ گروهی یافت نشد",
-  },
-  form: {
-    name: "نام گروه",
-    namePlaceholder: "نام گروه را وارد کنید",
-    description: shared.description,
-    descriptionPlaceholder: "توضیحات گروه (اختیاری)",
-    manager: "مدیر گروه",
-    selectManager: "انتخاب مدیر",
-    managerModeLabel: "روش تعیین مدیر گروه",
-    selectExisting: "انتخاب مدیر موجود",
-    createNew: "ساخت مدیر جدید",
-  },
-  status: {
-    active: shared.active,
-    inactive: shared.inactive,
-  },
-  actions: {
-    activate: "فعال‌سازی",
-    deactivate: "غیرفعال‌سازی",
-  },
-  stats: {
-    users: shared.user,
-    projects: shared.project,
-    tasks: shared.task,
-  },
-} as const;
-
 // Projects module constants
 export const projects = {
   title: "پروژه‌ها",
@@ -223,8 +167,6 @@ export const projects = {
       descriptionPlaceholder: "درباره این پروژه بنویسید...",
       assets: "فایل‌های پیوست",
       assetsPlaceholder: "فایل‌های مرتبط را اینجا بکشید یا کلیک کنید",
-      group: shared.group,
-      selectGroup: "انتخاب گروه",
       supervisor: "سرپرست",
       selectSupervisor: "سرپرست را انتخاب کنید",
     },
@@ -301,5 +243,93 @@ export const projects = {
   errors: {
     notFound: "پروژه یافت نشد",
     projectNotFound: "پروژه یافت نشد",
+  },
+} as const;
+
+// Organizations module constants
+export const organization = {
+  title: "سازمان",
+  create: {
+    title: "ایجاد سازمان جدید",
+    button: "ایجاد سازمان",
+    description: "سازمان جدیدی را برای همکاری تیم خود ایجاد کنید",
+    success: "سازمان با موفقیت ایجاد شد",
+    error: "نتوانستیم سازمان را ایجاد کنیم",
+    formDescription: "اطلاعات سازمان را وارد کنید",
+  },
+  settings: {
+    title: "تنظیمات سازمان",
+    general: "تنظیمات عمومی",
+    name: "نام سازمان",
+    namePlaceholder: "نام سازمان را وارد کنید",
+    slug: "نامک (Slug)",
+    slugPlaceholder: "نامک-سازمان",
+    slugHelper: "در آدرس URL استفاده می‌شود",
+    description: shared.description,
+    descriptionPlaceholder: "درباره سازمان توضیح دهید...",
+    logo: "لوگو",
+    logoUpload: "بارگذاری لوگو",
+    logoRemove: "حذف لوگو",
+    save: "ذخیره تغییرات",
+    saveSuccess: "تنظیمات با موفقیت ذخیره شد",
+    saveError: "نتوانستیم تنظیمات را ذخیره کنیم",
+    dangerZone: "منطقه خطر",
+    delete: "حذف سازمان",
+    deleteDescription:
+      "با حذف سازمان، تمام پروژه‌ها و داده‌های مرتبط حذف می‌شوند",
+    transferOwnership: "انتقال مالکیت",
+    transferOwnershipDescription: "مالکیت سازمان را به شخص دیگری منتقل کنید",
+  },
+  members: {
+    title: "اعضای سازمان",
+    invite: "دعوت عضو",
+    inviteDialog: {
+      title: "دعوت عضو جدید",
+      email: "ایمیل",
+      emailPlaceholder: "ایمیل فرد را وارد کنید",
+      role: "نقش",
+      rolePlaceholder: "نقش را انتخاب کنید",
+      send: "ارسال دعوت‌نامه",
+      sendSuccess: "دعوت‌نامه با موفقیت ارسال شد",
+      sendError: "نتوانستیم دعوت‌نامه را ارسال کنیم",
+    },
+    table: {
+      user: shared.user,
+      email: "ایمیل",
+      role: "نقش",
+      status: "وضعیت",
+      joined: "تاریخ عضویت",
+      actions: shared.actions,
+    },
+    roles: {
+      owner: "مالک",
+      admin: "ادمین",
+      member: "عضو",
+    },
+    status: {
+      active: "فعال",
+      invited: "در انتظار",
+      suspended: "معلق",
+    },
+    remove: {
+      title: "حذف عضو",
+      description: "آیا از حذف این عضو اطمینان دارید؟",
+      success: "عضو با موفقیت حذف شد",
+      error: "نتوانستیم عضو را حذف کنیم",
+    },
+    updateRole: {
+      title: "تغییر نقش",
+      success: "نقش با موفقیت تغییر کرد",
+      error: "نتوانستیم نقش را تغییر دهیم",
+    },
+    empty: "هنوز عضوی در سازمان ندارید",
+    inviteEmpty: "هیچ دعوت‌نامه‌ای در انتظار تأیید نیست",
+  },
+  select: {
+    title: "انتخاب سازمان",
+    description: "لطفاً یک سازمان را انتخاب کنید یا سازمان جدید ایجاد کنید",
+    createNew: "ایجاد سازمان جدید",
+    switch: "تغییر سازمان",
+    yourOrgs: "سازمان‌های شما",
   },
 } as const;

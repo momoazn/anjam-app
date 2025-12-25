@@ -87,7 +87,7 @@ export function ChartsWidget({
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {["ske-1", "ske-2", "ske-3"].map((key) => (
-          <Card key={key} className="border-border/50 rounded-sm">
+          <Card key={key} className="border-border/50 rounded-none">
             <CardHeader>
               <Skeleton className="h-5 w-40" />
             </CardHeader>
@@ -106,10 +106,10 @@ export function ChartsWidget({
       data-animate-stagger
     >
       {/* Task Status Distribution */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
+      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
-            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
               <BarChart3 className="size-4" />
             </div>
             {dashboard.cards.taskStatusDistribution}
@@ -147,8 +147,8 @@ export function ChartsWidget({
                     if (active && payload && payload.length) {
                       const value = payload[0].value;
                       return (
-                        <div className="bg-card rounded-sm border p-3 shadow-xl">
-                          <p className="text-muted-foreground/60 text-xs font-black tracking-widest uppercase">
+                        <div className="bg-card rounded-none border p-3 shadow-md">
+                          <p className="text-muted-foreground/60 text-xs font-black tracking-tight uppercase">
                             {payload[0].name}
                           </p>
                           <p className="mt-1 text-2xl font-black">
@@ -167,7 +167,7 @@ export function ChartsWidget({
             {pieChartData.map((entry) => (
               <div
                 key={entry.name}
-                className="border-border/40 bg-muted/10 flex items-center gap-2 rounded-sm border p-2"
+                className="border-border/40 bg-muted/10 flex items-center gap-2 rounded-none border p-2"
               >
                 <div
                   className="size-2 rounded-none"
@@ -186,10 +186,10 @@ export function ChartsWidget({
       </Card>
 
       {/* Productivity Trend */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
+      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
-            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
               <TrendingUp className="size-4" />
             </div>
             {dashboard.cards.productivityTrend}
@@ -212,7 +212,7 @@ export function ChartsWidget({
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fontWeight: 900, fill: "currentColor" }}
-                  className="text-muted-foreground/40 tracking-widest uppercase"
+                  className="text-muted-foreground/40 tracking-tight uppercase"
                 />
                 <YAxis
                   axisLine={false}
@@ -225,8 +225,8 @@ export function ChartsWidget({
                     if (active && payload && payload.length) {
                       const value = payload[0].value;
                       return (
-                        <div className="bg-card rounded-sm border p-3 shadow-xl">
-                          <p className="text-muted-foreground/60 text-xs font-black tracking-widest uppercase">
+                        <div className="bg-card rounded-none border p-3 shadow-md">
+                          <p className="text-muted-foreground/60 text-xs font-black tracking-tight uppercase">
                             {label}
                           </p>
                           <div className="mt-1 flex items-baseline gap-2">
@@ -263,11 +263,11 @@ export function ChartsWidget({
       </Card>
 
       {/* Recent Activity Feed */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl lg:col-span-2 xl:col-span-1">
+      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm lg:col-span-2 xl:col-span-1">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-lg font-black tracking-tight">
-              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-sm">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
                 <Clock className="size-4" />
               </div>
               {dashboard.cards.recentActivity}
@@ -300,13 +300,13 @@ export function ChartsWidget({
                 <div className="flex min-w-0 flex-1 items-center gap-4 px-4 py-4 text-right">
                   <UserAvatar
                     user={task.expand?.assignee}
-                    className="border-background size-10 rounded-sm border-2 shadow-sm transition-transform duration-300 group-hover:scale-110"
+                    className="border-background size-10 rounded-none border shadow-sm transition-transform duration-300 group-hover:scale-110"
                   />
 
                   <div className="min-w-0 flex-1 text-right">
                     <div className="flex items-center gap-2">
                       <Hash className="text-muted-foreground/30 size-3" />
-                      <span className="text-muted-foreground/50 text-[9px] font-black tracking-widest uppercase">
+                      <span className="text-muted-foreground/50 text-[9px] font-black tracking-tight uppercase">
                         {digitsEnToFa(
                           format(new Date(task.created), "MM/dd HH:mm"),
                         )}
@@ -367,7 +367,7 @@ export function ChartsWidget({
             {recentTasks.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 opacity-20 grayscale">
                 <Clock className="size-12 stroke-[1]" />
-                <p className="mt-4 text-sm font-black tracking-widest uppercase">
+                <p className="mt-4 text-sm font-black tracking-tight uppercase">
                   {dashboard.cards.noActivityFound}
                 </p>
               </div>

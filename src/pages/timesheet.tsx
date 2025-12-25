@@ -7,7 +7,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { faIR } from "date-fns/locale";
-import { IconClock, IconDownload, IconTerminal } from "@tabler/icons-react";
+import { IconClock, IconDownload, IconHistory } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
@@ -132,8 +132,8 @@ export default function TimesheetPage() {
   const headerActions = (
     <div className="flex items-center gap-4">
       <div className="border-primary/20 me-2 flex flex-col items-end border-e-2 pe-4">
-        <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.2em] uppercase">
-          Weekly_Total
+        <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+          Weekly Total
         </span>
         <div className="text-primary text-right text-sm font-black tabular-nums">
           {digitsEnToFa(weeklyTotalTime.hours)}h{" "}
@@ -143,7 +143,7 @@ export default function TimesheetPage() {
       <Button
         onClick={handleExport}
         variant="outline"
-        className="border-foreground bg-card h-12 rounded-none border-2 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+        className="border-border bg-card h-12 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md transition-all   active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
       >
         <IconDownload className="ms-2 size-4" />
         {common.buttons.export}
@@ -172,25 +172,24 @@ export default function TimesheetPage() {
         title={navigationLabels.timesheet}
         description={`${digitsEnToFa(format(weekStart, "yyyy/MM/dd"))} — ${digitsEnToFa(format(weekEnd, "yyyy/MM/dd"))}`}
         icon={IconClock}
-        nodeId="Temporal_Registry"
         actions={headerActions}
       />
 
       {tasksByDay.every((d) => d.tasks.length === 0) ? (
-        <div className="border-border/40 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
-          <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2">
+        <div className="border-border/40 flex flex-col items-center justify-center border border-dashed py-24 text-center opacity-30 grayscale">
+          <div className="border-border/40 mb-6 flex h-20 w-20 items-center justify-center border">
             <IconClock className="size-10 stroke-[1]" />
           </div>
-          <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
+          <h3 className="text-foreground mb-2 text-lg font-black tracking-tight uppercase">
             {timesheet.noTimeSpent}
           </h3>
-          <p className="text-muted-foreground mb-8 text-xs font-bold tracking-widest uppercase">
+          <p className="text-muted-foreground mb-8 text-xs font-bold tracking-tight uppercase">
             {timesheet.emptyStateDescription}
           </p>
           <div className="flex gap-4">
             <Button
               asChild
-              className="h-12 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="h-12 rounded-none px-8 font-black shadow-md"
             >
               <Link to="/tasks/new">{timesheet.createTaskCta}</Link>
             </Button>
@@ -207,7 +206,7 @@ export default function TimesheetPage() {
               className="bg-card flex min-h-[400px] flex-col"
             >
               <div className="border-border/20 bg-muted/10 border-b p-4 text-right">
-                <span className="text-muted-foreground/60 text-[10px] leading-none font-black tracking-[0.2em] uppercase">
+                <span className="text-muted-foreground/60 text-[10px] leading-none font-black tracking-tight uppercase">
                   {format(date, "EEEE", { locale: faIR })}
                 </span>
                 <div className="mt-1 flex items-baseline justify-end gap-2">
@@ -241,7 +240,7 @@ export default function TimesheetPage() {
                         key={t.id}
                         className="group hover:bg-muted/30 relative overflow-hidden p-4 text-right transition-colors"
                       >
-                        <span className="text-primary/40 mb-1 block text-[8px] font-black tracking-widest uppercase">
+                        <span className="text-primary/40 mb-1 block text-[8px] font-black tracking-tight uppercase">
                           {(t.expand as { project?: { name?: string } })
                             ?.project?.name || reports.fallbacks.projectName}
                         </span>
@@ -262,7 +261,7 @@ export default function TimesheetPage() {
                   })
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 opacity-10">
-                    <IconTerminal className="size-6 stroke-[1]" />
+                    <IconHistory className="size-6 stroke-[1]" />
                   </div>
                 )}
               </div>

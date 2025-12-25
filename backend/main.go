@@ -76,28 +76,29 @@ func main() {
 	app.OnServe().BindFunc(ensureSuperuserExists)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 	app.OnServe().BindFunc(registerAuditHooksHandler)
+	registerOrganizationEndpoints(app)
+	registerPermissionsEndpoint(app)
+	registerBatchEndpoints(app)
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
+	app.OnRecordValidate("tasks").BindFunc(validateTaskStatusTransition)
+	app.OnRecordUpdateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
+		setTaskStatusRef(e)
+		return e.Next()
+	})
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
+	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectCreatedStatuses)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
-	app.OnRecordAfterCreateSuccess("users_projects").BindFunc(handleUsersProjectsCreatedNotify)
-
-	// Group management handlers
-	app.OnRecordCreateExecute("groups").BindFunc(handleGroupCreation)
-	app.OnRecordAfterCreateSuccess("groups").BindFunc(handleGroupCreatedNotification)
-
-	// Group-aware project creation validation
-	app.OnRecordCreateExecute("projects").BindFunc(handleProjectCreationWithGroup)
-
-	// Group-aware user-project assignment validation
-	app.OnRecordCreateExecute("users_projects").BindFunc(handleUsersProjectsValidation)
-
-	// Tag creation handler to set group
-	app.OnRecordCreateExecute("tags").BindFunc(handleTagCreation)
+	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
+	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
+	app.OnRecordEnrich("audit_logs").BindFunc(handleAuditLogEnrich)
+	app.OnRecordAfterCreateSuccess("time_entries").BindFunc(handleTimeEntryCreated)
+	app.OnRecordAfterUpdateSuccess("time_entries").BindFunc(handleTimeEntryUpdated)
+	app.OnRecordAfterDeleteSuccess("time_entries").BindFunc(handleTimeEntryDeleted)
 
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
@@ -108,13 +109,14 @@ func main() {
 		se.Router.PATCH("/api/v1/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/v1/users/{id}/login-logs", handleGetUserLoginLogs)
 		se.Router.GET("/api/v1/search", handleGlobalSearch)
-		se.Router.POST("/api/v1/groups/create-with-manager", handleCreateGroupWithManager)
 
 		return se.Next()
 	})
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Server.Handler = addRequestMetadataMiddleware(se.Server.Handler)
+		limiter := newRateLimiter(120, time.Minute)
+		se.Server.Handler = rateLimitMiddleware(limiter)(se.Server.Handler)
 		return se.Next()
 	})
 
@@ -188,144 +190,7 @@ func generateRandomCode() string {
 }
 
 // handleGroupCreation validates manager assignment and ensures status defaults.
-func handleGroupCreation(e *core.RecordEvent) error {
-	record := e.Record
-
-	// Validate that only managers or admins can be assigned as group managers
-	managerId := record.GetString("manager")
-	if managerId != "" {
-		manager, err := e.App.FindRecordById(CollectionUsers, managerId)
-		if err != nil {
-			return fmt.Errorf("manager not found: %w", err)
-		}
-
-		managerRole := manager.GetString("role")
-		if managerRole != RoleManager && managerRole != RoleAdmin {
-			return errors.New(ErrOnlyManagersCanBeGroupManagers)
-		}
-	}
-
-	// Set default active status
-	record.Set("active", true)
-
-	return e.Next()
-}
-
-// handleProjectCreationWithGroup validates that the project's supervisor
-// belongs to the same group as the project
-func handleProjectCreationWithGroup(e *core.RecordEvent) error {
-	record := e.Record
-
-	// FIRST: Run the existing project creation logic (generates project code)
-	if err := handleProjectCreation(e); err != nil {
-		return err
-	}
-
-	// Get the group and supervisor IDs from the new project
-	groupId := record.GetString("group")
-	supervisorId := record.GetString("supervisor")
-
-	// Skip validation if either is missing (will be caught by required field validation)
-	if groupId == "" || supervisorId == "" {
-		return e.Next()
-	}
-
-	// Fetch the supervisor user record
-	supervisor, err := e.App.FindRecordById(CollectionUsers, supervisorId)
-	if err != nil {
-		return fmt.Errorf("supervisor not found: %w", err)
-	}
-
-	// Check if supervisor belongs to the same group
-	supervisorGroupId := supervisor.GetString("group")
-	if supervisorGroupId != groupId {
-		return errors.New(ErrSupervisorMustBeInSameGroup)
-	}
-
-	return e.Next()
-}
-
-// handleTagCreation sets the group for new tags based on the creator's group
-func handleTagCreation(e *core.RecordEvent) error {
-	// Get the creator's user ID from the record
-	creatorId := e.Record.GetString("creator")
-	if creatorId == "" {
-		return errors.New("creator is required")
-	}
-
-	// Fetch the creator's user record to get their group
-	creator, err := e.App.FindRecordById(CollectionUsers, creatorId)
-	if err != nil {
-		return fmt.Errorf("failed to find creator: %w", err)
-	}
-
-	// Get the creator's group
-	creatorGroupId := creator.GetString("group")
-	if creatorGroupId == "" {
-		return errors.New("creator must belong to a group")
-	}
-
-	// Set the group on the tag
-	e.Record.Set("group", creatorGroupId)
-
-	return e.Next()
-}
-
-// handleUsersProjectsValidation ensures that when adding a user to a project,
-// both the user and project belong to the same group
-func handleUsersProjectsValidation(e *core.RecordEvent) error {
-	record := e.Record
-
-	userId := record.GetString("user")
-	projectId := record.GetString("project")
-
-	// Skip if either field is missing
-	if userId == "" || projectId == "" {
-		return e.Next()
-	}
-
-	// Fetch user record
-	user, err := e.App.FindRecordById(CollectionUsers, userId)
-	if err != nil {
-		return fmt.Errorf("user not found: %w", err)
-	}
-
-	// Fetch project record
-	project, err := e.App.FindRecordById(CollectionProjects, projectId)
-	if err != nil {
-		return fmt.Errorf("project not found: %w", err)
-	}
-
-	// Validate both belong to the same group
-	userGroupId := user.GetString("group")
-	projectGroupId := project.GetString("group")
-
-	if userGroupId != projectGroupId {
-		return errors.New(ErrUserAndProjectMustBeInSameGroup)
-	}
-
-	return e.Next()
-}
-
-// handleGroupCreatedNotification sends a notification to the manager
-// when they are assigned to manage a new group
-func handleGroupCreatedNotification(e *core.RecordEvent) error {
-	record := e.Record
-	managerId := record.GetString("manager")
-
-	if managerId == "" {
-		return e.Next()
-	}
-
-	groupName := record.GetString("name")
-	return createNotification(e.App, managerId, "system",
-		MsgGroupCreated,
-		fmt.Sprintf(MsgAssignedToGroup, groupName),
-		map[string]interface{}{
-			"group_id":   record.Id,
-			"group_name": groupName,
-		})
-}
+// NOTE: Tag creation now expects organization to be provided by the client.
 
 func startApp(app *pocketbase.PocketBase) {
 	if app.IsDev() {
@@ -350,7 +215,7 @@ func startApp(app *pocketbase.PocketBase) {
 	}
 }
 
-func handleUsersProjectsCreatedNotify(e *core.RecordEvent) error {
+func handleProjectMembersCreatedNotify(e *core.RecordEvent) error {
 	userId := e.Record.GetString("user")
 	projectId := e.Record.GetString("project")
 	if userId == "" || projectId == "" {
@@ -507,10 +372,9 @@ func handleUserCreation(e *core.RecordEvent) error {
 	newUserRole := e.Record.GetString("role")
 
 	// RBAC validations are handled by schema rules:
-	// - Only admin and managers can create users (enforced by createRule)
-	// - Managers cannot create admin/manager roles (enforced by createRule)
-	// - Managers can only create users in groups they manage (enforced by createRule)
-	// - Supervisors cannot create users (enforced by createRule)
+	// - Only admins can list/create/delete users (enforced by list/create/delete rules)
+	// - Users can update their own record (enforced by updateRule)
+	// - Organization membership controls visibility, so even org admins cannot read users from other tenants
 	// This handler focuses on setting defaults and data integrity.
 
 	// Set new users as inactive by default, except admins
@@ -577,8 +441,9 @@ func handleTaskCreation(e *core.RecordEvent) error {
 		return err
 	}
 	setTaskDefaults(e)
+	setTaskStatusRef(e)
 
-	// Validate that all tags belong to the same group as the project
+	// Validate that all tags belong to the same organization as the project
 	if err := validateTaskTags(e); err != nil {
 		log.Printf("Error validating task tags: %v", err)
 		return err
@@ -660,15 +525,15 @@ func validateTaskTags(e *core.RecordEvent) error {
 		return nil // No project, skip validation
 	}
 
-	// Get project to find its group
+	// Get project to find its organization
 	project, err := e.App.FindRecordById(CollectionProjects, projectId)
 	if err != nil {
 		return fmt.Errorf("failed to find project: %w", err)
 	}
 
-	projectGroupId := project.GetString("group")
-	if projectGroupId == "" {
-		return nil // Project has no group, skip validation
+	projectOrgId := project.GetString("organization")
+	if projectOrgId == "" {
+		return nil // Project has no organization, skip validation
 	}
 
 	// Get tags from the task
@@ -677,16 +542,16 @@ func validateTaskTags(e *core.RecordEvent) error {
 		return nil // No tags, nothing to validate
 	}
 
-	// Check each tag belongs to the same group
+	// Check each tag belongs to the same organization
 	for _, tagId := range tagIds {
 		tag, err := e.App.FindRecordById(CollectionTags, tagId)
 		if err != nil {
 			return fmt.Errorf("failed to find tag %s: %w", tagId, err)
 		}
 
-		tagGroupId := tag.GetString("group")
-		if tagGroupId != projectGroupId {
-			return errors.New(ErrTagsMustBeInSameGroup)
+		tagOrgId := tag.GetString("organization")
+		if tagOrgId != projectOrgId {
+			return errors.New(ErrTagsMustBeInSameOrganization)
 		}
 	}
 
@@ -764,7 +629,7 @@ func handleProjectUpdateNotification(e *core.RecordEvent) error {
 		UserId string `db:"user"`
 	}
 	err := e.App.DB().NewQuery(`
-		SELECT user FROM users_projects WHERE project = {:projectId}
+		SELECT user FROM project_members WHERE project = {:projectId}
 	`).Bind(dbx.Params{"projectId": e.Record.Id}).All(&projectUsers)
 
 	if err != nil {

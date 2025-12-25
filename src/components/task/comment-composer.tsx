@@ -1,83 +1,240 @@
-import { Send } from "lucide-react";
-import { useState } from "react";
+import { IconX } from "@tabler/icons-react";
+import { useMemo, useRef, useState } from "react";
 
+import { MentionAutocomplete } from "@/components/comments/mention-autocomplete";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { FileUpload } from "@/components/ui/file-upload";
+import { FileWithPreview } from "@/hooks/use-file-upload";
 import { comments } from "@/constants";
+import { useProjectMembers } from "@/hooks/project-members";
 import { useCreateComment } from "@/hooks/comments";
+import type { CommentWithUser } from "@/hooks/comments";
 import { useAuthUser } from "@/store/auth-store";
+import { formatUserName } from "@/lib/utils";
 
 type CommentComposerProps = {
   taskId: string;
+  projectId: string;
+  replyTarget?: CommentWithUser | null;
   onCommentAdded?: () => void;
+  onCancelReply?: () => void;
 };
 
 export function CommentComposer({
   taskId,
+  projectId,
+  replyTarget = null,
   onCommentAdded,
+  onCancelReply,
 }: CommentComposerProps) {
   const [content, setContent] = useState("");
-
-  const currentUser = useAuthUser();
+  const [attachments, setAttachments] = useState<FileWithPreview[]>([]);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionStart, setMentionStart] = useState<number | null>(null);
+  const [mentionCursor, setMentionCursor] = useState<number>(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const createComment = useCreateComment();
+  const currentUser = useAuthUser();
+  const { data: projectMembers } = useProjectMembers(projectId, {
+    enabled: Boolean(projectId),
+  });
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const trimmedContent = useMemo(() => content.trim(), [content]);
+  const isDisabled = !currentUser || createComment.isPending;
 
-    if (!content.trim() || !currentUser) return;
+  const mentionOptions = useMemo(() => {
+    if (!projectMembers) return [];
+    const normalized = mentionQuery.toLowerCase();
+    return projectMembers
+      .map((member) => member.expand?.user)
+      .filter((user): user is NonNullable<typeof user> => Boolean(user))
+      .filter((user) => {
+        if (!normalized) return true;
+        const fullName = formatUserName(
+          user.first_name,
+          user.last_name,
+          user.username,
+        ).toLowerCase();
+        return (
+          user.username.toLowerCase().includes(normalized) ||
+          fullName.includes(normalized)
+        );
+      })
+      .map((user) => ({
+        id: user.id,
+        username: user.username,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        avatar: user.avatar,
+      }));
+  }, [projectMembers, mentionQuery]);
+
+  const isMentionOpen = mentionStart !== null && mentionOptions.length > 0;
+
+  const updateMentionState = (value: string, cursor: number) => {
+    const textBefore = value.slice(0, cursor);
+    const match = /(?:^|\s)@([\w.-]*)$/.exec(textBefore);
+    if (!match) {
+      setMentionStart(null);
+      setMentionQuery("");
+      return;
+    }
+    const query = match[1] ?? "";
+    const startIndex = textBefore.lastIndexOf("@");
+    setMentionStart(startIndex);
+    setMentionQuery(query);
+    setSelectedIndex(0);
+  };
+
+  const handleMentionSelect = (index: number) => {
+    const option = mentionOptions[index];
+    if (!option || mentionStart === null) return;
+    const before = content.slice(0, mentionStart);
+    const after = content.slice(mentionCursor);
+    const mentionText = `@${option.username} `;
+    const nextValue = `${before}${mentionText}${after}`;
+    setContent(nextValue);
+    setMentionStart(null);
+    setMentionQuery("");
+    requestAnimationFrame(() => {
+      const nextCursor = before.length + mentionText.length;
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(nextCursor, nextCursor);
+    });
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!currentUser || !trimmedContent) return;
+
+    const formData = new FormData();
+    formData.append("content", trimmedContent);
+    formData.append("task", taskId);
+    formData.append("user", currentUser.id);
+    if (replyTarget) {
+      formData.append("parent", replyTarget.id);
+    }
+    attachments.forEach((file) => {
+      formData.append("attachments+", file);
+    });
 
     createComment.mutate(
-      {
-        content: content.trim(),
-        task: taskId,
-        user: currentUser.id,
-      },
+      { formData, task: taskId },
       {
         onSuccess: () => {
           setContent("");
+          setAttachments([]);
           onCommentAdded?.();
+          if (replyTarget) {
+            onCancelReply?.();
+          }
         },
       },
     );
   };
 
-  const isDisabled = !currentUser || createComment.isPending;
-
   return (
-    <div className="space-y-3">
-      <div className="flex items-start gap-3">
-        <div className="flex-1">
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={
-              currentUser
-                ? comments.composer.placeholder
-                : comments.composer.placeholderDisabled
-            }
-            className="min-h-[80px] resize-none"
-            disabled={isDisabled}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-          />
-        </div>
-        <div className="shrink-0 pt-1">
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      {replyTarget && (
+        <div className="border-border/40 bg-muted/10 flex items-center justify-between rounded-none border px-4 py-2 text-right text-[11px] font-black tracking-tight uppercase">
+          <span>
+            {comments.item.replyingTo}
+            {replyTarget.expand?.user?.first_name ||
+              replyTarget.expand?.user?.username}
+          </span>
           <Button
-            type="submit"
-            size="sm"
-            disabled={isDisabled || !content.trim()}
-            onClick={handleSubmit}
-            className="h-10 px-3"
+            variant="ghost"
+            size="icon"
+            disabled={isDisabled}
+            onClick={() => onCancelReply?.()}
+            className="h-7 w-7 rounded-none border border-transparent"
           >
-            <Send className="h-4 w-4" />
-            <span className="sr-only">{comments.composer.send}</span>
+            <IconX className="size-3" />
           </Button>
         </div>
+      )}
+
+      <div className="space-y-3">
+        <Textarea
+          ref={textareaRef}
+          value={content}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            const cursor = event.target.selectionStart ?? nextValue.length;
+            setContent(nextValue);
+            setMentionCursor(cursor);
+            updateMentionState(nextValue, cursor);
+          }}
+          placeholder={
+            currentUser
+              ? comments.composer.placeholder
+              : comments.composer.placeholderDisabled
+          }
+          className="min-h-[100px] rounded-none text-right"
+          disabled={isDisabled}
+          onKeyDown={(event) => {
+            if (isMentionOpen) {
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                setSelectedIndex((prev) =>
+                  Math.min(prev + 1, mentionOptions.length - 1),
+                );
+                return;
+              }
+              if (event.key === "ArrowUp") {
+                event.preventDefault();
+                setSelectedIndex((prev) => Math.max(prev - 1, 0));
+                return;
+              }
+              if (event.key === "Enter" || event.key === "Tab") {
+                event.preventDefault();
+                handleMentionSelect(selectedIndex);
+                return;
+              }
+              if (event.key === "Escape") {
+                event.preventDefault();
+                setMentionStart(null);
+                setMentionQuery("");
+                return;
+              }
+            }
+            if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+              handleSubmit(event);
+            }
+          }}
+        />
+
+        <MentionAutocomplete
+          items={mentionOptions}
+          selectedIndex={selectedIndex}
+          onSelect={(item) => {
+            const index = mentionOptions.findIndex((i) => i.id === item.id);
+            handleMentionSelect(index);
+          }}
+          onHover={(index) => setSelectedIndex(index)}
+          visible={isMentionOpen}
+        />
+
+        <FileUpload
+          value={attachments}
+          onChange={setAttachments}
+          disabled={isDisabled}
+          maxFiles={5}
+        />
       </div>
-    </div>
+
+      <div className="flex justify-end">
+        <Button
+          type="submit"
+          size="sm"
+          className="h-10 rounded-none px-4 text-[10px] font-black tracking-tight uppercase"
+          disabled={isDisabled || !trimmedContent}
+        >
+          {comments.composer.send}
+        </Button>
+      </div>
+    </form>
   );
 }

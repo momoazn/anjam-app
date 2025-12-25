@@ -18,6 +18,7 @@ import type {
   NotificationSort,
 } from "@/components/notifications/notification-filters";
 import { NotificationList } from "@/components/notifications/notification-list";
+import { MentionsList } from "@/components/notifications/mentions-list";
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -36,12 +37,15 @@ import {
   useMarkAsRead,
   useNotifications,
 } from "@/hooks/notifications";
+import { useMentions } from "@/hooks";
+import type { MentionsResponse } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 
 export default function Notifications() {
   const user = useAuthUser();
   const { data: notificationsData = [], isLoading, error } = useNotifications();
+  const { data: mentionsData = [], isLoading: mentionsLoading } = useMentions();
   const markAsRead = useMarkAsRead();
 
   const markAllAsRead = useMarkAllAsRead();
@@ -160,7 +164,7 @@ export default function Notifications() {
               <IconCheck className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+          <TooltipContent className="border-border bg-card text-foreground rounded-none border text-[9px] font-black tracking-tight uppercase">
             {notificationsText.markAllAsRead}
           </TooltipContent>
         </Tooltip>
@@ -177,7 +181,7 @@ export default function Notifications() {
               <IconTrashX className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+          <TooltipContent className="border-border bg-card text-foreground rounded-none border text-[9px] font-black tracking-tight uppercase">
             {notificationsText.actions.clearRead}
           </TooltipContent>
         </Tooltip>
@@ -194,7 +198,7 @@ export default function Notifications() {
               <IconTrash className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="border-foreground bg-card text-foreground rounded-none border-2 text-[9px] font-black tracking-widest uppercase">
+          <TooltipContent className="border-border bg-card text-foreground rounded-none border text-[9px] font-black tracking-tight uppercase">
             {notificationsText.clearAll}
           </TooltipContent>
         </Tooltip>
@@ -208,11 +212,10 @@ export default function Notifications() {
         title={notificationsText.pageTitle}
         description={notificationsText.pageDescription}
         icon={IconBell}
-        nodeId="Alert_Central"
         actions={headerActions}
       />
 
-      {/* Telemetry Bar */}
+      {/* Stats Bar */}
       <div
         className="bg-border/40 border-border/40 mb-8 grid grid-cols-2 gap-px border sm:grid-cols-4"
         data-animate-stagger
@@ -248,7 +251,7 @@ export default function Notifications() {
             className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
           >
             <div className="mb-2 flex items-center justify-end gap-3">
-              <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+              <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
                 {stat.label}
               </span>
               <stat.icon className={cn("size-4", stat.color)} />
@@ -287,6 +290,11 @@ export default function Notifications() {
           onDelete={handleDelete}
         />
       </div>
+
+      <MentionsList
+        mentions={mentionsData as MentionsResponse[]}
+        isLoading={mentionsLoading}
+      />
     </PageTransition>
   );
 }

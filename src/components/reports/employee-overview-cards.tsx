@@ -12,7 +12,7 @@ type Props = {
 export function EmployeeOverviewCards({ summaries, onCardClick }: Props) {
   if (summaries.length === 0) {
     return (
-      <div className="text-muted-foreground flex h-32 items-center justify-center rounded-md border border-dashed text-sm">
+      <div className="text-muted-foreground flex h-32 items-center justify-center rounded-none border border-dashed text-sm">
         {reports.charts.employee.emptyStates.noEmployees}
       </div>
     );

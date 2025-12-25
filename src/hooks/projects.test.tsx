@@ -64,7 +64,7 @@ describe("useProjects", () => {
         name: "Project 1",
         code: "PRJ",
         supervisor: "sup-1",
-        group: "grp-1",
+        organization: "org-1",
         assets: [],
         description: "Test project",
         collectionId: Collections.Projects,
@@ -148,7 +148,7 @@ describe("useProject", () => {
       name: "Project 1",
       code: "PRJ",
       supervisor: "sup-1",
-      group: "grp-1",
+      organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-01T00:00:00Z",
     };
@@ -211,7 +211,7 @@ describe("useProjectWithSupervisor", () => {
       name: "Project 1",
       code: "PRJ",
       supervisor: "sup-1",
-      group: "grp-1",
+      organization: "org-1",
       expand: {
         supervisor: {
           id: "sup-1",
@@ -259,7 +259,7 @@ describe("useCreateProject", () => {
       name: "New Project",
       code: "NEW",
       supervisor: "sup-1",
-      group: "grp-1",
+      organization: "org-1",
     };
 
     const createdProject = {
@@ -291,7 +291,7 @@ describe("useCreateProject", () => {
       name: "Test",
       code: "TST",
       supervisor: "sup-1",
-      group: "grp-1",
+      organization: "org-1",
     };
 
     const createdProject = {
@@ -333,7 +333,7 @@ describe("useCreateProject", () => {
       name: "Test",
       code: "TST",
       supervisor: "sup-1",
-      group: "grp-1",
+      organization: "org-1",
     };
 
     await expect(result.current.mutateAsync(projectData)).rejects.toEqual(
@@ -354,7 +354,7 @@ describe("useUpdateProject", () => {
       name: "Updated Project",
       code: "UPD",
       supervisor: "sup-1",
-      group: "grp-1",
+      organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
     };
@@ -387,7 +387,7 @@ describe("useUpdateProject", () => {
       name: "Updated",
       code: "UPD",
       supervisor: "sup-1",
-      group: "grp-1",
+      organization: "org-1",
       created: "2024-01-01T00:00:00Z",
       updated: "2024-01-02T00:00:00Z",
     };
@@ -434,24 +434,52 @@ describe("useUpdateProject", () => {
 
 describe("useDeleteProject", () => {
   beforeEach(() => {
+    updateMock.mockReset();
     deleteMock.mockReset();
   });
 
   it("deletes a project by ID", async () => {
-    deleteMock.mockResolvedValue(undefined);
+    const updated = {
+      id: "proj-1",
+      name: "Project 1",
+      code: "PRJ",
+      supervisor: "sup-1",
+      organization: "org-1",
+      created: "2024-01-01T00:00:00Z",
+      updated: "2024-01-02T00:00:00Z",
+    };
+
+    updateMock.mockResolvedValue(updated);
 
     const { result } = renderHook(() => useDeleteProject(), {
       wrapper: createWrapper(),
     });
 
-    await result.current.mutateAsync("proj-1");
+    const mutationPromise = result.current.mutateAsync("proj-1");
 
-    expect(deleteMock).toHaveBeenCalledWith("proj-1");
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await mutationPromise;
+
+    expect(updateMock).toHaveBeenCalledWith(
+      "proj-1",
+      expect.objectContaining({ deleted_at: expect.any(String) }),
+    );
+    expect(result.current.data).toEqual(updated);
   });
 
   it("calls onSuccess callback if provided", async () => {
     const onSuccess = vi.fn();
-    deleteMock.mockResolvedValue(undefined);
+    const updated = {
+      id: "proj-1",
+      name: "Project 1",
+      code: "PRJ",
+      supervisor: "sup-1",
+      organization: "org-1",
+      created: "2024-01-01T00:00:00Z",
+      updated: "2024-01-02T00:00:00Z",
+    };
+
+    updateMock.mockResolvedValue(updated);
 
     const { result } = renderHook(() => useDeleteProject({ onSuccess }), {
       wrapper: createWrapper(),
@@ -464,12 +492,12 @@ describe("useDeleteProject", () => {
     await mutationPromise;
 
     expect(onSuccess).toHaveBeenCalled();
-    expect(onSuccess).toHaveBeenCalledWith(undefined, "proj-1", undefined);
+    expect(onSuccess).toHaveBeenCalledWith(updated, "proj-1", undefined);
   });
 
   it("handles deletion errors", async () => {
     const error = new Error("Delete failed");
-    deleteMock.mockRejectedValue(error);
+    updateMock.mockRejectedValue(error);
 
     const { result } = renderHook(() => useDeleteProject(), {
       wrapper: createWrapper(),
@@ -479,7 +507,15 @@ describe("useDeleteProject", () => {
   });
 
   it("handles multiple deletions", async () => {
-    deleteMock.mockResolvedValue(undefined);
+    updateMock.mockResolvedValue({
+      id: "proj-1",
+      name: "Project 1",
+      code: "PRJ",
+      supervisor: "sup-1",
+      organization: "org-1",
+      created: "2024-01-01T00:00:00Z",
+      updated: "2024-01-02T00:00:00Z",
+    });
 
     const { result } = renderHook(() => useDeleteProject(), {
       wrapper: createWrapper(),
@@ -488,8 +524,16 @@ describe("useDeleteProject", () => {
     await result.current.mutateAsync("proj-1");
     await result.current.mutateAsync("proj-2");
 
-    expect(deleteMock).toHaveBeenCalledTimes(2);
-    expect(deleteMock).toHaveBeenNthCalledWith(1, "proj-1");
-    expect(deleteMock).toHaveBeenNthCalledWith(2, "proj-2");
+    expect(updateMock).toHaveBeenCalledTimes(2);
+    expect(updateMock).toHaveBeenNthCalledWith(
+      1,
+      "proj-1",
+      expect.objectContaining({ deleted_at: expect.any(String) }),
+    );
+    expect(updateMock).toHaveBeenNthCalledWith(
+      2,
+      "proj-2",
+      expect.objectContaining({ deleted_at: expect.any(String) }),
+    );
   });
 });

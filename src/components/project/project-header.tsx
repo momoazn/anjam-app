@@ -50,7 +50,7 @@ export function ProjectHeader({
                 variant="ghost"
                 onClick={onCancelEdit}
                 disabled={isUpdating}
-                className="text-muted-foreground/60 h-12 rounded-none px-6 text-[10px] font-black tracking-widest uppercase"
+                className="text-muted-foreground/60 h-12 rounded-none px-6 text-[10px] font-black tracking-tight uppercase"
               >
                 <IconX className="ms-2 size-4" />
                 {common.cancel}
@@ -58,7 +58,7 @@ export function ProjectHeader({
               <Button
                 onClick={onSaveEdit}
                 disabled={isUpdating}
-                className="h-12 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
               >
                 <IconDeviceFloppy className="ms-2 size-4" />
                 {common.save}
@@ -68,7 +68,7 @@ export function ProjectHeader({
             <Button
               variant="outline"
               onClick={onStartEdit}
-              className="border-foreground bg-card h-12 rounded-none border-2 px-8 text-[10px] font-black tracking-widest uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+              className="border-border bg-card h-12 rounded-none border px-8 text-[10px] font-black tracking-tight uppercase shadow-md transition-all   active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
             >
               <IconPencil className="ms-2 size-4" />
               {common.edit}
@@ -85,19 +85,19 @@ export function ProjectHeader({
         variant="ghost"
         size="sm"
         onClick={onBack}
-        className="group text-muted-foreground/40 hover:text-primary gap-2 p-0 text-[10px] font-black tracking-[0.3em] uppercase transition-all"
+        className="group text-muted-foreground/40 hover:text-primary gap-2 p-0 text-[10px] font-black tracking-tight uppercase transition-all"
       >
         <IconChevronRight className="size-3" />
-        Back_To_Registry
+        Back to Projects
       </Button>
 
       {isEditing ? (
-        <div className="border-border/40 bg-card relative overflow-hidden rounded-none border p-8 shadow-xl">
+        <div className="border-border/40 bg-card relative overflow-hidden rounded-none border p-8 shadow-md">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex-1 space-y-6">
               <div className="space-y-1.5 text-right">
-                <span className="text-primary/60 text-[10px] font-black tracking-[0.2em] uppercase">
-                  Project_Identity_Modification
+                <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+                  Edit Project Name
                 </span>
                 <Input
                   value={editedName}
@@ -106,9 +106,9 @@ export function ProjectHeader({
                   className="border-border/40 bg-muted/5 focus:border-primary/40 h-14 rounded-none text-right text-2xl font-black tracking-tight uppercase focus:ring-0"
                 />
               </div>
-              <div className="ms-auto ms-0 w-40 space-y-1.5 text-right">
-                <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.2em] uppercase">
-                  Unique_Code
+              <div className="ms-0 ms-auto w-40 space-y-1.5 text-right">
+                <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+                  Project Code
                 </span>
                 <Input
                   value={editedCode}
@@ -117,7 +117,7 @@ export function ProjectHeader({
                   }
                   placeholder={projects.create.form.code}
                   maxLength={3}
-                  className="border-border/40 bg-muted/5 focus:border-primary/40 h-10 rounded-none text-center font-mono text-xs font-black tracking-[0.3em] uppercase focus:ring-0"
+                  className="border-border/40 bg-muted/5 focus:border-primary/40 h-10 rounded-none text-center font-mono text-xs font-black tracking-tight uppercase focus:ring-0"
                 />
               </div>
             </div>
@@ -127,9 +127,8 @@ export function ProjectHeader({
       ) : (
         <PageHeader
           title={project.name}
-          description={`Centralized repository for project nodes :: Access authorized for supervisor level and above`}
+          description={`Project details and management for team members and stakeholders.`}
           icon={IconStack2}
-          nodeId={`Project_Registry :: ${project.code}`}
           actions={headerActions}
         />
       )}

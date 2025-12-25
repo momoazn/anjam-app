@@ -57,7 +57,7 @@ export function TaskListHeader({
   return (
     <div
       className={cn(
-        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-sm border-y border-s-2 px-4 py-3 text-right transition-all",
+        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-none border-y border-s-2 px-4 py-3 text-right transition-all",
         getStatusColorVariant(status, "border")
           .replace("border-", "border-s-")
           .replace("/20", ""),
@@ -75,7 +75,7 @@ export function TaskListHeader({
       <div className="flex items-center gap-4">
         <div
           className={cn(
-            "bg-card ring-border/50 flex h-8 w-8 items-center justify-center rounded-sm border-2 shadow-sm ring-1 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md",
+            "bg-card ring-border/50 flex h-8 w-8 items-center justify-center rounded-none border shadow-sm ring-1 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md",
             statusColor.replace("text", "ring"),
           )}
         >
@@ -93,7 +93,7 @@ export function TaskListHeader({
           </h2>
           <div className="mt-0.5 flex items-center gap-2">
             <Hash className="text-muted-foreground/30 size-2.5" />
-            <span className="text-muted-foreground/70 text-[9px] font-black tracking-widest uppercase">
+            <span className="text-muted-foreground/70 text-[9px] font-black tracking-tight uppercase">
               {digitsEnToFa(taskCount)} ITEMS TOTAL
             </span>
           </div>
@@ -123,7 +123,7 @@ export function TaskListHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="border-border/50 rounded-sm"
+              className="border-border/50 rounded-none"
             >
               <DropdownMenuItem
                 onClick={() =>
@@ -168,7 +168,7 @@ export function TaskListHeader({
 
       <div
         className={cn(
-          "absolute bottom-0 start-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
+          "absolute start-0 bottom-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
           statusColor.replace("text", "text"),
         )}
       />

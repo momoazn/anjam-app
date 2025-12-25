@@ -7,25 +7,26 @@ import { useBulkDeleteTasks, useTasks } from "./tasks";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Hoisted mocks to avoid initialization errors with vi.mock
-const { getListMock, getFullListMock, updateMock, collectionMock } = vi.hoisted(
+const { getListMock, getFullListMock, sendMock, collectionMock } = vi.hoisted(
   () => {
     const getListMock = vi.fn();
     const getFullListMock = vi.fn();
-    const updateMock = vi.fn();
+    const sendMock = vi.fn();
     const collectionMock = vi.fn(() => ({
       getList: getListMock,
       getFullList: getFullListMock,
-      update: updateMock,
+      update: vi.fn(),
       delete: vi.fn(),
     }));
 
-    return { getListMock, getFullListMock, updateMock, collectionMock };
+    return { getListMock, getFullListMock, sendMock, collectionMock };
   },
 );
 
 vi.mock("../lib/pocketbase", () => ({
   pb: {
     collection: collectionMock,
+    send: sendMock,
     authStore: { record: null },
   },
 }));
@@ -97,11 +98,11 @@ describe("useTasks pagination", () => {
 
 describe("useBulkDeleteTasks", () => {
   beforeEach(() => {
-    updateMock.mockReset();
+    sendMock.mockReset();
   });
 
-  it("soft deletes tasks by setting deleted_at", async () => {
-    updateMock.mockResolvedValue({});
+  it("soft deletes tasks via batch endpoint", async () => {
+    sendMock.mockResolvedValue({ updated: 2 });
 
     const { result } = renderHook(() => useBulkDeleteTasks(), {
       wrapper: createWrapper(),
@@ -115,12 +116,14 @@ describe("useBulkDeleteTasks", () => {
 
     vi.useRealTimers();
 
-    expect(updateMock).toHaveBeenCalledTimes(2);
-    expect(updateMock).toHaveBeenCalledWith("a", {
-      deleted_at: new Date(now).toISOString(),
-    });
-    expect(updateMock).toHaveBeenCalledWith("b", {
-      deleted_at: new Date(now).toISOString(),
+    expect(sendMock).toHaveBeenCalledWith("/api/v1/tasks/batch-update", {
+      method: "POST",
+      body: {
+        task_ids: ["a", "b"],
+        updates: {
+          deleted_at: new Date(now).toISOString(),
+        },
+      },
     });
   });
 });

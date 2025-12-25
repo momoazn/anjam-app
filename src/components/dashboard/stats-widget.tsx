@@ -44,11 +44,11 @@ function StatCard({
   borderColor?: string;
 }) {
   return (
-    <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-sm shadow-xl transition-all hover:shadow-2xl">
+    <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
       <CardContent className="relative p-4 md:p-6">
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
+            <p className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
               {title}
             </p>
             <div
@@ -68,7 +68,7 @@ function StatCard({
           </div>
           <div
             className={cn(
-              "bg-background border-border/20 flex size-10 items-center justify-center rounded-sm border-2 shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6",
+              "bg-background border-border/20 flex size-10 items-center justify-center rounded-none border shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6",
               borderColor,
             )}
           >
@@ -76,7 +76,7 @@ function StatCard({
           </div>
         </div>
         <div className="from-primary/20 absolute end-0 bottom-0 h-px w-0 bg-gradient-to-l to-transparent transition-all duration-300 group-hover:w-1/2" />
-        <div className="from-primary/20 absolute bottom-0 start-0 h-px w-0 bg-gradient-to-r to-transparent transition-all duration-300 group-hover:w-1/2" />
+        <div className="from-primary/20 absolute start-0 bottom-0 h-px w-0 bg-gradient-to-r to-transparent transition-all duration-300 group-hover:w-1/2" />
       </CardContent>
     </Card>
   );
@@ -89,7 +89,7 @@ export function StatsWidget({ stats, isLoading = false }: StatsWidgetProps) {
         {Array.from({ length: 6 }).map((_, i) => (
           <Card
             key={`stat-skeleton-${i}`}
-            className="border-border/50 rounded-sm"
+            className="border-border/50 rounded-none"
           >
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center justify-between">
@@ -97,7 +97,7 @@ export function StatsWidget({ stats, isLoading = false }: StatsWidgetProps) {
                   <Skeleton className="mb-2 h-3 w-16" />
                   <Skeleton className="h-8 w-12" />
                 </div>
-                <Skeleton className="h-10 w-10 rounded-sm" />
+                <Skeleton className="h-10 w-10 rounded-none" />
               </div>
             </CardContent>
           </Card>

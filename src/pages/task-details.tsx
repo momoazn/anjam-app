@@ -34,7 +34,11 @@ export default function TaskDetails() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const pendingDeleteRef = useRef<number | null>(null);
 
-  const { data: task, isLoading: taskLoading } = useTask({
+  const {
+    data: task,
+    isLoading: taskLoading,
+    refetch: refetchTask,
+  } = useTask({
     id: id ?? "",
     enabled: !!id,
   });
@@ -156,6 +160,7 @@ export default function TaskDetails() {
           onMinutesChange={setMinutes}
           onSaveTime={handleSaveTime}
           onCancelTimeEdit={handleCancelTimeEdit}
+          onTaskRefresh={refetchTask}
         />
 
         <TaskDetailsSidebar

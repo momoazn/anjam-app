@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IconLoader2, IconPlus, IconTerminal } from "@tabler/icons-react";
+import { IconLoader2, IconPlus, IconCheck } from "@tabler/icons-react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
@@ -140,7 +140,6 @@ export default function CreateTask() {
             : tasks.addTask.description
         }
         icon={IconPlus}
-        nodeId="Task_Creation_Protocol"
       />
 
       <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
@@ -154,21 +153,21 @@ export default function CreateTask() {
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isPending}
-                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-widest uppercase"
+                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
               >
                 {tasks.details.buttons.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
               >
                 {isPending ? (
                   <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <IconTerminal className="ms-2 size-4" />
+                  <IconCheck className="ms-2 size-4" />
                 )}
-                <span className="tracking-widest uppercase">
+                <span className="tracking-tight uppercase">
                   {isPending
                     ? tasks.addTask.buttons.creating
                     : tasks.addTask.buttons.create}

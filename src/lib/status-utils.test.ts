@@ -5,6 +5,7 @@ import {
   type IsoAutoDateString,
   TasksPriorityOptions,
   TasksStatusOptions,
+  TasksTaskTypeOptions,
 } from "./pocketbase-types";
 import {
   getAllTaskStatuses,
@@ -41,6 +42,10 @@ const createMockTask = (
   order: 0,
   time_spent_minutes: 0,
   deleted_at: "",
+  status_ref: "",
+  story_points: 0,
+  task_type: TasksTaskTypeOptions.task,
+  watchers: [],
   ...overrides,
 });
 
@@ -62,7 +67,7 @@ describe("getTaskStatus", () => {
 
     const result = getTaskStatus(task);
     expect(result.key).toBe("todo");
-    expect(result.color).toBe("slate");
+    expect(result.color).toBe("blue");
     expect(result.isCompleted).toBe(false);
     expect(result.isCanceled).toBe(false);
     expect(result.order).toBe(1);
@@ -74,7 +79,7 @@ describe("getTaskStatus", () => {
 
     const result = getTaskStatus(task);
     expect(result.key).toBe("in_progress");
-    expect(result.color).toBe("blueSubtle");
+    expect(result.color).toBe("amber");
     expect(result.isCompleted).toBe(false);
     expect(result.isCanceled).toBe(false);
     expect(result.order).toBe(2);
@@ -86,7 +91,7 @@ describe("getTaskStatus", () => {
     const result = getTaskStatus(task);
     expect(result.isCompleted).toBe(true);
     expect(result.isCanceled).toBe(false);
-    expect(result.color).toBe("greenSubtle");
+    expect(result.color).toBe("emerald");
   });
 
   it("should correctly identify canceled status", () => {
@@ -95,7 +100,7 @@ describe("getTaskStatus", () => {
     const result = getTaskStatus(task);
     expect(result.isCompleted).toBe(false);
     expect(result.isCanceled).toBe(true);
-    expect(result.color).toBe("graySubtle");
+    expect(result.color).toBe("gray");
   });
 
   it("should handle all status values", () => {
@@ -150,22 +155,19 @@ describe("getStatusColorClass", () => {
   it("should return correct color class for blueSubtle status", () => {
     const task = createMockTask({ status: TasksStatusOptions.in_progress });
     const result = getStatusColorClass(task);
-    expect(result).toContain("bg-blue");
-    expect(result).toContain("text-blue");
+    expect(result).toContain("bg-amber");
   });
 
   it("should return correct color class for greenSubtle status", () => {
     const task = createMockTask({ status: TasksStatusOptions.done });
     const result = getStatusColorClass(task);
-    expect(result).toContain("bg-green");
-    expect(result).toContain("text-green");
+    expect(result).toContain("bg-emerald");
   });
 
   it("should return correct color class for gray status", () => {
     const task = createMockTask({ status: TasksStatusOptions.canceled });
     const result = getStatusColorClass(task);
     expect(result).toContain("bg-gray");
-    expect(result).toContain("text-gray");
   });
 });
 

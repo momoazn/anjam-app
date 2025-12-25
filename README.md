@@ -16,6 +16,9 @@ A comprehensive task and project management application built with React, TypeSc
 # Install dependencies
 bun install
 
+# Setup database with initial data
+bun run setup
+
 # Start development server (frontend + backend)
 bun run dev
 
@@ -70,12 +73,11 @@ bun run build:mac
 - `bun run lint:fix` - Run ESLint with fixes
 - `bun run type:check` - Run TypeScript type checking
 
-### Database
+### Database Setup
 
-- `bun run data:generate` - Generate seed data
-- `bun run data:seed` - Insert seed data into database
-- `bun run data:truncate` - Clear all data from database
-- `bun run data:reset` - Truncate then seed database
+- `bun run setup` - Clear and seed database with initial data (recommended)
+- `bun run data:seed` - Seed database (alias for setup)
+- `bun run data:reset` - Reset database (alias for setup)
 
 ### Testing
 

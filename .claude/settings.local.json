@@ -16,7 +16,10 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(bun run format:fix)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []
