@@ -63,7 +63,7 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="text-right">
-        <p className="text-sm font-black tracking-[0.3em] uppercase">{label}</p>
+        <p className="text-sm font-black tracking-tight uppercase">{label}</p>
         <p className="text-muted-foreground/70 text-[11px]">{description}</p>
       </div>
       <Switch
@@ -181,7 +181,7 @@ export function PreferencesSection() {
 
   if (!user) {
     return (
-      <div className="border-border/40 bg-muted/5 text-muted-foreground rounded-xl border p-6 text-right text-sm">
+      <div className="border-border/40 bg-muted/5 text-muted-foreground rounded-none border p-6 text-right text-sm">
         {settings.preferences.signinRequired}
       </div>
     );
@@ -189,9 +189,9 @@ export function PreferencesSection() {
 
   return (
     <div className="space-y-6 text-right">
-      <section className="border-border/40 bg-muted/5 rounded-xl border p-6 shadow-sm">
+      <section className="border-border/40 bg-muted/5 rounded-none border p-6 shadow-sm">
         <div className="border-border/20 space-y-1 border-b pb-4">
-          <p className="text-muted-foreground text-xs font-black tracking-[0.4em] uppercase">
+          <p className="text-muted-foreground text-xs font-black tracking-tight uppercase">
             {settings.preferences.title}
           </p>
           <p className="text-muted-foreground text-sm">
@@ -209,15 +209,15 @@ export function PreferencesSection() {
         </div>
       </section>
 
-      <section className="border-border/40 bg-muted/5 rounded-xl border p-6 shadow-sm">
+      <section className="border-border/40 bg-muted/5 rounded-none border p-6 shadow-sm">
         <div className="border-border/20 mb-4 border-b pb-3">
-          <p className="text-muted-foreground text-xs font-black tracking-[0.4em] uppercase">
+          <p className="text-muted-foreground text-xs font-black tracking-tight uppercase">
             تنظیمات نمایش
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
-            <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
               تم
             </span>
             <Select
@@ -229,10 +229,10 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
-              <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectContent className="border-border bg-card rounded-none border">
                 {themeOptions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -247,7 +247,7 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
               منطقه زمانی
             </span>
             <Select
@@ -259,10 +259,10 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
                 <SelectValue placeholder="Timezone" />
               </SelectTrigger>
-              <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectContent className="border-border bg-card rounded-none border">
                 {timezoneOptions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -277,7 +277,7 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+            <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
               فرمت تاریخ
             </span>
             <Select
@@ -289,10 +289,10 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border-2 text-right text-xs font-black tracking-widest uppercase focus:ring-0">
+              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
                 <SelectValue placeholder="Date format" />
               </SelectTrigger>
-              <SelectContent className="border-foreground bg-card rounded-none border-2">
+              <SelectContent className="border-border bg-card rounded-none border">
                 {dateFormatOptions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -308,9 +308,9 @@ export function PreferencesSection() {
         </div>
       </section>
 
-      <section className="border-border/40 bg-muted/5 rounded-xl border p-6 shadow-sm">
+      <section className="border-border/40 bg-muted/5 rounded-none border p-6 shadow-sm">
         <div className="border-border/20 mb-4 border-b pb-3">
-          <p className="text-muted-foreground text-xs font-black tracking-[0.4em] uppercase">
+          <p className="text-muted-foreground text-xs font-black tracking-tight uppercase">
             اعلان‌ها
           </p>
         </div>

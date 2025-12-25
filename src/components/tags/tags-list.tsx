@@ -35,19 +35,19 @@ const TagsListSkeleton = () => (
 );
 
 const EmptyState = ({ onCreateClick }: { onCreateClick: () => void }) => (
-  <div className="border-border/40 flex flex-col items-center justify-center border-2 border-dashed py-24 text-center opacity-30 grayscale">
-    <div className="border-foreground/40 mb-6 flex h-20 w-20 items-center justify-center border-2">
+  <div className="border-border/40 flex flex-col items-center justify-center border border-dashed py-24 text-center opacity-30 grayscale">
+    <div className="border-border/40 mb-6 flex h-20 w-20 items-center justify-center border">
       <IconTag className="size-10 stroke-[1]" />
     </div>
-    <h3 className="text-foreground mb-2 text-lg font-black tracking-widest uppercase">
+    <h3 className="text-foreground mb-2 text-lg font-black tracking-tight uppercase">
       {tagsManagement.noTags}
     </h3>
-    <p className="text-muted-foreground mb-8 text-xs font-bold tracking-widest uppercase">
+    <p className="text-muted-foreground mb-8 text-xs font-bold tracking-tight uppercase">
       {tagsManagement.noTagsDescription}
     </p>
     <Button
       onClick={onCreateClick}
-      className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+      className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
     >
       <IconPlus className="size-4" />
       {tagsManagement.createFirstTag}
@@ -84,12 +84,12 @@ export function TagsList({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2 opacity-40">
               <IconHash className="size-3" />
-              <span className="font-mono text-[9px] font-black tracking-widest uppercase">
+              <span className="font-mono text-[9px] font-black tracking-tight uppercase">
                 {tag.id.slice(0, 6)}
               </span>
             </div>
             <div
-              className="border-foreground/10 h-3 w-3 border shadow-sm"
+              className="border-border/10 h-3 w-3 border shadow-sm"
               style={{ backgroundColor: tag.color }}
             />
           </div>

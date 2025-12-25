@@ -55,7 +55,7 @@ function NotificationItem({
   return (
     <div
       className={cn(
-        "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-start gap-3 rounded-md px-3 py-2.5 transition-colors duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2",
+        "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-start gap-3 rounded-none px-3 py-2.5 transition-colors duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2",
         !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
       )}
       role="listitem"

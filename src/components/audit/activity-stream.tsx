@@ -7,8 +7,8 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconClock,
-  IconTerminal,
   IconHistory,
+  IconActivity,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -134,7 +134,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                 {formatActionMessage(log, actorName)}
               </p>
               <div className="mt-2 flex items-center justify-end gap-3 opacity-40">
-                <span className="text-[10px] font-black tracking-widest uppercase">
+                <span className="text-[10px] font-black tracking-tight uppercase">
                   {relativeTime ? digitsEnToFa(relativeTime) : ""}
                 </span>
                 <IconClock className="size-2.5" />
@@ -148,7 +148,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
               />
               <Badge
                 variant="outline"
-                className="border-primary/20 bg-primary/5 text-primary rounded-none text-[8px] font-black tracking-widest uppercase"
+                className="border-primary/20 bg-primary/5 text-primary rounded-none text-[8px] font-black tracking-tight uppercase"
               >
                 {auditLogs.actions[
                   log.action as keyof typeof auditLogs.actions
@@ -163,15 +163,15 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setExpanded(!expanded)}
-                className="text-muted-foreground/60 hover:bg-muted/50 h-7 gap-2 rounded-none text-[9px] font-black tracking-widest uppercase"
+                className="text-muted-foreground/60 hover:bg-muted/50 h-7 gap-2 rounded-none text-[9px] font-black tracking-tight uppercase"
               >
                 {expanded ? (
                   <>
-                    Hide_Registry_Diff <IconChevronUp className="size-3" />
+                    Hide Details <IconChevronUp className="size-3" />
                   </>
                 ) : (
                   <>
-                    View_Registry_Diff <IconChevronDown className="size-3" />
+                    View Details <IconChevronDown className="size-3" />
                   </>
                 )}
               </Button>
@@ -188,15 +188,15 @@ function AuditLogItem({ log }: { log: AuditLog }) {
               className="border-border/5 grid grid-cols-12 gap-4 border-b pb-4 last:border-0 last:pb-0"
             >
               <div className="border-border/10 col-span-3 flex flex-col items-end border-s">
-                <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
-                  Entry
+                <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
+                  Field
                 </span>
                 <span className="text-primary/80 font-black uppercase">
                   {field}
                 </span>
               </div>
               <div className="border-border/10 col-span-4 flex flex-col items-end border-s pe-4">
-                <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
                   Original
                 </span>
                 <span className="w-full truncate opacity-60">
@@ -204,7 +204,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                 </span>
               </div>
               <div className="col-span-5 flex flex-col items-end pe-4">
-                <span className="mb-1 text-[8px] font-black tracking-widest uppercase opacity-40">
+                <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
                   Updated
                 </span>
                 <span className="text-foreground w-full truncate font-black">
@@ -280,7 +280,7 @@ export function ActivityStream({
           className,
         )}
       >
-        <IconTerminal className="mx-auto mb-4 size-8 opacity-20" />
+        <IconActivity className="mx-auto mb-4 size-8 opacity-20" />
         {auditLogs.errors.loadHistoryFailed}
       </div>
     );
@@ -308,8 +308,8 @@ export function ActivityStream({
       )}
     >
       <div className="bg-muted/20 border-border/40 flex items-center justify-between border-b px-4 py-2">
-        <span className="text-muted-foreground/40 text-[8px] font-black tracking-[0.3em] uppercase">
-          Resource_Telemetry_Stream
+        <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+          Activity Log
         </span>
         <span className="text-[9px] font-black tabular-nums">
           {digitsEnToFa(data.items.length)} EVENTS

@@ -63,7 +63,7 @@ export function HelpCategories() {
         <AccordionItem key={cat.id} value={cat.id} className="border-none">
           <AccordionTrigger className="bg-card hover:bg-muted/30 [&[data-state=open]]:bg-primary/5 [&[data-state=open]]:text-primary h-16 flex-row-reverse gap-4 px-6 transition-all hover:no-underline">
             <div className="flex items-center gap-3">
-              <span className="text-[11px] font-black tracking-widest uppercase">
+              <span className="text-[11px] font-black tracking-tight uppercase">
                 {cat.title}
               </span>
               <cat.icon className="size-4.5" />
@@ -101,7 +101,7 @@ export function HelpCategories() {
                           key={item.combo}
                           className="bg-card flex items-center justify-between p-3"
                         >
-                          <span className="text-muted-foreground/60 text-[10px] font-bold tracking-widest uppercase">
+                          <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight uppercase">
                             {item.description}
                           </span>
                           <kbd className="bg-muted/20 border-border/20 border px-2 py-0.5 font-mono text-[10px] font-black">
@@ -166,7 +166,7 @@ export function HelpCategories() {
                       key={problem.title}
                       className="bg-muted/20 border-primary/20 border-e-2 p-4 text-right"
                     >
-                      <h4 className="text-foreground mb-1 text-[11px] font-black tracking-widest uppercase">
+                      <h4 className="text-foreground mb-1 text-[11px] font-black tracking-tight uppercase">
                         {problem.title}
                       </h4>
                       <p className="text-muted-foreground/60 text-xs leading-relaxed font-bold">
@@ -185,8 +185,8 @@ export function HelpCategories() {
               ].includes(cat.id) && (
                 <div className="py-12 text-center opacity-40">
                   <IconTerminal className="mx-auto mb-4 size-10 stroke-[1]" />
-                  <p className="text-[10px] font-black tracking-[0.3em] uppercase">
-                    Module_Protocol :: Under_Expansion
+                  <p className="text-[10px] font-black tracking-tight uppercase">
+                    Module_ :: Under_Expansion
                   </p>
                 </div>
               )}

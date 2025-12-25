@@ -40,7 +40,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
     <section className="border-border/40 bg-card mt-10 space-y-4 border p-6 text-right">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">
+          <p className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
             {notificationsText.mentions.title}
           </p>
           <p className="text-muted-foreground text-xs">
@@ -84,11 +84,11 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
             return (
               <article
                 key={mention.id}
-                className="border-border/30 bg-muted/10 rounded-xl border p-4 text-right"
+                className="border-border/30 bg-muted/10 rounded-none border p-4 text-right"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-black tracking-[0.3em] uppercase">
+                    <p className="text-sm font-black tracking-tight uppercase">
                       {notificationsText.mentions.byTask.replace(
                         "{task}",
                         taskName,
@@ -110,7 +110,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
                     {mentionWithExpand.task && (
                       <Link
                         to={`/tasks/${mentionWithExpand.task}`}
-                        className="text-primary text-[10px] font-black tracking-[0.3em] uppercase"
+                        className="text-primary text-[10px] font-black tracking-tight uppercase"
                       >
                         {notificationsText.mentions.viewTask}
                       </Link>
@@ -130,7 +130,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
 
       {!isLoading && mentions.length > 0 && (
         <div className="border-border/20 flex items-center justify-end gap-2 border-t pt-4">
-          <div className="text-muted-foreground flex items-center gap-2 text-[10px] font-black tracking-[0.3em] uppercase">
+          <div className="text-muted-foreground flex items-center gap-2 text-[10px] font-black tracking-tight uppercase">
             <IconCircleCheck className="size-3" />
             {notificationsText.actions.markAsRead}
           </div>

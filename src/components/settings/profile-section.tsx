@@ -121,7 +121,7 @@ export function ProfileSection() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <IconUserCircle className="text-primary/60 size-4" />
-            <h3 className="text-sm font-black tracking-widest uppercase">
+            <h3 className="text-sm font-black tracking-tight uppercase">
               {settings.profile.title}
             </h3>
           </div>
@@ -135,14 +135,14 @@ export function ProfileSection() {
                 <div className="relative">
                   <UserAvatar
                     user={{ ...fullUser, avatar: currentAvatarUrl }}
-                    className="border-border/40 h-32 w-32 rounded-none border-2 shadow-sm"
+                    className="border-border/40 h-32 w-32 rounded-none border shadow-sm"
                   />
                   <div className="border-background absolute -end-1 -bottom-1 h-3 w-3 border bg-emerald-500" />
                 </div>
 
                 <label
                   htmlFor="avatar-upload"
-                  className="bg-card border-foreground hover:bg-muted absolute -start-2 -bottom-2 cursor-pointer border-2 p-2 shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[-1px] active:translate-y-[1px] active:shadow-none"
+                  className="bg-card border-border hover:bg-muted absolute -start-2 -bottom-2 cursor-pointer border p-2 shadow-md transition-all   active:shadow-none"
                 >
                   <IconCamera className="h-4 w-4" />
                   <span className="sr-only">
@@ -165,7 +165,7 @@ export function ProfileSection() {
                     name="first_name"
                     render={({ field }) => (
                       <FormItem className="space-y-1.5">
-                        <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                        <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                           {settings.profile.firstName}
                         </FormLabel>
                         <FormControl>
@@ -183,7 +183,7 @@ export function ProfileSection() {
                     name="last_name"
                     render={({ field }) => (
                       <FormItem className="space-y-1.5">
-                        <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                        <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                           {settings.profile.lastName}
                         </FormLabel>
                         <FormControl>
@@ -204,7 +204,7 @@ export function ProfileSection() {
                   render={({ field }) => (
                     <FormItem className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+                        <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                           {settings.profile.username}
                         </FormLabel>
                         <IconTerminal className="size-3 opacity-20" />
@@ -213,7 +213,7 @@ export function ProfileSection() {
                         <Input
                           {...field}
                           dir="ltr"
-                          className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none text-left font-mono text-xs font-black tracking-widest uppercase focus:ring-0"
+                          className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none text-left font-mono text-xs font-black tracking-tight uppercase focus:ring-0"
                         />
                       </FormControl>
                       <FormDescription className="text-right text-[9px] font-bold uppercase opacity-40">
@@ -230,12 +230,12 @@ export function ProfileSection() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
               >
                 {form.formState.isSubmitting && (
                   <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                 )}
-                <span className="tracking-widest uppercase">
+                <span className="tracking-tight uppercase">
                   {settings.profile.saveChanges}
                 </span>
               </Button>
@@ -248,7 +248,7 @@ export function ProfileSection() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <IconFingerprint className="text-primary/60 size-4" />
-            <h3 className="text-sm font-black tracking-widest uppercase">
+            <h3 className="text-sm font-black tracking-tight uppercase">
               {settings.profile.contactTitle}
             </h3>
           </div>
@@ -257,13 +257,13 @@ export function ProfileSection() {
 
         <div className="bg-muted/10 border-border/40 space-y-4 border p-6">
           <div className="grid gap-2 text-right">
-            <span className="text-muted-foreground/60 text-[10px] font-black tracking-[0.2em] uppercase">
+            <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
               {settings.profile.email}
             </span>
-            <div className="bg-muted/20 border-border/20 flex h-11 items-center border px-4 font-mono text-xs font-black tracking-widest uppercase opacity-60">
+            <div className="bg-muted/20 border-border/20 flex h-11 items-center border px-4 font-mono text-xs font-black tracking-tight uppercase opacity-60">
               {fullUser.email}
             </div>
-            <p className="text-muted-foreground/40 text-[9px] font-black tracking-widest uppercase">
+            <p className="text-muted-foreground/40 text-[9px] font-black tracking-tight uppercase">
               {settings.profile.emailChangeNote}
             </p>
           </div>

@@ -146,7 +146,7 @@ export function TagFormDialog({
                   <button
                     key={tagColor.value}
                     type="button"
-                    className={`flex h-12 items-center justify-center rounded-md border-2 transition-all ${
+                    className={`flex h-12 items-center justify-center rounded-none border transition-all ${
                       color === tagColor.value
                         ? "border-primary ring-primary ring-2 ring-offset-2"
                         : "hover:border-muted-foreground/20 border-transparent"

@@ -74,23 +74,23 @@ export function NotificationItem({
         <div className="mt-3 flex items-center justify-end gap-4 opacity-40 transition-opacity group-hover:opacity-100">
           <div className="flex items-center gap-1.5">
             <IconHash className="size-3" />
-            <span className="text-[9px] font-black tracking-widest uppercase">
+            <span className="text-[9px] font-black tracking-tight uppercase">
               {notification.id.slice(0, 8)}
             </span>
           </div>
           <Badge
             variant="outline"
-            className="border-border/40 bg-muted/30 text-muted-foreground rounded-none px-1.5 py-0 text-[8px] font-black tracking-widest uppercase"
+            className="border-border/40 bg-muted/30 text-muted-foreground rounded-none px-1.5 py-0 text-[8px] font-black tracking-tight uppercase"
           >
             {notificationsText.types[notification.type]}
           </Badge>
         </div>
       </div>
 
-      {/* Protocol & Actions Zone */}
+      {/*  & Actions Zone */}
       <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-e px-4">
         <div className="flex flex-col items-center">
-          <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-[0.2em] uppercase">
+          <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
             Event_Time
           </span>
           <div className="text-foreground/60 flex items-center gap-1.5 text-[10px] font-black tabular-nums">

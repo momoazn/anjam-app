@@ -176,7 +176,7 @@ export function UserListTable({
     <div className="space-y-6">
       {isAdmin && selectedIds.length > 0 ? (
         <div className="bg-primary/5 border-primary/20 animate-in fade-in slide-in-from-top-2 flex flex-wrap items-center gap-2 rounded-none border p-2 shadow-sm">
-          <div className="bg-primary text-primary-foreground flex items-center gap-2 px-4 py-1.5 text-[10px] font-black tracking-widest uppercase">
+          <div className="bg-primary text-primary-foreground flex items-center gap-2 px-4 py-1.5 text-[10px] font-black tracking-tight uppercase">
             <IconTerminal className="size-3" />
             {digitsEnToFa(selectedIds.length)} {notifications.selected}
           </div>
@@ -185,7 +185,7 @@ export function UserListTable({
             size="sm"
             variant="ghost"
             onClick={bulkToggleActive}
-            className="hover:bg-primary/10 h-9 rounded-none text-[9px] font-black tracking-widest uppercase"
+            className="hover:bg-primary/10 h-9 rounded-none text-[9px] font-black tracking-tight uppercase"
           >
             <IconPower className="ms-1.5 size-3.5" />
             {usersText.bulk.toggleActive}
@@ -194,7 +194,7 @@ export function UserListTable({
             size="sm"
             variant="ghost"
             onClick={bulkUnblock}
-            className="hover:bg-primary/10 h-9 rounded-none text-[9px] font-black tracking-widest uppercase"
+            className="hover:bg-primary/10 h-9 rounded-none text-[9px] font-black tracking-tight uppercase"
           >
             <IconLockOpen className="ms-1.5 size-3.5" />
             {usersText.bulk.unblock}
@@ -203,7 +203,7 @@ export function UserListTable({
             size="sm"
             variant="ghost"
             onClick={() => setBulkDeleteOpen(true)}
-            className="h-9 rounded-none text-[9px] font-black tracking-widest text-rose-500 uppercase hover:bg-rose-500/10"
+            className="h-9 rounded-none text-[9px] font-black tracking-tight text-rose-500 uppercase hover:bg-rose-500/10"
           >
             <IconTrash className="ms-1.5 size-3.5" />
             {usersText.bulk.delete}
@@ -213,7 +213,7 @@ export function UserListTable({
               size="sm"
               variant="ghost"
               onClick={() => setSelectedIds([])}
-              className="h-9 rounded-none text-[9px] font-black tracking-widest uppercase opacity-60"
+              className="h-9 rounded-none text-[9px] font-black tracking-tight uppercase opacity-60"
             >
               <IconX className="ms-1.5 size-3.5" />
               {notifications.deselectAll}
@@ -226,7 +226,7 @@ export function UserListTable({
         className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border"
         data-animate-stagger
       >
-        {/* Table Head Protocol */}
+        {/* Table Head  */}
         <div className="bg-muted/20 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
           {isAdmin && (
             <div className="border-border/10 col-span-1 flex items-center justify-center border-s">
@@ -244,7 +244,7 @@ export function UserListTable({
               isAdmin ? "col-span-4" : "col-span-5",
             )}
           >
-            <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+            <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
               {usersText.table.columns.user}
             </span>
           </div>
@@ -254,7 +254,7 @@ export function UserListTable({
               isAdmin ? "col-span-3" : "col-span-4",
             )}
           >
-            <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+            <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
               {usersText.table.columns.username}
             </span>
           </div>
@@ -264,20 +264,20 @@ export function UserListTable({
               isAdmin ? "col-span-2" : "col-span-3",
             )}
           >
-            <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+            <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
               {usersText.table.columns.role}
             </span>
           </div>
           {isAdmin && (
             <div className="col-span-2 flex items-center justify-center px-4">
-              <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
                 {usersText.table.columns.actions}
               </span>
             </div>
           )}
         </div>
 
-        {/* Registry Modules */}
+        {/*  Modules */}
         {users.map((u) => (
           <div
             key={u.id}
@@ -307,7 +307,7 @@ export function UserListTable({
                 </span>
                 <div className="flex items-center gap-1.5">
                   <IconHash className="size-2.5 opacity-20" />
-                  <span className="font-mono text-[8px] font-black tracking-widest uppercase opacity-40">
+                  <span className="font-mono text-[8px] font-black tracking-tight uppercase opacity-40">
                     {u.id.slice(0, 8)}
                   </span>
                 </div>
@@ -328,7 +328,7 @@ export function UserListTable({
 
             <div
               className={cn(
-                "border-border/10 flex items-center justify-end border-s px-4 py-3 font-mono text-[10px] font-black tracking-widest uppercase opacity-60",
+                "border-border/10 flex items-center justify-end border-s px-4 py-3 font-mono text-[10px] font-black tracking-tight uppercase opacity-60",
                 isAdmin ? "col-span-3" : "col-span-4",
               )}
             >
@@ -343,7 +343,7 @@ export function UserListTable({
             >
               <Badge
                 variant="outline"
-                className="border-primary/20 bg-primary/5 text-primary rounded-none text-[9px] font-black tracking-widest uppercase"
+                className="border-primary/20 bg-primary/5 text-primary rounded-none text-[9px] font-black tracking-tight uppercase"
               >
                 {usersText.table.roles[u.role]}
               </Badge>
@@ -384,14 +384,14 @@ export function UserListTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="border-foreground bg-card rounded-none border-2"
+                      className="border-border bg-card rounded-none border"
                     >
                       <DropdownMenuItem
                         onClick={() => handleToggleActive(u)}
                         disabled={
                           toggleActiveMutation.isPending || u.role === "admin"
                         }
-                        className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
+                        className="rounded-none p-3 text-[9px] font-black tracking-tight uppercase"
                       >
                         <IconPower className="ms-2 size-4 opacity-40" />
                         {u.active
@@ -401,7 +401,7 @@ export function UserListTable({
                       <DropdownMenuSeparator className="bg-border/40" />
                       <DropdownMenuItem
                         onClick={() => setSelectedUserForLogs(u)}
-                        className="rounded-none p-3 text-[9px] font-black tracking-widest uppercase"
+                        className="rounded-none p-3 text-[9px] font-black tracking-tight uppercase"
                       >
                         <IconHistory className="ms-2 size-4 opacity-40" />
                         {usersText.actions.viewLogs}
@@ -435,7 +435,7 @@ export function UserListTable({
       )}
 
       <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
-        <AlertDialogContent className="border-foreground rounded-none border-2 shadow-[-8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <AlertDialogContent className="border-border rounded-none border shadow-sm">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center gap-3 text-rose-500">
               <IconTrash className="size-5" />
@@ -451,12 +451,12 @@ export function UserListTable({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="border-foreground rounded-none border-2 text-[10px] font-black tracking-widest uppercase">
+            <AlertDialogCancel className="border-border rounded-none border text-[10px] font-black tracking-tight uppercase">
               {common.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmBulkDelete}
-              className="border-foreground rounded-none border-2 bg-rose-500 text-[10px] font-black tracking-widest text-white uppercase shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-rose-600 active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none"
+              className="border-border rounded-none border bg-rose-500 text-[10px] font-black tracking-tight text-white uppercase shadow-md hover:bg-rose-600   active:shadow-none"
             >
               {usersText.delete.title}
             </AlertDialogAction>
