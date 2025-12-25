@@ -10,6 +10,7 @@ import { z } from "zod";
 import { ProjectFields } from "@/components/forms/project-fields";
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { ProjectStatusesSettings } from "@/components/project/project-statuses-settings";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, errors, projects } from "@/constants";
@@ -167,6 +168,12 @@ export default function EditProject() {
           </Form>
         )}
       </div>
+
+      {project && (
+        <div className="mt-10">
+          <ProjectStatusesSettings projectId={project.id} />
+        </div>
+      )}
     </PageTransition>
   );
 }
