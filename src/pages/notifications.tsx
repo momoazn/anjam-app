@@ -3,6 +3,7 @@ import {
   IconActivity,
   IconBell,
   IconCheck,
+  IconCircleCheck,
   IconClock,
   IconTrash,
   IconTrashX,
