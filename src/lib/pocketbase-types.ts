@@ -13,7 +13,6 @@ export enum Collections {
   Superusers = "_superusers",
   AuditLogs = "audit_logs",
   Comments = "comments",
-  Groups = "groups",
   Mentions = "mentions",
   Notifications = "notifications",
   OrganizationMembers = "organization_members",
@@ -163,16 +162,6 @@ export type CommentsRecord<Treactions = unknown> = {
   user: RecordIdString;
 };
 
-export type GroupsRecord = {
-  active?: boolean;
-  created: IsoAutoDateString;
-  description?: HTMLString;
-  id: string;
-  manager?: RecordIdString;
-  name: string;
-  updated: IsoAutoDateString;
-};
-
 export type MentionsRecord = {
   comment?: RecordIdString;
   created: IsoAutoDateString;
@@ -280,7 +269,6 @@ export type ProjectsRecord = {
   code: string;
   created: IsoAutoDateString;
   description?: HTMLString;
-  group: RecordIdString;
   id: string;
   name: string;
   organization: RecordIdString;
@@ -303,7 +291,6 @@ export type TagsRecord = {
   color?: string;
   created: IsoAutoDateString;
   creator: RecordIdString;
-  group: RecordIdString;
   id: string;
   name: string;
   organization: RecordIdString;
@@ -410,7 +397,6 @@ export type UsersRecord = {
   emailVisibility?: boolean;
   failed_login_attempts?: number;
   first_name?: string;
-  group?: RecordIdString;
   id: string;
   last_name?: string;
   password: string;
@@ -440,8 +426,6 @@ export type CommentsResponse<
   Treactions = unknown,
   Texpand = unknown,
 > = Required<CommentsRecord<Treactions>> & BaseSystemFields<Texpand>;
-export type GroupsResponse<Texpand = unknown> = Required<GroupsRecord> &
-  BaseSystemFields<Texpand>;
 export type MentionsResponse<Texpand = unknown> = Required<MentionsRecord> &
   BaseSystemFields<Texpand>;
 export type NotificationsResponse<
@@ -489,7 +473,6 @@ export type CollectionRecords = {
   _superusers: SuperusersRecord;
   audit_logs: AuditLogsRecord;
   comments: CommentsRecord;
-  groups: GroupsRecord;
   mentions: MentionsRecord;
   notifications: NotificationsRecord;
   organization_members: OrganizationMembersRecord;
@@ -514,7 +497,6 @@ export type CollectionResponses = {
   _superusers: SuperusersResponse;
   audit_logs: AuditLogsResponse;
   comments: CommentsResponse;
-  groups: GroupsResponse;
   mentions: MentionsResponse;
   notifications: NotificationsResponse;
   organization_members: OrganizationMembersResponse;
@@ -538,7 +520,8 @@ type ProcessCreateAndUpdateFields<T> = Omit<
     // Omit AutoDate fields
     [K in keyof T as Extract<T[K], IsoAutoDateString> extends never
       ? K
-      : never]: T[K] extends infer U // Convert FileNameString to File
+      : never]: // Convert FileNameString to File
+    T[K] extends infer U
       ? U extends FileNameString | FileNameString[]
         ? U extends any[]
           ? File[]
