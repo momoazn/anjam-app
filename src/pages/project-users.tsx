@@ -7,13 +7,11 @@ import { PageHeader } from "@/components/page-header";
 import { ProjectMembersSection } from "@/components/project/project-members";
 import { projects } from "@/constants";
 import { useProjectMembers } from "@/hooks/project-members";
-import { useProjectWithSupervisor } from "@/hooks";
 
 export default function ProjectUsers() {
   const { id } = useParams<{ id: string }>();
   const projectId = id as string;
 
-  const { data: project } = useProjectWithSupervisor({ id: projectId });
   const { data: projectMembers } = useProjectMembers(projectId);
 
   return (
@@ -26,7 +24,6 @@ export default function ProjectUsers() {
             : projects.users.title
         }
         icon={IconUsers}
-        nodeId={`Project_Personnel :: ${project?.code || "???"}`}
       />
 
       {projectId && <ProjectMembersSection projectId={projectId} />}

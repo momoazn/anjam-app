@@ -31,11 +31,11 @@ export default function Projects() {
   const headerActions = canCreateProject ? (
     <Button
       onClick={() => navigate("/projects/new")}
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
       size="lg"
     >
       <Plus className="size-5" />
-      <span className="tracking-widest uppercase">
+      <span className="tracking-tight uppercase">
         {projects.create.button}
       </span>
     </Button>
@@ -50,7 +50,6 @@ export default function Projects() {
           digitsEnToFa(userProjects?.length ?? 0).toString(),
         )}
         icon={Target}
-        nodeId="Central_Registry"
         actions={headerActions}
       />
 
@@ -58,8 +57,8 @@ export default function Projects() {
         <div className="flex h-full items-center justify-center py-24">
           <div className="relative flex flex-col items-center">
             <Loader2 className="text-primary size-12 animate-spin opacity-20" />
-            <span className="text-muted-foreground/50 mt-4 text-[10px] font-black tracking-widest uppercase">
-              Loading Data Grid
+            <span className="text-muted-foreground/50 mt-4 text-[10px] font-black tracking-tight uppercase">
+              Loading Projects...
             </span>
           </div>
         </div>

@@ -12,7 +12,6 @@ export function PreferencesPage() {
         title={settings.preferences.title}
         description={settings.preferences.description}
         icon={IconSettings}
-        nodeId="User_Preferences"
       />
 
       <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">

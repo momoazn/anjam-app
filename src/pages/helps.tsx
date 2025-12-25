@@ -11,7 +11,6 @@ export default function Helps() {
         title={helps.title}
         description={helps.description}
         icon={IconHelp}
-        nodeId="Kernel_Manual :: v1.0"
       />
       <div className="space-y-10">
         <HelpCategories />

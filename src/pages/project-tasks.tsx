@@ -111,18 +111,18 @@ export default function ProjectTasks() {
         className="hover:bg-primary/5 hover:text-primary border-border/40 bg-muted/20 h-12 gap-3 rounded-none border px-6 font-bold transition-all"
       >
         <IconLayoutGrid className="size-4" />
-        <span className="text-[11px] font-black tracking-widest uppercase">
+        <span className="text-[11px] font-black tracking-tight uppercase">
           {tasksText.board.title}
         </span>
       </Button>
 
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-[-4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:scale-95 dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
         size="lg"
         onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
       >
         <Plus className="size-5" />
-        <span className="tracking-widest uppercase">
+        <span className="tracking-tight uppercase">
           {tasksText.addTask.buttons.newTaskForProject}
         </span>
       </Button>
@@ -142,11 +142,10 @@ export default function ProjectTasks() {
             : tasksText.header.manageProjectTasks
         }
         icon={FolderOpen}
-        nodeId={`Project_Node :: ${project?.code || "???"}`}
         actions={headerActions}
       />
 
-      {/* Telemetry Stats Bar */}
+      {/* Stats Bar */}
       <div
         className="bg-border/40 border-border/40 mb-8 grid grid-cols-2 gap-px border sm:grid-cols-4"
         data-animate-stagger
@@ -182,7 +181,7 @@ export default function ProjectTasks() {
             className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
           >
             <div className="mb-2 flex items-center justify-end gap-3">
-              <span className="text-muted-foreground/40 text-[10px] font-black tracking-widest uppercase">
+              <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
                 {stat.label}
               </span>
               <stat.icon className={cn("size-4", stat.color)} />

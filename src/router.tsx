@@ -311,7 +311,7 @@ const routes: RouteType[] = [
     path: "/landing",
     element: <Landing />,
     protected: false,
-    title: "Anjam Registry",
+    title: "Anjam Dashboard",
   },
   // Organization routes (public - no RequireOrganization needed)
   {
@@ -468,6 +468,12 @@ const routes: RouteType[] = [
   },
   {
     path: "/projects/:id/tasks/new",
+    element: <CreateTask />,
+    protected: true,
+    title: tasks.addTask.title,
+  },
+  {
+    path: "/tasks/new",
     element: <CreateTask />,
     protected: true,
     title: tasks.addTask.title,

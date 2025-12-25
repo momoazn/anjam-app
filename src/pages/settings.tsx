@@ -20,7 +20,6 @@ export default function SettingsPage() {
         title={settings.title}
         description={settings.description}
         icon={IconSettings}
-        nodeId="System_Config"
       />
 
       <div className="flex flex-col items-start gap-10 lg:flex-row">

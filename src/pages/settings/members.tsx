@@ -97,7 +97,7 @@ export function OrgMembersPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border">
+      <div className="rounded-none border">
         <Table>
           <TableHeader>
             <TableRow>
