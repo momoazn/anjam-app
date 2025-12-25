@@ -817,23 +817,23 @@ We'll keep `deleted_at` as text (to match the current schema) but standardize:
 1. `backend/pb_schema.json` - All collections with soft delete
 2. `backend/main.go` - All handlers that set deleted_at
 
-#### Verification Checklist
+#### Verification Checklist _(completed December 25, 2025)_
 
-- [ ] Tasks collection: listRule includes soft delete filter
-- [ ] Comments collection: listRule includes soft delete filter
-- [ ] Soft delete sets ISO timestamp: `time.Now().Format(time.RFC3339)`
-- [ ] All queries filter by deleted_at
+- [x] Tasks collection: listRule includes soft delete filter
+- [x] Comments collection: listRule includes soft delete filter
+- [x] Soft delete sets ISO timestamp: `time.Now().Format(time.RFC3339)`
+- [x] All queries filter by deleted_at
 
 ---
 
 ### Phase 0 Completion Checklist
 
-- [ ] Comments rules enforce organization membership
-- [ ] Search results are filtered via `CanAccessRecord`
-- [ ] All soft delete patterns standardized
-- [ ] Run `bun run check` - no errors
-- [ ] Manual security testing completed
-- [ ] Code reviewed for remaining security issues
+- [x] Comments rules enforce organization membership
+- [x] Search results are filtered via `CanAccessRecord`
+- [x] All soft delete patterns standardized
+- [x] Run `bun run check` - no errors
+- [x] Manual security testing completed
+- [x] Code reviewed for remaining security issues
 
 ---
 
@@ -2154,20 +2154,20 @@ This will update `src/lib/pocketbase-types.ts` with:
 
 ### Phase 1 Completion Checklist
 
-- [ ] `organizations` collection created in schema
-- [ ] `organization_members` collection created in schema
-- [ ] Projects collection has `organization` field
-- [ ] Tags collection has `organization` field
-- [ ] Audit logs collection has `organization` field
-- [ ] All access rules updated for organization-based access
-- [ ] Bootstrap/seed flow implemented (optional but recommended)
-- [ ] Backend constants updated with new roles
-- [ ] Organization API endpoints created
-- [ ] Auth store updated with organization context
-- [ ] TypeScript types regenerated
-- [ ] Run `bun run check` - no errors
-- [ ] Manual testing of organization CRUD
-- [ ] Manual testing of organization switching
+- [x] `organizations` collection created in schema
+- [x] `organization_members` collection created in schema
+- [x] Projects collection has `organization` field
+- [x] Tags collection has `organization` field
+- [x] Audit logs collection has `organization` field
+- [x] All access rules updated for organization-based access
+- [x] Bootstrap/seed flow implemented (optional but recommended)
+- [x] Backend constants updated with new roles
+- [x] Organization API endpoints created
+- [x] Auth store updated with organization context
+- [x] TypeScript types regenerated
+- [x] Run `bun run check` - no errors
+- [x] Manual testing of organization CRUD
+- [x] Manual testing of organization switching
 
 ---
 
@@ -3201,17 +3201,17 @@ main();
 
 ### Phase 2 Completion Checklist
 
-- [ ] `project_members` collection created
-- [ ] `backend/permissions.go` created
-- [ ] Permissions API endpoint created
-- [ ] `src/lib/permissions.ts` rewritten
-- [ ] `src/hooks/usePermissions.ts` created
-- [ ] All components updated to use new permission hooks
-- [ ] Run `bun run check` - no errors
-- [ ] Manual testing of role-based access
-- [ ] Test org admin access to all projects
-- [ ] Test project member restrictions
-- [ ] Test viewer read-only access
+- [x] `project_members` collection created
+- [x] `backend/permissions.go` created
+- [x] Permissions API endpoint created
+- [x] `src/lib/permissions.ts` rewritten
+- [x] `src/hooks/usePermissions.ts` created
+- [x] All components updated to use new permission hooks
+- [x] Run `bun run check` - no errors
+- [x] Manual testing of role-based access
+- [x] Test org admin access to all projects
+- [x] Test project member restrictions
+- [x] Test viewer read-only access
 
 ---
 
