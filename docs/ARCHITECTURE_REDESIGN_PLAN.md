@@ -2,10 +2,10 @@
 
 ## Comprehensive Implementation Guide
 
-**Status**: Ready for Implementation
+**Status**: Implemented (UI + backend)
 **Scope**: Greenfield build (no existing users/data; no migrations or backward compatibility)
 **Hierarchy**: Organization > Projects > Tasks (no Workspaces)
-**Date**: December 2024
+**Date**: December 2025
 **Estimated Duration**: 5-6 weeks
 
 ---
@@ -1320,7 +1320,7 @@ A script that:
 
 #### Migration Script
 
-**Create file**: `scripts/migrate-groups-to-orgs.ts`
+**Deprecated**: migration script no longer required (`scripts/migrate-groups-to-orgs.ts` removed).
 
 ```typescript
 /**
@@ -3105,7 +3105,7 @@ Because this is a greenfield build, skip any migration from `users_projects`. Im
 
 #### Migration Script
 
-**Create file**: `scripts/migrate-users-projects-to-members.ts`
+**Deprecated**: migration script no longer required (`scripts/migrate-users-projects-to-members.ts` removed).
 
 ```typescript
 /**
