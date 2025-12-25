@@ -1,28 +1,28 @@
 [
   {
     "name": "پروژه وب سایت",
-    "code": "PROJ1",
+    "code": "WEB",
     "description": "پروژه اول سازمان اول - توسعه وب سایت",
     "organization": "org1",
     "supervisor": "manager"
   },
   {
     "name": "پروژه موبایل",
-    "code": "PROJ2",
+    "code": "MOB",
     "description": "پروژه دوم سازمان اول - توسعه اپلیکیشن موبایل",
     "organization": "org1",
     "supervisor": "manager"
   },
   {
     "name": "پروژه API",
-    "code": "PROJ3",
+    "code": "API",
     "description": "پروژه اول سازمان دوم - توسعه API",
     "organization": "org2",
     "supervisor": "supervisor"
   },
   {
     "name": "پروژه امنیت",
-    "code": "PROJ4",
+    "code": "SEC",
     "description": "پروژه دوم سازمان دوم - بهبود امنیت سیستم",
     "organization": "org2",
     "supervisor": "supervisor"

@@ -2,7 +2,7 @@
   {
     "title": "طراحی رابط کاربری صفحه اصلی",
     "description": "ایجاد وایرفریم و طراحی اولیه برای صفحه اصلی وب سایت با تمرکز بر UX",
-    "project": "PROJ1",
+    "project": "WEB",
     "creator": "manager",
     "assignee": "employee1",
     "status": "in_progress",
@@ -15,7 +15,7 @@
   {
     "title": "پیاده‌سازی کامپوننت منوی اصلی",
     "description": "ساخت کامپوننت ناوبری واکنش‌گرا با پشتیبانی از منوی کشویی",
-    "project": "PROJ1",
+    "project": "WEB",
     "creator": "manager",
     "assignee": "employee2",
     "status": "todo",
@@ -28,7 +28,7 @@
   {
     "title": "پیاده‌سازی صفحه درباره ما",
     "description": "طراحی و توسعه صفحه درباره ما با محتوای پویا",
-    "project": "PROJ1",
+    "project": "WEB",
     "creator": "employee1",
     "assignee": "employee2",
     "status": "done",
@@ -41,7 +41,7 @@
   {
     "title": "بهینه‌سازی سرعت بارگذاری",
     "description": "بهینه‌سازی تصاویر، فشرده‌سازی کدها و استفاده از CDN",
-    "project": "PROJ1",
+    "project": "WEB",
     "creator": "admin",
     "assignee": "employee1",
     "status": "review",
@@ -54,7 +54,7 @@
   {
     "title": "راه‌اندازی سیستم تست خودکار",
     "description": "پیکربندی Jest و React Testing Library برای تست واحد",
-    "project": "PROJ1",
+    "project": "WEB",
     "creator": "manager",
     "assignee": "employee2",
     "status": "in_progress",
@@ -67,7 +67,7 @@
   {
     "title": "طراحی صفحه ورود و ثبت‌نام",
     "description": "ایجاد UI/UX برای صفحات احراز هویت در اپلیکیشن موبایل",
-    "project": "PROJ2",
+    "project": "MOB",
     "creator": "manager",
     "assignee": "employee1",
     "status": "todo",
@@ -80,7 +80,7 @@
   {
     "title": "پیاده‌سازی صفحه پروفایل کاربر",
     "description": "توسعه صفحه نمایش و ویرایش اطلاعات کاربری",
-    "project": "PROJ2",
+    "project": "MOB",
     "creator": "employee1",
     "assignee": "employee2",
     "status": "in_progress",
@@ -93,7 +93,7 @@
   {
     "title": "یکپارچه‌سازی Firebase Analytics",
     "description": "افزودن Google Firebase برای ردیابی رفتار کاربران",
-    "project": "PROJ2",
+    "project": "MOB",
     "creator": "manager",
     "assignee": "employee1",
     "status": "done",
@@ -106,7 +106,7 @@
   {
     "title": "پیاده‌سازی حالت آفلاین",
     "description": "افزودن قابلیت استفاده از اپلیکیشن بدون اتصال به اینترنت",
-    "project": "PROJ2",
+    "project": "MOB",
     "creator": "admin",
     "assignee": "employee2",
     "status": "todo",
@@ -119,7 +119,7 @@
   {
     "title": "تست بر روی دستگاه‌های مختلف",
     "description": "تست عملکرد اپلیکیشن بر روی مدل‌های مختلف iOS و Android",
-    "project": "PROJ2",
+    "project": "MOB",
     "creator": "manager",
     "assignee": "employee1",
     "status": "testing",
@@ -132,7 +132,7 @@
   {
     "title": "مستندسازی API endpoints",
     "description": "نوشتن مستندات کامل برای تمام نقاط پایانی REST API",
-    "project": "PROJ3",
+    "project": "API",
     "creator": "supervisor",
     "assignee": "employee3",
     "status": "done",
@@ -145,7 +145,7 @@
   {
     "title": "پیاده‌سازی احراز هویت JWT",
     "description": "توسعه سیستم احراز هویت با استفاده از JSON Web Tokens",
-    "project": "PROJ3",
+    "project": "API",
     "creator": "supervisor",
     "assignee": "employee4",
     "status": "in_progress",
@@ -158,7 +158,7 @@
   {
     "title": "اضافه کردن Rate Limiting",
     "description": "پیاده‌سازی محدودیت نرخ درخواست برای جلوگیری از سوء استفاده",
-    "project": "PROJ3",
+    "project": "API",
     "creator": "employee3",
     "assignee": "employee5",
     "status": "todo",
@@ -171,7 +171,7 @@
   {
     "title": "بهینه‌سازی Query‌های دیتابیس",
     "description": "بررسی و بهینه‌سازی Query‌های کند با اضافه کردن Index",
-    "project": "PROJ3",
+    "project": "API",
     "creator": "supervisor",
     "assignee": "employee3",
     "status": "review",
@@ -184,7 +184,7 @@
   {
     "title": "پیاده‌سازی سیستم Cache با Redis",
     "description": "افزودن Redis برای Cache کردن داده‌های پرتکرار",
-    "project": "PROJ3",
+    "project": "API",
     "creator": "supervisor",
     "assignee": "employee4",
     "status": "in_progress",
@@ -197,7 +197,7 @@
   {
     "title": "بررسی امنیتی کد",
     "description": "انجام بررسی امنیتی کامل و شناسایی آسیب‌پذیری‌های احتمالی",
-    "project": "PROJ4",
+    "project": "SEC",
     "creator": "supervisor",
     "assignee": "employee3",
     "status": "in_progress",
@@ -210,7 +210,7 @@
   {
     "title": "پیاده‌سازی احراز هویت دو مرحله‌ای",
     "description": "افزودن قابلیت 2FA برای افزایش امنیت حساب‌های کاربری",
-    "project": "PROJ4",
+    "project": "SEC",
     "creator": "employee3",
     "assignee": "employee4",
     "status": "todo",
@@ -223,7 +223,7 @@
   {
     "title": "رمزنگاری داده‌های حساس",
     "description": "رمزنگاری فیلدهای حساس مانند پسوردها و اطلاعات شخصی",
-    "project": "PROJ4",
+    "project": "SEC",
     "creator": "supervisor",
     "assignee": "employee5",
     "status": "review",
@@ -236,7 +236,7 @@
   {
     "title": "نوشتن Security Policy",
     "description": "تدوین و مستندسازی سیاست‌های امنیتی سیستم",
-    "project": "PROJ4",
+    "project": "SEC",
     "creator": "supervisor",
     "assignee": "employee3",
     "status": "done",
@@ -249,7 +249,7 @@
   {
     "title": "آموزش امنیتی تیم",
     "description": "برگزاری کارگاه آموزشی در مورد بهترین روش‌های امنیتی برنامه‌نویسی",
-    "project": "PROJ4",
+    "project": "SEC",
     "creator": "employee4",
     "assignee": "employee5",
     "status": "done",

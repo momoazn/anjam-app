@@ -183,8 +183,16 @@ async function createProject(
       supervisor: supervisorId,
     },
     () => Boolean(orgId && supervisorId),
-    (error) => {
-      console.error(`Failed to create project ${projectData.name}:`, error);
+    (error: unknown) => {
+      if (error && typeof error === "object" && "response" in error) {
+        const response = (error as { response: { data?: unknown } }).response;
+        console.error(
+          `Failed to create project ${projectData.name}:`,
+          JSON.stringify(response.data, null, 2),
+        );
+      } else {
+        console.error(`Failed to create project ${projectData.name}:`, error);
+      }
     },
   );
 }

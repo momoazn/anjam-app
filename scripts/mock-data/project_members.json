@@ -1,6 +1,6 @@
 [
   {
-    "project": "PROJ1",
+    "project": "WEB",
     "user": "admin",
     "role": "owner",
     "notifications": true,
@@ -8,7 +8,7 @@
     "added_by": "admin"
   },
   {
-    "project": "PROJ1",
+    "project": "WEB",
     "user": "manager",
     "role": "admin",
     "notifications": true,
@@ -16,7 +16,7 @@
     "added_by": "admin"
   },
   {
-    "project": "PROJ1",
+    "project": "WEB",
     "user": "employee1",
     "role": "member",
     "notifications": true,
@@ -24,7 +24,7 @@
     "added_by": "manager"
   },
   {
-    "project": "PROJ1",
+    "project": "WEB",
     "user": "employee2",
     "role": "member",
     "notifications": true,
@@ -32,7 +32,7 @@
     "added_by": "manager"
   },
   {
-    "project": "PROJ2",
+    "project": "MOB",
     "user": "admin",
     "role": "owner",
     "notifications": true,
@@ -40,7 +40,7 @@
     "added_by": "admin"
   },
   {
-    "project": "PROJ2",
+    "project": "MOB",
     "user": "manager",
     "role": "admin",
     "notifications": true,
@@ -48,7 +48,7 @@
     "added_by": "admin"
   },
   {
-    "project": "PROJ2",
+    "project": "MOB",
     "user": "employee1",
     "role": "member",
     "notifications": true,
@@ -56,7 +56,7 @@
     "added_by": "manager"
   },
   {
-    "project": "PROJ2",
+    "project": "MOB",
     "user": "employee2",
     "role": "member",
     "notifications": true,
@@ -64,7 +64,7 @@
     "added_by": "manager"
   },
   {
-    "project": "PROJ3",
+    "project": "API",
     "user": "supervisor",
     "role": "owner",
     "notifications": true,
@@ -72,7 +72,7 @@
     "added_by": "supervisor"
   },
   {
-    "project": "PROJ3",
+    "project": "API",
     "user": "employee3",
     "role": "admin",
     "notifications": true,
@@ -80,7 +80,7 @@
     "added_by": "supervisor"
   },
   {
-    "project": "PROJ3",
+    "project": "API",
     "user": "employee4",
     "role": "member",
     "notifications": true,
@@ -88,7 +88,7 @@
     "added_by": "employee3"
   },
   {
-    "project": "PROJ3",
+    "project": "API",
     "user": "employee5",
     "role": "member",
     "notifications": true,
@@ -96,7 +96,7 @@
     "added_by": "employee3"
   },
   {
-    "project": "PROJ4",
+    "project": "SEC",
     "user": "supervisor",
     "role": "owner",
     "notifications": true,
@@ -104,7 +104,7 @@
     "added_by": "supervisor"
   },
   {
-    "project": "PROJ4",
+    "project": "SEC",
     "user": "employee3",
     "role": "admin",
     "notifications": true,
@@ -112,7 +112,7 @@
     "added_by": "supervisor"
   },
   {
-    "project": "PROJ4",
+    "project": "SEC",
     "user": "employee4",
     "role": "member",
     "notifications": true,
@@ -120,7 +120,7 @@
     "added_by": "employee3"
   },
   {
-    "project": "PROJ4",
+    "project": "SEC",
     "user": "employee5",
     "role": "member",
     "notifications": true,
