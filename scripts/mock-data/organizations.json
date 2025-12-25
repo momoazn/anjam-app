@@ -1,0 +1,16 @@
+[
+  {
+    "name": "شرکت نمونه",
+    "slug": "org1",
+    "description": "سازمان اول برای توسعه و تست",
+    "active": true,
+    "plan": "free"
+  },
+  {
+    "name": "شرکت توسعه",
+    "slug": "org2",
+    "description": "سازمان دوم برای توسعه و تست",
+    "active": true,
+    "plan": "free"
+  }
+]

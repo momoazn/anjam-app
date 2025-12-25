@@ -1,20 +1,30 @@
 [
   {
-    "name": "سیستم مدیریت فروش",
-    "code": "SMS",
-    "supervisor": "supervisor.hassan",
-    "created": "2025-01-15T09:00:00.000Z"
+    "name": "پروژه وب سایت",
+    "code": "PROJ1",
+    "description": "پروژه اول سازمان اول - توسعه وب سایت",
+    "organization": "org1",
+    "supervisor": "manager"
   },
   {
-    "name": "پلتفرم تجارت الکترونیک",
-    "code": "ECO",
-    "supervisor": "supervisor.zahra",
-    "created": "2025-01-20T10:30:00.000Z"
+    "name": "پروژه موبایل",
+    "code": "PROJ2",
+    "description": "پروژه دوم سازمان اول - توسعه اپلیکیشن موبایل",
+    "organization": "org1",
+    "supervisor": "manager"
   },
   {
-    "name": "سیستم مدیریت انبار",
-    "code": "WMS",
-    "supervisor": "supervisor.mahmoud",
-    "created": "2025-02-01T08:15:00.000Z"
+    "name": "پروژه API",
+    "code": "PROJ3",
+    "description": "پروژه اول سازمان دوم - توسعه API",
+    "organization": "org2",
+    "supervisor": "supervisor"
+  },
+  {
+    "name": "پروژه امنیت",
+    "code": "PROJ4",
+    "description": "پروژه دوم سازمان دوم - بهبود امنیت سیستم",
+    "organization": "org2",
+    "supervisor": "supervisor"
   }
 ]

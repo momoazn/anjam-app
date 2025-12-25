@@ -1,0 +1,50 @@
+[
+  {
+    "name": "فرانت‌اند",
+    "color": "#3b82f6",
+    "organization": "org1",
+    "creator": "admin"
+  },
+  {
+    "name": "بک‌اند",
+    "color": "#10b981",
+    "organization": "org1",
+    "creator": "admin"
+  },
+  {
+    "name": "طراحی",
+    "color": "#f59e0b",
+    "organization": "org1",
+    "creator": "admin"
+  },
+  {
+    "name": "مستندات",
+    "color": "#8b5cf6",
+    "organization": "org1",
+    "creator": "admin"
+  },
+  {
+    "name": "API",
+    "color": "#06b6d4",
+    "organization": "org2",
+    "creator": "supervisor"
+  },
+  {
+    "name": "امنیت",
+    "color": "#ef4444",
+    "organization": "org2",
+    "creator": "supervisor"
+  },
+  {
+    "name": "بهینه‌سازی",
+    "color": "#84cc16",
+    "organization": "org2",
+    "creator": "supervisor"
+  },
+  {
+    "name": "تست",
+    "color": "#f97316",
+    "organization": "org2",
+    "creator": "supervisor"
+  }
+]

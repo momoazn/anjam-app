@@ -126,10 +126,9 @@ When modifying `backend/pb_schema.json`:
 ### Data Management
 
 ```bash
-bun run data:generate    # Generate mock data files
-bun run data:seed        # Insert seed data into database
-bun run data:truncate    # Clear all data from database
-bun run data:reset       # Truncate then seed database
+bun run setup            # Clear and seed database with initial data
+bun run data:seed        # Seed database (alias for setup)
+bun run data:reset       # Reset database (alias for setup)
 ```
 
 ## Project Structure

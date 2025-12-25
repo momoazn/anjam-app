@@ -1,74 +1,90 @@
 [
   {
     "username": "admin",
-    "first_name": "احمد",
-    "last_name": "محمدی",
+    "email": "admin@example.com",
     "password": "admin12345",
     "passwordConfirm": "admin12345",
-    "role": "admin"
+    "first_name": "مدیر",
+    "last_name": "سیستم",
+    "role": "admin",
+    "active": true,
+    "verified": true
   },
   {
-    "username": "supervisor.hassan",
-    "first_name": "حسن",
-    "last_name": "کریمی",
-    "password": "super123",
-    "passwordConfirm": "super123",
-    "role": "supervisor"
+    "username": "manager",
+    "email": "manager@example.com",
+    "password": "manager123",
+    "passwordConfirm": "manager123",
+    "first_name": "مدیر",
+    "last_name": "پروژه",
+    "role": "manager",
+    "active": true,
+    "verified": true
   },
   {
-    "username": "supervisor.zahra",
-    "first_name": "زهرا",
-    "last_name": "حسینی",
-    "password": "super123",
-    "passwordConfirm": "super123",
-    "role": "supervisor"
+    "username": "employee1",
+    "email": "employee1@example.com",
+    "password": "employee123",
+    "passwordConfirm": "employee123",
+    "first_name": "کارمند",
+    "last_name": "یک",
+    "role": "employee",
+    "active": true,
+    "verified": true
   },
   {
-    "username": "supervisor.mahmoud",
-    "first_name": "محمود",
-    "last_name": "نوری",
-    "password": "super123",
-    "passwordConfirm": "super123",
-    "role": "supervisor"
+    "username": "employee2",
+    "email": "employee2@example.com",
+    "password": "employee123",
+    "passwordConfirm": "employee123",
+    "first_name": "کارمند",
+    "last_name": "دو",
+    "role": "employee",
+    "active": true,
+    "verified": true
   },
   {
-    "username": "dev.mohammad",
-    "first_name": "محمد",
-    "last_name": "علیزاده",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
+    "username": "supervisor",
+    "email": "supervisor@example.com",
+    "password": "supervisor123",
+    "passwordConfirm": "supervisor123",
+    "first_name": "ناظر",
+    "last_name": "پروژه",
+    "role": "supervisor",
+    "active": true,
+    "verified": true
   },
   {
-    "username": "dev.sara",
-    "first_name": "سارا",
-    "last_name": "احمدی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
+    "username": "employee3",
+    "email": "employee3@example.com",
+    "password": "employee123",
+    "passwordConfirm": "employee123",
+    "first_name": "کارمند",
+    "last_name": "سه",
+    "role": "employee",
+    "active": true,
+    "verified": true
   },
   {
-    "username": "dev.amir",
-    "first_name": "امیر",
-    "last_name": "حسینی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
+    "username": "employee4",
+    "email": "employee4@example.com",
+    "password": "employee123",
+    "passwordConfirm": "employee123",
+    "first_name": "کارمند",
+    "last_name": "چهار",
+    "role": "employee",
+    "active": true,
+    "verified": true
   },
   {
-    "username": "dev.narges",
-    "first_name": "نرگس",
-    "last_name": "کریمی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
-  },
-  {
-    "username": "dev.hooman",
-    "first_name": "هومن",
-    "last_name": "رضایی",
-    "password": "user1234",
-    "passwordConfirm": "user1234",
-    "role": "employee"
+    "username": "employee5",
+    "email": "employee5@example.com",
+    "password": "employee123",
+    "passwordConfirm": "employee123",
+    "first_name": "کارمند",
+    "last_name": "پنج",
+    "role": "employee",
+    "active": true,
+    "verified": true
   }
 ]

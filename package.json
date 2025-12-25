@@ -31,10 +31,9 @@
     "type:check": "bun x --bun tsc -p tsconfig.app.json --noEmit --incremental && bun x --bun tsc -p tsconfig.node.json --noEmit --incremental",
     "check": "bun run type:check && bun run lint && bun run format",
     "fix": "bun run lint:fix && bun run format:fix",
-    "data:generate": "bun run scripts/generate-data.ts",
-    "data:truncate": "bun run scripts/truncate.ts",
+    "setup": "bun run scripts/setup.ts",
     "data:seed": "bun run scripts/seed-data.ts",
-    "data:reset": "bun run data:truncate && bun run data:seed",
+    "data:reset": "bun run setup",
     "types:generate": "pocketbase-typegen --json ./backend/pb_schema.json --out src/lib/pocketbase-types.ts",
     "clean": "rm -rf backend/dist node_modules tmp release",
     "prepare": "husky"

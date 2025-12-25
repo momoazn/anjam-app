@@ -108,10 +108,9 @@ This is the **Anjam (انجام)** task and project management application with 
 ### Data & Schema
 
 - `bun run types:generate` - Regenerate `src/lib/pocketbase-types.ts` from `backend/pb_schema.json`
-- `bun run data:reset` - Full seed (truncate + insert)
-- `bun run data:generate` - Generate mock data files
-- `bun run data:truncate` - Clear all data
-- `bun run data:seed` - Insert seed data
+- `bun run setup` - Clear and seed database with initial data
+- `bun run data:seed` - Seed database (alias for setup)
+- `bun run data:reset` - Reset database (alias for setup)
 
 ### Utilities
 

@@ -1,0 +1,130 @@
+[
+  {
+    "project": "PROJ1",
+    "user": "admin",
+    "role": "owner",
+    "notifications": true,
+    "added_at": "2023-12-15T08:00:00.000Z",
+    "added_by": "admin"
+  },
+  {
+    "project": "PROJ1",
+    "user": "manager",
+    "role": "admin",
+    "notifications": true,
+    "added_at": "2023-12-15T08:05:00.000Z",
+    "added_by": "admin"
+  },
+  {
+    "project": "PROJ1",
+    "user": "employee1",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-16T09:00:00.000Z",
+    "added_by": "manager"
+  },
+  {
+    "project": "PROJ1",
+    "user": "employee2",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-16T09:05:00.000Z",
+    "added_by": "manager"
+  },
+  {
+    "project": "PROJ2",
+    "user": "admin",
+    "role": "owner",
+    "notifications": true,
+    "added_at": "2023-12-20T10:00:00.000Z",
+    "added_by": "admin"
+  },
+  {
+    "project": "PROJ2",
+    "user": "manager",
+    "role": "admin",
+    "notifications": true,
+    "added_at": "2023-12-20T10:05:00.000Z",
+    "added_by": "admin"
+  },
+  {
+    "project": "PROJ2",
+    "user": "employee1",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-21T11:00:00.000Z",
+    "added_by": "manager"
+  },
+  {
+    "project": "PROJ2",
+    "user": "employee2",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-21T11:05:00.000Z",
+    "added_by": "manager"
+  },
+  {
+    "project": "PROJ3",
+    "user": "supervisor",
+    "role": "owner",
+    "notifications": true,
+    "added_at": "2023-12-01T14:00:00.000Z",
+    "added_by": "supervisor"
+  },
+  {
+    "project": "PROJ3",
+    "user": "employee3",
+    "role": "admin",
+    "notifications": true,
+    "added_at": "2023-12-02T09:00:00.000Z",
+    "added_by": "supervisor"
+  },
+  {
+    "project": "PROJ3",
+    "user": "employee4",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-03T10:00:00.000Z",
+    "added_by": "employee3"
+  },
+  {
+    "project": "PROJ3",
+    "user": "employee5",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-03T10:05:00.000Z",
+    "added_by": "employee3"
+  },
+  {
+    "project": "PROJ4",
+    "user": "supervisor",
+    "role": "owner",
+    "notifications": true,
+    "added_at": "2023-12-10T15:00:00.000Z",
+    "added_by": "supervisor"
+  },
+  {
+    "project": "PROJ4",
+    "user": "employee3",
+    "role": "admin",
+    "notifications": true,
+    "added_at": "2023-12-10T15:05:00.000Z",
+    "added_by": "supervisor"
+  },
+  {
+    "project": "PROJ4",
+    "user": "employee4",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-11T11:00:00.000Z",
+    "added_by": "employee3"
+  },
+  {
+    "project": "PROJ4",
+    "user": "employee5",
+    "role": "member",
+    "notifications": true,
+    "added_at": "2023-12-11T11:05:00.000Z",
+    "added_by": "employee3"
+  }
+]

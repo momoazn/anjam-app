@@ -123,4 +123,4 @@ Focus: what is already implemented, what deviates from the plans, and what to fi
    - Replace “missing UI components” language with “verify/refine existing UI + fill remaining gaps”.
 
 3. **Resolve plan scope contradiction** in `docs/ARCHITECTURE_REDESIGN_PLAN.md`:
-   - Either remove migration-script sections (if truly greenfield), or explicitly label them as “legacy/optional migration references” and ensure the referenced script exists (or link to the actual existing scripts such as `scripts/bootstrap-org.ts`).
+   - Either remove migration-script sections (if truly greenfield), or explicitly label them as "legacy/optional migration references".
