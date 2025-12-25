@@ -5,19 +5,19 @@ package main
 
 // Collection name constants
 const (
-	CollectionUsers         = "users"
-	CollectionGroups        = "groups"
-	CollectionOrganizations = "organizations"
-	CollectionOrgMembers    = "organization_members"
-	CollectionProjects      = "projects"
-	CollectionTasks         = "tasks"
-	CollectionNotifications = "notifications"
-	CollectionUserLoginLogs = "user_login_logs"
-	CollectionAuditLogs     = "audit_logs"
-	CollectionSuperusers    = "_superusers"
+	CollectionUsers          = "users"
+	CollectionGroups         = "groups"
+	CollectionOrganizations  = "organizations"
+	CollectionOrgMembers     = "organization_members"
+	CollectionProjects       = "projects"
+	CollectionTasks          = "tasks"
+	CollectionNotifications  = "notifications"
+	CollectionUserLoginLogs  = "user_login_logs"
+	CollectionAuditLogs      = "audit_logs"
+	CollectionSuperusers     = "_superusers"
 	CollectionProjectMembers = "project_members"
-	CollectionComments      = "comments"
-	CollectionTags          = "tags"
+	CollectionComments       = "comments"
+	CollectionTags           = "tags"
 )
 
 // Configuration constants
@@ -151,6 +151,8 @@ const (
 	ErrFailedToUpdateUserStatus     = "خطا در به‌روزرسانی وضعیت کاربر"
 	ErrFailedToUnblockUser          = "خطا در رفع مسدودی کاربر"
 	ErrFailedToGetLoginLogs         = "خطا در دریافت سوابق ورود"
+	ErrInvalidTaskStatus            = "وضعیت انتخاب‌شده برای این پروژه معتبر نیست"
+	ErrCannotReopenFinalStatus      = "نمی‌توان یک فعالیت بسته‌شده را دوباره باز کرد"
 
 	// User management success messages
 	MsgUserActivated   = "حساب کاربری فعال شد"

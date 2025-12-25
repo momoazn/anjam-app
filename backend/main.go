@@ -83,6 +83,11 @@ func main() {
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
+	app.OnRecordValidate("tasks").BindFunc(validateTaskStatusTransition)
+	app.OnRecordUpdateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
+		setTaskStatusRef(e)
+		return e.Next()
+	})
 	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
@@ -91,6 +96,9 @@ func main() {
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
 	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
 	app.OnRecordEnrich("audit_logs").BindFunc(handleAuditLogEnrich)
+	app.OnRecordAfterCreateSuccess("time_entries").BindFunc(handleTimeEntryCreated)
+	app.OnRecordAfterUpdateSuccess("time_entries").BindFunc(handleTimeEntryUpdated)
+	app.OnRecordAfterDeleteSuccess("time_entries").BindFunc(handleTimeEntryDeleted)
 
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
