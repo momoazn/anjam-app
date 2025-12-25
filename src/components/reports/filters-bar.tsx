@@ -136,7 +136,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
       {/* Time Segment */}
       <div className="bg-card border-border/10 flex h-16 min-w-[160px] flex-col justify-between border-s p-3">
         <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-          <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+          <span className="text-[7px] font-black tracking-tight uppercase">
             Time_Frame
           </span>
           <IconCalendar className="size-2.5" />
@@ -148,7 +148,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           <SelectTrigger className="bg-muted/10 h-7 rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="border-foreground bg-card rounded-none border-2">
+          <SelectContent className="border-border bg-card rounded-none border">
             {Object.values(TIME_PRESETS).map((preset) => (
               <SelectItem
                 key={preset.value}
@@ -170,7 +170,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              <span className="text-[7px] font-black tracking-tight uppercase">
                 {reports.projects}
               </span>
               <IconFilter className="size-2.5" />
@@ -186,11 +186,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          className="border-border bg-card w-64 rounded-none border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
               {reports.selectProjects}
             </h4>
             <div className="max-h-48 space-y-2 overflow-y-auto pe-1">
@@ -228,7 +228,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              <span className="text-[7px] font-black tracking-tight uppercase">
                 {reports.assignee_plural}
               </span>
               <IconFilter className="size-2.5" />
@@ -244,11 +244,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          className="border-border bg-card w-64 rounded-none border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
               {reports.selectAssignees}
             </h4>
             <div className="max-h-48 space-y-2 overflow-y-auto pe-1">
@@ -286,7 +286,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              <span className="text-[7px] font-black tracking-tight uppercase">
                 {reports.status}
               </span>
               <IconFilter className="size-2.5" />
@@ -302,11 +302,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          className="border-border bg-card w-64 rounded-none border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
               {reports.selectStatuses}
             </h4>
             <div className="space-y-2 overflow-y-auto pe-1">
@@ -344,7 +344,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+              <span className="text-[7px] font-black tracking-tight uppercase">
                 {reports.priority}
               </span>
               <IconFilter className="size-2.5" />
@@ -360,11 +360,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-foreground bg-card w-64 rounded-none border-2 p-0"
+          className="border-border bg-card w-64 rounded-none border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-widest uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
               {reports.selectPriorities}
             </h4>
             <div className="space-y-2 overflow-y-auto pe-1">
@@ -402,13 +402,13 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           className="bg-muted/20 border-border/10 flex h-16 flex-col items-center justify-center border-s px-6 text-rose-500 transition-colors hover:bg-rose-500/10"
         >
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-            <span className="text-[7px] font-black tracking-[0.2em] uppercase">
+            <span className="text-[7px] font-black tracking-tight uppercase">
               Reset_Gates
             </span>
             <IconX className="size-2.5" />
           </div>
-          <span className="text-[10px] font-black tracking-widest uppercase">
-            Protocol_00
+          <span className="text-[10px] font-black tracking-tight uppercase">
+            _00
           </span>
         </button>
       )}

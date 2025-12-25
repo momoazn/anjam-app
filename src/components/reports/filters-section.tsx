@@ -41,8 +41,8 @@ export function FiltersSection({
         data-animate-stagger
       >
         <div className="mb-6 flex items-center justify-end gap-2 text-right opacity-40">
-          <span className="text-[10px] font-black tracking-[0.3em] uppercase">
-            Telemetry_Filter_Protocol
+          <span className="text-[10px] font-black tracking-tight uppercase">
+            _Filter_
           </span>
           <IconTerminal className="text-primary size-3.5" />
         </div>
@@ -59,7 +59,7 @@ export function FiltersSection({
           <div className="mb-6 flex items-center gap-4">
             <div className="bg-border/20 h-px flex-1" />
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-black tracking-widest uppercase">
+              <h2 className="text-sm font-black tracking-tight uppercase">
                 {reports.projectsExportSection}
               </h2>
               <IconStack2 className="text-primary/60 size-4" />
@@ -86,7 +86,7 @@ export function FiltersSection({
                 >
                   <div className="min-w-0 flex-1 text-right">
                     <div className="mb-1 flex items-center justify-end gap-2 opacity-40">
-                      <span className="font-mono text-[9px] font-black tracking-widest uppercase">
+                      <span className="font-mono text-[9px] font-black tracking-tight uppercase">
                         {project.code}
                       </span>
                     </div>
@@ -95,7 +95,7 @@ export function FiltersSection({
                     </h3>
                     <div className="flex items-center justify-end gap-2 text-right">
                       <span className="text-muted-foreground/60 text-[10px] font-bold uppercase">
-                        Registry_Entry
+                        _Entry
                       </span>
                       <div className="bg-border/40 h-px w-4" />
                       <span className="text-xs font-black tabular-nums">

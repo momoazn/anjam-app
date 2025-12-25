@@ -126,7 +126,7 @@ export function ProductivityTrendsChart({
             </LineChart>
           </ChartContainer>
         ) : (
-          <div className="text-muted-foreground flex h-full w-full items-center justify-center rounded-md border border-dashed text-sm">
+          <div className="text-muted-foreground flex h-full w-full items-center justify-center rounded-none border border-dashed text-sm">
             {reports.charts.employee.productivityTrends.noData}
           </div>
         )}
