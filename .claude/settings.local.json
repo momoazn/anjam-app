@@ -19,7 +19,8 @@
       "Bash(grep:*)",
       "Bash(git commit:*)",
       "Bash(git add:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(bun run lint)"
     ],
     "deny": [],
     "ask": []
