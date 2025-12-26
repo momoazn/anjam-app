@@ -331,5 +331,6 @@ export const organization = {
     createNew: "ایجاد سازمان جدید",
     switch: "تغییر سازمان",
     yourOrgs: "سازمان‌های شما",
+    dropdownLabel: "سازمان‌ها",
   },
 } as const;

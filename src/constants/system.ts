@@ -156,6 +156,11 @@ export const auditLogs = {
     defaultMessage: "{actor} عملیات {action} را انجام داد",
     showDetails: "نمایش جزئیات",
     hideDetails: "پنهان کردن جزئیات",
+    hideDetailsButton: "پنهان کردن",
+    viewDetailsButton: "مشاهده جزئیات",
+    field: "فیلد",
+    original: "مقدار قبلی",
+    newValue: "مقدار جدید",
     empty: "تغییری برای نمایش وجود ندارد",
   },
   table: {
@@ -200,6 +205,7 @@ export const auditLogs = {
 export const settings = {
   title: "تنظیمات",
   description: "مدیریت حساب کاربری و تنظیمات برنامه",
+  configModules: "ماژول‌های پیکربندی",
   tabs: {
     profile: "پروفایل کاربری",
     appearance: "ظاهر و تم",
