@@ -14,7 +14,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import { dashboard, users } from "@/constants";
+import { app, dashboard, users } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import { useAuthRole } from "@/store/auth-store";
@@ -33,8 +33,6 @@ type DashboardHeaderProps = {
   } | null;
   isLoading?: boolean;
 };
-
-const appName = "ANJAM SYSTEM";
 
 export function DashboardHeader({
   stats,
@@ -138,19 +136,6 @@ export function DashboardHeader({
 
   return (
     <div className="bg-card hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-none border shadow-sm transition-all duration-500">
-      {/* Blueprint Grid Background */}
-      <div
-        className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.07]"
-        style={{
-          backgroundImage: `radial-gradient(var(--primary) 0.0625rem, transparent 0.0625rem), linear-gradient(to right, var(--primary) 0.0625rem, transparent 0.0625rem), linear-gradient(to bottom, var(--primary) 0.0625rem, transparent 0.0625rem)`,
-          backgroundSize: "2.5rem 2.5rem, 1.25rem 1.25rem, 1.25rem 1.25rem",
-          backgroundPosition: "0 0, 0 0, 0 0",
-        }}
-      />
-
-      {/* Decorative Accents */}
-      <div className="bg-primary/10 absolute end-0 top-0 h-32 w-32 translate-x-16 -translate-y-16 rounded-full blur-3xl" />
-      <div className="bg-primary/5 absolute start-0 bottom-0 h-32 w-32 -translate-x-16 translate-y-16 rounded-full blur-3xl" />
 
       <div className="relative z-10 flex flex-col lg:flex-row">
         {/* Main Welcome Section */}
@@ -160,7 +145,7 @@ export function DashboardHeader({
               <LayoutDashboard className="h-5 w-5" />
             </div>
             <span className="text-muted-foreground/80 text-xs font-bold tracking-tight uppercase">
-              {appName} / {dashboard.title}
+              {app.name} / {dashboard.title}
             </span>
           </div>
 
@@ -185,11 +170,11 @@ export function DashboardHeader({
                 className={cn(
                   "group h-12 gap-3 rounded-none px-6 transition-all duration-300",
                   action.variant === "default"
-                    ? "shadow-primary/20 hover:shadow-primary/30 shadow-sm hover:scale-105 hover:shadow-md active:scale-95"
+                    ? "shadow-primary/20 hover:shadow-primary/30 shadow-sm hover:scale-105 active:scale-95"
                     : "hover:border-primary/30 hover:bg-primary/5",
                 )}
               >
-                <span className="transition-transform duration-300 group-hover:rotate-12">
+                <span className="transition-transform duration-300 group-hover:scale-110">
                   {action.icon}
                 </span>
                 <span className="font-bold">{action.title}</span>
@@ -206,14 +191,10 @@ export function DashboardHeader({
                 key={item.label}
                 className="group bg-card hover:bg-muted/50 relative flex items-center justify-between overflow-hidden p-6 transition-all duration-300"
               >
-                {/* Corner Accents */}
-                <div className="bg-border absolute start-0 top-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
-                <div className="bg-border absolute end-0 top-0 h-1 w-1 opacity-0 transition-opacity group-hover:opacity-100" />
-
                 <div className="flex items-center gap-4">
                   <div
                     className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[360deg]",
+                      "flex h-12 w-12 items-center justify-center rounded-none transition-transform duration-300 group-hover:scale-105",
                       item.bg,
                     )}
                   >
@@ -230,29 +211,6 @@ export function DashboardHeader({
                     </div>
                   </div>
                 </div>
-
-                {/* Micro-sparkline or visual indicator */}
-                <div className="h-10 w-24 opacity-10 transition-all duration-500 group-hover:translate-x-1 group-hover:opacity-40">
-                  <div className="flex h-full items-end gap-1">
-                    {[40, 70, 45, 90, 65, 80].map((h, j) => (
-                      <div
-                        key={`${item.label}-bar-${j}`}
-                        className={cn(
-                          "w-full rounded-t-sm",
-                          item.color.replace("text", "bg"),
-                        )}
-                        style={{ height: `${h}%`, opacity: (j + 1) / 6 }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div
-                  className={cn(
-                    "absolute end-0 bottom-0 h-1 w-0 transition-all duration-700 group-hover:w-full",
-                    item.color.replace("text", "bg"),
-                  )}
-                />
               </div>
             ))}
           </div>

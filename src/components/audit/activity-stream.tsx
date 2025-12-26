@@ -167,11 +167,13 @@ function AuditLogItem({ log }: { log: AuditLog }) {
               >
                 {expanded ? (
                   <>
-                    Hide Details <IconChevronUp className="size-3" />
+                    {auditLogs.activityStream.hideDetailsButton}{" "}
+                    <IconChevronUp className="size-3" />
                   </>
                 ) : (
                   <>
-                    View Details <IconChevronDown className="size-3" />
+                    {auditLogs.activityStream.viewDetailsButton}{" "}
+                    <IconChevronDown className="size-3" />
                   </>
                 )}
               </Button>
@@ -189,7 +191,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
             >
               <div className="border-border/10 col-span-3 flex flex-col items-end border-s">
                 <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
-                  Field
+                  {auditLogs.activityStream.field}
                 </span>
                 <span className="text-primary/80 font-black uppercase">
                   {field}
@@ -197,7 +199,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
               </div>
               <div className="border-border/10 col-span-4 flex flex-col items-end border-s pe-4">
                 <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
-                  Original
+                  {auditLogs.activityStream.original}
                 </span>
                 <span className="w-full truncate opacity-60">
                   {String(diff.old || "EMPTY")}
@@ -205,7 +207,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
               </div>
               <div className="col-span-5 flex flex-col items-end pe-4">
                 <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
-                  Updated
+                  {auditLogs.activityStream.newValue}
                 </span>
                 <span className="text-foreground w-full truncate font-black">
                   {String(diff.new || "EMPTY")}

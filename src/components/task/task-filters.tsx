@@ -55,7 +55,7 @@ const ActiveFilterBadge = ({
 }) => (
   <Badge
     variant="secondary"
-    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-none border pe-1 text-[9px] font-black tracking-tight uppercase transition-all"
+    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-none border ps-1 text-[9px] font-black tracking-tight uppercase transition-all"
     onClick={onClear}
   >
     {label}

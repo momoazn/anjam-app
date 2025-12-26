@@ -36,7 +36,7 @@ export function SettingsSidebar({
     <nav className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
       <div className="mb-4 hidden px-4 lg:block">
         <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
-          Config_Modules
+          {settings.configModules}
         </span>
       </div>
 

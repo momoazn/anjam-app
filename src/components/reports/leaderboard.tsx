@@ -89,7 +89,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
                 <div className="flex flex-col items-end">
                   <div className="mb-1 flex items-center gap-1.5 opacity-40">
                     <span className="text-[8px] font-black tracking-tight uppercase">
-                      Completed
+                      {reports.completed}
                     </span>
                     <IconCircleCheck className="size-2.5" />
                   </div>

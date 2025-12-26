@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { dashboard } from "@/constants";
+import { dashboard, reports } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type Project = {
@@ -90,7 +90,7 @@ export function ProjectsWidget({
                   {project.name}
                 </CardTitle>
                 <Badge variant="secondary" className="rounded-none font-black">
-                  {digitsEnToFa(project.taskCount)} ITEMS
+                  {digitsEnToFa(project.taskCount)} {dashboard.chart.count}
                 </Badge>
               </div>
             </CardHeader>
@@ -110,7 +110,7 @@ export function ProjectsWidget({
                   </div>
                   <div className="text-right">
                     <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
-                      Completed
+                      {reports.completed}
                     </span>
                     <div className="mt-0.5 text-sm font-bold">
                       {digitsEnToFa(project.completedTasks)}{" "}

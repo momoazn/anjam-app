@@ -25,6 +25,7 @@ import {
 } from "@/store/auth-store";
 import { pb } from "@/lib/pocketbase";
 import { cn } from "@/lib/utils";
+import { organization } from "@/constants";
 import type { OrganizationsResponse } from "@/lib/pocketbase-types";
 
 // =============================================================================
@@ -130,7 +131,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         onClick={handleCreateOrg}
       >
         <IconPlus className="h-4 w-4" />
-        {!isCollapsed && <span>Create Organization</span>}
+        {!isCollapsed && <span>{organization.create.button}</span>}
       </Button>
     );
   }
@@ -215,7 +216,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         sideOffset={8}
       >
         <DropdownMenuLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-          Organizations
+          {organization.select.dropdownLabel}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
@@ -260,7 +261,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-none border border-dashed">
             <IconPlus className="h-4 w-4" />
           </div>
-          <span className="text-[13px] font-medium">Create Organization</span>
+          <span className="text-[13px] font-medium">{organization.create.button}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
