@@ -71,7 +71,6 @@ export function GlobalSearch() {
               value={query}
               onValueChange={setQuery}
               className="text-sm tracking-tight"
-              showIcon={true}
             />
 
             <CommandList className="scrollbar-none divide-border/20 max-h-[400px] divide-y overflow-y-auto">
