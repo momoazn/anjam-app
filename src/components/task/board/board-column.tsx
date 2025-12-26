@@ -13,6 +13,7 @@ import {
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconTerminal, IconHash } from "@tabler/icons-react";
 
@@ -43,11 +44,11 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
     .replace("/20", "");
 
   return (
-    <div className="bg-muted/5 border-border/40 flex h-full w-[300px] min-w-[300px] flex-col rounded-none border transition-all">
-      {/* Column  Header */}
-      <div
+    <Card className="bg-muted/5 border-border/40 flex h-full w-[300px] min-w-[300px] flex-col rounded-none border shadow-none transition-all">
+      {/* Column Header */}
+      <CardHeader
         className={cn(
-          "border-border/40 bg-muted/10 flex flex-col border-b p-4 text-right",
+          "border-border/40 bg-muted/10 flex flex-col space-y-0 border-b p-4 text-right",
           borderColor,
           "border-t-4",
         )}
@@ -68,38 +69,40 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
           </span>
           {Icon && <Icon className={cn("size-4", iconColor)} />}
         </div>
-      </div>
+      </CardHeader>
 
       {/* Droppable Area */}
-      <ScrollArea className="scrollbar-none flex-1">
-        <div
-          ref={setNodeRef}
-          className="bg-border/10 flex min-h-[200px] flex-col gap-px p-0"
-        >
-          <SortableContext
-            items={tasks.map((t) => t.id)}
-            strategy={verticalListSortingStrategy}
+      <CardContent className="flex-1 overflow-hidden p-0">
+        <ScrollArea className="scrollbar-none h-full">
+          <div
+            ref={setNodeRef}
+            className="bg-border/10 flex min-h-[200px] flex-col gap-px p-0"
           >
-            {tasks.map((task) => (
-              <BoardCard key={task.id} task={task} />
-            ))}
-          </SortableContext>
+            <SortableContext
+              items={tasks.map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {tasks.map((task) => (
+                <BoardCard key={task.id} task={task} />
+              ))}
+            </SortableContext>
 
-          {tasks.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 opacity-10 grayscale">
-              <IconHash className="size-8 stroke-[1]" />
-            </div>
-          )}
-        </div>
-      </ScrollArea>
+            {tasks.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 opacity-10 grayscale">
+                <IconHash className="size-8 stroke-1" />
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </CardContent>
 
-      {/* Column Footer  */}
+      {/* Column Footer */}
       <div className="bg-muted/5 border-border/20 flex items-center justify-between border-t px-4 py-1.5 opacity-30">
         <span className="text-[7px] font-black tracking-tight uppercase">
           Sector_Active
         </span>
         <div className="bg-foreground size-1 rounded-full" />
       </div>
-    </div>
+    </Card>
   );
 }

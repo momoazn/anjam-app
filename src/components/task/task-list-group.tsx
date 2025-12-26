@@ -6,7 +6,7 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 import { TaskListHeader, type TaskSortMode } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
@@ -80,32 +80,34 @@ function TaskListGroupInner({
         onToggleCollapse={() => setIsCollapsed((prev) => !prev)}
       />
       {!isCollapsed && (
-        <ul
-          className={cn(
-            "bg-muted/5 border-border/20 mt-1 min-h-[30px] space-y-0 border-x border-b shadow-sm",
-          )}
-          data-animate-stagger
-        >
-          {sortedTasks?.length > 0 ? (
-            sortedTasks.map((task) => (
-              <li key={task.id}>
-                <TaskListItem
-                  task={task}
-                  showProject={showProject}
-                  isSelectable={enableSelection}
-                  isSelected={localSelectedTasks.includes(task.id)}
-                  onSelectionChange={(selected) =>
-                    handleTaskSelection(task.id, selected)
-                  }
-                />
-              </li>
-            ))
-          ) : (
-            <div className="text-muted-foreground/40 py-12 text-center text-[10px] font-black tracking-tight uppercase">
-              {tasksText.list.noTasks}
-            </div>
-          )}
-        </ul>
+        <Card className="border-border/40 mt-1 overflow-hidden rounded-none shadow-sm">
+          <CardContent className="bg-muted/5 p-0">
+            <ul
+              className="divide-border/10 min-h-[30px] space-y-0 divide-y"
+              data-animate-stagger
+            >
+              {sortedTasks?.length > 0 ? (
+                sortedTasks.map((task) => (
+                  <li key={task.id}>
+                    <TaskListItem
+                      task={task}
+                      showProject={showProject}
+                      isSelectable={enableSelection}
+                      isSelected={localSelectedTasks.includes(task.id)}
+                      onSelectionChange={(selected) =>
+                        handleTaskSelection(task.id, selected)
+                      }
+                    />
+                  </li>
+                ))
+              ) : (
+                <div className="text-muted-foreground/40 py-12 text-center text-[10px] font-black tracking-tight uppercase">
+                  {tasksText.list.noTasks}
+                </div>
+              )}
+            </ul>
+          </CardContent>
+        </Card>
       )}
     </section>
   );

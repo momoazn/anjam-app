@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatDateShort } from "@/lib/date-utils";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
@@ -56,19 +57,19 @@ export function BoardCard({ task }: BoardCardProps) {
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
       className={cn(
-        "group border-border/40 bg-card hover:bg-muted/30 relative flex flex-col gap-3 rounded-none border p-4 text-right shadow-sm transition-all duration-200 hover:z-10",
+        "group border-border/40 bg-card hover:bg-muted/30 relative flex h-auto flex-col gap-3 rounded-none border p-4 text-right shadow-sm transition-all duration-200 hover:z-10 focus-visible:ring-0",
         "hover:border-primary/30 w-full cursor-grab active:cursor-grabbing",
       )}
       onClick={() => navigate(`/tasks/${task.id}`)}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex w-full items-start justify-between gap-2">
         <div className="flex items-center gap-1.5 opacity-40">
           <IconHash className="size-2.5" />
           <span className="font-mono text-[9px] leading-none font-black tracking-tight uppercase">
@@ -141,6 +142,6 @@ export function BoardCard({ task }: BoardCardProps) {
           getStatusColorVariant(task.status, "icon").replace("text", "bg"),
         )}
       />
-    </button>
+    </Button>
   );
 }

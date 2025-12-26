@@ -10,6 +10,7 @@ import type {
   UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
 import type { UsersResponse } from "@/lib/pocketbase-types";
+import { Card, CardContent } from "@/components/ui/card";
 import { Layers } from "lucide-react";
 
 export type TaskFiltersPanelProps = {
@@ -94,24 +95,26 @@ export function TaskFiltersPanel({
         />
       </div>
 
-      <div className="bg-muted/5 border-border/40 border p-6">
-        <TaskFilters
-          searchTerm={searchTerm}
-          selectedStatus={selectedStatus}
-          selectedPriority={selectedPriority}
-          selectedAssignee={selectedAssignee}
-          selectedDateRange={selectedDateRange}
-          selectedTag={selectedTag}
-          setSearchTerm={setSearchTerm}
-          setSelectedStatus={setSelectedStatus}
-          setSelectedPriority={setSelectedPriority}
-          setSelectedAssignee={setSelectedAssignee}
-          setSelectedDateRange={setSelectedDateRange}
-          setSelectedTag={setSelectedTag}
-          users={users}
-          isLoadingUsers={isLoadingUsers}
-        />
-      </div>
+      <Card className="border-border/40 rounded-none">
+        <CardContent className="p-6">
+          <TaskFilters
+            searchTerm={searchTerm}
+            selectedStatus={selectedStatus}
+            selectedPriority={selectedPriority}
+            selectedAssignee={selectedAssignee}
+            selectedDateRange={selectedDateRange}
+            selectedTag={selectedTag}
+            setSearchTerm={setSearchTerm}
+            setSelectedStatus={setSelectedStatus}
+            setSelectedPriority={setSelectedPriority}
+            setSelectedAssignee={setSelectedAssignee}
+            setSelectedDateRange={setSelectedDateRange}
+            setSelectedTag={setSelectedTag}
+            users={users}
+            isLoadingUsers={isLoadingUsers}
+          />
+        </CardContent>
+      </Card>
 
       <SaveFilterDialog
         open={saveFilterDialogOpen}

@@ -55,6 +55,8 @@ const taskFormSchema = z.object({
     .optional(),
 });
 
+import { Card, CardContent } from "@/components/ui/card";
+
 type TaskFormValues = z.infer<typeof taskFormSchema>;
 
 export default function EditTask() {
@@ -153,19 +155,21 @@ export default function EditTask() {
   if (!task) {
     return (
       <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
-        <div className="bg-card border-border/40 border border-dashed p-12 text-center opacity-30 grayscale">
-          <IconPencil className="mx-auto mb-4 size-12 stroke-1" />
-          <p className="text-sm font-black tracking-tight uppercase">
-            {tasks.errors.notFound}
-          </p>
-          <Button
-            variant="outline"
-            className="mt-8 rounded-none"
-            onClick={() => navigate("/tasks")}
-          >
-            {common.buttons.backToList}
-          </Button>
-        </div>
+        <Card className="border-border/40 border border-dashed opacity-30 shadow-none grayscale">
+          <CardContent className="p-12 text-center">
+            <IconPencil className="mx-auto mb-4 size-12 stroke-1" />
+            <p className="text-sm font-black tracking-tight uppercase">
+              {tasks.errors.notFound}
+            </p>
+            <Button
+              variant="outline"
+              className="mt-8 rounded-none"
+              onClick={() => navigate("/tasks")}
+            >
+              {common.buttons.backToList}
+            </Button>
+          </CardContent>
+        </Card>
       </PageTransition>
     );
   }
@@ -178,41 +182,43 @@ export default function EditTask() {
         icon={IconPencil}
       />
 
-      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-            <TaskFields control={form.control} isInProject={true} />
+      <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
+        <CardContent className="bg-muted/5 p-8">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+              <TaskFields control={form.control} isInProject={true} />
 
-            <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isPending}
-                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
-              >
-                {tasks.details.buttons.cancel}
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
-              >
-                {isPending ? (
-                  <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <IconCheck className="ms-2 size-4" />
-                )}
-                <span className="tracking-tight uppercase">
-                  {isPending
-                    ? tasks.edit.buttons.saving
-                    : tasks.edit.buttons.save}
-                </span>
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
+              <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isPending}
+                  className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
+                >
+                  {tasks.details.buttons.cancel}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
+                >
+                  {isPending ? (
+                    <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <IconCheck className="ms-2 size-4" />
+                  )}
+                  <span className="tracking-tight uppercase">
+                    {isPending
+                      ? tasks.edit.buttons.saving
+                      : tasks.edit.buttons.save}
+                  </span>
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </PageTransition>
   );
 }

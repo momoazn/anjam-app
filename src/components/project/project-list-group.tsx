@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   project as projectLabels,
   projects as projectsText,
@@ -75,9 +76,9 @@ export function ProjectListGroup({
         {projects.map((project) => {
           const progress = getProjectProgress(project.id);
           return (
-            <div
+            <Card
               key={project.id}
-              className="group bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-3xl border transition-all duration-300 hover:shadow-2xl"
+              className="group hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-none border shadow-sm transition-all duration-300 hover:shadow-2xl"
             >
               {/* Card Header */}
               <div className="bg-muted/20 relative border-b p-6">
@@ -86,15 +87,15 @@ export function ProjectListGroup({
                     <div className="bg-primary text-primary-foreground shadow-primary/20 flex h-12 w-12 items-center justify-center rounded-none shadow-sm transition-transform group-hover:rotate-12">
                       <Layers className="size-6" />
                     </div>
-                    <div>
+                    <div className="text-right">
                       <h3 className="text-xl font-black tracking-tight">
                         {project.name}
                       </h3>
-                      <div className="mt-1 flex items-center gap-2">
-                        <Hash className="text-muted-foreground/40 size-3" />
+                      <div className="mt-1 flex items-center justify-end gap-2">
                         <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
                           {project.code}
                         </span>
+                        <Hash className="text-muted-foreground/40 size-3" />
                       </div>
                     </div>
                   </div>
@@ -163,45 +164,45 @@ export function ProjectListGroup({
                     className="bg-primary absolute inset-y-0 start-0 transition-all duration-1000 ease-out"
                     style={{ width: `${progress.progress}%` }}
                   >
-                    <div className="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                    <div className="animate-shimmer absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent" />
                   </div>
                 </div>
               </div>
 
               {/* Action Grid */}
               <div className="bg-border mt-auto grid grid-cols-3 gap-px border-t">
-                <button
-                  type="button"
-                  className="group/btn bg-card hover:bg-muted/50 flex flex-col items-center justify-center py-4 transition-colors"
+                <Button
+                  variant="ghost"
+                  className="group/btn bg-card hover:bg-muted/50 flex h-auto flex-col items-center justify-center rounded-none py-4 transition-colors focus-visible:ring-0"
                   onClick={() => navigate(`/projects/${project.id}/details`)}
                 >
                   <FileText className="text-muted-foreground group-hover/btn:text-primary size-5 transition-transform group-hover/btn:-translate-y-1" />
                   <span className="text-muted-foreground/60 mt-2 text-[10px] font-bold tracking-wider uppercase">
                     {projectsText.details.viewDetails}
                   </span>
-                </button>
-                <button
-                  type="button"
-                  className="group/btn bg-card hover:bg-muted/50 flex flex-col items-center justify-center py-4 transition-colors"
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="group/btn bg-card hover:bg-muted/50 flex h-auto flex-col items-center justify-center rounded-none py-4 transition-colors focus-visible:ring-0"
                   onClick={() => navigate(`/projects/${project.id}/tasks`)}
                 >
                   <Target className="text-muted-foreground group-hover/btn:text-primary size-5 transition-transform group-hover/btn:-translate-y-1" />
                   <span className="text-muted-foreground/60 mt-2 text-[10px] font-bold tracking-wider uppercase">
                     {projectLabels.tasks}
                   </span>
-                </button>
-                <button
-                  type="button"
-                  className="group/btn bg-card hover:bg-muted/50 flex flex-col items-center justify-center py-4 transition-colors"
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="group/btn bg-card hover:bg-muted/50 flex h-auto flex-col items-center justify-center rounded-none py-4 transition-colors focus-visible:ring-0"
                   onClick={() => navigate(`/projects/${project.id}/users`)}
                 >
                   <Users className="text-muted-foreground group-hover/btn:text-primary size-5 transition-transform group-hover/btn:-translate-y-1" />
                   <span className="text-muted-foreground/60 mt-2 text-[10px] font-bold tracking-wider uppercase">
                     {projectLabels.users}
                   </span>
-                </button>
+                </Button>
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>

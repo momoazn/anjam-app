@@ -43,6 +43,7 @@ import { useQuery } from "@tanstack/react-query";
 import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 
 type DrilldownState = {
   title: string;
@@ -335,14 +336,16 @@ export default function Reports() {
               </span>
               <div className="bg-border/20 h-px flex-1" />
             </div>
-            <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-5">
-              {["s1", "s2", "s3", "s4", "s5"].map((key) => (
-                <div key={key} className="bg-card h-32 p-8">
-                  <Skeleton className="mb-4 h-4 w-20" />
-                  <Skeleton className="h-10 w-16" />
-                </div>
-              ))}
-            </div>
+            <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
+              <CardContent className="bg-border/40 grid grid-cols-1 gap-px border-none p-0 md:grid-cols-5">
+                {["s1", "s2", "s3", "s4", "s5"].map((key) => (
+                  <div key={key} className="bg-card h-32 p-8">
+                    <Skeleton className="mb-4 h-4 w-20" />
+                    <Skeleton className="h-10 w-16" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </section>
         </div>
       </PageTransition>
@@ -429,23 +432,25 @@ export default function Reports() {
                 suffix: "%",
               },
             ].map((stat) => (
-              <div
+              <Card
                 key={stat.id}
-                className="bg-card border-border/40 hover:shadow-primary/5 border p-8 text-right shadow-sm transition-all hover:shadow-md"
+                className="border-border/40 hover:shadow-primary/5 overflow-hidden rounded-none shadow-sm transition-all hover:shadow-md"
               >
-                <div className="mb-4 flex items-center justify-end gap-4 opacity-60">
-                  <span className="text-muted-foreground text-[11px] font-black tracking-tight uppercase">
-                    {stat.label}
-                  </span>
-                  <stat.icon className={cn("size-5", stat.color)} />
-                </div>
-                <div className="text-5xl font-black tracking-tighter">
-                  {digitsEnToFa(stat.value)}
-                  <span className="text-muted-foreground/30 me-1 text-xl">
-                    {stat.suffix}
-                  </span>
-                </div>
-              </div>
+                <CardContent className="p-8 text-right">
+                  <div className="mb-4 flex items-center justify-end gap-4 opacity-60">
+                    <span className="text-muted-foreground text-[11px] font-black tracking-tight uppercase">
+                      {stat.label}
+                    </span>
+                    <stat.icon className={cn("size-5", stat.color)} />
+                  </div>
+                  <div className="text-5xl font-black tracking-tighter">
+                    {digitsEnToFa(stat.value)}
+                    <span className="text-muted-foreground/30 me-1 text-xl">
+                      {stat.suffix}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </section>

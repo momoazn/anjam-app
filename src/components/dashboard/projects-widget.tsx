@@ -78,13 +78,12 @@ export function ProjectsWidget({
         data-animate-stagger
       >
         {projects.slice(0, 6).map((project) => (
-          <button
+          <Card
             key={project.id}
-            type="button"
-            className="group border-border/20 bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-none border text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-sm active:scale-[0.98]"
+            className="group border-border/20 bg-card hover:shadow-primary/5 relative flex h-auto cursor-pointer flex-col overflow-hidden rounded-none border p-0 text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-sm active:scale-[0.98]"
             onClick={() => navigate(`/projects/${project.id}/details`)}
           >
-            <CardHeader className="bg-muted/20 border-b p-6">
+            <CardHeader className="bg-muted/20 w-full border-b p-6">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-black tracking-tight">
                   {project.name}
@@ -94,10 +93,10 @@ export function ProjectsWidget({
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="w-full p-6 text-right">
               <div className="mb-4">
                 <div className="mb-2 flex items-end justify-between">
-                  <div>
+                  <div className="text-right">
                     <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
                       {dashboard.cards.progress}
                     </span>
@@ -125,7 +124,7 @@ export function ProjectsWidget({
                     className="bg-primary absolute inset-y-0 start-0 transition-all duration-1000 ease-out"
                     style={{ width: `${project.progress}%` }}
                   >
-                    <div className="animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                    <div className="animate-shimmer absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent" />
                   </div>
                 </div>
               </div>
@@ -140,7 +139,7 @@ export function ProjectsWidget({
 
             {/* Visual Hover Decoration */}
             <div className="bg-primary absolute end-0 bottom-0 h-1 w-0 transition-all duration-500 group-hover:w-full" />
-          </button>
+          </Card>
         ))}
       </div>
     </div>

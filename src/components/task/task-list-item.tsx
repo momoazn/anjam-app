@@ -3,6 +3,7 @@ import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserAvatar } from "@/components/user-avatar";
 import { task as taskLabels } from "@/constants";
@@ -58,20 +59,14 @@ function TaskListItemInner({
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
       className={cn(
-        "group border-border/15 bg-card hover:bg-muted/30 relative flex w-full cursor-pointer items-stretch border-b text-right transition-all duration-300 hover:z-10",
+        "group border-border/15 bg-card hover:bg-muted/30 relative flex h-auto w-full cursor-pointer items-stretch justify-start rounded-none border-b p-0 text-right transition-all duration-300 hover:z-10 focus-visible:ring-0",
         isSelected && "bg-primary/5",
         className,
       )}
       onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleClick();
-        }
-      }}
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Selection & Priority Zone */}
@@ -104,7 +99,7 @@ function TaskListItemInner({
       </div>
 
       {/* Main Content Zone */}
-      <div className="flex min-w-0 grow flex-col justify-center px-4 py-3">
+      <div className="flex min-w-0 grow flex-col justify-center px-4 py-3 text-right">
         <div className="flex items-center gap-3">
           <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
             {task.display_id}
@@ -200,7 +195,7 @@ function TaskListItemInner({
           statusIconColor.replace("text", "bg"),
         )}
       />
-    </button>
+    </Button>
   );
 }
 

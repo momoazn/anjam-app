@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Calendar, Hash } from "lucide-react";
@@ -62,18 +63,11 @@ export function OverdueTasksWidget({
       <CardContent className="p-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {overdueTasks.slice(0, 4).map((task) => (
-            <button
+            <Button
               key={task.id}
-              type="button"
-              className="group hover:bg-destructive/10 bg-background/80 border-border/20 hover:border-destructive/30 flex cursor-pointer items-center justify-between rounded-none border p-3 transition-all"
+              variant="ghost"
+              className="group hover:bg-destructive/10 bg-background/80 border-border/20 hover:border-destructive/30 flex h-auto cursor-pointer items-center justify-between rounded-none border p-3 transition-all"
               onClick={() => navigate(`/tasks/${task.id}`)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  navigate(`/tasks/${task.id}`);
-                }
-              }}
-              tabIndex={0}
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <div className="border-destructive/20 bg-destructive/5 group-hover:bg-destructive/40 flex h-1 w-1 shrink-0 rounded-none transition-colors" />
@@ -109,7 +103,7 @@ export function OverdueTasksWidget({
                   </span>
                 </div>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       </CardContent>

@@ -43,6 +43,8 @@ import {
   DEFAULT_USER_PREFERENCES,
 } from "@/hooks";
 
+import { Card, CardContent } from "@/components/ui/card";
+
 export type TaskDetailsContentProps = {
   task: TaskWithProject;
   comments: CommentWithUser[];
@@ -123,174 +125,182 @@ export function TaskDetailsContent({
   return (
     <div className="space-y-12 lg:col-span-2">
       {/* Detail Grid */}
-      <section className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-3">
-        <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6">
-          <div className="flex items-center justify-end gap-2 opacity-40">
-            <span className="text-[10px] font-bold tracking-tight uppercase">
-              Assignee
-            </span>
-            <IconUser className="size-3.5" />
-          </div>
-          <div className="text-right text-sm font-black tracking-tight uppercase">
-            {task.expand?.assignee ? (
-              formatUserName(
-                task.expand.assignee.first_name,
-                task.expand.assignee.last_name,
-                task.expand.assignee.username,
-              )
-            ) : (
-              <span className="text-muted-foreground/40">
-                {tasks.addTask.unassigned}
+      <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
+        <CardContent className="bg-border/40 grid grid-cols-1 gap-px p-0 sm:grid-cols-3">
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[10px] font-bold tracking-tight uppercase">
+                Assignee
               </span>
-            )}
+              <IconUser className="size-3.5" />
+            </div>
+            <div className="text-right text-sm font-black tracking-tight uppercase">
+              {task.expand?.assignee ? (
+                formatUserName(
+                  task.expand.assignee.first_name,
+                  task.expand.assignee.last_name,
+                  task.expand.assignee.username,
+                )
+              ) : (
+                <span className="text-muted-foreground/40">
+                  {tasks.addTask.unassigned}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6">
-          <div className="flex items-center justify-end gap-2 opacity-40">
-            <span className="text-[10px] font-bold tracking-tight uppercase">
-              Project
-            </span>
-            <IconTarget className="size-3.5" />
+          <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[10px] font-bold tracking-tight uppercase">
+                Project
+              </span>
+              <IconTarget className="size-3.5" />
+            </div>
+            <div className="truncate text-right text-sm font-black tracking-tight uppercase">
+              {task.expand?.project?.name || tasks.details.unknownProject}
+            </div>
           </div>
-          <div className="truncate text-right text-sm font-black tracking-tight uppercase">
-            {task.expand?.project?.name || tasks.details.unknownProject}
-          </div>
-        </div>
 
-        <div className="bg-card flex h-24 flex-col justify-between p-6">
-          <div className="flex items-center justify-end gap-2 opacity-40">
-            <span className="text-[10px] font-bold tracking-tight uppercase">
-              Deadline
-            </span>
-            <IconCalendar className="size-3.5" />
+          <div className="bg-card flex h-24 flex-col justify-between p-6">
+            <div className="flex items-center justify-end gap-2 opacity-40">
+              <span className="text-[10px] font-bold tracking-tight uppercase">
+                Deadline
+              </span>
+              <IconCalendar className="size-3.5" />
+            </div>
+            <div className="text-right text-sm font-black tabular-nums">
+              {task.deadline ? (
+                digitsEnToFa(formatTaskDate(task.deadline))
+              ) : (
+                <span className="opacity-20">—</span>
+              )}
+            </div>
           </div>
-          <div className="text-right text-sm font-black tabular-nums">
-            {task.deadline ? (
-              digitsEnToFa(formatTaskDate(task.deadline))
-            ) : (
-              <span className="opacity-20">—</span>
-            )}
-          </div>
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
       {/* Description */}
       {task.description && (
         <section className="space-y-4">
-          <div className="bg-muted/5 border-border/40 border p-8">
-            <p className="text-right text-sm leading-relaxed whitespace-pre-wrap">
-              {task.description}
-            </p>
-          </div>
+          <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
+            <CardContent className="bg-muted/5 p-8">
+              <p className="text-right text-sm leading-relaxed whitespace-pre-wrap">
+                {task.description}
+              </p>
+            </CardContent>
+          </Card>
         </section>
       )}
 
       {/* Time Tracking */}
-      <section className="bg-muted/5 border-border/40 border p-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <IconClock className="text-primary size-5" />
-            <h3 className="text-sm font-black tracking-tight uppercase">
-              {tasks.details.timeTracking.title}
-            </h3>
-          </div>
-          {!isEditingTime && canEditTime && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onStartTimeEdit}
-              className="border-border/40 hover:bg-primary/10 hover:text-primary h-9 rounded-none border text-[9px] font-black tracking-tight uppercase transition-all"
-            >
-              <IconPencil className="ms-2 size-3.5" />
-              {tasks.details.timeTracking.editTime}
-            </Button>
-          )}
-        </div>
-
-        {isEditingTime ? (
-          <div className="animate-in fade-in slide-in-from-top-2 space-y-6">
-            <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px overflow-hidden border">
-              <div className="bg-card border-border/10 space-y-2 border-s p-4 text-right">
-                <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
-                  {tasks.details.timeTracking.hours}
-                </span>
-                <Input
-                  type="number"
-                  min="0"
-                  value={hours}
-                  onChange={(event) =>
-                    onHoursChange(Number(event.target.value))
-                  }
-                  disabled={isUpdatingTime}
-                  className="bg-muted/10 h-10 rounded-none border-none text-right text-lg font-black tabular-nums focus:ring-0"
-                />
+      <section className="space-y-4">
+        <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
+          <CardContent className="bg-muted/5 p-8">
+            <div className="mb-8 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <IconClock className="text-primary size-5" />
+                <h3 className="text-sm font-black tracking-tight uppercase">
+                  {tasks.details.timeTracking.title}
+                </h3>
               </div>
-              <div className="bg-card space-y-2 p-4 text-right">
-                <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
-                  {tasks.details.timeTracking.minutes}
-                </span>
-                <Input
-                  type="number"
-                  min="0"
-                  max="59"
-                  value={minutes}
-                  onChange={(event) =>
-                    onMinutesChange(Number(event.target.value))
-                  }
-                  disabled={isUpdatingTime}
-                  className="bg-muted/10 h-10 rounded-none border-none text-right text-lg font-black tabular-nums focus:ring-0"
-                />
-              </div>
+              {!isEditingTime && canEditTime && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onStartTimeEdit}
+                  className="border-border/40 hover:bg-primary/10 hover:text-primary h-9 rounded-none border text-[9px] font-black tracking-tight uppercase transition-all"
+                >
+                  <IconPencil className="ms-2 size-3.5" />
+                  {tasks.details.timeTracking.editTime}
+                </Button>
+              )}
             </div>
 
-            <div className="border-border/10 flex items-center justify-end gap-3 border-t pt-4">
-              <Button
-                variant="ghost"
-                onClick={onCancelTimeEdit}
-                disabled={isUpdatingTime}
-                className="text-muted-foreground/60 h-10 rounded-none text-[9px] font-black tracking-tight uppercase"
-              >
-                <IconX className="ms-2 size-3.5" />
-                {tasks.details.timeTracking.cancelEdit}
-              </Button>
-              <Button
-                onClick={onSaveTime}
-                disabled={isUpdatingTime}
-                className="h-10 rounded-none px-6 text-[10px] font-black tracking-tight uppercase shadow-md transition-all active:scale-95"
-              >
-                {isUpdatingTime ? (
-                  <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <IconDeviceFloppy className="ms-2 size-4" />
-                )}
-                {tasks.details.timeTracking.saveTime}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-baseline justify-between gap-6 md:flex-row md:items-center">
-            <div className="text-right">
-              <div className="text-muted-foreground/40 mb-1 text-[10px] font-black tracking-tight uppercase">
-                Time Spent
-              </div>
-              <p className="text-primary text-5xl font-black tracking-tighter">
-                {formatTimeSpent(task.time_spent_minutes) ||
-                  digitsEnToFa("0h 0m")}
-              </p>
-            </div>
+            {isEditingTime ? (
+              <div className="animate-in fade-in slide-in-from-top-2 space-y-6">
+                <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px overflow-hidden border">
+                  <div className="bg-card border-border/10 space-y-2 border-s p-4 text-right">
+                    <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+                      {tasks.details.timeTracking.hours}
+                    </span>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={hours}
+                      onChange={(event) =>
+                        onHoursChange(Number(event.target.value))
+                      }
+                      disabled={isUpdatingTime}
+                      className="bg-muted/10 h-10 rounded-none border-none text-right text-lg font-black tabular-nums focus:ring-0"
+                    />
+                  </div>
+                  <div className="bg-card space-y-2 p-4 text-right">
+                    <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+                      {tasks.details.timeTracking.minutes}
+                    </span>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={minutes}
+                      onChange={(event) =>
+                        onMinutesChange(Number(event.target.value))
+                      }
+                      disabled={isUpdatingTime}
+                      className="bg-muted/10 h-10 rounded-none border-none text-right text-lg font-black tabular-nums focus:ring-0"
+                    />
+                  </div>
+                </div>
 
-            <div className="w-full max-w-sm flex-1">
-              <div className="text-muted-foreground/40 mb-3 text-right text-[10px] font-black tracking-tight uppercase">
-                Progress
+                <div className="border-border/10 flex items-center justify-end gap-3 border-t pt-4">
+                  <Button
+                    variant="ghost"
+                    onClick={onCancelTimeEdit}
+                    disabled={isUpdatingTime}
+                    className="text-muted-foreground/60 h-10 rounded-none text-[9px] font-black tracking-tight uppercase"
+                  >
+                    <IconX className="ms-2 size-3.5" />
+                    {tasks.details.timeTracking.cancelEdit}
+                  </Button>
+                  <Button
+                    onClick={onSaveTime}
+                    disabled={isUpdatingTime}
+                    className="h-10 rounded-none px-6 text-[10px] font-black tracking-tight uppercase shadow-md transition-all active:scale-95"
+                  >
+                    {isUpdatingTime ? (
+                      <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <IconDeviceFloppy className="ms-2 size-4" />
+                    )}
+                    {tasks.details.timeTracking.saveTime}
+                  </Button>
+                </div>
               </div>
-              <TimeComparison
-                estimatedMinutes={task.estimated_minutes || 0}
-                actualMinutes={task.time_spent_minutes}
-              />
-            </div>
-          </div>
-        )}
+            ) : (
+              <div className="flex flex-col items-baseline justify-between gap-6 md:flex-row md:items-center">
+                <div className="text-right">
+                  <div className="text-muted-foreground/40 mb-1 text-[10px] font-black tracking-tight uppercase">
+                    Time Spent
+                  </div>
+                  <p className="text-primary text-5xl font-black tracking-tighter">
+                    {formatTimeSpent(task.time_spent_minutes) ||
+                      digitsEnToFa("0h 0m")}
+                  </p>
+                </div>
+
+                <div className="w-full max-w-sm flex-1">
+                  <div className="text-muted-foreground/40 mb-3 text-right text-[10px] font-black tracking-tight uppercase">
+                    Progress
+                  </div>
+                  <TimeComparison
+                    estimatedMinutes={task.estimated_minutes || 0}
+                    actualMinutes={task.time_spent_minutes}
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </section>
 
       <div className="space-y-4">
@@ -343,46 +353,48 @@ export function TaskDetailsContent({
           </TabsTrigger>
         </TabsList>
 
-        <div className="border-border/40 bg-muted/5 mt-6 border p-8">
-          <TabsContent value="comments" className="m-0 outline-none">
-            <div className="space-y-10">
-              {commentsLoading ? (
-                <div className="flex justify-center py-12 opacity-20">
-                  <IconLoader2 className="h-10 w-10 animate-spin" />
-                </div>
-              ) : (
-                <>
-                  <CommentsList
-                    comments={comments}
-                    projectId={task.project}
-                    onReply={(comment) => setReplyTarget(comment)}
-                  />
-                  <div className="border-border/20 border-t pt-8">
-                    <CommentComposer
-                      taskId={task.id}
-                      projectId={task.project}
-                      replyTarget={replyTarget}
-                      onCancelReply={() => setReplyTarget(null)}
-                      onCommentAdded={handleCommentAdded}
-                    />
+        <Card className="border-border/40 mt-6 overflow-hidden rounded-none shadow-sm">
+          <CardContent className="bg-muted/5 m-0 p-8 outline-none">
+            <TabsContent value="comments" className="m-0 outline-none">
+              <div className="space-y-10">
+                {commentsLoading ? (
+                  <div className="flex justify-center py-12 opacity-20">
+                    <IconLoader2 className="h-10 w-10 animate-spin" />
                   </div>
-                </>
-              )}
-            </div>
-          </TabsContent>
-          <TabsContent value="history" className="m-0 outline-none">
-            {showActivityFeed ? (
-              <ActivityStream resource="tasks" resourceId={task.id} />
-            ) : (
-              <div
-                className="text-muted-foreground/40 py-12 text-center text-xs font-black uppercase opacity-30 grayscale"
-                dir="rtl"
-              >
-                {settings.preferences.activityDisabled}
+                ) : (
+                  <>
+                    <CommentsList
+                      comments={comments}
+                      projectId={task.project}
+                      onReply={(comment) => setReplyTarget(comment)}
+                    />
+                    <div className="border-border/20 border-t pt-8">
+                      <CommentComposer
+                        taskId={task.id}
+                        projectId={task.project}
+                        replyTarget={replyTarget}
+                        onCancelReply={() => setReplyTarget(null)}
+                        onCommentAdded={handleCommentAdded}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-          </TabsContent>
-        </div>
+            </TabsContent>
+            <TabsContent value="history" className="m-0 outline-none">
+              {showActivityFeed ? (
+                <ActivityStream resource="tasks" resourceId={task.id} />
+              ) : (
+                <div
+                  className="text-muted-foreground/40 py-12 text-center text-xs font-black uppercase opacity-30 grayscale"
+                  dir="rtl"
+                >
+                  {settings.preferences.activityDisabled}
+                </div>
+              )}
+            </TabsContent>
+          </CardContent>
+        </Card>
       </Tabs>
 
       <TimeEntryDialog

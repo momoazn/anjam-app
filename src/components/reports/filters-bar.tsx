@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { useMemo } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import DatePicker from "@/components/ui/date-picker";
 import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
@@ -165,8 +166,8 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
       {/* Projects Segment */}
       <Popover>
         <PopoverTrigger asChild>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
@@ -183,7 +184,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                   : "All Projects"}
               </span>
             </div>
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent
           className="border-border bg-card w-64 rounded-none border p-0"
@@ -223,8 +224,8 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
       {/* Assignees Segment */}
       <Popover>
         <PopoverTrigger asChild>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
@@ -241,7 +242,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                   : "All Assignees"}
               </span>
             </div>
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent
           className="border-border bg-card w-64 rounded-none border p-0"
@@ -281,8 +282,8 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
       {/* Status Segment */}
       <Popover>
         <PopoverTrigger asChild>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
@@ -299,7 +300,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                   : "All Statuses"}
               </span>
             </div>
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent
           className="border-border bg-card w-64 rounded-none border p-0"
@@ -339,8 +340,8 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
       {/* Priority Segment */}
       <Popover>
         <PopoverTrigger asChild>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
@@ -357,7 +358,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                   : "All Priorities"}
               </span>
             </div>
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent
           className="border-border bg-card w-64 rounded-none border p-0"
@@ -396,8 +397,8 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
 
       {/* Clear Reset Segment */}
       {hasActiveFilters && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={clearAllFilters}
           className="bg-muted/20 border-border/10 flex h-16 flex-col items-center justify-center border-s px-6 text-rose-500 transition-colors hover:bg-rose-500/10"
         >
@@ -410,7 +411,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           <span className="text-[10px] font-black tracking-tight uppercase">
             _00
           </span>
-        </button>
+        </Button>
       )}
 
       {/* Custom Date Range Picker */}

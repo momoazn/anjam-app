@@ -14,6 +14,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { app, dashboard, users } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
@@ -135,8 +136,8 @@ export function DashboardHeader({
   ];
 
   return (
-    <div className="bg-card hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-none border shadow-sm transition-all duration-500">
-      <div className="relative z-10 flex flex-col lg:flex-row">
+    <Card className="hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-none shadow-sm transition-all duration-500">
+      <CardContent className="relative z-10 flex flex-col p-0 lg:flex-row">
         {/* Main Welcome Section */}
         <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-s lg:border-b-0 lg:p-10">
           <div className="text-primary flex items-center gap-3">
@@ -186,35 +187,37 @@ export function DashboardHeader({
         <div className="bg-muted/30 lg:w-[400px] xl:w-[480px]">
           <div className="bg-border grid h-full grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-1">
             {statItems.map((item) => (
-              <div
+              <Card
                 key={item.label}
-                className="group bg-card hover:bg-muted/50 relative flex items-center justify-between overflow-hidden p-6 transition-all duration-300"
+                className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-none border-none p-0 shadow-none transition-all duration-300 hover:shadow-none"
               >
-                <div className="flex items-center gap-4">
-                  <div
-                    className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-none transition-transform duration-300 group-hover:scale-105",
-                      item.bg,
-                    )}
-                  >
-                    <item.icon className={cn("h-6 w-6", item.color)} />
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                      {item.label}
-                    </p>
-                    <div className="mt-0.5 flex items-baseline gap-1">
-                      <span className="text-3xl font-black tracking-tighter">
-                        {isLoading ? "---" : digitsEnToFa(item.value)}
-                      </span>
+                <CardContent className="flex items-center justify-between p-6">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={cn(
+                        "flex h-12 w-12 items-center justify-center rounded-none transition-transform duration-300 group-hover:scale-105",
+                        item.bg,
+                      )}
+                    >
+                      <item.icon className={cn("h-6 w-6", item.color)} />
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                        {item.label}
+                      </p>
+                      <div className="mt-0.5 flex items-baseline gap-1">
+                        <span className="text-3xl font-black tracking-tighter">
+                          {isLoading ? "---" : digitsEnToFa(item.value)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

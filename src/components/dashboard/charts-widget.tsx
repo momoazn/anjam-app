@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { format, isPast, isToday } from "date-fns-jalali";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChartContainer } from "@/components/ui/chart";
@@ -280,10 +281,10 @@ export function ChartsWidget({
         <CardContent className="p-0">
           <div className="divide-border/40 divide-y">
             {recentTasks.slice(0, 6).map((task) => (
-              <button
+              <Button
                 key={task.id}
-                type="button"
-                className="group hover:bg-muted/30 flex w-full cursor-pointer items-stretch transition-all"
+                variant="ghost"
+                className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-stretch justify-start rounded-none border-none p-0 transition-all focus-visible:ring-0"
                 onClick={() => navigate(`/tasks/${task.id}`)}
               >
                 {/* Visual Status Bar */}
@@ -362,11 +363,11 @@ export function ChartsWidget({
                     )}
                   </div>
                 </div>
-              </button>
+              </Button>
             ))}
             {recentTasks.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 opacity-20 grayscale">
-                <Clock className="size-12 stroke-[1]" />
+                <Clock className="size-12 stroke-1" />
                 <p className="mt-4 text-sm font-black tracking-tight uppercase">
                   {dashboard.cards.noActivityFound}
                 </p>

@@ -55,24 +55,17 @@ export function TaskListHeader({
   };
 
   return (
-    <div
+    <Button
+      variant="ghost"
       className={cn(
-        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex w-full cursor-pointer items-center justify-between overflow-hidden rounded-none border-y border-s-2 px-4 py-3 text-right transition-all",
+        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex h-auto w-full cursor-pointer items-center justify-between overflow-hidden rounded-none border-y border-s-2 px-4 py-3 text-right transition-all focus-visible:ring-0",
         getStatusColorVariant(status, "border")
           .replace("border-", "border-s-")
           .replace("/20", ""),
       )}
       onClick={onToggleCollapse}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onToggleCollapse?.();
-        }
-      }}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 text-right">
         <div
           className={cn(
             "bg-card ring-border/50 flex h-8 w-8 items-center justify-center rounded-none border shadow-sm ring-1 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md",
@@ -87,15 +80,15 @@ export function TaskListHeader({
           />
         </div>
 
-        <div>
+        <div className="text-right">
           <h2 className="text-sm font-black tracking-tight uppercase">
             {tasks.status[status]}
           </h2>
-          <div className="mt-0.5 flex items-center gap-2">
-            <Hash className="text-muted-foreground/30 size-2.5" />
+          <div className="mt-0.5 flex items-center justify-end gap-2">
             <span className="text-muted-foreground/70 text-[9px] font-black tracking-tight uppercase">
               {digitsEnToFa(taskCount)} ITEMS TOTAL
             </span>
+            <Hash className="text-muted-foreground/30 size-2.5" />
           </div>
         </div>
       </div>
@@ -106,7 +99,10 @@ export function TaskListHeader({
             variant="ghost"
             size="icon"
             className="hover:bg-background size-8 rounded-none transition-transform active:scale-95"
-            onClick={handleCreateTask}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCreateTask();
+            }}
           >
             <Plus className="size-4" />
           </Button>
@@ -117,6 +113,7 @@ export function TaskListHeader({
                 variant="ghost"
                 size="icon"
                 className="hover:bg-background size-8 rounded-none transition-transform active:scale-95"
+                onClick={(e) => e.stopPropagation()}
               >
                 <MoreHorizontal className="size-4" />
               </Button>
@@ -126,11 +123,12 @@ export function TaskListHeader({
               className="border-border/20 rounded-none"
             >
               <DropdownMenuItem
-                onClick={() =>
+                onClick={(e) => {
+                  e.stopPropagation();
                   onSortChange?.(
                     sortMode === "priority" ? "default" : "priority",
-                  )
-                }
+                  );
+                }}
                 className="gap-2"
               >
                 {sortMode === "priority" ? (
@@ -141,9 +139,10 @@ export function TaskListHeader({
                 <span className="font-bold">{task.sortByPriority}</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() =>
-                  onSortChange?.(sortMode === "date" ? "default" : "date")
-                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSortChange?.(sortMode === "date" ? "default" : "date");
+                }}
                 className="gap-2"
               >
                 {sortMode === "date" ? (
@@ -168,10 +167,10 @@ export function TaskListHeader({
 
       <div
         className={cn(
-          "absolute start-0 bottom-0 h-px w-0 bg-gradient-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
-          statusColor.replace("text", "text"),
+          "absolute start-0 bottom-0 h-px w-0 bg-linear-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
+          statusColor,
         )}
       />
-    </div>
+    </Button>
   );
 }

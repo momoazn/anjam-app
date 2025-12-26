@@ -9,6 +9,7 @@ import {
 
 import { common, myTasks as myTasksText } from "@/constants";
 import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 
 export type MyTasksStatsValues = {
   total: number;
@@ -57,32 +58,34 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
   ];
 
   return (
-    <div
-      className="bg-border/40 border-border/40 mb-8 grid grid-cols-2 gap-px border sm:grid-cols-3 md:grid-cols-5"
-      data-animate-stagger
-    >
-      {statItems.map((stat) => (
-        <div
-          key={stat.label}
-          className="bg-card hover:bg-muted/10 group relative overflow-hidden p-6 text-right transition-colors"
-        >
-          <div className="mb-2 flex items-center justify-end gap-3">
-            <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
-              {stat.label}
-            </span>
-            <stat.icon
-              className={cn(
-                "size-4 opacity-40 transition-opacity group-hover:opacity-100",
-                stat.color,
-              )}
-            />
+    <Card className="border-border/40 mb-8 overflow-hidden rounded-none shadow-sm">
+      <CardContent
+        className="grid grid-cols-2 gap-px p-0 sm:grid-cols-3 md:grid-cols-5"
+        data-animate-stagger
+      >
+        {statItems.map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-card hover:bg-muted/10 group relative overflow-hidden p-6 text-right transition-colors"
+          >
+            <div className="mb-2 flex items-center justify-end gap-3">
+              <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+                {stat.label}
+              </span>
+              <stat.icon
+                className={cn(
+                  "size-4 opacity-40 transition-opacity group-hover:opacity-100",
+                  stat.color,
+                )}
+              />
+            </div>
+            <div className="text-3xl font-black tracking-tighter">
+              {digitsEnToFa(stat.value)}
+            </div>
+            <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
           </div>
-          <div className="text-3xl font-black tracking-tighter">
-            {digitsEnToFa(stat.value)}
-          </div>
-          <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
-        </div>
-      ))}
-    </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }

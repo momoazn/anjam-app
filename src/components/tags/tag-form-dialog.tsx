@@ -143,9 +143,10 @@ export function TagFormDialog({
               <Label>{tagsManagement.colorLabel}</Label>
               <div className="grid grid-cols-4 gap-2">
                 {TAG_COLORS.map((tagColor) => (
-                  <button
+                  <Button
                     key={tagColor.value}
                     type="button"
+                    variant="ghost"
                     className={`flex h-12 items-center justify-center rounded-none border transition-all ${
                       color === tagColor.value
                         ? "border-primary ring-primary ring-2 ring-offset-2"
@@ -158,7 +159,7 @@ export function TagFormDialog({
                     {color === tagColor.value && (
                       <span className="text-white">✓</span>
                     )}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

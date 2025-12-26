@@ -1,4 +1,6 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { MyTasksEmptyState } from "@/components/task/my-tasks-empty-state";
@@ -179,9 +181,9 @@ export function MyTasksTabs({
             />
           ) : (
             tasksByProject.map((project) => (
-              <div
+              <Card
                 key={project.projectId}
-                className="bg-card overflow-hidden rounded-3xl border"
+                className="overflow-hidden rounded-none shadow-sm"
               >
                 <div className="bg-muted/20 border-b px-6 py-4">
                   <div className="flex items-center justify-between">
@@ -202,20 +204,20 @@ export function MyTasksTabs({
                 </div>
                 <div className="divide-border/40 divide-y">
                   {project.tasks.map((task) => (
-                    <button
+                    <Button
                       key={task.id}
-                      type="button"
-                      className="group hover:bg-muted/30 flex w-full cursor-pointer items-center justify-between p-6 text-right transition-colors"
+                      variant="ghost"
+                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-none p-6 text-right transition-colors focus-visible:ring-0"
                       onClick={() =>
                         onProjectTaskClick(project.projectId, task.id)
                       }
                     >
-                      <div className="flex-1">
+                      <div className="flex-1 text-right">
                         <h4 className="group-hover:text-primary text-base font-bold tracking-tight transition-colors">
                           {task.title}
                         </h4>
                         {task.deadline && (
-                          <div className="mt-2 flex items-center gap-2">
+                          <div className="mt-2 flex items-center justify-end gap-2">
                             <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
                               {tasks.addTask.deadline}
                             </span>
@@ -243,10 +245,10 @@ export function MyTasksTabs({
                           {tasks.status[task.status]}
                         </Badge>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
-              </div>
+              </Card>
             ))
           )}
         </TabsContent>

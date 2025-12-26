@@ -11,6 +11,8 @@ import { PageHeader } from "@/components/page-header";
 import { common, projects } from "@/constants";
 import type { ProjectWithSupervisor } from "@/lib/pocketbase";
 
+import { Card, CardContent } from "@/components/ui/card";
+
 type ProjectHeaderProps = {
   project: ProjectWithSupervisor;
   canEdit: boolean;
@@ -80,7 +82,7 @@ export function ProjectHeader({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-right">
       <Button
         variant="ghost"
         size="sm"
@@ -92,38 +94,40 @@ export function ProjectHeader({
       </Button>
 
       {isEditing ? (
-        <div className="border-border/40 bg-card relative overflow-hidden rounded-none border p-8 shadow-md">
-          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="flex-1 space-y-6">
-              <div className="space-y-1.5 text-right">
-                <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
-                  Edit Project Name
-                </span>
-                <Input
-                  value={editedName}
-                  onChange={(event) => onNameChange(event.target.value)}
-                  placeholder={projects.create.form.name}
-                  className="border-border/40 bg-muted/5 focus:border-primary/40 h-14 rounded-none text-right text-2xl font-black tracking-tight uppercase focus:ring-0"
-                />
+        <Card className="border-border/40 overflow-hidden rounded-none shadow-md">
+          <CardContent className="p-8">
+            <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex-1 space-y-6">
+                <div className="space-y-1.5 text-right">
+                  <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+                    Edit Project Name
+                  </span>
+                  <Input
+                    value={editedName}
+                    onChange={(event) => onNameChange(event.target.value)}
+                    placeholder={projects.create.form.name}
+                    className="border-border/40 bg-muted/5 focus:border-primary/40 h-14 rounded-none text-right text-2xl font-black tracking-tight uppercase focus:ring-0"
+                  />
+                </div>
+                <div className="ms-auto w-40 space-y-1.5 text-right">
+                  <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+                    Project Code
+                  </span>
+                  <Input
+                    value={editedCode}
+                    onChange={(event) =>
+                      onCodeChange(event.target.value.slice(0, 3))
+                    }
+                    placeholder={projects.create.form.code}
+                    maxLength={3}
+                    className="border-border/40 bg-muted/5 focus:border-primary/40 h-10 rounded-none text-center font-mono text-xs font-black tracking-tight uppercase focus:ring-0"
+                  />
+                </div>
               </div>
-              <div className="ms-auto w-40 space-y-1.5 text-right">
-                <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
-                  Project Code
-                </span>
-                <Input
-                  value={editedCode}
-                  onChange={(event) =>
-                    onCodeChange(event.target.value.slice(0, 3))
-                  }
-                  placeholder={projects.create.form.code}
-                  maxLength={3}
-                  className="border-border/40 bg-muted/5 focus:border-primary/40 h-10 rounded-none text-center font-mono text-xs font-black tracking-tight uppercase focus:ring-0"
-                />
-              </div>
+              {headerActions}
             </div>
-            {headerActions}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ) : (
         <PageHeader
           title={project.name}

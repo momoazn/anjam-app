@@ -109,11 +109,11 @@ export function ProductivityWidget({
           <div className="divide-border/40 divide-y">
             {recentNotifications.length > 0 ? (
               recentNotifications.slice(0, 3).map((notification) => (
-                <button
+                <Button
                   key={notification.id}
-                  type="button"
+                  variant="ghost"
                   className={cn(
-                    "hover:bg-muted/30 flex w-full items-center gap-4 px-6 py-4 text-right transition-colors",
+                    "hover:bg-muted/30 flex h-auto w-full items-center justify-start gap-4 border-none px-6 py-4 text-right transition-colors",
                     notification.read === false && "bg-primary/5",
                   )}
                   onClick={() => navigate("/notifications")}
@@ -129,7 +129,7 @@ export function ProductivityWidget({
                   <span className="text-muted-foreground truncate text-sm font-bold tracking-tight">
                     {notification.title}
                   </span>
-                </button>
+                </Button>
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-10 text-right opacity-20 grayscale">

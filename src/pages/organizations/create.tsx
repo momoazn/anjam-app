@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import { organization } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { useAuthStore } from "@/store/auth-store";
@@ -146,8 +147,7 @@ export function CreateOrganizationPage() {
               <FormItem>
                 <FormLabel>{organization.settings.description}</FormLabel>
                 <FormControl>
-                  <textarea
-                    className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[100px] w-full rounded-none border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  <Textarea
                     placeholder={organization.settings.descriptionPlaceholder}
                     {...field}
                   />
