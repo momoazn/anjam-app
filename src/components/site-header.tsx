@@ -16,6 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { LFrame } from "@/components/design-system";
 import { navigation, themeLabels } from "@/constants";
 import { useTheme } from "@/hooks/use-theme";
 import { Clock, Terminal, Sun, Moon, Globe } from "lucide-react";
@@ -64,10 +65,9 @@ export function SiteHeader() {
   }, [location.pathname]);
 
   return (
-    <header className="bg-background sticky top-0 z-50 flex h-14 shrink-0 items-center border-b transition-all">
-      {/* Left Segment: Frame Integration */}
+    <LFrame variant="full" size="lg" className="bg-background sticky top-0 z-50 flex h-14 shrink-0 items-center border-b">
       <div className="bg-muted/5 flex h-full items-center border-s px-4 lg:px-6">
-        <SidebarTrigger className="border-border/40 bg-card hover:bg-muted/50 size-9 border transition-all active:scale-95" />
+        <SidebarTrigger className="border-border/40 bg-card hover:bg-muted/50 size-9 border spring-transition active:scale-95" />
       </div>
 
       {/* Middle Segment: Breadcrumb Console */}
@@ -75,7 +75,7 @@ export function SiteHeader() {
         <Breadcrumb className="hidden min-w-0 flex-1 md:block">
           <BreadcrumbList className="flex-nowrap">
             <BreadcrumbItem>
-              <Terminal className="text-primary/60 me-2 size-3" />
+              <Terminal className="text-primary/60 ms-2 size-3" />
             </BreadcrumbItem>
             {crumbs.map((c, idx) => (
               <Fragment key={`${c.label}-${idx}`}>
@@ -110,23 +110,23 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Right Segment:  & Actions */}
+      {/* Right Segment: Status & Actions */}
       <div className="bg-muted/5 flex h-full items-center gap-4 border-e px-4 lg:px-8">
-        {/*  Console */}
-        <div className="border-border/40 me-4 hidden h-full items-center gap-8 border-e pe-8 lg:flex">
-          <div className="flex flex-col items-end justify-center">
+        {/* Status Console */}
+        <div className="border-border/40 ms-4 hidden h-full items-center gap-8 border-e ps-8 lg:flex">
+          <div className="flex flex-col items-start justify-center">
             <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-tight uppercase">
-              Status
+              وضعیت
             </span>
             <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-500/80 uppercase">
               <div className="size-1 animate-pulse bg-emerald-500" />
-              Operational
+              عملیاتی
             </div>
           </div>
 
-          <div className="flex flex-col items-end justify-center">
+          <div className="flex flex-col items-start justify-center">
             <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-tight uppercase">
-              Time_UTC
+              زمان_UTC
             </span>
             <div className="text-foreground/60 flex items-center gap-2 text-[10px] font-black tabular-nums">
               <Clock className="text-primary/40 size-2.5" />
@@ -134,13 +134,13 @@ export function SiteHeader() {
             </div>
           </div>
 
-          <div className="flex flex-col items-end justify-center">
+          <div className="flex flex-col items-start justify-center">
             <span className="text-muted-foreground/30 mb-1 text-[7px] leading-none font-black tracking-tight uppercase">
-              Region
+              منطقه
             </span>
             <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-black uppercase">
               <Globe className="text-primary/40 size-2.5" />
-              ME-West
+              غرب-شرق
             </div>
           </div>
         </div>
@@ -181,6 +181,6 @@ export function SiteHeader() {
           <HeaderUserMenu />
         </div>
       </div>
-    </header>
+    </LFrame>
   );
 }
