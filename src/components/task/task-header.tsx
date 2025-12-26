@@ -23,7 +23,7 @@ export function TaskHeader({
 }: TaskHeaderProps) {
   const headerActions = (
     <div className="flex flex-wrap gap-2">
-      <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
+      <div className="bg-muted/20 border-border/15 flex items-center gap-2 border p-1">
         <Button
           variant="ghost"
           size="lg"
@@ -36,7 +36,7 @@ export function TaskHeader({
           </span>
         </Button>
 
-        <div className="bg-border/40 h-6 w-px" />
+        <div className="bg-border/15 h-6 w-px" />
 
         <Button
           variant="ghost"
@@ -57,7 +57,7 @@ export function TaskHeader({
       </div>
 
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
         size="lg"
         onClick={onCreateTask}
       >

@@ -44,7 +44,7 @@ function StatCard({
   borderColor?: string;
 }) {
   return (
-    <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
+    <Card className="group border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
       <CardContent className="relative p-4 md:p-6">
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex-1">
@@ -89,7 +89,7 @@ export function StatsWidget({ stats, isLoading = false }: StatsWidgetProps) {
         {Array.from({ length: 6 }).map((_, i) => (
           <Card
             key={`stat-skeleton-${i}`}
-            className="border-border/50 rounded-none"
+            className="border-border/20 rounded-none"
           >
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center justify-between">

@@ -123,7 +123,7 @@ export function TaskListHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="border-border/50 rounded-none"
+              className="border-border/20 rounded-none"
             >
               <DropdownMenuItem
                 onClick={() =>

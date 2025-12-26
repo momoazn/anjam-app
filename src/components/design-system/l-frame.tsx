@@ -35,7 +35,7 @@ export function LFrame({
       <div
         className={cn(
           "relative overflow-hidden",
-          variant === "border" && "border-border/40 border-b-2 border-l-2",
+          variant === "border" && "border-border/15 border-b-2 border-l-2",
           className,
         )}
         {...props}
@@ -52,7 +52,7 @@ export function LFrame({
       <div
         className={cn(
           "relative overflow-hidden rounded-none",
-          "border-border/40 border-b-2 border-l-2",
+          "border-border/15 border-b-2 border-l-2",
           className,
         )}
         {...props}

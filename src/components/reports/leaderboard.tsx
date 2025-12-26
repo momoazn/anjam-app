@@ -24,7 +24,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale">
-        <div className="border-border/40 mb-6 flex h-20 w-20 items-center justify-center border">
+        <div className="border-border/15 mb-6 flex h-20 w-20 items-center justify-center border">
           <IconTrophy className="size-10 stroke-[1]" />
         </div>
         <p className="text-[10px] font-black tracking-tight uppercase">
@@ -47,7 +47,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
       </div>
 
       <div
-        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border"
+        className="bg-border/15 border-border/15 grid grid-cols-1 gap-px overflow-hidden border"
         data-animate-stagger
       >
         {rows.map((row, index) => {

@@ -16,7 +16,6 @@ import { NavMain } from "@/components/nav-main";
 import { QuickCreate } from "@/components/sidebar/quick-create";
 import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";
 import { TaskViews } from "@/components/sidebar/task-views";
-import { NavUser } from "@/components/nav-user";
 import { OrgSwitcher } from "@/components/organization/org-switcher";
 import {
   Sidebar,
@@ -108,7 +107,7 @@ function AppSidebarHeader() {
   const { isMobile, setOpenMobile, state } = useSidebar();
 
   return (
-    <SidebarHeader className="border-border/40 bg-muted/10 h-14 border-b p-0">
+    <SidebarHeader className="border-border/15 bg-muted/10 h-14 border-b p-0">
       <SidebarMenu className="h-full">
         <SidebarMenuItem className="h-full">
           <SidebarMenuButton
@@ -155,7 +154,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
       collapsible="icon"
-      className="border-border/40 group-data-[side=left]:border-e group-data-[side=right]:border-s"
+      className="border-border/15 group-data-[side=left]:border-e group-data-[side=right]:border-s"
       {...props}
     >
       {/* Precision Blueprint Backdrop */}
@@ -171,7 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent className="scrollbar-none relative z-10 p-0">
         {/* Organization Switcher */}
-        <div className="border-border/20 border-b py-3">
+        <div className="border-border/10 border-b py-3">
           <OrgSwitcher />
         </div>
 
@@ -209,7 +208,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
 
         {/* Quick Create */}
-        <div className="border-border/20 bg-muted/5 border-b p-4">
+        <div className="border-border/10 bg-muted/5 border-b p-4">
           <QuickCreate />
         </div>
 
@@ -234,21 +233,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
       </SidebarContent>
 
-      <SidebarFooter className="border-border/40 bg-muted/10 relative z-10 flex flex-col border-t p-0">
+      <SidebarFooter className="border-border/15 bg-muted/10 relative z-10 flex flex-col border-t p-0">
         <NavMain
           items={sidebarData.navSecondary.filter((item) =>
             item.permission ? can(item.permission) : true,
           )}
           title={navigation.helpSection}
         />
-
-        <div className="border-border/20 border-t p-4 group-data-[state=collapsed]:hidden">
-          <NavUser />
-        </div>
-
-        <div className="bg-background flex justify-center py-4 group-data-[state=expanded]:hidden">
-          <NavUser />
-        </div>
       </SidebarFooter>
     </Sidebar>
   );

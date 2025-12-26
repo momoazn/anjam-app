@@ -65,7 +65,7 @@ export function OverdueTasksWidget({
             <button
               key={task.id}
               type="button"
-              className="group hover:bg-destructive/10 bg-background/80 border-border/50 hover:border-destructive/30 flex cursor-pointer items-center justify-between rounded-none border p-3 transition-all"
+              className="group hover:bg-destructive/10 bg-background/80 border-border/20 hover:border-destructive/30 flex cursor-pointer items-center justify-between rounded-none border p-3 transition-all"
               onClick={() => navigate(`/tasks/${task.id}`)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -96,7 +96,7 @@ export function OverdueTasksWidget({
               <div className="flex flex-col items-end gap-1.5">
                 <Badge
                   variant="secondary"
-                  className="border-border/50 bg-muted/50 rounded-none border text-[9px] font-black uppercase"
+                  className="border-border/20 bg-muted/50 rounded-none border text-[9px] font-black uppercase"
                 >
                   {tasks.priority[task.priority]}
                 </Badge>

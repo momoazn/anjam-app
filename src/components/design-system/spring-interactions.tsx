@@ -85,7 +85,7 @@ export function SpringButton({
     ghost:
       "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
     outline:
-      "border-border/50 bg-background hover:bg-accent hover:text-accent-foreground",
+      "border-border/20 bg-background hover:bg-accent hover:text-accent-foreground",
   };
 
   return (

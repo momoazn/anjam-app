@@ -34,7 +34,7 @@ export function TaskPagination({
   if (totalTasks === 0) return null;
 
   return (
-    <div className="border-border/40 bg-card flex flex-col gap-6 rounded-none border p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="border-border/15 bg-card flex flex-col gap-6 rounded-none border p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <Hash className="text-primary/40 size-4" />
         <div className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
@@ -54,7 +54,7 @@ export function TaskPagination({
             value={currentPerPage.toString()}
             onValueChange={onPerPageChange}
           >
-            <SelectTrigger className="border-border/40 bg-muted/5 h-8 w-[120px] rounded-none text-[10px] font-black tracking-tight uppercase focus:ring-0">
+            <SelectTrigger className="border-border/15 bg-muted/5 h-8 w-[120px] rounded-none text-[10px] font-black tracking-tight uppercase focus:ring-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="border-border rounded-none border">
@@ -71,7 +71,7 @@ export function TaskPagination({
           </Select>
         </div>
 
-        <div className="bg-border/40 hidden h-6 w-px sm:block" />
+        <div className="bg-border/15 hidden h-6 w-px sm:block" />
 
         <div className="flex items-center gap-4">
           <Button
@@ -79,7 +79,7 @@ export function TaskPagination({
             size="icon"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="border-border/40 hover:bg-primary/10 hover:text-primary size-8 rounded-none border transition-all active:scale-95"
+            className="border-border/15 hover:bg-primary/10 hover:text-primary size-8 rounded-none border transition-all active:scale-95"
           >
             <ChevronRight className="size-4" />
           </Button>
@@ -102,7 +102,7 @@ export function TaskPagination({
             size="icon"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
-            className="border-border/40 hover:bg-primary/10 hover:text-primary size-8 rounded-none border transition-all active:scale-95"
+            className="border-border/15 hover:bg-primary/10 hover:text-primary size-8 rounded-none border transition-all active:scale-95"
           >
             <ChevronLeft className="size-4" />
           </Button>

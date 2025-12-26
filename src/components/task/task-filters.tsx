@@ -166,7 +166,7 @@ export function TaskFilters({
   return (
     <div className="space-y-2">
       {/* Search & Global Reset Segment - Ultra Compact */}
-      <div className="bg-border/40 border-border/40 flex items-center gap-px overflow-hidden border">
+      <div className="bg-border/15 border-border/15 flex items-center gap-px overflow-hidden border">
         <div className="bg-muted/20 border-border/20 flex h-9 shrink-0 items-center gap-2 border-s px-3">
           <Terminal className="text-primary/60 size-3" />
           <span className="text-muted-foreground/60 text-[8px] font-black tracking-tight uppercase">
@@ -198,7 +198,7 @@ export function TaskFilters({
       </div>
 
       {/* Logic Gates Grid - Strictly Aligned Column Layout */}
-      <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px overflow-hidden border sm:grid-cols-3 md:grid-cols-5">
+      <div className="bg-border/15 border-border/15 grid grid-cols-2 gap-px overflow-hidden border sm:grid-cols-3 md:grid-cols-5">
         {/* Status Gate */}
         <div className="bg-card flex min-h-[4rem] flex-col justify-between p-2.5">
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">

@@ -64,7 +64,7 @@ export const designClasses = {
 
   // L-Frame variants
   lFrameCorners: "relative overflow-hidden rounded-none",
-  lFrameBorder: "border-b-2 border-l-2 border-border/40",
+  lFrameBorder: "border-b-2 border-l-2 border-border/15",
 
   // Technical typography
   technicalLabel:

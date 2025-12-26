@@ -223,11 +223,11 @@ export function UserListTable({
       ) : null}
 
       <div
-        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border"
+        className="bg-border/15 border-border/15 grid grid-cols-1 gap-px overflow-hidden border"
         data-animate-stagger
       >
         {/* Table Head  */}
-        <div className="bg-muted/20 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
+        <div className="bg-muted/20 border-border/15 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
           {isAdmin && (
             <div className="border-border/10 col-span-1 flex items-center justify-center border-s">
               <Checkbox
@@ -315,7 +315,7 @@ export function UserListTable({
               <div className="relative shrink-0">
                 <UserAvatar
                   user={u}
-                  className="border-border/40 size-9 rounded-none border"
+                  className="border-border/15 size-9 rounded-none border"
                 />
                 <div
                   className={cn(
@@ -398,7 +398,7 @@ export function UserListTable({
                           ? usersText.actions.deactivate
                           : usersText.actions.activate}
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator className="bg-border/40" />
+                      <DropdownMenuSeparator className="bg-border/15" />
                       <DropdownMenuItem
                         onClick={() => setSelectedUserForLogs(u)}
                         className="rounded-none p-3 text-[9px] font-black tracking-tight uppercase"

@@ -33,7 +33,7 @@ export function ProjectsWidget({
         <Skeleton className="mb-6 h-8 w-48 rounded-none" />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {["ske-proj-1", "ske-proj-2", "ske-proj-3"].map((key) => (
-            <Card key={key} className="border-border/50 rounded-none">
+            <Card key={key} className="border-border/20 rounded-none">
               <CardHeader className="pb-3">
                 <Skeleton className="h-5 w-32" />
               </CardHeader>
@@ -81,7 +81,7 @@ export function ProjectsWidget({
           <button
             key={project.id}
             type="button"
-            className="group border-border/50 bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-none border text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-sm active:scale-[0.98]"
+            className="group border-border/20 bg-card hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-none border text-right transition-all duration-300 hover:translate-y-[-4px] hover:shadow-sm active:scale-[0.98]"
             onClick={() => navigate(`/projects/${project.id}/details`)}
           >
             <CardHeader className="bg-muted/20 border-b p-6">
@@ -130,7 +130,7 @@ export function ProjectsWidget({
                 </div>
               </div>
 
-              <div className="border-border/40 flex items-center gap-2 border-t pt-4 opacity-40 transition-opacity group-hover:opacity-100">
+              <div className="border-border/15 flex items-center gap-2 border-t pt-4 opacity-40 transition-opacity group-hover:opacity-100">
                 <Hash className="text-muted-foreground size-3" />
                 <span className="text-muted-foreground text-[9px] font-black tracking-tight uppercase">
                   PRJ-{project.id.slice(0, 4).toUpperCase()}

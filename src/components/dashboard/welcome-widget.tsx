@@ -82,7 +82,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
 
   if (isLoading) {
     return (
-      <div className="border-border/50 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-none border bg-gradient-to-r to-transparent p-6 shadow-md">
+      <div className="border-border/20 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-none border bg-gradient-to-r to-transparent p-6 shadow-md">
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
           <div
             className="h-full w-full"
@@ -107,7 +107,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
   }
 
   return (
-    <div className="border-border/50 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-none border bg-gradient-to-r to-transparent p-6 shadow-md">
+    <div className="border-border/20 from-primary/5 via-primary/10 shadow-primary/5 relative mb-8 overflow-hidden rounded-none border bg-gradient-to-r to-transparent p-6 shadow-md">
       <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
         <div
           className="h-full w-full"

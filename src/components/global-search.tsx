@@ -47,7 +47,7 @@ export function GlobalSearch() {
       <Button
         variant="outline"
         className={cn(
-          "bg-muted/30 text-muted-foreground/60 border-border/40 hover:bg-muted/50 hover:text-foreground hover:border-primary/30 relative h-9 w-full justify-start rounded-none border font-mono text-[10px] tracking-tight uppercase shadow-none transition-all active:scale-[0.98] sm:pe-12 md:w-40 lg:w-64",
+          "bg-muted/30 text-muted-foreground/60 border-border/15 hover:bg-muted/50 hover:text-foreground hover:border-primary/30 relative h-9 w-full justify-start rounded-none border font-mono text-[10px] tracking-tight uppercase shadow-none transition-all active:scale-[0.98] sm:pe-12 md:w-40 lg:w-64",
         )}
         onClick={() => setOpen(true)}
       >
@@ -55,16 +55,16 @@ export function GlobalSearch() {
           <Search className="h-3 w-3 opacity-40" />
           <span className="hidden lg:inline-flex">{search.placeholder}</span>
         </span>
-        <kbd className="bg-primary/10 text-primary border-primary/20 pointer-events-none absolute start-[0.35rem] top-[0.35rem] hidden h-4 items-center gap-1 rounded-none border px-1 font-mono text-[8px] font-black tracking-tighter uppercase opacity-100 select-none sm:flex">
+        <kbd className="bg-primary/10 text-primary border-primary/20 pointer-events-none absolute end-1 top-1 hidden h-4 items-center gap-1 rounded-none border px-1 font-mono text-[8px] font-black tracking-tighter uppercase opacity-100 select-none sm:flex">
           <span className="text-[10px]">⌘</span>K
         </kbd>
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="border-border bg-card max-w-[600px] overflow-hidden rounded-none border p-0 shadow-2xl transition-all">
+        <DialogContent className="border-border/15 bg-card max-w-[600px] overflow-hidden rounded-none border p-0 shadow-2xl transition-all">
           <Command
             shouldFilter={false}
-            className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[data-slot=command-input-wrapper]]:border-border/40 [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-black [&_[cmdk-group-heading]]:tracking-tight [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group]]:px-2 [&_[cmdk-input]]:h-14 [&_[cmdk-item]]:rounded-none [&_[cmdk-item]]:px-4 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[data-slot=command-input-wrapper]]:h-14 [&_[data-slot=command-input-wrapper]]:border-b [&_[data-slot=command-input-wrapper]_svg]:h-4 [&_[data-slot=command-input-wrapper]_svg]:w-4"
+            className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[data-slot=command-input-wrapper]]:border-border/15 [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-black [&_[cmdk-group-heading]]:tracking-tight [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group]]:px-2 [&_[cmdk-input]]:h-14 [&_[cmdk-item]]:rounded-none [&_[cmdk-item]]:px-4 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[data-slot=command-input-wrapper]]:h-14 [&_[data-slot=command-input-wrapper]]:border-b [&_[data-slot=command-input-wrapper]_svg]:h-4 [&_[data-slot=command-input-wrapper]_svg]:w-4"
           >
             <CommandInput
               placeholder={search.placeholder}
@@ -127,7 +127,7 @@ export function GlobalSearch() {
                           </div>
                           <Badge
                             variant="outline"
-                            className="border-border/40 bg-muted/30 text-muted-foreground group-data-[selected=true]:border-primary/30 group-data-[selected=true]:text-primary ms-auto rounded-none px-1.5 py-0 text-[8px] font-black tracking-tight uppercase"
+                            className="border-border/15 bg-muted/30 text-muted-foreground group-data-[selected=true]:border-primary/30 group-data-[selected=true]:text-primary ms-auto rounded-none px-1.5 py-0 text-[8px] font-black tracking-tight uppercase"
                           >
                             {task.status}
                           </Badge>
@@ -178,7 +178,7 @@ export function GlobalSearch() {
               )}
             </CommandList>
 
-            <div className="border-border/40 bg-muted/10 text-muted-foreground/40 flex items-center justify-between border-t px-4 py-2 text-[8px] font-black tracking-tight uppercase">
+            <div className="border-border/15 bg-muted/10 text-muted-foreground/40 flex items-center justify-between border-t px-4 py-2 text-[8px] font-black tracking-tight uppercase">
               <span>Press enter to select</span>
               <span>ESC to Close</span>
             </div>

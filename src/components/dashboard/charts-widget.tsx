@@ -87,7 +87,7 @@ export function ChartsWidget({
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {["ske-1", "ske-2", "ske-3"].map((key) => (
-          <Card key={key} className="border-border/50 rounded-none">
+          <Card key={key} className="border-border/20 rounded-none">
             <CardHeader>
               <Skeleton className="h-5 w-40" />
             </CardHeader>
@@ -106,7 +106,7 @@ export function ChartsWidget({
       data-animate-stagger
     >
       {/* Task Status Distribution */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
+      <Card className="border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
@@ -167,7 +167,7 @@ export function ChartsWidget({
             {pieChartData.map((entry) => (
               <div
                 key={entry.name}
-                className="border-border/40 bg-muted/10 flex items-center gap-2 rounded-none border p-2"
+                className="border-border/15 bg-muted/10 flex items-center gap-2 rounded-none border p-2"
               >
                 <div
                   className="size-2 rounded-none"
@@ -186,7 +186,7 @@ export function ChartsWidget({
       </Card>
 
       {/* Productivity Trend */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
+      <Card className="border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">
@@ -263,7 +263,7 @@ export function ChartsWidget({
       </Card>
 
       {/* Recent Activity Feed */}
-      <Card className="border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm lg:col-span-2 xl:col-span-1">
+      <Card className="border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm lg:col-span-2 xl:col-span-1">
         <CardHeader className="bg-muted/20 border-b">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-lg font-black tracking-tight">

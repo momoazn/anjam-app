@@ -8,7 +8,7 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
       glowOnHover={true}
       springVariant="normal"
       className={cn(
-        "bg-card text-card-foreground border-border/50 flex flex-col gap-4 rounded-none border py-4 shadow-sm sm:gap-6 sm:py-6",
+        "bg-card text-card-foreground border-border/20 flex flex-col gap-4 rounded-none border py-4 shadow-sm sm:gap-6 sm:py-6",
         className,
       )}
       {...props}

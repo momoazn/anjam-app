@@ -40,7 +40,7 @@ export function ProductivityWidget({
     return (
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {["ske-prod-1", "ske-prod-2", "ske-prod-3"].map((key) => (
-          <Card key={key} className="border-border/50 rounded-none">
+          <Card key={key} className="border-border/20 rounded-none">
             <CardHeader className="pb-3">
               <Skeleton className="h-5 w-32" />
             </CardHeader>
@@ -60,7 +60,7 @@ export function ProductivityWidget({
       data-animate-stagger
     >
       {/* Completion Rate Card */}
-      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
+      <Card className="group border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b pb-4">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none text-right">
@@ -93,7 +93,7 @@ export function ProductivityWidget({
       </Card>
 
       {/* Recent Notifications */}
-      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
+      <Card className="group border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b pb-4">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-lg font-black tracking-tight">
@@ -144,7 +144,7 @@ export function ProductivityWidget({
       </Card>
 
       {/* Quick Actions Card */}
-      <Card className="group border-border/50 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
+      <Card className="group border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
         <CardHeader className="bg-muted/20 border-b pb-4">
           <CardTitle className="flex items-center gap-3 text-lg font-black tracking-tight">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-none">

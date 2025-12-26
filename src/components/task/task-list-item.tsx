@@ -61,7 +61,7 @@ function TaskListItemInner({
     <button
       type="button"
       className={cn(
-        "group border-border/40 bg-card hover:bg-muted/30 relative flex w-full cursor-pointer items-stretch border-b text-right transition-all duration-300 hover:z-10",
+        "group border-border/15 bg-card hover:bg-muted/30 relative flex w-full cursor-pointer items-stretch border-b text-right transition-all duration-300 hover:z-10",
         isSelected && "bg-primary/5",
         className,
       )}
@@ -109,7 +109,7 @@ function TaskListItemInner({
           <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
             {task.display_id}
           </span>
-          <div className="bg-border/50 h-px w-4" />
+          <div className="bg-border/20 h-px w-4" />
           {showProject && task.expand?.project?.name && (
             <span className="text-primary/70 text-[10px] font-black tracking-tight uppercase">
               {task.expand.project.name}
@@ -130,7 +130,7 @@ function TaskListItemInner({
               <Badge
                 key={tag}
                 variant="outline"
-                className="border-border/50 bg-muted/50 text-muted-foreground rounded-none px-1.5 py-0 text-[9px] font-black tracking-wider uppercase"
+                className="border-border/20 bg-muted/50 text-muted-foreground rounded-none px-1.5 py-0 text-[9px] font-black tracking-wider uppercase"
               >
                 {tag}
               </Badge>
