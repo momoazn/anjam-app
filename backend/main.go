@@ -115,8 +115,6 @@ func main() {
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Server.Handler = addRequestMetadataMiddleware(se.Server.Handler)
-		limiter := newRateLimiter(120, time.Minute)
-		se.Server.Handler = rateLimitMiddleware(limiter)(se.Server.Handler)
 		return se.Next()
 	})
 
