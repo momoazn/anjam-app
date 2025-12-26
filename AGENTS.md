@@ -85,7 +85,7 @@ This is the **Anjam (انجام)** task and project management application with 
 - `bun run build:server` - Build only the Linux backend binary into `release/`.
 - `bun run build:windows` - Build the Windows backend binary and package `release/anjam-windows.zip`.
 - `bun run build:mac` - Build the macOS backend binary into `release/`.
-- `bun run build:legacy` - Build all platforms with legacy binary names (task-manager, task-manager.exe, etc.).
+- `bun run build:legacy` - Build all platforms with legacy binary names (anjam, anjam.exe, etc.).
 
 ### Quality Checks (Run After Changes Complete)
 

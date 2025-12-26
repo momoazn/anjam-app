@@ -1,4 +1,4 @@
-module task-manager
+module anjam
 
 go 1.24.0
 
