@@ -311,7 +311,7 @@ const routes: RouteType[] = [
     path: "/landing",
     element: <Landing />,
     protected: false,
-    title: "Anjam Dashboard",
+    title: "داشبورد",
   },
   // Organization routes (public - no RequireOrganization needed)
   {

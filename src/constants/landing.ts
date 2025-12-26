@@ -7,11 +7,11 @@ export const landing = {
   getStarted: "شروع کار",
 
   // Brand
-  brandName: "سـامـانه انـجـام",
-  shortBrandName: "انجام",
+  brandName: "سامانه Anjam (انجام)",
+  shortBrandName: "Anjam (انجام)",
 
   // Hero section
-  heroTitle: "انجام",
+  heroTitle: "Anjam (انجام)",
   heroDescription:
     "اقدتدار در مدیریت، دقت در اجرا. ابزاری مهندسی‌شده برای تیم‌هایی که خواستار انضباط و شفافیت مطلق در پروژه‌های پیچیده هستند.",
   ctaButton: "ورود به سامانه",
