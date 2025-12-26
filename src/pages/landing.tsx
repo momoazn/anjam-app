@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { useTheme } from "@/hooks/use-theme";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { landing } from "@/constants";
 
 const LandingPage = () => {
   const isLoggedIn = useAuthIsLoggedIn();
@@ -61,7 +62,7 @@ const LandingPage = () => {
             to="/login"
             className="text-muted-foreground hover:text-foreground hidden font-mono text-[10px] tracking-tight uppercase transition-colors md:block"
           >
-            LOGIN
+            {landing.loginButton}
           </Link>
           <Button
             asChild
@@ -69,7 +70,7 @@ const LandingPage = () => {
             className="border-border hover:bg-accent h-8 rounded-none px-4 font-mono text-[10px] tracking-tight uppercase shadow-sm transition-all active:scale-95"
           >
             <Link to={isLoggedIn ? "/" : "/login"}>
-              {isLoggedIn ? "DASHBOARD" : "GET STARTED"}
+              {isLoggedIn ? landing.dashboard : landing.getStarted}
             </Link>
           </Button>
         </div>
@@ -372,7 +373,8 @@ const LandingPage = () => {
                 سـامـانـه انـجـام
               </span>
               <span className="text-muted-foreground font-mono text-[10px] leading-none font-bold tracking-tight uppercase">
-                © {digitsEnToFa(new Date().getFullYear())} ALL RIGHTS RESERVED
+                © {digitsEnToFa(new Date().getFullYear())}{" "}
+                {landing.footer.allRightsReserved}
               </span>
             </div>
           </div>
