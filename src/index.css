@@ -255,11 +255,41 @@
 
 @layer utilities {
   [data-page-transition] {
-    animation: page-fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: page-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   [data-animate-stagger] > * {
-    animation: stagger-fade-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: stagger-fade-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Spring physics for interactive elements */
+  .spring-transition {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .spring-transition-slow {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .spring-transition-fast {
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Hover effects with spring physics */
+  .hover-scale-spring:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-scale-spring:active {
+    transform: scale(0.98);
+    transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Button active states with spring */
+  .btn-spring:active {
+    transform: translateY(1px);
+    transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   [data-animate-stagger] > *:nth-child(1) {
