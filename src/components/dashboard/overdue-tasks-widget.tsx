@@ -43,7 +43,7 @@ export function OverdueTasksWidget({
   }
 
   return (
-    <Card className="border-destructive/40 bg-destructive/5 shadow-destructive/5 mt-6 shadow-md">
+    <Card className="border-destructive/40 bg-card shadow-destructive/5 mt-6 shadow-md">
       <CardHeader className="border-destructive/20 bg-destructive/10 border-b">
         <CardTitle className="text-destructive flex items-center gap-3 text-sm font-black tracking-tight uppercase">
           <div className="bg-destructive/10 text-destructive border-destructive/20 flex h-7 w-7 items-center justify-center rounded-none border">

@@ -53,21 +53,21 @@
   h1 {
     font-size: 2rem;
     line-height: 1.1;
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: -0.02em;
   }
 
   h2 {
     font-size: 1.25rem;
     line-height: 1.3;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: -0.01em;
   }
 
   h3 {
     font-size: 1.125rem;
     line-height: 1.4;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   p,
@@ -87,14 +87,15 @@
 }
 
 @font-face {
-  font-family: "Vazirmatn";
-  src: url("/Vazirmatn-VariableFont_wght.ttf") format("truetype");
+  font-family: "Arad";
+  src: url("/AradVF.woff2") format("woff2-variations");
+  font-weight: 100 900;
 }
 
 /* RTL Support & Base Typography */
 :root {
   direction: rtl;
-  font-family: "Vazirmatn", "Inter", system-ui, sans-serif;
+  font-family: "Arad", system-ui, sans-serif;
   scrollbar-gutter: stable;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -160,7 +161,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: "Inter Variable", sans-serif;
+  --font-sans: "Arad", system-ui, sans-serif;
   --font-mono: "Fira Code", monospace;
 
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -289,8 +290,8 @@
   }
 }
 
-.font-vazirmatn {
-  font-family: "Vazirmatn", sans-serif;
+.font-arad {
+  font-family: "Arad", system-ui, sans-serif;
 }
 
 @keyframes page-fade-in {
@@ -316,6 +317,43 @@
 }
 
 @layer utilities {
+  /* Adjust font-weight classes for Arad variable font */
+  .font-thin {
+    font-weight: 100;
+  }
+
+  .font-extralight {
+    font-weight: 200;
+  }
+
+  .font-light {
+    font-weight: 300;
+  }
+
+  .font-normal {
+    font-weight: 400;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .font-semibold {
+    font-weight: 500;
+  }
+
+  .font-bold {
+    font-weight: 600;
+  }
+
+  .font-extrabold {
+    font-weight: 700;
+  }
+
+  .font-black {
+    font-weight: 700;
+  }
+
   [data-page-transition] {
     animation: page-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }

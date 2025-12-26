@@ -40,7 +40,7 @@ const LandingPage = () => {
             A
           </div>
           <div className="flex flex-col text-right">
-            <span className="font-vazirmatn text-[14px] leading-none font-black tracking-tight uppercase">
+            <span className="font-arad text-[14px] leading-none font-black tracking-tight uppercase">
               {landing.brandName}
             </span>
           </div>
@@ -78,11 +78,11 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <header className="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pt-24 pb-12 text-center">
-        <h1 className="animate-in fade-in slide-in-from-bottom-8 font-vazirmatn from-foreground via-foreground to-foreground/60 relative mb-6 bg-gradient-to-b bg-clip-text text-5xl font-black tracking-tighter text-transparent delay-200 duration-1000 md:text-7xl">
+        <h1 className="animate-in fade-in slide-in-from-bottom-8 font-arad from-foreground via-foreground to-foreground/60 relative mb-6 bg-gradient-to-b bg-clip-text text-5xl font-black tracking-tighter text-transparent delay-200 duration-1000 md:text-7xl">
           {landing.shortBrandName}
         </h1>
 
-        <p className="animate-in fade-in slide-in-from-bottom-8 font-vazirmatn text-muted-foreground mb-10 max-w-xl px-4 text-base leading-relaxed font-light delay-300 duration-1000 md:text-lg">
+        <p className="animate-in fade-in slide-in-from-bottom-8 font-arad text-muted-foreground mb-10 max-w-xl px-4 text-base leading-relaxed font-light delay-300 duration-1000 md:text-lg">
           {landing.heroDescription}
         </p>
 
@@ -90,7 +90,7 @@ const LandingPage = () => {
           <Button
             asChild
             size="lg"
-            className="font-vazirmatn bg-primary text-primary-foreground h-12 rounded-none px-8 text-sm font-black tracking-tight shadow-md transition-all hover:brightness-110 active:scale-95"
+            className="font-arad bg-primary text-primary-foreground h-12 rounded-none px-8 text-sm font-black tracking-tight shadow-md transition-all hover:brightness-110 active:scale-95"
           >
             <Link to="/login">{landing.ctaButton}</Link>
           </Button>
@@ -98,7 +98,7 @@ const LandingPage = () => {
             asChild
             size="lg"
             variant="outline"
-            className="font-vazirmatn border-border text-muted-foreground hover:bg-accent hover:text-foreground h-12 rounded-none px-8 text-sm font-black tracking-tight uppercase transition-all active:scale-95"
+            className="font-arad border-border text-muted-foreground hover:bg-accent hover:text-foreground h-12 rounded-none px-8 text-sm font-black tracking-tight uppercase transition-all active:scale-95"
           >
             <a href="#features">{landing.featuresButton}</a>
           </Button>
@@ -232,13 +232,13 @@ const LandingPage = () => {
               className="group border-border/40 hover:border-primary/50 flex flex-col gap-4 border-e pe-6 text-right transition-colors duration-500 last:border-none"
             >
               <div className="flex items-center justify-end gap-2">
-                <span className="font-vazirmatn text-muted-foreground text-xs leading-none font-bold uppercase">
+                <span className="font-arad text-muted-foreground text-xs leading-none font-bold uppercase">
                   {metric.label}
                 </span>
                 {metric.icon}
               </div>
               <div className="flex flex-row-reverse items-baseline gap-2">
-                <span className="font-vazirmatn text-foreground group-hover:text-primary text-4xl font-black transition-all duration-500">
+                <span className="font-arad text-foreground group-hover:text-primary text-4xl font-black transition-all duration-500">
                   {metric.value}
                 </span>
                 <span className="text-muted-foreground font-mono text-[10px] font-bold tracking-tight uppercase">
@@ -257,11 +257,11 @@ const LandingPage = () => {
       >
         <div className="mb-20 flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl text-right">
-            <h2 className="font-vazirmatn text-foreground text-4xl leading-[1.1] font-black tracking-tighter uppercase md:text-6xl">
+            <h2 className="font-arad text-foreground text-4xl leading-[1.1] font-black tracking-tighter uppercase md:text-6xl">
               {landing.featuresTitle}
             </h2>
           </div>
-          <p className="font-vazirmatn border-primary text-muted-foreground max-w-xs border-e pe-6 text-right text-sm leading-relaxed font-light">
+          <p className="font-arad border-primary text-muted-foreground max-w-xs border-e pe-6 text-right text-sm leading-relaxed font-light">
             {landing.featuresSubtitle}
           </p>
         </div>
@@ -312,10 +312,10 @@ const LandingPage = () => {
               <div className="border-border/60 bg-muted text-muted-foreground group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground mb-8 flex h-12 w-12 items-center justify-center border shadow-sm transition-all duration-500">
                 {feature.icon}
               </div>
-              <h3 className="font-vazirmatn text-foreground mb-4 text-xl leading-none font-black tracking-tight uppercase">
+              <h3 className="font-arad text-foreground mb-4 text-xl leading-none font-black tracking-tight uppercase">
                 {feature.title}
               </h3>
-              <p className="font-vazirmatn text-muted-foreground group-hover:text-foreground/80 text-sm leading-relaxed font-light transition-colors">
+              <p className="font-arad text-muted-foreground group-hover:text-foreground/80 text-sm leading-relaxed font-light transition-colors">
                 {feature.desc}
               </p>
             </div>
@@ -330,24 +330,24 @@ const LandingPage = () => {
           <div className="absolute inset-0 bg-black/10 mix-blend-multiply"></div>
 
           <div className="relative z-10">
-            <h2 className="font-vazirmatn mb-8 text-5xl leading-[0.9] font-black tracking-tighter text-white uppercase md:text-7xl">
+            <h2 className="font-arad mb-8 text-5xl leading-[0.9] font-black tracking-tighter text-white uppercase md:text-7xl">
               {landing.ctaTitle}
             </h2>
-            <p className="font-vazirmatn mx-auto mb-12 max-w-lg text-base leading-relaxed font-light text-blue-50/90">
+            <p className="font-arad mx-auto mb-12 max-w-lg text-base leading-relaxed font-light text-blue-50/90">
               {landing.ctaDescription}
             </p>
             <div className="flex flex-col justify-center gap-6 sm:flex-row">
               <Button
                 asChild
                 size="lg"
-                className="font-vazirmatn h-14 rounded-none border-none bg-white px-10 text-base font-black tracking-tight text-black uppercase shadow-lg transition-all hover:bg-zinc-100 active:scale-95"
+                className="font-arad h-14 rounded-none border-none bg-white px-10 text-base font-black tracking-tight text-black uppercase shadow-lg transition-all hover:bg-zinc-100 active:scale-95"
               >
                 <Link to="/login">{landing.quickStart}</Link>
               </Button>
               <Button
                 asChild
                 size="lg"
-                className="font-vazirmatn h-14 rounded-none border border-white/40 bg-transparent px-10 text-base font-black tracking-tight text-white uppercase transition-all hover:bg-white/10 active:scale-95"
+                className="font-arad h-14 rounded-none border border-white/40 bg-transparent px-10 text-base font-black tracking-tight text-white uppercase transition-all hover:bg-white/10 active:scale-95"
               >
                 <a href="mailto:support@anjam.ir">
                   {landing.requestConsultation}
@@ -366,7 +366,7 @@ const LandingPage = () => {
               A
             </div>
             <div className="flex flex-col text-right">
-              <span className="font-vazirmatn text-foreground/80 mb-1 text-sm leading-none font-black tracking-tight uppercase">
+              <span className="font-arad text-foreground/80 mb-1 text-sm leading-none font-black tracking-tight uppercase">
                 {landing.brandName}
               </span>
               <span className="text-muted-foreground font-mono text-[10px] leading-none font-bold tracking-tight uppercase">
@@ -376,7 +376,7 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="font-vazirmatn text-muted-foreground flex flex-wrap justify-center gap-x-10 gap-y-4 font-mono text-xs font-bold tracking-tight uppercase">
+          <div className="font-arad text-muted-foreground flex flex-wrap justify-center gap-x-10 gap-y-4 font-mono text-xs font-bold tracking-tight uppercase">
             <span className="hover:text-primary cursor-pointer transition-colors">
               {landing.footer.documentation}
             </span>

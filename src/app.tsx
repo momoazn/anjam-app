@@ -108,7 +108,7 @@ function App() {
             <AppLayout />
             <Toaster
               position="bottom-right"
-              className="font-vazirmatn"
+              className="font-arad"
               toastOptions={{
                 duration: 3000,
               }}
