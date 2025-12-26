@@ -1,0 +1,118 @@
+import React from "react";
+import { cn } from "@/lib/utils";
+
+interface BlueprintPatternProps {
+  opacity?: number;
+  variant?: "grid" | "dots" | "lines";
+  className?: string;
+}
+
+/**
+ * Blueprint pattern background for technical aesthetic
+ */
+export function BlueprintPattern({
+  opacity = 0.05,
+  variant = "grid",
+  className,
+}: BlueprintPatternProps) {
+  const getPatternStyle = () => {
+    const baseStyle = {
+      opacity: opacity.toString(),
+      position: "absolute" as const,
+      inset: 0,
+      zIndex: 0,
+    };
+
+    switch (variant) {
+      case "grid":
+        return {
+          ...baseStyle,
+          backgroundImage: `
+            radial-gradient(circle at 1px 1px, var(--primary) 1px, transparent 1px),
+            linear-gradient(to right, var(--primary) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--primary) 1px, transparent 1px)
+          `,
+          backgroundSize: "20px 20px, 20px 20px, 20px 20px",
+        };
+
+      case "dots":
+        return {
+          ...baseStyle,
+          backgroundImage: `radial-gradient(circle, var(--primary) 1px, transparent 1px)`,
+          backgroundSize: "25px 25px",
+          backgroundPosition: "0 0",
+        };
+
+      case "lines":
+        return {
+          ...baseStyle,
+          backgroundImage: `
+            repeating-linear-gradient(45deg, transparent, transparent 10px, var(--primary) 10px, var(--primary) 11px),
+            repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--primary) 10px, var(--primary) 11px)
+          `,
+          backgroundSize: "20px 20px",
+        };
+
+      default:
+        return baseStyle;
+    }
+  };
+
+  return (
+    <div
+      className={cn("pointer-events-none", className)}
+      style={getPatternStyle()}
+    />
+  );
+}
+
+interface TechnicalHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  title: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+}
+
+/**
+ * Technical header component with blueprint background
+ */
+export function TechnicalHeader({
+  title,
+  subtitle,
+  icon,
+  className,
+  ...props
+}: TechnicalHeaderProps) {
+  return (
+    <div
+      className={cn(
+        "border-border/40 relative overflow-hidden rounded-none border-b-2 border-l-2",
+        "bg-card/95 backdrop-blur-sm",
+        "px-6 py-4",
+        className,
+      )}
+      {...props}
+    >
+      <BlueprintPattern variant="grid" opacity={0.03} />
+
+      <div className="relative z-10 flex items-center gap-3">
+        {icon && (
+          <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-none backdrop-blur-sm">
+            {icon}
+          </div>
+        )}
+
+        <div>
+          <h2 className="text-lg font-black tracking-tight uppercase">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Top accent line */}
+      <div className="via-primary/30 absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent to-transparent" />
+    </div>
+  );
+}
