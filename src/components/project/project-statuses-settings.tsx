@@ -412,9 +412,15 @@ export function ProjectStatusesSettings({
           <div className="col-span-1" />
           <div className="col-span-3">{projectStatuses.headers.name}</div>
           <div className="col-span-2">{projectStatuses.headers.color}</div>
-          <div className="col-span-2 text-center">{projectStatuses.headers.default}</div>
-          <div className="col-span-2 text-center">{projectStatuses.headers.done}</div>
-          <div className="col-span-2 text-center">{projectStatuses.headers.actions}</div>
+          <div className="col-span-2 text-center">
+            {projectStatuses.headers.default}
+          </div>
+          <div className="col-span-2 text-center">
+            {projectStatuses.headers.done}
+          </div>
+          <div className="col-span-2 text-center">
+            {projectStatuses.headers.actions}
+          </div>
         </div>
 
         <DndContext

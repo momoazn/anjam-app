@@ -21,9 +21,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -76,16 +73,22 @@ const sidebarData = {
       permission: "time_entry.create",
     },
     {
-      title: navigation.users,
-      url: "/users",
-      icon: IconUsers,
-      permission: "org.manage_members",
-    },
-    {
       title: navigation.auditLogs,
       url: "/audit-logs",
       icon: IconFileDescription,
       permission: "org.view",
+    },
+  ] as NavItem[],
+  navAdmin: [
+    {
+      title: navigation.users,
+      url: "/settings/members",
+      icon: IconUsers,
+    },
+    {
+      title: navigation.settings,
+      url: "/settings/organization",
+      icon: IconSettings,
     },
   ] as NavItem[],
   navSecondary: [
@@ -93,12 +96,6 @@ const sidebarData = {
       title: navigation.helps,
       url: "/helps",
       icon: IconHelp,
-    },
-    {
-      title: navigation.settings,
-      url: "/settings",
-      icon: IconSettings,
-      permission: "org.update",
     },
   ] as NavItem[],
 };
@@ -174,39 +171,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <OrgSwitcher />
         </div>
 
-        {/* Organization Section - Admin Only */}
-        {showAdminItems && (
-          <SidebarGroup className="py-2">
-            <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
-              {navigation.organizationSection}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu className="gap-0.5">
-                <SidebarMenuItem>
-                  <NavLink to="/settings/organization">
-                    <SidebarMenuButton tooltip={navigation.settings}>
-                      <IconSettings className="size-4.5" />
-                      <span className="text-[13px] font-black tracking-tight uppercase">
-                        {navigation.settings}
-                      </span>
-                    </SidebarMenuButton>
-                  </NavLink>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <NavLink to="/settings/members">
-                    <SidebarMenuButton tooltip={navigation.users}>
-                      <IconUsers className="size-4.5" />
-                      <span className="text-[13px] font-black tracking-tight uppercase">
-                        {navigation.users}
-                      </span>
-                    </SidebarMenuButton>
-                  </NavLink>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-
         {/* Quick Create */}
         <div className="border-border/10 bg-muted/5 border-b p-4">
           <QuickCreate />
@@ -231,6 +195,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           )}
           title={navigation.managementSection}
         />
+
+        {/* Admin Section - Org Admins Only */}
+        {showAdminItems && (
+          <NavMain
+            items={sidebarData.navAdmin}
+            title={navigation.organizationSection}
+          />
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-border/15 bg-muted/10 relative z-10 flex flex-col border-t p-0">
