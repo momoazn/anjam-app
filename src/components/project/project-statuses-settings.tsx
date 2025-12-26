@@ -31,6 +31,7 @@ import { pb } from "@/lib/pocketbase";
 import type { ProjectStatusesResponse } from "@/lib/pocketbase-types";
 import { queryKeys } from "@/hooks/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
+import { projectStatuses } from "@/constants/misc";
 
 const colorOptions = [
   { value: "slate", label: "Slate" },
@@ -227,12 +228,12 @@ export function ProjectStatusesSettings({
           }),
         ),
       );
-      toast.success("ترتیب وضعیت‌ها ذخیره شد");
+      toast.success(projectStatuses.toasts.orderSaved);
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectStatuses.byProject(projectId),
       });
     } catch (error) {
-      toast.error("ذخیره ترتیب وضعیت‌ها ناموفق بود");
+      toast.error(projectStatuses.toasts.orderSaveFailed);
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -261,12 +262,12 @@ export function ProjectStatusesSettings({
         name: draft.name,
         color: draft.color,
       });
-      toast.success("وضعیت به‌روزرسانی شد");
+      toast.success(projectStatuses.toasts.updated);
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectStatuses.byProject(projectId),
       });
     } catch (error) {
-      toast.error("به‌روزرسانی وضعیت ناموفق بود");
+      toast.error(projectStatuses.toasts.updateFailed);
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -284,12 +285,12 @@ export function ProjectStatusesSettings({
           }),
         ),
       );
-      toast.success("وضعیت پیش‌فرض به‌روزرسانی شد");
+      toast.success(projectStatuses.toasts.defaultUpdated);
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectStatuses.byProject(projectId),
       });
     } catch (error) {
-      toast.error("به‌روزرسانی وضعیت پیش‌فرض ناموفق بود");
+      toast.error(projectStatuses.toasts.defaultUpdateFailed);
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -302,12 +303,12 @@ export function ProjectStatusesSettings({
       await pb.collection("project_statuses").update(status.id, {
         is_done: !status.is_done,
       });
-      toast.success("وضعیت انجام‌شده به‌روزرسانی شد");
+      toast.success(projectStatuses.toasts.doneUpdated);
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectStatuses.byProject(projectId),
       });
     } catch (error) {
-      toast.error("به‌روزرسانی وضعیت انجام‌شده ناموفق بود");
+      toast.error(projectStatuses.toasts.doneUpdateFailed);
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -323,7 +324,7 @@ export function ProjectStatusesSettings({
           .getFirstListItem(
             `project = "${projectId}" && status = "${status.key}"`,
           );
-        toast.error("این وضعیت در تسک‌ها استفاده شده است");
+        toast.error(projectStatuses.toasts.inUse);
         return;
       } catch (error: unknown) {
         const isNotFound =
@@ -337,12 +338,12 @@ export function ProjectStatusesSettings({
       }
 
       await pb.collection("project_statuses").delete(status.id);
-      toast.success("وضعیت حذف شد");
+      toast.success(projectStatuses.toasts.deleted);
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectStatuses.byProject(projectId),
       });
     } catch (error) {
-      toast.error("حذف وضعیت ناموفق بود");
+      toast.error(projectStatuses.toasts.deleteFailed);
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -351,7 +352,7 @@ export function ProjectStatusesSettings({
 
   const handleAdd = async () => {
     if (!newName.trim()) {
-      toast.error("نام وضعیت الزامی است");
+      toast.error(projectStatuses.toasts.nameRequired);
       return;
     }
     const key = slugifyKey(newName);
@@ -380,7 +381,7 @@ export function ProjectStatusesSettings({
         );
       }
 
-      toast.success("وضعیت جدید اضافه شد");
+      toast.success(projectStatuses.toasts.created);
       setNewName("");
       setNewColor("slate");
       setNewIsDefault(false);
@@ -389,7 +390,7 @@ export function ProjectStatusesSettings({
         queryKey: queryKeys.projectStatuses.byProject(projectId),
       });
     } catch (error) {
-      toast.error("افزودن وضعیت ناموفق بود");
+      toast.error(projectStatuses.toasts.createFailed);
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -402,18 +403,18 @@ export function ProjectStatusesSettings({
     <section className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
-          Project_Statuses
+          {projectStatuses.settings.title}
         </div>
       </div>
 
       <div className="bg-muted/5 border-border/40 border p-4">
         <div className="border-border/20 grid grid-cols-12 items-center gap-3 border-b pb-3 text-right text-[9px] font-black tracking-tight uppercase opacity-60">
           <div className="col-span-1" />
-          <div className="col-span-3">نام</div>
-          <div className="col-span-2">رنگ</div>
-          <div className="col-span-2 text-center">پیش‌فرض</div>
-          <div className="col-span-2 text-center">انجام‌شده</div>
-          <div className="col-span-2 text-center">اقدامات</div>
+          <div className="col-span-3">{projectStatuses.headers.name}</div>
+          <div className="col-span-2">{projectStatuses.headers.color}</div>
+          <div className="col-span-2 text-center">{projectStatuses.headers.default}</div>
+          <div className="col-span-2 text-center">{projectStatuses.headers.done}</div>
+          <div className="col-span-2 text-center">{projectStatuses.headers.actions}</div>
         </div>
 
         <DndContext
@@ -459,14 +460,14 @@ export function ProjectStatusesSettings({
       {canManageStatuses && (
         <div className="border-border/40 bg-muted/5 border p-4">
           <div className="mb-3 text-[10px] font-black tracking-tight uppercase opacity-60">
-            افزودن وضعیت
+            {projectStatuses.settings.addStatus}
           </div>
           <div className="grid grid-cols-12 items-center gap-3">
             <div className="col-span-5">
               <Input
                 value={newName}
                 onChange={(event) => setNewName(event.target.value)}
-                placeholder="نام وضعیت"
+                placeholder={projectStatuses.settings.placeholder}
                 className="border-border/40 bg-muted/5 h-10 rounded-none text-right text-xs font-black tracking-tight uppercase"
                 disabled={isSaving}
               />
@@ -499,7 +500,7 @@ export function ProjectStatusesSettings({
                 onCheckedChange={(value) => setNewIsDefault(Boolean(value))}
                 disabled={isSaving}
               />
-              پیش‌فرض
+              {projectStatuses.headers.default}
             </div>
             <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-black tracking-tight uppercase">
               <Switch
@@ -507,7 +508,7 @@ export function ProjectStatusesSettings({
                 onCheckedChange={(value) => setNewIsDone(Boolean(value))}
                 disabled={isSaving}
               />
-              انجام‌شده
+              {projectStatuses.headers.done}
             </div>
             <div className="col-span-12 flex justify-end">
               <Button
@@ -517,7 +518,7 @@ export function ProjectStatusesSettings({
                 disabled={isSaving}
               >
                 <IconPlus className="ms-2 size-4" />
-                افزودن وضعیت
+                {projectStatuses.settings.addStatus}
               </Button>
             </div>
           </div>

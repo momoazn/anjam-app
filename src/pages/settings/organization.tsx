@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { organization } from "@/constants";
+import { organization, shared } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { useCurrentOrganization } from "@/store/auth-store";
 
@@ -51,7 +51,7 @@ export function OrgSettingsPage() {
 
   const onSubmit = async (data: OrgSettingsForm) => {
     if (!currentOrg) {
-      toast.error("سازمان یافت نشد");
+      toast.error(organization.notFound);
       return;
     }
 
@@ -72,7 +72,9 @@ export function OrgSettingsPage() {
   if (!currentOrg) {
     return (
       <div className="container mx-auto py-12">
-        <p className="text-muted-foreground text-center">سازمان یافت نشد</p>
+        <p className="text-muted-foreground text-center">
+          {organization.notFound}
+        </p>
       </div>
     );
   }
@@ -152,7 +154,7 @@ export function OrgSettingsPage() {
           <div className="flex gap-4">
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting
-                ? "در حال ذخیره..."
+                ? shared.saving
                 : organization.settings.save}
             </Button>
             <Button
@@ -160,7 +162,7 @@ export function OrgSettingsPage() {
               variant="outline"
               onClick={() => navigate(-1)}
             >
-              انصراف
+              {shared.cancel}
             </Button>
           </div>
         </form>

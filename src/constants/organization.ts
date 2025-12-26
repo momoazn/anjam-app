@@ -249,6 +249,7 @@ export const projects = {
 // Organizations module constants
 export const organization = {
   title: "سازمان",
+  notFound: "سازمان یافت نشد",
   create: {
     title: "ایجاد سازمان جدید",
     button: "ایجاد سازمان",
@@ -283,8 +284,12 @@ export const organization = {
   members: {
     title: "اعضای سازمان",
     invite: "دعوت عضو",
+    loading: shared.loading,
+    sending: "در حال ارسال...",
+    unknownUser: "کاربر ناشناس",
     inviteDialog: {
       title: "دعوت عضو جدید",
+      description: "دعوت‌نامه‌ای به ایمیل وارد شده ارسال می‌شود",
       email: "ایمیل",
       emailPlaceholder: "ایمیل فرد را وارد کنید",
       role: "نقش",

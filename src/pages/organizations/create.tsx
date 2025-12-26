@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { organization } from "@/constants";
+import { organization, auth, shared } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -63,7 +63,7 @@ export function CreateOrganizationPage() {
 
   const onSubmit = async (data: CreateOrgForm) => {
     if (!currentUser) {
-      toast.error("لطفاً ابتدا وارد شوید");
+      toast.error(auth.errors.notLoggedIn);
       return;
     }
 
@@ -160,7 +160,7 @@ export function CreateOrganizationPage() {
           <div className="flex gap-4">
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting
-                ? "در حال ایجاد..."
+                ? shared.creating
                 : organization.create.button}
             </Button>
             <Button
@@ -168,7 +168,7 @@ export function CreateOrganizationPage() {
               variant="outline"
               onClick={() => navigate(-1)}
             >
-              انصراف
+              {shared.cancel}
             </Button>
           </div>
         </form>

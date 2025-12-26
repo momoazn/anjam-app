@@ -99,14 +99,14 @@ export default function Login() {
             ANJAM
           </div>
           <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
-            {digitsEnToFa("توسعه سیستم")}
+            {digitsEnToFa(auth.visual.systemDevelopment)}
             <br />
-            <span className="text-primary">{digitsEnToFa("مدیریت")}</span>
+            <span className="text-primary">
+              {digitsEnToFa(auth.visual.management)}
+            </span>
           </h2>
           <p className="text-muted-foreground/80 mt-8 max-w-md text-xl leading-relaxed font-medium">
-            {digitsEnToFa(
-              "ورود به سامانه انجام برای مدیریت یکپارچه تسک‌ها و پروژه‌های سازمانی.",
-            )}
+            {digitsEnToFa(auth.visual.description)}
           </p>
         </div>
 
@@ -204,9 +204,7 @@ export default function Login() {
           </div>
 
           <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
-            {digitsEnToFa(
-              "© 2025 سامانه مدیریت تسک انجام. تمامی حقوق محفوظ است.",
-            )}
+            {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}
           </p>
         </PageTransition>
       </div>

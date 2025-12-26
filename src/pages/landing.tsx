@@ -41,7 +41,7 @@ const LandingPage = () => {
           </div>
           <div className="flex flex-col text-right">
             <span className="font-vazirmatn text-[14px] leading-none font-black tracking-tight uppercase">
-              سـامـانـه انـجـام
+              {landing.brandName}
             </span>
           </div>
         </div>
@@ -79,12 +79,11 @@ const LandingPage = () => {
       {/* Hero Section */}
       <header className="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pt-24 pb-12 text-center">
         <h1 className="animate-in fade-in slide-in-from-bottom-8 font-vazirmatn from-foreground via-foreground to-foreground/60 relative mb-6 bg-gradient-to-b bg-clip-text text-5xl font-black tracking-tighter text-transparent delay-200 duration-1000 md:text-7xl">
-          انجام
+          {landing.shortBrandName}
         </h1>
 
         <p className="animate-in fade-in slide-in-from-bottom-8 font-vazirmatn text-muted-foreground mb-10 max-w-xl px-4 text-base leading-relaxed font-light delay-300 duration-1000 md:text-lg">
-          اقتدار در مدیریت، دقت در اجرا. ابزاری مهندسی‌شده برای تیم‌هایی که
-          خواستار انضباط و شفافیت مطلق در پروژه‌های پیچیده هستند.
+          {landing.heroDescription}
         </p>
 
         <div className="animate-in fade-in slide-in-from-bottom-8 flex flex-col justify-center gap-4 delay-500 duration-1000 sm:flex-row">
@@ -93,7 +92,7 @@ const LandingPage = () => {
             size="lg"
             className="font-vazirmatn bg-primary text-primary-foreground h-12 rounded-none px-8 text-sm font-black tracking-tight shadow-md transition-all hover:brightness-110 active:scale-95"
           >
-            <Link to="/login">ورود به سامانه</Link>
+            <Link to="/login">{landing.ctaButton}</Link>
           </Button>
           <Button
             asChild
@@ -101,7 +100,7 @@ const LandingPage = () => {
             variant="outline"
             className="font-vazirmatn border-border text-muted-foreground hover:bg-accent hover:text-foreground h-12 rounded-none px-8 text-sm font-black tracking-tight uppercase transition-all active:scale-95"
           >
-            <a href="#features">بررسی قابلیت‌ها</a>
+            <a href="#features">{landing.featuresButton}</a>
           </Button>
         </div>
 
@@ -121,7 +120,7 @@ const LandingPage = () => {
                 <div className="bg-muted-foreground/20 h-2.5 w-2.5 rounded-full"></div>
               </div>
               <div className="text-muted-foreground flex items-center gap-4 text-xs font-bold">
-                <span>سامانه مدیریت پروژه</span>
+                <span>{landing.mockUi.projectManagementSystem}</span>
               </div>
             </div>
 
@@ -194,14 +193,14 @@ const LandingPage = () => {
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 md:grid-cols-4 md:gap-4">
           {[
             {
-              label: "تراکنش‌های نهایی",
+              label: landing.metrics.finalTransactions,
               value: digitsEnToFa("۸۵,۴۲۰"),
               suffix: "LOGS",
               icon: <BarChart3 className="text-primary h-4 w-4" />,
               id: "metric-1",
             },
             {
-              label: "میانگین تحویل تسک",
+              label: landing.metrics.avgTaskDelivery,
               value: digitsEnToFa("۴.۲"),
               suffix: "DAYS",
               icon: (
@@ -210,7 +209,7 @@ const LandingPage = () => {
               id: "metric-2",
             },
             {
-              label: "پروژه‌های فعال",
+              label: landing.metrics.activeProjects,
               value: digitsEnToFa("۱۲۴"),
               suffix: "UNITS",
               icon: (
@@ -219,7 +218,7 @@ const LandingPage = () => {
               id: "metric-3",
             },
             {
-              label: "کاربران تایید شده",
+              label: landing.metrics.verifiedUsers,
               value: digitsEnToFa("۴۸۲"),
               suffix: "ACTIVE_USERS",
               icon: (
@@ -259,13 +258,11 @@ const LandingPage = () => {
         <div className="mb-20 flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl text-right">
             <h2 className="font-vazirmatn text-foreground text-4xl leading-[1.1] font-black tracking-tighter uppercase md:text-6xl">
-              مدیریت حرفه‌ای <br />
-              در کالبد نرم‌افزار
+              {landing.featuresTitle}
             </h2>
           </div>
           <p className="font-vazirmatn border-primary text-muted-foreground max-w-xs border-e pe-6 text-right text-sm leading-relaxed font-light">
-            انجام با مدیریت تیم شما مانند یک عملیات دقیق برخورد می‌کند؛ جایی که
-            هر تسک یک گام و هر تغییر یک رکورد ثبت شده است.
+            {landing.featuresSubtitle}
           </p>
         </div>
 
@@ -273,38 +270,38 @@ const LandingPage = () => {
           {[
             {
               icon: <Layers className="h-5 w-5" />,
-              title: "مدیریت یکپارچه",
-              desc: "فراتر از یک لیست ساده؛ تسک‌ها در انجام به عنوان رکوردهای دقیق با تاریخچه کامل و شفافیت مطلق ثبت می‌شوند.",
+              title: landing.features.integratedManagement.title,
+              desc: landing.features.integratedManagement.description,
               id: "feature-1",
             },
             {
               icon: <Cpu className="h-5 w-5" />,
-              title: "اتوماسیون هوشمند",
-              desc: "فرآیندهای خودکار برای تغییر وضعیت، اطلاع‌رسانی و اختصاص منابع که بدون دخالت انسانی، نظم تیم را حفظ می‌کنند.",
+              title: landing.features.smartAutomation.title,
+              desc: landing.features.smartAutomation.description,
               id: "feature-2",
             },
             {
               icon: <ShieldCheck className="h-5 w-5" />,
-              title: "امنیت متمرکز",
-              desc: "کنترل‌های دسترسی مبتنی بر نقش (RBAC) با استانداردهای بالا و پایش لحظه‌ای تلاش‌های ناموفق.",
+              title: landing.features.centralizedSecurity.title,
+              desc: landing.features.centralizedSecurity.description,
               id: "feature-3",
             },
             {
               icon: <Zap className="h-5 w-5" />,
-              title: "همگام‌سازی لحظه‌ای",
-              desc: "مشاهده لحظه‌ای پیشرفت پروژه‌ها با سرعت بالا؛ تیم شما همیشه با هسته مرکزی همگام باقی می‌ماند.",
+              title: landing.features.instantSync.title,
+              desc: landing.features.instantSync.description,
               id: "feature-4",
             },
             {
               icon: <BarChart3 className="h-5 w-5" />,
-              title: "گزارش‌دهی تحلیلی",
-              desc: "استخراج بینش‌های ارزشمند از داده‌های خام؛ شناسایی گلوگاه‌های کاری با ابزارهای تحلیل داخلی.",
+              title: landing.features.analyticalReporting.title,
+              desc: landing.features.analyticalReporting.description,
               id: "feature-5",
             },
             {
               icon: <Users className="h-5 w-5" />,
-              title: "همکاری تیمی",
-              desc: "ساختار یافته برای تیم‌های بزرگ؛ مدیریت گروه‌ها، دسترسی‌ها و ارتباطات به صورت کاملاً دقیق و حرفه‌ای.",
+              title: landing.features.teamCollaboration.title,
+              desc: landing.features.teamCollaboration.description,
               id: "feature-6",
             },
           ].map((feature) => (
@@ -334,12 +331,10 @@ const LandingPage = () => {
 
           <div className="relative z-10">
             <h2 className="font-vazirmatn mb-8 text-5xl leading-[0.9] font-black tracking-tighter text-white uppercase md:text-7xl">
-              شروع <br />
-              سـامـانـه
+              {landing.ctaTitle}
             </h2>
             <p className="font-vazirmatn mx-auto mb-12 max-w-lg text-base leading-relaxed font-light text-blue-50/90">
-              آماده ورود به عصر جدید انضباط کاری هستید؟ همین حالا شروع کنید و
-              تیم خود را در سامانه انجام فعال کنید.
+              {landing.ctaDescription}
             </p>
             <div className="flex flex-col justify-center gap-6 sm:flex-row">
               <Button
@@ -347,14 +342,16 @@ const LandingPage = () => {
                 size="lg"
                 className="font-vazirmatn h-14 rounded-none border-none bg-white px-10 text-base font-black tracking-tight text-black uppercase shadow-lg transition-all hover:bg-zinc-100 active:scale-95"
               >
-                <Link to="/login">شروع سریع</Link>
+                <Link to="/login">{landing.quickStart}</Link>
               </Button>
               <Button
                 asChild
                 size="lg"
                 className="font-vazirmatn h-14 rounded-none border border-white/40 bg-transparent px-10 text-base font-black tracking-tight text-white uppercase transition-all hover:bg-white/10 active:scale-95"
               >
-                <a href="mailto:support@anjam.ir">درخواست مشاوره</a>
+                <a href="mailto:support@anjam.ir">
+                  {landing.requestConsultation}
+                </a>
               </Button>
             </div>
           </div>
@@ -370,7 +367,7 @@ const LandingPage = () => {
             </div>
             <div className="flex flex-col text-right">
               <span className="font-vazirmatn text-foreground/80 mb-1 text-sm leading-none font-black tracking-tight uppercase">
-                سـامـانـه انـجـام
+                {landing.brandName}
               </span>
               <span className="text-muted-foreground font-mono text-[10px] leading-none font-bold tracking-tight uppercase">
                 © {digitsEnToFa(new Date().getFullYear())}{" "}
@@ -381,16 +378,16 @@ const LandingPage = () => {
 
           <div className="font-vazirmatn text-muted-foreground flex flex-wrap justify-center gap-x-10 gap-y-4 font-mono text-xs font-bold tracking-tight uppercase">
             <span className="hover:text-primary cursor-pointer transition-colors">
-              مستندات
+              {landing.footer.documentation}
             </span>
             <span className="hover:text-primary cursor-pointer transition-colors">
-              امنیت
+              {landing.footer.security}
             </span>
             <span className="hover:text-primary cursor-pointer transition-colors">
-              قوانین
+              {landing.footer.terms}
             </span>
             <span className="hover:text-primary cursor-pointer transition-colors">
-              وضعیت سیستم
+              {landing.footer.systemStatus}
             </span>
           </div>
         </div>

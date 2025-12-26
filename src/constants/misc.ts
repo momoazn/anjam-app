@@ -109,3 +109,51 @@ export const myTasks = {
       "تسک‌های تکمیل شده در اینجا نمایش داده می‌شوند",
   },
 } as const;
+
+// Project Status Settings
+export const projectStatuses = {
+  settings: {
+    title: "Project_Statuses",
+    addStatus: "افزودن وضعیت",
+    placeholder: "نام وضعیت",
+  },
+  headers: {
+    name: "نام",
+    color: "رنگ",
+    default: "پیش‌فرض",
+    done: "انجام‌شده",
+    actions: "اقدامات",
+  },
+  toasts: {
+    orderSaved: "ترتیب وضعیت‌ها ذخیره شد",
+    orderSaveFailed: "ذخیره ترتیب وضعیت‌ها ناموفق بود",
+    updated: "وضعیت به‌روزرسانی شد",
+    updateFailed: "به‌روزرسانی وضعیت ناموفق بود",
+    defaultUpdated: "وضعیت پیش‌فرض به‌روزرسانی شد",
+    defaultUpdateFailed: "به‌روزرسانی وضعیت پیش‌فرض ناموفق بود",
+    doneUpdated: "وضعیت انجام‌شده به‌روزرسانی شد",
+    doneUpdateFailed: "به‌روزرسانی وضعیت انجام‌شده ناموفق بود",
+    inUse: "این وضعیت در تسک‌ها استفاده شده است",
+    deleted: "وضعیت حذف شد",
+    deleteFailed: "حذف وضعیت ناموفق بود",
+    nameRequired: "نام وضعیت الزامی است",
+    created: "وضعیت جدید اضافه شد",
+    createFailed: "افزودن وضعیت ناموفق بود",
+  },
+} as const;
+
+// Project Role Descriptions
+export const projectRoles = {
+  descriptions: {
+    owner: "مدیریت کامل پروژه و اعضا",
+    admin: "مدیریت اعضا و تنظیمات پروژه",
+    member: "دسترسی کامل به تسک‌ها",
+    viewer: "دسترسی فقط خواندنی",
+  },
+  labels: {
+    owner: "Owner",
+    admin: "Admin",
+    member: "Member",
+    viewer: "Viewer",
+  },
+} as const;

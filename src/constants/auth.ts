@@ -8,10 +8,19 @@ export const auth = {
     loginButton: "ورود",
     loggingIn: "در حال ورود...",
     registerButton: "ثبت‌نام",
+    subtitle: "Please provide your credentials",
     errors: {
       credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
       invalidCredentials: "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید",
     },
+  },
+  // Visual content (left side)
+  visual: {
+    systemDevelopment: "توسعه سیستم",
+    management: "مدیریت",
+    description:
+      "ورود به سامانه انجام برای مدیریت یکپارچه تسک‌ها و پروژه‌های سازمانی.",
+    copyright: "تمامی حقوق محفوظ است.",
   },
   register: {
     title: "ایجاد حساب کاربری",
@@ -54,5 +63,6 @@ export const auth = {
     serverError: "مشکلی پیش آمده. چند لحظه صبر کنید و دوباره تلاش کنید",
     rateLimited:
       "تعداد درخواست‌ها بیش از حد مجاز است. لطفاً چند لحظه صبر کنید.",
+    notLoggedIn: "لطفاً ابتدا وارد شوید",
   },
 } as const;

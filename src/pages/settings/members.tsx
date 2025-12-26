@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { organization } from "@/constants";
+import { organization, shared } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { useAuthUser } from "@/store/auth-store";
 import {
@@ -115,7 +115,7 @@ export function OrgMembersPage() {
             {isLoadingMembers ? (
               <TableRow>
                 <TableCell colSpan={6} className="py-8 text-center">
-                  در حال بارگذاری...
+                  {organization.members.loading}
                 </TableCell>
               </TableRow>
             ) : !members || members.length === 0 ? (
@@ -150,7 +150,9 @@ export function OrgMembersPage() {
                         <span className="font-medium">
                           {getUserDisplayName(
                             user ??
-                              ({ username: "کاربر ناشناس" } as UsersResponse),
+                              ({
+                                username: organization.members.unknownUser,
+                              } as UsersResponse),
                           )}
                         </span>
                       </div>
@@ -183,7 +185,7 @@ export function OrgMembersPage() {
                           onClick={() => handleRemoveMember(member.id)}
                           disabled={isRemoving}
                         >
-                          حذف
+                          {shared.delete}
                         </Button>
                       )}
                     </TableCell>
@@ -201,7 +203,7 @@ export function OrgMembersPage() {
           <DialogHeader>
             <DialogTitle>{organization.members.inviteDialog.title}</DialogTitle>
             <DialogDescription>
-              دعوت‌نامه‌ای به ایمیل وارد شده ارسال می‌شود
+              {organization.members.inviteDialog.description}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -232,22 +234,26 @@ export function OrgMembersPage() {
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">ادمین</SelectItem>
-                  <SelectItem value="member">عضو</SelectItem>
+                  <SelectItem value="admin">
+                    {organization.members.roles.admin}
+                  </SelectItem>
+                  <SelectItem value="member">
+                    {organization.members.roles.member}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsInviteOpen(false)}>
-              انصراف
+              {shared.cancel}
             </Button>
             <Button
               onClick={handleInvite}
               disabled={isInviting || !inviteEmail}
             >
               {isInviting
-                ? "در حال ارسال..."
+                ? organization.members.sending
                 : organization.members.inviteDialog.send}
             </Button>
           </DialogFooter>
