@@ -1,6 +1,6 @@
 # Essentials for Small–Medium Startup Teams
 
-This document captures which capabilities are truly essential for startups and small/medium teams (roughly 5–100 people) to successfully adopt and rely on this task manager in production.
+This document captures which capabilities are truly essential for startups and small/medium teams (roughly 5–100 people) to successfully adopt and rely on Anjam (انجام) in production.
 
 ## 1. Product‑Level Essentials
 

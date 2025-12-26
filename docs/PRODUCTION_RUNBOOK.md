@@ -1,4 +1,4 @@
-# Production Runbook - Anjam Task Manager v1
+# Production Runbook - Anjam (انجام) v1
 
 This runbook provides step-by-step procedures for deploying, configuring, and maintaining Anjam in production.
 
@@ -44,28 +44,23 @@ This runbook provides step-by-step procedures for deploying, configuring, and ma
 
 **From Docker Container:**
 
-1. Create `Dockerfile`:
+Use the repo Dockerfile at `infra/Dockerfile`:
 
-   ```dockerfile
-   FROM alpine:latest
-   RUN apk add --no-cache ca-certificates
-   COPY anjam-linux /app/anjam
-   RUN chmod +x /app/anjam
-   EXPOSE 8090
-   WORKDIR /data
-   CMD ["/app/anjam", "serve"]
-   ```
+```bash
+docker build -f infra/Dockerfile -t anjam:latest .
+docker run -d \
+  --name anjam \
+  -p 8090:8090 \
+  -v anjam-data:/app/data \
+  -e TM_ALLOW_DEFAULT_ACCOUNTS=false \
+  anjam:latest
+```
 
-2. Build and run:
-   ```bash
-   docker build -t anjam:latest .
-   docker run -d \
-     --name anjam \
-     -p 8090:8090 \
-     -v anjam-data:/data \
-     -e TM_ALLOW_DEFAULT_ACCOUNTS=false \
-     anjam:latest
-   ```
+If using docker compose, make sure the compose file points to `infra/Dockerfile`:
+
+```bash
+docker compose -f infra/docker-compose.yml up -d --build
+```
 
 ### 1.2 Configure TLS Termination
 
@@ -74,10 +69,10 @@ This runbook provides step-by-step procedures for deploying, configuring, and ma
 ```nginx
 server {
     listen 443 ssl http2;
-    server_name anjam.yourdomain.com;
+    server_name ianjam.ir;
 
-    ssl_certificate /etc/letsencrypt/live/anjam.yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/anjam.yourdomain.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/ianjam.ir/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ianjam.ir/privkey.pem;
 
     # SSL configuration
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -99,7 +94,7 @@ server {
 
 server {
     listen 80;
-    server_name anjam.yourdomain.com;
+    server_name ianjam.ir;
     return 301 https://$server_name$request_uri;
 }
 ```
@@ -107,7 +102,7 @@ server {
 **Using Caddy:**
 
 ```caddy
-anjam.yourdomain.com {
+ianjam.ir {
     reverse_proxy 127.0.0.1:8090
     encode gzip
 }
@@ -119,14 +114,14 @@ Create `/etc/systemd/system/anjam.service`:
 
 ```ini
 [Unit]
-Description=Anjam Task Manager
+Description=Anjam (انجام)
 After=network.target
 
 [Service]
 Type=simple
 User=anjam
 WorkingDirectory=/opt/anjam
-ExecStart=/opt/anjam/anjam serve
+ExecStart=/opt/anjam/anjam --http=0.0.0.0:8090
 Restart=on-failure
 RestartSec=10s
 Environment="TM_ALLOW_DEFAULT_ACCOUNTS=false"
@@ -153,14 +148,12 @@ Set these before starting the application:
 ```bash
 # Security settings
 export TM_ALLOW_DEFAULT_ACCOUNTS=false
-
-# Optional: PocketBase settings
-export PB_LOG_LEVEL=info  # info, error, debug
+# Add any PocketBase flags in the service command if needed.
 ```
 
 ### 2.2 PocketBase Dashboard Configuration
 
-Access PocketBase admin UI at `https://anjam.yourdomain.com/admin`:
+Access PocketBase admin UI at `https://ianjam.ir/admin`:
 
 1. **Default Credentials:**
    - Email: `admin@example.com`
@@ -198,7 +191,6 @@ ls -la /opt/anjam/data/
 # Expected structure
 # data/
 # ├── data.db           (SQLite database)
-# ├── logs/             (Application logs)
 # └── files/            (Uploaded files, if enabled)
 ```
 
@@ -220,7 +212,7 @@ Check application health:
 
 ```bash
 # HTTP health check
-curl -s https://anjam.yourdomain.com/api/health
+curl -s https://ianjam.ir/api/health
 
 # System resource check
 ps aux | grep anjam
@@ -241,24 +233,14 @@ Recommended metrics to monitor:
 
 - **Disk Usage:**
   - Database file size: `/opt/anjam/data/data.db`
-  - Log file size: `/opt/anjam/data/logs/`
   - Alert when usage > 80% of available space
 
 - **Response Time:**
   - API response time should be < 500 ms
   - Database query time < 100 ms
 
-**Example Prometheus configuration:**
-
-```yaml
-global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: "anjam"
-    static_configs:
-      - targets: ["localhost:8090"]
-```
+PocketBase does not expose a native Prometheus metrics endpoint. If you need metrics,
+use system-level monitoring or add a dedicated exporter.
 
 ### 3.3 Backup Procedures
 
@@ -365,7 +347,7 @@ If the new version has critical issues:
 
 6. **Verify health:**
    ```bash
-   curl -s https://anjam.yourdomain.com/
+   curl -s https://ianjam.ir/api/health
    ```
 
 ### 4.2 Rollback from Database Corruption
@@ -441,12 +423,14 @@ sqlite3 /opt/anjam/data/data.db "VACUUM;"
 
 View application logs:
 
+PocketBase emits logs to stdout/stderr; use your service manager or container logs.
+
 ```bash
 # Systemd logs
 sudo journalctl -u anjam -f
 
-# PocketBase logs (if available)
-tail -f /opt/anjam/data/logs/*.log
+# Docker logs (if running in a container)
+docker logs -f anjam
 ```
 
 ## Part 6: Maintenance
@@ -466,27 +450,7 @@ sqlite3 /opt/anjam/data/data.db "VACUUM;"
 sqlite3 /opt/anjam/data/data.db "REINDEX;"
 ```
 
-### 6.2 Log Rotation
-
-Configure logrotate for PocketBase logs:
-
-Create `/etc/logrotate.d/anjam`:
-
-```
-/opt/anjam/data/logs/*.log {
-    daily
-    rotate 30
-    compress
-    delaycompress
-    notifempty
-    create 0640 anjam anjam
-    postrotate
-        systemctl reload anjam > /dev/null 2>&1 || true
-    endscript
-}
-```
-
-### 6.3 Security Updates
+### 6.2 Security Updates
 
 Monitor for security updates:
 

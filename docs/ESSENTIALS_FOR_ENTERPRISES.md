@@ -1,6 +1,6 @@
 # Essentials for Enterprise Use
 
-This document outlines the capabilities typically required to position the task manager as “enterprise‑ready” for larger organizations (100+ users and/or regulated environments).
+This document outlines the capabilities typically required to position Anjam (انجام) as “enterprise‑ready” for larger organizations (100+ users and/or regulated environments).
 
 Many of these build on top of the startup essentials and extend them with stronger security, configurability, and integration guarantees.
 
@@ -113,4 +113,4 @@ Not always strictly required, but often expected for “project/portfolio manage
 
 ---
 
-Taken together, these capabilities turn the current single‑tenant, role‑based task manager into a platform that can satisfy enterprise procurement, security, and compliance requirements while remaining usable for everyday project work.
+Taken together, these capabilities turn Anjam (انجام) into a platform that can satisfy enterprise procurement, security, and compliance requirements while remaining usable for everyday project work.

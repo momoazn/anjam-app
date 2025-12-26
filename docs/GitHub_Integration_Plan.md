@@ -1,6 +1,6 @@
 # GitHub Integration Plan
 
-This document outlines the plan for integrating GitHub into the Anjam (انجام) Task Manager Application. The goal is to enhance developer workflow by linking tasks to GitHub issues, synchronizing statuses, and streamlining project management.
+This document outlines the plan for integrating GitHub into the Anjam (انجام) Application. The goal is to enhance developer workflow by linking tasks to GitHub issues, synchronizing statuses, and streamlining project management.
 
 **Current Architecture Context**: The application uses an organization-based multi-tenant architecture where:
 

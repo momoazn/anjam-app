@@ -1,6 +1,6 @@
 # QA Testing Guide (SLIM)
 
-A concise guide for testing the task manager application locally and validating key flows.
+A concise guide for testing the Anjam (انجام) application locally and validating key flows.
 
 ## Quick Test Commands
 
