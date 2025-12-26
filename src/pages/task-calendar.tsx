@@ -204,7 +204,7 @@ export default function TaskCalendar() {
         </Badge>
       </div>
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
         size="lg"
         onClick={() => navigate("/tasks/new")}
       >
@@ -261,7 +261,7 @@ export default function TaskCalendar() {
             variant="outline"
             size="sm"
             onClick={goToToday}
-            className="border-border bg-card h-9 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md   active:shadow-none"
+            className="border-border bg-card h-9 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md active:shadow-none"
           >
             {common.today}
           </Button>

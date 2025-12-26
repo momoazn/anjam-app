@@ -261,7 +261,9 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-none border border-dashed">
             <IconPlus className="h-4 w-4" />
           </div>
-          <span className="text-[13px] font-medium">{organization.create.button}</span>
+          <span className="text-[13px] font-medium">
+            {organization.create.button}
+          </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -143,7 +143,7 @@ export default function TimesheetPage() {
       <Button
         onClick={handleExport}
         variant="outline"
-        className="border-border bg-card h-12 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md transition-all   active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+        className="border-border bg-card h-12 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md transition-all active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
       >
         <IconDownload className="ms-2 size-4" />
         {common.buttons.export}

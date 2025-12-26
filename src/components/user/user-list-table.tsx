@@ -456,7 +456,7 @@ export function UserListTable({
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmBulkDelete}
-              className="border-border rounded-none border bg-rose-500 text-[10px] font-black tracking-tight text-white uppercase shadow-md hover:bg-rose-600   active:shadow-none"
+              className="border-border rounded-none border bg-rose-500 text-[10px] font-black tracking-tight text-white uppercase shadow-md hover:bg-rose-600 active:shadow-none"
             >
               {usersText.delete.title}
             </AlertDialogAction>

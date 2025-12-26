@@ -65,7 +65,7 @@ export function TaskDetailsHeader({
         <Button
           variant="outline"
           onClick={onEdit}
-          className="border-border bg-card h-12 rounded-none border px-6 text-[10px] font-black tracking-tight uppercase shadow-md transition-all   active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+          className="border-border bg-card h-12 rounded-none border px-6 text-[10px] font-black tracking-tight uppercase shadow-md transition-all active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
         >
           <IconPencil className="ms-2 size-4" />
           {tasks.details.editButton}

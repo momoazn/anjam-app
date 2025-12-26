@@ -47,7 +47,7 @@ const EmptyState = ({ onCreateClick }: { onCreateClick: () => void }) => (
     </p>
     <Button
       onClick={onCreateClick}
-      className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+      className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
     >
       <IconPlus className="size-4" />
       {tagsManagement.createFirstTag}

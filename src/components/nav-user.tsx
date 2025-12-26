@@ -101,7 +101,7 @@ export function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="border-border bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border shadow-sm "
+            className="border-border bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border shadow-sm"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={12}

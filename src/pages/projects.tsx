@@ -31,13 +31,11 @@ export default function Projects() {
   const headerActions = canCreateProject ? (
     <Button
       onClick={() => navigate("/projects/new")}
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
       size="lg"
     >
       <Plus className="size-5" />
-      <span className="tracking-tight uppercase">
-        {projects.create.button}
-      </span>
+      <span className="tracking-tight uppercase">{projects.create.button}</span>
     </Button>
   ) : null;
 

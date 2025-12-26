@@ -370,7 +370,7 @@ export function CommentItem({
                   size="sm"
                   onClick={handleSaveEdit}
                   disabled={!editContent.trim() || updateComment.isPending}
-                  className="h-9 rounded-none px-6 text-[9px] font-black tracking-tight uppercase shadow-md transition-all active:scale-95 "
+                  className="h-9 rounded-none px-6 text-[9px] font-black tracking-tight uppercase shadow-md transition-all active:scale-95"
                 >
                   {updateComment.isPending ? (
                     <IconLoader2 className="me-2 h-3.5 w-3.5 animate-spin" />

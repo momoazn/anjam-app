@@ -160,7 +160,7 @@ export default function CreateTask() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
               >
                 {isPending ? (
                   <IconLoader2 className="me-2 h-4 w-4 animate-spin" />

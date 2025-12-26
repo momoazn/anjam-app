@@ -83,10 +83,8 @@ type TimelinessKey = "on_time" | "overdue" | "no_deadline";
 
 const EmptyState = ({ message }: { message: string }) => (
   <div className="flex flex-col items-center justify-center py-12 text-center opacity-30 grayscale">
-    <IconChartPie className="mb-4 size-8 stroke-[1]" />
-    <p className="text-[10px] font-black tracking-tight uppercase">
-      {message}
-    </p>
+    <IconChartPie className="mb-4 size-8 stroke-1" />
+    <p className="text-[10px] font-black tracking-tight uppercase">{message}</p>
   </div>
 );
 

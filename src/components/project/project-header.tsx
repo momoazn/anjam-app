@@ -58,7 +58,7 @@ export function ProjectHeader({
               <Button
                 onClick={onSaveEdit}
                 disabled={isUpdating}
-                className="h-12 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+                className="h-12 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
               >
                 <IconDeviceFloppy className="ms-2 size-4" />
                 {common.save}
@@ -68,7 +68,7 @@ export function ProjectHeader({
             <Button
               variant="outline"
               onClick={onStartEdit}
-              className="border-border bg-card h-12 rounded-none border px-8 text-[10px] font-black tracking-tight uppercase shadow-md transition-all   active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+              className="border-border bg-card h-12 rounded-none border px-8 text-[10px] font-black tracking-tight uppercase shadow-md transition-all active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
             >
               <IconPencil className="ms-2 size-4" />
               {common.edit}
@@ -106,7 +106,7 @@ export function ProjectHeader({
                   className="border-border/40 bg-muted/5 focus:border-primary/40 h-14 rounded-none text-right text-2xl font-black tracking-tight uppercase focus:ring-0"
                 />
               </div>
-              <div className="ms-0 ms-auto w-40 space-y-1.5 text-right">
+              <div className="ms-auto w-40 space-y-1.5 text-right">
                 <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
                   Project Code
                 </span>

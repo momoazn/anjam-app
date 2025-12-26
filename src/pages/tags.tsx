@@ -56,7 +56,7 @@ export default function TagsManagement() {
 
   const headerActions = (
     <Button
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
       size="lg"
       onClick={() => setCreateDialogOpen(true)}
     >

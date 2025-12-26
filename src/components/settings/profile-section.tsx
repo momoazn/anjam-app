@@ -142,7 +142,7 @@ export function ProfileSection() {
 
                 <label
                   htmlFor="avatar-upload"
-                  className="bg-card border-border hover:bg-muted absolute -start-2 -bottom-2 cursor-pointer border p-2 shadow-md transition-all   active:shadow-none"
+                  className="bg-card border-border hover:bg-muted absolute -start-2 -bottom-2 cursor-pointer border p-2 shadow-md transition-all active:shadow-none"
                 >
                   <IconCamera className="h-4 w-4" />
                   <span className="sr-only">
@@ -230,7 +230,7 @@ export function ProfileSection() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
               >
                 {form.formState.isSubmitting && (
                   <IconLoader2 className="me-2 h-4 w-4 animate-spin" />

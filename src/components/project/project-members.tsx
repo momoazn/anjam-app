@@ -259,7 +259,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
             <AlertDialogAction
               onClick={confirmRemove}
               disabled={isRemoving}
-              className="border-border rounded-none border bg-rose-500 text-[10px] font-black tracking-tight text-white uppercase shadow-md hover:bg-rose-600   active:shadow-none"
+              className="border-border rounded-none border bg-rose-500 text-[10px] font-black tracking-tight text-white uppercase shadow-md hover:bg-rose-600 active:shadow-none"
             >
               {isRemoving && (
                 <IconLoader2 className="me-2 h-4 w-4 animate-spin" />

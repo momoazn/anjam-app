@@ -431,7 +431,7 @@ export default function Reports() {
             ].map((stat) => (
               <div
                 key={stat.id}
-                className="bg-card border-border/40 hover:shadow-primary/5 border p-8 text-right shadow-sm transition-all  hover:shadow-md"
+                className="bg-card border-border/40 hover:shadow-primary/5 border p-8 text-right shadow-sm transition-all hover:shadow-md"
               >
                 <div className="mb-4 flex items-center justify-end gap-4 opacity-60">
                   <span className="text-muted-foreground text-[11px] font-black tracking-tight uppercase">

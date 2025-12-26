@@ -52,7 +52,7 @@ export default function Users() {
   const headerActions = canCreateUsers ? (
     <Button
       onClick={() => navigate("/users/new")}
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all   hover:shadow-lg active:scale-95 "
+      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
       size="lg"
     >
       <IconPlus className="size-5" />

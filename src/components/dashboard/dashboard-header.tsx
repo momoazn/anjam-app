@@ -136,7 +136,6 @@ export function DashboardHeader({
 
   return (
     <div className="bg-card hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-none border shadow-sm transition-all duration-500">
-
       <div className="relative z-10 flex flex-col lg:flex-row">
         {/* Main Welcome Section */}
         <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-s lg:border-b-0 lg:p-10">
