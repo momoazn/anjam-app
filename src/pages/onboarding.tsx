@@ -80,7 +80,10 @@ export default function Onboarding() {
         // Create an invite link with max uses equal to number of emails
         await fetch(`/api/v1/organizations/${currentOrg.id}/invites`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: pb.authStore.token,
+          },
           body: JSON.stringify({
             role: "member",
             max_uses: validEmails.length,

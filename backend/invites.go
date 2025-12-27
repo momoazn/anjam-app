@@ -322,7 +322,7 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 			return fmt.Errorf("failed to update invite: %w", err)
 		}
 
-		// Send welcome notification
+		// Send welcome notification (non-critical - don't fail registration if this fails)
 		notificationsCollection, err := txApp.FindCollectionByNameOrId(CollectionNotifications)
 		if err == nil {
 			notification := core.NewRecord(notificationsCollection)
@@ -333,9 +333,8 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 			notification.Set("data", map[string]any{
 				"organizationId": org.Id,
 			})
-			if err := txApp.Save(notification); err != nil {
-				return fmt.Errorf("failed to save welcome notification: %w", err)
-			}
+			// Notification is non-critical - log error but don't fail the transaction
+			_ = txApp.Save(notification)
 		}
 
 		return nil
