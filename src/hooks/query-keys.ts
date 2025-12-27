@@ -147,4 +147,13 @@ export const queryKeys = {
       ["project_members", "list", projectId] as const,
     detail: (id: string) => ["project_members", "detail", id] as const,
   },
+
+  orgInvites: {
+    all: ["organization_invites"] as const,
+    lists: () => ["organization_invites", "list"] as const,
+    list: (orgId: string | undefined) =>
+      ["organization_invites", "list", orgId] as const,
+    byToken: (token: string) =>
+      ["organization_invites", "token", token] as const,
+  },
 } as const;
