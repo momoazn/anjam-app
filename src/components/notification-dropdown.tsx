@@ -1,9 +1,14 @@
-import { IconCheck, IconTrash, IconEye } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconTrash,
+  IconEye,
+  IconBellOff,
+  IconActivity,
+} from "@tabler/icons-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
 import { useNavigate } from "react-router-dom";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -55,32 +60,51 @@ function NotificationItem({
   return (
     <div
       className={cn(
-        "group hover:bg-muted/50 focus-within:ring-ring flex cursor-pointer items-start gap-3 rounded-none px-3 py-2.5 transition-colors duration-200 ease-in-out focus-within:ring-2 focus-within:ring-offset-2",
-        !notification.read && "bg-blue-50/50 dark:bg-blue-400/10",
+        "group hover:bg-muted/50 relative flex cursor-pointer items-start gap-3 border-b px-4 py-4 transition-all duration-200",
+        !notification.read && "bg-primary/5",
       )}
       role="listitem"
       aria-label={`${notificationText.notificationsLabel}: ${notification.title}`}
       dir="rtl"
     >
-      {/* Notification indicator */}
+      {/* Status Bar Indicator */}
       <div
         className={cn(
-          "mt-1.5 size-2 flex-shrink-0 rounded-full",
-          !notification.read ? "bg-blue-500" : "bg-muted",
+          "absolute inset-y-0 right-0 w-1 transition-all duration-300",
+          !notification.read ? "bg-primary" : "bg-transparent",
         )}
       />
 
-      <div className="min-w-0 flex-1">
-        <h4
+      <div className="bg-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+        <IconActivity
           className={cn(
-            "text-right text-sm leading-relaxed font-medium",
-            !notification.read ? "text-foreground" : "text-muted-foreground",
+            "size-4",
+            !notification.read ? "text-primary" : "text-muted-foreground",
           )}
-          id={`notification-title-${notification.id}`}
-          dir="auto"
-        >
-          {notification.title}
-        </h4>
+          stroke={2}
+        />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-2">
+          <h4
+            className={cn(
+              "text-right text-sm font-bold",
+              !notification.read ? "text-foreground" : "text-muted-foreground",
+            )}
+            id={`notification-title-${notification.id}`}
+            dir="auto"
+          >
+            {notification.title}
+          </h4>
+          <time
+            dateTime={notification.created || ""}
+            className="text-muted-foreground shrink-0 text-[10px] font-medium"
+          >
+            {formatNotificationTime(notification.created)}
+          </time>
+        </div>
+
         <p
           className="text-muted-foreground mt-1 line-clamp-2 text-right text-xs leading-relaxed"
           aria-describedby={`notification-title-${notification.id}`}
@@ -88,41 +112,21 @@ function NotificationItem({
         >
           {notification.message}
         </p>
-        <div className="mt-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <time
-              dateTime={notification.created || ""}
-              className="text-muted-foreground text-xs"
-            >
-              {formatNotificationTime(notification.created)}
-            </time>
-            {!notification.read && (
-              <Badge
-                variant="secondary"
-                className="rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-              >
-                {notificationText.new}
-              </Badge>
-            )}
-          </div>
-        </div>
-      </div>
 
-      {!notification.read && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleMarkAsRead}
-          className="h-7 w-7 shrink-0 p-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          title={notificationsText.buttons.markAsRead}
-          aria-label={notificationText.markAsReadLabel.replace(
-            "{title}",
-            notification.title,
-          )}
-        >
-          <IconCheck className="size-3" aria-hidden="true" />
-        </Button>
-      )}
+        {!notification.read && (
+          <div className="mt-3 flex items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleMarkAsRead}
+              className="h-7 rounded-md px-3 text-[10px] font-bold"
+            >
+              <IconCheck className="me-1.5 size-3" stroke={3} />
+              {notificationsText.buttons.markAsRead}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -136,71 +140,74 @@ export function NotificationDropdown({
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
 
-  const recentNotifications = notificationsData.slice(0, 10); // Show last 10 notifications
+  const recentNotifications = notificationsData.slice(0, 10);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div>
+        <div className="cursor-pointer">
           <NotificationBadge />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={align}
-        className="ms-4 mt-1 w-[28rem] max-w-[90vw] p-0"
+        className="bg-card mt-2 w-[26rem] max-w-[95vw] overflow-hidden rounded-xl border p-0 shadow-xl"
         aria-label={notificationText.notificationsPanel}
       >
         {/* Header */}
-        <div
-          className="bg-muted/30 flex items-center justify-between border-b px-4 py-3"
-          dir="rtl"
-        >
-          <h3
-            className="text-foreground flex-1 truncate text-right font-semibold"
-            id="notifications-heading"
-          >
-            {notificationsText.title}
-          </h3>
-          {notificationsData.length > 0 && (
-            <div className="me-3 flex flex-shrink-0 gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => user?.id && markAllAsRead.mutate(user.id)}
-                className="hover:bg-muted/80 h-7 px-2 text-xs"
-                title={notificationsText.markAllAsRead}
-                aria-label={notificationsText.markAllAsRead}
-              >
-                <IconCheck className="ms-1 size-3" aria-hidden="true" />
-                {notificationsText.markAllAsRead}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => user?.id && clearAll.mutate(user.id)}
-                className="hover:bg-destructive/10 hover:text-destructive h-7 px-2 text-xs"
-                title={notificationsText.clearAll}
-                aria-label={notificationsText.clearAll}
-              >
-                <IconTrash className="ms-1 size-3" aria-hidden="true" />
-                {notificationsText.clearAll}
-              </Button>
+        <div className="bg-muted/30 border-b px-4 py-4" dir="rtl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+                <IconActivity className="size-4" stroke={2.5} />
+              </div>
+              <h3 className="text-base font-bold" id="notifications-heading">
+                {notificationsText.title}
+              </h3>
             </div>
-          )}
+
+            {notificationsData.length > 0 && (
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => user?.id && markAllAsRead.mutate(user.id)}
+                  className="h-8 rounded-md px-3 text-[10px] font-bold"
+                >
+                  <IconCheck className="me-1.5 size-3" stroke={3} />
+                  {notificationsText.markAllAsRead}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => user?.id && clearAll.mutate(user.id)}
+                  className="hover:bg-destructive/10 hover:text-destructive h-8 rounded-md px-3 text-[10px] font-bold"
+                >
+                  <IconTrash className="me-1.5 size-3" stroke={3} />
+                  {notificationsText.clearAll}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Notifications List */}
         {recentNotifications.length === 0 ? (
           <div
-            className="text-muted-foreground flex flex-col items-center justify-center p-8 text-center"
+            className="flex flex-col items-center justify-center py-12 text-center"
             role="status"
             aria-live="polite"
             dir="rtl"
           >
-            <div className="bg-muted/50 mb-3 flex size-12 items-center justify-center rounded-full">
-              <IconCheck className="text-muted-foreground/50 size-5" />
+            <div className="mb-4 flex justify-center">
+              <div className="bg-muted flex h-14 w-14 items-center justify-center rounded-full">
+                <IconBellOff
+                  className="text-muted-foreground/40 size-7"
+                  stroke={1.5}
+                />
+              </div>
             </div>
-            <p className="text-sm font-medium">
+            <p className="text-foreground/60 text-base font-bold">
               {notificationsText.noNotifications}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
@@ -209,7 +216,7 @@ export function NotificationDropdown({
           </div>
         ) : (
           <div
-            className="max-h-96 overflow-y-auto"
+            className="max-h-[28rem] overflow-y-auto"
             role="list"
             aria-labelledby="notifications-heading"
             aria-live="polite"
@@ -224,26 +231,29 @@ export function NotificationDropdown({
           </div>
         )}
 
-        {/* Footer with count and view all */}
+        {/* Footer */}
         {notificationsData.length > 0 && (
-          <div className="bg-muted/20 border-t px-4 py-2" dir="rtl">
+          <div className="bg-muted/30 border-t px-4 py-3" dir="rtl">
             <div className="flex items-center justify-between">
-              <p className="text-muted-foreground text-right text-xs">
-                {notificationText.showCount.replace(
-                  "{count}",
-                  digitsEnToFa(Math.min(10, notificationsData.length)),
-                )}{" "}
-                {digitsEnToFa(notificationsData.length)}{" "}
-                {notificationText.notificationWord}
-              </p>
+              <div className="flex items-center gap-2">
+                <div className="bg-primary h-1.5 w-1.5 animate-pulse rounded-full" />
+                <p className="text-muted-foreground text-[10px] font-bold">
+                  {notificationText.showCount.replace(
+                    "{count}",
+                    digitsEnToFa(Math.min(10, notificationsData.length)),
+                  )}{" "}
+                  / {digitsEnToFa(notificationsData.length)}{" "}
+                  {notificationText.notificationWord}
+                </p>
+              </div>
               <Button
-                variant="ghost"
+                variant="link"
                 size="sm"
                 onClick={() => navigate("/notifications")}
-                className="h-6 px-2 text-xs"
+                className="text-primary h-auto p-0 text-xs font-bold hover:no-underline"
               >
-                <IconEye className="ms-1 h-3 w-3" />
                 {notificationsText.actions.viewAll}
+                <IconEye className="ms-1.5 size-4" stroke={2.5} />
               </Button>
             </div>
           </div>

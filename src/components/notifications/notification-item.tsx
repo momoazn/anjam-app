@@ -44,7 +44,7 @@ export function NotificationItem({
         <Checkbox
           checked={selected}
           onCheckedChange={() => onToggleSelect(notification.id)}
-          className="size-4 rounded-none transition-transform hover:scale-110"
+          className="size-4 rounded-md transition-transform hover:scale-110"
           aria-label={notificationsText.selected}
         />
       </div>
@@ -53,11 +53,11 @@ export function NotificationItem({
       <div className="flex min-w-0 grow flex-col justify-center px-6 py-4 text-right">
         <div className="mb-1 flex items-center justify-end gap-3">
           {!notification.read && (
-            <div className="bg-primary size-1.5 rounded-none shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+            <div className="bg-primary size-2 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
           )}
           <h4
             className={cn(
-              "truncate text-sm font-black tracking-tight uppercase",
+              "truncate text-sm font-bold",
               !notification.read
                 ? "text-foreground"
                 : "text-muted-foreground/60",
@@ -74,13 +74,13 @@ export function NotificationItem({
         <div className="mt-3 flex items-center justify-end gap-4 opacity-40 transition-opacity group-hover:opacity-100">
           <div className="flex items-center gap-1.5">
             <IconHash className="size-3" />
-            <span className="text-[9px] font-black tracking-tight uppercase">
+            <span className="text-[10px] font-bold">
               {notification.id.slice(0, 8)}
             </span>
           </div>
           <Badge
             variant="outline"
-            className="border-border/40 bg-muted/30 text-muted-foreground rounded-none px-1.5 py-0 text-[8px] font-black tracking-tight uppercase"
+            className="border-border/40 bg-muted/30 text-muted-foreground rounded-md px-1.5 py-0 text-[10px] font-bold"
           >
             {notificationsText.types[notification.type]}
           </Badge>
@@ -90,10 +90,10 @@ export function NotificationItem({
       {/*  & Actions Zone */}
       <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-e px-4">
         <div className="flex flex-col items-center">
-          <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
-            Event_Time
+          <span className="text-muted-foreground/40 mb-1 text-[10px] font-bold">
+            زمان
           </span>
-          <div className="text-foreground/60 flex items-center gap-1.5 text-[10px] font-black tabular-nums">
+          <div className="text-foreground/60 flex items-center gap-1.5 text-[10px] font-bold tabular-nums">
             <IconClock className="text-primary/40 size-3" />
             {formatNotificationTime(notification.created)}
           </div>
@@ -105,7 +105,7 @@ export function NotificationItem({
               variant="ghost"
               size="icon"
               onClick={() => onMarkAsRead(notification.id)}
-              className="hover:bg-primary/10 hover:text-primary size-8 rounded-none transition-all"
+              className="hover:bg-primary/10 hover:text-primary size-8 rounded-lg transition-all"
               title={notificationsText.actions.markAsRead}
             >
               <IconEye className="size-4" />
@@ -115,7 +115,7 @@ export function NotificationItem({
             variant="ghost"
             size="icon"
             onClick={() => onDelete(notification.id)}
-            className="size-8 rounded-none text-rose-500/80 transition-all hover:bg-rose-500/10"
+            className="size-8 rounded-lg text-rose-500/80 transition-all hover:bg-rose-500/10"
             title={notificationsText.actions.delete}
           >
             <IconTrash className="size-4" />

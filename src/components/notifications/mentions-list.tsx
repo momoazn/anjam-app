@@ -37,27 +37,27 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
   };
 
   return (
-    <section className="border-border/40 bg-card mt-10 space-y-4 border p-6 text-right">
+    <section className="border-border/40 bg-card mt-10 space-y-4 rounded-xl border p-6 text-right shadow-sm">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
+          <p className="text-foreground text-sm font-bold">
             {notificationsText.mentions.title}
           </p>
           <p className="text-muted-foreground text-xs">
             {notificationsText.mentions.description}
           </p>
         </div>
-        <span className="text-[11px] font-black tracking-tight uppercase">
+        <span className="text-sm font-bold">
           {digitsEnToFa(mentions.length)}
         </span>
       </div>
 
       {isLoading ? (
-        <p className="text-muted-foreground text-center text-xs font-black uppercase">
+        <p className="text-muted-foreground text-center text-xs font-bold">
           {notificationsText.mentions.loading}
         </p>
       ) : mentions.length === 0 ? (
-        <div className="text-muted-foreground text-center text-xs font-black uppercase opacity-70">
+        <div className="text-muted-foreground text-center text-xs font-bold opacity-70">
           {notificationsText.mentions.empty}
         </div>
       ) : (
@@ -84,17 +84,17 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
             return (
               <article
                 key={mention.id}
-                className="border-border/30 bg-muted/10 rounded-none border p-4 text-right"
+                className="border-border/30 bg-muted/10 rounded-lg border p-4 text-right"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-black tracking-tight uppercase">
+                    <p className="text-sm font-bold">
                       {notificationsText.mentions.byTask.replace(
                         "{task}",
                         taskName,
                       )}
                     </p>
-                    <p className="text-muted-foreground text-[10px] font-black uppercase">
+                    <p className="text-muted-foreground text-[10px] font-bold">
                       {timeAgo ? digitsEnToFa(timeAgo) : "—"}
                     </p>
                   </div>
@@ -102,7 +102,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-9 rounded-none"
+                      className="size-9 rounded-lg"
                       onClick={() => handleMarkAsRead(mention.id)}
                     >
                       <IconCheck className="size-4" />
@@ -110,7 +110,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
                     {mentionWithExpand.task && (
                       <Link
                         to={`/tasks/${mentionWithExpand.task}`}
-                        className="text-primary text-[10px] font-black tracking-tight uppercase"
+                        className="text-primary text-xs font-bold"
                       >
                         {notificationsText.mentions.viewTask}
                       </Link>
@@ -130,7 +130,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
 
       {!isLoading && mentions.length > 0 && (
         <div className="border-border/20 flex items-center justify-end gap-2 border-t pt-4">
-          <div className="text-muted-foreground flex items-center gap-2 text-[10px] font-black tracking-tight uppercase">
+          <div className="text-muted-foreground flex items-center gap-2 text-[10px] font-bold">
             <IconCircleCheck className="size-3" />
             {notificationsText.actions.markAsRead}
           </div>
