@@ -20,6 +20,7 @@ export const tasks = {
   list: {
     noTasks: "تسکی وجود ندارد",
     openMenu: "باز کردن منو",
+    count: "تعداد",
   },
 
   // Task priority levels
