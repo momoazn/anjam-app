@@ -131,11 +131,11 @@ export default function TimesheetPage() {
 
   const headerActions = (
     <div className="flex items-center gap-4">
-      <div className="border-primary/20 me-2 flex flex-col items-end border-e-2 pe-4">
-        <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+      <div className="border-border me-2 flex flex-col items-end border-e pe-4">
+        <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
           Weekly Total
         </span>
-        <div className="text-primary text-right text-sm font-black tabular-nums">
+        <div className="text-primary text-right text-sm font-bold tabular-nums">
           {digitsEnToFa(weeklyTotalTime.hours)}h{" "}
           {digitsEnToFa(weeklyTotalTime.minutes)}m
         </div>
@@ -143,7 +143,7 @@ export default function TimesheetPage() {
       <Button
         onClick={handleExport}
         variant="outline"
-        className="border-border bg-card h-12 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md transition-all active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+        className="h-11 px-6 font-bold shadow-sm"
       >
         <IconDownload className="ms-2 size-4" />
         {common.buttons.export}
@@ -155,10 +155,10 @@ export default function TimesheetPage() {
     return (
       <PageTransition className="container mx-auto p-4 md:p-6">
         <div className="animate-pulse space-y-10">
-          <div className="bg-muted/20 h-24 w-full" />
-          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-7">
+          <div className="bg-muted/20 h-24 w-full rounded-xl" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
             {["s1", "s2", "s3", "s4", "s5", "s6", "s7"].map((key) => (
-              <div key={key} className="bg-card h-64" />
+              <div key={key} className="bg-muted/20 h-64 rounded-xl" />
             ))}
           </div>
         </div>
@@ -176,60 +176,55 @@ export default function TimesheetPage() {
       />
 
       {tasksByDay.every((d) => d.tasks.length === 0) ? (
-        <div className="border-border/40 flex flex-col items-center justify-center border border-dashed py-24 text-center opacity-30 grayscale">
-          <div className="border-border/40 mb-6 flex h-20 w-20 items-center justify-center border">
-            <IconClock className="size-10 stroke-[1]" />
+        <div className="border-border flex flex-col items-center justify-center rounded-xl border border-dashed py-24 text-center">
+          <div className="bg-muted/30 mb-6 flex h-20 w-20 items-center justify-center rounded-full">
+            <IconClock className="text-muted-foreground size-10 stroke-[1.5]" />
           </div>
-          <h3 className="text-foreground mb-2 text-lg font-black tracking-tight uppercase">
-            {timesheet.noTimeSpent}
-          </h3>
-          <p className="text-muted-foreground mb-8 text-xs font-bold tracking-tight uppercase">
+          <h3 className="text-lg font-bold">{timesheet.noTimeSpent}</h3>
+          <p className="text-muted-foreground mb-8 text-sm font-medium">
             {timesheet.emptyStateDescription}
           </p>
           <div className="flex gap-4">
-            <Button
-              asChild
-              className="h-12 rounded-none px-8 font-black shadow-md"
-            >
+            <Button asChild className="h-11 px-8 font-bold shadow-sm">
               <Link to="/tasks/new">{timesheet.createTaskCta}</Link>
             </Button>
           </div>
         </div>
       ) : (
         <div
-          className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-7"
+          className="grid grid-cols-1 gap-4 md:grid-cols-7"
           data-animate-stagger
         >
           {tasksByDay.map(({ date, tasks: dayTasks, totalTime }) => (
             <div
               key={date.toISOString()}
-              className="bg-card flex min-h-[400px] flex-col"
+              className="bg-card border-border flex min-h-[400px] flex-col overflow-hidden rounded-xl border shadow-sm"
             >
-              <div className="border-border/20 bg-muted/10 border-b p-4 text-right">
-                <span className="text-muted-foreground/60 text-[10px] leading-none font-black tracking-tight uppercase">
+              <div className="bg-muted/30 border-border border-b p-4 text-right">
+                <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
                   {format(date, "EEEE", { locale: faIR })}
                 </span>
                 <div className="mt-1 flex items-baseline justify-end gap-2">
-                  <span className="text-lg font-black tabular-nums">
+                  <span className="text-lg font-bold tabular-nums">
                     {digitsEnToFa(format(date, "MM/dd"))}
                   </span>
                 </div>
                 {totalTime.hours > 0 || totalTime.minutes > 0 ? (
                   <div className="text-primary mt-3 flex items-center justify-end gap-1.5">
-                    <IconClock className="size-3" />
-                    <span className="text-[10px] font-black tabular-nums">
+                    <IconClock className="size-3.5" />
+                    <span className="text-xs font-bold tabular-nums">
                       {digitsEnToFa(totalTime.hours)}h{" "}
                       {digitsEnToFa(totalTime.minutes)}m
                     </span>
                   </div>
                 ) : (
-                  <div className="text-muted-foreground/30 mt-3 text-right text-[10px] font-bold">
+                  <div className="text-muted-foreground/30 mt-3 text-right text-xs font-medium">
                     -
                   </div>
                 )}
               </div>
 
-              <div className="divide-border/10 flex-1 divide-y p-0">
+              <div className="divide-border flex-1 divide-y p-0">
                 {dayTasks.length > 0 ? (
                   dayTasks.map((t) => {
                     const tTime = minutesToHoursAndMinutes(
@@ -238,30 +233,29 @@ export default function TimesheetPage() {
                     return (
                       <div
                         key={t.id}
-                        className="group hover:bg-muted/30 relative overflow-hidden p-4 text-right transition-colors"
+                        className="group hover:bg-muted/30 relative p-4 text-right transition-colors"
                       >
-                        <span className="text-primary/40 mb-1 block text-[8px] font-black tracking-tight uppercase">
+                        <span className="text-primary/60 mb-1 block text-[10px] font-bold tracking-wider uppercase">
                           {(t.expand as { project?: { name?: string } })
                             ?.project?.name || reports.fallbacks.projectName}
                         </span>
-                        <div className="group-hover:text-primary mb-3 truncate text-[11px] leading-tight font-black tracking-tight transition-colors">
+                        <div className="group-hover:text-primary mb-3 truncate text-xs font-bold transition-colors">
                           {t.title}
                         </div>
-                        <div className="flex items-center justify-end gap-1.5 opacity-40">
-                          <IconClock className="size-2.5" />
-                          <span className="text-[9px] font-black tabular-nums">
+                        <div className="flex items-center justify-end gap-1.5 opacity-60">
+                          <IconClock className="size-3" />
+                          <span className="text-[10px] font-bold tabular-nums">
                             {tTime.hours > 0 &&
                               `${digitsEnToFa(tTime.hours)}h `}
                             {digitsEnToFa(tTime.minutes)}m
                           </span>
                         </div>
-                        <div className="bg-primary/20 absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
                       </div>
                     );
                   })
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 opacity-10">
-                    <IconHistory className="size-6 stroke-[1]" />
+                    <IconHistory className="size-6 stroke-[1.5]" />
                   </div>
                 )}
               </div>

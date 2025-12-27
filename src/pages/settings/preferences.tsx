@@ -14,7 +14,7 @@ export function PreferencesPage() {
         icon={IconSettings}
       />
 
-      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
+      <div className="mt-8">
         <PreferencesSection />
       </div>
     </PageTransition>

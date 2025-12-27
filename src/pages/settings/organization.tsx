@@ -3,22 +3,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { IconBuilding, IconDeviceFloppy, IconX } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { Form } from "@/components/ui/form";
+import { FormField } from "@/components/forms/form-field";
 import { organization, shared } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { useCurrentOrganization } from "@/store/auth-store";
+import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 
 const orgSettingsSchema = z.object({
   name: z.string().min(1).max(200),
@@ -71,102 +65,97 @@ export function OrgSettingsPage() {
 
   if (!currentOrg) {
     return (
-      <div className="container mx-auto py-12">
-        <p className="text-muted-foreground text-center">
-          {organization.notFound}
-        </p>
-      </div>
+      <PageTransition className="container mx-auto py-12">
+        <div className="border-border bg-background relative overflow-hidden rounded-lg border p-12 text-center shadow-sm">
+          <p className="text-foreground relative z-10 text-lg font-semibold">
+            {organization.notFound}
+          </p>
+        </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-2xl py-8">
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-black tracking-tight">
-          {organization.settings.title}
-        </h1>
+    <PageTransition className="container mx-auto max-w-3xl p-4 md:p-6">
+      <PageHeader
+        title={organization.settings.title}
+        description="Manage your organization settings and metadata"
+        icon={IconBuilding}
+      />
+
+      <div className="mt-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <section className="border-border bg-card relative overflow-hidden rounded-lg border p-8 shadow-sm">
+              <div className="relative z-10">
+                <div className="border-border mb-8 flex items-center gap-4 border-b pb-4">
+                  <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-md">
+                    <IconBuilding className="size-6" />
+                  </div>
+                  <div className="text-right">
+                    <h3 className="text-lg font-bold tracking-tight">
+                      {organization.settings.general}
+                    </h3>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      General Information
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    label={organization.settings.name}
+                    type="input"
+                    placeholder={organization.settings.namePlaceholder}
+                    required
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="slug"
+                    label={organization.settings.slug}
+                    type="input"
+                    placeholder={organization.settings.slugPlaceholder}
+                    required
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    label={organization.settings.description}
+                    type="textarea"
+                    placeholder={organization.settings.descriptionPlaceholder}
+                  />
+                </div>
+              </div>
+            </section>
+
+            <div className="flex flex-row-reverse gap-4">
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="h-11 px-8"
+              >
+                <IconDeviceFloppy className="me-2 size-5" />
+                {form.formState.isSubmitting
+                  ? shared.saving
+                  : organization.settings.save}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate(-1)}
+                className="h-11 px-8"
+              >
+                <IconX className="me-2 size-5" />
+                {shared.cancel}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                {organization.settings.general}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{organization.settings.name}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={organization.settings.namePlaceholder}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{organization.settings.slug}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={organization.settings.slugPlaceholder}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{organization.settings.description}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={
-                          organization.settings.descriptionPlaceholder
-                        }
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          <div className="flex gap-4">
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting
-                ? shared.saving
-                : organization.settings.save}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate(-1)}
-            >
-              {shared.cancel}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+    </PageTransition>
   );
 }

@@ -52,13 +52,10 @@ export default function Users() {
   const headerActions = canCreateUsers ? (
     <Button
       onClick={() => navigate("/users/new")}
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
-      size="lg"
+      className="h-12 gap-2 px-6 font-bold shadow-sm"
     >
       <IconPlus className="size-5" />
-      <span className="tracking-tight uppercase">
-        {usersText.create.button}
-      </span>
+      <span>{usersText.create.button}</span>
     </Button>
   ) : null;
 
@@ -78,8 +75,8 @@ export default function Users() {
         <div className="space-y-6">
           {isLoadingUsers ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <IconUsers className="text-primary size-12 animate-pulse opacity-20" />
-              <h3 className="text-foreground mt-4 text-[10px] font-black tracking-tight uppercase opacity-40">
+              <div className="border-primary h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" />
+              <h3 className="text-muted-foreground mt-4 text-sm font-medium">
                 Loading users...
               </h3>
             </div>

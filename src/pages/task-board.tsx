@@ -18,7 +18,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { BoardColumn } from "@/components/task/board/board-column";
 import { BoardCard } from "@/components/task/board/board-card";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { pb, TaskWithProject } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks/query-keys";
@@ -29,7 +28,12 @@ import {
   TasksRecord,
   ProjectsResponse,
 } from "@/lib/pocketbase-types";
-import { IconLayoutGrid, IconPlus, IconList } from "@tabler/icons-react";
+import {
+  IconLayoutGrid,
+  IconPlus,
+  IconList,
+  IconHash,
+} from "@tabler/icons-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 const dropAnimation: DropAnimation = {
@@ -177,39 +181,6 @@ export function TaskBoardPage() {
     }
   };
 
-  const headerActions = (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        variant="ghost"
-        size="lg"
-        onClick={() =>
-          navigate(projectId ? `/projects/${projectId}/tasks` : "/tasks")
-        }
-        className="hover:bg-primary/5 hover:text-primary border-border/40 bg-muted/20 h-12 gap-3 rounded-none border px-6 font-bold transition-all"
-      >
-        <IconList className="size-4" />
-        <span className="text-[11px] font-black tracking-tight uppercase">
-          List View
-        </span>
-      </Button>
-
-      <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
-        size="lg"
-        onClick={() =>
-          navigate(
-            projectId ? `/projects/${projectId}/tasks/new` : "/tasks/new",
-          )
-        }
-      >
-        <IconPlus className="size-5" />
-        <span className="tracking-tight uppercase">
-          {tasksText.addTask.buttons.newTask}
-        </span>
-      </Button>
-    </div>
-  );
-
   if (isLoading) {
     return (
       <div className="flex flex-1 items-center justify-center p-24">
@@ -219,27 +190,68 @@ export function TaskBoardPage() {
   }
 
   return (
-    <PageTransition className="container mx-auto flex h-[calc(100vh-4rem)] flex-col p-4 md:p-6">
-      <PageHeader
-        title={
-          projectId
-            ? `${project?.name} :: ${tasksText.board.title}`
-            : tasksText.board.title
-        }
-        description={tasksText.header.tasksFound.replace(
-          "{count}",
-          digitsEnToFa(tasksData.length).toString(),
-        )}
-        icon={IconLayoutGrid}
-        actions={headerActions}
-      />
+    <PageTransition className="flex h-[calc(100vh-4rem)] flex-col">
+      {/* Minimal Header */}
+      <div className="bg-card border-border border-b">
+        <div className="relative z-10 flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:px-8">
+          <div className="space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2">
+              <IconHash className="size-4" />
+              <span className="text-xs font-semibold tracking-wider uppercase">
+                {projectId ? project?.code : "GLOBAL"} / BOARD
+              </span>
+            </div>
+
+            <h1 className="text-3xl font-bold tracking-tight">
+              {projectId ? project?.name : tasksText.board.title}
+            </h1>
+
+            <div className="flex items-center gap-2">
+              <div className="bg-primary/10 text-primary flex size-5 items-center justify-center rounded-md">
+                <IconLayoutGrid className="size-3.5" />
+              </div>
+              <span className="text-muted-foreground text-xs font-medium">
+                {tasksText.header.tasksFound.replace(
+                  "{count}",
+                  digitsEnToFa(tasksData.length).toString(),
+                )}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Button
+              variant="outline"
+              onClick={() =>
+                navigate(projectId ? `/projects/${projectId}/tasks` : "/tasks")
+              }
+              className="h-11 px-6 font-bold"
+            >
+              <IconList className="ms-2 size-4" />
+              List View
+            </Button>
+
+            <Button
+              onClick={() =>
+                navigate(
+                  projectId ? `/projects/${projectId}/tasks/new` : "/tasks/new",
+                )
+              }
+              className="h-11 px-6 font-bold shadow-sm"
+            >
+              <IconPlus className="ms-2 size-5" />
+              {tasksText.addTask.buttons.newTask}
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       >
-        <div className="bg-border/40 border-border/40 scrollbar-none flex flex-1 gap-px overflow-x-auto overflow-y-hidden border">
+        <div className="scrollbar-none bg-muted/30 flex flex-1 gap-4 overflow-x-auto overflow-y-hidden p-4">
           {TASK_STATUS_ORDER.map((statusKey) => (
             <BoardColumn
               key={statusKey}
@@ -252,7 +264,7 @@ export function TaskBoardPage() {
         {createPortal(
           <DragOverlay dropAnimation={dropAnimation}>
             {activeTask && (
-              <div className="ring-primary border-border w-[300px] border opacity-80 shadow-2xl ring-2">
+              <div className="border-primary/20 bg-card w-[320px] overflow-hidden rounded-xl border opacity-90 shadow-2xl">
                 <BoardCard task={activeTask} />
               </div>
             )}

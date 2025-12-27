@@ -88,16 +88,16 @@ export default function Login() {
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
           <Logo size={40} showTelemetry />
-          <span className="text-sm font-black tracking-tight uppercase opacity-70">
+          <span className="text-muted-foreground text-sm font-semibold tracking-tight">
             {app.name} / Secure Access
           </span>
         </div>
 
         <div className="relative">
-          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-black uppercase select-none">
+          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-bold select-none">
             ANJAM
           </div>
-          <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
+          <h2 className="relative z-10 text-6xl leading-tight font-bold tracking-tight lg:text-7xl xl:text-8xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
             <br />
             <span className="text-primary">
@@ -117,15 +117,15 @@ export default function Login() {
         <PageTransition className="w-full" disableStagger>
           <div className="mb-10 lg:hidden">
             <Logo size={48} className="mb-6" />
-            <h2 className="text-4xl font-black tracking-tight">
+            <h2 className="text-4xl font-bold tracking-tight">
               {auth.login.title}
             </h2>
           </div>
 
-          <div className="bg-card relative rounded-none border p-8 shadow-2xl lg:p-10">
-            <div className="mb-8 flex items-center justify-between border-b pb-6">
+          <div className="bg-card border-border relative rounded-xl border p-8 shadow-xl lg:p-10">
+            <div className="border-border mb-8 flex items-center justify-between border-b pb-6">
               <div>
-                <h3 className="text-xl font-black tracking-tight">
+                <h3 className="text-xl font-bold tracking-tight">
                   {auth.login.title}
                 </h3>
                 <p className="text-muted-foreground mt-1 text-xs font-medium">
@@ -138,17 +138,17 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                  <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                     {auth.login.username}
                   </Label>
-                  <IconUserBolt className="text-muted-foreground/40 size-3" />
+                  <IconUserBolt className="text-muted-foreground/40 size-3.5" />
                 </div>
                 <Input
                   type="text"
                   value={identity}
                   dir="ltr"
                   onChange={(e) => setIdentity(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  className="h-12 px-4 font-medium"
                   placeholder="name@company.com"
                   required
                   autoFocus
@@ -163,16 +163,16 @@ export default function Login() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                  <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                     {auth.login.password}
                   </Label>
-                  <IconServer className="text-muted-foreground/40 size-3" />
+                  <IconServer className="text-muted-foreground/40 size-3.5" />
                 </div>
                 <Input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  className="h-12 px-4 font-medium"
                   placeholder="••••••••"
                   required
                   dir="ltr"
@@ -187,7 +187,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
+                className="h-14 w-full text-base font-bold shadow-sm"
                 disabled={submitting}
               >
                 <span className="flex items-center gap-2">
@@ -198,11 +198,11 @@ export default function Login() {
                 </span>
               </Button>
             </form>
-            <div className="mt-6 flex items-center justify-between border-t pt-4">
+            <div className="border-border mt-6 flex items-center justify-between border-t pt-4">
               <span className="text-muted-foreground text-xs font-semibold">
                 {auth.login.noAccountPrompt}
               </span>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="font-bold">
                 <Link to="/register">{auth.login.registerButton}</Link>
               </Button>
             </div>

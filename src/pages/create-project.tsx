@@ -1,6 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { IconLoader2, IconStack2 } from "@tabler/icons-react";
+import {
+  IconLoader2,
+  IconStack2,
+  IconDeviceFloppy,
+  IconX,
+} from "@tabler/icons-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -101,36 +106,56 @@ export default function CreateProject() {
         icon={IconStack2}
       />
 
-      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
+      <div className="mt-8">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-            <ProjectFields
-              control={form.control}
-              showSupervisor={true}
-              isAdmin={isAdmin}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="bg-card rounded-xl border p-6 shadow-sm">
+              <div className="mb-8 flex items-center gap-4 border-b pb-6">
+                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                  <IconStack2 className="size-6" stroke={2} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">
+                    {projects.details.information}
+                  </h3>
+                  <p className="text-muted-foreground text-xs font-medium">
+                    {projects.create.form.description}
+                  </p>
+                </div>
+              </div>
 
-            <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
+              <ProjectFields
+                control={form.control}
+                showSupervisor={true}
+                isAdmin={isAdmin}
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 onClick={handleCancel}
                 disabled={isPending}
-                className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
+                className="h-11 rounded-lg px-6 font-bold"
               >
+                <IconX className="me-2 size-4" stroke={2.5} />
                 {common.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
+                className="shadow-primary/20 h-11 rounded-lg px-8 font-bold shadow-lg"
               >
-                {isPending && (
-                  <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
+                {isPending ? (
+                  <IconLoader2
+                    className="me-2 size-4 animate-spin"
+                    stroke={2.5}
+                  />
+                ) : (
+                  <IconDeviceFloppy className="me-2 size-4" stroke={2.5} />
                 )}
-                <span className="tracking-tight uppercase">
-                  {projects.create.submit}
-                </span>
+                {projects.create.submit}
               </Button>
             </div>
           </form>

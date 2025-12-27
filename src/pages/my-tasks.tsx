@@ -172,29 +172,25 @@ export default function MyTasks() {
     <div className="flex flex-wrap gap-2">
       <Button
         variant={selectionMode ? "secondary" : "outline"}
-        size="lg"
         onClick={toggleSelectionMode}
         className={cn(
-          "border-border/40 bg-muted/20 h-12 gap-3 rounded-none px-6 font-bold transition-all",
+          "h-11 gap-2 px-5 font-bold transition-all",
           selectionMode && "bg-primary/10 text-primary border-primary/30",
         )}
       >
         <IconChecklist className="size-4" />
-        <span className="text-[11px] font-black tracking-tight uppercase">
+        <span className="text-xs">
           {selectionMode
             ? common.buttons.cancelSelection
             : common.buttons.multiSelect}
         </span>
       </Button>
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
-        size="lg"
+        className="h-11 gap-2 px-6 font-bold shadow-sm"
         onClick={() => navigate("/tasks/new")}
       >
         <IconPlus className="size-5" />
-        <span className="tracking-tight uppercase">
-          {tasks.addTask.buttons.newTask}
-        </span>
+        <span>{tasks.addTask.buttons.newTask}</span>
       </Button>
     </div>
   );

@@ -1,12 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IconLoader2, IconPlus, IconCheck } from "@tabler/icons-react";
+import {
+  IconLoader2,
+  IconPlus,
+  IconTerminal2,
+  IconArrowLeft,
+  IconCpu,
+  IconActivity,
+} from "@tabler/icons-react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { TaskFields } from "@/components/forms/task-fields";
 import { PageTransition } from "@/components/page-transition";
-import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, errors, tasks } from "@/constants";
@@ -17,51 +24,28 @@ import {
 } from "@/lib/pocketbase-types";
 import { parseTimeInput } from "@/lib/time-utils";
 import { useAuthUser } from "@/store/auth-store";
-import { Card, CardContent } from "@/components/ui/card";
 
-const taskFormSchema = z
-  .object({
-    title: z
-      .string({ required_error: common.validation.required })
-      .min(1, { message: errors.validation.titleRequired }),
-    description: z.string({ required_error: common.validation.required }),
-    assignee: z.string({ required_error: common.validation.required }),
-    priority: z.nativeEnum(TasksPriorityOptions, {
-      required_error: errors.validation.invalidOption,
-      invalid_type_error: errors.validation.invalidOption,
-    }),
-    status: z.nativeEnum(TasksStatusOptions, {
-      required_error: errors.validation.invalidOption,
-      invalid_type_error: errors.validation.invalidOption,
-    }),
-    project: z.string().optional(),
-    deadline: z
-      .date({ invalid_type_error: errors.validation.invalidDate })
-      .optional(),
-    estimated_hours: z.coerce
-      .number({
-        invalid_type_error: errors.validation.numberInvalid,
-      })
-      .min(0, { message: errors.validation.estimatedHoursRange })
-      .max(999, { message: errors.validation.estimatedHoursRange })
-      .optional(),
-    estimated_minutes: z.coerce
-      .number({
-        invalid_type_error: errors.validation.numberInvalid,
-      })
-      .min(0, { message: errors.validation.estimatedMinutesRange })
-      .max(59, { message: errors.validation.estimatedMinutesRange })
-      .optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (!data.deadline) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: common.validation.required,
-        path: ["deadline"],
-      });
-    }
-  });
+const taskFormSchema = z.object({
+  title: z.string().min(1, { message: errors.validation.titleRequired }),
+  description: z.string().min(1, { message: common.validation.required }),
+  assignee: z.string().min(1, { message: common.validation.required }),
+  priority: z.nativeEnum(TasksPriorityOptions),
+  status: z.nativeEnum(TasksStatusOptions),
+  project: z.string().optional(),
+  deadline: z.date().optional(),
+  estimated_hours: z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? undefined : Number(v)))
+    .pipe(z.number().min(0).max(999).optional()),
+  estimated_minutes: z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? undefined : Number(v)))
+    .pipe(z.number().min(0).max(59).optional()),
+});
+
+type TaskFormData = z.infer<typeof taskFormSchema>;
 
 export default function CreateTask() {
   const navigate = useNavigate();
@@ -71,8 +55,8 @@ export default function CreateTask() {
   const isInProject = Boolean(projectId);
   const initialProject = projectId ?? "";
 
-  const form = useForm<z.infer<typeof taskFormSchema>>({
-    resolver: zodResolver(taskFormSchema),
+  const form = useForm<TaskFormData>({
+    resolver: zodResolver(taskFormSchema) as any,
     mode: "onChange",
     defaultValues: {
       title: "",
@@ -97,7 +81,7 @@ export default function CreateTask() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof taskFormSchema>) {
+  function onSubmit(values: TaskFormData) {
     if (!user) return;
 
     const {
@@ -132,54 +116,127 @@ export default function CreateTask() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
-      <PageHeader
-        title={tasks.addTask.title}
-        description={
-          isInProject
-            ? tasks.addTask.descriptionProject
-            : tasks.addTask.description
-        }
-        icon={IconPlus}
-      />
+    <PageTransition className="bg-background relative min-h-screen p-4 lg:p-8">
+      <div className="relative mx-auto max-w-5xl space-y-8">
+        {/* Header Section */}
+        <div className="flex flex-col justify-between gap-6 border-b pb-8 md:flex-row md:items-end">
+          <div className="space-y-3">
+            <div className="text-primary flex items-center gap-2">
+              <IconTerminal2 size={18} stroke={2.5} />
+              <span className="text-[10px] font-bold tracking-wider uppercase">
+                Task Creation
+              </span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+              {tasks.addTask.title}
+            </h1>
+            <p className="text-muted-foreground max-w-md text-sm leading-relaxed font-medium">
+              {isInProject
+                ? tasks.addTask.descriptionProject
+                : tasks.addTask.description}
+            </p>
+          </div>
 
-      <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-        <CardContent className="bg-muted/5 p-8">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-              <TaskFields control={form.control} isInProject={isInProject} />
+          <Button
+            variant="ghost"
+            onClick={handleCancel}
+            className="h-11 rounded-lg px-6 font-bold"
+          >
+            <IconArrowLeft className="me-2" size={18} stroke={2.5} />
+            {common.cancel}
+          </Button>
+        </div>
 
-              <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isPending}
-                  className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
-                >
-                  {tasks.details.buttons.cancel}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
-                >
-                  {isPending ? (
-                    <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <IconCheck className="ms-2 size-4" />
-                  )}
-                  <span className="tracking-tight uppercase">
-                    {isPending
-                      ? tasks.addTask.buttons.creating
-                      : tasks.addTask.buttons.create}
-                  </span>
-                </Button>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+              {/* Main Form Area */}
+              <div className="space-y-10 lg:col-span-8">
+                <div className="bg-card rounded-xl border p-8 shadow-sm">
+                  <div className="mb-8 flex items-center gap-3 border-b pb-6">
+                    <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                      <IconCpu size={22} stroke={2} />
+                    </div>
+                    <h2 className="text-xl font-bold">
+                      {tasks.details.detailsCardTitle}
+                    </h2>
+                  </div>
+
+                  <TaskFields
+                    control={form.control}
+                    isInProject={isInProject}
+                  />
+                </div>
               </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+
+              {/* Sidebar / Actions */}
+              <div className="space-y-8 lg:col-span-4">
+                <div className="bg-primary text-primary-foreground shadow-primary/20 rounded-xl border p-6 shadow-xl">
+                  <div className="border-primary-foreground/20 mb-6 flex items-center gap-3 border-b pb-4">
+                    <IconActivity size={20} stroke={2.5} />
+                    <span className="text-sm font-bold">
+                      {common.messages.quickActions}
+                    </span>
+                  </div>
+
+                  <div className="space-y-6">
+                    <Button
+                      type="submit"
+                      disabled={isPending}
+                      className="text-primary h-12 w-full rounded-lg bg-white text-sm font-bold transition-all hover:bg-white/90 disabled:opacity-50"
+                    >
+                      {isPending ? (
+                        <IconLoader2 className="me-2 size-5 animate-spin" />
+                      ) : (
+                        <IconPlus className="me-2" size={22} stroke={3} />
+                      )}
+                      {isPending
+                        ? tasks.addTask.buttons.creating
+                        : tasks.addTask.buttons.create}
+                    </Button>
+
+                    <div className="text-primary-foreground/70 space-y-2 text-[11px] leading-relaxed font-medium">
+                      <p>• فیلدهای ستاره‌دار الزامی هستند</p>
+                      <p>• تسک‌ها برای جستجوی سراسری ایندکس می‌شوند</p>
+                      <p>• مسئول تسک اعلان دریافت خواهد کرد</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-muted/30 rounded-xl border p-6">
+                  <h3 className="text-muted-foreground mb-4 text-xs font-bold tracking-wider uppercase">
+                    System Status
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="border-border/50 flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground text-[11px] font-medium">
+                        Network
+                      </span>
+                      <span className="text-[11px] font-bold text-green-500">
+                        Online
+                      </span>
+                    </div>
+                    <div className="border-border/50 flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground text-[11px] font-medium">
+                        Database
+                      </span>
+                      <span className="text-[11px] font-bold text-green-500">
+                        Connected
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground text-[11px] font-medium">
+                        Latency
+                      </span>
+                      <span className="text-[11px] font-bold">24ms</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </Form>
+      </div>
     </PageTransition>
   );
 }

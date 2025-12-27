@@ -152,7 +152,7 @@ export default function Notifications() {
 
   const headerActions = (
     <TooltipProvider>
-      <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
+      <div className="flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -160,12 +160,12 @@ export default function Notifications() {
               size="icon"
               onClick={() => user?.id && markAllAsRead.mutate(user.id)}
               disabled={unreadCount === 0}
-              className="hover:bg-primary/10 hover:text-primary size-10 rounded-none transition-all disabled:opacity-20"
+              className="hover:bg-primary/10 hover:text-primary size-10 rounded-lg transition-all disabled:opacity-20"
             >
               <IconCheck className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="border-border bg-card text-foreground rounded-none border text-[9px] font-black tracking-tight uppercase">
+          <TooltipContent className="border-border bg-card text-foreground rounded-md border text-xs font-bold">
             {notificationsText.markAllAsRead}
           </TooltipContent>
         </Tooltip>
@@ -177,12 +177,12 @@ export default function Notifications() {
               size="icon"
               onClick={() => user?.id && clearRead.mutate(user.id)}
               disabled={readCount === 0}
-              className="size-10 rounded-none text-amber-500 transition-all hover:bg-amber-500/10 disabled:opacity-20"
+              className="size-10 rounded-lg text-amber-500 transition-all hover:bg-amber-500/10 disabled:opacity-20"
             >
               <IconTrashX className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="border-border bg-card text-foreground rounded-none border text-[9px] font-black tracking-tight uppercase">
+          <TooltipContent className="border-border bg-card text-foreground rounded-md border text-xs font-bold">
             {notificationsText.actions.clearRead}
           </TooltipContent>
         </Tooltip>
@@ -194,12 +194,12 @@ export default function Notifications() {
               size="icon"
               onClick={() => user?.id && clearAll.mutate(user.id)}
               disabled={notificationsData.length === 0}
-              className="size-10 rounded-none text-rose-500 transition-all hover:bg-rose-500/10 disabled:opacity-20"
+              className="size-10 rounded-lg text-rose-500 transition-all hover:bg-rose-500/10 disabled:opacity-20"
             >
               <IconTrash className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="border-border bg-card text-foreground rounded-none border text-[9px] font-black tracking-tight uppercase">
+          <TooltipContent className="border-border bg-card text-foreground rounded-md border text-xs font-bold">
             {notificationsText.clearAll}
           </TooltipContent>
         </Tooltip>
@@ -217,8 +217,8 @@ export default function Notifications() {
       />
 
       {/* Stats Bar */}
-      <Card className="border-border/40 mb-8 overflow-hidden rounded-none shadow-sm">
-        <CardContent className="bg-border/40 grid grid-cols-2 gap-px p-0 sm:grid-cols-4">
+      <Card className="border-border mb-8 overflow-hidden rounded-xl border shadow-sm">
+        <CardContent className="bg-border grid grid-cols-2 gap-px p-0 sm:grid-cols-4">
           {[
             {
               label: notificationsText.stats.total,
@@ -250,12 +250,12 @@ export default function Notifications() {
               className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
             >
               <div className="mb-2 flex items-center justify-end gap-3">
-                <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+                <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
                   {stat.label}
                 </span>
                 <stat.icon className={cn("size-4", stat.color)} />
               </div>
-              <div className="text-3xl font-black tracking-tighter">
+              <div className="text-3xl font-bold tracking-tight">
                 {digitsEnToFa(stat.value)}
               </div>
             </div>
@@ -263,8 +263,8 @@ export default function Notifications() {
         </CardContent>
       </Card>
 
-      <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-        <CardContent className="bg-muted/5 p-6">
+      <Card className="border-border overflow-hidden rounded-xl border shadow-sm">
+        <CardContent className="p-6">
           <NotificationFilters
             filter={filter}
             sort={sort}
