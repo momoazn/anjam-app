@@ -135,7 +135,7 @@ export function FileUpload({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         className={cn(
-          "relative overflow-hidden border-4 border-dashed p-10 text-center transition-all duration-200",
+          "relative overflow-hidden rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-200",
           disabled
             ? "border-foreground/10 bg-foreground/5 cursor-not-allowed"
             : "border-foreground/20 bg-foreground/[0.02] hover:border-foreground hover:bg-foreground/[0.04] cursor-pointer",
@@ -158,14 +158,14 @@ export function FileUpload({
             disabled ? "cursor-not-allowed" : "cursor-pointer",
           )}
         >
-          <div className="bg-foreground text-background flex h-16 w-16 items-center justify-center">
-            <IconUpload className="size-8" stroke={3} />
+          <div className="bg-foreground text-background flex h-16 w-16 items-center justify-center rounded-xl">
+            <IconUpload className="size-8" stroke={2} />
           </div>
           <div className="space-y-1">
-            <p className="text-foreground text-lg font-black tracking-tighter uppercase">
+            <p className="text-foreground text-lg font-bold tracking-tight">
               {projects.files.dropzone}
             </p>
-            <div className="text-muted-foreground flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-bold tracking-widest uppercase">
+            <div className="text-muted-foreground flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-bold tracking-widest">
               <span>MAX_SIZE: {formatFileSize(maxSize)}</span>
               <span>ALLOWED: PDF, DOC, IMG, ZIP</span>
             </div>
@@ -179,10 +179,10 @@ export function FileUpload({
           {value.map((file, index) => (
             <div
               key={`${file.name}-${index}`}
-              className="group border-foreground/10 bg-background hover:border-foreground relative flex items-center gap-4 border-2 p-3 transition-all"
+              className="group border-foreground/10 bg-background hover:border-foreground relative flex items-center gap-4 rounded-xl border p-3 transition-all"
             >
               {/* Preview or Icon */}
-              <div className="border-foreground/5 bg-foreground/5 flex h-12 w-12 shrink-0 items-center justify-center border-2">
+              <div className="border-foreground/5 bg-foreground/5 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border">
                 {file.preview ? (
                   <img
                     src={file.preview}
@@ -198,7 +198,7 @@ export function FileUpload({
 
               {/* File Info */}
               <div className="min-w-0 flex-1 text-right">
-                <p className="text-foreground truncate text-xs font-black tracking-tight uppercase">
+                <p className="text-foreground truncate text-xs font-bold tracking-tight">
                   {file.name}
                 </p>
                 <p className="text-muted-foreground font-mono text-[10px] font-bold">
@@ -213,9 +213,9 @@ export function FileUpload({
                 size="icon"
                 onClick={() => handleRemove(index)}
                 disabled={disabled}
-                className="border-foreground/10 hover:border-destructive hover:bg-destructive hover:text-destructive-foreground h-8 w-8 shrink-0 rounded-none border-2"
+                className="border-foreground/10 hover:border-destructive hover:bg-destructive hover:text-destructive-foreground h-8 w-8 shrink-0 rounded-lg border"
               >
-                <IconX className="size-4" stroke={3} />
+                <IconX className="size-4" stroke={2} />
               </Button>
             </div>
           ))}

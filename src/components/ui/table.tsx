@@ -8,13 +8,15 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="border-foreground relative w-full overflow-x-auto border-4 shadow-[12px_12px_0_0_rgba(0,0,0,1)]"
+      className="border-border relative w-full overflow-hidden rounded-2xl border shadow-sm"
     >
-      <table
-        data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
-        {...props}
-      />
+      <div className="overflow-x-auto">
+        <table
+          data-slot="table"
+          className={cn("w-full caption-bottom text-sm", className)}
+          {...props}
+        />
+      </div>
     </div>
   );
 }
@@ -23,7 +25,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("bg-foreground text-background [&_tr]:border-0", className)}
+      className={cn("bg-muted/50 text-foreground [&_tr]:border-0", className)}
       {...props}
     />
   );
@@ -44,7 +46,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        "bg-foreground/5 border-foreground border-t-4 font-black [&>tr]:last:border-b-0",
+        "bg-foreground/5 border-border border-t font-bold [&>tr]:last:border-b-0",
         className,
       )}
       {...props}
@@ -57,7 +59,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "border-foreground/5 hover:bg-foreground/[0.02] data-[state=selected]:bg-foreground/[0.05] border-b-2 transition-all duration-200",
+        "border-border hover:bg-foreground/[0.02] data-[state=selected]:bg-foreground/[0.05] border-b transition-all duration-200",
         className,
       )}
       {...props}
@@ -70,7 +72,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-12 px-4 text-right align-middle font-black tracking-widest whitespace-nowrap uppercase [&:has([role=checkbox])]:pr-0",
+        "h-12 px-4 text-right align-middle font-bold tracking-tight whitespace-nowrap [&:has([role=checkbox])]:pr-0",
         className,
       )}
       {...props}

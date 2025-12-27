@@ -31,7 +31,7 @@ export function MetricCard({
   return (
     <Card className="border-border rounded-xl border shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+        <CardTitle className="text-muted-foreground text-xs font-bold">
           {title}
         </CardTitle>
         <Icon className="text-primary/40 h-4 w-4" />
