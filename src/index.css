@@ -117,6 +117,32 @@
 
   /* Radius */
   --radius: 0.5rem;
+
+  /* Design System Tokens (generated) */
+  /* DESIGN SYSTEM TOKENS:START */
+  --ds-motion-durationFast: 150ms;
+  --ds-motion-durationNormal: 300ms;
+  --ds-motion-durationSlow: 500ms;
+  --ds-motion-easingSpring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ds-radius-button: var(--radius-xl);
+  --ds-radius-card: var(--radius-2xl);
+  --ds-radius-heroHeader: var(--radius-3xl);
+  --ds-radius-iconBox: var(--radius-2xl);
+  --ds-radius-input: var(--radius-xl);
+  --ds-radius-toolbar: var(--radius-2xl);
+  --ds-sizing-formControlHeight: 3rem;
+  --ds-sizing-iconBox-lg: 4rem;
+  --ds-sizing-iconBox-md: 3.5rem;
+  --ds-sizing-iconBox-sm: 3rem;
+  --ds-sizing-iconBox-xs: 2.5rem;
+  --ds-sizing-inputHeight: 2.5rem;
+  --ds-sizing-siteHeaderHeight: 4rem;
+  --ds-spacing-cardPadding: 1.5rem;
+  --ds-spacing-emptyStatePaddingY: 4rem;
+  --ds-spacing-heroPadding: 2rem;
+  --ds-spacing-heroPaddingLg: 3rem;
+  --ds-spacing-toolbarPadding: 0.375rem;
+  /* DESIGN SYSTEM TOKENS:END */
 }
 
 /* CSS Custom Properties - Dark Theme */

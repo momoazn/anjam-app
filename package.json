@@ -35,6 +35,8 @@
     "data:seed": "bun run scripts/seed-data.ts",
     "data:reset": "bun run setup",
     "types:generate": "pocketbase-typegen --json ./backend/pb_schema.json --out src/lib/pocketbase-types.ts",
+    "design:tokens": "bun run scripts/design-tokens.ts",
+    "design:tokens:check": "bun run scripts/design-tokens.ts --check",
     "clean": "rm -rf backend/dist node_modules tmp release",
     "prepare": "husky"
   },
