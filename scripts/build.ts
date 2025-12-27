@@ -43,10 +43,10 @@ type Target = {
 
 function getTargets(): Target[] {
   const legacyNames = {
-    linux: "anjam",
-    windows: "anjam.exe",
-    macos: "anjam-macos",
-    windowsZip: "anjam-windows.zip",
+    linux: "task-manager",
+    windows: "task-manager.exe",
+    macos: "task-manager-macos",
+    windowsZip: "task-manager-windows.zip",
   };
 
   const newNames = {
@@ -156,7 +156,9 @@ function main() {
   if (!skipWindows && !skipZip) {
     console.log("Packaging Windows assets...");
     const windowsTarget = targets.find((t) => t.name === "windows");
-    const zipName = "anjam-windows.zip";
+    const zipName = useLegacyNames
+      ? "task-manager-windows.zip"
+      : "anjam-windows.zip";
     run("zip", [
       "-j",
       path.join(releaseDir, "windows", zipName),
