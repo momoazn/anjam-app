@@ -25,7 +25,7 @@ test.describe("Authentication", () => {
 
   test("should handle invalid credentials", async ({ page }) => {
     // Fill in invalid credentials
-    await page.getByPlaceholder("operator_id").fill("invaliduser");
+    await page.getByPlaceholder("name@company.com").fill("invaliduser");
     await page.getByPlaceholder("••••••••").fill("invalidpassword");
     await page.getByRole("button", { name: auth.login.loginButton }).click();
 
