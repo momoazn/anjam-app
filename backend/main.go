@@ -74,6 +74,7 @@ func main() {
 	// --- Bind Serve Event Handlers ---
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
+	app.OnServe().BindFunc(applyProductionSettings)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 	app.OnServe().BindFunc(registerAuditHooksHandler)
 	registerOrganizationEndpoints(app)
