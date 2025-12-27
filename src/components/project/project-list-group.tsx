@@ -1,18 +1,9 @@
-import {
-  Edit,
-  Target,
-  Trash,
-  Users,
-  FileText,
-  Layers,
-  Hash,
-} from "lucide-react";
+import { Edit, Target, Trash, Users, FileText, Layers } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   project as projectLabels,
   projects as projectsText,
@@ -21,6 +12,8 @@ import { useTasks } from "@/hooks";
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconHash, IconActivity } from "@tabler/icons-react";
+import { Progress } from "@/components/ui/progress";
 
 type ProjectListGroupProps = {
   projects: ProjectsResponse[];
@@ -69,60 +62,57 @@ export function ProjectListGroup({
 
   return (
     <>
-      <div
-        className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-        data-animate-stagger
-      >
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => {
           const progress = getProjectProgress(project.id);
           return (
-            <Card
+            <div
               key={project.id}
-              className="group hover:shadow-primary/5 relative flex flex-col overflow-hidden rounded-none border shadow-sm transition-all duration-300 hover:shadow-2xl"
+              className="bg-card group relative flex flex-col overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md"
             >
               {/* Card Header */}
-              <div className="bg-muted/20 relative border-b p-6">
+              <div className="border-b p-6">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary text-primary-foreground shadow-primary/20 flex h-12 w-12 items-center justify-center rounded-none shadow-sm transition-transform group-hover:rotate-12">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-lg transition-transform group-hover:scale-110">
                       <Layers className="size-6" />
                     </div>
-                    <div className="text-right">
-                      <h3 className="text-xl font-black tracking-tight">
-                        {project.name}
-                      </h3>
-                      <div className="mt-1 flex items-center justify-end gap-2">
-                        <span className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                    <div className="flex flex-col">
+                      <div className="text-muted-foreground flex items-center gap-1.5">
+                        <IconHash className="size-3" />
+                        <span className="text-[10px] font-bold tracking-wider uppercase">
                           {project.code}
                         </span>
-                        <Hash className="text-muted-foreground/40 size-3" />
                       </div>
+                      <h3 className="text-lg font-bold tracking-tight">
+                        {project.name}
+                      </h3>
                     </div>
                   </div>
 
                   {canEditDelete && (
                     <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       <Button
-                        variant="secondary"
+                        variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-none"
+                        className="size-8 rounded-md"
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(project.id);
                         }}
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="size-4" />
                       </Button>
                       <Button
-                        variant="secondary"
+                        variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-none text-rose-500 hover:bg-rose-500/10 hover:text-rose-600"
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive size-8 rounded-md"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(project);
                         }}
                       >
-                        <Trash className="h-4 w-4" />
+                        <Trash className="size-4" />
                       </Button>
                     </div>
                   )}
@@ -132,77 +122,74 @@ export function ProjectListGroup({
               {/* Progress Section */}
               <div className="p-6">
                 <div className="flex items-end justify-between">
-                  <div>
-                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
-                      {projectLabels.progress}
-                    </span>
-                    <div className="mt-1 flex items-baseline gap-1">
-                      <span className="text-4xl font-black tracking-tighter">
-                        {digitsEnToFa(progress.progress)}
-                      </span>
-                      <span className="text-muted-foreground/40 text-lg font-bold">
-                        %
+                  <div className="flex flex-col">
+                    <div className="text-muted-foreground flex items-center gap-1.5">
+                      <IconActivity className="size-3" />
+                      <span className="text-[10px] font-bold tracking-wider uppercase">
+                        {projectLabels.progress}
                       </span>
                     </div>
+                    <div className="mt-1 flex items-baseline gap-1">
+                      <span className="text-3xl font-bold tracking-tight tabular-nums">
+                        {digitsEnToFa(progress.progress)}
+                      </span>
+                      <span className="text-sm font-bold opacity-40">%</span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
-                      Tasks Completed
+
+                  <div className="flex flex-col items-end">
+                    <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                      Tasks
                     </span>
-                    <div className="mt-1 text-sm font-bold">
-                      {digitsEnToFa(progress.completed)}{" "}
-                      <span className="text-muted-foreground/40 font-medium">
-                        /
-                      </span>{" "}
-                      {digitsEnToFa(progress.total)}
+                    <div className="mt-1 flex items-center gap-1.5 font-bold">
+                      <span className="text-lg tabular-nums">
+                        {digitsEnToFa(progress.completed)}
+                      </span>
+                      <span className="text-sm opacity-20">/</span>
+                      <span className="text-lg tabular-nums">
+                        {digitsEnToFa(progress.total)}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-muted/60 relative mt-4 h-3 w-full overflow-hidden rounded-full">
-                  <div
-                    className="bg-primary absolute inset-y-0 start-0 transition-all duration-1000 ease-out"
-                    style={{ width: `${progress.progress}%` }}
-                  >
-                    <div className="animate-shimmer absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent" />
-                  </div>
-                </div>
+                <Progress value={progress.progress} className="mt-6 h-2" />
               </div>
 
               {/* Action Grid */}
-              <div className="bg-border mt-auto grid grid-cols-3 gap-px border-t">
+              <div className="mt-auto grid grid-cols-3 border-t">
                 <Button
                   variant="ghost"
-                  className="group/btn bg-card hover:bg-muted/50 flex h-auto flex-col items-center justify-center rounded-none py-4 transition-colors focus-visible:ring-0"
+                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-none border-r font-bold transition-colors"
                   onClick={() => navigate(`/projects/${project.id}/details`)}
                 >
-                  <FileText className="text-muted-foreground group-hover/btn:text-primary size-5 transition-transform group-hover/btn:-translate-y-1" />
-                  <span className="text-muted-foreground/60 mt-2 text-[10px] font-bold tracking-wider uppercase">
+                  <FileText className="size-4" />
+                  <span className="mt-1 text-[10px]">
                     {projectsText.details.viewDetails}
                   </span>
                 </Button>
                 <Button
                   variant="ghost"
-                  className="group/btn bg-card hover:bg-muted/50 flex h-auto flex-col items-center justify-center rounded-none py-4 transition-colors focus-visible:ring-0"
+                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-none border-r font-bold transition-colors"
                   onClick={() => navigate(`/projects/${project.id}/tasks`)}
                 >
-                  <Target className="text-muted-foreground group-hover/btn:text-primary size-5 transition-transform group-hover/btn:-translate-y-1" />
-                  <span className="text-muted-foreground/60 mt-2 text-[10px] font-bold tracking-wider uppercase">
+                  <Target className="size-4" />
+                  <span className="mt-1 text-[10px]">
                     {projectLabels.tasks}
                   </span>
                 </Button>
                 <Button
                   variant="ghost"
-                  className="group/btn bg-card hover:bg-muted/50 flex h-auto flex-col items-center justify-center rounded-none py-4 transition-colors focus-visible:ring-0"
+                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-none font-bold transition-colors"
                   onClick={() => navigate(`/projects/${project.id}/users`)}
                 >
-                  <Users className="text-muted-foreground group-hover/btn:text-primary size-5 transition-transform group-hover/btn:-translate-y-1" />
-                  <span className="text-muted-foreground/60 mt-2 text-[10px] font-bold tracking-wider uppercase">
+                  <Users className="size-4" />
+                  <span className="mt-1 text-[10px]">
                     {projectLabels.users}
                   </span>
                 </Button>
               </div>
-            </Card>
+            </div>
           );
         })}
       </div>

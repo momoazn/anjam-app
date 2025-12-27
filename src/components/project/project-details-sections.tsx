@@ -6,6 +6,8 @@ import {
   IconUpload,
   IconUser,
   IconTerminal,
+  IconQuote,
+  IconActivity,
 } from "@tabler/icons-react";
 
 import { ActivityStream } from "@/components/audit/activity-stream";
@@ -20,7 +22,7 @@ import { stripHtml } from "@/lib/excel-export";
 import type { ProjectWithSupervisor } from "@/lib/pocketbase";
 import { formatUserName } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { Card, CardContent } from "@/components/ui/card";
+import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 
 type ProjectDetailsSectionsProps = {
   project: ProjectWithSupervisor;
@@ -46,154 +48,172 @@ export function ProjectDetailsSections({
   const supervisor = project.expand?.supervisor;
 
   return (
-    <div className="space-y-10 lg:col-span-2">
+    <div className="space-y-16 lg:col-span-2">
       {/* Identity Log Module */}
-      <section className="space-y-4">
+      <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+            <IconTerminal className="size-4" />
+          </div>
+          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
             01_Identity_Log
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-          <CardContent className="bg-border/40 grid grid-cols-1 gap-px p-0 sm:grid-cols-2">
-            <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6 text-right">
-              <div className="flex items-center justify-end gap-2 opacity-40">
-                <span className="text-[8px] font-black tracking-tight uppercase">
-                  Supervisor_ID
-                </span>
-                <IconUser className="size-3" />
-              </div>
-              <div className="text-sm font-black tracking-tight uppercase">
-                {supervisor ? (
-                  formatUserName(
-                    supervisor.first_name,
-                    supervisor.last_name,
-                    supervisor.username,
-                  )
-                ) : (
-                  <span className="text-muted-foreground/40">—</span>
-                )}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {[
+            {
+              label: "Supervisor_ID",
+              value: supervisor ? (
+                formatUserName(
+                  supervisor.first_name,
+                  supervisor.last_name,
+                  supervisor.username,
+                )
+              ) : (
+                <span className="text-muted-foreground/40">—</span>
+              ),
+              icon: IconUser,
+            },
+            {
+              label: "Temporal_Start",
+              value: digitsEnToFa(formatDateLocale(project.created)),
+              icon: IconCalendar,
+            },
+            {
+              label: "Internal_Hash",
+              value: project.id,
+              icon: IconTerminal,
+              mono: true,
+            },
+            {
+              label: "Latest_Sync",
+              value: digitsEnToFa(formatDateLocale(project.updated)),
+              icon: IconHistory,
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="group border-border/40 bg-card hover:border-primary/40 relative overflow-hidden border-2 p-6 transition-colors"
+            >
+              <BlueprintPattern
+                variant="technical"
+                className="opacity-[0.02]"
+              />
+              <div className="relative z-10 flex h-full flex-col justify-between gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.2em] uppercase">
+                    {item.label}
+                  </span>
+                  <item.icon className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
+                </div>
+                <div
+                  className={cn(
+                    "text-right text-sm font-black tracking-tight uppercase",
+                    item.mono && "font-mono text-[10px] opacity-60",
+                  )}
+                >
+                  {item.value}
+                </div>
               </div>
             </div>
-
-            <div className="bg-card flex h-24 flex-col justify-between p-6 text-right">
-              <div className="flex items-center justify-end gap-2 opacity-40">
-                <span className="text-[8px] font-black tracking-tight uppercase">
-                  Temporal_Start
-                </span>
-                <IconCalendar className="size-3" />
-              </div>
-              <div className="text-sm font-black tabular-nums">
-                {digitsEnToFa(formatDateLocale(project.created))}
-              </div>
-            </div>
-
-            <div className="bg-card border-border/10 flex h-24 flex-col justify-between border-s p-6 text-right">
-              <div className="flex items-center justify-end gap-2 opacity-40">
-                <span className="text-[8px] font-black tracking-tight uppercase">
-                  Internal_Hash
-                </span>
-                <IconTerminal className="size-3" />
-              </div>
-              <div className="font-mono text-xs font-black tracking-tight uppercase opacity-60">
-                {project.id}
-              </div>
-            </div>
-
-            <div className="bg-card flex h-24 flex-col justify-between p-6 text-right">
-              <div className="flex items-center justify-end gap-2 opacity-40">
-                <span className="text-[8px] font-black tracking-tight uppercase">
-                  Latest_Sync
-                </span>
-                <IconHistory className="size-3" />
-              </div>
-              <div className="text-sm font-black tabular-nums">
-                {digitsEnToFa(formatDateLocale(project.updated))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          ))}
+        </div>
       </section>
 
-      {/* Description  Section */}
-      <section className="space-y-4">
+      {/* Description Section */}
+      <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+            <IconFileText className="size-4" />
+          </div>
+          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
             02_Project_Brief
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-          <CardContent className="bg-muted/5 p-8">
-            {isEditing ? (
-              <div className="space-y-2 text-right">
-                <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
-                  Input_Buffer
+        <div className="relative">
+          {isEditing ? (
+            <div className="border-primary bg-card relative overflow-hidden border-4 p-8">
+              <BlueprintPattern
+                variant="technical"
+                className="opacity-[0.05]"
+              />
+              <div className="relative z-10 space-y-3 text-right">
+                <span className="text-primary text-[10px] font-black tracking-widest uppercase">
+                  Input_Buffer :: Description_Edit
                 </span>
                 <Textarea
                   value={editedDescription.replace(/<br>/g, "\n")}
                   onChange={(event) => onDescriptionChange(event.target.value)}
                   placeholder={projects.create.form.descriptionPlaceholder}
-                  className="border-border/40 bg-muted/5 focus:border-primary/40 min-h-32 rounded-none text-right leading-relaxed font-medium focus:ring-0"
+                  className="border-border/40 bg-background focus:border-primary min-h-48 rounded-none border-2 p-6 text-right text-lg leading-relaxed font-medium focus:ring-0"
                 />
               </div>
-            ) : project.description ? (
-              <div className="prose prose-sm max-w-none text-right">
-                <p className="text-sm leading-relaxed font-medium whitespace-pre-wrap opacity-80">
-                  {stripHtml(project.description)}
-                </p>
+            </div>
+          ) : project.description ? (
+            <div className="border-border/40 bg-card relative overflow-hidden border-2 p-12">
+              <BlueprintPattern variant="cross" className="opacity-[0.03]" />
+              <div className="bg-primary text-primary-foreground absolute -top-4 -right-4 z-10 flex size-12 items-center justify-center">
+                <IconQuote className="size-6" />
               </div>
-            ) : (
-              <div className="py-12 text-center opacity-20 grayscale">
-                <IconFileText className="mx-auto mb-4 size-10 stroke-1" />
-                <p className="text-[10px] font-black tracking-tight uppercase">
-                  {projects.details.noDescription}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              <p className="text-foreground/80 relative z-10 text-right text-xl leading-relaxed font-medium whitespace-pre-wrap">
+                {stripHtml(project.description)}
+              </p>
+            </div>
+          ) : (
+            <div className="border-border/20 bg-muted/5 relative overflow-hidden border-2 border-dashed p-20 text-center opacity-30 grayscale">
+              <IconFileText className="text-primary mx-auto mb-6 size-16 stroke-1" />
+              <p className="text-xs font-black tracking-[0.3em] uppercase">
+                {projects.details.noDescription}
+              </p>
+            </div>
+          )}
+        </div>
       </section>
 
-      {/* Asset  Section */}
-      <section className="space-y-4">
+      {/* Asset Section */}
+      <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+            <IconUpload className="size-4" />
+          </div>
+          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
             03_Asset_Stream
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-          <CardContent className="p-0">
+        <div className="border-border/40 bg-card relative overflow-hidden border-2">
+          <BlueprintPattern variant="technical" className="opacity-[0.02]" />
+          <div className="relative z-10">
             {isEditing ? (
-              <div className="space-y-10 p-8 text-right">
+              <div className="space-y-12 p-8 text-right md:p-12">
                 {project.assets && project.assets.length > 0 && (
-                  <div className="space-y-4">
-                    <h4 className="text-muted-foreground/60 border-border/10 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
+                  <div className="space-y-6">
+                    <h4 className="text-muted-foreground/40 border-border/10 border-b-2 pb-3 text-[10px] font-black tracking-widest uppercase">
                       {projects.files.existingFiles}
                     </h4>
-                    <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm">
+                    <div className="grid grid-cols-1 gap-3">
                       {project.assets
                         .filter((filename) => !filesToDelete.includes(filename))
                         .map((filename) => (
                           <div
                             key={filename}
-                            className="bg-card hover:bg-muted/30 group flex items-center justify-between p-4 transition-all"
+                            className="group border-border/20 bg-background/50 flex items-center justify-between border-2 p-4 transition-all hover:border-rose-500/40"
                           >
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
                               onClick={() => onDeleteFile(filename)}
-                              className="h-8 w-8 shrink-0 rounded-none text-rose-500 hover:bg-rose-500/10"
+                              className="h-10 w-10 shrink-0 rounded-none text-rose-500 hover:bg-rose-500 hover:text-white"
                             >
-                              <IconTrash className="size-4" />
+                              <IconTrash className="size-5" />
                             </Button>
-                            <span className="flex-1 truncate pe-4 text-right font-mono text-xs font-bold tracking-tight uppercase opacity-60">
+                            <span className="flex-1 truncate pe-6 text-right font-mono text-xs font-bold tracking-tight uppercase opacity-60">
                               {filename}
                             </span>
                           </div>
@@ -202,10 +222,10 @@ export function ProjectDetailsSections({
                   </div>
                 )}
 
-                <div className="space-y-4">
-                  <h4 className="text-muted-foreground/60 border-border/10 flex items-center justify-end gap-2 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
+                <div className="space-y-6">
+                  <h4 className="text-primary border-primary/20 flex items-center justify-end gap-3 border-b-2 pb-3 text-[10px] font-black tracking-widest uppercase">
                     {projects.files.addNewFiles}
-                    <IconUpload className="size-3.5" />
+                    <IconUpload className="size-4" />
                   </h4>
                   <FileUpload
                     value={newFiles}
@@ -217,25 +237,31 @@ export function ProjectDetailsSections({
             ) : (
               <ProjectAssets project={project} />
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
 
       {/* Operation Log Section */}
-      <section className="space-y-4">
+      <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+            <IconActivity className="size-4" />
+          </div>
+          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
             06_Operation_Log
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-          <CardContent className="bg-muted/5 p-0">
+        <div className="border-border/40 bg-card relative overflow-hidden border-2">
+          <BlueprintPattern variant="technical" className="opacity-[0.02]" />
+          <div className="relative z-10">
             <ActivityStream resource="projects" resourceId={project.id} />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
     </div>
   );
 }
+
+import { cn } from "@/lib/utils";

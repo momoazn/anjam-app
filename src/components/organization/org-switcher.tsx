@@ -109,8 +109,8 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
 
   if (isLoadingOrgs) {
     return (
-      <div className="flex items-center gap-3 px-3 py-2">
-        <Skeleton className="h-9 w-9 rounded-none" />
+      <div className="flex items-center gap-2 px-2 py-1.5">
+        <Skeleton className="h-8 w-8 rounded-md" />
         {!isCollapsed && <Skeleton className="h-4 w-24" />}
       </div>
     );
@@ -125,12 +125,12 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
       <Button
         variant="outline"
         className={cn(
-          "w-full justify-start gap-3 border-dashed",
-          isCollapsed && "justify-center px-2",
+          "w-full justify-start gap-2 border-dashed",
+          isCollapsed && "justify-center px-1.5",
         )}
         onClick={handleCreateOrg}
       >
-        <IconPlus className="h-4 w-4" />
+        <IconPlus className="h-3.5 w-3.5" />
         {!isCollapsed && <span>{organization.create.button}</span>}
       </Button>
     );
@@ -144,24 +144,22 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
     return (
       <div
         className={cn(
-          "flex items-center gap-3 px-3 py-2",
-          isCollapsed && "justify-center px-2",
+          "flex items-center gap-2 px-2 py-1.5",
+          isCollapsed && "justify-center px-1.5",
         )}
       >
-        <Avatar className="h-9 w-9 rounded-none">
+        <Avatar className="h-8 w-8 rounded-md">
           <AvatarImage src={getOrgLogoUrl(currentOrg) ?? undefined} />
-          <AvatarFallback className="bg-primary/10 rounded-none text-[11px] font-black">
+          <AvatarFallback className="bg-primary/10 rounded-md text-[10px] font-semibold">
             {getOrgInitials(currentOrg.name)}
           </AvatarFallback>
         </Avatar>
         {!isCollapsed && (
           <div className="flex flex-col">
-            <span className="text-[13px] font-bold tracking-tight">
-              {currentOrg.name}
-            </span>
+            <span className="text-sm font-semibold">{currentOrg.name}</span>
             <Badge
               variant={getRoleBadgeVariant(currentOrgRole ?? "member")}
-              className="mt-0.5 w-fit px-1.5 py-0 text-[9px]"
+              className="mt-0.5 w-fit px-1 py-0 text-[8px]"
             >
               {currentOrgRole}
             </Badge>
@@ -181,41 +179,39 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         <Button
           variant="ghost"
           className={cn(
-            "h-auto w-full justify-start gap-3 px-3 py-2",
-            isCollapsed && "justify-center px-2",
+            "h-auto w-full justify-start gap-2 px-2 py-1.5",
+            isCollapsed && "justify-center px-1.5",
           )}
         >
-          <Avatar className="h-9 w-9 rounded-none">
+          <Avatar className="h-8 w-8 rounded-md">
             <AvatarImage src={getOrgLogoUrl(currentOrg) ?? undefined} />
-            <AvatarFallback className="bg-primary/10 rounded-none text-[11px] font-black">
+            <AvatarFallback className="bg-primary/10 rounded-md text-[10px] font-semibold">
               {getOrgInitials(currentOrg.name)}
             </AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <>
               <div className="flex flex-col items-start text-left">
-                <span className="text-[13px] font-bold tracking-tight">
-                  {currentOrg.name}
-                </span>
+                <span className="text-sm font-semibold">{currentOrg.name}</span>
                 <Badge
                   variant={getRoleBadgeVariant(currentOrgRole ?? "member")}
-                  className="mt-0.5 px-1.5 py-0 text-[9px]"
+                  className="mt-0.5 px-1 py-0 text-[8px]"
                 >
                   {currentOrgRole}
                 </Badge>
               </div>
-              <IconChevronDown className="ml-auto h-4 w-4 opacity-50" />
+              <IconChevronDown className="ml-auto h-3.5 w-3.5 opacity-50" />
             </>
           )}
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="border-border w-64 rounded-none border"
+        className="border-border w-64 rounded-lg border"
         align="start"
         sideOffset={8}
       >
-        <DropdownMenuLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+        <DropdownMenuLabel className="text-muted-foreground/60 text-[10px] font-semibold tracking-wider uppercase">
           {organization.select.dropdownLabel}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -227,28 +223,28 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
               key={organization.id}
               onClick={() => handleOrgSelect(organization.id)}
               className={cn(
-                "flex cursor-pointer items-center gap-3",
+                "flex cursor-pointer items-center gap-2 p-2",
                 isSelected && "bg-muted",
               )}
             >
-              <Avatar className="h-8 w-8 rounded-none">
+              <Avatar className="h-7 w-7 rounded-md">
                 <AvatarImage src={getOrgLogoUrl(organization) ?? undefined} />
-                <AvatarFallback className="bg-primary/10 rounded-none text-[10px] font-black">
+                <AvatarFallback className="bg-primary/10 rounded-md text-[9px] font-semibold">
                   {getOrgInitials(organization.name)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-1 flex-col">
-                <span className="text-[13px] font-bold">
+                <span className="text-sm font-semibold">
                   {organization.name}
                 </span>
                 <Badge
                   variant={getRoleBadgeVariant(role)}
-                  className="mt-0.5 w-fit px-1.5 py-0 text-[9px]"
+                  className="mt-0.5 w-fit px-1 py-0 text-[8px]"
                 >
                   {role}
                 </Badge>
               </div>
-              {isSelected && <IconCheck className="text-primary h-4 w-4" />}
+              {isSelected && <IconCheck className="text-primary h-3.5 w-3.5" />}
             </DropdownMenuItem>
           );
         })}
@@ -256,12 +252,12 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleCreateOrg}
-          className="flex cursor-pointer items-center gap-3"
+          className="flex cursor-pointer items-center gap-2 p-2"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-none border border-dashed">
-            <IconPlus className="h-4 w-4" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-md border border-dashed">
+            <IconPlus className="h-3.5 w-3.5" />
           </div>
-          <span className="text-[13px] font-medium">
+          <span className="text-sm font-medium">
             {organization.create.button}
           </span>
         </DropdownMenuItem>
