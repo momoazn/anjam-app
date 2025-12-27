@@ -1,7 +1,7 @@
 // Core application constants (shared labels, UI strings, and base copy)
 
 export const app = {
-  name: "Anjam (انجام)",
+  name: "انجام",
 } as const;
 
 // Shared constants used across multiple modules

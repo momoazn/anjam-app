@@ -11,7 +11,7 @@ export const search = {
 } as const;
 
 export const header = {
-  title: "Anjam (انجام)",
+  title: "انجام",
   addNewTask: "افزودن تسک جدید",
   addNewProject: "پروژه جدید",
 } as const;
