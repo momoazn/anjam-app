@@ -44,16 +44,16 @@ function StatCard({
   borderColor?: string;
 }) {
   return (
-    <Card className="group border-border/20 shadow-primary/5 hover:shadow-primary/10 overflow-hidden rounded-none shadow-md transition-all hover:shadow-sm">
+    <Card className="group border-border/40 shadow-sm transition-all hover:shadow-md">
       <CardContent className="relative p-4 md:p-6">
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+            <p className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
               {title}
             </p>
             <div
               className={cn(
-                "mt-2 font-black tracking-tight transition-colors group-hover:scale-105",
+                "mt-1 font-bold tracking-tight transition-transform group-hover:scale-105",
                 "text-2xl md:text-3xl",
                 textColor,
               )}
@@ -61,22 +61,20 @@ function StatCard({
               {digitsEnToFa(value)}
             </div>
             {description && (
-              <p className="text-muted-foreground/40 mt-1 text-[9px] font-bold uppercase">
+              <p className="text-muted-foreground/60 mt-1 text-[9px] font-medium">
                 {description}
               </p>
             )}
           </div>
           <div
             className={cn(
-              "bg-background border-border/20 flex size-10 items-center justify-center rounded-none border shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6",
+              "bg-background border-border/40 flex size-10 items-center justify-center rounded-lg border shadow-sm transition-transform duration-300 group-hover:scale-110",
               borderColor,
             )}
           >
             <div className={color}>{icon}</div>
           </div>
         </div>
-        <div className="from-primary/20 absolute end-0 bottom-0 h-px w-0 bg-gradient-to-l to-transparent transition-all duration-300 group-hover:w-1/2" />
-        <div className="from-primary/20 absolute start-0 bottom-0 h-px w-0 bg-gradient-to-r to-transparent transition-all duration-300 group-hover:w-1/2" />
       </CardContent>
     </Card>
   );
@@ -87,17 +85,14 @@ export function StatsWidget({ stats, isLoading = false }: StatsWidgetProps) {
     return (
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card
-            key={`stat-skeleton-${i}`}
-            className="border-border/20 rounded-none"
-          >
+          <Card key={`stat-skeleton-${i}`} className="border-border/40">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <Skeleton className="mb-2 h-3 w-16" />
                   <Skeleton className="h-8 w-12" />
                 </div>
-                <Skeleton className="h-10 w-10 rounded-none" />
+                <Skeleton className="h-10 w-10 rounded-lg" />
               </div>
             </CardContent>
           </Card>

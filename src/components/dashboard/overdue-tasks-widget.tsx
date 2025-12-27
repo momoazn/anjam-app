@@ -43,16 +43,16 @@ export function OverdueTasksWidget({
   }
 
   return (
-    <Card className="border-destructive/40 bg-card shadow-destructive/5 mt-6 shadow-md">
-      <CardHeader className="border-destructive/20 bg-destructive/10 border-b">
-        <CardTitle className="text-destructive flex items-center gap-3 text-sm font-black tracking-tight uppercase">
-          <div className="bg-destructive/10 text-destructive border-destructive/20 flex h-7 w-7 items-center justify-center rounded-none border">
-            <AlertTriangle className="size-3.5" />
+    <Card className="relative mt-8 overflow-hidden rounded-lg border border-rose-200 bg-rose-50 shadow-sm dark:border-rose-900/50 dark:bg-rose-950/20">
+      <CardHeader className="relative z-10 border-b border-rose-100 p-6 dark:border-rose-900/30">
+        <CardTitle className="flex items-center gap-3 text-sm font-bold text-rose-600 dark:text-rose-400">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md border border-rose-200 bg-rose-100 text-rose-600 dark:border-rose-800 dark:bg-rose-900/50">
+            <AlertTriangle className="size-4" />
           </div>
           <span className="flex-1">{dashboard.cards.overdueTasks}</span>
           <Badge
             variant="outline"
-            className="border-destructive/30 bg-destructive/10 text-destructive rounded-none text-[9px] font-black tracking-wider uppercase"
+            className="border-rose-200 bg-rose-100 px-2 py-0.5 text-[10px] font-semibold text-rose-600 dark:border-rose-800 dark:bg-rose-900/50 dark:text-rose-400"
           >
             {overdueTasks.length > 4
               ? `${digitsEnToFa(4)} / ${digitsEnToFa(overdueTasks.length)}`
@@ -60,43 +60,46 @@ export function OverdueTasksWidget({
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {overdueTasks.slice(0, 4).map((task) => (
+
+      <CardContent className="relative z-10 p-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {overdueTasks.slice(0, 4).map((task, idx) => (
             <Button
               key={task.id}
               variant="ghost"
-              className="group hover:bg-destructive/10 bg-background/80 border-border/20 hover:border-destructive/30 flex h-auto cursor-pointer items-center justify-between rounded-none border p-3 transition-all"
+              className="group/item bg-card flex h-auto cursor-pointer items-center justify-between rounded-lg border border-rose-100 p-4 transition-all duration-200 hover:border-rose-300 hover:bg-rose-50 dark:border-rose-900/30 dark:hover:bg-rose-900/20"
               onClick={() => navigate(`/tasks/${task.id}`)}
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <div className="border-destructive/20 bg-destructive/5 group-hover:bg-destructive/40 flex h-1 w-1 shrink-0 rounded-none transition-colors" />
-                <UserAvatar
-                  user={task.expand?.assignee}
-                  className="border-border size-7 rounded-none border shadow-sm transition-transform duration-300 group-hover:scale-110"
-                />
+                <div className="relative">
+                  <UserAvatar
+                    user={task.expand?.assignee}
+                    className="size-8 rounded-full border border-rose-200 shadow-sm transition-transform duration-300 group-hover/item:scale-105"
+                  />
+                </div>
+
                 <div className="min-w-0 flex-1 text-right">
-                  <p className="text-foreground truncate text-xs font-black tracking-tight">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-semibold tracking-wider text-rose-500/60 uppercase">
+                      Task {idx + 1}
+                    </span>
+                  </div>
+                  <p className="text-foreground mt-0.5 truncate text-sm font-semibold">
                     {task.title}
                   </p>
                   <div className="mt-1 flex items-center gap-1.5">
-                    <Hash className="text-muted-foreground/30 size-2" />
-                    <span className="text-muted-foreground/50 text-[8px] font-bold uppercase">
-                      PRIORITY
+                    <Hash className="size-3 text-rose-500/40" />
+                    <span className="text-[10px] font-medium text-rose-500/70">
+                      {tasks.priority[task.priority]}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1.5">
-                <Badge
-                  variant="secondary"
-                  className="border-border/20 bg-muted/50 rounded-none border text-[9px] font-black uppercase"
-                >
-                  {tasks.priority[task.priority]}
-                </Badge>
-                <div className="bg-destructive/10 border-destructive/30 flex items-center gap-1 rounded-none border px-1.5 py-0.5">
-                  <Calendar className="text-destructive size-2.5" />
-                  <span className="text-destructive text-[9px] font-black tracking-tight">
+
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex items-center gap-1.5 rounded-md border border-rose-200 bg-rose-100 px-2 py-1 dark:border-rose-800 dark:bg-rose-900/50">
+                  <Calendar className="size-3 text-rose-600" />
+                  <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400">
                     {task.deadline
                       ? digitsEnToFa(format(new Date(task.deadline), "MM/dd"))
                       : ""}

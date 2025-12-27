@@ -9,6 +9,7 @@ import {
   Plus,
   Target,
   Users,
+  ArrowUpRight,
 } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -102,118 +103,130 @@ export function DashboardHeader({
       label: dashboard.stats.totalTasks,
       value: stats?.total ?? 0,
       icon: ListTodo,
-      color: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-500/10",
+      color: "text-primary",
+      bg: "bg-primary/5",
     },
     {
       label: dashboard.stats.completed,
       value: stats?.completed ?? 0,
       icon: CheckCircle,
       color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-500/10",
+      bg: "bg-emerald-500/5",
     },
     {
       label: dashboard.stats.inProgress,
       value: stats?.inProgress ?? 0,
       icon: Clock,
       color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-500/10",
+      bg: "bg-amber-500/5",
     },
     {
       label: dashboard.cards.todayDue,
       value: stats?.dueToday ?? 0,
       icon: Calendar,
       color: "text-orange-600 dark:text-orange-400",
-      bg: "bg-orange-500/10",
+      bg: "bg-orange-500/5",
     },
     {
       label: dashboard.stats.overdue,
       value: stats?.overdue ?? 0,
       icon: AlertTriangle,
       color: "text-rose-600 dark:text-rose-400",
-      bg: "bg-rose-500/10",
+      bg: "bg-rose-500/5",
     },
   ];
 
   return (
-    <Card className="hover:shadow-primary/5 relative mb-10 overflow-hidden rounded-none shadow-sm transition-all duration-500">
-      <CardContent className="relative z-10 flex flex-col p-0 lg:flex-row">
+    <Card className="border-border bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm">
+      <CardContent className="relative z-10 flex flex-col p-0 lg:flex-row lg:items-stretch">
         {/* Main Welcome Section */}
-        <div className="flex flex-1 flex-col justify-center border-b p-8 lg:border-s lg:border-b-0 lg:p-10">
-          <div className="text-primary flex items-center gap-3">
-            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-none backdrop-blur-sm">
+        <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-10">
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
               <LayoutDashboard className="h-5 w-5" />
             </div>
-            <span className="text-muted-foreground/80 text-xs font-bold tracking-tight uppercase">
-              {app.name} / {dashboard.title}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                {app.name}
+              </span>
+              <span className="text-primary text-xs font-bold">
+                {dashboard.title}
+              </span>
+            </div>
           </div>
 
-          <h1 className="mt-6 text-3xl font-black tracking-tight md:text-5xl lg:text-6xl">
+          <h1 className="relative z-10 mt-8 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             {isLoading ? (
-              <div className="bg-muted h-16 w-3/4 animate-pulse rounded-none" />
+              <div className="bg-muted h-12 w-3/4 animate-pulse rounded-lg" />
             ) : (
               digitsEnToFa(config.welcomeMessage)
             )}
           </h1>
 
-          <p className="text-muted-foreground mt-4 max-w-xl text-lg leading-relaxed">
+          <p className="text-muted-foreground relative z-10 mt-4 max-w-2xl text-lg leading-relaxed">
             {config.welcomeSubtitle}
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="relative z-10 mt-8 flex flex-wrap gap-3">
             {config.quickActions.map((action) => (
               <Button
                 key={action.title}
                 onClick={action.action}
                 variant={action.variant}
                 className={cn(
-                  "group h-12 gap-3 rounded-none px-6 transition-all duration-300",
+                  "group h-11 gap-2.5 rounded-xl px-6 text-sm font-bold transition-all duration-300",
                   action.variant === "default"
-                    ? "shadow-primary/20 hover:shadow-primary/30 shadow-sm hover:scale-105 active:scale-95"
-                    : "hover:border-primary/30 hover:bg-primary/5",
+                    ? "bg-primary text-primary-foreground shadow-sm hover:shadow-md"
+                    : "border-border hover:border-primary/40 hover:bg-primary/5",
                 )}
               >
                 <span className="transition-transform duration-300 group-hover:scale-110">
                   {action.icon}
                 </span>
-                <span className="font-bold">{action.title}</span>
+                <span>{action.title}</span>
+                {action.variant === "default" && (
+                  <ArrowUpRight className="h-4 w-4 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-[-4px] group-hover:opacity-100" />
+                )}
               </Button>
             ))}
           </div>
         </div>
 
-        {/* Technical Stats Sidebar */}
-        <div className="bg-muted/30 lg:w-[400px] xl:w-[480px]">
-          <div className="bg-border grid h-full grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-1">
+        {/* Stats Sidebar */}
+        <div className="border-border/40 bg-muted/5 lg:w-[300px] lg:border-s">
+          <div className="divide-border/40 grid h-full grid-cols-1 divide-y sm:grid-cols-2 lg:grid-cols-1">
             {statItems.map((item) => (
-              <Card
+              <div
                 key={item.label}
-                className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-none border-none p-0 shadow-none transition-all duration-300 hover:shadow-none"
+                className="group hover:bg-card relative overflow-hidden p-6 transition-all duration-300"
               >
-                <CardContent className="flex items-center justify-between p-6">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={cn(
-                        "flex h-12 w-12 items-center justify-center rounded-none transition-transform duration-300 group-hover:scale-105",
-                        item.bg,
-                      )}
-                    >
-                      <item.icon className={cn("h-6 w-6", item.color)} />
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                        {item.label}
-                      </p>
-                      <div className="mt-0.5 flex items-baseline gap-1">
-                        <span className="text-3xl font-black tracking-tighter">
-                          {isLoading ? "---" : digitsEnToFa(item.value)}
-                        </span>
-                      </div>
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                      {item.label}
+                    </span>
+                    <div className="mt-1 flex items-baseline gap-2">
+                      <span className="text-3xl font-bold tracking-tight">
+                        {isLoading ? "---" : digitsEnToFa(item.value)}
+                      </span>
+                      <div
+                        className={cn(
+                          "h-2 w-2 rounded-full",
+                          item.color.replace("text-", "bg-"),
+                        )}
+                      />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div
+                    className={cn(
+                      "flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110",
+                      item.bg,
+                    )}
+                  >
+                    <item.icon className={cn("h-6 w-6", item.color)} />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
