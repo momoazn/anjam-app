@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Anjam (انجام) application has transitioned from a generic component-based UI to a distinctive **Industrial Editorial** aesthetic. This philosophy treats the task management interface not just as a software tool, but as a high-precision professional instrument—reminiscent of a technical manual, an architect's control center, or an industrial registry.
+The Anjam application has transitioned from a generic component-based UI to a distinctive **Industrial Editorial** aesthetic. This philosophy treats the task management interface not just as a software tool, but as a high-precision professional instrument—reminiscent of a technical manual, an architect's control center, or an industrial registry.
 
 ## Core Pillars
 

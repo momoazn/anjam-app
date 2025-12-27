@@ -1,6 +1,6 @@
 # Audit Logging & History System Plan
 
-This plan details the implementation of a comprehensive audit logging system for the Anjam (انجام) application. The goal is to track all significant data changes (create, update, delete) to core entities (Tasks, Projects, Users) to ensure accountability, recoverability, and compliance.
+This plan details the implementation of a comprehensive audit logging system for the Anjam application. The goal is to track all significant data changes (create, update, delete) to core entities (Tasks, Projects, Users) to ensure accountability, recoverability, and compliance.
 
 ## 1. Architecture Choice: SQLite Collection (`audit_logs`)
 

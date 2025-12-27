@@ -1,4 +1,4 @@
-# Production Runbook - Anjam (انجام) v1
+# Production Runbook - Anjam v1
 
 This runbook provides step-by-step procedures for deploying, configuring, and maintaining Anjam in production.
 
@@ -135,7 +135,7 @@ Create `/etc/systemd/system/anjam.service`:
 
 ```ini
 [Unit]
-Description=Anjam (انجام)
+Description=Anjam
 After=network.target
 
 [Service]

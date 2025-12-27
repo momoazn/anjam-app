@@ -1,4 +1,4 @@
-# Anjam (انجام) Documentation
+# Anjam Documentation
 
 Welcome to the documentation for Anjam, a task and project management application. This documentation is organized into several sections to help you find what you need.
 

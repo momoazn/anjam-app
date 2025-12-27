@@ -1,6 +1,6 @@
 # System Architecture
 
-This document describes the current architecture of the Anjam (انجام) application, following the transition to a multi-tenant organization model.
+This document describes the current architecture of the Anjam application, following the transition to a multi-tenant organization model.
 
 ## 1. Core Hierarchy
 

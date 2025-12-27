@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-This is the **Anjam (انجام)** task and project management application with a Go backend (PocketBase) and React frontend:
+This is the **Anjam** task and project management application with a Go backend (PocketBase) and React frontend:
 
 - **Backend**: Go application using PocketBase framework, serving on port 8090
   - `backend/main.go`: Entry point with event handler registration and API routing

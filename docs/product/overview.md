@@ -50,7 +50,7 @@ This is a comprehensive **task and project management application** designed for
 ## Target Users
 
 - **Small to Medium Teams**: 5-100 person teams looking for a self-hosted task management solution
-- **Startups**: Teams needing a flexible, customizable Anjam (انجام) platform without SaaS limitations
+- **Startups**: Teams needing a flexible, customizable Anjam platform without SaaS limitations
 - **Enterprise**: Organizations requiring on-premise deployment and full data control
 
 ## Key Benefits

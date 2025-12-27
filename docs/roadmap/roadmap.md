@@ -1,6 +1,6 @@
 # Development Roadmap
 
-This document outlines the strategic planning and future direction for the Anjam (انجام) application.
+This document outlines the strategic planning and future direction for the Anjam application.
 
 ## Current Status
 

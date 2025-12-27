@@ -1,4 +1,4 @@
-# Anjam (انجام)
+# Anjam
 
 A comprehensive task and project management application built with React, TypeScript, PocketBase, and Go.
 
