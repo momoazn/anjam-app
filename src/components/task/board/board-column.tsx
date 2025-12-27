@@ -13,7 +13,6 @@ import {
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconTerminal, IconHash } from "@tabler/icons-react";
 
@@ -44,39 +43,39 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
     .replace("/20", "");
 
   return (
-    <Card className="bg-muted/5 border-border/40 flex h-full w-[300px] min-w-[300px] flex-col rounded-none border shadow-none transition-all">
+    <div className="border-border/20 bg-muted/5 relative flex h-full w-[320px] min-w-[320px] flex-col border-e transition-all">
       {/* Column Header */}
-      <CardHeader
+      <div
         className={cn(
-          "border-border/40 bg-muted/10 flex flex-col space-y-0 border-b p-4 text-right",
+          "border-border/40 bg-card relative overflow-hidden border-b p-6 text-right",
           borderColor,
-          "border-t-4",
+          "border-t-2",
         )}
       >
-        <div className="mb-3 flex items-center justify-between opacity-40">
-          <div className="flex items-center gap-1.5">
-            <IconHash className="size-3" />
-            <span className="text-[10px] font-black tabular-nums">
-              {digitsEnToFa(tasks.length)}
-            </span>
+        <div className="relative z-10">
+          <div className="mb-4 flex items-center justify-between opacity-40">
+            <div className="flex items-center gap-2">
+              <IconHash className="size-4" />
+              <span className="text-sm font-bold tabular-nums">
+                {digitsEnToFa(tasks.length)}
+              </span>
+            </div>
+            <IconTerminal className="text-primary size-4" />
           </div>
-          <IconTerminal className="text-primary size-3" />
-        </div>
 
-        <div className="flex items-center justify-end gap-3">
-          <span className="text-foreground text-xs font-black tracking-tight uppercase">
-            {status.name}
-          </span>
-          {Icon && <Icon className={cn("size-4", iconColor)} />}
+          <div className="flex items-center justify-end gap-4">
+            <span className="text-lg font-bold">{status.name}</span>
+            {Icon && <Icon className={cn("size-6", iconColor)} />}
+          </div>
         </div>
-      </CardHeader>
+      </div>
 
       {/* Droppable Area */}
-      <CardContent className="flex-1 overflow-hidden p-0">
+      <div className="flex-1 overflow-hidden">
         <ScrollArea className="scrollbar-none h-full">
           <div
             ref={setNodeRef}
-            className="bg-border/10 flex min-h-[200px] flex-col gap-px p-0"
+            className="bg-border/10 flex min-h-full flex-col gap-px p-0"
           >
             <SortableContext
               items={tasks.map((t) => t.id)}
@@ -88,21 +87,23 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
             </SortableContext>
 
             {tasks.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 opacity-10 grayscale">
-                <IconHash className="size-8 stroke-1" />
+              <div className="flex flex-col items-center justify-center py-24 opacity-10 grayscale">
+                <IconHash className="size-12 stroke-1" />
+                <p className="mt-4 text-xs font-bold">خالی</p>
               </div>
             )}
           </div>
         </ScrollArea>
-      </CardContent>
+      </div>
 
       {/* Column Footer */}
-      <div className="bg-muted/5 border-border/20 flex items-center justify-between border-t px-4 py-1.5 opacity-30">
-        <span className="text-[7px] font-black tracking-tight uppercase">
-          Sector_Active
-        </span>
-        <div className="bg-foreground size-1 rounded-full" />
+      <div className="border-border/20 bg-card flex items-center justify-between border-t px-6 py-3 opacity-40">
+        <div className="flex items-center gap-2">
+          <div className="bg-primary size-2 animate-pulse rounded-full" />
+          <span className="text-[10px] font-bold">فعال</span>
+        </div>
+        <span className="text-[10px] font-bold">{status.key.slice(0, 8)}</span>
       </div>
-    </Card>
+    </div>
   );
 }

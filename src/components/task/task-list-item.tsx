@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconHash, IconTarget, IconClock } from "@tabler/icons-react";
 
 type TaskListItemProps = {
   task: TaskWithProject;
@@ -50,6 +51,7 @@ function TaskListItemInner({
   const isDeadlineToday = deadlineDate ? isToday(deadlineDate) : false;
   const isOverdue =
     deadlineDate &&
+    // eslint-disable-next-line react-hooks/purity
     deadlineDate.getTime() < Date.now() &&
     !isTaskCompleted(task) &&
     !isTaskCanceled(task);
@@ -62,7 +64,7 @@ function TaskListItemInner({
     <Button
       variant="ghost"
       className={cn(
-        "group border-border/15 bg-card hover:bg-muted/30 relative flex h-auto w-full cursor-pointer items-stretch justify-start rounded-none border-b p-0 text-right transition-all duration-300 hover:z-10 focus-visible:ring-0",
+        "group bg-card hover:bg-muted/30 relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b p-0 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0",
         isSelected && "bg-primary/5",
         className,
       )}
@@ -70,62 +72,69 @@ function TaskListItemInner({
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Selection & Priority Zone */}
-      <div className="border-border/30 bg-muted/10 flex w-14 shrink-0 flex-col items-center justify-center gap-2 border-s py-3 text-right">
+      <div className="bg-muted/5 flex w-12 shrink-0 flex-col items-center justify-center gap-2 border-s py-3">
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
             onCheckedChange={(checked) =>
               onSelectionChange?.(checked as boolean)
             }
-            className="size-4 rounded-none transition-transform hover:scale-110"
+            className="size-4 rounded-md transition-transform hover:scale-110"
             onClick={(e) => e.stopPropagation()}
           />
         ) : (
           <div
             className={cn(
-              "flex size-8 items-center justify-center rounded-none transition-transform duration-300 group-hover:scale-110",
-              priorityColors[task.priority]
-                .replace("text", "bg-")
-                .replace("600", "500/10")
-                .replace("400", "400/10"),
+              "bg-background/50 flex size-8 items-center justify-center rounded-lg border transition-all duration-300 group-hover:scale-110",
+              priorityIconColor,
             )}
           >
-            <PriorityIcon className={cn("size-4.5", priorityIconColor)} />
+            <PriorityIcon className="size-4" />
           </div>
         )}
-        <div className="flex h-1 flex-col gap-px opacity-20">
-          <div className="bg-foreground h-full w-4" />
-        </div>
       </div>
 
       {/* Main Content Zone */}
       <div className="flex min-w-0 grow flex-col justify-center px-4 py-3 text-right">
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground/50 text-[10px] font-black tracking-tight uppercase">
-            {task.display_id}
-          </span>
-          <div className="bg-border/20 h-px w-4" />
-          {showProject && task.expand?.project?.name && (
-            <span className="text-primary/70 text-[10px] font-black tracking-tight uppercase">
-              {task.expand.project.name}
+          <div className="flex items-center gap-1 opacity-40">
+            <IconHash className="size-2.5" />
+            <span className="font-mono text-[10px] font-bold">
+              {task.display_id}
             </span>
+          </div>
+
+          {showProject && task.expand?.project?.name && (
+            <div className="text-primary/60 flex items-center gap-1">
+              <IconTarget className="size-2.5" />
+              <span className="text-[10px] font-bold">
+                {task.expand.project.name}
+              </span>
+            </div>
           )}
         </div>
 
-        <div className="mt-1 flex items-center gap-3">
-          <StatusIcon className={cn("size-4 shrink-0", statusIconColor)} />
-          <span className="text-foreground group-hover:text-primary truncate text-base font-bold tracking-tight transition-colors">
+        <div className="mt-1.5 flex items-center gap-3">
+          <div
+            className={cn(
+              "bg-background/50 flex size-5 items-center justify-center rounded border",
+              statusIconColor,
+            )}
+          >
+            <StatusIcon className="size-3.5 shrink-0" />
+          </div>
+          <span className="text-foreground group-hover:text-primary truncate text-base font-bold transition-colors">
             {task.title}
           </span>
         </div>
 
         {task.tags && task.tags.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5 text-right">
+          <div className="mt-2 flex flex-wrap gap-1.5">
             {task.tags.map((tag) => (
               <Badge
                 key={tag}
                 variant="outline"
-                className="border-border/20 bg-muted/50 text-muted-foreground rounded-none px-1.5 py-0 text-[9px] font-black tracking-wider uppercase"
+                className="bg-background/50 text-muted-foreground rounded-md px-1.5 py-0 text-[10px] font-medium"
               >
                 {tag}
               </Badge>
@@ -138,13 +147,16 @@ function TaskListItemInner({
       <div className="flex items-center gap-6 px-6">
         {/* Deadline Indicator */}
         <div className="hidden flex-col items-end text-right sm:flex">
-          <span className="text-muted-foreground/40 text-[9px] font-black tracking-tight uppercase">
-            Deadline
-          </span>
+          <div className="flex items-center gap-1 opacity-40">
+            <IconClock className="size-2.5" />
+            <span className="text-[10px] font-bold tracking-wider uppercase">
+              Deadline
+            </span>
+          </div>
           <span
             className={cn(
-              "mt-0.5 text-xs font-black tracking-tighter",
-              !task.deadline && "text-muted-foreground/30",
+              "mt-0.5 text-xs font-bold tabular-nums",
+              !task.deadline && "text-muted-foreground/20",
               task.deadline &&
                 !isOverdue &&
                 !isDeadlineToday &&
@@ -177,12 +189,10 @@ function TaskListItemInner({
                   : undefined
               }
               showUnassigned={!assigneeRecord && !task.assignee}
-              className="border-background size-10 rounded-none border shadow-sm transition-transform duration-300 group-hover:scale-110"
+              className="size-10 rounded-full border-2 shadow-sm transition-all duration-300 group-hover:scale-110"
             />
             {assigneeRecord && (
-              <div className="border-background absolute -end-1 -bottom-1 flex size-4 items-center justify-center rounded-full border bg-emerald-500">
-                <div className="size-1 rounded-full bg-white" />
-              </div>
+              <div className="bg-primary border-background absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2" />
             )}
           </div>
         </div>

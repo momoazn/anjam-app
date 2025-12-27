@@ -4,7 +4,6 @@ import {
   ChevronUp,
   MoreHorizontal,
   Plus,
-  Hash,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -20,6 +19,7 @@ import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconHash } from "@tabler/icons-react";
 
 export type TaskSortMode = "default" | "priority" | "date";
 
@@ -55,122 +55,118 @@ export function TaskListHeader({
   };
 
   return (
-    <Button
-      variant="ghost"
-      className={cn(
-        "group bg-muted/20 hover:bg-muted/30 border-y-border/50 relative flex h-auto w-full cursor-pointer items-center justify-between overflow-hidden rounded-none border-y border-s-2 px-4 py-3 text-right transition-all focus-visible:ring-0",
-        getStatusColorVariant(status, "border")
-          .replace("border-", "border-s-")
-          .replace("/20", ""),
-      )}
-      onClick={onToggleCollapse}
-    >
-      <div className="flex items-center gap-4 text-right">
-        <div
-          className={cn(
-            "bg-card ring-border/50 flex h-8 w-8 items-center justify-center rounded-none border shadow-sm ring-1 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md",
-            statusColor.replace("text", "ring"),
-          )}
-        >
-          <IconComponent
+    <div className="group relative mb-2 flex flex-col">
+      <Button
+        variant="ghost"
+        className={cn(
+          "bg-muted/30 hover:bg-muted/50 relative flex h-auto w-full cursor-pointer items-center justify-between rounded-t-xl border px-6 py-4 text-right transition-all focus-visible:ring-0",
+          isCollapsed && "rounded-xl",
+        )}
+        onClick={onToggleCollapse}
+      >
+        <div className="flex items-center gap-6">
+          <div
             className={cn(
-              "size-4 transition-transform duration-500 group-hover:rotate-180",
+              "bg-background flex size-12 items-center justify-center rounded-xl border shadow-sm transition-all duration-300 group-hover:scale-105",
               statusColor,
             )}
-          />
-        </div>
+          >
+            <IconComponent className="size-6" />
+          </div>
 
-        <div className="text-right">
-          <h2 className="text-sm font-black tracking-tight uppercase">
-            {tasks.status[status]}
-          </h2>
-          <div className="mt-0.5 flex items-center justify-end gap-2">
-            <span className="text-muted-foreground/70 text-[9px] font-black tracking-tight uppercase">
-              {digitsEnToFa(taskCount)} ITEMS TOTAL
-            </span>
-            <Hash className="text-muted-foreground/30 size-2.5" />
+          <div className="flex flex-col items-start text-left">
+            <div className="flex items-center gap-2 opacity-40">
+              <IconHash className="size-3" />
+              <span className="text-[10px] font-bold tracking-wider uppercase">
+                {status}
+              </span>
+            </div>
+            <h2 className="text-xl font-bold tracking-tight">
+              {tasks.status[status]}
+            </h2>
           </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-2">
-        <div className="border-border/30 flex items-center gap-1 border-e pe-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-background size-8 rounded-none transition-transform active:scale-95"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCreateTask();
-            }}
-          >
-            <Plus className="size-4" />
-          </Button>
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-end">
+            <span className="text-[10px] font-bold tracking-wider uppercase opacity-40">
+              {tasks.list.count}
+            </span>
+            <span className="text-lg font-bold tabular-nums">
+              {digitsEnToFa(taskCount)}
+            </span>
+          </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover:bg-background size-8 rounded-none transition-transform active:scale-95"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="border-border/20 rounded-none"
+          <div className="bg-border mx-2 h-10 w-px" />
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="bg-background size-10 rounded-lg transition-all active:scale-95"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCreateTask();
+              }}
             >
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSortChange?.(
-                    sortMode === "priority" ? "default" : "priority",
-                  );
-                }}
-                className="gap-2"
-              >
-                {sortMode === "priority" ? (
-                  <Check className="text-primary size-4" />
-                ) : (
-                  <div className="size-4" />
-                )}
-                <span className="font-bold">{task.sortByPriority}</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSortChange?.(sortMode === "date" ? "default" : "date");
-                }}
-                className="gap-2"
-              >
-                {sortMode === "date" ? (
-                  <Check className="text-primary size-4" />
-                ) : (
-                  <div className="size-4" />
-                )}
-                <span className="font-bold">{task.sortByDate}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <Plus className="size-5" />
+            </Button>
 
-        <div className="hover:bg-background border-border/30 flex size-8 items-center justify-center rounded-none border transition-all duration-300 group-hover:scale-105 group-hover:shadow-sm">
-          {isCollapsed ? (
-            <ChevronDown className="text-muted-foreground size-4 transition-transform duration-300 group-hover:translate-y-0.5" />
-          ) : (
-            <ChevronUp className="text-muted-foreground size-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
-          )}
-        </div>
-      </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="bg-background size-10 rounded-lg transition-all active:scale-95"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreHorizontal className="size-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-xl p-2">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSortChange?.(
+                      sortMode === "priority" ? "default" : "priority",
+                    );
+                  }}
+                  className="gap-3 rounded-lg p-3 font-bold transition-colors"
+                >
+                  {sortMode === "priority" ? (
+                    <Check className="text-primary size-4" />
+                  ) : (
+                    <div className="size-4" />
+                  )}
+                  {task.sortByPriority}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSortChange?.(sortMode === "date" ? "default" : "date");
+                  }}
+                  className="gap-3 rounded-lg p-3 font-bold transition-colors"
+                >
+                  {sortMode === "date" ? (
+                    <Check className="text-primary size-4" />
+                  ) : (
+                    <div className="size-4" />
+                  )}
+                  {task.sortByDate}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-      <div
-        className={cn(
-          "absolute start-0 bottom-0 h-px w-0 bg-linear-to-r from-transparent via-current to-transparent opacity-20 transition-all duration-300 group-hover:w-full",
-          statusColor,
-        )}
-      />
-    </Button>
+            <div className="bg-background flex size-10 items-center justify-center rounded-lg border transition-all">
+              {isCollapsed ? (
+                <ChevronDown className="size-5 opacity-40" />
+              ) : (
+                <ChevronUp className="size-5 opacity-40" />
+              )}
+            </div>
+          </div>
+        </div>
+      </Button>
+    </div>
   );
 }

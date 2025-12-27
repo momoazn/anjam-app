@@ -6,7 +6,6 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { Card, CardContent } from "@/components/ui/card";
 import { TaskListHeader, type TaskSortMode } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
@@ -80,34 +79,31 @@ function TaskListGroupInner({
         onToggleCollapse={() => setIsCollapsed((prev) => !prev)}
       />
       {!isCollapsed && (
-        <Card className="border-border/40 mt-1 overflow-hidden rounded-none shadow-sm">
-          <CardContent className="bg-muted/5 p-0">
-            <ul
-              className="divide-border/10 min-h-[30px] space-y-0 divide-y"
-              data-animate-stagger
-            >
-              {sortedTasks?.length > 0 ? (
-                sortedTasks.map((task) => (
-                  <li key={task.id}>
-                    <TaskListItem
-                      task={task}
-                      showProject={showProject}
-                      isSelectable={enableSelection}
-                      isSelected={localSelectedTasks.includes(task.id)}
-                      onSelectionChange={(selected) =>
-                        handleTaskSelection(task.id, selected)
-                      }
-                    />
-                  </li>
-                ))
-              ) : (
-                <div className="text-muted-foreground/40 py-12 text-center text-[10px] font-black tracking-tight uppercase">
+        <div className="bg-card/50 overflow-hidden rounded-b-xl border border-t-0">
+          <ul className="divide-y" data-animate-stagger>
+            {sortedTasks?.length > 0 ? (
+              sortedTasks.map((task) => (
+                <li key={task.id}>
+                  <TaskListItem
+                    task={task}
+                    showProject={showProject}
+                    isSelectable={enableSelection}
+                    isSelected={localSelectedTasks.includes(task.id)}
+                    onSelectionChange={(selected) =>
+                      handleTaskSelection(task.id, selected)
+                    }
+                  />
+                </li>
+              ))
+            ) : (
+              <div className="py-16 text-center">
+                <span className="text-muted-foreground text-xs font-medium">
                   {tasksText.list.noTasks}
-                </div>
-              )}
-            </ul>
-          </CardContent>
-        </Card>
+                </span>
+              </div>
+            )}
+          </ul>
+        </div>
       )}
     </section>
   );

@@ -1,4 +1,10 @@
-import { IconPencil, IconTrash, IconInfoCircle } from "@tabler/icons-react";
+import {
+  IconPencil,
+  IconTrash,
+  IconInfoCircle,
+  IconActivity,
+  IconSettings,
+} from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,8 +19,6 @@ import {
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
-
-import { Card, CardContent } from "@/components/ui/card";
 
 export type TaskDetailsSidebarProps = {
   task: TaskWithProject;
@@ -33,26 +37,28 @@ export function TaskDetailsSidebar({
   const PriorityIcon = priorityIcons[task.priority];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Quick Status Block */}
       <section className="space-y-4">
-        <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
-            Signal_Status
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
+            <IconActivity className="size-4" />
+          </div>
+          <span className="text-xs font-bold tracking-wider uppercase">
+            {tasks.details.quickInfoCardTitle}
           </span>
-          <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-          <CardContent className="space-y-6 p-6">
+        <div className="bg-card relative overflow-hidden rounded-xl border p-6 shadow-sm">
+          <div className="relative z-10 space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+              <span className="text-muted-foreground text-xs font-medium">
                 {tasks.details.statusLabel}
               </span>
               <Badge
                 variant="outline"
                 className={cn(
-                  "rounded-none border-transparent text-[10px] font-black tracking-tight uppercase",
+                  "rounded-md border-transparent px-2.5 py-0.5 text-xs font-bold",
                   getStatusColorVariant(task.status, "badge"),
                 )}
               >
@@ -62,13 +68,13 @@ export function TaskDetailsSidebar({
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+              <span className="text-muted-foreground text-xs font-medium">
                 {tasks.details.priorityLabel}
               </span>
               <Badge
                 variant="outline"
                 className={cn(
-                  "rounded-none border-transparent text-[10px] font-black tracking-tight uppercase",
+                  "rounded-md border-transparent px-2.5 py-0.5 text-xs font-bold",
                   priorityColors[task.priority],
                 )}
               >
@@ -77,71 +83,78 @@ export function TaskDetailsSidebar({
               </Badge>
             </div>
 
-            <div className="bg-border/10 h-px" />
-
-            <div className="space-y-3 text-right">
-              <div className="flex flex-col items-end">
-                <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
+            <div className="space-y-3 border-t pt-4">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground font-medium">
                   {tasks.details.createdLabel}
                 </span>
-                <span className="text-xs font-black tabular-nums">
+                <span className="font-bold">
                   {digitsEnToFa(formatTaskDate(task.created))}
                 </span>
               </div>
-              <div className="flex flex-col items-end">
-                <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground font-medium">
                   {tasks.details.updatedLabel}
                 </span>
-                <span className="text-xs font-black tabular-nums">
+                <span className="text-primary font-bold">
                   {digitsEnToFa(formatTaskDate(task.updated))}
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
 
       {/* Operator Actions Block */}
       <section className="space-y-4">
-        <div className="flex items-center gap-4">
-          <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
-            Operator_Actions
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
+            <IconSettings className="size-4" />
+          </div>
+          <span className="text-xs font-bold tracking-wider uppercase">
+            {tasks.details.actionsCardTitle}
           </span>
-          <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
-          <CardContent className="bg-muted/10 space-y-2 p-4">
+        <div className="bg-card relative overflow-hidden rounded-xl border p-4 shadow-sm">
+          <div className="relative z-10 space-y-2">
             <Button
               variant="ghost"
-              className="text-muted-foreground/60 hover:bg-muted/30 h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-tight uppercase"
+              className="w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
               onClick={onEdit}
             >
+              <IconPencil className="size-4" />
               {tasks.details.editTaskButton}
-              <IconPencil className="size-4 opacity-40" />
             </Button>
             <Button
               variant="ghost"
-              className="h-11 w-full justify-end gap-3 rounded-none text-[10px] font-black tracking-tight text-rose-500/60 uppercase hover:bg-rose-500/10 hover:text-rose-500"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
               onClick={onDelete}
               disabled={isDeleting}
             >
-              {tasks.details.deleteTaskButton}
-              <IconTrash className="size-4 opacity-40" />
+              <IconTrash className="size-4" />
+              {isDeleting
+                ? tasks.details.buttons.deleting
+                : tasks.details.buttons.delete}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
 
-      {/* System Integrity Block */}
-      <Card className="border-border/20 border-dashed opacity-30 shadow-none grayscale">
-        <CardContent className="bg-muted/20 flex flex-col items-center gap-3 p-6">
-          <IconInfoCircle className="size-8 stroke-1" />
-          <p className="text-center text-[9px] font-black tracking-tight uppercase">
-            Data_Grid :: Integrity_Verified
-          </p>
-        </CardContent>
-      </Card>
+      {/* Info Block */}
+      <div className="bg-muted/30 rounded-xl border border-dashed p-6">
+        <div className="flex flex-col items-center gap-3">
+          <IconInfoCircle className="text-muted-foreground size-6" />
+          <div className="space-y-1 text-center">
+            <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+              {tasks.details.displayIdLabel}
+            </p>
+            <p className="font-mono text-xs font-bold">
+              {digitsEnToFa(task.display_id)}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

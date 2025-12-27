@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { useNavigate } from "react-router-dom";
-import { IconHash, IconClock } from "@tabler/icons-react";
+import { IconHash, IconClock, IconTarget } from "@tabler/icons-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface BoardCardProps {
@@ -47,7 +47,7 @@ export function BoardCard({ task }: BoardCardProps) {
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-primary/5 border-primary/20 h-32 rounded-none border border-dashed opacity-50"
+        className="border-primary/20 bg-primary/5 relative h-40 rounded-xl border-2 border-dashed"
       />
     );
   }
@@ -64,70 +64,83 @@ export function BoardCard({ task }: BoardCardProps) {
       {...attributes}
       {...listeners}
       className={cn(
-        "group border-border/40 bg-card hover:bg-muted/30 relative flex h-auto flex-col gap-3 rounded-none border p-4 text-right shadow-sm transition-all duration-200 hover:z-10 focus-visible:ring-0",
-        "hover:border-primary/30 w-full cursor-grab active:cursor-grabbing",
+        "group border-border/40 bg-card hover:bg-muted/30 relative flex h-auto w-full cursor-grab flex-col gap-3 border-b p-4 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0 active:cursor-grabbing",
+        "hover:border-primary/40",
       )}
       onClick={() => navigate(`/tasks/${task.id}`)}
     >
-      <div className="flex w-full items-start justify-between gap-2">
+      <div className="relative z-10 flex w-full items-start justify-between gap-2">
         <div className="flex items-center gap-1.5 opacity-40">
-          <IconHash className="size-2.5" />
-          <span className="font-mono text-[9px] leading-none font-black tracking-tight uppercase">
-            {task.display_id}
-          </span>
+          <IconHash className="size-3" />
+          <span className="text-[10px] font-bold">{task.display_id}</span>
         </div>
-        <PriorityIcon className={cn("size-4 shrink-0", priorityIconColor)} />
+        <div
+          className={cn(
+            "bg-background/50 border-border/40 flex size-6 items-center justify-center rounded-md border",
+            priorityIconColor,
+          )}
+        >
+          <PriorityIcon className="size-4" />
+        </div>
       </div>
 
-      <div className="group-hover:text-primary line-clamp-2 w-full text-right text-sm leading-tight font-black tracking-tight uppercase transition-colors">
+      <div className="group-hover:text-primary relative z-10 w-full text-right text-sm leading-tight font-bold transition-colors">
         {task.title}
       </div>
 
-      <div className="mt-2 flex w-full items-center justify-between">
-        <div className="flex items-center gap-3">
-          <UserAvatar
-            user={
-              assigneeRecord
-                ? {
-                    first_name: assigneeRecord.first_name,
-                    last_name: assigneeRecord.last_name,
-                    username: assigneeRecord.username,
-                    avatar: assigneeRecord.avatar,
-                    id: assigneeRecord.id,
-                    collectionId: assigneeRecord.collectionId,
-                    collectionName: assigneeRecord.collectionName,
-                  }
-                : undefined
-            }
-            showUnassigned={!assigneeRecord && !task.assignee}
-            className="border-border/20 size-7 rounded-none border shadow-sm"
-          />
+      <div className="relative z-10 mt-1 flex w-full items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="relative">
+            <UserAvatar
+              user={
+                assigneeRecord
+                  ? {
+                      first_name: assigneeRecord.first_name,
+                      last_name: assigneeRecord.last_name,
+                      username: assigneeRecord.username,
+                      avatar: assigneeRecord.avatar,
+                      id: assigneeRecord.id,
+                      collectionId: assigneeRecord.collectionId,
+                      collectionName: assigneeRecord.collectionName,
+                    }
+                  : undefined
+              }
+              showUnassigned={!assigneeRecord && !task.assignee}
+              className="border-border/20 size-8 rounded-full border shadow-sm"
+            />
+            {assigneeRecord && (
+              <div className="bg-primary border-card absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2" />
+            )}
+          </div>
 
           {task.expand?.project && (
-            <span className="text-muted-foreground/40 max-w-[80px] truncate text-[8px] font-black tracking-[0.15em] uppercase">
-              {task.expand.project.name}
-            </span>
+            <div className="flex items-center gap-1 opacity-40">
+              <IconTarget className="size-3" />
+              <span className="max-w-[100px] truncate text-[10px] font-bold">
+                {task.expand.project.name}
+              </span>
+            </div>
           )}
         </div>
 
         {task.deadline && (
-          <div className="flex items-center gap-1.5 opacity-60">
-            <IconClock className="size-2.5" />
-            <span className="text-[9px] font-black tabular-nums">
+          <div className="bg-muted/20 flex items-center gap-1.5 rounded-md px-2 py-0.5 opacity-60">
+            <IconClock className="size-3" />
+            <span className="text-[10px] font-bold tabular-nums">
               {digitsEnToFa(formatDateShort(task.deadline))}
             </span>
           </div>
         )}
       </div>
 
-      {/* Tags  */}
+      {/* Tags */}
       {task.tags && task.tags.length > 0 && (
-        <div className="mt-1 flex w-full flex-wrap justify-end gap-1">
+        <div className="relative z-10 flex w-full flex-wrap justify-end gap-1">
           {task.tags.map((tag) => (
             <Badge
               key={tag}
               variant="outline"
-              className="border-border/40 bg-muted/30 text-muted-foreground rounded-none px-1.5 py-0 text-[7px] font-black tracking-tight uppercase"
+              className="border-border/40 bg-background/50 rounded-md px-1.5 py-0 text-[10px] font-bold"
             >
               {tag}
             </Badge>
@@ -138,7 +151,7 @@ export function BoardCard({ task }: BoardCardProps) {
       {/* Visual Status Bar */}
       <div
         className={cn(
-          "absolute inset-y-0 end-0 w-0.5 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
+          "absolute inset-y-0 end-0 w-1 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
           getStatusColorVariant(task.status, "icon").replace("text", "bg"),
         )}
       />
