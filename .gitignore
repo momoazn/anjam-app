@@ -47,3 +47,5 @@ testing/
 # Test artifacts
 playwright-report/
 test-results/
+
+.worktrees/

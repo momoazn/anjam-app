@@ -22,7 +22,8 @@
       "Bash(test:*)",
       "Bash(bun run lint)",
       "Bash(bun run format:*)",
-      "WebFetch(domain:pocketbase.io)"
+      "WebFetch(domain:pocketbase.io)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
