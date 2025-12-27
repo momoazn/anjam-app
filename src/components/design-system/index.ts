@@ -21,26 +21,27 @@ export const designTokens = {
     slow: "300ms",
   },
 
-  // Border radius (sharp corners)
+  // Border radius (rounded corners)
   radius: {
     none: "0rem",
-    sm: "0rem",
-    md: "0rem",
-    lg: "0rem",
+    sm: "0.5rem",
+    md: "0.75rem",
+    lg: "1rem",
+    xl: "1.5rem",
   },
 
   // L-Frame sizes
   lFrame: {
-    sm: { width: "0.5rem", height: "0.5rem" },
-    md: { width: "0.75rem", height: "0.75rem" },
-    lg: { width: "1rem", height: "1rem" },
+    sm: { width: "0.25rem", height: "0.25rem" },
+    md: { width: "0.5rem", height: "0.5rem" },
+    lg: { width: "0.75rem", height: "0.75rem" },
   },
 
   // Pattern opacities
   patterns: {
-    subtle: 0.03,
-    medium: 0.05,
-    strong: 0.08,
+    subtle: 0.02,
+    medium: 0.03,
+    strong: 0.05,
   },
 };
 
@@ -58,17 +59,17 @@ export const designClasses = {
   },
 
   // Hover effects
-  hoverScale: "hover:scale-[1.02] active:scale-[0.98]",
-  hoverGlow: "hover:shadow-primary/20",
-  hoverRotate: "hover:rotate-[1deg]",
+  hoverScale: "hover:scale-[1.01] active:scale-[0.99]",
+  hoverGlow: "hover:shadow-primary/10",
+  hoverRotate: "hover:rotate-[0.5deg]",
 
   // L-Frame variants
-  lFrameCorners: "relative overflow-hidden rounded-none",
-  lFrameBorder: "border-b-2 border-l-2 border-border/15",
+  lFrameCorners: "relative overflow-hidden rounded-xl",
+  lFrameBorder: "border-border/10",
 
   // Technical typography
   technicalLabel:
-    "text-[8px] font-black tracking-tight uppercase text-muted-foreground/60",
-  technicalTitle: "text-lg font-black tracking-tight uppercase",
+    "text-[9px] font-bold tracking-tight text-muted-foreground/50",
+  technicalTitle: "text-lg font-bold tracking-tight",
   technicalSubtitle: "text-sm text-muted-foreground",
 };

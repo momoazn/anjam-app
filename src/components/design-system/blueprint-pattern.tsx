@@ -109,34 +109,29 @@ export function TechnicalHeader({
   return (
     <div
       className={cn(
-        "border-border/15 relative overflow-hidden rounded-none border-b-2 border-l-2",
+        "border-border/15 relative overflow-hidden rounded-2xl border",
         "bg-card/95 backdrop-blur-sm",
-        "px-6 py-4",
+        "px-6 py-4 shadow-sm",
         className,
       )}
       {...props}
     >
-      <BlueprintPattern variant="grid" opacity={0.03} />
+      <BlueprintPattern variant="dots" opacity={0.02} />
 
-      <div className="relative z-10 flex items-center gap-3">
+      <div className="relative z-10 flex items-center gap-4">
         {icon && (
-          <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-none backdrop-blur-sm">
+          <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-xl backdrop-blur-sm">
             {icon}
           </div>
         )}
 
         <div>
-          <h2 className="text-lg font-black tracking-tight uppercase">
-            {title}
-          </h2>
+          <h2 className="text-lg font-bold tracking-tight">{title}</h2>
           {subtitle && (
-            <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>
+            <p className="text-muted-foreground mt-0.5 text-sm">{subtitle}</p>
           )}
         </div>
       </div>
-
-      {/* Top accent line */}
-      <div className="via-primary/30 absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent to-transparent" />
     </div>
   );
 }

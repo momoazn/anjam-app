@@ -8,8 +8,8 @@ interface LFrameProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * L-Frame component for consistent angular design
- * Provides the Industrial Editorial aesthetic with sharp corners
+ * L-Frame component for consistent design
+ * Provides a subtle frame with rounded corners
  */
 export function LFrame({
   variant = "corners",
@@ -25,24 +25,22 @@ export function LFrame({
   };
 
   const borderClasses = {
-    sm: "border-t-[1px] border-l-[1px]",
-    md: "border-t-2 border-l-2",
-    lg: "border-t-[3px] border-l-[3px]",
+    sm: "border-t-[1px] border-l-[1px] rounded-tl-sm",
+    md: "border-t-2 border-l-2 rounded-tl-md",
+    lg: "border-t-[3px] border-l-[3px] rounded-tl-lg",
   };
 
   if (variant === "border") {
     return (
       <div
         className={cn(
-          "relative overflow-hidden",
-          variant === "border" && "border-border/15 border-b-2 border-l-2",
+          "relative overflow-hidden rounded-xl",
+          variant === "border" && "border-border/10 border",
           className,
         )}
         {...props}
       >
         {children}
-        {/* Top border accent */}
-        <div className="via-primary/20 absolute top-0 left-0 h-0.5 w-full bg-gradient-to-r from-transparent to-transparent" />
       </div>
     );
   }
@@ -51,8 +49,8 @@ export function LFrame({
     return (
       <div
         className={cn(
-          "relative overflow-hidden rounded-none",
-          "border-border/15 border-b-2 border-l-2",
+          "relative overflow-hidden rounded-xl",
+          "border-border/10 border",
           className,
         )}
         {...props}
@@ -64,42 +62,40 @@ export function LFrame({
             "absolute top-0 left-0",
             sizeClasses[size],
             borderClasses[size],
-            "border-primary/20",
+            "border-primary/10",
           )}
         />
         <div
           className={cn(
             "absolute top-0 right-0",
             sizeClasses[size],
-            "border-t-2 border-r-2",
-            "border-primary/20",
+            "rounded-tr-md border-t-2 border-r-2",
+            "border-primary/10",
           )}
         />
         <div
           className={cn(
             "absolute bottom-0 left-0",
             sizeClasses[size],
-            "border-b-2 border-l-2",
-            "border-primary/20",
+            "rounded-bl-md border-b-2 border-l-2",
+            "border-primary/10",
           )}
         />
         <div
           className={cn(
             "absolute right-0 bottom-0",
             sizeClasses[size],
-            "border-r-2 border-b-2",
-            "border-primary/20",
+            "rounded-br-md border-r-2 border-b-2",
+            "border-primary/10",
           )}
         />
-        {/* Top border accent */}
-        <div className="via-primary/20 absolute top-0 left-0 h-0.5 w-full bg-gradient-to-r from-transparent to-transparent" />
       </div>
     );
   }
 
   return (
     <div
-      className={cn("relative overflow-hidden rounded-none", className)}
+      className={cn("relative overflow-hidden rounded-xl", className)}
       {...props}
     >
       {children}
@@ -109,31 +105,31 @@ export function LFrame({
           "absolute top-0 left-0",
           sizeClasses[size],
           borderClasses[size],
-          "border-primary/20 opacity-0 transition-opacity hover:opacity-100",
+          "border-primary/10 opacity-0 transition-opacity hover:opacity-100",
         )}
       />
       <div
         className={cn(
           "absolute top-0 right-0",
           sizeClasses[size],
-          "border-t-2 border-r-2",
-          "border-primary/20 opacity-0 transition-opacity hover:opacity-100",
+          "rounded-tr-md border-t-2 border-r-2",
+          "border-primary/10 opacity-0 transition-opacity hover:opacity-100",
         )}
       />
       <div
         className={cn(
           "absolute bottom-0 left-0",
           sizeClasses[size],
-          "border-b-2 border-l-2",
-          "border-primary/20 opacity-0 transition-opacity hover:opacity-100",
+          "rounded-bl-md border-b-2 border-l-2",
+          "border-primary/10 opacity-0 transition-opacity hover:opacity-100",
         )}
       />
       <div
         className={cn(
           "absolute right-0 bottom-0",
           sizeClasses[size],
-          "border-r-2 border-b-2",
-          "border-primary/20 opacity-0 transition-opacity hover:opacity-100",
+          "rounded-br-md border-r-2 border-b-2",
+          "border-primary/10 opacity-0 transition-opacity hover:opacity-100",
         )}
       />
     </div>

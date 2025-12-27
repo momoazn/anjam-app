@@ -44,7 +44,7 @@ export function SpringCard({
       {children}
       {/* Subtle glow effect */}
       {glowOnHover && (
-        <div className="from-primary/0 via-primary/0 to-primary/5 absolute inset-0 -z-10 rounded-none bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-100" />
+        <div className="from-primary/0 via-primary/0 to-primary/5 absolute inset-0 -z-10 rounded-xl bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-100" />
       )}
     </div>
   );
@@ -91,7 +91,7 @@ export function SpringButton({
   return (
     <button
       className={cn(
-        "inline-flex cursor-pointer items-center justify-center rounded-none font-black whitespace-nowrap",
+        "inline-flex cursor-pointer items-center justify-center rounded-xl font-bold whitespace-nowrap",
         "disabled:pointer-events-none disabled:opacity-50",
         '[&_svg]:pointer-events-none [&_svg:not([class*="size-"])]:size-4',
         "focus-visible:ring-ring/50 outline-none focus-visible:ring-[3px]",
