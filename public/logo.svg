@@ -1,0 +1,69 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="oklch(0.15 0.02 240)"/>
+  
+  <!-- Grid System (Blueprint Foundation) -->
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="oklch(0.85 0.01 240)" stroke-width="0.5" stroke-opacity="0.1"/>
+    </pattern>
+    <radialGradient id="radial-grid" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="oklch(0.85 0.01 240)" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="oklch(0.85 0.01 240)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#grid)"/>
+  <circle cx="256" cy="256" r="240" fill="url(#radial-grid)"/>
+
+  <!-- Command Frame (Industrial Registry) -->
+  <rect x="40" y="40" width="432" height="432" rx="2" stroke="oklch(0.85 0.01 240)" stroke-width="1" stroke-opacity="0.3"/>
+  
+  <!-- Zonal Divisions -->
+  <line x1="40" y1="100" x2="472" y2="100" stroke="oklch(0.85 0.01 240)" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="40" y1="412" x2="472" y2="412" stroke="oklch(0.85 0.01 240)" stroke-width="1" stroke-opacity="0.3"/>
+  
+  <!-- Central Motif: Interlocking Modular Blocks -->
+  <g transform="translate(156, 140)">
+    <!-- Block 1: Active Project -->
+    <rect x="0" y="0" width="80" height="80" rx="2" fill="oklch(0.45 0.12 250)" fill-opacity="0.2" stroke="oklch(0.45 0.12 250)" stroke-width="2"/>
+    <rect x="10" y="10" width="20" height="20" rx="1" fill="oklch(0.45 0.12 250)"/>
+    
+    <!-- Block 2: Connected Task -->
+    <rect x="100" y="20" width="100" height="60" rx="2" stroke="oklch(0.85 0.01 240)" stroke-width="1.5" stroke-dasharray="4 2"/>
+    <line x1="80" y1="40" x2="100" y2="40" stroke="oklch(0.45 0.12 250)" stroke-width="2"/>
+    
+    <!-- Block 3: Workflow Node -->
+    <rect x="20" y="100" width="160" height="120" rx="2" stroke="oklch(0.85 0.01 240)" stroke-width="1" stroke-opacity="0.5"/>
+    <path d="M 20 140 L 180 140 M 100 100 L 100 220" stroke="oklch(0.85 0.01 240)" stroke-width="0.5" stroke-opacity="0.3"/>
+    
+    <!-- Telemetry: Sparkline -->
+    <path d="M 40 180 L 60 170 L 80 190 L 100 160 L 120 175 L 140 155 L 160 170" fill="none" stroke="oklch(0.65 0.15 45)" stroke-width="1.5"/>
+    
+    <!-- Status Signal (Pulsing Dot) -->
+    <circle cx="160" cy="120" r="4" fill="oklch(0.65 0.15 45)">
+      <animate attributeName="opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite" />
+    </circle>
+  </g>
+
+  <!-- Typography Integration -->
+  <text x="256" y="455" text-anchor="middle" fill="oklch(0.85 0.01 240)" font-family="Vazirmatn, sans-serif" font-weight="bold" font-size="32" letter-spacing="4">ANJAM</text>
+  
+  <!-- Secondary Labels (Fira Code) -->
+  <text x="55" y="80" fill="oklch(0.85 0.01 240)" font-family="Fira Code, monospace" font-size="12" opacity="0.6">SYS_INIT // v1.0.4</text>
+  <text x="457" y="80" text-anchor="end" fill="oklch(0.45 0.12 250)" font-family="Fira Code, monospace" font-size="12" font-weight="bold">TM_CORE</text>
+  
+  <!-- Registry Metadata -->
+  <g transform="translate(55, 425)">
+    <rect x="0" y="0" width="8" height="8" fill="oklch(0.65 0.15 45)"/>
+    <text x="15" y="8" fill="oklch(0.85 0.01 240)" font-family="Fira Code, monospace" font-size="10" opacity="0.5">STATUS: ACTIVE</text>
+    
+    <rect x="120" y="0" width="8" height="8" fill="oklch(0.45 0.12 250)"/>
+    <text x="135" y="8" fill="oklch(0.85 0.01 240)" font-family="Fira Code, monospace" font-size="10" opacity="0.5">LOAD: 0.84ms</text>
+  </g>
+  
+  <!-- Corner Accents (Technical Manual Style) -->
+  <path d="M 40 60 L 40 40 L 60 40" fill="none" stroke="oklch(0.85 0.01 240)" stroke-width="2"/>
+  <path d="M 452 40 L 472 40 L 472 60" fill="none" stroke="oklch(0.85 0.01 240)" stroke-width="2"/>
+  <path d="M 40 452 L 40 472 L 60 472" fill="none" stroke="oklch(0.85 0.01 240)" stroke-width="2"/>
+  <path d="M 452 472 L 472 472 L 472 452" fill="none" stroke="oklch(0.85 0.01 240)" stroke-width="2"/>
+</svg>
