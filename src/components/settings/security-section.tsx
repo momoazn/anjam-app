@@ -97,39 +97,39 @@ export function SecuritySection() {
   };
 
   return (
-    <div className="space-y-12" data-animate-stagger>
-      <div className="space-y-8">
+    <div className="space-y-8" data-animate-stagger>
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <IconShieldLock className="text-primary/60 size-4" />
+            <IconShieldLock className="text-primary size-4" />
             <h3 className="text-sm font-black tracking-tight uppercase">
               {settings.security.changePasswordTitle}
             </h3>
           </div>
-          <div className="bg-border/20 h-px flex-1" />
+          <div className="h-0.5 flex-1 bg-black" />
         </div>
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onChangePassword)}
-            className="max-w-md space-y-6"
+            className="max-w-md space-y-4"
           >
             <FormField
               control={form.control}
               name="oldPassword"
               render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                <FormItem className="space-y-1">
+                  <FormLabel className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
                     {settings.security.oldPassword}
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       {...field}
-                      className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0"
+                      className="h-9 rounded-none border-2 border-black bg-white font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px] font-bold" />
+                  <FormMessage className="text-[10px] font-bold uppercase" />
                 </FormItem>
               )}
             />
@@ -137,18 +137,18 @@ export function SecuritySection() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                <FormItem className="space-y-1">
+                  <FormLabel className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
                     {settings.security.newPassword}
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       {...field}
-                      className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0"
+                      className="h-9 rounded-none border-2 border-black bg-white font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px] font-bold" />
+                  <FormMessage className="text-[10px] font-bold uppercase" />
                 </FormItem>
               )}
             />
@@ -156,31 +156,31 @@ export function SecuritySection() {
               control={form.control}
               name="passwordConfirm"
               render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                <FormItem className="space-y-1">
+                  <FormLabel className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
                     {settings.security.confirmPassword}
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       {...field}
-                      className="border-border/40 bg-muted/5 focus:border-primary/40 h-11 rounded-none font-bold focus:ring-0"
+                      className="h-9 rounded-none border-2 border-black bg-white font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </FormControl>
-                  <FormMessage className="text-[10px] font-bold" />
+                  <FormMessage className="text-[10px] font-bold uppercase" />
                 </FormItem>
               )}
             />
-            <div className="pt-4">
+            <div className="pt-2">
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
+                className="h-10 gap-2 rounded-none border-2 border-black bg-black px-6 font-black text-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:scale-95 disabled:opacity-50"
               >
                 {form.formState.isSubmitting && (
-                  <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
+                  <IconLoader2 className="h-3.5 w-3.5 animate-spin" />
                 )}
-                <span className="tracking-tight uppercase">
+                <span className="text-[11px] tracking-tight uppercase">
                   {settings.security.updatePassword}
                 </span>
               </Button>
@@ -189,45 +189,45 @@ export function SecuritySection() {
         </Form>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <IconActivity className="text-primary/60 size-4" />
+            <IconActivity className="text-primary size-4" />
             <h3 className="text-sm font-black tracking-tight uppercase">
               {settings.security.activeSessionsTitle}
             </h3>
           </div>
-          <div className="bg-border/20 h-px flex-1" />
+          <div className="h-0.5 flex-1 bg-black" />
         </div>
 
         <div className="space-y-4">
-          <p className="text-muted-foreground/60 text-right text-xs leading-relaxed font-bold tracking-tight uppercase">
+          <p className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
             {settings.security.activeSessionsDescription}
           </p>
 
           {loadingLogs ? (
-            <div className="flex justify-center p-12 opacity-20">
-              <IconLoader2 className="h-8 w-8 animate-spin" />
+            <div className="flex justify-center p-8 opacity-20">
+              <IconLoader2 className="h-6 w-6 animate-spin" />
             </div>
           ) : (
-            <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border">
+            <div className="grid gap-3">
               {loginLogs && loginLogs.length > 0 ? (
                 loginLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="group bg-card hover:bg-muted/30 relative flex items-stretch p-4 text-right transition-all"
+                    className="group relative flex items-center border-2 border-black bg-white p-3 shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
                   >
-                    <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-s">
+                    <div className="bg-muted/30 flex h-8 w-8 shrink-0 items-center justify-center border-2 border-black">
                       {log.success ? (
-                        <IconCheck className="size-4 text-emerald-500" />
+                        <IconCheck className="size-4 text-emerald-600" />
                       ) : (
-                        <IconX className="size-4 text-rose-500" />
+                        <IconX className="size-4 text-rose-600" />
                       )}
                     </div>
 
-                    <div className="flex-1 px-4 py-1">
-                      <div className="mb-1 flex items-center justify-end gap-2">
-                        <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+                    <div className="flex-1 px-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground/40 font-mono text-[8px] font-black tracking-tight uppercase">
                           Remote_Host
                         </span>
                         <IconServer className="size-2.5 opacity-20" />
@@ -235,13 +235,13 @@ export function SecuritySection() {
                       <p className="text-[11px] font-black tabular-nums">
                         {log.ip_address || "Unknown IP"}
                       </p>
-                      <p className="text-muted-foreground/40 mt-1 max-w-[240px] truncate text-[9px] font-bold uppercase">
+                      <p className="text-muted-foreground/40 max-w-[240px] truncate font-mono text-[9px] font-bold uppercase">
                         {log.user_agent || "Unknown Device"}
                       </p>
                     </div>
 
-                    <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center border-e px-2">
-                      <span className="text-muted-foreground/40 mb-1 text-[7px] font-black tracking-tight uppercase">
+                    <div className="flex shrink-0 flex-col items-end border-l-2 border-black/10 pl-3">
+                      <span className="text-muted-foreground/40 mb-1 font-mono text-[7px] font-black tracking-tight uppercase">
                         Auth_Time
                       </span>
                       <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-black tabular-nums">
@@ -254,14 +254,12 @@ export function SecuritySection() {
                         )}
                       </div>
                     </div>
-
-                    <div className="bg-primary/20 absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
                   </div>
                 ))
               ) : (
-                <div className="bg-card p-12 text-center opacity-30 grayscale">
-                  <IconTerminal className="mx-auto mb-4 size-8 stroke-[1]" />
-                  <p className="text-[10px] font-black tracking-tight uppercase">
+                <div className="bg-muted/10 border-2 border-black p-8 text-center grayscale">
+                  <IconTerminal className="mx-auto mb-3 size-6 stroke-[1.5] opacity-20" />
+                  <p className="text-[10px] font-black tracking-tight uppercase opacity-40">
                     {settings.security.noLoginHistory}
                   </p>
                 </div>

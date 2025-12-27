@@ -5,61 +5,61 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export function AboutSection() {
   return (
-    <div className="space-y-12" data-animate-stagger>
-      <div className="space-y-8">
+    <div className="space-y-8" data-animate-stagger>
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <IconTerminal className="text-primary/60 size-4" />
+            <IconTerminal className="text-primary size-4" />
             <h3 className="text-sm font-black tracking-tight uppercase">
               {settings.about.title}
             </h3>
           </div>
-          <div className="bg-border/20 h-px flex-1" />
+          <div className="h-0.5 flex-1 bg-black" />
         </div>
 
-        <div className="flex flex-col gap-8 md:flex-row md:items-start">
-          <div className="bg-primary text-primary-foreground border-primary/30 flex h-24 w-24 shrink-0 items-center justify-center rounded-none border shadow-[-4px_4px_0px_0px_rgba(var(--primary),0.2)]">
-            <IconCircleCheck className="h-10 w-10" />
+        <div className="flex flex-col gap-6 md:flex-row md:items-start">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center border-2 border-black bg-black text-white shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            <IconCircleCheck className="h-8 w-8" />
           </div>
 
           <div className="flex-1 text-right">
-            <div className="mb-2 flex items-center justify-end gap-3">
-              <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            <div className="mb-1 flex items-center justify-end gap-2">
+              <span className="text-primary font-mono text-[9px] font-black tracking-widest uppercase">
                 Software_Manifest
               </span>
             </div>
-            <h3 className="mb-2 text-3xl font-black tracking-tight uppercase">
+            <h3 className="mb-1 text-2xl font-black tracking-tight uppercase">
               {app.name}
             </h3>
-            <div className="bg-muted/20 border-border/20 mb-6 inline-flex items-center gap-2 rounded-none border px-3 py-1">
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-40">
+            <div className="bg-muted/20 mb-4 inline-flex items-center gap-2 border-2 border-black px-2 py-0.5 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+              <span className="font-mono text-[8px] font-black tracking-tight uppercase opacity-40">
                 Build_Version
               </span>
-              <div className="bg-border/40 h-3 w-px" />
+              <div className="h-2.5 w-0.5 bg-black/20" />
               <span className="text-[10px] font-black tabular-nums">
                 {digitsEnToFa(settings.about.version)}
               </span>
             </div>
 
-            <p className="text-muted-foreground/80 text-sm leading-relaxed font-bold tracking-tight uppercase">
+            <p className="text-muted-foreground font-mono text-xs leading-relaxed font-bold tracking-tight uppercase">
               {settings.about.description}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="border-border/20 border-t pt-12">
-        <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px border">
-          <div className="bg-muted/5 p-4 text-right">
-            <span className="text-muted-foreground/40 mb-1 block text-[8px] font-black tracking-tight uppercase">
+      <div className="border-t-2 border-black pt-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-muted/5 border-2 border-black p-3 text-right shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            <span className="text-muted-foreground/40 mb-1 block font-mono text-[7px] font-black tracking-tight uppercase">
               Architecture
             </span>
             <span className="text-[10px] font-black uppercase">
               PocketBase_Framework
             </span>
           </div>
-          <div className="bg-muted/5 p-4 text-right">
-            <span className="text-muted-foreground/40 mb-1 block text-[8px] font-black tracking-tight uppercase">
+          <div className="bg-muted/5 border-2 border-black p-3 text-right shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            <span className="text-muted-foreground/40 mb-1 block font-mono text-[7px] font-black tracking-tight uppercase">
               UI_Engine
             </span>
             <span className="text-[10px] font-black uppercase">

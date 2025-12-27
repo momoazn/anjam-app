@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "sonner";
 import { useState } from "react";
+import { IconPalette, IconBell, IconSettings } from "@tabler/icons-react";
 import {
   Select,
   SelectContent,
@@ -61,10 +63,12 @@ function ToggleRow({
   onChange,
 }: ToggleRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="group border-border flex items-center justify-between gap-6 border-b py-4 last:border-0">
       <div className="text-right">
-        <p className="text-sm font-black tracking-tight uppercase">{label}</p>
-        <p className="text-muted-foreground/70 text-[11px]">{description}</p>
+        <p className="text-sm font-bold tracking-tight">{label}</p>
+        <p className="text-muted-foreground text-xs font-medium">
+          {description}
+        </p>
       </div>
       <Switch
         checked={checked}
@@ -72,6 +76,32 @@ function ToggleRow({
         disabled={disabled}
         aria-label={label}
       />
+    </div>
+  );
+}
+
+function SectionHeader({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: any;
+  title: string;
+  description?: string;
+}) {
+  return (
+    <div className="border-border mb-6 flex items-center gap-4 border-b pb-4">
+      <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+        <Icon className="size-6" stroke={1.5} />
+      </div>
+      <div className="text-right">
+        <h3 className="text-lg font-bold tracking-tight">{title}</h3>
+        {description && (
+          <p className="text-muted-foreground text-xs font-medium">
+            {description}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -181,24 +211,24 @@ export function PreferencesSection() {
 
   if (!user) {
     return (
-      <div className="border-border/40 bg-muted/5 text-muted-foreground rounded-none border p-6 text-right text-sm">
-        {settings.preferences.signinRequired}
+      <div className="bg-card border-border rounded-lg border p-8 text-center shadow-sm">
+        <p className="text-foreground text-base font-bold tracking-tight">
+          {settings.preferences.signinRequired}
+        </p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6 text-right">
-      <section className="border-border/40 bg-muted/5 rounded-none border p-6 shadow-sm">
-        <div className="border-border/20 space-y-1 border-b pb-4">
-          <p className="text-muted-foreground text-xs font-black tracking-tight uppercase">
-            {settings.preferences.title}
-          </p>
-          <p className="text-muted-foreground text-sm">
-            {settings.preferences.description}
-          </p>
-        </div>
-        <div className="mt-4 space-y-4">
+      {/* UI Preferences */}
+      <section className="bg-card border-border rounded-lg border p-6 shadow-sm">
+        <SectionHeader
+          icon={IconSettings}
+          title={settings.preferences.title}
+          description="تنظیمات رابط کاربری سیستم"
+        />
+        <div className="space-y-1">
           <ToggleRow
             label={settings.preferences.toggles.activityFeed.label}
             description={settings.preferences.toggles.activityFeed.description}
@@ -209,17 +239,18 @@ export function PreferencesSection() {
         </div>
       </section>
 
-      <section className="border-border/40 bg-muted/5 rounded-none border p-6 shadow-sm">
-        <div className="border-border/20 mb-4 border-b pb-3">
-          <p className="text-muted-foreground text-xs font-black tracking-tight uppercase">
-            تنظیمات نمایش
-          </p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
+      {/* Display Settings */}
+      <section className="bg-card border-border rounded-lg border p-6 shadow-sm">
+        <SectionHeader
+          icon={IconPalette}
+          title="تنظیمات نمایش"
+          description="پارامترهای بصری سیستم"
+        />
+        <div className="grid gap-6 sm:grid-cols-3">
           <div className="space-y-2">
-            <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
-              تم
-            </span>
+            <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+              تم سیستم
+            </label>
             <Select
               value={displayPreferences.theme}
               onValueChange={(value) =>
@@ -229,15 +260,15 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
+              <SelectTrigger className="h-11 text-right">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
-              <SelectContent className="border-border bg-card rounded-none border">
+              <SelectContent>
                 {themeOptions.map((option) => (
                   <SelectItem
                     key={option.value}
                     value={option.value}
-                    className="text-right text-[10px] font-black uppercase"
+                    className="text-right"
                   >
                     {option.label}
                   </SelectItem>
@@ -247,9 +278,9 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
+            <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               منطقه زمانی
-            </span>
+            </label>
             <Select
               value={displayPreferences.timezone}
               onValueChange={(value) =>
@@ -259,15 +290,15 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
+              <SelectTrigger className="h-11 text-right">
                 <SelectValue placeholder="Timezone" />
               </SelectTrigger>
-              <SelectContent className="border-border bg-card rounded-none border">
+              <SelectContent>
                 {timezoneOptions.map((option) => (
                   <SelectItem
                     key={option.value}
                     value={option.value}
-                    className="text-right text-[10px] font-black uppercase"
+                    className="text-right"
                   >
                     {option.label}
                   </SelectItem>
@@ -277,9 +308,9 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
+            <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               فرمت تاریخ
-            </span>
+            </label>
             <Select
               value={displayPreferences.dateFormat}
               onValueChange={(value) =>
@@ -289,15 +320,15 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-none border text-right text-xs font-black tracking-tight uppercase focus:ring-0">
+              <SelectTrigger className="h-11 text-right">
                 <SelectValue placeholder="Date format" />
               </SelectTrigger>
-              <SelectContent className="border-border bg-card rounded-none border">
+              <SelectContent>
                 {dateFormatOptions.map((option) => (
                   <SelectItem
                     key={option.value}
                     value={option.value}
-                    className="text-right text-[10px] font-black uppercase"
+                    className="text-right"
                   >
                     {option.label}
                   </SelectItem>
@@ -308,13 +339,14 @@ export function PreferencesSection() {
         </div>
       </section>
 
-      <section className="border-border/40 bg-muted/5 rounded-none border p-6 shadow-sm">
-        <div className="border-border/20 mb-4 border-b pb-3">
-          <p className="text-muted-foreground text-xs font-black tracking-tight uppercase">
-            اعلان‌ها
-          </p>
-        </div>
-        <div className="space-y-4">
+      {/* Notifications */}
+      <section className="bg-card border-border rounded-lg border p-6 shadow-sm">
+        <SectionHeader
+          icon={IconBell}
+          title="اعلان‌ها"
+          description="مدیریت دریافت اعلان‌های سیستم"
+        />
+        <div className="space-y-1">
           {(Object.keys(notificationToggles) as NotificationKey[]).map(
             (key) => (
               <ToggleRow

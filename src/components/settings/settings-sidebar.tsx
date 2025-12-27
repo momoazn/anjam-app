@@ -49,7 +49,7 @@ export function SettingsSidebar({
             key={item.id}
             variant="ghost"
             className={cn(
-              "group relative h-12 justify-start gap-4 rounded-none border-s-2 px-4 transition-all transition-none duration-100",
+              "group relative h-10 justify-start gap-3 rounded-none border-s-2 px-4 transition-all transition-none duration-100",
               isActive
                 ? "bg-primary/5 border-primary text-primary"
                 : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground border-transparent",
@@ -58,13 +58,13 @@ export function SettingsSidebar({
           >
             <Icon
               className={cn(
-                "size-5 transition-transform duration-200 group-hover:scale-110",
+                "size-4 transition-transform duration-200 group-hover:scale-110",
                 isActive ? "text-primary" : "text-muted-foreground/40",
               )}
             />
             <span
               className={cn(
-                "text-[13px] font-black tracking-tight uppercase",
+                "text-[11px] font-black tracking-tight uppercase",
                 isActive ? "opacity-100" : "opacity-90",
               )}
             >
@@ -72,7 +72,7 @@ export function SettingsSidebar({
             </span>
 
             {isActive && (
-              <IconChevronLeft className="ms-auto size-4 opacity-40" />
+              <IconChevronLeft className="ms-auto size-3.5 opacity-40" />
             )}
           </Button>
         );
