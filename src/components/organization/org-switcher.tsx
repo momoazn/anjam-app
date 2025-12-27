@@ -95,7 +95,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
     await switchOrganization(orgId);
     setIsOpen(false);
     // Optionally navigate to dashboard after switch
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const handleCreateOrg = () => {

@@ -46,7 +46,7 @@ export default function Users() {
   };
 
   if (!canViewPage) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const headerActions = canCreateUsers ? (

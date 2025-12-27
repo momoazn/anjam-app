@@ -1,7 +1,6 @@
 import { NavLink } from "react-router-dom";
 import {
   IconDashboard,
-  IconInnerShadowTop,
   IconBell,
   IconTag,
   IconChartBar,
@@ -12,6 +11,7 @@ import {
   IconFileDescription,
 } from "@tabler/icons-react";
 
+import { Logo } from "@/components/brand/logo";
 import { NavMain } from "@/components/nav-main";
 import { QuickCreate } from "@/components/sidebar/quick-create";
 import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";
@@ -44,7 +44,7 @@ const sidebarData = {
   navWorkspace: [
     {
       title: navigation.dashboard,
-      url: "/",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
@@ -112,7 +112,7 @@ function AppSidebarHeader() {
             className="hover:bg-muted/30 active:bg-muted/50 h-full rounded-none border-s-0 transition-none"
           >
             <NavLink
-              to="/"
+              to="/dashboard"
               className="flex h-full w-full items-center gap-4 px-6"
               onClick={() => {
                 if (isMobile) {
@@ -120,9 +120,7 @@ function AppSidebarHeader() {
                 }
               }}
             >
-              <div className="bg-primary text-primary-foreground border-primary/30 flex size-8 items-center justify-center rounded-none border shadow-sm">
-                <IconInnerShadowTop className="size-4.5" />
-              </div>
+              <Logo size={32} className="shrink-0" />
               {state === "expanded" && (
                 <div className="flex flex-col">
                   <span className="text-xs leading-none font-black tracking-tight uppercase">

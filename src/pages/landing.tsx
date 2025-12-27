@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { useTheme } from "@/hooks/use-theme";
@@ -36,9 +37,7 @@ const LandingPage = () => {
       {/* Navigation */}
       <nav className="border-border/40 bg-background/40 relative z-20 mx-auto flex max-w-7xl items-center justify-between border-b px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="bg-primary text-primary-foreground flex h-7 w-7 items-center justify-center rounded-none font-mono text-sm font-black">
-            A
-          </div>
+          <Logo size={28} />
           <div className="flex flex-col text-right">
             <span className="font-arad text-[14px] leading-none font-black tracking-tight uppercase">
               {landing.brandName}
@@ -60,16 +59,16 @@ const LandingPage = () => {
           </Button>
           <Link
             to="/login"
-            className="text-muted-foreground hover:text-foreground hidden font-mono text-[10px] tracking-tight uppercase transition-colors md:block"
+            className="font-arad text-muted-foreground hover:text-foreground hidden text-[10px] tracking-tight uppercase transition-colors md:block"
           >
             {landing.loginButton}
           </Link>
           <Button
             asChild
             variant="outline"
-            className="border-border hover:bg-accent h-8 rounded-none px-4 font-mono text-[10px] tracking-tight uppercase shadow-sm transition-all active:scale-95"
+            className="font-arad border-border hover:bg-accent h-8 rounded-none px-4 text-[10px] tracking-tight uppercase shadow-sm transition-all active:scale-95"
           >
-            <Link to={isLoggedIn ? "/" : "/login"}>
+            <Link to={isLoggedIn ? "/dashboard" : "/login"}>
               {isLoggedIn ? landing.dashboard : landing.getStarted}
             </Link>
           </Button>
@@ -362,21 +361,19 @@ const LandingPage = () => {
       <footer className="border-border/40 bg-card relative z-10 border-t px-6 py-16">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 md:flex-row">
           <div className="flex items-center gap-5">
-            <div className="border-border/60 bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-none border font-mono text-xl font-black tracking-tighter shadow-sm">
-              A
-            </div>
+            <Logo size={40} />
             <div className="flex flex-col text-right">
               <span className="font-arad text-foreground/80 mb-1 text-sm leading-none font-black tracking-tight uppercase">
                 {landing.brandName}
               </span>
-              <span className="text-muted-foreground font-mono text-[10px] leading-none font-bold tracking-tight uppercase">
+              <span className="font-arad text-muted-foreground text-[10px] leading-none font-bold tracking-tight uppercase">
                 © {digitsEnToFa(new Date().getFullYear())}{" "}
                 {landing.footer.allRightsReserved}
               </span>
             </div>
           </div>
 
-          <div className="font-arad text-muted-foreground flex flex-wrap justify-center gap-x-10 gap-y-4 font-mono text-xs font-bold tracking-tight uppercase">
+          <div className="font-arad text-muted-foreground flex flex-wrap justify-center gap-x-10 gap-y-4 text-xs font-bold tracking-tight uppercase">
             <span className="hover:text-primary cursor-pointer transition-colors">
               {landing.footer.documentation}
             </span>

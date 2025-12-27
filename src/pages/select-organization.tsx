@@ -83,7 +83,7 @@ export function SelectOrganizationPage() {
               onClick={() => {
                 // Switch to this organization
                 useAuthStore.getState().switchOrganization(org.id);
-                navigate("/");
+                navigate("/dashboard");
               }}
               className={cn(
                 "group relative flex flex-col items-center gap-4 rounded-none border p-6 text-left transition-all",

@@ -73,7 +73,7 @@ function AppLayout() {
   const location = useLocation();
   useNotifications(); // Auto-subscribes
 
-  const isLandingPage = location.pathname === "/landing";
+  const isLandingPage = location.pathname === "/";
 
   if (isLandingPage) {
     return (

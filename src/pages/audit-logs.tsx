@@ -76,7 +76,7 @@ export default function AuditLogs() {
   });
 
   if (!isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const hasFilters = !!resource || !!action || !!client || !!search;

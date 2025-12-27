@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
-  IconFingerprint,
   IconShieldLock,
   IconUserBolt,
   IconServer,
+  IconFingerprint,
 } from "@tabler/icons-react";
 
+import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
@@ -33,18 +34,18 @@ export default function Login() {
   const navigate = useNavigate();
   const login = useAuthStore().login;
 
-  const [username, setUsername] = useState("");
+  const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
-    username?: string;
+    identity?: string;
     password?: string;
   }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: { username?: string; password?: string } = {};
-    if (!username.trim()) newErrors.username = auth.errors.usernameRequired;
+    const newErrors: { identity?: string; password?: string } = {};
+    if (!identity.trim()) newErrors.identity = auth.errors.usernameRequired;
     if (!password.trim()) newErrors.password = auth.errors.passwordRequired;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
@@ -56,7 +57,7 @@ export default function Login() {
       setSubmitting(true);
       await pb
         .collection("users")
-        .authWithPassword(username.trim().toLowerCase(), password.trim());
+        .authWithPassword(identity.trim().toLowerCase(), password.trim());
       if (
         pb.authStore.record &&
         pb.authStore.token &&
@@ -86,9 +87,7 @@ export default function Login() {
       {/* Left Side: Visual Content (Desktop Only) */}
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
-          <div className="bg-primary/10 flex size-10 items-center justify-center rounded-none">
-            <IconFingerprint className="size-6" />
-          </div>
+          <Logo size={40} showTelemetry />
           <span className="text-sm font-black tracking-tight uppercase opacity-70">
             {app.name} / Secure Access
           </span>
@@ -117,9 +116,7 @@ export default function Login() {
       <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
         <PageTransition className="w-full" disableStagger>
           <div className="mb-10 lg:hidden">
-            <div className="bg-primary text-primary-foreground shadow-primary/20 mb-6 flex size-12 items-center justify-center rounded-none shadow-md">
-              <IconFingerprint className="size-7" />
-            </div>
+            <Logo size={48} className="mb-6" />
             <h2 className="text-4xl font-black tracking-tight">
               {auth.login.title}
             </h2>
@@ -148,18 +145,18 @@ export default function Login() {
                 </div>
                 <Input
                   type="text"
-                  value={username}
+                  value={identity}
                   dir="ltr"
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setIdentity(e.target.value)}
                   className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
-                  placeholder="username"
+                  placeholder="name@company.com"
                   required
                   autoFocus
                   disabled={submitting}
                 />
-                {errors.username && (
+                {errors.identity && (
                   <p className="text-destructive text-[10px] font-bold">
-                    {errors.username}
+                    {errors.identity}
                   </p>
                 )}
               </div>
@@ -201,6 +198,14 @@ export default function Login() {
                 </span>
               </Button>
             </form>
+            <div className="mt-6 flex items-center justify-between border-t pt-4">
+              <span className="text-muted-foreground text-xs font-semibold">
+                {auth.login.noAccountPrompt}
+              </span>
+              <Button variant="ghost" asChild>
+                <Link to="/register">{auth.login.registerButton}</Link>
+              </Button>
+            </div>
           </div>
 
           <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">

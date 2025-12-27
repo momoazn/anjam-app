@@ -47,7 +47,7 @@ export default function NotFound() {
             asChild
             className="h-14 rounded-none px-10 font-black shadow-sm transition-all active:scale-95"
           >
-            <Link to="/" className="tracking-tight uppercase">
+            <Link to="/dashboard" className="tracking-tight uppercase">
               {navigation.dashboard}
             </Link>
           </Button>

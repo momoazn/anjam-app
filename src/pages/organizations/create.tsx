@@ -83,7 +83,7 @@ export function CreateOrganizationPage() {
       await switchOrganization(response.organization.id);
 
       toast.success(organization.create.success);
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error creating organization:", error);
       toast.error(organization.create.error);

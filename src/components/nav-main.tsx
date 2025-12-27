@@ -44,7 +44,7 @@ export function NavMain({ items, title }: NavMainProps) {
               <SidebarMenuItem key={item.title}>
                 <NavLink
                   to={item.url}
-                  end={item.url === "/"}
+                  end={item.url === "/dashboard"}
                   className="block"
                   onClick={() => {
                     if (isMobile) {

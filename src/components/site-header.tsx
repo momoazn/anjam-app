@@ -33,7 +33,7 @@ export function SiteHeader() {
     const parts = normalizedPath.split("/").filter(Boolean);
 
     if (parts.length === 0) {
-      return [{ label: navigation.dashboard, to: "/" as const }];
+      return [{ label: navigation.dashboard, to: "/dashboard" as const }];
     }
 
     const first = parts[0];
@@ -44,13 +44,13 @@ export function SiteHeader() {
 
     if (parts.length === 1) {
       return [
-        { label: navigation.dashboard, to: "/" as const },
+        { label: navigation.dashboard, to: "/dashboard" as const },
         { label: firstLabel },
       ];
     }
 
     return [
-      { label: navigation.dashboard, to: "/" as const },
+      { label: navigation.dashboard, to: "/dashboard" as const },
       { label: firstLabel, to: `/${first}` as const },
       { label: parts[parts.length - 1] },
     ];
