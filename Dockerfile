@@ -59,8 +59,8 @@ FROM ${RUNTIME_IMAGE}
 
 WORKDIR /app
 
-# Install CA certificates and timezone data
-RUN apk add --no-cache ca-certificates tzdata
+# Install CA certificates, timezone data, and wget for health checks
+RUN apk add --no-cache ca-certificates tzdata wget
 ENV TZ=Etc/UTC
 
 # Copy the built binary
@@ -76,5 +76,10 @@ USER anjam
 # Expose the default PocketBase port
 EXPOSE 8090
 
-# Run the application (backend binds to 0.0.0.0:8090 in production mode)
-CMD ["/app/anjam", "--http=0.0.0.0:8090"]
+# Default memory limit for Go GC (can be overridden via environment)
+ENV GOMEMLIMIT=512MiB
+
+# Run the application with settings encryption support
+# --encryptionEnv tells PocketBase which env var contains the 32-char encryption key
+# If ANJAM_ENCRYPTION_KEY is empty, PocketBase runs without encryption
+CMD ["/app/anjam", "--http=0.0.0.0:8090", "--encryptionEnv=ANJAM_ENCRYPTION_KEY"]

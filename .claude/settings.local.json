@@ -21,7 +21,8 @@
       "Bash(git add:*)",
       "Bash(test:*)",
       "Bash(bun run lint)",
-      "Bash(bun run format:*)"
+      "Bash(bun run format:*)",
+      "WebFetch(domain:pocketbase.io)"
     ],
     "deny": [],
     "ask": []

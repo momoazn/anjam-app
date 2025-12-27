@@ -42,25 +42,46 @@ This runbook provides step-by-step procedures for deploying, configuring, and ma
    sha256sum /opt/anjam/anjam
    ```
 
-**From Docker Container:**
+**From Docker Container (Recommended):**
 
-Use the repo Dockerfile at `Dockerfile`:
+1. Copy and configure environment file:
 
-```bash
-docker build -f Dockerfile -t anjam:latest .
-docker run -d \
-  --name anjam \
-  -p 8090:8090 \
-  -v anjam-data:/app/data \
-  -e TM_ALLOW_DEFAULT_ACCOUNTS=false \
-  anjam:latest
-```
+   ```bash
+   cp .env.example .env
+   # Edit .env with your production values
 
-If using docker compose, make sure the compose file points to `Dockerfile`:
+   # Generate encryption key:
+   openssl rand -hex 16
+   # Add the generated key to ANJAM_ENCRYPTION_KEY in .env
+   ```
 
-```bash
-docker compose up -d --build
-```
+2. Build and start with docker compose:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. Or build and run manually:
+
+   ```bash
+   docker build -f Dockerfile -t anjam:latest .
+   docker run -d \
+     --name anjam \
+     -p 8090:8090 \
+     -v anjam-data:/app/data \
+     -e TM_ALLOW_DEFAULT_ACCOUNTS=false \
+     -e ANJAM_ENCRYPTION_KEY="<your-32-char-key>" \
+     -e GOMEMLIMIT=512MiB \
+     --memory=1g \
+     --ulimit nofile=4096:4096 \
+     anjam:latest
+   ```
+
+4. Verify deployment:
+   ```bash
+   docker logs anjam
+   curl http://localhost:8090/api/health
+   ```
 
 ### 1.2 Configure TLS Termination
 
@@ -121,13 +142,31 @@ After=network.target
 Type=simple
 User=anjam
 WorkingDirectory=/opt/anjam
-ExecStart=/opt/anjam/anjam --http=0.0.0.0:8090
+ExecStart=/opt/anjam/anjam --http=0.0.0.0:8090 --encryptionEnv=ANJAM_ENCRYPTION_KEY
 Restart=on-failure
 RestartSec=10s
+
+# Security settings
 Environment="TM_ALLOW_DEFAULT_ACCOUNTS=false"
+
+# Settings encryption (generate with: openssl rand -hex 16)
+Environment="ANJAM_ENCRYPTION_KEY=<32-character-random-string>"
+
+# Memory management (adjust based on available RAM)
+# Recommended: 50-75% of available memory
+Environment="GOMEMLIMIT=512MiB"
+
+# Increase file descriptors for realtime connections
+LimitNOFILE=4096
 
 [Install]
 WantedBy=multi-user.target
+```
+
+**Generate encryption key:**
+
+```bash
+openssl rand -hex 16
 ```
 
 Enable and start:
@@ -153,32 +192,51 @@ export TM_ALLOW_DEFAULT_ACCOUNTS=false
 
 ### 2.2 PocketBase Dashboard Configuration
 
-Access PocketBase admin UI at `https://ianjam.ir/admin`:
+Access PocketBase admin UI at `https://ianjam.ir/_/`:
 
 1. **Default Credentials:**
    - Email: `admin@example.com`
    - Password: `admin12345`
    - **Change immediately after first login**
 
-2. **Enable Rate Limiting:**
-   - Navigate to Settings > Application
-   - Set rate limiting if needed (PocketBase built-in feature)
+2. **Enable Multi-Factor Authentication (MFA) - HIGHLY RECOMMENDED:**
+   - Navigate to Collections > `_superusers`
+   - Edit collection settings
+   - Enable MFA/OTP requirement
+   - This enforces email-based one-time passwords for admin access
 
-3. **Configure Logging:**
+3. **Enable Rate Limiting - HIGHLY RECOMMENDED:**
+   - Navigate to Settings > Application
+   - Enable the built-in rate limiter (available since PocketBase v0.23.0)
+   - Recommended settings:
+     - Auth endpoints: 10 requests/minute per IP
+     - API endpoints: 100 requests/minute per IP
+   - Prevents brute force attacks and API abuse
+
+4. **Configure Logging:**
    - Navigate to Settings > Logs
    - Set log level to `info` (or `debug` for troubleshooting)
    - Configure retention policy (e.g., 30 days)
 
-4. **Configure Email (Optional):**
+5. **Configure Email (Recommended):**
    - Navigate to Settings > Mail
-   - Configure SMTP if email notifications are needed
+   - Configure SMTP for password resets and notifications
+   - Recommended services: MailerSend, SendGrid, Mailgun, or AWS SES
    - Test SMTP settings before deploying
+   - **Note:** Without SMTP, MFA cannot send verification codes
 
-5. **User Management:**
+6. **Configure User IP Proxy Headers:**
+   - If behind a reverse proxy (nginx, Caddy, etc.)
+   - Navigate to Settings > Application
+   - Set "Trusted proxy headers" to: `X-Real-IP` or `X-Forwarded-For`
+   - This ensures accurate IP logging and rate limiting
+
+7. **User Management:**
    - Create admin users via the Users collection
    - Disable default accounts after setup:
-     - Deactivate `admin@example.com`
-     - Or ensure only application admins exist and set `TM_ALLOW_DEFAULT_ACCOUNTS=false`
+     - Deactivate `admin@example.com` superuser
+     - Ensure only application admins exist
+     - Set `TM_ALLOW_DEFAULT_ACCOUNTS=false` in environment
 
 ### 2.3 Data Directory Persistence
 
@@ -214,11 +272,23 @@ Check application health:
 # HTTP health check
 curl -s https://ianjam.ir/api/health
 
-# System resource check
+# Docker health check
+docker inspect --format='{{.State.Health.Status}}' anjam
+
+# Docker container logs
+docker logs --tail 100 anjam
+
+# System resource check (Docker)
+docker stats anjam --no-stream
+
+# System resource check (non-Docker)
 ps aux | grep anjam
 df -h /opt/anjam/data
 
 # Database integrity check (run periodically)
+# For Docker:
+docker exec anjam sqlite3 /app/data/data.db "PRAGMA integrity_check;"
+# For non-Docker:
 sqlite3 /opt/anjam/data/data.db "PRAGMA integrity_check;"
 ```
 
@@ -244,7 +314,21 @@ use system-level monitoring or add a dedicated exporter.
 
 ### 3.3 Backup Procedures
 
-**Automated Daily Backup:**
+PocketBase v0.16+ includes built-in backup/restore APIs accessible via the Dashboard settings.
+Backups are ZIP archives of the `pb_data` directory and can be stored locally or in S3-compatible storage.
+The application enters read-only mode briefly during backup generation.
+
+**Option 1: PocketBase Built-in Backups (Recommended)**
+
+1. Access PocketBase admin UI at `https://ianjam.ir/_/`
+2. Navigate to Settings > Backups
+3. Configure backup settings:
+   - Enable scheduled backups
+   - Set retention policy
+   - Optionally configure S3-compatible storage (MinIO, AWS S3, etc.)
+4. Test restore procedure in a staging environment
+
+**Option 2: Automated File-based Backup**
 
 Create `/opt/anjam/backup.sh`:
 
@@ -281,11 +365,26 @@ Schedule with cron:
 **Manual Backup:**
 
 ```bash
-# Backup database
+# For Docker deployments:
+docker exec anjam sqlite3 /app/data/data.db ".backup '/app/data/backup.db'"
+docker cp anjam:/app/data/backup.db /mnt/backups/data.db.$(date +%Y%m%d)
+docker exec anjam rm /app/data/backup.db
+
+# For non-Docker deployments:
 cp /opt/anjam/data/data.db /mnt/backups/data.db.backup
 
 # Verify backup integrity
 sqlite3 /mnt/backups/data.db.backup "PRAGMA integrity_check;"
+```
+
+**Docker Volume Backup:**
+
+```bash
+# Create backup of entire data volume
+docker run --rm \
+  -v anjam-data:/data \
+  -v /mnt/backups:/backup \
+  alpine tar czf /backup/anjam-data-$(date +%Y%m%d).tar.gz -C /data .
 ```
 
 ### 3.4 System Limits (Linux)
@@ -464,21 +563,52 @@ Monitor for security updates:
 
 ## Checklist: Production Deployment
 
-- [ ] Binary deployed and executable
-- [ ] Data directory created and permissions set (700)
+### Pre-Deployment
+
+- [ ] `.env` file created from `.env.example`
+- [ ] Encryption key generated (`openssl rand -hex 16`) and added to `.env`
+- [ ] `TM_ALLOW_DEFAULT_ACCOUNTS=false` set (after first admin created)
+
+### Docker Deployment
+
+- [ ] `docker compose up -d --build` successful
+- [ ] Container health check passing (`docker inspect --format='{{.State.Health.Status}}' anjam`)
+- [ ] Logs show no errors (`docker logs anjam`)
+- [ ] Data volume created and mounted (`anjam-data`)
+
+### TLS & Networking
+
 - [ ] TLS certificates installed and configured
-- [ ] Reverse proxy configured for HTTPS
-- [ ] Systemd service created and enabled
-- [ ] Default credentials changed
-- [ ] Rate limiting configured (if needed)
-- [ ] Logging enabled and configured
-- [ ] Email configuration tested (if needed)
-- [ ] Daily backup script scheduled
-- [ ] Monitoring and alerting configured
-- [ ] OS limits configured
-- [ ] Database integrity verified
-- [ ] Health checks passing
-- [ ] Documentation updated with deployment details
+- [ ] Reverse proxy configured for HTTPS (nginx/Caddy)
+- [ ] WebSocket upgrade headers configured for realtime features
+
+### PocketBase Dashboard Configuration
+
+- [ ] Default superuser credentials changed (admin@example.com)
+- [ ] **MFA enabled for `_superusers` collection** (highly recommended)
+- [ ] **Rate limiting enabled** (highly recommended)
+- [ ] Trusted proxy headers configured (`X-Real-IP` or `X-Forwarded-For`)
+- [ ] SMTP configured for password resets and MFA codes
+- [ ] Logging level and retention configured
+
+### Data & Backups
+
+- [ ] Backup strategy configured (PocketBase built-in or file-based)
+- [ ] Backup schedule tested
+- [ ] Restore procedure documented and tested
+
+### Monitoring & Operations
+
+- [ ] Health check endpoint accessible (`/api/health`)
+- [ ] Log aggregation configured (if needed)
+- [ ] Alerting configured (disk, memory, uptime)
+- [ ] Database integrity verified (`PRAGMA integrity_check`)
+
+### Security
+
+- [ ] No sensitive data in environment variables or logs
+- [ ] Default accounts disabled/removed
+- [ ] Admin UI access restricted (if needed)
 
 ## Support and Incident Response
 
