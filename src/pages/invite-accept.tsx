@@ -1,0 +1,302 @@
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  IconMail,
+  IconShieldLock,
+  IconFingerprint,
+  IconAlertCircle,
+  IconLoader2,
+} from "@tabler/icons-react";
+import { toast } from "sonner";
+
+import { Logo } from "@/components/brand/logo";
+import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/page-transition";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { auth, app } from "@/constants";
+import {
+  useInviteByToken,
+  useAcceptInvite,
+} from "@/hooks/organization-invites";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export default function InviteAccept() {
+  const navigate = useNavigate();
+  const { token } = useParams<{ token: string }>();
+
+  const { data: inviteInfo, isLoading, error } = useInviteByToken(token ?? "");
+  const acceptInviteMutation = useAcceptInvite(token ?? "");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newErrors: typeof errors = {};
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedPassword = password.trim();
+    const trimmedConfirm = confirmPassword.trim();
+
+    if (!trimmedEmail) newErrors.email = auth.errors.emailRequired;
+    else if (!emailRegex.test(trimmedEmail)) {
+      newErrors.email = auth.errors.emailInvalid;
+    }
+
+    if (!trimmedPassword) newErrors.password = auth.errors.passwordRequired;
+    if (!trimmedConfirm) {
+      newErrors.confirmPassword = auth.errors.passwordConfirmRequired;
+    } else if (trimmedPassword !== trimmedConfirm) {
+      newErrors.confirmPassword = auth.errors.passwordsMismatch;
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(auth.register.errors.credentialsRequired);
+      return;
+    }
+
+    acceptInviteMutation.mutate(
+      {
+        email: trimmedEmail,
+        password: trimmedPassword,
+        passwordConfirm: trimmedConfirm,
+      },
+      {
+        onSuccess: () => {
+          toast.success(auth.invite.success);
+          navigate("/dashboard", { replace: true });
+        },
+      },
+    );
+  };
+
+  const submitting = acceptInviteMutation.isPending;
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="bg-background flex min-h-screen items-center justify-center">
+        <IconLoader2 className="text-primary size-8 animate-spin" />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !inviteInfo) {
+    const errorMessage =
+      error?.message === "Invalid invite link"
+        ? auth.invite.errors.inviteNotFound
+        : error?.message?.includes("expired")
+          ? auth.invite.errors.inviteExpired
+          : error?.message?.includes("exhausted")
+            ? auth.invite.errors.inviteExhausted
+            : error?.message?.includes("revoked")
+              ? auth.invite.errors.inviteRevoked
+              : auth.invite.errors.inviteNotFound;
+
+    return (
+      <div className="bg-background flex min-h-screen items-center justify-center p-4">
+        <div className="bg-card rounded-none border p-8 shadow-2xl">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <IconAlertCircle className="text-destructive size-12" />
+            <h1 className="text-xl font-bold">{errorMessage}</h1>
+            <Button asChild>
+              <Link to="/login">{auth.register.loginButton}</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-background relative flex min-h-screen items-stretch overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `radial-gradient(var(--primary) 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
+        <div className="text-primary flex items-center gap-3">
+          <Logo size={40} showTelemetry />
+          <span className="text-sm font-black tracking-tight uppercase opacity-70">
+            {app.name} / {auth.invite.title}
+          </span>
+        </div>
+
+        <div className="relative">
+          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-black uppercase select-none">
+            ANJAM
+          </div>
+          <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
+            {digitsEnToFa(auth.visual.systemDevelopment)}
+            <br />
+            <span className="text-primary">
+              {digitsEnToFa(auth.visual.management)}
+            </span>
+          </h2>
+          <p className="text-muted-foreground/80 mt-8 max-w-md text-xl leading-relaxed font-medium">
+            {digitsEnToFa(auth.visual.description)}
+          </p>
+        </div>
+
+        <div className="opacity-0">{/* Bottom spacer */}</div>
+      </div>
+
+      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
+        <PageTransition className="w-full" disableStagger>
+          <div className="mb-10 lg:hidden">
+            <Logo size={48} className="mb-6" />
+            <h2 className="text-4xl font-black tracking-tight">
+              {auth.invite.title}
+            </h2>
+          </div>
+
+          <div className="bg-card relative rounded-none border p-8 shadow-2xl lg:p-10">
+            <div className="mb-8 flex items-center justify-between border-b pb-6">
+              <div>
+                <h3 className="text-xl font-black tracking-tight">
+                  {auth.invite.joining.replace(
+                    "{orgName}",
+                    inviteInfo.organization.name,
+                  )}
+                </h3>
+                <p className="text-muted-foreground mt-1 text-xs font-medium">
+                  {auth.invite.welcomeMessage}
+                </p>
+              </div>
+              {inviteInfo.organization.logo ? (
+                <img
+                  src={`/api/files/organizations/${inviteInfo.organization.id}/${inviteInfo.organization.logo}`}
+                  alt={inviteInfo.organization.name}
+                  className="size-12 rounded-full object-cover"
+                />
+              ) : (
+                <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full text-lg font-bold">
+                  {inviteInfo.organization.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                    {auth.register.email}
+                  </Label>
+                  <IconMail className="text-muted-foreground/40 size-3" />
+                </div>
+                <Input
+                  type="email"
+                  value={email}
+                  dir="ltr"
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  placeholder="name@company.com"
+                  required
+                  autoFocus
+                  disabled={submitting}
+                />
+                {errors.email && (
+                  <p className="text-destructive text-[10px] font-bold">
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                    {auth.register.password}
+                  </Label>
+                  <IconShieldLock className="text-muted-foreground/40 size-3" />
+                </div>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  placeholder="••••••••"
+                  required
+                  dir="ltr"
+                  disabled={submitting}
+                />
+                {errors.password && (
+                  <p className="text-destructive text-[10px] font-bold">
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                    {auth.register.confirmPassword}
+                  </Label>
+                  <IconShieldLock className="text-muted-foreground/40 size-3" />
+                </div>
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  placeholder="••••••••"
+                  required
+                  dir="ltr"
+                  disabled={submitting}
+                />
+                {errors.confirmPassword && (
+                  <p className="text-destructive text-[10px] font-bold">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
+                disabled={submitting}
+              >
+                <span className="flex items-center gap-2">
+                  {submitting
+                    ? auth.invite.joiningButton
+                    : auth.invite.joinButton}
+                  {!submitting && (
+                    <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                  )}
+                </span>
+              </Button>
+            </form>
+            <div className="mt-6 flex items-center justify-between border-t pt-4">
+              <span className="text-muted-foreground text-xs font-semibold">
+                {auth.invite.loginPrompt}
+              </span>
+              <Button variant="ghost" asChild>
+                <Link to="/login">{auth.register.loginButton}</Link>
+              </Button>
+            </div>
+          </div>
+
+          <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
+            {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}
+          </p>
+        </PageTransition>
+      </div>
+    </div>
+  );
+}
+
+export { InviteAccept };
