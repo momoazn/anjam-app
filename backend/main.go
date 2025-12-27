@@ -109,9 +109,6 @@ func main() {
 		se.Router.PATCH("/api/v1/users/{id}/unblock", handleUnblockUser)
 		se.Router.GET("/api/v1/users/{id}/login-logs", handleGetUserLoginLogs)
 		se.Router.GET("/api/v1/search", handleGlobalSearch)
-		se.Router.GET("/api/health", func(e *core.RequestEvent) error {
-			return e.JSON(200, map[string]string{"status": "ok"})
-		})
 
 		return se.Next()
 	})
