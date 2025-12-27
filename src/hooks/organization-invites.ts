@@ -8,6 +8,7 @@ import { organization as orgStrings } from "@/constants";
 import type {
   OrganizationInvitesResponse,
   OrganizationsResponse,
+  UsersResponse,
 } from "@/lib/pocketbase-types";
 
 // =============================================================================
@@ -204,7 +205,7 @@ export function useRevokeOrgInvite() {
  * Accept an invite and register a new user
  */
 export function useAcceptInvite(token: string) {
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const login = useAuthStore((s) => s.login);
 
   return useMutation({
     mutationFn: async ({
@@ -233,9 +234,10 @@ export function useAcceptInvite(token: string) {
     },
     onSuccess: (data) => {
       // Auto-login the user
-      if (data.token) {
-        pb.authStore.save(data.token, data.user);
-        setAuth(data.user as never);
+      if (data.token && data.user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        pb.authStore.save(data.token, data.user as any);
+        login(data.user as UsersResponse, data.token);
       }
     },
     onError: (error) => {
@@ -248,8 +250,7 @@ export function useAcceptInvite(token: string) {
  * Register with organization (direct registration flow)
  */
 export function useRegisterWithOrg() {
-  const setAuth = useAuthStore((s) => s.setAuth);
-  const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
+  const login = useAuthStore((s) => s.login);
 
   return useMutation({
     mutationFn: async ({
@@ -279,11 +280,11 @@ export function useRegisterWithOrg() {
       return response.json();
     },
     onSuccess: (data) => {
-      // Auto-login the user
-      if (data.token) {
-        pb.authStore.save(data.token, data.user);
-        setAuth(data.user as never);
-        fetchOrgs();
+      // Auto-login the user (login also fetches orgs)
+      if (data.token && data.user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        pb.authStore.save(data.token, data.user as any);
+        login(data.user as UsersResponse, data.token);
       }
     },
     onError: (error) => {

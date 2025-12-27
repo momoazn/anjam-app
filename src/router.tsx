@@ -204,6 +204,17 @@ const OrgMembers = createLazyPage(
     })),
   errors.pageLoad.notFound,
 );
+const InviteAccept = createLazyPage(
+  () =>
+    import("@/pages/invite-accept").then((module) => ({
+      default: module.InviteAccept,
+    })),
+  errors.pageLoad.notFound,
+);
+const Onboarding = createLazyPage(
+  () => import("@/pages/onboarding"),
+  errors.pageLoad.notFound,
+);
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -401,6 +412,19 @@ const routes: RouteType[] = [
     element: <PendingActivation />,
     protected: false,
     title: users.pendingActivation.title,
+  },
+  {
+    path: "/invite/:token",
+    element: <InviteAccept />,
+    protected: false,
+    title: auth.invite.title,
+  },
+  {
+    path: "/onboarding",
+    element: <Onboarding />,
+    protected: true,
+    requiresOrg: false,
+    title: auth.onboarding.title,
   },
   {
     path: "/tasks",
@@ -612,7 +636,8 @@ export const AppRoutes = () => {
           } else if (
             route.path === "/login" ||
             route.path === "/register" ||
-            route.path === "/pending-activation"
+            route.path === "/pending-activation" ||
+            route.path === "/invite/:token"
           ) {
             element = <PublicRoute>{content}</PublicRoute>;
           }
