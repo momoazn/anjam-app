@@ -43,6 +43,13 @@ WORKDIR /app
 
 # Copy Go module files for the backend and download dependencies
 COPY backend/go.mod backend/go.sum ./backend/
+
+# Configure Go proxy with fallback to direct downloads
+# Using goproxy.cn for better reliability in certain regions
+ENV GO111MODULE=on
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GOPRIVATE=""
+
 RUN cd backend && go mod download
 
 # Copy backend source (including embedded schema) and built frontend assets
