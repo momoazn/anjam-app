@@ -44,10 +44,10 @@ This runbook provides step-by-step procedures for deploying, configuring, and ma
 
 **From Docker Container:**
 
-Use the repo Dockerfile at `infra/Dockerfile`:
+Use the repo Dockerfile at `Dockerfile`:
 
 ```bash
-docker build -f infra/Dockerfile -t anjam:latest .
+docker build -f Dockerfile -t anjam:latest .
 docker run -d \
   --name anjam \
   -p 8090:8090 \
@@ -56,10 +56,10 @@ docker run -d \
   anjam:latest
 ```
 
-If using docker compose, make sure the compose file points to `infra/Dockerfile`:
+If using docker compose, make sure the compose file points to `Dockerfile`:
 
 ```bash
-docker compose -f infra/docker-compose.yml up -d --build
+docker compose up -d --build
 ```
 
 ### 1.2 Configure TLS Termination

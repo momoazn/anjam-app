@@ -116,7 +116,7 @@ bun run build:mac
 
 ### Infrastructure
 
-- `infra/` - Dockerfile and docker-compose live here so infrastructure configs stay grouped and the repo root focuses on code
+- `Dockerfile` and `docker-compose.yml` - Docker configuration files for containerized deployment
 
 ### Documentation
 

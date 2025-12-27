@@ -245,14 +245,14 @@ These aspects matter to maintainability and team confidence.
 
 - **Simple deployment story**
   - Single binary backend (PocketBase + embedded frontend) with clear instructions.
-  - A straightforward Docker/docker‑compose setup (already under `infra/`).
+  - A straightforward Docker/docker‑compose setup (`Dockerfile` and `docker-compose.yml` in the root).
 
 **How to implement / validate**
 
 1. **Build and serve**
    - Ensure `bun run build` works end‑to‑end on a clean machine.
 2. **Docker**
-   - Test `docker compose -f infra/docker-compose.yml up` in a clean environment and verify:
+   - Test `docker compose up` in a clean environment and verify:
      - The app starts successfully.
      - The frontend and backend are reachable as documented.
 3. **Production checklist**
