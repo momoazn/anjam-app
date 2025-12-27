@@ -129,6 +129,8 @@ func handleListInvites(e *core.RequestEvent) error {
 		return e.ForbiddenError(ErrNotOrgAdmin, nil)
 	}
 
+	// TODO: Add pagination support (limit/offset query params) to prevent
+	// performance issues when organizations have many invite links.
 	invites, err := e.App.FindRecordsByFilter(
 		CollectionOrgInvites,
 		"organization = {:orgId}",
