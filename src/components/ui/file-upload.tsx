@@ -2,9 +2,17 @@ import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { FileWithPreview, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
-import { Upload, X } from "lucide-react";
+import {
+  IconUpload,
+  IconX,
+  IconFile,
+  IconPhoto,
+  IconFileText,
+  IconFileZip,
+} from "@tabler/icons-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 
 type FileUploadProps = {
   value?: FileWithPreview[];
@@ -23,10 +31,19 @@ export function FileUpload({
   disabled = false,
   className,
 }: FileUploadProps) {
-  const { validateFile, formatFileSize, getFileIcon } = useFileUpload({
+  const { validateFile, formatFileSize } = useFileUpload({
     maxSize,
     maxFiles,
   });
+
+  const getTablerIcon = (file: File) => {
+    if (file.type.startsWith("image/")) return <IconPhoto className="size-6" />;
+    if (file.type.includes("zip") || file.type.includes("rar"))
+      return <IconFileZip className="size-6" />;
+    if (file.type.includes("pdf") || file.type.includes("text"))
+      return <IconFileText className="size-6" />;
+    return <IconFile className="size-6" />;
+  };
 
   const handleAddFiles = useCallback(
     (fileList: FileList) => {
@@ -94,7 +111,6 @@ export function FileUpload({
       if (selectedFiles && selectedFiles.length > 0) {
         handleAddFiles(selectedFiles);
       }
-      // Reset input value to allow selecting the same file again
       e.target.value = "";
     },
     [handleAddFiles],
@@ -113,18 +129,19 @@ export function FileUpload({
   );
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn("space-y-6", className)}>
       {/* Dropzone */}
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         className={cn(
-          "rounded-none border border-dashed p-8 text-center transition-colors",
+          "relative overflow-hidden border-4 border-dashed p-10 text-center transition-all duration-200",
           disabled
-            ? "border-muted bg-muted/20 cursor-not-allowed"
-            : "border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer",
+            ? "border-foreground/10 bg-foreground/5 cursor-not-allowed"
+            : "border-foreground/20 bg-foreground/[0.02] hover:border-foreground hover:bg-foreground/[0.04] cursor-pointer",
         )}
       >
+        <BlueprintPattern opacity={0.03} />
         <input
           type="file"
           multiple
@@ -137,50 +154,54 @@ export function FileUpload({
         <label
           htmlFor="file-upload-input"
           className={cn(
-            "flex flex-col items-center gap-2",
+            "relative z-10 flex flex-col items-center gap-4",
             disabled ? "cursor-not-allowed" : "cursor-pointer",
           )}
         >
-          <Upload className="text-muted-foreground h-10 w-10" />
-          <div className="text-muted-foreground text-sm">
-            <span className="text-foreground font-medium">
+          <div className="bg-foreground text-background flex h-16 w-16 items-center justify-center">
+            <IconUpload className="size-8" stroke={3} />
+          </div>
+          <div className="space-y-1">
+            <p className="text-foreground text-lg font-black tracking-tighter uppercase">
               {projects.files.dropzone}
-            </span>
-          </div>
-          <div className="text-muted-foreground text-xs">
-            {projects.files.maxSize.replace("{size}", formatFileSize(maxSize))}
-          </div>
-          <div className="text-muted-foreground text-xs">
-            {projects.files.allowedTypes}
+            </p>
+            <div className="text-muted-foreground flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-bold tracking-widest uppercase">
+              <span>MAX_SIZE: {formatFileSize(maxSize)}</span>
+              <span>ALLOWED: PDF, DOC, IMG, ZIP</span>
+            </div>
           </div>
         </label>
       </div>
 
       {/* File List */}
       {value.length > 0 && (
-        <div className="space-y-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {value.map((file, index) => (
             <div
               key={`${file.name}-${index}`}
-              className="bg-muted/50 flex items-center gap-3 rounded-none p-3"
+              className="group border-foreground/10 bg-background hover:border-foreground relative flex items-center gap-4 border-2 p-3 transition-all"
             >
               {/* Preview or Icon */}
-              {file.preview ? (
-                <img
-                  src={file.preview}
-                  alt={file.name}
-                  className="h-12 w-12 rounded object-cover"
-                />
-              ) : (
-                <div className="bg-muted flex h-12 w-12 items-center justify-center rounded">
-                  <span className="text-2xl">{getFileIcon(file)}</span>
-                </div>
-              )}
+              <div className="border-foreground/5 bg-foreground/5 flex h-12 w-12 shrink-0 items-center justify-center border-2">
+                {file.preview ? (
+                  <img
+                    src={file.preview}
+                    alt={file.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="text-foreground/40">
+                    {getTablerIcon(file)}
+                  </div>
+                )}
+              </div>
 
               {/* File Info */}
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{file.name}</p>
-                <p className="text-muted-foreground text-xs">
+              <div className="min-w-0 flex-1 text-right">
+                <p className="text-foreground truncate text-xs font-black tracking-tight uppercase">
+                  {file.name}
+                </p>
+                <p className="text-muted-foreground font-mono text-[10px] font-bold">
                   {formatFileSize(file.size)}
                 </p>
               </div>
@@ -188,13 +209,13 @@ export function FileUpload({
               {/* Remove Button */}
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="icon"
                 onClick={() => handleRemove(index)}
                 disabled={disabled}
-                className="h-8 w-8 shrink-0"
+                className="border-foreground/10 hover:border-destructive hover:bg-destructive hover:text-destructive-foreground h-8 w-8 shrink-0 rounded-none border-2"
               >
-                <X className="h-4 w-4" />
+                <IconX className="size-4" stroke={3} />
               </Button>
             </div>
           ))}

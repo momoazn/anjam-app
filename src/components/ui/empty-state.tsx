@@ -30,15 +30,17 @@ type EmptyStateProps = {
 
 function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <Card className="border-dashed">
+    <Card className="rounded-xl border-dashed shadow-none">
       <CardContent
-        className="flex flex-col items-center justify-center py-12 text-center"
+        className="flex flex-col items-center justify-center py-16 text-center"
         data-animate-stagger
       >
-        <div className="text-muted-foreground mb-4 h-12 w-12">{icon}</div>
-        <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+        <div className="text-muted-foreground/40 mb-6 h-16 w-16">{icon}</div>
+        <h3 className="mb-2 text-xl font-bold tracking-tight">{title}</h3>
         {description && (
-          <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
+          <p className="text-muted-foreground mb-8 max-w-md text-sm leading-relaxed">
+            {description}
+          </p>
         )}
         {action}
       </CardContent>

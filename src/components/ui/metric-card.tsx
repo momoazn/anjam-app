@@ -19,7 +19,7 @@ export function MetricCard({
   title,
   value,
   icon: Icon,
-  valueColor = "text-2xl font-bold",
+  valueColor = "text-3xl font-bold tracking-tight",
   formatNumber = true,
   suffix = "",
 }: MetricCardProps) {
@@ -29,10 +29,12 @@ export function MetricCard({
       : `${value}${suffix}`;
 
   return (
-    <Card>
+    <Card className="border-border rounded-xl border shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="text-muted-foreground h-4 w-4" />
+        <CardTitle className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+          {title}
+        </CardTitle>
+        <Icon className="text-primary/40 h-4 w-4" />
       </CardHeader>
       <CardContent>
         <div className={valueColor}>{displayValue}</div>
