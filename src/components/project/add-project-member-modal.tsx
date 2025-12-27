@@ -68,7 +68,7 @@ export function AddProjectMemberModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-card overflow-hidden rounded-2xl border p-0 shadow-sm">
+      <DialogContent className="border-border bg-card overflow-hidden rounded-[var(--ds-radius-card)] border p-0 shadow-sm">
         <div className="bg-muted/20 border-border/40 flex items-center justify-between border-b px-6 py-4">
           <div className="flex items-center gap-3">
             <IconTerminal className="text-primary size-4" />
@@ -95,12 +95,12 @@ export function AddProjectMemberModal({
               value={selectedUserId}
               disabled={isPending || isLoading}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-xl border text-right text-xs font-bold tracking-tight focus:ring-0">
+              <SelectTrigger className="border-border/40 bg-muted/5 h-[var(--ds-sizing-formControlHeight)] rounded-[var(--ds-radius-input)] border text-right text-xs font-bold tracking-tight focus:ring-0">
                 <SelectValue
                   placeholder={projects.users.addDialog.selectPlaceholder}
                 />
               </SelectTrigger>
-              <SelectContent className="border-border bg-card rounded-xl border">
+              <SelectContent className="border-border bg-card rounded-[var(--ds-radius-card)] border">
                 {availableUsers.length > 0 ? (
                   availableUsers.map((user) => (
                     <SelectItem
@@ -137,10 +137,10 @@ export function AddProjectMemberModal({
               value={selectedRole}
               disabled={isPending}
             >
-              <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-xl border text-right text-xs font-bold tracking-tight focus:ring-0">
+              <SelectTrigger className="border-border/40 bg-muted/5 h-[var(--ds-sizing-formControlHeight)] rounded-[var(--ds-radius-input)] border text-right text-xs font-bold tracking-tight focus:ring-0">
                 <SelectValue placeholder={projects.users.table.role} />
               </SelectTrigger>
-              <SelectContent className="border-border bg-card rounded-xl border">
+              <SelectContent className="border-border bg-card rounded-[var(--ds-radius-card)] border">
                 {projectRoles.map((role) => (
                   <SelectItem
                     key={role}
@@ -169,14 +169,14 @@ export function AddProjectMemberModal({
             <Button
               type="button"
               variant="outline"
-              className="rounded-xl"
+              className="rounded-[var(--ds-radius-button)]"
               onClick={() => onOpenChange(false)}
             >
               {common.cancel}
             </Button>
             <Button
               type="button"
-              className="rounded-xl"
+              className="rounded-[var(--ds-radius-button)]"
               onClick={handleSubmit}
               disabled={!selectedUserId || isPending}
             >

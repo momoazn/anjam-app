@@ -83,7 +83,7 @@ export function SaveFilterDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-2xl sm:max-w-md">
+      <DialogContent className="rounded-[var(--ds-radius-card)] sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{savedFilters.saveDialog.title}</DialogTitle>
           <DialogDescription>

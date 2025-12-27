@@ -252,7 +252,7 @@ export function BulkActionsBar({
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="border-border rounded-2xl border shadow-lg">
+        <AlertDialogContent className="border-border rounded-[var(--ds-radius-card)] border shadow-lg">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center gap-3 text-rose-500">
               <Trash2 className="size-5" />
@@ -270,14 +270,14 @@ export function BulkActionsBar({
           <AlertDialogFooter className="mt-6 gap-2">
             <AlertDialogCancel
               disabled={isLoading}
-              className="border-border rounded-xl border text-[10px] font-bold tracking-tight"
+              className="border-border rounded-[var(--ds-radius-button)] border text-[10px] font-bold tracking-tight"
             >
               {tasks.bulkActions.cancelButton}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isLoading}
-              className="border-border rounded-xl border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
+              className="border-border rounded-[var(--ds-radius-button)] border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
             >
               {isLoading
                 ? tasks.bulkActions.deletingButton

@@ -28,7 +28,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/pages/reports.tsx
 - [ ] src/pages/select-organization.tsx
 - [ ] src/pages/settings.tsx
-- [ ] src/pages/settings/members.tsx
+- [x] src/pages/settings/members.tsx
 - [ ] src/pages/settings/organization.tsx
 - [ ] src/pages/settings/preferences.tsx
 - [ ] src/pages/tags.tsx
@@ -79,14 +79,14 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/components/organization/org-switcher.tsx
 - [x] src/components/page-header.tsx
 - [ ] src/components/page-transition.tsx
-- [ ] src/components/project/add-project-member-modal.tsx
+- [x] src/components/project/add-project-member-modal.tsx
 - [ ] src/components/project/delete-project-dialog.tsx
 - [ ] src/components/project/project-assets.tsx
 - [ ] src/components/project/project-details-sections.tsx
 - [ ] src/components/project/project-details-skeleton.tsx
 - [ ] src/components/project/project-header.tsx
 - [ ] src/components/project/project-list-group.tsx
-- [ ] src/components/project/project-members.tsx
+- [x] src/components/project/project-members.tsx
 - [ ] src/components/project/project-role-info.tsx
 - [ ] src/components/project/project-sidebar.tsx
 - [ ] src/components/project/project-statuses-settings.tsx
@@ -137,7 +137,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/components/tags/tags-list.tsx
 - [ ] src/components/task/board/board-card.tsx
 - [ ] src/components/task/board/board-column.tsx
-- [ ] src/components/task/bulk-actions-bar.tsx
+- [x] src/components/task/bulk-actions-bar.tsx
 - [ ] src/components/task/comment-composer.tsx
 - [ ] src/components/task/comment-item.tsx
 - [ ] src/components/task/comments-list.tsx
@@ -147,7 +147,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/components/task/my-tasks-skeleton.tsx
 - [ ] src/components/task/my-tasks-stats.tsx
 - [ ] src/components/task/my-tasks-tabs.tsx
-- [ ] src/components/task/save-filter-dialog.tsx
+- [x] src/components/task/save-filter-dialog.tsx
 - [ ] src/components/task/saved-filters-dropdown.tsx
 - [ ] src/components/task/subtasks.tsx
 - [ ] src/components/task/tag-picker.tsx
@@ -231,5 +231,5 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/components/ui/tooltip.tsx
 - [ ] src/components/user-avatar.tsx
 - [ ] src/components/user/delete-user-dialog.tsx
-- [ ] src/components/user/user-list-table.tsx
+- [x] src/components/user/user-list-table.tsx
 - [ ] src/components/user/user-login-logs-dialog.tsx
