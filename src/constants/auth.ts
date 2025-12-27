@@ -3,11 +3,12 @@
 export const auth = {
   login: {
     title: "ورود به سیستم",
-    username: "نام کاربری",
+    username: "ایمیل یا نام کاربری",
     password: "رمز عبور",
     loginButton: "ورود",
     loggingIn: "در حال ورود...",
     registerButton: "ثبت‌نام",
+    noAccountPrompt: "حساب ندارید؟",
     subtitle: "Please provide your credentials",
     errors: {
       credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
@@ -25,16 +26,18 @@ export const auth = {
   register: {
     title: "ایجاد حساب کاربری",
     username: "نام کاربری",
+    email: "ایمیل",
     password: "رمز عبور",
     confirmPassword: "تکرار رمز عبور",
     registerButton: "ایجاد حساب",
     registering: "در حال ایجاد حساب...",
     loginButton: "بازگشت به ورود",
+    haveAccountPrompt: "قبلا ثبت‌نام کرده‌اید؟",
     success: "حساب کاربری با موفقیت ایجاد شد",
     initialAdminMessage:
-      "برای شروع، حساب ادمین سیستم را بسازید. نام کاربری و رمز عبور دلخواهتان را وارد کنید.",
+      "با ایمیل و رمز عبور خود ثبت‌نام کنید تا وارد سیستم شوید.",
     errors: {
-      credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
+      credentialsRequired: "لطفاً اطلاعات لازم را وارد کنید",
       passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",
       adminCreationFailed:
         "متأسفانه نتوانستیم حساب ادمین را بسازیم. دوباره تلاش کنید",
@@ -42,6 +45,8 @@ export const auth = {
   },
   errors: {
     usernameRequired: "نام کاربری را وارد کنید",
+    emailRequired: "ایمیل را وارد کنید",
+    emailInvalid: "ایمیل معتبر نیست",
     passwordRequired: "رمز عبور باید حداقل ۸ کاراکتر باشد",
     passwordConfirmRequired: "لطفاً رمز عبور را دوباره وارد کنید",
     passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",

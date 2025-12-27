@@ -55,6 +55,10 @@ const Login = createLazyPage(
   () => import("@/pages/login"),
   errors.pageLoad.login,
 );
+const Register = createLazyPage(
+  () => import("@/pages/register"),
+  errors.pageLoad.register,
+);
 const Landing = createLazyPage(
   () => import("@/pages/landing"),
   errors.pageLoad.notFound,
@@ -267,17 +271,17 @@ const PermissionProtectedRoute = ({
   }
 
   if (!can(permission)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
 };
 
-// PublicRoute component (redirects authenticated users to home)
+// PublicRoute component (redirects authenticated users to dashboard)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
   if (isLoggedIn) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   return <>{children}</>;
 };
@@ -308,7 +312,7 @@ const Title = ({
 // Memoized routes configuration
 const routes: RouteType[] = [
   {
-    path: "/landing",
+    path: "/",
     element: <Landing />,
     protected: false,
     title: "داشبورد",
@@ -351,7 +355,7 @@ const routes: RouteType[] = [
     title: organization.members.title,
   },
   {
-    path: "/",
+    path: "/dashboard",
     element: <Dashboard />,
     protected: true,
     title: navigation.dashboard,
@@ -385,6 +389,12 @@ const routes: RouteType[] = [
     element: <Login />,
     protected: false,
     title: auth.login.title,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+    protected: false,
+    title: auth.register.title,
   },
   {
     path: "/pending-activation",
@@ -561,7 +571,7 @@ export const AppRoutes = () => {
       <Routes>
         {routes.map((route) => {
           const routeKey =
-            route.path === "/"
+            route.path === "/dashboard"
               ? "dashboard"
               : route.path.startsWith("/projects")
                 ? "projects"
@@ -601,6 +611,7 @@ export const AppRoutes = () => {
             }
           } else if (
             route.path === "/login" ||
+            route.path === "/register" ||
             route.path === "/pending-activation"
           ) {
             element = <PublicRoute>{content}</PublicRoute>;

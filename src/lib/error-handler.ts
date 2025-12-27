@@ -54,6 +54,10 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     // Check for specific field validation errors
     if (validationErrors.password?.code === "validation_min_text_constraint") {
       toast.error(auth.errors.passwordMinLength);
+    } else if (validationErrors.email?.code === "validation_required") {
+      toast.error(auth.errors.emailRequired);
+    } else if (validationErrors.email?.code === "validation_invalid_email") {
+      toast.error(auth.errors.emailInvalid);
     } else if (
       validationErrors.username?.code === "validation_min_text_constraint"
     ) {
@@ -76,6 +80,10 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
       toast.error(auth.errors.passwordInvalid);
     } else if (
       validationErrors.username?.code === "validation_unique_constraint"
+    ) {
+      toast.error(auth.errors.userAlreadyExists);
+    } else if (
+      validationErrors.email?.code === "validation_unique_constraint"
     ) {
       toast.error(auth.errors.userAlreadyExists);
     } else {
