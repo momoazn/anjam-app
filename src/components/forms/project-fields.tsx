@@ -57,8 +57,8 @@ export function ProjectFields({
   }, [allUsers]);
 
   return (
-    <div className="space-y-8 text-right">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="space-y-6 text-right">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <GenericFormField
           control={control}
           name="name"
@@ -77,7 +77,7 @@ export function ProjectFields({
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {showSupervisor && isAdmin && (
           <GenericFormField
             control={control}
@@ -97,6 +97,7 @@ export function ProjectFields({
           label={projects.create.form.description}
           type="textarea"
           placeholder={projects.create.form.descriptionPlaceholder}
+          className="min-h-[100px]"
         />
       )}
 
@@ -105,10 +106,10 @@ export function ProjectFields({
           control={control}
           name="assets"
           render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel className="text-muted-foreground/60 flex items-center justify-end gap-2 text-[10px] font-black tracking-tight uppercase">
+            <FormItem className="space-y-1.5">
+              <FormLabel className="text-muted-foreground/60 flex items-center justify-end gap-2 text-[9px] font-black tracking-tight uppercase">
                 {projects.create.form.assets}
-                <IconUpload className="size-3.5" />
+                <IconUpload className="size-3" />
               </FormLabel>
               <FormControl>
                 <FileUpload
@@ -117,7 +118,7 @@ export function ProjectFields({
                   maxSize={52428800}
                 />
               </FormControl>
-              <FormMessage className="text-[10px] font-bold" />
+              <FormMessage className="text-[9px] font-bold" />
             </FormItem>
           )}
         />
