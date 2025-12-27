@@ -25,10 +25,12 @@ export function QuickCreate() {
         >
           <SidebarMenuButton
             tooltip={navigation.quickCreate.tooltip}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground h-9 min-w-8 gap-3 px-4"
           >
-            <IconCirclePlusFilled />
-            <span>{navigation.quickCreate.button}</span>
+            <IconCirclePlusFilled className="size-4" />
+            <span className="text-sm font-semibold">
+              {navigation.quickCreate.button}
+            </span>
           </SidebarMenuButton>
         </NavLink>
       </SidebarMenuItem>

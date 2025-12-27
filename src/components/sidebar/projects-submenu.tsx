@@ -31,7 +31,7 @@ export function ProjectsSubmenu() {
   return (
     <SidebarGroup className="py-2">
       {state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-wider uppercase">
           {navigationSectionLabels.projects}
         </SidebarGroupLabel>
       )}
@@ -47,26 +47,24 @@ export function ProjectsSubmenu() {
               <SidebarMenuButton
                 tooltip={navigation.allProjects}
                 className={cn(
-                  "group relative h-10 w-full justify-start gap-4 rounded-none border-s-2 px-4 transition-all duration-100",
+                  "group relative h-9 w-full justify-start gap-3 rounded-md px-3 transition-all duration-200",
                   isProjectsActive
-                    ? "bg-primary/5 border-primary text-primary"
-                    : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground border-transparent",
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
               >
                 <IconLayoutGrid
                   className={cn(
-                    "size-4.5 transition-transform duration-200 group-hover:scale-110",
-                    isProjectsActive
-                      ? "text-primary"
-                      : "text-muted-foreground/60",
+                    "size-4 transition-transform duration-200",
+                    isProjectsActive ? "text-primary" : "text-muted-foreground",
                   )}
                 />
                 <span
                   className={cn(
-                    "text-[13px] font-black tracking-tight uppercase",
+                    "text-sm",
                     isProjectsActive
-                      ? "text-primary opacity-100"
-                      : "text-foreground opacity-100",
+                      ? "text-primary font-semibold"
+                      : "text-foreground/80 font-medium",
                   )}
                 >
                   {navigation.allProjects}
@@ -91,24 +89,26 @@ export function ProjectsSubmenu() {
                   >
                     <SidebarMenuButton
                       className={cn(
-                        "group hover:bg-muted/20 relative h-9 w-full justify-start gap-4 rounded-none border-s-2 border-transparent px-4 ps-2 transition-all",
+                        "group relative h-8 w-full justify-start gap-3 rounded-md px-3 transition-all duration-200",
                         isActive
-                          ? "bg-muted/30 border-primary/40"
-                          : "text-foreground",
+                          ? "bg-accent text-accent-foreground"
+                          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                       )}
                     >
                       <div className="flex size-4 items-center justify-center">
                         <IconHash
                           className={cn(
-                            "size-3.5 opacity-60",
-                            isActive && "text-primary opacity-100",
+                            "size-3.5",
+                            isActive
+                              ? "text-primary"
+                              : "text-muted-foreground/60",
                           )}
                         />
                       </div>
                       <div className="flex min-w-0 flex-1 items-center justify-between">
                         <span
                           className={cn(
-                            "truncate text-[11px] font-bold tracking-wide uppercase opacity-100",
+                            "truncate text-xs font-medium",
                             isActive ? "text-foreground" : "text-foreground/80",
                           )}
                         >
@@ -116,7 +116,7 @@ export function ProjectsSubmenu() {
                         </span>
 
                         {count > 0 && (
-                          <span className="font-mono text-[9px] font-black tabular-nums opacity-40">
+                          <span className="text-[10px] font-medium tabular-nums opacity-60">
                             {digitsEnToFa(count)}
                           </span>
                         )}

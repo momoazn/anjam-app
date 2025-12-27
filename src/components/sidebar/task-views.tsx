@@ -61,7 +61,7 @@ export function TaskViews() {
   return (
     <SidebarGroup className="py-2">
       {state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-wider uppercase">
           {navigationSectionLabels.tasks}
         </SidebarGroupLabel>
       )}
@@ -81,24 +81,24 @@ export function TaskViews() {
                   <SidebarMenuButton
                     tooltip={view.title}
                     className={cn(
-                      "group relative h-10 w-full justify-start gap-4 rounded-none border-s-2 px-4 transition-all duration-100",
+                      "group relative h-9 w-full justify-start gap-3 rounded-md px-3 transition-all duration-200",
                       isActive
-                        ? "bg-primary/5 border-primary text-primary"
-                        : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground border-transparent",
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                     )}
                   >
                     <view.icon
                       className={cn(
-                        "size-4.5 transition-transform duration-200 group-hover:scale-110",
-                        isActive ? "text-primary" : "text-foreground/70",
+                        "size-4 transition-transform duration-200",
+                        isActive ? "text-primary" : "text-muted-foreground",
                       )}
                     />
                     <span
                       className={cn(
-                        "text-[13px] font-black tracking-tight uppercase",
+                        "text-sm",
                         isActive
-                          ? "text-primary opacity-100"
-                          : "text-foreground opacity-100",
+                          ? "text-primary font-semibold"
+                          : "text-foreground/80 font-medium",
                       )}
                     >
                       {view.title}
@@ -107,10 +107,10 @@ export function TaskViews() {
                     {count > 0 && state === "expanded" && (
                       <span
                         className={cn(
-                          "ms-auto font-mono text-[9px] font-black tabular-nums",
+                          "ms-auto text-[10px] font-medium tabular-nums",
                           view.title === navigation.overdue
                             ? "text-rose-500"
-                            : "opacity-40",
+                            : "opacity-60",
                         )}
                       >
                         {digitsEnToFa(count)}
