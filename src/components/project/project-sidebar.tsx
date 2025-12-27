@@ -46,7 +46,7 @@ export function ProjectSidebar({
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="bg-card border-border/40 relative overflow-hidden rounded-2xl border shadow-sm">
+        <div className="bg-card border-border/40 relative overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm">
           <div className="relative z-10">
             {tasksLoading ? (
               <div className="space-y-3 p-4">
@@ -129,11 +129,11 @@ export function ProjectSidebar({
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="bg-card border-border/40 relative overflow-hidden rounded-2xl border p-2 shadow-sm">
+        <div className="bg-card border-border/40 relative overflow-hidden rounded-[var(--ds-radius-card)] border p-2 shadow-sm">
           <div className="relative z-10 space-y-1">
             <Button
               variant="ghost"
-              className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"
+              className="hover:bg-primary hover:text-primary-foreground h-[var(--ds-sizing-formControlHeight)] w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"
               onClick={onViewTasks}
             >
               {projects.list.viewTasks}
@@ -141,7 +141,7 @@ export function ProjectSidebar({
             </Button>
             <Button
               variant="ghost"
-              className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"
+              className="hover:bg-primary hover:text-primary-foreground h-[var(--ds-sizing-formControlHeight)] w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"
               onClick={onViewUsers}
             >
               {projects.users.title}

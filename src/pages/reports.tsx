@@ -311,7 +311,7 @@ export default function Reports() {
 
   if (isLoading) {
     return (
-      <PageTransition className="container mx-auto max-w-[1600px] p-6 md:p-10">
+      <PageTransition className="container mx-auto max-w-[1600px] p-[var(--ds-spacing-cardPadding)] md:p-10">
         <PageHeader
           title={reports.dashboardTitle}
           description={`${reports.range.label} ${digitsEnToFa(rangeLabel)}`}
@@ -326,7 +326,7 @@ export default function Reports() {
               </span>
               <div className="bg-border/20 h-px flex-1" />
             </div>
-            <Skeleton className="h-24 w-full rounded-2xl" />
+            <Skeleton className="h-24 w-full rounded-[var(--ds-radius-card)]" />
           </section>
 
           <section className="space-y-8">
@@ -336,7 +336,7 @@ export default function Reports() {
               </span>
               <div className="bg-border/20 h-px flex-1" />
             </div>
-            <Card className="border-border/40 overflow-hidden rounded-2xl shadow-sm">
+            <Card className="border-border/40 overflow-hidden rounded-[var(--ds-radius-card)] shadow-sm">
               <CardContent className="bg-border/40 grid grid-cols-1 gap-px border-none p-0 md:grid-cols-5">
                 {["s1", "s2", "s3", "s4", "s5"].map((key) => (
                   <div key={key} className="bg-card h-32 p-8">
@@ -353,7 +353,7 @@ export default function Reports() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-[1600px] p-6 md:p-10">
+    <PageTransition className="container mx-auto max-w-[1600px] p-[var(--ds-spacing-cardPadding)] md:p-10">
       <PageHeader
         title={reports.dashboardTitle}
         description={`${reports.range.label} ${digitsEnToFa(rangeLabel)}`}
@@ -434,7 +434,7 @@ export default function Reports() {
             ].map((stat) => (
               <Card
                 key={stat.id}
-                className="border-border/40 hover:shadow-primary/5 overflow-hidden rounded-2xl shadow-sm transition-all hover:shadow-md"
+                className="border-border/40 hover:shadow-primary/5 overflow-hidden rounded-[var(--ds-radius-card)] shadow-sm transition-all hover:shadow-md"
               >
                 <CardContent className="p-8 text-right">
                   <div className="mb-4 flex items-center justify-end gap-4 opacity-60">

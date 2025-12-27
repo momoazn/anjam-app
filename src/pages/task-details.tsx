@@ -119,7 +119,7 @@ export default function TaskDetails() {
 
   if (!task) {
     return (
-      <PageTransition className="container mx-auto space-y-6 p-6">
+      <PageTransition className="container mx-auto space-y-6 p-[var(--ds-spacing-cardPadding)]">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground">{tasks.errors.notFound}</p>
@@ -137,7 +137,7 @@ export default function TaskDetails() {
   }
 
   return (
-    <PageTransition className="container mx-auto space-y-6 p-6">
+    <PageTransition className="container mx-auto space-y-6 p-[var(--ds-spacing-cardPadding)]">
       <TaskDetailsHeader
         task={task}
         onBack={() => navigate("/tasks")}

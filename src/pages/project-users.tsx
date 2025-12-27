@@ -15,7 +15,7 @@ export default function ProjectUsers() {
   const { data: projectMembers } = useProjectMembers(projectId);
 
   return (
-    <PageTransition className="container mx-auto max-w-5xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-5xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={projects.users.title}
         description={

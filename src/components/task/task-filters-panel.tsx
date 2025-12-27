@@ -95,8 +95,8 @@ export function TaskFiltersPanel({
         />
       </div>
 
-      <Card className="border-border/40 rounded-2xl">
-        <CardContent className="p-6">
+      <Card className="border-border/40 rounded-[var(--ds-radius-card)]">
+        <CardContent className="p-[var(--ds-spacing-cardPadding)]">
           <TaskFilters
             searchTerm={searchTerm}
             selectedStatus={selectedStatus}

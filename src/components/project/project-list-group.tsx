@@ -71,7 +71,7 @@ export function ProjectListGroup({
               className="bg-card group relative flex flex-col overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md"
             >
               {/* Card Header */}
-              <div className="border-b p-6">
+              <div className="border-b p-[var(--ds-spacing-cardPadding)]">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
                     <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-lg transition-transform group-hover:scale-110">
@@ -120,7 +120,7 @@ export function ProjectListGroup({
               </div>
 
               {/* Progress Section */}
-              <div className="p-6">
+              <div className="p-[var(--ds-spacing-cardPadding)]">
                 <div className="flex items-end justify-between">
                   <div className="flex flex-col">
                     <div className="text-muted-foreground flex items-center gap-1.5">

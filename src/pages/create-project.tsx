@@ -99,7 +99,7 @@ export default function CreateProject() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={projects.create.title}
         description={projects.create.description}
@@ -109,7 +109,7 @@ export default function CreateProject() {
       <div className="mt-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="bg-card rounded-xl border p-6 shadow-sm">
+            <div className="bg-card rounded-xl border p-[var(--ds-spacing-cardPadding)] shadow-sm">
               <div className="mb-8 flex items-center gap-4 border-b pb-6">
                 <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
                   <IconStack2 className="size-6" stroke={2} />

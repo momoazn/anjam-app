@@ -165,7 +165,7 @@ export function TaskFilters({
   return (
     <div className="space-y-3">
       {/* Search & Global Reset Segment */}
-      <div className="bg-card border-border/40 flex items-center gap-2 overflow-hidden rounded-2xl border p-1.5 shadow-sm">
+      <div className="bg-card border-border/40 flex items-center gap-2 overflow-hidden rounded-[var(--ds-radius-card)] border p-1.5 shadow-sm">
         <div className="bg-muted/30 flex h-9 shrink-0 items-center gap-2 rounded-xl px-3">
           <Search className="text-muted-foreground/60 size-3.5" />
           <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
@@ -198,7 +198,7 @@ export function TaskFilters({
       {/* Filters Grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
         {/* Status Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-[var(--ds-radius-card)] border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               {tasks.filters.status}
@@ -237,7 +237,7 @@ export function TaskFilters({
         </div>
 
         {/* Priority Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-[var(--ds-radius-card)] border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               {tasks.filters.priority}
@@ -276,7 +276,7 @@ export function TaskFilters({
         </div>
 
         {/* Assignee Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-[var(--ds-radius-card)] border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               Assignee
@@ -318,7 +318,7 @@ export function TaskFilters({
         </div>
 
         {/* Date Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-[var(--ds-radius-card)] border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               Timeframe
@@ -353,7 +353,7 @@ export function TaskFilters({
         </div>
 
         {/* Tag Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-[var(--ds-radius-card)] border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">Tags</span>
             <Tag className="size-3" />
@@ -386,7 +386,7 @@ export function TaskFilters({
 
       {/* Active Filters Display */}
       {hasActiveFilters && (
-        <div className="bg-primary/5 border-primary/10 flex items-center gap-3 overflow-hidden rounded-2xl border p-2.5 shadow-sm">
+        <div className="bg-primary/5 border-primary/10 flex items-center gap-3 overflow-hidden rounded-[var(--ds-radius-card)] border p-2.5 shadow-sm">
           <div className="flex shrink-0 items-center gap-2 px-1">
             <Filter className="text-primary/60 size-3" />
             <span className="text-primary/60 text-[10px] font-bold tracking-tight">

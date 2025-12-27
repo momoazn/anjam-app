@@ -39,7 +39,7 @@ export function TaskDetailsHeader({
 
   return (
     <div className="bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm">
-      <div className="relative z-10 p-6 md:p-8">
+      <div className="relative z-10 p-[var(--ds-spacing-cardPadding)] md:p-8">
         <div className="mb-6 flex items-center justify-between">
           <Button
             variant="ghost"

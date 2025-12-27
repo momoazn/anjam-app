@@ -45,7 +45,7 @@ export function ProductivityWidget({
               <Skeleton className="h-6 w-32" />
             </CardHeader>
             <CardContent>
-              <Skeleton className="mb-4 h-12 w-24" />
+              <Skeleton className="mb-4 h-[var(--ds-sizing-formControlHeight)] w-24" />
               <Skeleton className="h-4 w-48" />
             </CardContent>
           </Card>

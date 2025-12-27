@@ -52,7 +52,7 @@ export default function Users() {
   const headerActions = canCreateUsers ? (
     <Button
       onClick={() => navigate("/users/new")}
-      className="h-12 gap-2 px-6 font-bold shadow-sm"
+      className="h-[var(--ds-sizing-formControlHeight)] gap-2 px-6 font-bold shadow-sm"
     >
       <IconPlus className="size-5" />
       <span>{usersText.create.button}</span>
@@ -61,7 +61,7 @@ export default function Users() {
 
   return (
     <>
-      <PageTransition className="container mx-auto p-4 md:p-6">
+      <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
         <PageHeader
           title={usersText.title}
           description={usersText.list.count.replace(

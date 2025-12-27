@@ -183,7 +183,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
       </div>
 
       {expanded && hasChanges && (
-        <div className="bg-muted/10 border-border/10 animate-in fade-in slide-in-from-top-2 space-y-4 border-t p-6 text-right font-mono text-[10px]">
+        <div className="bg-muted/10 border-border/10 animate-in fade-in slide-in-from-top-2 space-y-4 border-t p-[var(--ds-spacing-cardPadding)] text-right font-mono text-[10px]">
           {Object.entries(changes!).map(([field, diff]) => (
             <div
               key={field}
@@ -303,7 +303,7 @@ export function ActivityStream({
   return (
     <div
       className={cn(
-        "border-border/40 bg-muted/5 overflow-hidden rounded-2xl border",
+        "border-border/40 bg-muted/5 overflow-hidden rounded-[var(--ds-radius-card)] border",
         className,
       )}
     >

@@ -374,7 +374,7 @@ export default function Tasks() {
     }));
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <TaskHeader
         totalTasks={totalTasks}
         selectionMode={selectionMode}

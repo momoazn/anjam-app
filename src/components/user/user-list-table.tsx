@@ -175,7 +175,7 @@ export function UserListTable({
   return (
     <div className="space-y-6">
       {isAdmin && selectedIds.length > 0 ? (
-        <div className="bg-primary/5 border-primary/20 animate-in fade-in slide-in-from-top-2 flex flex-wrap items-center gap-2 rounded-2xl border p-2 shadow-sm">
+        <div className="bg-primary/5 border-primary/20 animate-in fade-in slide-in-from-top-2 flex flex-wrap items-center gap-2 rounded-[var(--ds-radius-card)] border p-2 shadow-sm">
           <div className="bg-primary text-primary-foreground flex items-center gap-2 rounded-xl px-4 py-1.5 text-[10px] font-bold tracking-tight">
             <IconTerminal className="size-3" />
             {digitsEnToFa(selectedIds.length)} {notifications.selected}
@@ -223,7 +223,7 @@ export function UserListTable({
       ) : null}
 
       <div
-        className="bg-border/15 border-border/15 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border"
+        className="bg-border/15 border-border/15 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border"
         data-animate-stagger
       >
         {/* Table Head  */}

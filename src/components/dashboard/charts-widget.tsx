@@ -101,7 +101,7 @@ export function ChartsWidget({
     >
       {/* Task Status Distribution */}
       <Card className="group border-border bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-md">
-        <CardHeader className="border-border/40 relative z-10 border-b p-6">
+        <CardHeader className="border-border/40 relative z-10 border-b p-[var(--ds-spacing-cardPadding)]">
           <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
               <BarChart3 className="size-4" />
@@ -109,7 +109,7 @@ export function ChartsWidget({
             {dashboard.cards.taskStatusDistribution}
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative z-10 p-6">
+        <CardContent className="relative z-10 p-[var(--ds-spacing-cardPadding)]">
           <ChartContainer
             config={{
               count: { label: dashboard.chart.count },
@@ -181,7 +181,7 @@ export function ChartsWidget({
 
       {/* Productivity Trend */}
       <Card className="group border-border bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-md">
-        <CardHeader className="border-border/40 relative z-10 border-b p-6">
+        <CardHeader className="border-border/40 relative z-10 border-b p-[var(--ds-spacing-cardPadding)]">
           <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
               <TrendingUp className="size-4" />
@@ -189,7 +189,7 @@ export function ChartsWidget({
             {dashboard.cards.productivityTrend}
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative z-10 p-6">
+        <CardContent className="relative z-10 p-[var(--ds-spacing-cardPadding)]">
           <ChartContainer
             config={{
               completed: { label: dashboard.cards.completed },
@@ -262,7 +262,7 @@ export function ChartsWidget({
 
       {/* Recent Activity Feed */}
       <Card className="group border-border bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-md lg:col-span-2 xl:col-span-1">
-        <CardHeader className="border-border/40 relative z-10 border-b p-6">
+        <CardHeader className="border-border/40 relative z-10 border-b p-[var(--ds-spacing-cardPadding)]">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-xs font-bold tracking-wider">
               <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
@@ -369,7 +369,7 @@ export function ChartsWidget({
             ))}
             {recentTasks.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 opacity-20 grayscale">
-                <Clock className="size-14 stroke-[1.5]" />
+                <Clock className="size-[var(--ds-sizing-iconBox-md)] stroke-[1.5]" />
                 <p className="mt-6 text-[10px] font-bold tracking-wider">
                   {dashboard.cards.noActivityFound}
                 </p>

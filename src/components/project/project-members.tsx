@@ -114,7 +114,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
       </div>
 
       <div
-        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border"
+        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border"
         data-animate-stagger
       >
         <div className="bg-muted/20 border-border/40 grid h-10 grid-cols-12 border-b">

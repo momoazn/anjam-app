@@ -141,7 +141,7 @@ export function BulkActionsBar({
 
   return (
     <>
-      <div className="border-border bg-card animate-in fade-in slide-in-from-bottom-4 fixed start-1/2 bottom-8 z-50 flex -translate-x-1/2 items-center gap-4 rounded-2xl border p-2 shadow-lg transition-all">
+      <div className="border-border bg-card animate-in fade-in slide-in-from-bottom-4 fixed start-1/2 bottom-8 z-50 flex -translate-x-1/2 items-center gap-4 rounded-[var(--ds-radius-card)] border p-2 shadow-lg transition-all">
         <div className="bg-muted/20 border-border/40 flex items-center gap-3 rounded-xl border px-4 py-2">
           <div className="flex flex-col items-end">
             <span className="text-muted-foreground/40 mb-1 text-right text-[7px] leading-none font-bold tracking-tight">

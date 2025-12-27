@@ -49,7 +49,7 @@ export function TaskDetailsSidebar({
           </span>
         </div>
 
-        <div className="bg-card relative overflow-hidden rounded-xl border p-6 shadow-sm">
+        <div className="bg-card relative overflow-hidden rounded-xl border p-[var(--ds-spacing-cardPadding)] shadow-sm">
           <div className="relative z-10 space-y-6">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground text-xs font-medium">
@@ -142,7 +142,7 @@ export function TaskDetailsSidebar({
       </section>
 
       {/* Info Block */}
-      <div className="bg-muted/30 rounded-xl border border-dashed p-6">
+      <div className="bg-muted/30 rounded-xl border border-dashed p-[var(--ds-spacing-cardPadding)]">
         <div className="flex flex-col items-center gap-3">
           <IconInfoCircle className="text-muted-foreground size-6" />
           <div className="space-y-1 text-center">

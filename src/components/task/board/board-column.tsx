@@ -47,7 +47,7 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
       {/* Column Header */}
       <div
         className={cn(
-          "border-border/40 bg-card relative overflow-hidden border-b p-6 text-right",
+          "border-border/40 bg-card relative overflow-hidden border-b p-[var(--ds-spacing-cardPadding)] text-right",
           borderColor,
           "border-t-2",
         )}

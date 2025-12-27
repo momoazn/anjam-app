@@ -137,7 +137,10 @@ export function HelpCategories() {
               {cat.id === "roles" && (
                 <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-2">
                   {roles.list.map((role) => (
-                    <div key={role.key} className="bg-card space-y-4 p-6">
+                    <div
+                      key={role.key}
+                      className="bg-card space-y-4 p-[var(--ds-spacing-cardPadding)]"
+                    >
                       <div className="border-border/10 flex items-center justify-end gap-2 border-b pb-2">
                         <h3 className="text-sm font-bold tracking-tight">
                           {role.title}

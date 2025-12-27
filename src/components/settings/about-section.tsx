@@ -18,7 +18,7 @@ export function AboutSection() {
         </div>
 
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
-          <div className="bg-primary/10 text-primary flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl">
+          <div className="bg-primary/10 text-primary flex h-20 w-20 shrink-0 items-center justify-center rounded-[var(--ds-radius-card)]">
             <IconCircleCheck className="h-10 w-10" />
           </div>
 

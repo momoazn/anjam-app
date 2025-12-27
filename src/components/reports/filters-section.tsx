@@ -37,7 +37,7 @@ export function FiltersSection({
   return (
     <div className="space-y-10">
       <div
-        className="bg-muted/5 border-border/40 rounded-xl border p-6"
+        className="bg-muted/5 border-border/40 rounded-xl border p-[var(--ds-spacing-cardPadding)]"
         data-animate-stagger
       >
         <div className="mb-6 flex items-center justify-end gap-2 text-right opacity-40">
@@ -80,7 +80,7 @@ export function FiltersSection({
               return (
                 <div
                   key={project.id}
-                  className="group bg-card hover:bg-muted/10 relative flex flex-col justify-between overflow-hidden p-6 transition-all"
+                  className="group bg-card hover:bg-muted/10 relative flex flex-col justify-between overflow-hidden p-[var(--ds-spacing-cardPadding)] transition-all"
                 >
                   <div className="min-w-0 flex-1 text-right">
                     <div className="mb-1 flex items-center justify-end gap-2 opacity-40">

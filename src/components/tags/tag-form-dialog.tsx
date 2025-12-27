@@ -136,7 +136,7 @@ function TagFormDialogForm({
                 key={tagColor.value}
                 type="button"
                 variant="ghost"
-                className={`flex h-12 items-center justify-center rounded-xl border transition-all ${
+                className={`flex h-[var(--ds-sizing-formControlHeight)] items-center justify-center rounded-xl border transition-all ${
                   color === tagColor.value
                     ? "border-primary ring-primary ring-2 ring-offset-2"
                     : "hover:border-muted-foreground/20 border-transparent"

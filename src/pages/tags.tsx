@@ -66,7 +66,7 @@ export default function TagsManagement() {
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={tagsManagement.title}
         description={

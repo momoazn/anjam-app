@@ -14,7 +14,7 @@ export function MyTasksEmptyState({
   return (
     <Card className="border-dashed">
       <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-        <User className="text-muted-foreground mb-4 h-12 w-12" />
+        <User className="text-muted-foreground mb-4 h-[var(--ds-sizing-formControlHeight)] w-12" />
         <h3 className="mb-2 text-lg font-semibold">{message}</h3>
         <p className="text-muted-foreground max-w-md">{description}</p>
       </CardContent>

@@ -128,7 +128,7 @@ export default function ProjectTasks() {
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={project?.name || projects.fallbacks.name}
         description={
@@ -145,7 +145,7 @@ export default function ProjectTasks() {
 
       {/* Stats Bar */}
       <div
-        className="border-border/40 bg-border/40 mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border shadow-sm sm:grid-cols-4"
+        className="border-border/40 bg-border/40 mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm sm:grid-cols-4"
         data-animate-stagger
       >
         {[
@@ -176,7 +176,7 @@ export default function ProjectTasks() {
         ].map((stat) => (
           <div
             key={stat.label}
-            className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
+            className="bg-card hover:bg-muted/10 p-[var(--ds-spacing-cardPadding)] text-right transition-colors"
           >
             <div className="mb-2 flex items-center justify-end gap-3">
               <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
@@ -191,7 +191,7 @@ export default function ProjectTasks() {
         ))}
       </div>
 
-      <div className="border-border/40 bg-card mb-10 rounded-2xl border p-6 shadow-sm">
+      <div className="border-border/40 bg-card mb-10 rounded-[var(--ds-radius-card)] border p-[var(--ds-spacing-cardPadding)] shadow-sm">
         <TaskFilters
           searchTerm={searchTerm}
           selectedStatus={selectedStatus}

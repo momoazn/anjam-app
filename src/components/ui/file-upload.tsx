@@ -135,7 +135,7 @@ export function FileUpload({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         className={cn(
-          "relative overflow-hidden rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-200",
+          "relative overflow-hidden rounded-[var(--ds-radius-card)] border-2 border-dashed p-10 text-center transition-all duration-200",
           disabled
             ? "border-foreground/10 bg-foreground/5 cursor-not-allowed"
             : "border-foreground/20 bg-foreground/[0.02] hover:border-foreground hover:bg-foreground/[0.04] cursor-pointer",
@@ -182,7 +182,7 @@ export function FileUpload({
               className="group border-foreground/10 bg-background hover:border-foreground relative flex items-center gap-4 rounded-xl border p-3 transition-all"
             >
               {/* Preview or Icon */}
-              <div className="border-foreground/5 bg-foreground/5 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border">
+              <div className="border-foreground/5 bg-foreground/5 flex h-[var(--ds-sizing-formControlHeight)] w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border">
                 {file.preview ? (
                   <img
                     src={file.preview}

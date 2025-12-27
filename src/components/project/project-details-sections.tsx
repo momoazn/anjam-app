@@ -95,7 +95,7 @@ export function ProjectDetailsSections({
           ].map((item, i) => (
             <div
               key={i}
-              className="group border-border/40 bg-card hover:border-primary/40 relative overflow-hidden rounded-2xl border p-6 transition-colors"
+              className="group border-border/40 bg-card hover:border-primary/40 relative overflow-hidden rounded-[var(--ds-radius-card)] border p-[var(--ds-spacing-cardPadding)] transition-colors"
             >
               <BlueprintPattern
                 variant="technical"
@@ -136,7 +136,7 @@ export function ProjectDetailsSections({
 
         <div className="relative">
           {isEditing ? (
-            <div className="border-primary/20 bg-card relative overflow-hidden rounded-2xl border p-8">
+            <div className="border-primary/20 bg-card relative overflow-hidden rounded-[var(--ds-radius-card)] border p-8">
               <BlueprintPattern
                 variant="technical"
                 className="opacity-[0.05]"
@@ -149,14 +149,14 @@ export function ProjectDetailsSections({
                   value={editedDescription.replace(/<br>/g, "\n")}
                   onChange={(event) => onDescriptionChange(event.target.value)}
                   placeholder={projects.create.form.descriptionPlaceholder}
-                  className="border-border/40 bg-background focus:border-primary/40 min-h-48 rounded-xl border p-6 text-right text-lg leading-relaxed font-medium focus:ring-0"
+                  className="border-border/40 bg-background focus:border-primary/40 min-h-48 rounded-xl border p-[var(--ds-spacing-cardPadding)] text-right text-lg leading-relaxed font-medium focus:ring-0"
                 />
               </div>
             </div>
           ) : project.description ? (
-            <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border p-12">
+            <div className="border-border/40 bg-card relative overflow-hidden rounded-[var(--ds-radius-card)] border p-12">
               <BlueprintPattern variant="cross" className="opacity-[0.03]" />
-              <div className="bg-primary text-primary-foreground absolute -top-4 -right-4 z-10 flex size-12 items-center justify-center rounded-2xl">
+              <div className="bg-primary text-primary-foreground absolute -top-4 -right-4 z-10 flex size-12 items-center justify-center rounded-[var(--ds-radius-card)]">
                 <IconQuote className="size-6" />
               </div>
               <p className="text-foreground/80 relative z-10 text-right text-xl leading-relaxed font-medium whitespace-pre-wrap">
@@ -164,8 +164,8 @@ export function ProjectDetailsSections({
               </p>
             </div>
           ) : (
-            <div className="border-border/20 bg-muted/5 relative overflow-hidden rounded-2xl border border-dashed p-20 text-center opacity-30 grayscale">
-              <IconFileText className="text-primary mx-auto mb-6 size-16 stroke-1" />
+            <div className="border-border/20 bg-muted/5 relative overflow-hidden rounded-[var(--ds-radius-card)] border border-dashed p-20 text-center opacity-30 grayscale">
+              <IconFileText className="text-primary mx-auto mb-6 size-[var(--ds-sizing-iconBox-lg)] stroke-1" />
               <p className="text-xs font-bold tracking-tight">
                 {projects.details.noDescription}
               </p>
@@ -186,7 +186,7 @@ export function ProjectDetailsSections({
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border">
+        <div className="border-border/40 bg-card relative overflow-hidden rounded-[var(--ds-radius-card)] border">
           <BlueprintPattern variant="technical" className="opacity-[0.02]" />
           <div className="relative z-10">
             {isEditing ? (
@@ -253,7 +253,7 @@ export function ProjectDetailsSections({
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border">
+        <div className="border-border/40 bg-card relative overflow-hidden rounded-[var(--ds-radius-card)] border">
           <BlueprintPattern variant="technical" className="opacity-[0.02]" />
           <div className="relative z-10">
             <ActivityStream resource="projects" resourceId={project.id} />

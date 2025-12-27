@@ -122,7 +122,7 @@ export default function Login() {
             </h2>
           </div>
 
-          <div className="bg-card border-border relative rounded-2xl border p-8 shadow-xl lg:p-10">
+          <div className="bg-card border-border relative rounded-[var(--ds-radius-card)] border p-8 shadow-xl lg:p-10">
             <div className="border-border mb-8 flex items-center justify-between border-b pb-6">
               <div>
                 <h3 className="text-xl font-bold tracking-tight">
@@ -148,7 +148,7 @@ export default function Login() {
                   value={identity}
                   dir="ltr"
                   onChange={(e) => setIdentity(e.target.value)}
-                  className="h-12 rounded-xl px-4 font-bold"
+                  className="h-[var(--ds-sizing-formControlHeight)] rounded-xl px-4 font-bold"
                   placeholder="name@company.com"
                   required
                   autoFocus
@@ -172,7 +172,7 @@ export default function Login() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 rounded-xl px-4 font-bold"
+                  className="h-[var(--ds-sizing-formControlHeight)] rounded-xl px-4 font-bold"
                   placeholder="••••••••"
                   required
                   dir="ltr"

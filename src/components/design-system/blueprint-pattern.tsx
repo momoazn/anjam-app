@@ -109,7 +109,7 @@ export function TechnicalHeader({
   return (
     <div
       className={cn(
-        "border-border/15 relative overflow-hidden rounded-2xl border",
+        "border-border/15 relative overflow-hidden rounded-[var(--ds-radius-card)] border",
         "bg-card/95 backdrop-blur-sm",
         "px-6 py-4 shadow-sm",
         className,

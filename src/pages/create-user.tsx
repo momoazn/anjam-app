@@ -72,14 +72,14 @@ export default function CreateUser() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={users.create.title}
         description="Add a new user to the system"
         icon={IconUserPlus}
       />
 
-      <div className="bg-card border-border/40 rounded-2xl border p-8 shadow-sm">
+      <div className="bg-card border-border/40 rounded-[var(--ds-radius-card)] border p-8 shadow-sm">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <UserFields control={userFieldsControl} />

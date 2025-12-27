@@ -25,7 +25,7 @@ export default function PendingActivation() {
       />
 
       <PageTransition
-        className="bg-card border-border relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border shadow-md"
+        className="bg-card border-border relative z-10 w-full max-w-xl overflow-hidden rounded-[var(--ds-radius-card)] border shadow-md"
         disableStagger
       >
         <div className="bg-muted/20 border-border flex items-center justify-between border-b px-8 py-4">
@@ -41,7 +41,7 @@ export default function PendingActivation() {
         <div className="space-y-10 p-10 text-right">
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center rounded-xl border shadow-sm">
-              <IconClock className="h-12 w-12 stroke-[1.5]" />
+              <IconClock className="h-[var(--ds-sizing-formControlHeight)] w-12 stroke-[1.5]" />
             </div>
 
             <div className="space-y-2">
@@ -59,7 +59,7 @@ export default function PendingActivation() {
               {usersText.pendingActivation.message}
             </p>
 
-            <div className="bg-muted/10 border-primary space-y-3 rounded-xl border-e-4 p-6">
+            <div className="bg-muted/10 border-primary space-y-3 rounded-xl border-e-4 p-[var(--ds-spacing-cardPadding)]">
               <div className="text-primary flex items-center justify-end gap-3">
                 <span className="text-[10px] font-bold tracking-tight">
                   Instruction

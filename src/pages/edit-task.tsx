@@ -156,7 +156,7 @@ export default function EditTask() {
 
               {/* Sidebar / Actions */}
               <div className="space-y-8 lg:col-span-4">
-                <div className="bg-primary text-primary-foreground shadow-primary/20 rounded-xl border p-6 shadow-xl">
+                <div className="bg-primary text-primary-foreground shadow-primary/20 rounded-xl border p-[var(--ds-spacing-cardPadding)] shadow-xl">
                   <div className="border-primary-foreground/20 mb-6 flex items-center gap-3 border-b pb-4">
                     <IconActivity size={20} stroke={2.5} />
                     <span className="text-sm font-bold">
@@ -168,7 +168,7 @@ export default function EditTask() {
                     <Button
                       type="submit"
                       disabled={isPending}
-                      className="text-primary h-12 w-full rounded-lg bg-white text-sm font-bold transition-all hover:bg-white/90 disabled:opacity-50"
+                      className="text-primary h-[var(--ds-sizing-formControlHeight)] w-full rounded-lg bg-white text-sm font-bold transition-all hover:bg-white/90 disabled:opacity-50"
                     >
                       {isPending ? (
                         <IconLoader2 className="me-2 size-5 animate-spin" />
@@ -192,7 +192,7 @@ export default function EditTask() {
                   </div>
                 </div>
 
-                <div className="bg-muted/30 rounded-xl border p-6">
+                <div className="bg-muted/30 rounded-xl border p-[var(--ds-spacing-cardPadding)]">
                   <h3 className="text-muted-foreground mb-4 text-xs font-bold tracking-tight">
                     System Status
                   </h3>

@@ -76,7 +76,7 @@ export function OrgSettingsPage() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-3xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-3xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={organization.settings.title}
         description="Manage your organization settings and metadata"

@@ -83,7 +83,7 @@ export function ProjectsWidget({
             className="group border-border/40 bg-card/50 hover:bg-card hover:border-primary/40 relative flex h-auto cursor-pointer flex-col overflow-hidden transition-all duration-300 hover:shadow-md"
             onClick={() => navigate(`/projects/${project.id}/details`)}
           >
-            <CardHeader className="border-border/40 relative z-10 border-b p-6">
+            <CardHeader className="border-border/40 relative z-10 border-b p-[var(--ds-spacing-cardPadding)]">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
@@ -102,7 +102,7 @@ export function ProjectsWidget({
               </div>
             </CardHeader>
 
-            <CardContent className="relative z-10 p-6 text-right">
+            <CardContent className="relative z-10 p-[var(--ds-spacing-cardPadding)] text-right">
               <div className="mb-4">
                 <div className="mb-3 flex items-end justify-between">
                   <div className="flex flex-col gap-0.5">

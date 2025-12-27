@@ -15,7 +15,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
 
   return (
-    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={settings.title}
         description={settings.description}

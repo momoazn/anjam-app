@@ -100,17 +100,17 @@ export default function EditUser() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
       <PageHeader
         title={users.edit.title}
         description={`Update information for user :: ${user?.username || id}`}
         icon={IconUserEdit}
       />
 
-      <div className="bg-card border-border/40 rounded-2xl border p-8 shadow-sm">
+      <div className="bg-card border-border/40 rounded-[var(--ds-radius-card)] border p-8 shadow-sm">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 opacity-20">
-            <IconLoader2 className="h-12 w-12 animate-spin" />
+            <IconLoader2 className="h-[var(--ds-sizing-formControlHeight)] w-12 animate-spin" />
           </div>
         ) : (
           <Form {...form}>

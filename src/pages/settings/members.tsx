@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { IconCopy, IconLink, IconCheck } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconCopy,
+  IconLink,
+  IconUserPlus,
+  IconUsers,
+} from "@tabler/icons-react";
 import { toast } from "sonner";
 
 import { PageTransition } from "@/components/page-transition";
@@ -165,19 +171,20 @@ export function OrgMembersPage() {
   };
 
   return (
-    <PageTransition className="container mx-auto py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="mb-2 text-3xl font-black tracking-tight">
-            {organization.members.title}
-          </h1>
-        </div>
-        <Button onClick={() => setIsInviteOpen(true)}>
+    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
+      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <PageHeader
+          title={organization.members.title}
+          description="Manage your organization members and their roles"
+          icon={IconUsers}
+        />
+        <Button onClick={() => setIsInviteOpen(true)} className="h-11 px-6">
+          <IconUserPlus className="me-2 size-5" />
           {organization.members.invite}
         </Button>
       </div>
 
-      <div className="rounded-none border">
+      <div className="border-border bg-card relative overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>

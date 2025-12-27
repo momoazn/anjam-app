@@ -128,7 +128,7 @@ export default function Register() {
             </h2>
           </div>
 
-          <div className="bg-card relative rounded-2xl border p-8 shadow-2xl lg:p-10">
+          <div className="bg-card relative rounded-[var(--ds-radius-card)] border p-8 shadow-2xl lg:p-10">
             <div className="mb-8 flex items-center justify-between border-b pb-6">
               <div>
                 <h3 className="text-xl font-bold tracking-tight">
@@ -154,7 +154,7 @@ export default function Register() {
                   value={email}
                   dir="ltr"
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-[var(--ds-sizing-formControlHeight)] rounded-xl px-4 font-bold transition-all"
                   placeholder="name@company.com"
                   required
                   autoFocus
@@ -178,7 +178,7 @@ export default function Register() {
                   type="text"
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-[var(--ds-sizing-formControlHeight)] rounded-xl px-4 font-bold transition-all"
                   placeholder={auth.register.organizationNamePlaceholder}
                   disabled={submitting}
                 />
@@ -200,7 +200,7 @@ export default function Register() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-[var(--ds-sizing-formControlHeight)] rounded-xl px-4 font-bold transition-all"
                   placeholder="••••••••"
                   required
                   dir="ltr"
@@ -224,7 +224,7 @@ export default function Register() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-[var(--ds-sizing-formControlHeight)] rounded-xl px-4 font-bold transition-all"
                   placeholder="••••••••"
                   required
                   dir="ltr"
