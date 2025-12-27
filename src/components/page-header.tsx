@@ -17,27 +17,18 @@ export function PageHeader({
   actions,
 }: PageHeaderProps) {
   return (
-    <Card className="border-border/40 relative mb-8 overflow-hidden rounded-none shadow-md">
-      <CardContent className="p-8">
-        {/* Refined Grid Backdrop */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-
-        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <Card className="border-border bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm">
+      <CardContent className="p-6">
+        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-5 text-right">
-            <div className="border-primary/20 bg-primary/10 text-primary flex size-14 items-center justify-center rounded-none border">
-              <Icon className="size-7" />
+            <div className="bg-primary/10 text-primary flex size-14 items-center justify-center rounded-xl">
+              <Icon className="size-7" strokeWidth={1.5} />
             </div>
-            <div>
-              <h1 className="mt-1 text-right text-3xl font-black tracking-tight uppercase md:text-4xl">
+            <div className="flex flex-col justify-center">
+              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
                 {title}
               </h1>
-              <p className="text-muted-foreground mt-2 text-right text-sm leading-relaxed font-medium">
+              <p className="text-muted-foreground mt-1 text-sm leading-relaxed font-medium">
                 {description}
               </p>
             </div>

@@ -31,7 +31,7 @@ export function NavMain({ items, title }: NavMainProps) {
   return (
     <SidebarGroup className="py-2">
       {title && state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/30 mb-2 px-4 text-[8px] font-black tracking-tight uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-wider uppercase">
           {title}
         </SidebarGroupLabel>
       )}
@@ -55,35 +55,31 @@ export function NavMain({ items, title }: NavMainProps) {
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={cn(
-                      "group relative h-10 w-full justify-start gap-4 rounded-none border-s-2 px-4 transition-all transition-none duration-100",
+                      "group relative h-9 w-full justify-start gap-3 rounded-md px-3 transition-all duration-200",
                       active
-                        ? "bg-primary/5 border-primary text-primary"
-                        : "text-muted-foreground/60 hover:bg-muted/30 hover:text-foreground border-transparent",
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
                     {item.icon && (
                       <item.icon
                         className={cn(
-                          "size-4.5 transition-transform duration-200 group-hover:scale-110",
-                          active ? "text-primary" : "text-muted-foreground/40",
+                          "size-4 transition-all duration-200",
+                          active ? "text-primary" : "text-muted-foreground",
                         )}
                       />
                     )}
                     <span
                       className={cn(
-                        "text-[13px] font-black tracking-tight uppercase",
+                        "text-sm",
                         active
-                          ? "text-primary opacity-100"
-                          : "text-foreground opacity-100",
+                          ? "text-primary font-semibold"
+                          : "text-foreground/80 font-medium",
                       )}
                     >
                       {item.title}
                     </span>
-
-                    {active && state === "expanded" && (
-                      <div className="bg-primary/20 absolute end-0 top-1 bottom-1 w-[1px]" />
-                    )}
 
                     <div className="ms-auto">{item.badge}</div>
                   </SidebarMenuButton>

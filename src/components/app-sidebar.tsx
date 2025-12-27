@@ -104,27 +104,35 @@ function AppSidebarHeader() {
   const { isMobile, setOpenMobile, state } = useSidebar();
 
   return (
-    <SidebarHeader className="border-border/15 bg-muted/10 h-14 border-b p-0">
+    <SidebarHeader className="border-border/40 h-16 border-b p-0">
       <SidebarMenu className="h-full">
         <SidebarMenuItem className="h-full">
           <SidebarMenuButton
             asChild
-            className="hover:bg-muted/30 active:bg-muted/50 h-full rounded-none border-s-0 transition-none"
+            className="hover:bg-accent active:bg-accent/80 h-full rounded-none transition-all duration-200"
           >
             <NavLink
               to="/dashboard"
-              className="flex h-full w-full items-center gap-4 px-6"
+              className="flex h-full w-full items-center gap-3 px-4"
               onClick={() => {
                 if (isMobile) {
                   setOpenMobile(false);
                 }
               }}
             >
-              <Logo size={32} className="shrink-0" />
+              <div className="relative">
+                <Logo
+                  size={28}
+                  className="shrink-0 transition-transform duration-300"
+                />
+              </div>
               {state === "expanded" && (
                 <div className="flex flex-col">
-                  <span className="text-xs leading-none font-black tracking-tight uppercase">
+                  <span className="text-sm font-bold tracking-tight">
                     {app.name}
+                  </span>
+                  <span className="text-muted-foreground text-[10px] font-medium">
+                    Task Management
                   </span>
                 </div>
               )}
@@ -147,30 +155,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="border-border/15 group-data-[side=left]:border-e group-data-[side=right]:border-s"
-      {...props}
-    >
-      {/* Precision Blueprint Backdrop */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.06]"
-        style={{
-          backgroundImage: `linear-gradient(to right, var(--color-border) 1px, transparent 1px), linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)`,
-          backgroundSize: "20px 20px",
-        }}
-      />
-
+    <Sidebar collapsible="icon" className="border-border/40" {...props}>
       <AppSidebarHeader />
 
       <SidebarContent className="scrollbar-none relative z-10 p-0">
         {/* Organization Switcher */}
-        <div className="border-border/10 border-b py-3">
+        <div className="border-border/40 border-b py-2">
           <OrgSwitcher />
         </div>
 
         {/* Quick Create */}
-        <div className="border-border/10 bg-muted/5 border-b p-4">
+        <div className="border-border/40 border-b p-4">
           <QuickCreate />
         </div>
 
@@ -203,7 +198,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-border/15 bg-muted/10 relative z-10 flex flex-col border-t p-0">
+      <SidebarFooter className="border-border/40 relative z-10 flex flex-col border-t p-0">
         <NavMain
           items={sidebarData.navSecondary.filter((item) =>
             item.permission ? can(item.permission) : true,
