@@ -1,8 +1,12 @@
+# Global ARG declarations (must be before FROM to be used across stages)
+ARG BUN_IMAGE=oven/bun:1.3.4
+ARG GO_IMAGE=golang:1.24-alpine
+ARG RUNTIME_IMAGE=alpine:3.21
+
 ###########
 # Stage 1 #
 ###########
 # Frontend build (Bun image)
-ARG BUN_IMAGE=oven/bun:1.3.4
 FROM ${BUN_IMAGE} AS frontend-builder
 
 ENV NODE_ENV=production
@@ -30,7 +34,6 @@ RUN bun run build:client
 # Stage 2 #
 ###########
 # Backend build (Go)
-ARG GO_IMAGE=golang:1.24-alpine
 FROM ${GO_IMAGE} AS backend-builder
 
 # Install git (for module fetching) and CA certificates
@@ -54,7 +57,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/anjam .
 # Stage 3 #
 ###########
 # Runtime image (Alpine-based for smaller size)
-ARG RUNTIME_IMAGE=alpine:3.21
 FROM ${RUNTIME_IMAGE}
 
 WORKDIR /app
