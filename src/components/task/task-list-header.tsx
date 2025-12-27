@@ -77,7 +77,7 @@ export function TaskListHeader({
           <div className="flex flex-col items-start text-left">
             <div className="flex items-center gap-2 opacity-40">
               <IconHash className="size-3" />
-              <span className="text-[10px] font-bold tracking-wider uppercase">
+              <span className="text-[10px] font-bold tracking-tight">
                 {status}
               </span>
             </div>
@@ -89,7 +89,7 @@ export function TaskListHeader({
 
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-end">
-            <span className="text-[10px] font-bold tracking-wider uppercase opacity-40">
+            <span className="text-[10px] font-bold tracking-tight opacity-40">
               {tasks.list.count}
             </span>
             <span className="text-lg font-bold tabular-nums">

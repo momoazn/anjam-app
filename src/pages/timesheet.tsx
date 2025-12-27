@@ -132,7 +132,7 @@ export default function TimesheetPage() {
   const headerActions = (
     <div className="flex items-center gap-4">
       <div className="border-border me-2 flex flex-col items-end border-e pe-4">
-        <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
+        <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
           Weekly Total
         </span>
         <div className="text-primary text-right text-sm font-bold tabular-nums">
@@ -201,7 +201,7 @@ export default function TimesheetPage() {
               className="bg-card border-border flex min-h-[400px] flex-col overflow-hidden rounded-xl border shadow-sm"
             >
               <div className="bg-muted/30 border-border border-b p-4 text-right">
-                <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                   {format(date, "EEEE", { locale: faIR })}
                 </span>
                 <div className="mt-1 flex items-baseline justify-end gap-2">
@@ -235,7 +235,7 @@ export default function TimesheetPage() {
                         key={t.id}
                         className="group hover:bg-muted/30 relative p-4 text-right transition-colors"
                       >
-                        <span className="text-primary/60 mb-1 block text-[10px] font-bold tracking-wider uppercase">
+                        <span className="text-primary/60 mb-1 block text-[10px] font-bold tracking-tight">
                           {(t.expand as { project?: { name?: string } })
                             ?.project?.name || reports.fallbacks.projectName}
                         </span>

@@ -37,13 +37,11 @@ export function FiltersSection({
   return (
     <div className="space-y-10">
       <div
-        className="bg-muted/5 border-border/40 border p-6"
+        className="bg-muted/5 border-border/40 rounded-xl border p-6"
         data-animate-stagger
       >
         <div className="mb-6 flex items-center justify-end gap-2 text-right opacity-40">
-          <span className="text-[10px] font-black tracking-tight uppercase">
-            _Filter_
-          </span>
+          <span className="text-[10px] font-bold tracking-tight">_Filter_</span>
           <IconTerminal className="text-primary size-3.5" />
         </div>
         <FiltersBar
@@ -59,14 +57,14 @@ export function FiltersSection({
           <div className="mb-6 flex items-center gap-4">
             <div className="bg-border/20 h-px flex-1" />
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-black tracking-tight uppercase">
+              <h2 className="text-sm font-bold tracking-tight">
                 {reports.projectsExportSection}
               </h2>
               <IconStack2 className="text-primary/60 size-4" />
             </div>
           </div>
 
-          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-2 lg:grid-cols-3">
+          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-xl border md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => {
               const pWithSupervisor = projectsWithSupervisor?.find(
                 (p) => p.id === project.id,
@@ -86,19 +84,19 @@ export function FiltersSection({
                 >
                   <div className="min-w-0 flex-1 text-right">
                     <div className="mb-1 flex items-center justify-end gap-2 opacity-40">
-                      <span className="font-mono text-[9px] font-black tracking-tight uppercase">
+                      <span className="font-mono text-[9px] font-bold tracking-tight">
                         {project.code}
                       </span>
                     </div>
-                    <h3 className="group-hover:text-primary mb-4 truncate text-base font-black tracking-tight uppercase transition-colors">
+                    <h3 className="group-hover:text-primary mb-4 truncate text-base font-bold tracking-tight transition-colors">
                       {project.name}
                     </h3>
                     <div className="flex items-center justify-end gap-2 text-right">
-                      <span className="text-muted-foreground/60 text-[10px] font-bold uppercase">
+                      <span className="text-muted-foreground/60 text-[10px] font-bold">
                         _Entry
                       </span>
                       <div className="bg-border/40 h-px w-4" />
-                      <span className="text-xs font-black tabular-nums">
+                      <span className="text-xs font-bold tabular-nums">
                         {taskCount > 0 ? digitsEnToFa(taskCount) : "0"}
                       </span>
                     </div>

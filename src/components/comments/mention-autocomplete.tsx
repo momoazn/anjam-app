@@ -27,8 +27,8 @@ export function MentionAutocomplete({
   if (!visible || items.length === 0) return null;
 
   return (
-    <div className="border-border/40 bg-card mt-2 max-h-56 overflow-auto rounded-none border p-2 text-right shadow-sm">
-      <div className="text-muted-foreground mb-2 text-[10px] font-black tracking-tight uppercase">
+    <div className="border-border/40 bg-card mt-2 max-h-56 overflow-auto rounded-xl border p-2 text-right shadow-sm">
+      <div className="text-muted-foreground mb-2 text-[10px] font-bold tracking-tight">
         Mention
       </div>
       <div className="space-y-1">
@@ -38,7 +38,7 @@ export function MentionAutocomplete({
             type="button"
             onClick={() => onSelect(item)}
             onMouseEnter={() => onHover(index)}
-            className={`flex w-full items-center justify-between gap-3 rounded-none px-3 py-2 text-xs font-black tracking-tight uppercase transition-all ${
+            className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-xs font-bold tracking-tight transition-all ${
               index === selectedIndex
                 ? "bg-primary/10 text-primary"
                 : "hover:bg-muted/30"
@@ -58,7 +58,7 @@ export function MentionAutocomplete({
                 last_name: item.lastName,
                 avatar: item.avatar,
               }}
-              className="border-border/40 size-7 rounded-none border"
+              className="border-border/40 size-7 rounded-md border"
             />
           </button>
         ))}

@@ -28,7 +28,7 @@ export function TableSection({
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <IconTable className="text-primary/60 size-4" />
-          <h3 className="text-sm font-black tracking-tight uppercase">
+          <h3 className="text-sm font-bold tracking-tight">
             Employee_Performance_Matrix
           </h3>
         </div>
@@ -36,7 +36,7 @@ export function TableSection({
         <IconTerminal className="text-muted-foreground/20 size-3.5" />
       </div>
 
-      <Suspense fallback={<Skeleton className="h-64 w-full rounded-none" />}>
+      <Suspense fallback={<Skeleton className="h-64 w-full rounded-xl" />}>
         <EmployeePerformanceTable
           summaries={summaries}
           onRowClick={(userId) => {

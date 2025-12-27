@@ -140,7 +140,7 @@ export default function EditTask() {
           <div className="space-y-3">
             <div className="text-primary flex items-center gap-2">
               <IconTerminal2 size={18} stroke={2.5} />
-              <span className="text-[10px] font-bold tracking-wider uppercase">
+              <span className="text-[10px] font-bold tracking-tight">
                 Task Modification
               </span>
             </div>
@@ -223,7 +223,7 @@ export default function EditTask() {
                 </div>
 
                 <div className="bg-muted/30 rounded-xl border p-6">
-                  <h3 className="text-muted-foreground mb-4 text-xs font-bold tracking-wider uppercase">
+                  <h3 className="text-muted-foreground mb-4 text-xs font-bold tracking-tight">
                     System Status
                   </h3>
                   <div className="space-y-3">

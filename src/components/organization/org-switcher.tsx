@@ -148,9 +148,9 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
           isCollapsed && "justify-center px-1.5",
         )}
       >
-        <Avatar className="h-8 w-8 rounded-md">
+        <Avatar className="h-8 w-8 rounded-lg">
           <AvatarImage src={getOrgLogoUrl(currentOrg) ?? undefined} />
-          <AvatarFallback className="bg-primary/10 rounded-md text-[10px] font-semibold">
+          <AvatarFallback className="bg-primary/10 rounded-lg text-[10px] font-semibold">
             {getOrgInitials(currentOrg.name)}
           </AvatarFallback>
         </Avatar>
@@ -183,9 +183,9 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
             isCollapsed && "justify-center px-1.5",
           )}
         >
-          <Avatar className="h-8 w-8 rounded-md">
+          <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src={getOrgLogoUrl(currentOrg) ?? undefined} />
-            <AvatarFallback className="bg-primary/10 rounded-md text-[10px] font-semibold">
+            <AvatarFallback className="bg-primary/10 rounded-lg text-[10px] font-semibold">
               {getOrgInitials(currentOrg.name)}
             </AvatarFallback>
           </Avatar>
@@ -207,11 +207,11 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="border-border w-64 rounded-lg border"
+        className="border-border w-64 rounded-xl border shadow-lg"
         align="start"
         sideOffset={8}
       >
-        <DropdownMenuLabel className="text-muted-foreground/60 text-[10px] font-semibold tracking-wider uppercase">
+        <DropdownMenuLabel className="text-muted-foreground/60 text-[10px] font-semibold tracking-tight">
           {organization.select.dropdownLabel}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -223,13 +223,13 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
               key={organization.id}
               onClick={() => handleOrgSelect(organization.id)}
               className={cn(
-                "flex cursor-pointer items-center gap-2 p-2",
+                "flex cursor-pointer items-center gap-2 rounded-lg p-2",
                 isSelected && "bg-muted",
               )}
             >
-              <Avatar className="h-7 w-7 rounded-md">
+              <Avatar className="h-7 w-7 rounded-lg">
                 <AvatarImage src={getOrgLogoUrl(organization) ?? undefined} />
-                <AvatarFallback className="bg-primary/10 rounded-md text-[9px] font-semibold">
+                <AvatarFallback className="bg-primary/10 rounded-lg text-[9px] font-semibold">
                   {getOrgInitials(organization.name)}
                 </AvatarFallback>
               </Avatar>
@@ -252,9 +252,9 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleCreateOrg}
-          className="flex cursor-pointer items-center gap-2 p-2"
+          className="flex cursor-pointer items-center gap-2 rounded-lg p-2"
         >
-          <div className="flex h-7 w-7 items-center justify-center rounded-md border border-dashed">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-dashed">
             <IconPlus className="h-3.5 w-3.5" />
           </div>
           <span className="text-sm font-medium">

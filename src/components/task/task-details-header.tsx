@@ -84,7 +84,7 @@ export function TaskDetailsHeader({
           <div className="space-y-3">
             <div className="text-primary/60 flex items-center gap-2">
               <IconHash className="size-4" />
-              <span className="text-[10px] font-bold tracking-wider uppercase">
+              <span className="text-[10px] font-bold tracking-wider">
                 {task.display_id || "TASK-ID"}
               </span>
             </div>
@@ -95,7 +95,7 @@ export function TaskDetailsHeader({
 
             <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1.5">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold tracking-wider uppercase opacity-60">
+                <span className="text-[10px] font-bold tracking-wider opacity-60">
                   Created By
                 </span>
                 <span className="text-foreground text-xs font-bold">
@@ -109,7 +109,7 @@ export function TaskDetailsHeader({
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold tracking-wider uppercase opacity-60">
+                <span className="text-[10px] font-bold tracking-wider opacity-60">
                   Timestamp
                 </span>
                 <span className="text-foreground text-xs font-bold tabular-nums">

@@ -59,8 +59,8 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
 
   if (summaries.length === 0) {
     return (
-      <div className="border-border/40 flex flex-col items-center justify-center border border-dashed py-24 text-center opacity-30 grayscale">
-        <p className="text-[10px] font-black tracking-tight uppercase">
+      <div className="border-border/40 flex flex-col items-center justify-center rounded-xl border border-dashed py-24 text-center opacity-30 grayscale">
+        <p className="text-[10px] font-bold tracking-tight">
           {reports.charts.employee.emptyStates.noData}
         </p>
       </div>
@@ -70,14 +70,14 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
   return (
     <div className="space-y-6">
       <div className="border-border/20 flex items-center justify-between border-b pb-4">
-        <h3 className="text-sm font-black tracking-tight uppercase">
+        <h3 className="text-sm font-bold tracking-tight">
           {reports.charts.employee.performanceTable.title}
         </h3>
         <Button
           variant="outline"
           size="sm"
           onClick={handleExportCsv}
-          className="border-border bg-card h-10 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md transition-all active:shadow-none dark:shadow-[-4px_4px_0px_0px_rgba(255,255,255,0.05)]"
+          className="border-border bg-card h-10 rounded-xl border text-[10px] font-bold tracking-tight shadow-sm transition-all active:shadow-none"
         >
           <IconDownload className="ms-2 size-4" />
           {reports.charts.employee.performanceTable.exportCsv}
@@ -85,7 +85,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
       </div>
 
       <div
-        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border"
+        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-xl border"
         data-animate-stagger
       >
         {/* Table Head  */}
@@ -134,7 +134,7 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
               className="hover:bg-muted/30 border-border/10 flex items-center justify-center gap-2 border-s transition-colors last:border-s-0"
             >
               <col.icon className="text-primary/40 size-3" />
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
+              <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {col.label}
               </span>
               <IconArrowsSort
@@ -158,22 +158,22 @@ export function EmployeePerformanceTable({ summaries, onRowClick }: Props) {
               onRowClick && "cursor-pointer",
             )}
           >
-            <div className="border-border/10 flex items-center justify-end border-s p-4 text-[11px] font-black tracking-tight uppercase">
+            <div className="border-border/10 flex items-center justify-end border-s p-4 text-[11px] font-bold tracking-tight">
               {summary.name}
             </div>
-            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black tabular-nums opacity-60">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-bold tabular-nums opacity-60">
               {digitsEnToFa(summary.totalAssigned)}
             </div>
-            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black text-emerald-500/80 tabular-nums">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-bold text-emerald-500/80 tabular-nums">
               {digitsEnToFa(summary.completed)}
             </div>
-            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black tabular-nums">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-bold tabular-nums">
               {digitsEnToFa(Math.round(summary.efficiencyScore * 100))}%
             </div>
-            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-black tabular-nums">
+            <div className="border-border/10 flex items-center justify-center border-s p-4 text-xs font-bold tabular-nums">
               {digitsEnToFa(Math.round(summary.onTimeRate * 100))}%
             </div>
-            <div className="flex items-center justify-center p-4 text-xs font-black tabular-nums opacity-40">
+            <div className="flex items-center justify-center p-4 text-xs font-bold tabular-nums opacity-40">
               {summary.avgTimeToCompleteDays > 0
                 ? digitsEnToFa(Math.round(summary.avgTimeToCompleteDays))
                 : "—"}

@@ -25,13 +25,13 @@ export default function PendingActivation() {
       />
 
       <PageTransition
-        className="bg-card border-border relative z-10 w-full max-w-xl overflow-hidden rounded-none border shadow-md"
+        className="bg-card border-border relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border shadow-md"
         disableStagger
       >
         <div className="bg-muted/20 border-border flex items-center justify-between border-b px-8 py-4">
           <div className="text-primary flex items-center gap-3">
             <IconLock className="size-4" />
-            <span className="text-foreground text-[10px] font-black tracking-tight uppercase">
+            <span className="text-foreground text-[10px] font-bold tracking-tight">
               Authentication :: Activation
             </span>
           </div>
@@ -40,15 +40,15 @@ export default function PendingActivation() {
 
         <div className="space-y-10 p-10 text-right">
           <div className="flex flex-col items-center gap-6 text-center">
-            <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center rounded-none border shadow-sm">
+            <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center rounded-xl border shadow-sm">
               <IconClock className="h-12 w-12 stroke-[1.5]" />
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-4xl font-black tracking-tight uppercase">
+              <h1 className="text-4xl font-bold tracking-tight">
                 {usersText.pendingActivation.title}
               </h1>
-              <p className="text-muted-foreground text-[10px] font-bold tracking-tight uppercase">
+              <p className="text-muted-foreground text-[10px] font-bold tracking-tight">
                 Account Status :: Pending
               </p>
             </div>
@@ -59,9 +59,9 @@ export default function PendingActivation() {
               {usersText.pendingActivation.message}
             </p>
 
-            <div className="bg-muted/10 border-primary space-y-3 rounded-none border-e-4 p-6">
+            <div className="bg-muted/10 border-primary space-y-3 rounded-xl border-e-4 p-6">
               <div className="text-primary flex items-center justify-end gap-3">
-                <span className="text-[10px] font-black tracking-tight uppercase">
+                <span className="text-[10px] font-bold tracking-tight">
                   Instruction
                 </span>
                 <IconMail className="size-4" />
@@ -75,7 +75,7 @@ export default function PendingActivation() {
           <div className="border-border/20 border-t pt-6">
             <Button
               onClick={() => navigate("/login")}
-              className="h-14 w-full rounded-none text-base font-black tracking-tight uppercase shadow-sm transition-all active:scale-95"
+              className="h-14 w-full rounded-xl text-base font-bold tracking-tight shadow-sm transition-all active:scale-95"
               size="lg"
             >
               {usersText.pendingActivation.backToLogin}
@@ -85,10 +85,10 @@ export default function PendingActivation() {
 
         {/* Verification Metadata */}
         <div className="bg-muted/20 border-border/10 flex items-center justify-between border-t px-8 py-2 opacity-30">
-          <span className="text-[7px] font-black tracking-tight uppercase">
+          <span className="text-[7px] font-bold tracking-tight">
             Security Check :: Passed
           </span>
-          <span className="text-[7px] font-black tracking-tight uppercase">
+          <span className="text-[7px] font-bold tracking-tight">
             {app.name} Secure Auth
           </span>
         </div>

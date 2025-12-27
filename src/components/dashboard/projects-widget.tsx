@@ -86,7 +86,7 @@ export function ProjectsWidget({
             <CardHeader className="border-border/40 relative z-10 border-b p-6">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-muted-foreground/60 text-[10px] font-semibold tracking-wider uppercase">
+                  <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                     Project {idx + 1}
                   </span>
                   <CardTitle className="text-lg font-bold tracking-tight">
@@ -106,7 +106,7 @@ export function ProjectsWidget({
               <div className="mb-4">
                 <div className="mb-3 flex items-end justify-between">
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-muted-foreground/60 text-[10px] font-semibold tracking-wider uppercase">
+                    <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                       {dashboard.cards.progress}
                     </span>
                     <div className="text-2xl font-bold tracking-tight">
@@ -117,7 +117,7 @@ export function ProjectsWidget({
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
-                    <span className="text-muted-foreground/60 text-[10px] font-semibold tracking-wider uppercase">
+                    <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                       {reports.completed}
                     </span>
                     <div className="text-xs font-semibold tracking-tight">

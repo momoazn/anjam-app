@@ -102,7 +102,7 @@ export function ChartsWidget({
       {/* Task Status Distribution */}
       <Card className="group border-border bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-md">
         <CardHeader className="border-border/40 relative z-10 border-b p-6">
-          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
+          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
               <BarChart3 className="size-4" />
             </div>
@@ -142,7 +142,7 @@ export function ChartsWidget({
                       const value = payload[0].value;
                       return (
                         <div className="bg-card border-border rounded-lg border p-3 shadow-xl">
-                          <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                          <p className="text-muted-foreground text-[10px] font-bold tracking-wider">
                             {payload[0].name}
                           </p>
                           <p className="mt-1.5 text-2xl font-bold tracking-tight">
@@ -167,7 +167,7 @@ export function ChartsWidget({
                   className="size-2 rounded-full"
                   style={{ backgroundColor: entry.fill }}
                 />
-                <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                <span className="text-muted-foreground text-[10px] font-bold tracking-wider">
                   {entry.name}
                 </span>
                 <span className="ms-auto text-xs font-bold tracking-tight">
@@ -182,7 +182,7 @@ export function ChartsWidget({
       {/* Productivity Trend */}
       <Card className="group border-border bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-md">
         <CardHeader className="border-border/40 relative z-10 border-b p-6">
-          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
+          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
               <TrendingUp className="size-4" />
             </div>
@@ -206,7 +206,7 @@ export function ChartsWidget({
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fontWeight: 700, fill: "currentColor" }}
-                  className="text-muted-foreground tracking-wider uppercase"
+                  className="text-muted-foreground tracking-wider"
                 />
                 <YAxis
                   axisLine={false}
@@ -220,14 +220,14 @@ export function ChartsWidget({
                       const value = payload[0].value;
                       return (
                         <div className="bg-card border-border rounded-lg border p-3 shadow-xl">
-                          <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                          <p className="text-muted-foreground text-[10px] font-bold tracking-wider">
                             {label}
                           </p>
                           <div className="mt-1.5 flex items-baseline gap-2">
                             <span className="text-primary text-3xl font-bold tracking-tight">
                               {digitsEnToFa(value?.toString() ?? "0")}
                             </span>
-                            <span className="text-muted-foreground text-[10px] font-bold uppercase">
+                            <span className="text-muted-foreground text-[10px] font-bold">
                               تکمیل شده
                             </span>
                           </div>
@@ -264,7 +264,7 @@ export function ChartsWidget({
       <Card className="group border-border bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-md lg:col-span-2 xl:col-span-1">
         <CardHeader className="border-border/40 relative z-10 border-b p-6">
           <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
+            <div className="flex items-center gap-3 text-xs font-bold tracking-wider">
               <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
                 <Clock className="size-4" />
               </div>
@@ -284,7 +284,7 @@ export function ChartsWidget({
               <Button
                 key={task.id}
                 variant="ghost"
-                className="group/item hover:bg-primary/5 flex h-auto w-full cursor-pointer items-stretch justify-start rounded-none border-none p-0 transition-all duration-300 focus-visible:ring-0"
+                className="group/item hover:bg-primary/5 flex h-auto w-full cursor-pointer items-stretch justify-start border-none p-0 transition-all duration-300 focus-visible:ring-0"
                 onClick={() => navigate(`/tasks/${task.id}`)}
               >
                 {/* Visual Status Bar */}
@@ -309,7 +309,7 @@ export function ChartsWidget({
 
                   <div className="min-w-0 flex-1 text-right">
                     <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                      <span className="text-muted-foreground text-[10px] font-bold tracking-wider">
                         {digitsEnToFa(
                           format(new Date(task.created), "MM/dd HH:mm"),
                         )}
@@ -320,7 +320,7 @@ export function ChartsWidget({
                     </p>
                     <div className="mt-1.5 flex items-center gap-1.5">
                       <Layers className="text-primary/40 size-3" />
-                      <span className="text-muted-foreground truncate text-[10px] font-bold tracking-wider uppercase">
+                      <span className="text-muted-foreground truncate text-[10px] font-bold tracking-wider">
                         {task?.expand?.project?.name ||
                           dashboard.cards.noProject}
                       </span>
@@ -331,7 +331,7 @@ export function ChartsWidget({
                     <Badge
                       variant="outline"
                       className={cn(
-                        "border-transparent px-1.5 py-0 text-[10px] font-bold tracking-wider uppercase",
+                        "border-transparent px-1.5 py-0 text-[10px] font-bold tracking-wider",
                         getStatusColorVariant(task.status, "badge"),
                       )}
                     >
@@ -370,7 +370,7 @@ export function ChartsWidget({
             {recentTasks.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 opacity-20 grayscale">
                 <Clock className="size-14 stroke-[1.5]" />
-                <p className="mt-6 text-[10px] font-bold tracking-wider uppercase">
+                <p className="mt-6 text-[10px] font-bold tracking-wider">
                   {dashboard.cards.noActivityFound}
                 </p>
               </div>

@@ -162,7 +162,7 @@ export function TaskDetailsContent({
           >
             <div className="relative z-10 flex h-full flex-col justify-between gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                   {item.label}
                 </span>
                 <item.icon className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
@@ -199,7 +199,7 @@ export function TaskDetailsContent({
                 <h3 className="text-lg font-bold tracking-tight">
                   {tasks.details.timeTracking.title}
                 </h3>
-                <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                   Resource Allocation Metrics
                 </span>
               </div>
@@ -221,7 +221,7 @@ export function TaskDetailsContent({
             <div className="animate-in fade-in slide-in-from-top-2 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                  <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                     {tasks.details.timeTracking.hours}
                   </span>
                   <Input
@@ -236,7 +236,7 @@ export function TaskDetailsContent({
                   />
                 </div>
                 <div className="space-y-2">
-                  <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                  <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                     {tasks.details.timeTracking.minutes}
                   </span>
                   <Input
@@ -280,7 +280,7 @@ export function TaskDetailsContent({
           ) : (
             <div className="flex flex-col items-baseline justify-between gap-8 md:flex-row md:items-center">
               <div className="text-right">
-                <div className="text-muted-foreground mb-1.5 text-[10px] font-bold tracking-wider uppercase">
+                <div className="text-muted-foreground mb-1.5 text-[10px] font-bold tracking-tight">
                   Total Time Spent
                 </div>
                 <p className="text-primary text-5xl font-bold tracking-tighter md:text-6xl">
@@ -290,7 +290,7 @@ export function TaskDetailsContent({
               </div>
 
               <div className="w-full max-w-md flex-1">
-                <div className="text-muted-foreground mb-3 text-right text-[10px] font-bold tracking-wider uppercase">
+                <div className="text-muted-foreground mb-3 text-right text-[10px] font-bold tracking-tight">
                   Efficiency Index
                 </div>
                 <TimeComparison
@@ -311,7 +311,7 @@ export function TaskDetailsContent({
               <h3 className="text-lg font-bold tracking-tight">
                 {tasks.details.timeEntries.title}
               </h3>
-              <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+              <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                 {tasks.details.timeEntries.entriesLabel}
               </span>
             </div>
@@ -390,7 +390,7 @@ export function TaskDetailsContent({
                 <ActivityStream resource="tasks" resourceId={task.id} />
               ) : (
                 <div
-                  className="text-muted-foreground py-12 text-center text-xs font-bold tracking-wider uppercase opacity-50"
+                  className="text-muted-foreground py-12 text-center text-xs font-bold tracking-tight opacity-50"
                   dir="rtl"
                 >
                   {settings.preferences.activityDisabled}

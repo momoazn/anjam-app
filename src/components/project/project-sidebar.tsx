@@ -12,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { projects } from "@/constants";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 
 type ProjectSidebarProps = {
   tasksLoading: boolean;
@@ -38,26 +37,25 @@ export function ProjectSidebar({
       {/* Project Status */}
       <section className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className="bg-primary text-primary-foreground flex size-5 items-center justify-center">
-            <IconActivity className="size-3.5" />
+          <div className="bg-primary/10 text-primary flex size-6 items-center justify-center rounded-lg">
+            <IconActivity className="size-4" />
           </div>
-          <span className="text-primary text-[9px] font-black tracking-[0.2em] uppercase">
-            Project_Status
+          <span className="text-primary text-[10px] font-bold tracking-wider">
+            Project Status
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="border-border/40 bg-card relative overflow-hidden border-2">
-          <BlueprintPattern variant="technical" className="opacity-[0.02]" />
+        <div className="bg-card border-border/40 relative overflow-hidden rounded-2xl border shadow-sm">
           <div className="relative z-10">
             {tasksLoading ? (
               <div className="space-y-3 p-4">
-                <Skeleton className="h-10 w-full rounded-none" />
-                <Skeleton className="h-10 w-full rounded-none" />
-                <Skeleton className="h-10 w-full rounded-none" />
+                <Skeleton className="h-10 w-full rounded-xl" />
+                <Skeleton className="h-10 w-full rounded-xl" />
+                <Skeleton className="h-10 w-full rounded-xl" />
               </div>
             ) : (
-              <div className="divide-border/10 divide-y-2">
+              <div className="divide-border/10 divide-y">
                 {[
                   {
                     label: projects.details.totalTasks,
@@ -99,13 +97,13 @@ export function ProjectSidebar({
                           item.color,
                         )}
                       />
-                      <span className="text-muted-foreground/60 text-[9px] font-black tracking-widest uppercase">
+                      <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                         {item.label}
                       </span>
                     </div>
                     <span
                       className={cn(
-                        "text-right text-xl font-black tabular-nums",
+                        "text-right text-xl font-bold tabular-nums",
                         item.highlight ? "text-primary" : "text-foreground",
                       )}
                     >
@@ -122,21 +120,20 @@ export function ProjectSidebar({
       {/* Access */}
       <section className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className="bg-primary text-primary-foreground flex size-5 items-center justify-center">
-            <IconSettings className="size-3.5" />
+          <div className="bg-primary/10 text-primary flex size-6 items-center justify-center rounded-lg">
+            <IconSettings className="size-4" />
           </div>
-          <span className="text-primary text-[9px] font-black tracking-[0.2em] uppercase">
-            Operator_Access
+          <span className="text-primary text-[10px] font-bold tracking-wider">
+            Quick Access
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="border-border/40 bg-card relative overflow-hidden border-2 p-1.5">
-          <BlueprintPattern variant="cross" className="opacity-[0.02]" />
-          <div className="relative z-10 space-y-0.5">
+        <div className="bg-card border-border/40 relative overflow-hidden rounded-2xl border p-2 shadow-sm">
+          <div className="relative z-10 space-y-1">
             <Button
               variant="ghost"
-              className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-none text-[9px] font-black tracking-widest uppercase transition-all"
+              className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"
               onClick={onViewTasks}
             >
               {projects.list.viewTasks}
@@ -144,7 +141,7 @@ export function ProjectSidebar({
             </Button>
             <Button
               variant="ghost"
-              className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-none text-[9px] font-black tracking-widest uppercase transition-all"
+              className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"
               onClick={onViewUsers}
             >
               {projects.users.title}

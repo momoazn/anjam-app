@@ -134,7 +134,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                 {formatActionMessage(log, actorName)}
               </p>
               <div className="mt-2 flex items-center justify-end gap-3 opacity-40">
-                <span className="text-[10px] font-black tracking-tight uppercase">
+                <span className="text-[10px] font-bold tracking-tight">
                   {relativeTime ? digitsEnToFa(relativeTime) : ""}
                 </span>
                 <IconClock className="size-2.5" />
@@ -144,11 +144,11 @@ function AuditLogItem({ log }: { log: AuditLog }) {
             <div className="flex shrink-0 flex-col items-end gap-2">
               <UserAvatar
                 user={actor}
-                className="border-border/20 size-8 rounded-none border shadow-sm"
+                className="border-border/20 size-8 rounded-lg border shadow-sm"
               />
               <Badge
                 variant="outline"
-                className="border-primary/20 bg-primary/5 text-primary rounded-none text-[8px] font-black tracking-tight uppercase"
+                className="border-primary/20 bg-primary/5 text-primary rounded-lg text-[8px] font-bold tracking-tight"
               >
                 {auditLogs.actions[
                   log.action as keyof typeof auditLogs.actions
@@ -163,7 +163,7 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setExpanded(!expanded)}
-                className="text-muted-foreground/60 hover:bg-muted/50 h-7 gap-2 rounded-none text-[9px] font-black tracking-tight uppercase"
+                className="text-muted-foreground/60 hover:bg-muted/50 h-7 gap-2 rounded-lg text-[9px] font-bold tracking-tight"
               >
                 {expanded ? (
                   <>
@@ -190,15 +190,13 @@ function AuditLogItem({ log }: { log: AuditLog }) {
               className="border-border/5 grid grid-cols-12 gap-4 border-b pb-4 last:border-0 last:pb-0"
             >
               <div className="border-border/10 col-span-3 flex flex-col items-end border-s">
-                <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
+                <span className="mb-1 text-[8px] font-bold tracking-tight opacity-40">
                   {auditLogs.activityStream.field}
                 </span>
-                <span className="text-primary/80 font-black uppercase">
-                  {field}
-                </span>
+                <span className="text-primary/80 font-bold">{field}</span>
               </div>
               <div className="border-border/10 col-span-4 flex flex-col items-end border-s pe-4">
-                <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
+                <span className="mb-1 text-[8px] font-bold tracking-tight opacity-40">
                   {auditLogs.activityStream.original}
                 </span>
                 <span className="w-full truncate opacity-60">
@@ -206,10 +204,10 @@ function AuditLogItem({ log }: { log: AuditLog }) {
                 </span>
               </div>
               <div className="col-span-5 flex flex-col items-end pe-4">
-                <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
+                <span className="mb-1 text-[8px] font-bold tracking-tight opacity-40">
                   {auditLogs.activityStream.newValue}
                 </span>
-                <span className="text-foreground w-full truncate font-black">
+                <span className="text-foreground w-full truncate font-bold">
                   {String(diff.new || "EMPTY")}
                 </span>
               </div>
@@ -278,7 +276,7 @@ export function ActivityStream({
     return (
       <div
         className={cn(
-          "py-12 text-center text-xs font-black text-rose-500 uppercase",
+          "py-12 text-center text-xs font-bold text-rose-500",
           className,
         )}
       >
@@ -292,7 +290,7 @@ export function ActivityStream({
     return (
       <div
         className={cn(
-          "text-muted-foreground/40 py-12 text-center text-xs font-black uppercase opacity-30 grayscale",
+          "text-muted-foreground/40 py-12 text-center text-xs font-bold opacity-30 grayscale",
           className,
         )}
       >
@@ -305,15 +303,15 @@ export function ActivityStream({
   return (
     <div
       className={cn(
-        "border-border/40 bg-muted/5 overflow-hidden border",
+        "border-border/40 bg-muted/5 overflow-hidden rounded-2xl border",
         className,
       )}
     >
       <div className="bg-muted/20 border-border/40 flex items-center justify-between border-b px-4 py-2">
-        <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+        <span className="text-muted-foreground/40 text-[8px] font-bold tracking-tight">
           Activity Log
         </span>
-        <span className="text-[9px] font-black tabular-nums">
+        <span className="text-[9px] font-bold tabular-nums">
           {digitsEnToFa(data.items.length)} EVENTS
         </span>
       </div>

@@ -31,7 +31,7 @@ export function NavMain({ items, title }: NavMainProps) {
   return (
     <SidebarGroup className="py-2">
       {title && state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-wider uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-tight">
           {title}
         </SidebarGroupLabel>
       )}
@@ -55,7 +55,7 @@ export function NavMain({ items, title }: NavMainProps) {
                   <SidebarMenuButton
                     tooltip={item.title}
                     className={cn(
-                      "group relative h-9 w-full justify-start gap-3 rounded-md px-3 transition-all duration-200",
+                      "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                       active
                         ? "bg-primary/10 text-primary font-medium"
                         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",

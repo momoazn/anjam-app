@@ -211,7 +211,7 @@ export function PreferencesSection() {
 
   if (!user) {
     return (
-      <div className="bg-card border-border rounded-lg border p-8 text-center shadow-sm">
+      <div className="bg-card border-border rounded-2xl border p-8 text-center shadow-sm">
         <p className="text-foreground text-base font-bold tracking-tight">
           {settings.preferences.signinRequired}
         </p>
@@ -222,7 +222,7 @@ export function PreferencesSection() {
   return (
     <div className="space-y-6 text-right">
       {/* UI Preferences */}
-      <section className="bg-card border-border rounded-lg border p-6 shadow-sm">
+      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconSettings}
           title={settings.preferences.title}
@@ -240,7 +240,7 @@ export function PreferencesSection() {
       </section>
 
       {/* Display Settings */}
-      <section className="bg-card border-border rounded-lg border p-6 shadow-sm">
+      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconPalette}
           title="تنظیمات نمایش"
@@ -248,7 +248,7 @@ export function PreferencesSection() {
         />
         <div className="grid gap-6 sm:grid-cols-3">
           <div className="space-y-2">
-            <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+            <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
               تم سیستم
             </label>
             <Select
@@ -260,10 +260,10 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="h-11 text-right">
+              <SelectTrigger className="h-11 rounded-xl text-right">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl">
                 {themeOptions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -278,7 +278,7 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+            <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
               منطقه زمانی
             </label>
             <Select
@@ -290,10 +290,10 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="h-11 text-right">
+              <SelectTrigger className="h-11 rounded-xl text-right">
                 <SelectValue placeholder="Timezone" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl">
                 {timezoneOptions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -308,7 +308,7 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+            <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
               فرمت تاریخ
             </label>
             <Select
@@ -320,10 +320,10 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="h-11 text-right">
+              <SelectTrigger className="h-11 rounded-xl text-right">
                 <SelectValue placeholder="Date format" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl">
                 {dateFormatOptions.map((option) => (
                   <SelectItem
                     key={option.value}
@@ -340,7 +340,7 @@ export function PreferencesSection() {
       </section>
 
       {/* Notifications */}
-      <section className="bg-card border-border rounded-lg border p-6 shadow-sm">
+      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconBell}
           title="اعلان‌ها"

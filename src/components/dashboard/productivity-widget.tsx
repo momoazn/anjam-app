@@ -62,7 +62,7 @@ export function ProductivityWidget({
       {/* Completion Rate Card */}
       <Card className="group border-border/40 bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden transition-all duration-300 hover:shadow-md">
         <CardHeader className="border-border/40 relative z-10 border-b pb-4">
-          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
+          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-tight">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
               <Activity className="size-4" />
             </div>
@@ -78,7 +78,7 @@ export function ProductivityWidget({
               %
             </span>
           </div>
-          <div className="text-muted-foreground mt-3 flex items-center gap-2 text-[10px] font-semibold tracking-wider uppercase">
+          <div className="text-muted-foreground mt-3 flex items-center gap-2 text-[10px] font-bold tracking-tight">
             <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
             {digitsEnToFa(stats?.thisWeekCompleted ?? 0)}{" "}
             {dashboard.cards.completedThisWeek}
@@ -96,7 +96,7 @@ export function ProductivityWidget({
       <Card className="group border-border/40 bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden transition-all duration-300 hover:shadow-md">
         <CardHeader className="border-border/40 relative z-10 border-b pb-4">
           <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
+            <div className="flex items-center gap-3 text-xs font-bold tracking-tight">
               <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
                 <Bell className="size-4" />
               </div>
@@ -126,7 +126,7 @@ export function ProductivityWidget({
                         : "bg-muted-foreground/20",
                     )}
                   />
-                  <span className="text-foreground truncate text-xs font-semibold">
+                  <span className="text-foreground truncate text-xs font-bold">
                     {notification.title}
                   </span>
                 </Button>
@@ -134,7 +134,7 @@ export function ProductivityWidget({
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-right opacity-20 grayscale">
                 <Bell className="size-6 stroke-[1.5]" />
-                <p className="mt-2 text-[10px] font-semibold tracking-wider uppercase">
+                <p className="mt-2 text-[10px] font-bold tracking-tight">
                   {dashboard.cards.noNewNotifications}
                 </p>
               </div>
@@ -146,7 +146,7 @@ export function ProductivityWidget({
       {/* Quick Actions Card */}
       <Card className="group border-border/40 bg-card/50 hover:bg-card hover:border-primary/40 relative overflow-hidden transition-all duration-300 hover:shadow-md">
         <CardHeader className="border-border/40 relative z-10 border-b pb-4">
-          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
+          <CardTitle className="flex items-center gap-3 text-xs font-bold tracking-tight">
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-md">
               <Zap className="size-4" />
             </div>

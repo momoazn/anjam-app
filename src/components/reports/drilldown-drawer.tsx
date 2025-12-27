@@ -50,18 +50,18 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="border-border bg-card max-h-[85vh] rounded-none border-t-2 shadow-[0_-8px_24px_rgba(0,0,0,0.2)]">
+      <DrawerContent className="border-border bg-card max-h-[85vh] rounded-t-2xl border-t-2 shadow-[0_-8px_24px_rgba(0,0,0,0.2)]">
         <DrawerHeader className="border-border/40 bg-muted/20 flex flex-row items-center justify-between border-b px-6 py-4">
           <div className="flex items-center gap-3">
             <IconTerminal className="text-primary size-4" />
-            <DrawerTitle className="text-sm font-black tracking-tight uppercase">
+            <DrawerTitle className="text-sm font-bold tracking-tight">
               {title}
             </DrawerTitle>
           </div>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="hover:bg-muted hover:border-border/40 border border-transparent p-2 transition-colors"
+            className="hover:bg-muted hover:border-border/40 rounded-lg border border-transparent p-2 transition-colors"
           >
             <IconX className="size-4" />
           </button>
@@ -71,7 +71,7 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
           {rows.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale">
               <IconHash className="mb-4 size-10 stroke-[1]" />
-              <p className="text-[10px] font-black tracking-tight uppercase">
+              <p className="text-[10px] font-bold tracking-tight">
                 {reports.noTasksFound}
               </p>
             </div>
@@ -91,7 +91,7 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
                 ].map((head) => (
                   <div
                     key={head}
-                    className="text-muted-foreground/60 border-border/10 flex items-center justify-center border-s text-[8px] font-black tracking-tight uppercase last:border-s-0"
+                    className="text-muted-foreground/60 border-border/10 flex items-center justify-center border-s text-[8px] font-bold tracking-tight last:border-s-0"
                   >
                     {head}
                   </div>
@@ -107,28 +107,28 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
                   <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-xs font-bold">
                     {row.title}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-bold tracking-tight opacity-60">
                     {STATUS_LABELS[row.status as keyof typeof STATUS_LABELS] ||
                       row.status}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tracking-tight uppercase opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-bold tracking-tight opacity-60">
                     {PRIORITY_LABELS[
                       row.priority as keyof typeof PRIORITY_LABELS
                     ] || row.priority}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tabular-nums opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-bold tabular-nums opacity-60">
                     {formatDeadline(row.deadline)}
                   </div>
-                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-black tabular-nums opacity-60">
+                  <div className="border-border/10 flex items-center justify-center border-s p-4 text-[10px] font-bold tabular-nums opacity-60">
                     {digitsEnToFa(row.ageDays)}
                   </div>
-                  <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-[10px] font-black uppercase">
+                  <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-[10px] font-bold">
                     {row.assigneeName}
                   </div>
-                  <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-[10px] font-black uppercase opacity-60">
+                  <div className="border-border/10 flex items-center justify-end truncate border-s p-4 text-[10px] font-bold opacity-60">
                     {row.projectName}
                   </div>
-                  <div className="flex items-center justify-end p-4 text-[9px] font-black tracking-tight uppercase opacity-40">
+                  <div className="flex items-center justify-end p-4 text-[9px] font-bold tracking-tight opacity-40">
                     {row.tags?.length ? row.tags.join(", ") : "—"}
                   </div>
 
@@ -140,10 +140,10 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
         </div>
 
         <div className="bg-muted/20 border-border/40 flex items-center justify-between border-t px-6 py-2">
-          <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
+          <span className="text-muted-foreground/40 text-[8px] font-bold tracking-tight">
             _Active :: _Dump
           </span>
-          <span className="text-[10px] font-black tabular-nums">
+          <span className="text-[10px] font-bold tabular-nums">
             {digitsEnToFa(rows.length)} ENTRIES
           </span>
         </div>

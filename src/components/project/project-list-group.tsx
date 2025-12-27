@@ -80,7 +80,7 @@ export function ProjectListGroup({
                     <div className="flex flex-col">
                       <div className="text-muted-foreground flex items-center gap-1.5">
                         <IconHash className="size-3" />
-                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                        <span className="text-[10px] font-bold tracking-wider">
                           {project.code}
                         </span>
                       </div>
@@ -125,7 +125,7 @@ export function ProjectListGroup({
                   <div className="flex flex-col">
                     <div className="text-muted-foreground flex items-center gap-1.5">
                       <IconActivity className="size-3" />
-                      <span className="text-[10px] font-bold tracking-wider uppercase">
+                      <span className="text-[10px] font-bold tracking-wider">
                         {projectLabels.progress}
                       </span>
                     </div>
@@ -138,7 +138,7 @@ export function ProjectListGroup({
                   </div>
 
                   <div className="flex flex-col items-end">
-                    <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                    <span className="text-muted-foreground text-[10px] font-bold tracking-wider">
                       Tasks
                     </span>
                     <div className="mt-1 flex items-center gap-1.5 font-bold">
@@ -157,10 +157,10 @@ export function ProjectListGroup({
               </div>
 
               {/* Action Grid */}
-              <div className="mt-auto grid grid-cols-3 border-t">
+              <div className="mt-auto grid grid-cols-3 gap-1.5 border-t p-1.5">
                 <Button
                   variant="ghost"
-                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-none border-r font-bold transition-colors"
+                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-xl font-bold transition-colors"
                   onClick={() => navigate(`/projects/${project.id}/details`)}
                 >
                   <FileText className="size-4" />
@@ -170,7 +170,7 @@ export function ProjectListGroup({
                 </Button>
                 <Button
                   variant="ghost"
-                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-none border-r font-bold transition-colors"
+                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-xl font-bold transition-colors"
                   onClick={() => navigate(`/projects/${project.id}/tasks`)}
                 >
                   <Target className="size-4" />
@@ -180,7 +180,7 @@ export function ProjectListGroup({
                 </Button>
                 <Button
                   variant="ghost"
-                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-none font-bold transition-colors"
+                  className="hover:bg-muted/50 flex h-14 flex-col items-center justify-center rounded-xl font-bold transition-colors"
                   onClick={() => navigate(`/projects/${project.id}/users`)}
                 >
                   <Users className="size-4" />

@@ -107,16 +107,16 @@ export default function Register() {
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
           <Logo size={40} showTelemetry />
-          <span className="text-sm font-black tracking-tight uppercase opacity-70">
+          <span className="text-muted-foreground/70 text-sm font-bold tracking-tight">
             {app.name} / Secure Access
           </span>
         </div>
 
         <div className="relative">
-          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-black uppercase select-none">
+          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-bold select-none">
             ANJAM
           </div>
-          <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
+          <h2 className="relative z-10 text-6xl leading-tight font-bold tracking-tighter lg:text-7xl xl:text-8xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
             <br />
             <span className="text-primary">
@@ -135,15 +135,15 @@ export default function Register() {
         <PageTransition className="w-full" disableStagger>
           <div className="mb-10 lg:hidden">
             <Logo size={48} className="mb-6" />
-            <h2 className="text-4xl font-black tracking-tight">
+            <h2 className="text-4xl font-bold tracking-tight">
               {auth.register.title}
             </h2>
           </div>
 
-          <div className="bg-card relative rounded-none border p-8 shadow-2xl lg:p-10">
+          <div className="bg-card relative rounded-2xl border p-8 shadow-2xl lg:p-10">
             <div className="mb-8 flex items-center justify-between border-b pb-6">
               <div>
-                <h3 className="text-xl font-black tracking-tight">
+                <h3 className="text-xl font-bold tracking-tight">
                   {auth.register.title}
                 </h3>
                 <p className="text-muted-foreground mt-1 text-xs font-medium">
@@ -156,7 +156,7 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                     {auth.register.email}
                   </Label>
                   <IconMail className="text-muted-foreground/40 size-3" />
@@ -166,7 +166,7 @@ export default function Register() {
                   value={email}
                   dir="ltr"
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
                   placeholder="name@company.com"
                   required
                   autoFocus
@@ -181,7 +181,7 @@ export default function Register() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                     {auth.register.username}
                   </Label>
                   <IconUserBolt className="text-muted-foreground/40 size-3" />
@@ -191,7 +191,7 @@ export default function Register() {
                   value={username}
                   dir="ltr"
                   onChange={(e) => setUsername(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
                   placeholder={resolvedUsername || "username"}
                   disabled={submitting}
                 />
@@ -204,7 +204,7 @@ export default function Register() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                     {auth.register.password}
                   </Label>
                   <IconShieldLock className="text-muted-foreground/40 size-3" />
@@ -213,7 +213,7 @@ export default function Register() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
                   placeholder="••••••••"
                   required
                   dir="ltr"
@@ -228,7 +228,7 @@ export default function Register() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                     {auth.register.confirmPassword}
                   </Label>
                   <IconShieldLock className="text-muted-foreground/40 size-3" />
@@ -237,7 +237,7 @@ export default function Register() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
                   placeholder="••••••••"
                   required
                   dir="ltr"
@@ -252,7 +252,7 @@ export default function Register() {
 
               <Button
                 type="submit"
-                className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
+                className="group h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all active:scale-95"
                 disabled={submitting}
               >
                 <span className="flex items-center gap-2">

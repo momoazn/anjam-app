@@ -138,7 +138,7 @@ export function CommentComposer({
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       {replyTarget && (
-        <div className="border-border/40 bg-muted/10 flex items-center justify-between rounded-none border px-4 py-2 text-right text-[11px] font-black tracking-tight uppercase">
+        <div className="bg-muted/30 border-border/40 flex items-center justify-between rounded-xl border px-4 py-2 text-right text-[11px] font-bold tracking-tight">
           <span>
             {comments.item.replyingTo}
             {replyTarget.expand?.user?.first_name ||
@@ -149,7 +149,7 @@ export function CommentComposer({
             size="icon"
             disabled={isDisabled}
             onClick={() => onCancelReply?.()}
-            className="h-7 w-7 rounded-none border border-transparent"
+            className="h-7 w-7 rounded-lg border border-transparent"
           >
             <IconX className="size-3" />
           </Button>
@@ -172,7 +172,7 @@ export function CommentComposer({
               ? comments.composer.placeholder
               : comments.composer.placeholderDisabled
           }
-          className="min-h-[100px] rounded-none text-right"
+          className="min-h-[100px] rounded-xl text-right"
           disabled={isDisabled}
           onKeyDown={(event) => {
             if (isMentionOpen) {
@@ -229,7 +229,7 @@ export function CommentComposer({
         <Button
           type="submit"
           size="sm"
-          className="h-10 rounded-none px-4 text-[10px] font-black tracking-tight uppercase"
+          className="h-10 rounded-xl px-6 text-[11px] font-bold tracking-tight"
           disabled={isDisabled || !trimmedContent}
         >
           {comments.composer.send}

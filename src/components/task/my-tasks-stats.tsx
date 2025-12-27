@@ -58,7 +58,7 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
   ];
 
   return (
-    <Card className="border-border/40 mb-8 overflow-hidden rounded-none shadow-sm">
+    <Card className="border-border/40 mb-8 overflow-hidden rounded-2xl shadow-sm">
       <CardContent
         className="grid grid-cols-2 gap-px p-0 sm:grid-cols-3 md:grid-cols-5"
         data-animate-stagger
@@ -69,7 +69,7 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
             className="bg-card hover:bg-muted/10 group relative overflow-hidden p-6 text-right transition-colors"
           >
             <div className="mb-2 flex items-center justify-end gap-3">
-              <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+              <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
                 {stat.label}
               </span>
               <stat.icon
@@ -79,7 +79,7 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
                 )}
               />
             </div>
-            <div className="text-3xl font-black tracking-tighter">
+            <div className="text-3xl font-bold tracking-tighter">
               {digitsEnToFa(stat.value)}
             </div>
             <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />

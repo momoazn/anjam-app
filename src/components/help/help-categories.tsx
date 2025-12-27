@@ -63,7 +63,7 @@ export function HelpCategories() {
         <AccordionItem key={cat.id} value={cat.id} className="border-none">
           <AccordionTrigger className="bg-card hover:bg-muted/30 [&[data-state=open]]:bg-primary/5 [&[data-state=open]]:text-primary h-16 flex-row-reverse gap-4 px-6 transition-all hover:no-underline">
             <div className="flex items-center gap-3">
-              <span className="text-[11px] font-black tracking-tight uppercase">
+              <span className="text-[11px] font-bold tracking-tight">
                 {cat.title}
               </span>
               <cat.icon className="size-4.5" />
@@ -81,7 +81,7 @@ export function HelpCategories() {
                           className="flex items-start justify-end gap-3"
                         >
                           <div className="flex-1">
-                            <span className="text-primary/80 text-[11px] font-black tracking-tight uppercase">
+                            <span className="text-primary/80 text-[11px] font-bold tracking-tight">
                               {step.label}:
                             </span>{" "}
                             <span className="text-sm leading-relaxed font-medium opacity-80">
@@ -101,10 +101,10 @@ export function HelpCategories() {
                           key={item.combo}
                           className="bg-card flex items-center justify-between p-3"
                         >
-                          <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight uppercase">
+                          <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                             {item.description}
                           </span>
-                          <kbd className="bg-muted/20 border-border/20 border px-2 py-0.5 font-mono text-[10px] font-black">
+                          <kbd className="bg-muted/20 border-border/20 border px-2 py-0.5 font-mono text-[10px] font-bold">
                             {item.combo}
                           </kbd>
                         </div>
@@ -139,7 +139,7 @@ export function HelpCategories() {
                   {roles.list.map((role) => (
                     <div key={role.key} className="bg-card space-y-4 p-6">
                       <div className="border-border/10 flex items-center justify-end gap-2 border-b pb-2">
-                        <h3 className="text-sm font-black tracking-tight uppercase">
+                        <h3 className="text-sm font-bold tracking-tight">
                           {role.title}
                         </h3>
                         <IconShield className="text-primary/40 size-3" />
@@ -166,7 +166,7 @@ export function HelpCategories() {
                       key={problem.title}
                       className="bg-muted/20 border-primary/20 border-e-2 p-4 text-right"
                     >
-                      <h4 className="text-foreground mb-1 text-[11px] font-black tracking-tight uppercase">
+                      <h4 className="text-foreground mb-1 text-[11px] font-bold tracking-tight">
                         {problem.title}
                       </h4>
                       <p className="text-muted-foreground/60 text-xs leading-relaxed font-bold">
@@ -185,7 +185,7 @@ export function HelpCategories() {
               ].includes(cat.id) && (
                 <div className="py-12 text-center opacity-40">
                   <IconTerminal className="mx-auto mb-4 size-10 stroke-[1]" />
-                  <p className="text-[10px] font-black tracking-tight uppercase">
+                  <p className="text-[10px] font-bold tracking-tight">
                     Module_ :: Under_Expansion
                   </p>
                 </div>

@@ -250,7 +250,7 @@ export default function Notifications() {
               className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
             >
               <div className="mb-2 flex items-center justify-end gap-3">
-                <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                   {stat.label}
                 </span>
                 <stat.icon className={cn("size-4", stat.color)} />

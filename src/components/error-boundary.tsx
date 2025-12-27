@@ -62,31 +62,38 @@ export class ErrorBoundary extends Component<
       // Default error UI
       return (
         <div className="flex min-h-screen items-center justify-center p-4">
-          <Card className="w-full max-w-md">
+          <Card className="w-full max-w-md rounded-2xl shadow-lg">
             <CardHeader className="text-center">
               <div className="bg-destructive/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
                 <AlertTriangle className="text-destructive size-6" />
               </div>
-              <CardTitle>{errors.boundary.title}</CardTitle>
-              <CardDescription>{errors.boundary.description}</CardDescription>
+              <CardTitle className="text-xl font-bold">
+                {errors.boundary.title}
+              </CardTitle>
+              <CardDescription className="font-medium">
+                {errors.boundary.description}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {import.meta.env.DEV && this.state.error && (
-                <div className="bg-muted rounded-none p-3">
-                  <p className="text-muted-foreground font-mono text-sm">
+                <div className="bg-muted rounded-xl p-4">
+                  <p className="text-muted-foreground font-mono text-xs leading-relaxed">
                     {this.state.error.message}
                   </p>
                 </div>
               )}
-              <div className="flex gap-2">
-                <Button onClick={this.handleRetry} className="flex-1">
+              <div className="flex gap-3">
+                <Button
+                  onClick={this.handleRetry}
+                  className="h-11 flex-1 rounded-xl font-bold"
+                >
                   <RefreshCw className="me-2 size-4" />
                   {common.buttons.retry}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => window.history.back()}
-                  className="flex-1"
+                  className="h-11 flex-1 rounded-xl font-bold"
                 >
                   <ArrowLeft className="me-2 size-4" />
                   {common.buttons.back}

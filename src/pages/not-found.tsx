@@ -19,7 +19,7 @@ export default function NotFound() {
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-3 opacity-40">
               <IconSearch className="size-4" />
-              <span className="text-xs font-semibold tracking-wider uppercase">
+              <span className="text-xs font-bold tracking-tight">
                 Error 404
               </span>
             </div>

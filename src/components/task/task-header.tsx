@@ -21,28 +21,28 @@ export function TaskHeader({
   onCreateTask,
 }: TaskHeaderProps) {
   return (
-    <div className="border-foreground relative mb-12 flex flex-col gap-8 border-b-4 pb-12 md:flex-row md:items-end md:justify-between">
+    <div className="relative mb-12 flex flex-col gap-8 border-b pb-12 md:flex-row md:items-end md:justify-between">
       <BlueprintPattern variant="technical" className="opacity-[0.03]" />
 
       <div className="relative z-10 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <div className="bg-foreground text-background flex size-16 items-center justify-center">
+          <div className="bg-primary/10 text-primary flex size-16 items-center justify-center rounded-2xl">
             <ListTodo className="size-8" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2 opacity-40">
-              <span className="font-mono text-[10px] font-black tracking-[0.2em] uppercase">
-                System_Registry
+              <span className="font-mono text-[10px] font-bold tracking-tight">
+                System Registry
               </span>
               <div className="bg-foreground/20 h-px w-8" />
             </div>
-            <h1 className="text-5xl font-black tracking-tighter uppercase md:text-7xl">
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
               {tasks.allTasks}
             </h1>
           </div>
         </div>
 
-        <p className="text-muted-foreground/60 max-w-md text-sm leading-relaxed font-bold tracking-tight uppercase">
+        <p className="text-muted-foreground/60 max-w-md text-sm leading-relaxed font-medium">
           {totalTasks > 0
             ? tasks.header.tasksFound.replace(
                 "{count}",
@@ -53,33 +53,31 @@ export function TaskHeader({
       </div>
 
       <div className="relative z-10 flex flex-wrap items-center gap-3">
-        <div className="bg-muted/20 border-border/40 flex border-2 p-1">
+        <div className="bg-muted/30 flex items-center gap-1 rounded-2xl p-1.5">
           <Button
             variant="ghost"
             size="lg"
             onClick={onNavigateBoard}
-            className="hover:bg-primary/10 hover:text-primary h-14 gap-3 rounded-none px-6 font-black transition-all"
+            className="hover:bg-background h-12 gap-2 rounded-xl px-5 font-bold transition-all"
           >
-            <LayoutGrid className="size-5" />
-            <span className="text-[11px] tracking-widest uppercase">
-              {tasks.board.title}
-            </span>
+            <LayoutGrid className="size-4" />
+            <span className="text-sm">{tasks.board.title}</span>
           </Button>
 
-          <div className="bg-border/40 mx-1 w-px" />
+          <div className="bg-border/40 mx-1 h-6 w-px" />
 
           <Button
             variant="ghost"
             size="lg"
             onClick={onToggleSelection}
             className={cn(
-              "h-14 gap-3 rounded-none px-6 font-black transition-all",
+              "h-12 gap-2 rounded-xl px-5 font-bold transition-all",
               selectionMode &&
                 "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
           >
-            <CheckSquare className="size-5" />
-            <span className="text-[11px] tracking-widest uppercase">
+            <CheckSquare className="size-4" />
+            <span className="text-sm">
               {selectionMode
                 ? common.buttons.cancelSelection
                 : common.buttons.multiSelect}
@@ -88,14 +86,12 @@ export function TaskHeader({
         </div>
 
         <Button
-          className="h-16 gap-4 rounded-none px-10 text-lg font-black shadow-[8px_8px_0_0_rgba(0,0,0,0.1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0_0_rgba(0,0,0,0.15)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
+          className="h-14 gap-3 rounded-2xl px-8 text-base font-bold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
           size="lg"
           onClick={onCreateTask}
         >
-          <Plus className="size-6" />
-          <span className="tracking-tighter uppercase">
-            {tasks.addTask.buttons.newTask}
-          </span>
+          <Plus className="size-5" />
+          <span>{tasks.addTask.buttons.newTask}</span>
         </Button>
       </div>
     </div>

@@ -197,7 +197,7 @@ export function TaskBoardPage() {
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2">
               <IconHash className="size-4" />
-              <span className="text-xs font-semibold tracking-wider uppercase">
+              <span className="text-xs font-bold tracking-tight">
                 {projectId ? project?.code : "GLOBAL"} / BOARD
               </span>
             </div>

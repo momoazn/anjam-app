@@ -321,27 +321,27 @@ export default function Reports() {
         <div className="space-y-16">
           <section className="space-y-6">
             <div className="flex items-center gap-4">
-              <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+              <span className="text-primary/60 text-[10px] font-bold tracking-tight">
                 Configuration
               </span>
               <div className="bg-border/20 h-px flex-1" />
             </div>
-            <Skeleton className="h-24 w-full rounded-none" />
+            <Skeleton className="h-24 w-full rounded-2xl" />
           </section>
 
           <section className="space-y-8">
             <div className="flex items-center gap-4">
-              <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+              <span className="text-primary/60 text-[10px] font-bold tracking-tight">
                 Statistics Summary
               </span>
               <div className="bg-border/20 h-px flex-1" />
             </div>
-            <Card className="border-border/40 overflow-hidden rounded-none shadow-sm">
+            <Card className="border-border/40 overflow-hidden rounded-2xl shadow-sm">
               <CardContent className="bg-border/40 grid grid-cols-1 gap-px border-none p-0 md:grid-cols-5">
                 {["s1", "s2", "s3", "s4", "s5"].map((key) => (
                   <div key={key} className="bg-card h-32 p-8">
-                    <Skeleton className="mb-4 h-4 w-20" />
-                    <Skeleton className="h-10 w-16" />
+                    <Skeleton className="mb-4 h-4 w-20 rounded-md" />
+                    <Skeleton className="h-10 w-16 rounded-md" />
                   </div>
                 ))}
               </CardContent>
@@ -363,7 +363,7 @@ export default function Reports() {
       <div className="space-y-16">
         <section className="space-y-6">
           <div className="flex items-center gap-4">
-            <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            <span className="text-primary/60 text-[10px] font-bold tracking-tight">
               Configuration
             </span>
             <div className="bg-border/20 h-px flex-1" />
@@ -381,7 +381,7 @@ export default function Reports() {
 
         <section className="space-y-8">
           <div className="flex items-center gap-4">
-            <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            <span className="text-primary/60 text-[10px] font-bold tracking-tight">
               Statistics Summary
             </span>
             <div className="bg-border/20 h-px flex-1" />
@@ -434,16 +434,16 @@ export default function Reports() {
             ].map((stat) => (
               <Card
                 key={stat.id}
-                className="border-border/40 hover:shadow-primary/5 overflow-hidden rounded-none shadow-sm transition-all hover:shadow-md"
+                className="border-border/40 hover:shadow-primary/5 overflow-hidden rounded-2xl shadow-sm transition-all hover:shadow-md"
               >
                 <CardContent className="p-8 text-right">
                   <div className="mb-4 flex items-center justify-end gap-4 opacity-60">
-                    <span className="text-muted-foreground text-[11px] font-black tracking-tight uppercase">
+                    <span className="text-muted-foreground text-[11px] font-bold tracking-tight">
                       {stat.label}
                     </span>
                     <stat.icon className={cn("size-5", stat.color)} />
                   </div>
-                  <div className="text-5xl font-black tracking-tighter">
+                  <div className="text-5xl font-bold tracking-tighter">
                     {digitsEnToFa(stat.value)}
                     <span className="text-muted-foreground/30 me-1 text-xl">
                       {stat.suffix}
@@ -457,7 +457,7 @@ export default function Reports() {
 
         <section className="space-y-8">
           <div className="flex items-center gap-4">
-            <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+            <span className="text-primary/60 text-[10px] font-bold tracking-tight">
               Visual Analytics
             </span>
             <div className="bg-border/20 h-px flex-1" />

@@ -118,7 +118,7 @@ function SortableStatusRow({
         <Input
           value={draft.name}
           onChange={(event) => onDraftChange({ name: event.target.value })}
-          className="border-border/40 bg-muted/5 h-10 rounded-none text-right text-xs font-black tracking-tight uppercase"
+          className="border-border/40 bg-muted/5 h-10 rounded-lg text-right text-xs font-bold tracking-tight"
           disabled={disabled}
         />
       </div>
@@ -128,15 +128,15 @@ function SortableStatusRow({
           onValueChange={(value) => onDraftChange({ color: value })}
           disabled={disabled}
         >
-          <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-none border text-right text-[10px] font-black tracking-tight uppercase focus:ring-0">
+          <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-lg border text-right text-[10px] font-bold tracking-tight focus:ring-0">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="border-border bg-card rounded-none border">
+          <SelectContent className="border-border bg-card rounded-xl border">
             {colorOptions.map((option) => (
               <SelectItem
                 key={option.value}
                 value={option.value}
-                className="text-right text-[10px] font-black uppercase"
+                className="text-right text-[10px] font-bold"
               >
                 {option.label}
               </SelectItem>
@@ -163,7 +163,7 @@ function SortableStatusRow({
           type="button"
           variant="ghost"
           size="icon"
-          className="size-8 rounded-none"
+          className="size-8 rounded-lg"
           onClick={onSave}
           disabled={disabled || !hasChanges}
         >
@@ -173,7 +173,7 @@ function SortableStatusRow({
           type="button"
           variant="ghost"
           size="icon"
-          className="size-8 rounded-none text-rose-500 hover:bg-rose-500/10"
+          className="size-8 rounded-lg text-rose-500 hover:bg-rose-500/10"
           onClick={onDelete}
           disabled={disabled}
         >
@@ -402,13 +402,13 @@ export function ProjectStatusesSettings({
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
+        <div className="text-muted-foreground text-[10px] font-bold tracking-tight">
           {projectStatuses.settings.title}
         </div>
       </div>
 
-      <div className="bg-muted/5 border-border/40 border p-4">
-        <div className="border-border/20 grid grid-cols-12 items-center gap-3 border-b pb-3 text-right text-[9px] font-black tracking-tight uppercase opacity-60">
+      <div className="bg-muted/5 border-border/40 rounded-2xl border p-4">
+        <div className="border-border/20 grid grid-cols-12 items-center gap-3 border-b pb-3 text-right text-[9px] font-bold tracking-tight opacity-60">
           <div className="col-span-1" />
           <div className="col-span-3">{projectStatuses.headers.name}</div>
           <div className="col-span-2">{projectStatuses.headers.color}</div>
@@ -464,8 +464,8 @@ export function ProjectStatusesSettings({
       </div>
 
       {canManageStatuses && (
-        <div className="border-border/40 bg-muted/5 border p-4">
-          <div className="mb-3 text-[10px] font-black tracking-tight uppercase opacity-60">
+        <div className="border-border/40 bg-muted/5 rounded-2xl border p-4">
+          <div className="mb-3 text-[10px] font-bold tracking-tight opacity-60">
             {projectStatuses.settings.addStatus}
           </div>
           <div className="grid grid-cols-12 items-center gap-3">
@@ -474,7 +474,7 @@ export function ProjectStatusesSettings({
                 value={newName}
                 onChange={(event) => setNewName(event.target.value)}
                 placeholder={projectStatuses.settings.placeholder}
-                className="border-border/40 bg-muted/5 h-10 rounded-none text-right text-xs font-black tracking-tight uppercase"
+                className="border-border/40 bg-muted/5 h-10 rounded-lg text-right text-xs font-bold tracking-tight"
                 disabled={isSaving}
               />
             </div>
@@ -484,15 +484,15 @@ export function ProjectStatusesSettings({
                 onValueChange={setNewColor}
                 disabled={isSaving}
               >
-                <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-none border text-right text-[10px] font-black tracking-tight uppercase focus:ring-0">
+                <SelectTrigger className="border-border/40 bg-muted/5 h-10 rounded-lg border text-right text-[10px] font-bold tracking-tight focus:ring-0">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="border-border bg-card rounded-none border">
+                <SelectContent className="border-border bg-card rounded-xl border">
                   {colorOptions.map((option) => (
                     <SelectItem
                       key={option.value}
                       value={option.value}
-                      className="text-right text-[10px] font-black uppercase"
+                      className="text-right text-[10px] font-bold"
                     >
                       {option.label}
                     </SelectItem>
@@ -500,7 +500,7 @@ export function ProjectStatusesSettings({
                 </SelectContent>
               </Select>
             </div>
-            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-black tracking-tight uppercase">
+            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-bold tracking-tight">
               <Switch
                 checked={newIsDefault}
                 onCheckedChange={(value) => setNewIsDefault(Boolean(value))}
@@ -508,7 +508,7 @@ export function ProjectStatusesSettings({
               />
               {projectStatuses.headers.default}
             </div>
-            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-black tracking-tight uppercase">
+            <div className="col-span-2 flex items-center justify-center gap-2 text-[9px] font-bold tracking-tight">
               <Switch
                 checked={newIsDone}
                 onCheckedChange={(value) => setNewIsDone(Boolean(value))}
@@ -519,7 +519,7 @@ export function ProjectStatusesSettings({
             <div className="col-span-12 flex justify-end">
               <Button
                 type="button"
-                className="rounded-none"
+                className="rounded-xl"
                 onClick={handleAdd}
                 disabled={isSaving}
               >

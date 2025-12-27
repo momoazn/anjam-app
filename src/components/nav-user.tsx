@@ -41,18 +41,18 @@ function UserInfo({ user }: UserInfoProps) {
       <div className="relative">
         <UserAvatar
           user={user}
-          className="border-border/40 size-8 rounded-none border"
+          className="border-border/40 size-8 rounded-lg border"
         />
-        <div className="absolute -end-0.5 -bottom-0.5 h-2 w-2 rounded-none bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+        <div className="absolute -end-0.5 -bottom-0.5 h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
       </div>
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-right">
         <div className="flex items-center justify-end gap-2">
-          <span className="text-foreground truncate text-[11px] font-black tracking-tight uppercase">
+          <span className="text-foreground truncate text-[11px] font-bold tracking-tight">
             {user.first_name} {user.last_name}
           </span>
         </div>
         <div className="flex items-center justify-end gap-1.5">
-          <span className="text-muted-foreground/40 truncate font-mono text-[8px] leading-none tracking-tight uppercase">
+          <span className="text-muted-foreground/40 truncate font-mono text-[8px] leading-none tracking-tight">
             {
               usersText.table.roles[
                 user.role as keyof typeof usersText.table.roles
@@ -90,7 +90,7 @@ export function NavUser() {
             <SidebarMenuButton
               size="lg"
               className={cn(
-                "group border-border/20 bg-muted/5 hover:bg-muted/20 relative overflow-hidden rounded-none border p-2 transition-all active:scale-95",
+                "group border-border/20 bg-muted/5 hover:bg-muted/20 relative overflow-hidden rounded-xl border p-2 transition-all active:scale-95",
                 state === "collapsed" && "mx-auto h-10 w-10 justify-center p-0",
               )}
             >
@@ -101,7 +101,7 @@ export function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="border-border bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border shadow-sm"
+            className="border-border bg-card w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl border shadow-sm"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={12}
@@ -114,7 +114,7 @@ export function NavUser() {
             <DropdownMenuSeparator className="bg-border/40 h-px" />
             <DropdownMenuGroup className="p-1">
               <DropdownMenuItem
-                className="hover:bg-primary/10 hover:text-primary flex cursor-pointer items-center gap-3 rounded-none p-3 text-right text-[9px] font-black tracking-tight uppercase transition-colors"
+                className="hover:bg-primary/10 hover:text-primary flex cursor-pointer items-center gap-3 rounded-lg p-3 text-right text-[9px] font-bold tracking-tight transition-colors"
                 onClick={handleEditProfile}
               >
                 <IconUserCircle className="size-4 opacity-40" />
@@ -124,7 +124,7 @@ export function NavUser() {
             <DropdownMenuSeparator className="bg-border/40 h-px" />
             <div className="p-1">
               <DropdownMenuItem
-                className="flex cursor-pointer items-center gap-3 rounded-none p-3 text-right text-[9px] font-black tracking-tight text-rose-500/80 uppercase transition-colors hover:bg-rose-500/10"
+                className="flex cursor-pointer items-center gap-3 rounded-lg p-3 text-right text-[9px] font-bold tracking-tight text-rose-500/80 transition-colors hover:bg-rose-500/10"
                 onClick={handleLogout}
               >
                 <IconLogout className="size-4 opacity-40" />

@@ -71,10 +71,10 @@ export function FormField<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className="space-y-2">
-          <FormLabel className="text-foreground/60 flex items-center gap-2 text-[10px] font-black tracking-widest uppercase">
-            <div className="bg-foreground/20 h-1.5 w-1.5" />
+          <FormLabel className="text-foreground/60 flex items-center gap-2 text-[10px] font-bold tracking-tight">
+            <div className="bg-foreground/20 h-1.5 w-1.5 rounded-full" />
             {label}
-            {required && <span className="text-primary font-black">*</span>}
+            {required && <span className="text-primary font-bold">*</span>}
           </FormLabel>
           <FormControl>
             {children ? (
@@ -86,7 +86,7 @@ export function FormField<T extends FieldValues>({
                 autoFocus={autoFocus}
                 disabled={disabled}
                 className={cn(
-                  "border-foreground/10 bg-background focus:border-foreground focus:bg-foreground/[0.02] h-12 border-2 font-bold focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] h-12 rounded-xl border font-bold transition-all focus:ring-0",
                   className,
                 )}
               />
@@ -96,7 +96,7 @@ export function FormField<T extends FieldValues>({
                 placeholder={placeholder}
                 disabled={disabled}
                 className={cn(
-                  "border-foreground/10 bg-background focus:border-foreground focus:bg-foreground/[0.02] border-2 font-medium focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] rounded-xl border font-medium transition-all focus:ring-0",
                   className,
                 )}
               />
@@ -108,18 +108,18 @@ export function FormField<T extends FieldValues>({
               >
                 <SelectTrigger
                   className={cn(
-                    "border-foreground/10 bg-background focus:border-foreground focus:bg-foreground/[0.02] h-12 border-2 text-right text-xs font-black tracking-tight uppercase focus:ring-0",
+                    "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] h-12 rounded-xl border text-right text-xs font-bold tracking-tight transition-all focus:ring-0",
                     className,
                   )}
                 >
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
-                <SelectContent className="border-foreground bg-background rounded-none border-2 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+                <SelectContent className="border-border bg-background rounded-2xl border shadow-lg">
                   {options?.map((option) => (
                     <SelectItem
                       key={option.value}
                       value={option.value}
-                      className="text-[10px] font-black tracking-tight uppercase"
+                      className="text-[10px] font-bold tracking-tight"
                     >
                       {option.label}
                     </SelectItem>
@@ -139,7 +139,7 @@ export function FormField<T extends FieldValues>({
                   }
                 }}
                 className={cn(
-                  "border-foreground/10 bg-background focus:border-foreground focus:bg-foreground/[0.02] h-12 border-2 pt-2.5 font-bold focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] h-12 rounded-xl border pt-2.5 font-bold transition-all focus:ring-0",
                   className,
                 )}
               />
@@ -149,13 +149,13 @@ export function FormField<T extends FieldValues>({
                 placeholder={placeholder}
                 disabled={disabled}
                 className={cn(
-                  "border-foreground/10 bg-background focus:border-foreground focus:bg-foreground/[0.02] h-12 border-2 font-bold focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] h-12 rounded-xl border font-bold transition-all focus:ring-0",
                   className,
                 )}
               />
             )}
           </FormControl>
-          <FormMessage className="text-destructive font-mono text-[10px] font-black uppercase" />
+          <FormMessage className="text-destructive text-[10px] font-bold" />
         </FormItem>
       )}
     />

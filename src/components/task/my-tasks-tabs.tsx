@@ -57,15 +57,15 @@ export function MyTasksTabs({
         <TabsTrigger
           value="active"
           className={cn(
-            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-none border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
+            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-xl border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
             "hover:bg-muted/50",
           )}
         >
           <Activity className="size-4" />
-          <span className="font-black tracking-tight uppercase">
+          <span className="font-bold tracking-tight">
             {myTasksText.tabs.active}
           </span>
-          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-none px-2 text-[10px] font-black">
+          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-lg px-2 text-[10px] font-bold">
             {digitsEnToFa(stats.active)}
           </div>
           {activeTab === "active" && (
@@ -76,15 +76,15 @@ export function MyTasksTabs({
         <TabsTrigger
           value="completed"
           className={cn(
-            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-none border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
+            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-xl border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
             "hover:bg-muted/50",
           )}
         >
           <Layout className="size-4" />
-          <span className="font-black tracking-tight uppercase">
+          <span className="font-bold tracking-tight">
             {myTasksText.tabs.completed}
           </span>
-          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-none px-2 text-[10px] font-black">
+          <div className="bg-muted group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground flex h-6 items-center justify-center rounded-lg px-2 text-[10px] font-bold">
             {digitsEnToFa(stats.completed)}
           </div>
           {activeTab === "completed" && (
@@ -95,12 +95,12 @@ export function MyTasksTabs({
         <TabsTrigger
           value="by-project"
           className={cn(
-            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-none border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
+            "data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-primary/5 relative flex flex-1 items-center justify-center gap-3 rounded-xl border transition-all duration-300 data-[state=active]:shadow-sm lg:flex-none lg:px-10",
             "hover:bg-muted/50",
           )}
         >
           <Layers className="size-4" />
-          <span className="font-black tracking-tight uppercase">
+          <span className="font-bold tracking-tight">
             {myTasksText.tabs.byProject}
           </span>
           {activeTab === "by-project" && (
@@ -183,18 +183,15 @@ export function MyTasksTabs({
             tasksByProject.map((project) => (
               <Card
                 key={project.projectId}
-                className="overflow-hidden rounded-none shadow-sm"
+                className="overflow-hidden rounded-2xl shadow-sm"
               >
                 <div className="bg-muted/20 border-b px-6 py-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="flex items-center gap-3 text-lg font-black tracking-tight">
+                    <h3 className="flex items-center gap-3 text-lg font-bold tracking-tight">
                       <Layers className="text-primary size-5" />
                       {project.projectName}
                     </h3>
-                    <Badge
-                      variant="secondary"
-                      className="rounded-none font-black"
-                    >
+                    <Badge variant="secondary" className="rounded-lg font-bold">
                       {digitsEnToFa(project.tasks.length)}{" "}
                       {tasks.list.noTasks === "تسکی وجود ندارد"
                         ? "تسک"
@@ -207,7 +204,7 @@ export function MyTasksTabs({
                     <Button
                       key={task.id}
                       variant="ghost"
-                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-none p-6 text-right transition-colors focus-visible:ring-0"
+                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
                       onClick={() =>
                         onProjectTaskClick(project.projectId, task.id)
                       }
@@ -218,7 +215,7 @@ export function MyTasksTabs({
                         </h4>
                         {task.deadline && (
                           <div className="mt-2 flex items-center justify-end gap-2">
-                            <span className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+                            <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
                               {tasks.addTask.deadline}
                             </span>
                             <span className="text-muted-foreground text-xs font-bold">
@@ -234,13 +231,13 @@ export function MyTasksTabs({
                       <div className="flex items-center gap-3">
                         <Badge
                           variant="outline"
-                          className="border-primary/20 bg-primary/5 text-primary rounded-none text-[10px] font-black tracking-wider uppercase"
+                          className="border-primary/20 bg-primary/5 text-primary rounded-lg text-[10px] font-bold tracking-tight"
                         >
                           {tasks.priority[task.priority]}
                         </Badge>
                         <Badge
                           variant="outline"
-                          className="border-border/60 bg-muted/50 text-muted-foreground rounded-none text-[10px] font-black tracking-wider uppercase"
+                          className="border-border/60 bg-muted/50 text-muted-foreground rounded-lg text-[10px] font-bold tracking-tight"
                         >
                           {tasks.status[task.status]}
                         </Badge>

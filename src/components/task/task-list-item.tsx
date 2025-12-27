@@ -149,7 +149,7 @@ function TaskListItemInner({
         <div className="hidden flex-col items-end text-right sm:flex">
           <div className="flex items-center gap-1 opacity-40">
             <IconClock className="size-2.5" />
-            <span className="text-[10px] font-bold tracking-wider uppercase">
+            <span className="text-[10px] font-bold tracking-wider">
               Deadline
             </span>
           </div>

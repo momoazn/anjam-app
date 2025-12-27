@@ -56,12 +56,12 @@ export default function TagsManagement() {
 
   const headerActions = (
     <Button
-      className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
+      className="h-11 gap-2 rounded-xl px-6 font-semibold shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
       size="lg"
       onClick={() => setCreateDialogOpen(true)}
     >
       <IconPlus className="size-5" />
-      <span className="tracking-tight uppercase">{tagsManagement.addTag}</span>
+      <span>{tagsManagement.addTag}</span>
     </Button>
   );
 

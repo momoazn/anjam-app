@@ -107,7 +107,7 @@ export default function EditUser() {
         icon={IconUserEdit}
       />
 
-      <div className="bg-muted/5 border-border/40 border p-8 shadow-sm">
+      <div className="bg-card border-border/40 rounded-2xl border p-8 shadow-sm">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 opacity-20">
             <IconLoader2 className="h-12 w-12 animate-spin" />
@@ -121,27 +121,25 @@ export default function EditUser() {
                 editingUserId={id}
               />
 
-              <div className="border-border/20 flex items-center justify-end gap-3 border-t pt-6">
+              <div className="border-border/10 flex items-center justify-end gap-3 border-t pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleCancel}
                   disabled={isPending}
-                  className="border-border/40 h-12 rounded-none text-[10px] font-black tracking-tight uppercase"
+                  className="h-11 rounded-xl px-6 font-medium transition-all"
                 >
                   {common.cancel}
                 </Button>
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
+                  className="h-11 gap-2 rounded-xl px-8 font-semibold shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
                 >
                   {isPending && (
                     <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
                   )}
-                  <span className="tracking-tight uppercase">
-                    {users.edit.button}
-                  </span>
+                  <span>{users.edit.button}</span>
                 </Button>
               </div>
             </form>

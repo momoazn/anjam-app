@@ -83,7 +83,7 @@ export function SaveFilterDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="rounded-2xl sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{savedFilters.saveDialog.title}</DialogTitle>
           <DialogDescription>
@@ -93,7 +93,7 @@ export function SaveFilterDialog({
 
         <div className="space-y-4 py-4">
           {/* Filter summary */}
-          <div className="bg-muted rounded-none p-3">
+          <div className="bg-muted rounded-xl p-3">
             <p className="text-muted-foreground mb-1 text-xs">
               {savedFilters.activeFilters}
             </p>

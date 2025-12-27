@@ -16,7 +16,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
 
   if (assets.length === 0) {
     return (
-      <Card className={cn("p-6", className)}>
+      <Card className={cn("rounded-2xl p-6", className)}>
         <div className="text-muted-foreground text-center">
           <FileIcon className="mx-auto mb-2 h-12 w-12 opacity-50" />
           <p>{projects.details.noFiles}</p>
@@ -63,7 +63,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
           return (
             <Card
               key={`${filename}-${index}`}
-              className="overflow-hidden transition-shadow hover:shadow-md"
+              className="overflow-hidden rounded-2xl transition-shadow hover:shadow-md"
             >
               {/* Preview Area */}
               {isImage(filename) && thumbnailUrl ? (
@@ -81,7 +81,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
                     <div className="mb-2 text-6xl">
                       {getFileExtensionIcon(filename)}
                     </div>
-                    <p className="text-muted-foreground text-xs uppercase">
+                    <p className="text-muted-foreground text-xs font-bold">
                       {filename.split(".").pop()}
                     </p>
                   </div>
@@ -90,10 +90,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
 
               {/* File Info */}
               <div className="p-4">
-                <p
-                  className="mb-3 truncate text-sm font-medium"
-                  title={filename}
-                >
+                <p className="mb-3 truncate text-sm font-bold" title={filename}>
                   {filename}
                 </p>
 
@@ -102,7 +99,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 rounded-xl"
                     onClick={() => handleDownload(filename)}
                   >
                     <Download className="me-2 h-4 w-4" />
@@ -112,6 +109,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="rounded-xl"
                       onClick={() => window.open(fileUrl, "_blank")}
                     >
                       {projects.files.preview}

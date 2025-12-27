@@ -84,7 +84,7 @@ type TimelinessKey = "on_time" | "overdue" | "no_deadline";
 const EmptyState = ({ message }: { message: string }) => (
   <div className="flex flex-col items-center justify-center py-12 text-center opacity-30 grayscale">
     <IconChartPie className="mb-4 size-8 stroke-1" />
-    <p className="text-[10px] font-black tracking-tight uppercase">{message}</p>
+    <p className="text-[10px] font-bold tracking-tight">{message}</p>
   </div>
 );
 
@@ -142,7 +142,7 @@ export function ChartsSection({
 }: ChartsSectionProps) {
   return (
     <Tabs defaultValue="overview" className="w-full" dir="rtl">
-      <TabsList className="bg-border/40 border-border/40 mb-10 inline-flex h-14 w-full items-stretch justify-start gap-px rounded-none border p-0">
+      <TabsList className="bg-border/40 border-border/40 mb-10 inline-flex h-14 w-full items-stretch justify-start gap-px overflow-hidden rounded-xl border p-0">
         {[
           { id: "overview", label: reports.tabs.overview, icon: IconChartPie },
           { id: "team", label: reports.tabs.team, icon: IconUsers },
@@ -156,7 +156,7 @@ export function ChartsSection({
           <TabsTrigger
             key={tab.id}
             value={tab.id}
-            className="data-[state=active]:bg-card data-[state=active]:text-primary h-full flex-1 rounded-none text-[11px] font-black tracking-tight uppercase transition-none"
+            className="data-[state=active]:bg-card data-[state=active]:text-primary h-full flex-1 rounded-lg text-[11px] font-bold tracking-tight transition-none"
           >
             <tab.icon className="ms-2 size-4" />
             {tab.label}
@@ -173,7 +173,7 @@ export function ChartsSection({
           <div className="space-y-4">
             <div className="border-border/20 flex items-center justify-between border-b pb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-black tracking-tight uppercase">
+                <h3 className="text-sm font-bold tracking-tight">
                   {reports.charts.timeliness.title}
                 </h3>
                 <TooltipProvider delayDuration={200}>
@@ -181,7 +181,7 @@ export function ChartsSection({
                     <TooltipTrigger asChild>
                       <IconInfoCircle className="text-muted-foreground/40 size-3.5 cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent className="border-border bg-card rounded-none border text-[9px] font-black tracking-tight uppercase">
+                    <TooltipContent className="border-border bg-card rounded-xl border text-[9px] font-bold tracking-tight">
                       {reports.charts.timeliness.title}
                     </TooltipContent>
                   </Tooltip>
@@ -190,10 +190,10 @@ export function ChartsSection({
               <IconTerminal className="text-primary/40 size-3.5" />
             </div>
 
-            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden border p-6">
+            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border p-6">
               {hasTimeliness ? (
                 <Suspense
-                  fallback={<Skeleton className="h-full w-full rounded-none" />}
+                  fallback={<Skeleton className="h-full w-full rounded-xl" />}
                 >
                   <div dir="ltr" className="h-full w-full">
                     <TimelinessDonut
@@ -231,7 +231,7 @@ export function ChartsSection({
           <div className="space-y-4">
             <div className="border-border/20 flex items-center justify-between border-b pb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-black tracking-tight uppercase">
+                <h3 className="text-sm font-bold tracking-tight">
                   {reports.charts.priorities.title}
                 </h3>
                 <TooltipProvider delayDuration={200}>
@@ -239,7 +239,7 @@ export function ChartsSection({
                     <TooltipTrigger asChild>
                       <IconInfoCircle className="text-muted-foreground/40 size-3.5 cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent className="border-border bg-card rounded-none border text-[9px] font-black tracking-tight uppercase">
+                    <TooltipContent className="border-border bg-card rounded-xl border text-[9px] font-bold tracking-tight">
                       {reports.charts.priorities.title}
                     </TooltipContent>
                   </Tooltip>
@@ -248,10 +248,10 @@ export function ChartsSection({
               <IconTerminal className="text-primary/40 size-3.5" />
             </div>
 
-            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden border p-6">
+            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border p-6">
               {hasPriority ? (
                 <Suspense
-                  fallback={<Skeleton className="h-full w-full rounded-none" />}
+                  fallback={<Skeleton className="h-full w-full rounded-xl" />}
                 >
                   <div dir="ltr" className="h-full w-full">
                     <PriorityDistribution
@@ -275,10 +275,8 @@ export function ChartsSection({
           </div>
         </div>
 
-        <div className="bg-muted/5 border-border/40 border p-8">
-          <Suspense
-            fallback={<Skeleton className="h-64 w-full rounded-none" />}
-          >
+        <div className="bg-muted/5 border-border/40 rounded-xl border p-8">
+          <Suspense fallback={<Skeleton className="h-64 w-full rounded-xl" />}>
             <Leaderboard
               rows={leaderboardData}
               onRowClick={(userId) =>
@@ -301,13 +299,13 @@ export function ChartsSection({
       </TabsContent>
 
       <TabsContent value="team" className="space-y-10 outline-none">
-        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-2">
+        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-xl border md:grid-cols-2">
           <div className="bg-card p-8">
-            <h3 className="mb-6 text-xs font-black tracking-tight uppercase opacity-40">
+            <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
               Overtime_Analysis
             </h3>
             <Suspense
-              fallback={<Skeleton className="h-80 w-full rounded-none" />}
+              fallback={<Skeleton className="h-80 w-full rounded-xl" />}
             >
               <div dir="ltr">
                 <OvertimeAnalysisChart data={overtimeAnalysis} />
@@ -315,11 +313,11 @@ export function ChartsSection({
             </Suspense>
           </div>
           <div className="bg-card p-8">
-            <h3 className="mb-6 text-xs font-black tracking-tight uppercase opacity-40">
+            <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
               Workload_Distribution
             </h3>
             <Suspense
-              fallback={<Skeleton className="h-80 w-full rounded-none" />}
+              fallback={<Skeleton className="h-80 w-full rounded-xl" />}
             >
               <div dir="ltr">
                 <WorkloadDistributionChart data={workloadDistribution} />
@@ -330,20 +328,20 @@ export function ChartsSection({
       </TabsContent>
 
       <TabsContent value="individuals" className="space-y-10 outline-none">
-        <Suspense fallback={<Skeleton className="h-40 w-full rounded-none" />}>
+        <Suspense fallback={<Skeleton className="h-40 w-full rounded-xl" />}>
           <EmployeeOverviewCards
             summaries={employeeSummaries}
             onCardClick={(userId) => onSelectEmployee(userId)}
           />
         </Suspense>
 
-        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px border md:grid-cols-2">
+        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-xl border md:grid-cols-2">
           <div className="bg-card p-8">
-            <h3 className="mb-6 text-xs font-black tracking-tight uppercase opacity-40">
+            <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
               Productivity_Metric
             </h3>
             <Suspense
-              fallback={<Skeleton className="h-80 w-full rounded-none" />}
+              fallback={<Skeleton className="h-80 w-full rounded-xl" />}
             >
               <div dir="ltr">
                 <EmployeeProductivityChart
@@ -373,11 +371,11 @@ export function ChartsSection({
           </div>
 
           <div className="bg-card p-8">
-            <h3 className="mb-6 text-xs font-black tracking-tight uppercase opacity-40">
+            <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
               Benchmark_Comparison
             </h3>
             <Suspense
-              fallback={<Skeleton className="h-80 w-full rounded-none" />}
+              fallback={<Skeleton className="h-80 w-full rounded-xl" />}
             >
               <div dir="ltr">
                 <EmployeeComparisonChart
@@ -391,23 +389,23 @@ export function ChartsSection({
 
         {selectedEmployeeSummary && productivityTrends && (
           <div
-            className="bg-muted/5 border-border/40 border p-8"
+            className="bg-muted/5 border-border/40 rounded-xl border p-8"
             data-animate-stagger
           >
             <div className="mb-8 text-right">
               <div className="mb-1 flex items-center justify-end gap-2">
-                <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+                <span className="text-primary/60 text-[10px] font-bold tracking-tight">
                   Trend_Analysis
                 </span>
                 <IconActivity className="text-primary/40 size-3" />
               </div>
-              <h3 className="text-xl font-black tracking-tight uppercase">
+              <h3 className="text-xl font-bold tracking-tight">
                 {reports.charts.employee.productivityTrends.title} —{" "}
                 {selectedEmployeeSummary.name}
               </h3>
             </div>
             <Suspense
-              fallback={<Skeleton className="h-80 w-full rounded-none" />}
+              fallback={<Skeleton className="h-80 w-full rounded-xl" />}
             >
               <div dir="ltr">
                 <ProductivityTrendsChart
@@ -420,7 +418,7 @@ export function ChartsSection({
           </div>
         )}
 
-        <div className="bg-muted/5 border-border/40 border p-8">
+        <div className="bg-muted/5 border-border/40 rounded-xl border p-8">
           {tableSection}
         </div>
       </TabsContent>
@@ -431,24 +429,24 @@ export function ChartsSection({
         data-animate-stagger
       >
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-          <div className="bg-muted/5 border-border/40 border p-8">
-            <h3 className="mb-8 text-xs font-black tracking-tight uppercase opacity-40">
+          <div className="bg-muted/5 border-border/40 rounded-xl border p-8">
+            <h3 className="mb-8 text-xs font-bold tracking-tight opacity-40">
               Overtime_
             </h3>
             <Suspense
-              fallback={<Skeleton className="h-80 w-full rounded-none" />}
+              fallback={<Skeleton className="h-80 w-full rounded-xl" />}
             >
               <div dir="ltr">
                 <OvertimeAnalysisChart data={overtimeAnalysis} />
               </div>
             </Suspense>
           </div>
-          <div className="bg-muted/5 border-border/40 border p-8">
-            <h3 className="mb-8 text-xs font-black tracking-tight uppercase opacity-40">
+          <div className="bg-muted/5 border-border/40 rounded-xl border p-8">
+            <h3 className="mb-8 text-xs font-bold tracking-tight opacity-40">
               Load_Balancing
             </h3>
             <Suspense
-              fallback={<Skeleton className="h-80 w-full rounded-none" />}
+              fallback={<Skeleton className="h-80 w-full rounded-xl" />}
             >
               <div dir="ltr">
                 <WorkloadDistributionChart data={workloadDistribution} />

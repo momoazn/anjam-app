@@ -101,8 +101,8 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
       {/* Primary Input Zone */}
       <section className="space-y-3">
         <div className="flex items-center gap-3">
-          <span className="text-primary/60 text-[9px] font-black tracking-tight uppercase">
-            General_Info
+          <span className="text-primary/60 text-[9px] font-bold tracking-tight">
+            General Info
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -132,16 +132,16 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
       {/* Logic Gates Zone */}
       <section className="space-y-3">
         <div className="flex items-center gap-3">
-          <span className="text-primary/60 text-[9px] font-black tracking-tight uppercase">
-            Task_Parameters
+          <span className="text-primary/60 text-[9px] font-bold tracking-tight">
+            Task Parameters
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm sm:grid-cols-2 lg:grid-cols-3">
+        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border shadow-sm sm:grid-cols-2 lg:grid-cols-3">
           {!actualIsInProject && (
             <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-tight uppercase">
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
                 <IconStack2 className="size-2" /> Project
               </span>
               <GenericFormField
@@ -157,7 +157,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           )}
 
           <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-tight uppercase">
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
               <IconUser className="size-2" /> Assignee
             </span>
             <GenericFormField
@@ -172,7 +172,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-tight uppercase">
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
               <IconFilter className="size-2" /> Status
             </span>
             <ShadcnFormField
@@ -186,17 +186,17 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                 return (
                   <FormItem className="space-y-0">
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-muted/5 h-6 rounded-none border-none px-1 text-right text-[10px] font-black tracking-tight uppercase focus:ring-0">
+                      <SelectTrigger className="bg-muted/5 h-6 rounded-lg border-none px-1 text-right text-[10px] font-bold tracking-tight focus:ring-0">
                         <div className="flex items-center justify-end gap-1.5">
                           <span>
                             {TASK_STATUS_CONFIG[value]?.name ??
-                              value?.toUpperCase() ??
+                              value ??
                               "Status"}
                           </span>
                           <StatusIcon className={cn("size-3", statusColor)} />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="border-border bg-card rounded-none border">
+                      <SelectContent className="border-border bg-card rounded-lg border">
                         {statusOptions.map((option) => {
                           const ItemIcon =
                             taskStatusIcons[option.value] ||
@@ -209,7 +209,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              className="text-[9px] font-black uppercase"
+                              className="text-[9px] font-bold"
                             >
                               <div className="flex items-center gap-1.5">
                                 <ItemIcon className={cn("size-3", itemColor)} />
@@ -227,7 +227,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-tight uppercase">
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
               <IconHash className="size-2" /> Priority
             </span>
             <ShadcnFormField
@@ -240,7 +240,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                 return (
                   <FormItem className="space-y-0">
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-muted/5 h-6 rounded-none border-none px-1 text-right text-[10px] font-black tracking-tight uppercase focus:ring-0">
+                      <SelectTrigger className="bg-muted/5 h-6 rounded-lg border-none px-1 text-right text-[10px] font-bold tracking-tight focus:ring-0">
                         <div className="flex items-center justify-end gap-1.5">
                           <span>{tasks.priority[value]}</span>
                           <PriorityIcon
@@ -248,7 +248,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                           />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="border-border bg-card rounded-none border">
+                      <SelectContent className="border-border bg-card rounded-lg border">
                         {Object.values(TasksPriorityOptions).map((p) => {
                           const ItemIcon = priorityIcons[p];
                           const itemColor = priorityColors[p];
@@ -256,7 +256,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                             <SelectItem
                               key={p}
                               value={p}
-                              className="text-[9px] font-black uppercase"
+                              className="text-[9px] font-bold"
                             >
                               <div className="flex items-center gap-1.5">
                                 <ItemIcon className={cn("size-3", itemColor)} />
@@ -274,7 +274,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-tight uppercase">
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
               <IconCalendar className="size-2" /> Deadline
             </span>
             <ShadcnFormField
@@ -288,7 +288,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       setDate={field.onChange}
                       buttonProps={{
                         className:
-                          "h-6 rounded-none border-none bg-muted/5 shadow-none px-1 font-black text-[10px] uppercase tracking-tight focus:ring-0 text-right",
+                          "h-6 rounded-lg border-none bg-muted/5 shadow-none px-1 font-bold text-[10px] tracking-tight focus:ring-0 text-right",
                       }}
                     />
                   </FormControl>
@@ -299,7 +299,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
           </div>
 
           <div className="bg-card flex h-16 flex-col justify-between p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-black tracking-tight uppercase">
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
               <IconClock className="size-2" /> Estimate
             </span>
             <div className="flex items-center justify-end gap-3">
@@ -311,7 +311,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     <Input
                       {...field}
                       type="number"
-                      className="bg-muted/10 h-6 w-10 rounded-none border-none p-1 text-center text-[10px] font-black tabular-nums focus:ring-0"
+                      className="bg-muted/10 h-6 w-10 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
                       placeholder="00"
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -327,7 +327,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     <Input
                       {...field}
                       type="number"
-                      className="bg-muted/10 h-6 w-10 rounded-none border-none p-1 text-center text-[10px] font-black tabular-nums focus:ring-0"
+                      className="bg-muted/10 h-6 w-10 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
                       placeholder="00"
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />

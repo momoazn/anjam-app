@@ -35,11 +35,11 @@ export function TaskPagination({
   if (totalTasks === 0) return null;
 
   return (
-    <Card className="border-border/15 rounded-none shadow-sm">
+    <Card className="border-border/40 rounded-2xl shadow-sm">
       <CardContent className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Hash className="text-primary/40 size-4" />
-          <div className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+          <div className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
             {tasks.pagination.range
               .replace("{start}", digitsEnToFa(pageStart))
               .replace("{end}", digitsEnToFa(pageEnd))
@@ -49,24 +49,24 @@ export function TaskPagination({
 
         <div className="flex flex-wrap items-center gap-6">
           <div className="flex items-center gap-3">
-            <span className="text-muted-foreground/40 text-[8px] font-black tracking-tight uppercase">
-              Page_Size
+            <span className="text-muted-foreground/40 text-[9px] font-bold tracking-tight">
+              Page Size
             </span>
             <Select
               value={currentPerPage.toString()}
               onValueChange={onPerPageChange}
             >
-              <SelectTrigger className="border-border/15 bg-muted/5 h-8 w-[120px] rounded-none text-[10px] font-black tracking-tight uppercase focus:ring-0">
+              <SelectTrigger className="bg-muted/30 h-8 w-[120px] rounded-xl border-none text-[10px] font-bold tracking-tight focus:ring-0">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border-border rounded-none border">
+              <SelectContent className="border-border/40 rounded-xl border shadow-lg">
                 {[25, 50, 100, 200, 500].map((size) => (
                   <SelectItem
                     key={size}
                     value={size.toString()}
-                    className="text-[10px] font-bold uppercase"
+                    className="text-[10px] font-medium"
                   >
-                    {digitsEnToFa(size)} ITEMS
+                    {digitsEnToFa(size)} Items
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -81,16 +81,16 @@ export function TaskPagination({
               size="icon"
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage <= 1}
-              className="border-border/15 hover:bg-primary/10 hover:text-primary size-8 rounded-none border transition-all active:scale-95"
+              className="hover:bg-primary/10 hover:text-primary size-8 rounded-xl transition-all active:scale-95"
             >
               <ChevronRight className="size-4" />
             </Button>
 
             <div className="flex flex-col items-center">
-              <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
-                Index
+              <span className="text-muted-foreground/40 mb-1 text-[9px] leading-none font-bold tracking-tight">
+                Page
               </span>
-              <span className="text-xs font-black tabular-nums">
+              <span className="text-xs font-bold tabular-nums">
                 {digitsEnToFa(currentPage)}{" "}
                 <span className="text-muted-foreground/30 mx-1 text-[10px] font-bold">
                   /
@@ -104,7 +104,7 @@ export function TaskPagination({
               size="icon"
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage >= totalPages}
-              className="border-border/15 hover:bg-primary/10 hover:text-primary size-8 rounded-none border transition-all active:scale-95"
+              className="hover:bg-primary/10 hover:text-primary size-8 rounded-xl transition-all active:scale-95"
             >
               <ChevronLeft className="size-4" />
             </Button>

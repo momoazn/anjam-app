@@ -146,7 +146,7 @@ export function DashboardHeader({
               <LayoutDashboard className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+              <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                 {app.name}
               </span>
               <span className="text-primary text-xs font-bold">
@@ -202,7 +202,7 @@ export function DashboardHeader({
               >
                 <div className="relative z-10 flex items-center justify-between">
                   <div className="flex flex-col gap-1">
-                    <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                    <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                       {item.label}
                     </span>
                     <div className="mt-1 flex items-baseline gap-2">

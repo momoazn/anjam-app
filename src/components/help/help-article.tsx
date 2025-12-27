@@ -16,12 +16,7 @@ export function HelpArticle({
   return (
     <div className="space-y-4">
       <div className="border-border/10 flex items-center justify-end gap-3 border-b pb-2">
-        <h3
-          className={cn(
-            "text-sm font-black tracking-tight uppercase",
-            titleClassName,
-          )}
-        >
+        <h3 className={cn("text-sm font-bold tracking-tight", titleClassName)}>
           {title}
         </h3>
         <IconStack2 className="text-primary/40 size-3" />

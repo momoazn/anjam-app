@@ -98,11 +98,11 @@ export function TimeEntries({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <IconClock className="text-primary/60 size-4" />
-          <span className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
+          <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
             {tasks.details.timeEntries.title}
           </span>
         </div>
-        <span className="text-sm font-black">
+        <span className="text-sm font-bold">
           {formatTimeSpent(totalMinutes)}
         </span>
       </div>
@@ -115,7 +115,7 @@ export function TimeEntries({
         <div className="space-y-6">
           {groupedEntries.map(([dateKey, entries]) => (
             <div key={dateKey} className="space-y-3">
-              <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
+              <div className="text-muted-foreground text-[10px] font-bold tracking-tight">
                 {dateKey}
               </div>
               <div className="space-y-3">
@@ -125,16 +125,16 @@ export function TimeEntries({
                   return (
                     <div
                       key={entry.id}
-                      className="border-border/10 bg-card rounded-none border px-4 py-3 text-right shadow-sm"
+                      className="border-border/10 bg-card rounded-xl border px-4 py-3 text-right shadow-sm"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <UserAvatar
                             user={entryUser}
-                            className="border-border/40 size-9 rounded-none border"
+                            className="border-border/40 size-9 rounded-lg border"
                           />
                           <div>
-                            <p className="font-black">
+                            <p className="font-bold">
                               {formatTimeSpent(entry.minutes)}
                             </p>
                             <p className="text-muted-foreground text-[12px]">
@@ -150,7 +150,7 @@ export function TimeEntries({
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground text-[10px] uppercase">
+                          <span className="text-muted-foreground text-[10px]">
                             {formatTaskDate(entry.started_at || entry.created)}
                           </span>
                           {isOwner && (
@@ -158,7 +158,7 @@ export function TimeEntries({
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-8 rounded-none"
+                                className="size-8 rounded-lg"
                                 onClick={() => setEditingEntry(entry)}
                                 disabled={updateTimeEntry.isPending}
                               >
@@ -167,7 +167,7 @@ export function TimeEntries({
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-8 rounded-none text-rose-500"
+                                className="size-8 rounded-lg text-rose-500"
                                 onClick={() => handleDelete(entry.id)}
                                 disabled={deleteTimeEntry.isPending}
                               >

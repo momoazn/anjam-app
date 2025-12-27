@@ -21,33 +21,36 @@ type TagsListProps = {
 };
 
 const TagsListSkeleton = () => (
-  <div className="bg-border/40 border-border/40 grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-      <div key={i} className="bg-card space-y-3 p-4">
+      <div
+        key={i}
+        className="bg-card border-border/40 rounded-2xl border p-4 shadow-sm"
+      >
         <div className="flex items-center justify-between">
-          <Skeleton className="h-4 w-20 rounded-none" />
-          <Skeleton className="h-4 w-4 rounded-none" />
+          <Skeleton className="h-4 w-20 rounded-lg" />
+          <Skeleton className="h-4 w-4 rounded-full" />
         </div>
-        <Skeleton className="h-2 w-full rounded-none" />
+        <Skeleton className="mt-4 h-2 w-full rounded-full" />
       </div>
     ))}
   </div>
 );
 
 const EmptyState = ({ onCreateClick }: { onCreateClick: () => void }) => (
-  <div className="border-border/40 flex flex-col items-center justify-center border border-dashed py-24 text-center opacity-30 grayscale">
-    <div className="border-border/40 mb-6 flex h-20 w-20 items-center justify-center border">
-      <IconTag className="size-10 stroke-[1]" />
+  <div className="border-border/40 flex flex-col items-center justify-center rounded-3xl border border-dashed py-24 text-center">
+    <div className="bg-muted/30 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
+      <IconTag className="text-muted-foreground/40 size-10 stroke-[1]" />
     </div>
-    <h3 className="text-foreground mb-2 text-lg font-black tracking-tight uppercase">
+    <h3 className="text-foreground mb-2 text-lg font-bold tracking-tight">
       {tagsManagement.noTags}
     </h3>
-    <p className="text-muted-foreground mb-8 text-xs font-bold tracking-tight uppercase">
+    <p className="text-muted-foreground mb-8 text-sm font-medium tracking-tight">
       {tagsManagement.noTagsDescription}
     </p>
     <Button
       onClick={onCreateClick}
-      className="h-12 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
+      className="h-12 gap-3 rounded-2xl px-8 font-bold shadow-sm transition-all hover:shadow-md active:scale-95"
     >
       <IconPlus className="size-4" />
       {tagsManagement.createFirstTag}
@@ -73,36 +76,36 @@ export function TagsList({
 
   return (
     <div
-      className="bg-border/40 border-border/40 grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
       data-animate-stagger
     >
       {tags.map((tag) => (
         <div
           key={tag.id}
-          className="group bg-card hover:bg-muted/30 relative overflow-hidden p-4 text-right transition-all"
+          className="group bg-card border-border/40 hover:border-primary/20 relative overflow-hidden rounded-2xl border p-4 transition-all hover:shadow-md"
         >
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2 opacity-40">
               <IconHash className="size-3" />
-              <span className="font-mono text-[9px] font-black tracking-tight uppercase">
+              <span className="font-mono text-[9px] font-bold tracking-tight">
                 {tag.id.slice(0, 6)}
               </span>
             </div>
             <div
-              className="border-border/10 h-3 w-3 border shadow-sm"
+              className="h-3 w-3 rounded-full shadow-sm"
               style={{ backgroundColor: tag.color }}
             />
           </div>
 
-          <h3 className="mb-6 truncate text-sm font-black tracking-tight uppercase">
+          <h3 className="mb-6 truncate text-sm font-bold tracking-tight">
             {tag.name}
           </h3>
 
-          <div className="flex translate-y-1 items-center justify-end gap-1 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="flex items-center gap-1 opacity-0 transition-all group-hover:opacity-100">
             <Button
               variant="ghost"
               size="icon"
-              className="hover:bg-primary/10 hover:text-primary h-8 w-8 rounded-none"
+              className="hover:bg-primary/10 hover:text-primary h-8 w-8 rounded-xl"
               onClick={() => onEdit(tag)}
               title={tagsManagement.editButton}
             >
@@ -112,7 +115,7 @@ export function TagsList({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-none text-rose-500 hover:bg-rose-500/10"
+                className="h-8 w-8 rounded-xl text-rose-500 hover:bg-rose-500/10"
                 onClick={() => onDelete(tag)}
                 title={tagsManagement.deleteButton}
               >
@@ -120,8 +123,6 @@ export function TagsList({
               </Button>
             )}
           </div>
-
-          <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
         </div>
       ))}
     </div>

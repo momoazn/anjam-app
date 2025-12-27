@@ -109,7 +109,7 @@ function AppSidebarHeader() {
         <SidebarMenuItem className="h-full">
           <SidebarMenuButton
             asChild
-            className="hover:bg-accent active:bg-accent/80 h-full rounded-none transition-all duration-200"
+            className="hover:bg-accent active:bg-accent/80 h-full rounded-lg transition-all duration-200"
           >
             <NavLink
               to="/dashboard"

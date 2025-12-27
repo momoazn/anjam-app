@@ -41,8 +41,8 @@ const priorityColors = {
 
 const CalendarSkeleton = () => (
   <div className="space-y-6">
-    <div className="bg-muted/20 border-border/40 h-16 w-full animate-pulse border" />
-    <div className="bg-border/40 border-border/40 grid grid-cols-7 gap-px overflow-hidden border shadow-md">
+    <div className="bg-muted/20 border-border/40 h-16 w-full animate-pulse rounded-xl border" />
+    <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px overflow-hidden rounded-2xl border shadow-sm">
       {[
         "sk1",
         "sk2",
@@ -81,8 +81,8 @@ const CalendarSkeleton = () => (
         "sk35",
       ].map((key) => (
         <div key={key} className="bg-card h-32 p-4">
-          <Skeleton className="mb-4 h-4 w-6 rounded-none" />
-          <Skeleton className="h-3 w-full rounded-none" />
+          <Skeleton className="mb-4 h-4 w-6 rounded-md" />
+          <Skeleton className="h-3 w-full rounded-md" />
         </div>
       ))}
     </div>
@@ -101,19 +101,19 @@ function CalendarTask({ task }: CalendarTaskProps) {
     <Link to={taskUrl}>
       <div
         className={cn(
-          "group hover:bg-muted/50 mb-1 rounded-none border-e-2 p-1.5 text-right transition-all",
+          "group hover:bg-muted/50 mb-1 rounded-lg border-e-2 p-1.5 text-right transition-all",
           priorityColors[task.priority],
         )}
         style={{ borderRightColor: status.color }}
       >
         <div className="mb-0.5 flex items-center justify-end gap-1.5">
-          <span className="line-clamp-1 flex-1 text-[9px] font-black tracking-tight uppercase">
+          <span className="line-clamp-1 flex-1 text-[9px] font-semibold tracking-tight">
             {task.title}
           </span>
-          <div className="size-1 rounded-none bg-current" />
+          <div className="size-1 rounded-full bg-current" />
         </div>
         {task.expand?.assignee && (
-          <p className="truncate text-[8px] font-bold tracking-tight uppercase opacity-60">
+          <p className="truncate text-[8px] font-medium tracking-tight opacity-60">
             {formatUserName(
               task.expand.assignee.first_name,
               task.expand.assignee.last_name,
@@ -188,30 +188,28 @@ export default function TaskCalendar() {
 
   const headerActions = (
     <div className="flex flex-wrap gap-2">
-      <div className="bg-muted/20 border-border/40 flex items-center gap-2 border p-1">
+      <div className="border-border/40 bg-muted/20 flex items-center gap-2 rounded-xl border p-1">
         <Badge
           variant="outline"
-          className="text-primary rounded-none border-transparent text-[10px] font-black tracking-tight uppercase"
+          className="text-primary rounded-lg border-transparent text-[10px] font-semibold tracking-tight"
         >
           {digitsEnToFa(monthStats.total)} TOTAL
         </Badge>
         <div className="bg-border/40 mx-1 h-4 w-px" />
         <Badge
           variant="outline"
-          className="rounded-none border-transparent text-[10px] font-black tracking-tight text-emerald-500 uppercase"
+          className="rounded-lg border-transparent text-[10px] font-semibold tracking-tight text-emerald-500"
         >
           {digitsEnToFa(monthStats.completed)} DONE
         </Badge>
       </div>
       <Button
-        className="h-14 gap-3 rounded-none px-8 font-black shadow-md transition-all hover:shadow-lg active:scale-95"
+        className="h-11 gap-2 rounded-xl px-6 font-semibold shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
         size="lg"
         onClick={() => navigate("/tasks/new")}
       >
         <IconPlus className="size-5" />
-        <span className="tracking-tight uppercase">
-          {tasksText.addTask.buttons.newTask}
-        </span>
+        <span>{tasksText.addTask.buttons.newTask}</span>
       </Button>
     </div>
   );
@@ -226,22 +224,22 @@ export default function TaskCalendar() {
       />
 
       {/* Navigation */}
-      <div className="bg-muted/5 border-border/40 mb-8 flex items-center justify-between overflow-hidden border p-4 shadow-sm">
+      <div className="border-border/40 bg-card mb-8 flex items-center justify-between overflow-hidden rounded-2xl border p-4 shadow-sm">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={goToPreviousMonth}
-            className="border-border/20 hover:bg-muted size-10 rounded-none border active:scale-95"
+            className="border-border/20 hover:bg-muted size-10 rounded-xl border transition-all active:scale-95"
           >
             <IconChevronRight className="size-5" />
           </Button>
 
           <div className="flex min-w-[140px] flex-col items-end">
-            <span className="text-muted-foreground/40 mb-1 text-[8px] leading-none font-black tracking-tight uppercase">
+            <span className="text-muted-foreground/40 mb-1 text-[8px] font-bold tracking-tight">
               Current Month
             </span>
-            <h2 className="text-lg font-black tracking-tight uppercase">
+            <h2 className="text-lg font-bold tracking-tight">
               {format(currentMonth, "MMMM yyyy", { locale: undefined })}
             </h2>
           </div>
@@ -250,7 +248,7 @@ export default function TaskCalendar() {
             variant="ghost"
             size="icon"
             onClick={goToNextMonth}
-            className="border-border/20 hover:bg-muted size-10 rounded-none border active:scale-95"
+            className="border-border/20 hover:bg-muted size-10 rounded-xl border transition-all active:scale-95"
           >
             <IconChevronLeft className="size-5" />
           </Button>
@@ -261,7 +259,7 @@ export default function TaskCalendar() {
             variant="outline"
             size="sm"
             onClick={goToToday}
-            className="border-border bg-card h-9 rounded-none border text-[10px] font-black tracking-tight uppercase shadow-md active:shadow-none"
+            className="border-border bg-card hover:bg-muted h-9 rounded-xl border px-4 text-[10px] font-semibold tracking-tight shadow-sm transition-all active:scale-95"
           >
             {common.today}
           </Button>
@@ -272,13 +270,13 @@ export default function TaskCalendar() {
       {isLoadingTasks ? (
         <CalendarSkeleton />
       ) : (
-        <div className="bg-border/40 border-border/40 overflow-hidden border shadow-2xl">
+        <div className="border-border/40 bg-border/40 overflow-hidden rounded-2xl border shadow-xl">
           {/* Weekday Headers */}
-          <div className="bg-border/40 border-border/40 grid grid-cols-7 gap-px border-b">
+          <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px border-b">
             {weekdayNames.map((day) => (
               <div
                 key={day}
-                className="bg-muted/20 text-muted-foreground/60 py-3 text-center text-[10px] font-black tracking-tight uppercase"
+                className="bg-muted/20 text-muted-foreground/60 py-3 text-center text-[10px] font-bold tracking-tight"
               >
                 {day}
               </div>
@@ -307,9 +305,9 @@ export default function TaskCalendar() {
                   <div className="mb-3 flex items-start justify-between">
                     <span
                       className={cn(
-                        "text-xs font-black tabular-nums transition-all",
+                        "text-xs font-bold tabular-nums transition-all",
                         isTodayDate
-                          ? "text-primary border-primary border-b-2"
+                          ? "border-primary text-primary border-b-2"
                           : "text-muted-foreground/40 group-hover:text-foreground",
                       )}
                     >
@@ -318,7 +316,7 @@ export default function TaskCalendar() {
                     {dayTasks.length > 0 && (
                       <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100">
                         <IconHash className="size-2.5" />
-                        <span className="text-[9px] font-black tabular-nums">
+                        <span className="text-[9px] font-bold tabular-nums">
                           {digitsEnToFa(dayTasks.length)}
                         </span>
                       </div>
@@ -330,15 +328,14 @@ export default function TaskCalendar() {
                       <CalendarTask key={task.id} task={task} />
                     ))}
                     {dayTasks.length > 4 && (
-                      <div className="text-muted-foreground/40 border-border/10 mt-2 border-t pt-1 text-center text-[8px] font-black tracking-tight uppercase">
-                        + {digitsEnToFa(dayTasks.length - 4)} {common.more}
+                      <div className="border-border/10 text-muted-foreground/40 mt-2 border-t pt-1 text-center text-[8px] font-bold tracking-tight">
+                        +{digitsEnToFa(dayTasks.length - 4)} {common.more}
                       </div>
                     )}
                   </div>
-
                   {isTodayDate && (
                     <div className="mt-auto flex justify-end pt-1">
-                      <div className="bg-primary size-1 rounded-none shadow-[0_0_4px_rgba(var(--primary),0.5)]" />
+                      <div className="bg-primary size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
                     </div>
                   )}
                 </div>
@@ -350,12 +347,12 @@ export default function TaskCalendar() {
 
       {/* Empty State */}
       {!isLoadingTasks && tasksWithDeadlines.length === 0 && (
-        <div className="border-border/40 mt-8 flex flex-col items-center justify-center border border-dashed py-24 text-center opacity-30 grayscale">
+        <div className="border-border/40 mt-8 flex flex-col items-center justify-center rounded-2xl border border-dashed py-24 text-center opacity-30 grayscale">
           <IconCalendar className="mb-4 size-12 stroke-[1]" />
-          <h3 className="text-foreground mb-2 text-lg font-black tracking-tight uppercase">
+          <h3 className="text-foreground mb-2 text-lg font-bold tracking-tight">
             {tasksText.calendar.noTasks}
           </h3>
-          <p className="text-muted-foreground text-xs font-bold tracking-tight uppercase">
+          <p className="text-muted-foreground text-xs font-medium tracking-tight">
             {tasksText.calendar.noTasksDescription}
           </p>
         </div>

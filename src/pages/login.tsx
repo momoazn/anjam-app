@@ -122,7 +122,7 @@ export default function Login() {
             </h2>
           </div>
 
-          <div className="bg-card border-border relative rounded-xl border p-8 shadow-xl lg:p-10">
+          <div className="bg-card border-border relative rounded-2xl border p-8 shadow-xl lg:p-10">
             <div className="border-border mb-8 flex items-center justify-between border-b pb-6">
               <div>
                 <h3 className="text-xl font-bold tracking-tight">
@@ -138,7 +138,7 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                  <Label className="text-muted-foreground text-xs font-bold tracking-tight">
                     {auth.login.username}
                   </Label>
                   <IconUserBolt className="text-muted-foreground/40 size-3.5" />
@@ -148,7 +148,7 @@ export default function Login() {
                   value={identity}
                   dir="ltr"
                   onChange={(e) => setIdentity(e.target.value)}
-                  className="h-12 px-4 font-medium"
+                  className="h-12 rounded-xl px-4 font-bold"
                   placeholder="name@company.com"
                   required
                   autoFocus
@@ -163,7 +163,7 @@ export default function Login() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                  <Label className="text-muted-foreground text-xs font-bold tracking-tight">
                     {auth.login.password}
                   </Label>
                   <IconServer className="text-muted-foreground/40 size-3.5" />
@@ -172,7 +172,7 @@ export default function Login() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 px-4 font-medium"
+                  className="h-12 rounded-xl px-4 font-bold"
                   placeholder="••••••••"
                   required
                   dir="ltr"
@@ -187,7 +187,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="h-14 w-full text-base font-bold shadow-sm"
+                className="h-14 w-full rounded-xl text-base font-bold shadow-sm"
                 disabled={submitting}
               >
                 <span className="flex items-center gap-2">

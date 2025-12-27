@@ -206,21 +206,21 @@ export function CommentItem({
   if (deleted) {
     return (
       <div style={indentStyle}>
-        <div className="bg-muted/10 border-border/20 flex gap-4 border p-4 text-right opacity-30 grayscale">
+        <div className="bg-muted/10 border-border/20 flex gap-4 rounded-2xl border p-4 text-right opacity-30 grayscale">
           <UserAvatar
             user={comment.expand.user}
-            className="border-border/40 size-8 rounded-none border"
+            className="border-border/40 size-8 rounded-full border"
           />
           <div className="flex-1 space-y-1">
             <div className="flex items-center justify-end gap-3">
-              <span className="text-[10px] leading-none font-black tracking-tight uppercase">
+              <span className="text-[10px] leading-none font-bold tracking-tight">
                 {comment.user
                   ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
                     comment.expand.user.username
                   : tasks.details.unknownUser}
               </span>
             </div>
-            <p className="text-xs font-bold tracking-tight uppercase italic">
+            <p className="text-xs font-bold tracking-tight italic">
               {commentsConst.item.deleted}
             </p>
           </div>
@@ -238,7 +238,7 @@ export function CommentItem({
         <div className="bg-muted/5 border-border/5 flex w-12 shrink-0 flex-col items-center border-s pt-4">
           <UserAvatar
             user={comment.expand.user}
-            className="border-border/20 size-8 rounded-none border shadow-sm"
+            className="border-border/20 size-8 rounded-full border shadow-sm"
           />
         </div>
 
@@ -252,7 +252,7 @@ export function CommentItem({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="hover:border-border/40 hover:bg-muted h-7 w-7 rounded-none border border-transparent"
+                      className="hover:border-border/40 hover:bg-muted h-7 w-7 rounded-lg border border-transparent"
                       disabled={
                         updateComment.isPending || softDeleteComment.isPending
                       }
@@ -262,14 +262,14 @@ export function CommentItem({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="border-border bg-card rounded-none border"
+                    className="border-border bg-background rounded-xl border shadow-lg"
                   >
                     <DropdownMenuItem
                       onSelect={(e) => {
                         e.preventDefault();
                         handleEdit();
                       }}
-                      className="rounded-none p-3 text-[9px] font-black tracking-tight uppercase"
+                      className="rounded-lg p-3 text-[10px] font-bold tracking-tight"
                     >
                       <IconPencil className="ms-2 size-3.5 opacity-40" />
                       {commentsConst.item.edit}
@@ -279,7 +279,7 @@ export function CommentItem({
                         e.preventDefault();
                         handleSoftDelete();
                       }}
-                      className="rounded-none p-3 text-[9px] font-black tracking-tight text-rose-500 uppercase focus:text-rose-500"
+                      className="rounded-lg p-3 text-[10px] font-bold tracking-tight text-rose-500 focus:text-rose-500"
                       disabled={softDeleteComment.isPending}
                     >
                       <IconTrash className="ms-2 size-3.5 opacity-40" />
@@ -294,7 +294,7 @@ export function CommentItem({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="border-border/40 rounded-none text-[10px] font-black tracking-tight uppercase"
+                  className="border-border/40 rounded-lg text-[10px] font-bold tracking-tight"
                   onClick={() => onReply(comment)}
                 >
                   <IconCornerUpLeft className="ms-2 size-3" />
@@ -305,7 +305,7 @@ export function CommentItem({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="border-border/40 rounded-none text-[10px] font-black tracking-tight uppercase"
+                  className="border-border/40 rounded-lg text-[10px] font-bold tracking-tight"
                   onClick={onToggleThread}
                 >
                   {isCollapsed ? "نمایش" : "پنهان‌سازی"} (
@@ -316,14 +316,14 @@ export function CommentItem({
 
             <div className="flex items-center gap-4">
               <div className="flex flex-col items-end">
-                <span className="text-foreground text-[10px] leading-none font-black tracking-tight uppercase">
+                <span className="text-foreground text-[10px] leading-none font-bold tracking-tight">
                   {comment.user
                     ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
                       comment.expand.user.username
                     : tasks.details.unknownUser}
                 </span>
                 <div className="mt-1 flex items-center gap-1.5 opacity-40">
-                  <span className="font-mono text-[8px] font-black tabular-nums">
+                  <span className="font-mono text-[8px] font-bold tabular-nums">
                     {formatCommentDate(comment.created)}
                   </span>
                   <IconClock className="size-2.5" />
@@ -338,7 +338,7 @@ export function CommentItem({
                 <Textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="border-border/40 bg-muted/5 focus:border-primary/40 min-h-[100px] rounded-none text-right leading-relaxed font-medium focus:ring-0"
+                  className="border-border/40 bg-muted/5 focus:border-primary/40 min-h-[100px] rounded-xl text-right leading-relaxed font-medium focus:ring-0"
                   placeholder={commentsConst.item.editPlaceholder}
                   ref={textareaRef}
                   onKeyDown={(e) => {
@@ -353,7 +353,6 @@ export function CommentItem({
                   }}
                   disabled={updateComment.isPending}
                 />
-                <div className="bg-primary/40 absolute end-0 top-0 h-0.5 w-8" />
               </div>
               <div className="flex items-center justify-end gap-3">
                 <Button
@@ -361,7 +360,7 @@ export function CommentItem({
                   size="sm"
                   onClick={handleCancelEdit}
                   disabled={updateComment.isPending}
-                  className="text-muted-foreground/60 h-9 rounded-none text-[9px] font-black tracking-tight uppercase"
+                  className="text-muted-foreground/60 h-9 rounded-xl text-[10px] font-bold tracking-tight"
                 >
                   <IconX className="ms-2 size-3.5" />
                   {commentsConst.item.cancel}
@@ -370,7 +369,7 @@ export function CommentItem({
                   size="sm"
                   onClick={handleSaveEdit}
                   disabled={!editContent.trim() || updateComment.isPending}
-                  className="h-9 rounded-none px-6 text-[9px] font-black tracking-tight uppercase shadow-md transition-all active:scale-95"
+                  className="h-9 rounded-xl px-6 text-[10px] font-bold tracking-tight shadow-sm transition-all active:scale-95"
                 >
                   {updateComment.isPending ? (
                     <IconLoader2 className="me-2 h-3.5 w-3.5 animate-spin" />
@@ -394,7 +393,7 @@ export function CommentItem({
               {!deleted && wasEdited && (
                 <div className="mt-2 flex items-center justify-end gap-1 opacity-20 transition-opacity group-hover/content:opacity-40">
                   <IconPencil className="size-2.5" />
-                  <span className="text-[8px] font-black tracking-tight uppercase">
+                  <span className="text-[8px] font-bold tracking-tight">
                     {commentsConst.item.edited}
                   </span>
                 </div>
@@ -405,7 +404,7 @@ export function CommentItem({
             <div className="border-border/10 space-y-3 border-t pt-3 text-right">
               {hasAttachments && (
                 <div className="space-y-2">
-                  <div className="text-muted-foreground text-[10px] font-black tracking-tight uppercase">
+                  <div className="text-muted-foreground text-[10px] font-bold tracking-tight">
                     {commentsConst.item.attachments}
                   </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -418,21 +417,21 @@ export function CommentItem({
                       return (
                         <div
                           key={filename}
-                          className="border-border/30 bg-muted/5 flex items-center justify-between gap-3 rounded-none border p-3"
+                          className="border-border/30 bg-muted/5 flex items-center justify-between gap-3 rounded-xl border p-3"
                         >
                           <div className="flex items-center gap-3">
                             {isImage ? (
                               <img
                                 src={fileUrl}
                                 alt={filename}
-                                className="border-border/30 h-10 w-10 rounded-none border object-cover"
+                                className="border-border/30 h-10 w-10 rounded-lg border object-cover"
                               />
                             ) : (
-                              <div className="border-border/30 bg-card flex h-10 w-10 items-center justify-center rounded-none border">
+                              <div className="border-border/30 bg-card flex h-10 w-10 items-center justify-center rounded-lg border">
                                 <FileIcon className="size-5" />
                               </div>
                             )}
-                            <div className="text-xs font-black tracking-tight uppercase">
+                            <div className="text-xs font-bold tracking-tight">
                               {filename}
                             </div>
                           </div>
@@ -442,7 +441,7 @@ export function CommentItem({
                               target="_blank"
                               rel="noreferrer"
                               download
-                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-tight uppercase transition-colors"
+                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
                             >
                               <IconDownload className="size-3" />
                               Download
@@ -451,7 +450,7 @@ export function CommentItem({
                               href={fileUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-none border px-3 py-1 text-[10px] font-black tracking-tight uppercase transition-colors"
+                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
                             >
                               <IconPaperclip className="size-3" />
                               View
@@ -479,7 +478,7 @@ export function CommentItem({
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "border-border/30 rounded-none border px-3 py-1 text-[11px] font-black tracking-tight uppercase transition-colors",
+                        "border-border/30 rounded-xl border px-3 py-1 text-[11px] font-bold tracking-tight transition-colors",
                         hasReacted
                           ? "border-primary bg-primary/10 text-primary"
                           : "text-muted-foreground/80 hover:bg-muted/20",
@@ -490,7 +489,7 @@ export function CommentItem({
                     >
                       <span className="text-lg">{reaction.label}</span>
                       {count > 0 && (
-                        <span className="ms-1 text-[10px] font-black tabular-nums">
+                        <span className="ms-1 text-[10px] font-bold tabular-nums">
                           {digitsEnToFa(String(count))}
                         </span>
                       )}
@@ -501,9 +500,6 @@ export function CommentItem({
             </div>
           )}
         </div>
-
-        {/* Active Selection Indicator */}
-        <div className="bg-primary absolute end-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full" />
       </div>
     </div>
   );

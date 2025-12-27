@@ -107,7 +107,7 @@ export function OrgMembersPage() {
         </Button>
       </div>
 
-      <div className="border-border bg-card relative overflow-hidden rounded-lg border shadow-sm">
+      <div className="border-border bg-card relative overflow-hidden rounded-2xl border shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -187,7 +187,7 @@ export function OrgMembersPage() {
                             )}
                           </span>
                           <span className="text-muted-foreground text-[10px] font-medium">
-                            ID: {member.id.slice(0, 8).toUpperCase()}
+                            ID: {member.id.slice(0, 8)}
                           </span>
                         </div>
                       </div>
@@ -253,10 +253,10 @@ export function OrgMembersPage() {
 
       {/* Invite Dialog */}
       <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
-        <DialogContent className="border-border max-w-md overflow-hidden rounded-lg border p-0 shadow-lg">
+        <DialogContent className="border-border max-w-md overflow-hidden rounded-2xl border p-0 shadow-lg">
           <div className="bg-primary/5 border-border border-b px-6 py-6">
             <DialogHeader className="text-right">
-              <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-lg">
+              <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-xl">
                 <IconUserPlus className="size-7" />
               </div>
               <DialogTitle className="text-2xl font-bold tracking-tight">
@@ -270,7 +270,7 @@ export function OrgMembersPage() {
 
           <div className="space-y-6 p-6 text-right">
             <div className="space-y-2">
-              <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+              <label className="text-muted-foreground text-xs font-semibold tracking-wider">
                 {organization.members.inviteDialog.email}
               </label>
               <Input
@@ -278,25 +278,25 @@ export function OrgMembersPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 type="email"
-                className="h-11"
+                className="h-11 rounded-xl"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+              <label className="text-muted-foreground text-xs font-semibold tracking-wider">
                 {organization.members.inviteDialog.role}
               </label>
               <Select
                 value={inviteRole}
                 onValueChange={(v) => setInviteRole(v as "admin" | "member")}
               >
-                <SelectTrigger className="h-11 text-right">
+                <SelectTrigger className="h-11 rounded-xl text-right">
                   <SelectValue
                     placeholder={
                       organization.members.inviteDialog.rolePlaceholder
                     }
                   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   <SelectItem value="admin" className="text-right">
                     {organization.members.roles.admin}
                   </SelectItem>
@@ -312,7 +312,7 @@ export function OrgMembersPage() {
             <Button
               onClick={handleInvite}
               disabled={isInviting || !inviteEmail}
-              className="h-11 flex-1"
+              className="h-11 flex-1 rounded-xl"
             >
               {isInviting
                 ? organization.members.sending
@@ -321,7 +321,7 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsInviteOpen(false)}
-              className="h-11 flex-1"
+              className="h-11 flex-1 rounded-xl"
             >
               {shared.cancel}
             </Button>

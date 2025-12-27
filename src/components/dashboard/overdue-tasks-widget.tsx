@@ -43,10 +43,10 @@ export function OverdueTasksWidget({
   }
 
   return (
-    <Card className="relative mt-8 overflow-hidden rounded-lg border border-rose-200 bg-rose-50 shadow-sm dark:border-rose-900/50 dark:bg-rose-950/20">
+    <Card className="relative mt-8 overflow-hidden rounded-2xl border border-rose-200 bg-rose-50 shadow-sm dark:border-rose-900/50 dark:bg-rose-950/20">
       <CardHeader className="relative z-10 border-b border-rose-100 p-6 dark:border-rose-900/30">
         <CardTitle className="flex items-center gap-3 text-sm font-bold text-rose-600 dark:text-rose-400">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md border border-rose-200 bg-rose-100 text-rose-600 dark:border-rose-800 dark:bg-rose-900/50">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-200 bg-rose-100 text-rose-600 dark:border-rose-800 dark:bg-rose-900/50">
             <AlertTriangle className="size-4" />
           </div>
           <span className="flex-1">{dashboard.cards.overdueTasks}</span>
@@ -67,7 +67,7 @@ export function OverdueTasksWidget({
             <Button
               key={task.id}
               variant="ghost"
-              className="group/item bg-card flex h-auto cursor-pointer items-center justify-between rounded-lg border border-rose-100 p-4 transition-all duration-200 hover:border-rose-300 hover:bg-rose-50 dark:border-rose-900/30 dark:hover:bg-rose-900/20"
+              className="group/item bg-card flex h-auto cursor-pointer items-center justify-between rounded-xl border border-rose-100 p-4 transition-all duration-200 hover:border-rose-300 hover:bg-rose-50 dark:border-rose-900/30 dark:hover:bg-rose-900/20"
               onClick={() => navigate(`/tasks/${task.id}`)}
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -80,7 +80,7 @@ export function OverdueTasksWidget({
 
                 <div className="min-w-0 flex-1 text-right">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-semibold tracking-wider text-rose-500/60 uppercase">
+                    <span className="text-[10px] font-semibold tracking-tight text-rose-500/60">
                       Task {idx + 1}
                     </span>
                   </div>
@@ -97,7 +97,7 @@ export function OverdueTasksWidget({
               </div>
 
               <div className="flex flex-col items-end gap-2">
-                <div className="flex items-center gap-1.5 rounded-md border border-rose-200 bg-rose-100 px-2 py-1 dark:border-rose-800 dark:bg-rose-900/50">
+                <div className="flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-100 px-2 py-1 dark:border-rose-800 dark:bg-rose-900/50">
                   <Calendar className="size-3 text-rose-600" />
                   <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400">
                     {task.deadline

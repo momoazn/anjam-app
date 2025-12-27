@@ -121,18 +121,18 @@ export function ProfileSection() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <IconUserCircle className="text-primary size-4" />
-            <h3 className="text-sm font-black tracking-tight uppercase">
+            <h3 className="text-sm font-bold tracking-tight">
               {settings.profile.title}
             </h3>
           </div>
-          <div className="h-0.5 flex-1 bg-black" />
+          <div className="bg-border h-px flex-1" />
         </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="flex flex-col items-start gap-8 lg:flex-row">
               <div className="group relative shrink-0">
-                <div className="bg-muted relative aspect-square h-24 w-24 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                <div className="bg-muted relative aspect-square h-24 w-24 overflow-hidden rounded-2xl border shadow-sm">
                   {currentAvatarUrl ? (
                     <img
                       src={currentAvatarUrl}
@@ -144,12 +144,12 @@ export function ProfileSection() {
                       <IconUser className="text-muted-foreground/20 size-10" />
                     </div>
                   )}
-                  <div className="absolute -right-1 -bottom-1 h-2 w-2 border border-black bg-emerald-500" />
+                  <div className="border-background absolute -right-1 -bottom-1 h-3 w-3 rounded-full border-2 bg-emerald-500" />
                 </div>
 
                 <label
                   htmlFor="avatar-upload"
-                  className="active:bg-muted absolute -bottom-2 -left-2 cursor-pointer border-2 border-black bg-white p-1.5 shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
+                  className="active:bg-muted hover:bg-muted absolute -bottom-2 -left-2 cursor-pointer rounded-full border bg-white p-2 shadow-sm transition-all"
                 >
                   <IconCamera className="h-3.5 w-3.5" />
                   <span className="sr-only">
@@ -172,16 +172,16 @@ export function ProfileSection() {
                     name="first_name"
                     render={({ field }) => (
                       <FormItem className="space-y-1">
-                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
+                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
                           {settings.profile.firstName}
                         </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            className="h-9 rounded-none border-2 border-black bg-white font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="focus-visible:ring-primary h-9 rounded-xl border bg-white font-medium shadow-sm focus-visible:ring-1"
                           />
                         </FormControl>
-                        <FormMessage className="text-[10px] font-bold uppercase" />
+                        <FormMessage className="text-[10px] font-medium" />
                       </FormItem>
                     )}
                   />
@@ -190,16 +190,16 @@ export function ProfileSection() {
                     name="last_name"
                     render={({ field }) => (
                       <FormItem className="space-y-1">
-                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
+                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
                           {settings.profile.lastName}
                         </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            className="h-9 rounded-none border-2 border-black bg-white font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="focus-visible:ring-primary h-9 rounded-xl border bg-white font-medium shadow-sm focus-visible:ring-1"
                           />
                         </FormControl>
-                        <FormMessage className="text-[10px] font-bold uppercase" />
+                        <FormMessage className="text-[10px] font-medium" />
                       </FormItem>
                     )}
                   />
@@ -211,7 +211,7 @@ export function ProfileSection() {
                   render={({ field }) => (
                     <FormItem className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
+                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
                           {settings.profile.username}
                         </FormLabel>
                         <IconTerminal className="size-3 opacity-20" />
@@ -224,30 +224,30 @@ export function ProfileSection() {
                           <Input
                             {...field}
                             dir="ltr"
-                            className="h-9 rounded-none border-2 border-black bg-white pl-7 font-mono text-xs font-black tracking-tight uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="focus-visible:ring-primary h-9 rounded-xl border bg-white pl-7 font-mono text-xs font-medium tracking-tight shadow-sm focus-visible:ring-1"
                           />
                         </div>
                       </FormControl>
-                      <FormDescription className="text-[9px] font-bold uppercase opacity-40">
+                      <FormDescription className="text-[9px] font-medium opacity-40">
                         {settings.profile.usernameDescription}
                       </FormDescription>
-                      <FormMessage className="text-[10px] font-bold uppercase" />
+                      <FormMessage className="text-[10px] font-medium" />
                     </FormItem>
                   )}
                 />
               </div>
             </div>
 
-            <div className="flex justify-end border-t-2 border-black pt-4">
+            <div className="border-border flex justify-end border-t pt-4">
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="h-10 gap-2 rounded-none border-2 border-black bg-black px-6 font-black text-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:scale-95 disabled:opacity-50"
+                className="bg-primary text-primary-foreground h-10 gap-2 rounded-xl border px-6 font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50"
               >
                 {form.formState.isSubmitting && (
                   <IconLoader2 className="h-3.5 w-3.5 animate-spin" />
                 )}
-                <span className="text-[11px] tracking-tight uppercase">
+                <span className="text-[11px] tracking-tight">
                   {settings.profile.saveChanges}
                 </span>
               </Button>
@@ -260,22 +260,22 @@ export function ProfileSection() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <IconFingerprint className="text-primary size-4" />
-            <h3 className="text-sm font-black tracking-tight uppercase">
+            <h3 className="text-sm font-bold tracking-tight">
               {settings.profile.contactTitle}
             </h3>
           </div>
-          <div className="h-0.5 flex-1 bg-black" />
+          <div className="bg-border h-px flex-1" />
         </div>
 
-        <div className="bg-muted/30 border-2 border-black p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+        <div className="bg-muted/30 rounded-2xl border p-4 shadow-sm">
           <div className="grid gap-2">
-            <span className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
+            <span className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
               {settings.profile.email}
             </span>
-            <div className="flex h-9 items-center border-2 border-black bg-white px-3 font-mono text-xs font-black tracking-tight uppercase opacity-60">
+            <div className="flex h-9 items-center rounded-lg border bg-white px-3 font-mono text-xs font-medium tracking-tight opacity-60">
               {fullUser.email}
             </div>
-            <p className="text-muted-foreground/40 font-mono text-[9px] font-black tracking-tight uppercase">
+            <p className="text-muted-foreground/40 font-mono text-[9px] font-medium tracking-tight">
               {settings.profile.emailChangeNote}
             </p>
           </div>

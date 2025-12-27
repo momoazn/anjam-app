@@ -19,23 +19,22 @@ export function AppearanceSection() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <IconTerminal className="text-primary size-4" />
-            <h3 className="text-sm font-black tracking-tight uppercase">
-              {settings.appearance.title}
-            </h3>
+            <h3 className="text-sm font-bold">{settings.appearance.title}</h3>
           </div>
-          <div className="h-0.5 flex-1 bg-black" />
+          <div className="bg-border h-px flex-1" />
         </div>
 
-        <p className="text-muted-foreground font-mono text-[10px] font-black tracking-widest uppercase">
+        <p className="text-muted-foreground text-xs">
           {settings.appearance.description}
         </p>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Button
-            variant="ghost"
+            variant="outline"
             className={cn(
-              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-none border-2 border-black bg-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
-              theme === "light" && "bg-primary/5 border-primary text-primary",
+              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-2xl border transition-all duration-200",
+              theme === "light" &&
+                "bg-primary/5 border-primary text-primary ring-primary/20 ring-1",
             )}
             onClick={() => setTheme("light")}
           >
@@ -45,19 +44,17 @@ export function AppearanceSection() {
                 theme === "light" && "rotate-12",
               )}
             />
-            <span className="text-[10px] font-black tracking-tight uppercase">
+            <span className="text-xs font-bold">
               {settings.appearance.light}
             </span>
-            {theme === "light" && (
-              <div className="bg-primary absolute right-0 bottom-0 left-0 h-1" />
-            )}
           </Button>
 
           <Button
-            variant="ghost"
+            variant="outline"
             className={cn(
-              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-none border-2 border-black bg-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
-              theme === "dark" && "bg-primary/5 border-primary text-primary",
+              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-2xl border transition-all duration-200",
+              theme === "dark" &&
+                "bg-primary/5 border-primary text-primary ring-primary/20 ring-1",
             )}
             onClick={() => setTheme("dark")}
           >
@@ -67,29 +64,24 @@ export function AppearanceSection() {
                 theme === "dark" && "-rotate-12",
               )}
             />
-            <span className="text-[10px] font-black tracking-tight uppercase">
+            <span className="text-xs font-bold">
               {settings.appearance.dark}
             </span>
-            {theme === "dark" && (
-              <div className="bg-primary absolute right-0 bottom-0 left-0 h-1" />
-            )}
           </Button>
 
           <Button
-            variant="ghost"
+            variant="outline"
             className={cn(
-              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-none border-2 border-black bg-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
-              theme === "system" && "bg-primary/5 border-primary text-primary",
+              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-2xl border transition-all duration-200",
+              theme === "system" &&
+                "bg-primary/5 border-primary text-primary ring-primary/20 ring-1",
             )}
             onClick={() => setTheme("system")}
           >
             <IconDeviceDesktop className="size-5" />
-            <span className="text-[10px] font-black tracking-tight uppercase">
+            <span className="text-xs font-bold">
               {settings.appearance.system}
             </span>
-            {theme === "system" && (
-              <div className="bg-primary absolute right-0 bottom-0 left-0 h-1" />
-            )}
           </Button>
         </div>
       </div>

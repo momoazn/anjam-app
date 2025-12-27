@@ -96,10 +96,10 @@ export default function AuditLogs() {
       <div className="space-y-10">
         {/* Filter Area */}
         <section className="space-y-4">
-          <div className="bg-border/40 border-border/40 flex items-center gap-px overflow-hidden border shadow-sm">
-            <div className="bg-muted/20 border-border/20 flex h-10 shrink-0 items-center gap-2 border-s px-3">
+          <div className="border-border/40 bg-border/40 flex items-center gap-px overflow-hidden rounded-2xl border shadow-sm">
+            <div className="border-border/20 bg-muted/20 flex h-10 shrink-0 items-center gap-2 border-s px-3">
               <IconSearch className="text-primary/60 size-3.5" />
-              <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight uppercase">
+              <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                 Search
               </span>
             </div>
@@ -108,7 +108,7 @@ export default function AuditLogs() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Filter activities..."
-                className="h-full w-full rounded-none border-none bg-transparent px-4 text-xs font-bold tracking-tight transition-all outline-none focus:ring-0"
+                className="h-full w-full border-none bg-transparent px-4 text-xs font-bold tracking-tight transition-all outline-none focus:ring-0"
               />
             </div>
             {hasFilters && (
@@ -121,7 +121,7 @@ export default function AuditLogs() {
                   setClient("");
                   setSearch("");
                 }}
-                className="border-border/20 h-10 gap-2 rounded-none border-e px-4 text-[10px] font-black tracking-tight text-rose-500 uppercase transition-all hover:bg-rose-500/10"
+                className="border-border/20 h-10 gap-2 rounded-xl border-e px-4 text-[10px] font-bold tracking-tight text-rose-500 transition-all hover:bg-rose-500/10"
               >
                 <IconX className="size-3" />
                 Reset Filters
@@ -129,46 +129,37 @@ export default function AuditLogs() {
             )}
           </div>
 
-          <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-sm sm:grid-cols-3">
-            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+          <div className="border-border/40 bg-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border shadow-sm sm:grid-cols-3">
+            <div className="border-border/10 bg-card flex h-16 flex-col justify-between border-s p-3">
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-bold tracking-tight">
                 <IconFilter className="size-2.5" /> {auditLogs.filters.resource}
               </span>
               <Select value={resource} onValueChange={setResource}>
-                <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+                <SelectTrigger className="bg-muted/10 h-7 w-full border-none px-2 text-right text-[11px] font-bold tracking-tight focus:ring-0">
                   <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
-                <SelectContent className="border-border bg-card rounded-none border">
-                  <SelectItem
-                    value="all"
-                    className="text-[10px] font-black uppercase"
-                  >
+                <SelectContent className="border-border bg-card rounded-xl border">
+                  <SelectItem value="all" className="text-[10px] font-bold">
                     {auditLogs.filters.all}
                   </SelectItem>
-                  <SelectItem
-                    value="tasks"
-                    className="text-[10px] font-black uppercase"
-                  >
+                  <SelectItem value="tasks" className="text-[10px] font-bold">
                     {auditLogs.resources.tasks}
                   </SelectItem>
                   <SelectItem
                     value="projects"
-                    className="text-[10px] font-black uppercase"
+                    className="text-[10px] font-bold"
                   >
                     {auditLogs.resources.projects}
                   </SelectItem>
-                  <SelectItem
-                    value="users"
-                    className="text-[10px] font-black uppercase"
-                  >
+                  <SelectItem value="users" className="text-[10px] font-bold">
                     {auditLogs.resources.users}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+            <div className="border-border/10 bg-card flex h-16 flex-col justify-between border-s p-3">
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-bold tracking-tight">
                 <IconActivity className="size-2.5" /> {auditLogs.filters.action}
               </span>
               <Select
@@ -177,32 +168,20 @@ export default function AuditLogs() {
                   setAction(v as AuditLogsActionOptions | "")
                 }
               >
-                <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+                <SelectTrigger className="bg-muted/10 h-7 w-full border-none px-2 text-right text-[11px] font-bold tracking-tight focus:ring-0">
                   <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
-                <SelectContent className="border-border bg-card rounded-none border">
-                  <SelectItem
-                    value="all"
-                    className="text-[10px] font-black uppercase"
-                  >
+                <SelectContent className="border-border bg-card rounded-xl border">
+                  <SelectItem value="all" className="text-[10px] font-bold">
                     {auditLogs.filters.all}
                   </SelectItem>
-                  <SelectItem
-                    value="create"
-                    className="text-[10px] font-black uppercase"
-                  >
+                  <SelectItem value="create" className="text-[10px] font-bold">
                     {auditLogs.actions.create}
                   </SelectItem>
-                  <SelectItem
-                    value="update"
-                    className="text-[10px] font-black uppercase"
-                  >
+                  <SelectItem value="update" className="text-[10px] font-bold">
                     {auditLogs.actions.update}
                   </SelectItem>
-                  <SelectItem
-                    value="delete"
-                    className="text-[10px] font-black uppercase"
-                  >
+                  <SelectItem value="delete" className="text-[10px] font-bold">
                     {auditLogs.actions.delete}
                   </SelectItem>
                 </SelectContent>
@@ -210,7 +189,7 @@ export default function AuditLogs() {
             </div>
 
             <div className="bg-card flex h-16 flex-col justify-between p-3">
-              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-black tracking-tight uppercase">
+              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-bold tracking-tight">
                 <IconServer className="size-2.5" /> {auditLogs.filters.client}
               </span>
               <Select
@@ -219,31 +198,22 @@ export default function AuditLogs() {
                   setClient(v as AuditLogsClientOptions | "")
                 }
               >
-                <SelectTrigger className="bg-muted/10 h-7 w-full rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+                <SelectTrigger className="bg-muted/10 h-7 w-full border-none px-2 text-right text-[11px] font-bold tracking-tight focus:ring-0">
                   <SelectValue placeholder={auditLogs.filters.allPlaceholder} />
                 </SelectTrigger>
-                <SelectContent className="border-border bg-card rounded-none border">
-                  <SelectItem
-                    value="all"
-                    className="text-[10px] font-black uppercase"
-                  >
+                <SelectContent className="border-border bg-card rounded-xl border">
+                  <SelectItem value="all" className="text-[10px] font-bold">
                     {auditLogs.filters.all}
                   </SelectItem>
-                  <SelectItem
-                    value="web"
-                    className="text-[10px] font-black uppercase"
-                  >
+                  <SelectItem value="web" className="text-[10px] font-bold">
                     {auditLogs.clients.web}
                   </SelectItem>
-                  <SelectItem
-                    value="cli"
-                    className="text-[10px] font-black uppercase"
-                  >
+                  <SelectItem value="cli" className="text-[10px] font-bold">
                     {auditLogs.clients.cli}
                   </SelectItem>
                   <SelectItem
                     value="automation"
-                    className="text-[10px] font-black uppercase"
+                    className="text-[10px] font-bold"
                   >
                     {auditLogs.clients.automation}
                   </SelectItem>
@@ -254,36 +224,36 @@ export default function AuditLogs() {
         </section>
 
         {/* Activity Table */}
-        <section className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border shadow-md">
+        <section className="border-border/40 bg-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border shadow-md">
           {/* Table Header */}
-          <div className="bg-muted/20 border-border/40 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
+          <div className="border-border/40 bg-muted/20 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
             <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
+              <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {auditLogs.table.timestamp}
               </span>
             </div>
             <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
+              <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {auditLogs.table.actor}
               </span>
             </div>
             <div className="border-border/10 col-span-1 flex items-center justify-center border-s">
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
+              <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {auditLogs.table.action}
               </span>
             </div>
             <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
+              <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {auditLogs.table.resource}
               </span>
             </div>
             <div className="border-border/10 col-span-1 flex items-center justify-center border-s">
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
+              <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {auditLogs.table.client}
               </span>
             </div>
             <div className="col-span-4 flex items-center justify-end px-4">
-              <span className="text-[9px] font-black tracking-tight uppercase opacity-60">
+              <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {auditLogs.table.message}
               </span>
             </div>
@@ -296,11 +266,11 @@ export default function AuditLogs() {
                 <IconHistory className="size-12 animate-spin" />
               </div>
             ) : error ? (
-              <div className="p-12 text-center text-xs font-black text-rose-500 uppercase">
+              <div className="p-12 text-center text-xs font-bold text-rose-500">
                 {auditLogs.errors.loadFailed}
               </div>
             ) : !data || data.items.length === 0 ? (
-              <div className="text-muted-foreground/40 p-12 text-center text-xs font-black uppercase">
+              <div className="text-muted-foreground/40 p-12 text-center text-xs font-bold">
                 {auditLogs.empty.noResults}
               </div>
             ) : (
@@ -325,23 +295,23 @@ export default function AuditLogs() {
                       className="group bg-card hover:bg-muted/20 flex flex-col text-right transition-all"
                     >
                       <div className="relative grid grid-cols-12 overflow-hidden">
-                        <div className="border-border/10 col-span-2 flex items-center justify-end border-s p-4 font-mono text-[10px] font-black tracking-tight uppercase opacity-60">
+                        <div className="border-border/10 col-span-2 flex items-center justify-end border-s p-4 font-mono text-[10px] font-bold tracking-tight opacity-60">
                           {log.created
                             ? `${formatDateTime(log.created).date} ${formatDateTime(log.created).time}`
                             : "—"}
                         </div>
                         <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-s p-4">
-                          <span className="text-[11px] font-black tracking-tight uppercase">
+                          <span className="text-[11px] font-bold tracking-tight">
                             {actorName}
                           </span>
-                          <span className="text-[8px] font-bold uppercase opacity-40">
+                          <span className="text-[8px] font-bold opacity-40">
                             {log.actor_role || "External"}
                           </span>
                         </div>
                         <div className="border-border/10 col-span-1 flex items-center justify-center border-s p-4">
                           <Badge
                             variant="outline"
-                            className="border-primary/20 bg-primary/5 text-primary rounded-none text-[8px] font-black tracking-tight uppercase"
+                            className="border-primary/20 bg-primary/5 text-primary rounded-lg text-[8px] font-bold tracking-tight"
                           >
                             {auditLogs.actions[
                               log.action as keyof typeof auditLogs.actions
@@ -349,17 +319,17 @@ export default function AuditLogs() {
                           </Badge>
                         </div>
                         <div className="border-border/10 col-span-2 flex flex-col items-end justify-center border-s p-4">
-                          <span className="text-[11px] font-black tracking-tight uppercase">
+                          <span className="text-[11px] font-bold tracking-tight">
                             {log.resource}
                           </span>
                           <div className="flex items-center gap-1.5 opacity-40">
                             <IconHash className="size-2.5" />
-                            <span className="font-mono text-[8px] font-black tracking-tight uppercase">
+                            <span className="font-mono text-[8px] font-bold tracking-tight">
                               {log.resource_id.slice(0, 8)}
                             </span>
                           </div>
                         </div>
-                        <div className="border-border/10 col-span-1 flex items-center justify-center border-s p-4 font-mono text-[10px] font-black uppercase opacity-40">
+                        <div className="border-border/10 col-span-1 flex items-center justify-center border-s p-4 font-mono text-[10px] font-bold opacity-40">
                           {log.client || "—"}
                         </div>
                         <div className="col-span-4 flex items-center justify-end p-4 text-xs leading-relaxed font-medium opacity-80">
@@ -373,8 +343,8 @@ export default function AuditLogs() {
                       {hasChanges && (
                         <Accordion type="single" collapsible className="w-full">
                           <AccordionItem value={log.id} className="border-none">
-                            <AccordionTrigger className="bg-muted/5 border-border/10 h-8 flex-row-reverse gap-3 border-y px-4 hover:no-underline">
-                              <span className="text-[9px] font-black tracking-tight uppercase opacity-40">
+                            <AccordionTrigger className="border-border/10 bg-muted/5 h-8 flex-row-reverse gap-3 border-y px-4 hover:no-underline">
+                              <span className="text-[9px] font-bold tracking-tight opacity-40">
                                 {auditLogs.table.viewChanges}
                               </span>
                             </AccordionTrigger>
@@ -388,15 +358,15 @@ export default function AuditLogs() {
                                         className="group/field border-border/10 grid grid-cols-12 gap-4 border-b pb-4 last:border-0 last:pb-0"
                                       >
                                         <div className="border-border/10 col-span-2 flex flex-col items-end border-s">
-                                          <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
+                                          <span className="mb-1 text-[8px] font-bold tracking-tight opacity-40">
                                             Field
                                           </span>
-                                          <span className="text-primary/80 font-black uppercase">
+                                          <span className="text-primary/80 font-bold">
                                             {field}
                                           </span>
                                         </div>
                                         <div className="border-border/10 col-span-5 flex flex-col items-end border-s pe-4">
-                                          <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
+                                          <span className="mb-1 text-[8px] font-bold tracking-tight opacity-40">
                                             Before
                                           </span>
                                           <span className="w-full truncate opacity-60">
@@ -404,10 +374,10 @@ export default function AuditLogs() {
                                           </span>
                                         </div>
                                         <div className="col-span-5 flex flex-col items-end pe-4">
-                                          <span className="mb-1 text-[8px] font-black tracking-tight uppercase opacity-40">
+                                          <span className="mb-1 text-[8px] font-bold tracking-tight opacity-40">
                                             After
                                           </span>
-                                          <span className="text-foreground w-full truncate font-black">
+                                          <span className="text-foreground w-full truncate font-bold">
                                             {String(diff.new || "EMPTY")}
                                           </span>
                                         </div>
@@ -428,15 +398,15 @@ export default function AuditLogs() {
 
           {/* Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="bg-muted/20 border-border/40 flex items-center justify-between border-t px-6 py-3">
-              <div className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+            <div className="border-border/40 bg-muted/20 flex items-center justify-between border-t px-6 py-3">
+              <div className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                 Page {digitsEnToFa(page)} of {digitsEnToFa(data.totalPages)}
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-border/40 h-8 rounded-none text-[9px] font-black tracking-tight uppercase transition-all active:scale-95 disabled:opacity-20"
+                  className="border-border/40 h-8 rounded-xl px-4 text-[9px] font-bold tracking-tight transition-all active:scale-95 disabled:opacity-20"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
@@ -445,7 +415,7 @@ export default function AuditLogs() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-border/40 h-8 rounded-none text-[9px] font-black tracking-tight uppercase transition-all active:scale-95 disabled:opacity-20"
+                  className="border-border/40 h-8 rounded-xl px-4 text-[9px] font-bold tracking-tight transition-all active:scale-95 disabled:opacity-20"
                   onClick={() =>
                     setPage((p) => Math.min(data.totalPages, p + 1))
                   }

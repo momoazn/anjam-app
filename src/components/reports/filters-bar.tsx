@@ -133,11 +133,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
   };
 
   return (
-    <div className="bg-border/40 flex flex-wrap items-center gap-px overflow-hidden">
+    <div className="bg-border/40 flex flex-wrap items-center gap-px overflow-hidden rounded-xl">
       {/* Time Segment */}
       <div className="bg-card border-border/10 flex h-16 min-w-[160px] flex-col justify-between border-s p-3">
         <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-          <span className="text-[7px] font-black tracking-tight uppercase">
+          <span className="text-[7px] font-bold tracking-tight">
             Time_Frame
           </span>
           <IconCalendar className="size-2.5" />
@@ -146,15 +146,15 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           value={value.timeRange.preset}
           onValueChange={handleTimeRangeChange}
         >
-          <SelectTrigger className="bg-muted/10 h-7 rounded-none border-none px-2 text-right text-[11px] font-black tracking-tight uppercase focus:ring-0">
+          <SelectTrigger className="bg-muted/10 h-7 rounded-lg border-none px-2 text-right text-[11px] font-bold tracking-tight focus:ring-0">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="border-border bg-card rounded-none border">
+          <SelectContent className="border-border bg-card rounded-xl border">
             {Object.values(TIME_PRESETS).map((preset) => (
               <SelectItem
                 key={preset.value}
                 value={preset.value}
-                className="text-[10px] font-black uppercase"
+                className="text-[10px] font-bold"
               >
                 {preset.label}
               </SelectItem>
@@ -171,14 +171,14 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-tight uppercase">
+              <span className="text-[7px] font-bold tracking-tight">
                 {reports.projects}
               </span>
               <IconFilter className="size-2.5" />
             </div>
             <div className="flex items-center justify-end gap-2">
               <IconChevronDown className="size-3 opacity-20" />
-              <span className="text-[11px] font-black tracking-tight uppercase">
+              <span className="text-[11px] font-bold tracking-tight">
                 {selectedProjects.length > 0
                   ? `${digitsEnToFa(selectedProjects.length)} Selected`
                   : "All Projects"}
@@ -187,11 +187,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-border bg-card w-64 rounded-none border p-0"
+          className="border-border bg-card w-64 rounded-xl border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-bold tracking-tight">
               {reports.selectProjects}
             </h4>
             <div className="max-h-48 space-y-2 overflow-y-auto pe-1">
@@ -202,7 +202,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                 >
                   <label
                     htmlFor={`p-${project.id}`}
-                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold"
                   >
                     {project.name}
                   </label>
@@ -212,7 +212,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                     onCheckedChange={(c) =>
                       handleToggle("projectIds", project.id, !!c)
                     }
-                    className="rounded-none"
+                    className="rounded-md"
                   />
                 </div>
               ))}
@@ -229,14 +229,14 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-tight uppercase">
+              <span className="text-[7px] font-bold tracking-tight">
                 {reports.assignee_plural}
               </span>
               <IconFilter className="size-2.5" />
             </div>
             <div className="flex items-center justify-end gap-2">
               <IconChevronDown className="size-3 opacity-20" />
-              <span className="text-[11px] font-black tracking-tight uppercase">
+              <span className="text-[11px] font-bold tracking-tight">
                 {selectedUsers.length > 0
                   ? `${digitsEnToFa(selectedUsers.length)} Selected`
                   : "All Assignees"}
@@ -245,11 +245,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-border bg-card w-64 rounded-none border p-0"
+          className="border-border bg-card w-64 rounded-xl border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-bold tracking-tight">
               {reports.selectAssignees}
             </h4>
             <div className="max-h-48 space-y-2 overflow-y-auto pe-1">
@@ -260,7 +260,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                 >
                   <label
                     htmlFor={`u-${u.id}`}
-                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold"
                   >
                     {formatUserName(u.first_name, u.last_name, u.username)}
                   </label>
@@ -270,7 +270,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                     onCheckedChange={(c) =>
                       handleToggle("assigneeIds", u.id, !!c)
                     }
-                    className="rounded-none"
+                    className="rounded-md"
                   />
                 </div>
               ))}
@@ -287,14 +287,14 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-tight uppercase">
+              <span className="text-[7px] font-bold tracking-tight">
                 {reports.status}
               </span>
               <IconFilter className="size-2.5" />
             </div>
             <div className="flex items-center justify-end gap-2">
               <IconChevronDown className="size-3 opacity-20" />
-              <span className="text-[11px] font-black tracking-tight uppercase">
+              <span className="text-[11px] font-bold tracking-tight">
                 {selectedStatuses.length > 0
                   ? `${digitsEnToFa(selectedStatuses.length)} Selected`
                   : "All Statuses"}
@@ -303,11 +303,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-border bg-card w-64 rounded-none border p-0"
+          className="border-border bg-card w-64 rounded-xl border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-bold tracking-tight">
               {reports.selectStatuses}
             </h4>
             <div className="space-y-2 overflow-y-auto pe-1">
@@ -318,7 +318,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                 >
                   <label
                     htmlFor={`s-${s.value}`}
-                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold"
                   >
                     {s.label}
                   </label>
@@ -328,7 +328,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                     onCheckedChange={(c) =>
                       handleToggle("statuses", s.value, !!c)
                     }
-                    className="rounded-none"
+                    className="rounded-md"
                   />
                 </div>
               ))}
@@ -345,14 +345,14 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
             className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-              <span className="text-[7px] font-black tracking-tight uppercase">
+              <span className="text-[7px] font-bold tracking-tight">
                 {reports.priority}
               </span>
               <IconFilter className="size-2.5" />
             </div>
             <div className="flex items-center justify-end gap-2">
               <IconChevronDown className="size-3 opacity-20" />
-              <span className="text-[11px] font-black tracking-tight uppercase">
+              <span className="text-[11px] font-bold tracking-tight">
                 {selectedPriorities.length > 0
                   ? `${digitsEnToFa(selectedPriorities.length)} Selected`
                   : "All Priorities"}
@@ -361,11 +361,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-border bg-card w-64 rounded-none border p-0"
+          className="border-border bg-card w-64 rounded-xl border p-0"
           align="start"
         >
           <div className="p-4">
-            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-black tracking-tight uppercase">
+            <h4 className="border-border/40 mb-3 border-b pb-2 text-[10px] font-bold tracking-tight">
               {reports.selectPriorities}
             </h4>
             <div className="space-y-2 overflow-y-auto pe-1">
@@ -376,7 +376,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                 >
                   <label
                     htmlFor={`pe-${p.value}`}
-                    className="flex-1 cursor-pointer text-right text-[11px] font-bold uppercase"
+                    className="flex-1 cursor-pointer text-right text-[11px] font-bold"
                   >
                     {p.label}
                   </label>
@@ -386,7 +386,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
                     onCheckedChange={(c) =>
                       handleToggle("priorities", p.value, !!c)
                     }
-                    className="rounded-none"
+                    className="rounded-md"
                   />
                 </div>
               ))}
@@ -403,14 +403,12 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
           className="bg-muted/20 border-border/10 flex h-16 flex-col items-center justify-center border-s px-6 text-rose-500 transition-colors hover:bg-rose-500/10"
         >
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
-            <span className="text-[7px] font-black tracking-tight uppercase">
+            <span className="text-[7px] font-bold tracking-tight">
               Reset_Gates
             </span>
             <IconX className="size-2.5" />
           </div>
-          <span className="text-[10px] font-black tracking-tight uppercase">
-            _00
-          </span>
+          <span className="text-[10px] font-bold tracking-tight">_00</span>
         </Button>
       )}
 
@@ -426,7 +424,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
               })
             }
           />
-          <span className="text-[10px] font-black opacity-30">TO</span>
+          <span className="text-[10px] font-bold opacity-30">TO</span>
           <DatePicker
             date={value.timeRange.end}
             setDate={(d) =>

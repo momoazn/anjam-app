@@ -44,7 +44,7 @@ export function TaskDetailsSidebar({
           <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
             <IconActivity className="size-4" />
           </div>
-          <span className="text-xs font-bold tracking-wider uppercase">
+          <span className="text-xs font-bold tracking-tight">
             {tasks.details.quickInfoCardTitle}
           </span>
         </div>
@@ -111,7 +111,7 @@ export function TaskDetailsSidebar({
           <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
             <IconSettings className="size-4" />
           </div>
-          <span className="text-xs font-bold tracking-wider uppercase">
+          <span className="text-xs font-bold tracking-tight">
             {tasks.details.actionsCardTitle}
           </span>
         </div>
@@ -146,7 +146,7 @@ export function TaskDetailsSidebar({
         <div className="flex flex-col items-center gap-3">
           <IconInfoCircle className="text-muted-foreground size-6" />
           <div className="space-y-1 text-center">
-            <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+            <p className="text-muted-foreground text-[10px] font-bold tracking-tight">
               {tasks.details.displayIdLabel}
             </p>
             <p className="font-mono text-xs font-bold">

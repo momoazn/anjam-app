@@ -86,7 +86,7 @@ function SortableSubtaskRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "border-border/10 bg-card rounded-none border p-4 text-right",
+        "border-border/10 bg-card rounded-xl border p-4 text-right",
         isDragging && "bg-muted/30",
       )}
     >
@@ -101,7 +101,7 @@ function SortableSubtaskRow({
             <IconGripVertical className="size-4" />
           </button>
           <div>
-            <p className="text-sm font-black tracking-tight">{subtask.title}</p>
+            <p className="text-sm font-bold tracking-tight">{subtask.title}</p>
             <p className="text-muted-foreground text-[11px] font-medium">
               {assigneeName} · {formatTaskDate(subtask.created)}
             </p>
@@ -112,7 +112,7 @@ function SortableSubtaskRow({
             variant="outline"
             size="sm"
             className={cn(
-              "rounded-none text-[10px] font-black uppercase",
+              "rounded-lg text-[10px] font-bold",
               subtask.is_done ? "text-success" : "text-muted-foreground",
             )}
             onClick={onToggle}
@@ -126,7 +126,7 @@ function SortableSubtaskRow({
           <Button
             variant="ghost"
             size="sm"
-            className="text-[10px] font-black text-rose-500 uppercase"
+            className="text-[10px] font-bold text-rose-500"
             onClick={onDelete}
             disabled={isDeleting}
           >
@@ -242,28 +242,28 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-4">
-        <span className="text-primary/60 text-[10px] font-black tracking-tight uppercase">
+        <span className="text-primary/60 text-[10px] font-bold tracking-tight">
           Work_Breakdown
         </span>
         <div className="bg-border/20 h-px flex-1" />
       </div>
 
-      <div className="bg-border/40 border-border/40 border p-6">
+      <div className="bg-border/40 border-border/40 rounded-xl border p-6">
         <div className="border-border/20 space-y-4 border-b pb-4">
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <label className="text-muted-foreground/40 text-[10px] font-black tracking-tight uppercase">
+              <label className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
                 {tasks.details.subtasks.title}
               </label>
               <Input
                 value={newTitle}
                 onChange={(event) => setNewTitle(event.target.value)}
                 placeholder={tasks.details.subtasks.addPlaceholder}
-                className="border-border/40 bg-muted/5 mt-2 rounded-none text-right text-sm font-black"
+                className="border-border/40 bg-muted/5 mt-2 rounded-lg text-right text-sm font-bold"
               />
             </div>
             <div className="w-56">
-              <div className="text-muted-foreground/40 flex items-center justify-end gap-1 text-[10px] font-black tracking-tight uppercase">
+              <div className="text-muted-foreground/40 flex items-center justify-end gap-1 text-[10px] font-bold tracking-tight">
                 <IconUser className="size-3" />
                 {tasks.details.subtasks.assigneeLabel}
               </div>
@@ -272,7 +272,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
                   value={newAssignee}
                   onValueChange={(value) => setNewAssignee(value)}
                 >
-                  <SelectTrigger className="border-border/40 bg-muted/5 rounded-none text-right text-[11px] uppercase">
+                  <SelectTrigger className="border-border/40 bg-muted/5 rounded-lg text-right text-[11px]">
                     <span className="text-muted-foreground/60">
                       {newAssignee
                         ? assigneeOptions.find(
@@ -281,18 +281,15 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
                         : tasks.addTask.unassigned}
                     </span>
                   </SelectTrigger>
-                  <SelectContent className="border-border bg-card rounded-none border">
-                    <SelectItem
-                      value=""
-                      className="text-[10px] font-black uppercase"
-                    >
+                  <SelectContent className="border-border bg-card rounded-xl border">
+                    <SelectItem value="" className="text-[10px] font-bold">
                       {tasks.addTask.unassigned}
                     </SelectItem>
                     {assigneeOptions.map((option) => (
                       <SelectItem
                         key={option.value}
                         value={option.value}
-                        className="text-[10px] font-black uppercase"
+                        className="text-[10px] font-bold"
                       >
                         {option.label}
                       </SelectItem>
@@ -304,7 +301,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
             <Button
               onClick={handleCreate}
               disabled={createSubtask.isPending}
-              className="border-border/40 h-10 rounded-none text-[10px] font-black tracking-tight uppercase"
+              className="border-border/40 h-10 rounded-lg text-[10px] font-bold tracking-tight"
             >
               <IconPlus className="size-4" />
               {tasks.details.subtasks.addButton}

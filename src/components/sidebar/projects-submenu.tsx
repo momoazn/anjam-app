@@ -31,7 +31,7 @@ export function ProjectsSubmenu() {
   return (
     <SidebarGroup className="py-2">
       {state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-wider uppercase">
+        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-tight">
           {navigationSectionLabels.projects}
         </SidebarGroupLabel>
       )}
@@ -47,7 +47,7 @@ export function ProjectsSubmenu() {
               <SidebarMenuButton
                 tooltip={navigation.allProjects}
                 className={cn(
-                  "group relative h-9 w-full justify-start gap-3 rounded-md px-3 transition-all duration-200",
+                  "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                   isProjectsActive
                     ? "bg-primary/10 text-primary font-medium"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
@@ -89,7 +89,7 @@ export function ProjectsSubmenu() {
                   >
                     <SidebarMenuButton
                       className={cn(
-                        "group relative h-8 w-full justify-start gap-3 rounded-md px-3 transition-all duration-200",
+                        "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                         isActive
                           ? "bg-accent text-accent-foreground"
                           : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",

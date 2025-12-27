@@ -52,10 +52,10 @@ export function ProjectDetailsSections({
       {/* Identity Log Module */}
       <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-lg">
             <IconTerminal className="size-4" />
           </div>
-          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
+          <span className="text-primary text-[10px] font-bold tracking-tight">
             01_Identity_Log
           </span>
           <div className="bg-border/20 h-px flex-1" />
@@ -95,7 +95,7 @@ export function ProjectDetailsSections({
           ].map((item, i) => (
             <div
               key={i}
-              className="group border-border/40 bg-card hover:border-primary/40 relative overflow-hidden border-2 p-6 transition-colors"
+              className="group border-border/40 bg-card hover:border-primary/40 relative overflow-hidden rounded-2xl border p-6 transition-colors"
             >
               <BlueprintPattern
                 variant="technical"
@@ -103,14 +103,14 @@ export function ProjectDetailsSections({
               />
               <div className="relative z-10 flex h-full flex-col justify-between gap-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.2em] uppercase">
+                  <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
                     {item.label}
                   </span>
                   <item.icon className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
                 </div>
                 <div
                   className={cn(
-                    "text-right text-sm font-black tracking-tight uppercase",
+                    "text-right text-sm font-bold tracking-tight",
                     item.mono && "font-mono text-[10px] opacity-60",
                   )}
                 >
@@ -125,10 +125,10 @@ export function ProjectDetailsSections({
       {/* Description Section */}
       <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-lg">
             <IconFileText className="size-4" />
           </div>
-          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
+          <span className="text-primary text-[10px] font-bold tracking-tight">
             02_Project_Brief
           </span>
           <div className="bg-border/20 h-px flex-1" />
@@ -136,27 +136,27 @@ export function ProjectDetailsSections({
 
         <div className="relative">
           {isEditing ? (
-            <div className="border-primary bg-card relative overflow-hidden border-4 p-8">
+            <div className="border-primary/20 bg-card relative overflow-hidden rounded-2xl border p-8">
               <BlueprintPattern
                 variant="technical"
                 className="opacity-[0.05]"
               />
               <div className="relative z-10 space-y-3 text-right">
-                <span className="text-primary text-[10px] font-black tracking-widest uppercase">
+                <span className="text-primary text-[10px] font-bold tracking-tight">
                   Input_Buffer :: Description_Edit
                 </span>
                 <Textarea
                   value={editedDescription.replace(/<br>/g, "\n")}
                   onChange={(event) => onDescriptionChange(event.target.value)}
                   placeholder={projects.create.form.descriptionPlaceholder}
-                  className="border-border/40 bg-background focus:border-primary min-h-48 rounded-none border-2 p-6 text-right text-lg leading-relaxed font-medium focus:ring-0"
+                  className="border-border/40 bg-background focus:border-primary/40 min-h-48 rounded-xl border p-6 text-right text-lg leading-relaxed font-medium focus:ring-0"
                 />
               </div>
             </div>
           ) : project.description ? (
-            <div className="border-border/40 bg-card relative overflow-hidden border-2 p-12">
+            <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border p-12">
               <BlueprintPattern variant="cross" className="opacity-[0.03]" />
-              <div className="bg-primary text-primary-foreground absolute -top-4 -right-4 z-10 flex size-12 items-center justify-center">
+              <div className="bg-primary text-primary-foreground absolute -top-4 -right-4 z-10 flex size-12 items-center justify-center rounded-2xl">
                 <IconQuote className="size-6" />
               </div>
               <p className="text-foreground/80 relative z-10 text-right text-xl leading-relaxed font-medium whitespace-pre-wrap">
@@ -164,9 +164,9 @@ export function ProjectDetailsSections({
               </p>
             </div>
           ) : (
-            <div className="border-border/20 bg-muted/5 relative overflow-hidden border-2 border-dashed p-20 text-center opacity-30 grayscale">
+            <div className="border-border/20 bg-muted/5 relative overflow-hidden rounded-2xl border border-dashed p-20 text-center opacity-30 grayscale">
               <IconFileText className="text-primary mx-auto mb-6 size-16 stroke-1" />
-              <p className="text-xs font-black tracking-[0.3em] uppercase">
+              <p className="text-xs font-bold tracking-tight">
                 {projects.details.noDescription}
               </p>
             </div>
@@ -177,23 +177,23 @@ export function ProjectDetailsSections({
       {/* Asset Section */}
       <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-lg">
             <IconUpload className="size-4" />
           </div>
-          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
+          <span className="text-primary text-[10px] font-bold tracking-tight">
             03_Asset_Stream
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="border-border/40 bg-card relative overflow-hidden border-2">
+        <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border">
           <BlueprintPattern variant="technical" className="opacity-[0.02]" />
           <div className="relative z-10">
             {isEditing ? (
               <div className="space-y-12 p-8 text-right md:p-12">
                 {project.assets && project.assets.length > 0 && (
                   <div className="space-y-6">
-                    <h4 className="text-muted-foreground/40 border-border/10 border-b-2 pb-3 text-[10px] font-black tracking-widest uppercase">
+                    <h4 className="text-muted-foreground/40 border-border/10 border-b pb-3 text-[10px] font-bold tracking-tight">
                       {projects.files.existingFiles}
                     </h4>
                     <div className="grid grid-cols-1 gap-3">
@@ -202,18 +202,18 @@ export function ProjectDetailsSections({
                         .map((filename) => (
                           <div
                             key={filename}
-                            className="group border-border/20 bg-background/50 flex items-center justify-between border-2 p-4 transition-all hover:border-rose-500/40"
+                            className="group border-border/20 bg-background/50 flex items-center justify-between rounded-xl border p-4 transition-all hover:border-rose-500/40"
                           >
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
                               onClick={() => onDeleteFile(filename)}
-                              className="h-10 w-10 shrink-0 rounded-none text-rose-500 hover:bg-rose-500 hover:text-white"
+                              className="h-10 w-10 shrink-0 rounded-lg text-rose-500 hover:bg-rose-500 hover:text-white"
                             >
                               <IconTrash className="size-5" />
                             </Button>
-                            <span className="flex-1 truncate pe-6 text-right font-mono text-xs font-bold tracking-tight uppercase opacity-60">
+                            <span className="flex-1 truncate pe-6 text-right font-mono text-xs font-bold tracking-tight opacity-60">
                               {filename}
                             </span>
                           </div>
@@ -223,7 +223,7 @@ export function ProjectDetailsSections({
                 )}
 
                 <div className="space-y-6">
-                  <h4 className="text-primary border-primary/20 flex items-center justify-end gap-3 border-b-2 pb-3 text-[10px] font-black tracking-widest uppercase">
+                  <h4 className="text-primary border-primary/20 flex items-center justify-end gap-3 border-b pb-3 text-[10px] font-bold tracking-tight">
                     {projects.files.addNewFiles}
                     <IconUpload className="size-4" />
                   </h4>
@@ -244,16 +244,16 @@ export function ProjectDetailsSections({
       {/* Operation Log Section */}
       <section className="space-y-6">
         <div className="flex items-center gap-4">
-          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-lg">
             <IconActivity className="size-4" />
           </div>
-          <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
+          <span className="text-primary text-[10px] font-bold tracking-tight">
             06_Operation_Log
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="border-border/40 bg-card relative overflow-hidden border-2">
+        <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border">
           <BlueprintPattern variant="technical" className="opacity-[0.02]" />
           <div className="relative z-10">
             <ActivityStream resource="projects" resourceId={project.id} />
