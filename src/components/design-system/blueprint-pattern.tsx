@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface BlueprintPatternProps {
   opacity?: number;
-  variant?: "grid" | "dots" | "lines";
+  variant?: "grid" | "dots" | "lines" | "technical" | "cross";
   className?: string;
 }
 
@@ -51,6 +51,30 @@ export function BlueprintPattern({
             repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--primary) 10px, var(--primary) 11px)
           `,
           backgroundSize: "20px 20px",
+        };
+
+      case "technical":
+        return {
+          ...baseStyle,
+          backgroundImage: `
+            linear-gradient(to right, var(--primary) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--primary) 1px, transparent 1px),
+            linear-gradient(to right, var(--primary) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--primary) 1px, transparent 1px)
+          `,
+          backgroundSize: "100px 100px, 100px 100px, 20px 20px, 20px 20px",
+          backgroundPosition: "0 0, 0 0, 0 0, 0 0",
+        };
+
+      case "cross":
+        return {
+          ...baseStyle,
+          backgroundImage: `
+            linear-gradient(to right, var(--primary) 2px, transparent 2px),
+            linear-gradient(to bottom, var(--primary) 2px, transparent 2px)
+          `,
+          backgroundSize: "40px 40px",
+          backgroundPosition: "-1px -1px",
         };
 
       default:
