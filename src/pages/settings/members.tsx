@@ -69,6 +69,8 @@ export function OrgMembersPage() {
   const currentUser = useAuthUser();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isCreateLinkOpen, setIsCreateLinkOpen] = useState(false);
+  const [isRevokeConfirmOpen, setIsRevokeConfirmOpen] = useState(false);
+  const [inviteToRevoke, setInviteToRevoke] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"admin" | "member">("member");
   const [linkRole, setLinkRole] = useState<"admin" | "member">("member");
@@ -128,8 +130,20 @@ export function OrgMembersPage() {
     }
   };
 
-  const handleRevokeInvite = (inviteId: string) => {
-    revokeInvite(inviteId);
+  const handleRevokeClick = (inviteId: string) => {
+    setInviteToRevoke(inviteId);
+    setIsRevokeConfirmOpen(true);
+  };
+
+  const handleConfirmRevoke = () => {
+    if (inviteToRevoke) {
+      revokeInvite(inviteToRevoke, {
+        onSuccess: () => {
+          setIsRevokeConfirmOpen(false);
+          setInviteToRevoke(null);
+        },
+      });
+    }
   };
 
   const getStatusBadgeVariant = (
@@ -344,7 +358,7 @@ export function OrgMembersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleRevokeInvite(invite.id)}
+                              onClick={() => handleRevokeClick(invite.id)}
                               disabled={isRevoking}
                             >
                               {organization.inviteLinks.revoke}
@@ -484,6 +498,37 @@ export function OrgMembersPage() {
               {isCreatingLink
                 ? organization.members.loading
                 : organization.inviteLinks.createDialog.submit}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Revoke Confirmation Dialog */}
+      <Dialog open={isRevokeConfirmOpen} onOpenChange={setIsRevokeConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {organization.inviteLinks.revokeDialog.title}
+            </DialogTitle>
+            <DialogDescription>
+              {organization.inviteLinks.revokeDialog.description}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsRevokeConfirmOpen(false)}
+            >
+              {shared.cancel}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmRevoke}
+              disabled={isRevoking}
+            >
+              {isRevoking
+                ? organization.members.loading
+                : organization.inviteLinks.revokeDialog.confirm}
             </Button>
           </DialogFooter>
         </DialogContent>

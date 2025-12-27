@@ -44,18 +44,16 @@ export default function InviteAccept() {
 
     const newErrors: typeof errors = {};
     const trimmedEmail = email.trim().toLowerCase();
-    const trimmedPassword = password.trim();
-    const trimmedConfirm = confirmPassword.trim();
 
     if (!trimmedEmail) newErrors.email = auth.errors.emailRequired;
     else if (!emailRegex.test(trimmedEmail)) {
       newErrors.email = auth.errors.emailInvalid;
     }
 
-    if (!trimmedPassword) newErrors.password = auth.errors.passwordRequired;
-    if (!trimmedConfirm) {
+    if (!password) newErrors.password = auth.errors.passwordRequired;
+    if (!confirmPassword) {
       newErrors.confirmPassword = auth.errors.passwordConfirmRequired;
-    } else if (trimmedPassword !== trimmedConfirm) {
+    } else if (password !== confirmPassword) {
       newErrors.confirmPassword = auth.errors.passwordsMismatch;
     }
 
@@ -68,8 +66,8 @@ export default function InviteAccept() {
     acceptInviteMutation.mutate(
       {
         email: trimmedEmail,
-        password: trimmedPassword,
-        passwordConfirm: trimmedConfirm,
+        password,
+        passwordConfirm: confirmPassword,
       },
       {
         onSuccess: () => {
@@ -93,16 +91,16 @@ export default function InviteAccept() {
 
   // Error state
   if (error || !inviteInfo) {
+    // Match error messages (supports both Persian backend messages and English fallbacks)
+    const msg = error?.message ?? "";
     const errorMessage =
-      error?.message === "Invalid invite link"
-        ? auth.invite.errors.inviteNotFound
-        : error?.message?.includes("expired")
-          ? auth.invite.errors.inviteExpired
-          : error?.message?.includes("exhausted")
-            ? auth.invite.errors.inviteExhausted
-            : error?.message?.includes("revoked")
-              ? auth.invite.errors.inviteRevoked
-              : auth.invite.errors.inviteNotFound;
+      msg.includes("منقضی") || msg.includes("expired")
+        ? auth.invite.errors.inviteExpired
+        : msg.includes("ظرفیت") || msg.includes("exhausted")
+          ? auth.invite.errors.inviteExhausted
+          : msg.includes("لغو") || msg.includes("revoked")
+            ? auth.invite.errors.inviteRevoked
+            : auth.invite.errors.inviteNotFound;
 
     return (
       <div className="bg-background flex min-h-screen items-center justify-center p-4">

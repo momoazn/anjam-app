@@ -269,7 +269,21 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 			return err
 		}
 
-		username := deriveUsername(email)
+		// Generate unique username with collision handling
+		baseUsername := deriveUsername(email)
+		username := baseUsername
+		for i := 0; i < 5; i++ {
+			existingUser, _ := txApp.FindFirstRecordByFilter(
+				CollectionUsers,
+				"username = {:username}",
+				dbx.Params{"username": username},
+			)
+			if existingUser == nil {
+				break
+			}
+			username = fmt.Sprintf("%s_%s", baseUsername, security.RandomString(3))
+		}
+
 		newUser = core.NewRecord(usersCollection)
 		newUser.Set("email", email)
 		newUser.Set("username", username)
@@ -317,7 +331,9 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 			notification.Set("data", map[string]any{
 				"organizationId": org.Id,
 			})
-			_ = txApp.Save(notification)
+			if err := txApp.Save(notification); err != nil {
+				return fmt.Errorf("failed to save welcome notification: %w", err)
+			}
 		}
 
 		return nil
@@ -391,7 +407,21 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 			return err
 		}
 
-		username := deriveUsername(email)
+		// Generate unique username with collision handling
+		baseUsername := deriveUsername(email)
+		username := baseUsername
+		for i := 0; i < 5; i++ {
+			existingUser, _ := txApp.FindFirstRecordByFilter(
+				CollectionUsers,
+				"username = {:username}",
+				dbx.Params{"username": username},
+			)
+			if existingUser == nil {
+				break
+			}
+			username = fmt.Sprintf("%s_%s", baseUsername, security.RandomString(3))
+		}
+
 		newUser = core.NewRecord(usersCollection)
 		newUser.Set("email", email)
 		newUser.Set("username", username)
@@ -409,8 +439,9 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 			return err
 		}
 
-		slug := slugify(orgName)
-		// Check for slug collision and add suffix if needed
+		// Generate unique slug with collision handling
+		originalSlug := slugify(orgName)
+		slug := originalSlug
 		for i := 0; i < 5; i++ {
 			existingOrg, err := txApp.FindFirstRecordByFilter(
 				CollectionOrganizations,
@@ -420,7 +451,7 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 			if err != nil || existingOrg == nil {
 				break
 			}
-			slug = fmt.Sprintf("%s-%s", slug, generateShortID())
+			slug = fmt.Sprintf("%s-%s", originalSlug, generateShortID())
 		}
 
 		newOrg = core.NewRecord(orgCollection)

@@ -72,6 +72,23 @@ export default function Onboarding() {
         await pb.collection("organizations").update(currentOrg.id, formData);
       }
 
+      // Process invite emails - create invite link if any valid emails provided
+      const validEmails = inviteEmails.filter(
+        (e) => e.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim()),
+      );
+      if (validEmails.length > 0) {
+        // Create an invite link with max uses equal to number of emails
+        await fetch(`/api/v1/organizations/${currentOrg.id}/invites`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            role: "member",
+            max_uses: validEmails.length,
+          }),
+        });
+        // Note: In a production app, you'd send emails with the invite link here
+      }
+
       // Mark onboarding as completed for current user's membership
       const memberships = await pb
         .collection("organization_members")

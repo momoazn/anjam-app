@@ -349,6 +349,12 @@ export const organization = {
     revokeConfirm: "آیا از لغو این لینک دعوت مطمئن هستید؟",
     revokeSuccess: "لینک دعوت لغو شد",
     revokeError: "خطا در لغو لینک دعوت",
+    revokeDialog: {
+      title: "لغو لینک دعوت",
+      description:
+        "آیا از لغو این لینک دعوت مطمئن هستید؟ پس از لغو، کاربران نمی‌توانند از این لینک استفاده کنند.",
+      confirm: "لغو لینک",
+    },
     table: {
       link: "لینک",
       role: "نقش",

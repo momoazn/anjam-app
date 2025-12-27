@@ -39,8 +39,6 @@ export default function Register() {
 
     const newErrors: typeof errors = {};
     const trimmedEmail = email.trim().toLowerCase();
-    const trimmedPassword = password.trim();
-    const trimmedConfirm = confirmPassword.trim();
     const trimmedOrgName = organizationName.trim();
 
     if (!trimmedEmail) newErrors.email = auth.errors.emailRequired;
@@ -48,10 +46,10 @@ export default function Register() {
       newErrors.email = auth.errors.emailInvalid;
     }
 
-    if (!trimmedPassword) newErrors.password = auth.errors.passwordRequired;
-    if (!trimmedConfirm) {
+    if (!password) newErrors.password = auth.errors.passwordRequired;
+    if (!confirmPassword) {
       newErrors.confirmPassword = auth.errors.passwordConfirmRequired;
-    } else if (trimmedPassword !== trimmedConfirm) {
+    } else if (password !== confirmPassword) {
       newErrors.confirmPassword = auth.errors.passwordsMismatch;
     }
 
@@ -69,8 +67,8 @@ export default function Register() {
     registerMutation.mutate(
       {
         email: trimmedEmail,
-        password: trimmedPassword,
-        passwordConfirm: trimmedConfirm,
+        password,
+        passwordConfirm: confirmPassword,
         organizationName: trimmedOrgName,
       },
       {
