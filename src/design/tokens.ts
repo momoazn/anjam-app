@@ -30,6 +30,7 @@ export const tokens = {
   spacing: {
     cardPadding: "var(--ds-spacing-cardPadding)",
     emptyStatePaddingY: "var(--ds-spacing-emptyStatePaddingY)",
+    formItemGap: "var(--ds-spacing-formItemGap)",
     heroPadding: "var(--ds-spacing-heroPadding)",
     heroPaddingLg: "var(--ds-spacing-heroPaddingLg)",
     toolbarPadding: "var(--ds-spacing-toolbarPadding)",
