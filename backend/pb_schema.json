@@ -173,7 +173,7 @@
     "id": "_pb_users_auth_",
     "listRule": "@request.auth.role = \"admin\"",
     "viewRule": "@request.auth.role = \"admin\" || @request.auth.id = id",
-    "createRule": "@request.auth.role = \"admin\"",
+    "createRule": "@request.auth.role = \"admin\" || (@request.auth.id = \"\" && @request.body.role = \"employee\")",
     "updateRule": "@request.auth.role = \"admin\" || @request.auth.id = id",
     "deleteRule": "@request.auth.role = \"admin\"",
     "name": "users",

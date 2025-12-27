@@ -376,12 +376,12 @@ func handleUserCreation(e *core.RecordEvent) error {
 	// - Organization membership controls visibility, so even org admins cannot read users from other tenants
 	// This handler focuses on setting defaults and data integrity.
 
-	// Set new users as inactive by default, except admins
+	// Set new users as active by default, except admins (always active)
 	if e.Record.Get("active") == nil {
 		if newUserRole == RoleAdmin {
 			e.Record.Set("active", true) // Admins are always active
 		} else {
-			e.Record.Set("active", false) // Regular users start inactive
+			e.Record.Set("active", true) // Regular users start active
 		}
 	}
 	// Initialize failed login attempts to 0
