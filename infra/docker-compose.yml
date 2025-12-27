@@ -4,21 +4,21 @@ services:
   anjam:
     build:
       context: ..
-      dockerfile: ../Dockerfile
+      dockerfile: infra/Dockerfile
     ports:
       - "8090:8090"
     volumes:
       # Mount the local data directory so the SQLite file is accessible on the host
-      - ./data:/app/data
+      - ../data:/app/data
     environment:
       # Set to false in production to prevent default admin creation
       # after the first run
-      - TM_ALLOW_DEFAULT_ACCOUNTS=true
+      - TM_ALLOW_DEFAULT_ACCOUNTS=false
     # Restart policy
     restart: unless-stopped
     # Health check
     healthcheck:
-      test: ["CMD-SHELL", "/app/anjam --version"]
+      test: ["CMD", "/app/anjam", "--version"]
       interval: 30s
       timeout: 10s
       retries: 3
