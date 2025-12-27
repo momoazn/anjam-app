@@ -8,14 +8,14 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/pages/create-project.tsx
 - [ ] src/pages/create-task.tsx
 - [ ] src/pages/create-user.tsx
-- [ ] src/pages/dashboard.tsx
+- [x] src/pages/dashboard.tsx
 - [ ] src/pages/edit-project.tsx
 - [ ] src/pages/edit-task.tsx
 - [ ] src/pages/edit-user.tsx
 - [ ] src/pages/helps.tsx
 - [ ] src/pages/landing.tsx
 - [ ] src/pages/login.tsx
-- [ ] src/pages/my-tasks.tsx
+- [x] src/pages/my-tasks.tsx
 - [ ] src/pages/not-found.tsx
 - [ ] src/pages/notifications.tsx
 - [ ] src/pages/organizations/create.tsx
@@ -23,7 +23,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/pages/project-details.tsx
 - [ ] src/pages/project-tasks.tsx
 - [ ] src/pages/project-users.tsx
-- [ ] src/pages/projects.tsx
+- [x] src/pages/projects.tsx
 - [ ] src/pages/register.tsx
 - [ ] src/pages/reports.tsx
 - [ ] src/pages/select-organization.tsx
@@ -35,7 +35,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/pages/task-board.tsx
 - [ ] src/pages/task-calendar.tsx
 - [ ] src/pages/task-details.tsx
-- [ ] src/pages/tasks.tsx
+- [x] src/pages/tasks.tsx
 - [ ] src/pages/timesheet.tsx
 - [ ] src/pages/users.test.tsx
 - [ ] src/pages/users.tsx
@@ -47,7 +47,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/components/brand/logo.tsx
 - [ ] src/components/comments/mention-autocomplete.tsx
 - [ ] src/components/dashboard/charts-widget.tsx
-- [ ] src/components/dashboard/dashboard-header.tsx
+- [x] src/components/dashboard/dashboard-header.tsx
 - [ ] src/components/dashboard/overdue-tasks-widget.tsx
 - [ ] src/components/dashboard/productivity-widget.tsx
 - [ ] src/components/dashboard/projects-widget.tsx
@@ -77,7 +77,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/components/notifications/notification-item.tsx
 - [ ] src/components/notifications/notification-list.tsx
 - [ ] src/components/organization/org-switcher.tsx
-- [ ] src/components/page-header.tsx
+- [x] src/components/page-header.tsx
 - [ ] src/components/page-transition.tsx
 - [ ] src/components/project/add-project-member-modal.tsx
 - [ ] src/components/project/delete-project-dialog.tsx
@@ -158,7 +158,7 @@ This file tracks migration progress for the design-system refactor. Update check
 - [ ] src/components/task/task-empty-state.tsx
 - [ ] src/components/task/task-filters-panel.tsx
 - [ ] src/components/task/task-filters.tsx
-- [ ] src/components/task/task-header.tsx
+- [x] src/components/task/task-header.tsx
 - [ ] src/components/task/task-list-group.tsx
 - [ ] src/components/task/task-list-header.tsx
 - [ ] src/components/task/task-list-item.tsx

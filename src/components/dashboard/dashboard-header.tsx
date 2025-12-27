@@ -21,6 +21,7 @@ import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import { useAuthRole } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconBox } from "@/components/recipes/icon-box";
 
 type DashboardHeaderProps = {
   stats?: {
@@ -142,9 +143,12 @@ export function DashboardHeader({
         {/* Main Welcome Section */}
         <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-10">
           <div className="relative z-10 flex items-center gap-3">
-            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
-              <LayoutDashboard className="h-5 w-5" />
-            </div>
+            <IconBox
+              icon={LayoutDashboard}
+              size="xs"
+              tone="primary"
+              style={{ borderRadius: "var(--radius-lg)" }}
+            />
             <div className="flex flex-col">
               <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                 {app.name}
@@ -217,14 +221,17 @@ export function DashboardHeader({
                       />
                     </div>
                   </div>
-                  <div
+                  <IconBox
+                    icon={item.icon}
+                    size="sm"
+                    tone="custom"
                     className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110",
+                      "transition-all duration-300 group-hover:scale-110",
                       item.bg,
                     )}
-                  >
-                    <item.icon className={cn("h-6 w-6", item.color)} />
-                  </div>
+                    iconClassName={cn(item.color)}
+                    style={{ borderRadius: "var(--radius-xl)" }}
+                  />
                 </div>
               </div>
             ))}

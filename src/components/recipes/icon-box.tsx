@@ -5,7 +5,7 @@ import { tokens } from "@/design/tokens";
 import { cn } from "@/lib/utils";
 
 type IconBoxSize = "xs" | "sm" | "md" | "lg";
-type IconBoxTone = "primary" | "primarySolid" | "muted" | "accent";
+type IconBoxTone = "primary" | "primarySolid" | "muted" | "accent" | "custom";
 
 const iconClassBySize: Record<IconBoxSize, string> = {
   xs: "size-5",
@@ -20,6 +20,7 @@ const toneClassByTone: Record<IconBoxTone, string> = {
     "bg-primary text-primary-foreground shadow-primary/20 shadow-lg",
   muted: "bg-muted/50 text-muted-foreground",
   accent: "bg-accent text-accent-foreground",
+  custom: "",
 };
 
 type IconBoxProps = React.ComponentProps<"div"> & {

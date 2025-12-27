@@ -33,6 +33,7 @@ export function HeroHeader({
   iconSize = "lg",
   iconTone = "primary",
   background,
+  children,
   className,
   style,
   ...props
@@ -71,6 +72,8 @@ export function HeroHeader({
       </div>
 
       {action ? <div className="relative z-10">{action}</div> : null}
+
+      {children}
     </div>
   );
 }
