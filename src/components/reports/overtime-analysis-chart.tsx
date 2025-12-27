@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
 import type { OvertimeAnalysis } from "@/lib/reports-utils";
@@ -67,7 +68,7 @@ export function OvertimeAnalysisChart({ data }: Props) {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value, name) => [
+                    formatter={(value: any, name: any) => [
                       `${value}${name === reports.charts.employee.overtimeAnalysis.columns.workloadScore ? "%" : "h"}`,
                       name,
                     ]}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -92,7 +93,7 @@ export function EmployeeProductivityChart({
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value, name) => [
+                    formatter={(value: any, name: any) => [
                       `${value} ${reports.completedTasks}`,
                       name,
                     ]}
@@ -103,7 +104,7 @@ export function EmployeeProductivityChart({
                 dataKey="count"
                 fill="var(--color-count)"
                 radius={[4, 4, 0, 0]}
-                onClick={(entry) => onBarClick?.(entry.key, entry.label)}
+                onClick={(entry: any) => onBarClick?.(entry.key, entry.label)}
                 style={{ cursor: onBarClick ? "pointer" : "default" }}
               />
             </BarChart>

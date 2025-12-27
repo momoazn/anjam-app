@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { charts, reports } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
@@ -47,25 +48,15 @@ export function ThroughputChart({ data, onBarClick }: Props) {
           tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
           tickFormatter={(value) => digitsEnToFa(value)}
         />
-        <ChartLegend
-          payload={[
-            {
-              value: chartConfig.completed.label,
-              color: chartConfig.completed.color,
-              type: "square",
-              id: "completed",
-            },
-          ]}
-          content={<ChartLegendContent />}
-        />
+        <ChartLegend content={<ChartLegendContent />} />
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(value) => [
+              formatter={(value: any) => [
                 digitsEnToFa(value as number),
                 chartConfig.completed.label,
               ]}
-              labelFormatter={(label) => `${charts.dateLabel} ${label}`}
+              labelFormatter={(label: any) => `${charts.dateLabel} ${label}`}
             />
           }
         />
@@ -73,7 +64,7 @@ export function ThroughputChart({ data, onBarClick }: Props) {
           dataKey="count"
           fill={chartConfig.completed.color}
           radius={[4, 4, 0, 0]}
-          onClick={(entry) => onBarClick?.(entry.key, entry.label)}
+          onClick={(entry: any) => onBarClick?.(entry.key, entry.label)}
           style={{ cursor: onBarClick ? "pointer" : "default" }}
         />
       </BarChart>

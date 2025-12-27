@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { reports, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Cell, Pie, PieChart } from "recharts";
@@ -40,13 +41,6 @@ type Props = {
 };
 
 export function PriorityDistribution({ data, onSliceClick }: Props) {
-  const legendPayload = data.map((d) => ({
-    value: chartConfig[d.key].label,
-    color: chartConfig[d.key].color,
-    type: "square" as const,
-    id: d.key,
-    dataKey: d.key,
-  }));
   return (
     <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
       <PieChart>
@@ -61,12 +55,12 @@ export function PriorityDistribution({ data, onSliceClick }: Props) {
           paddingAngle={2}
           labelLine={false}
           label={({ percent }) => {
-            const percentage = digitsEnToFa((percent * 100).toFixed(0));
+            const percentage = digitsEnToFa(((percent || 0) * 100).toFixed(0));
             return `${percentage}%`;
           }}
           fontSize={12}
           fill="var(--foreground)"
-          onClick={(entry) => onSliceClick?.(entry.key)}
+          onClick={(entry: any) => onSliceClick?.(entry.key)}
           style={{ cursor: onSliceClick ? "pointer" : "default" }}
         >
           {data.map((entry) => (
@@ -76,7 +70,7 @@ export function PriorityDistribution({ data, onSliceClick }: Props) {
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(_value, name, item) => {
+              formatter={(_value: any, name: any, item: any) => {
                 const total = data.reduce((a, b) => a + b.value, 0) || 1;
                 const pct = Math.round(((item?.value as number) / total) * 100);
                 return [
@@ -87,10 +81,7 @@ export function PriorityDistribution({ data, onSliceClick }: Props) {
             />
           }
         />
-        <ChartLegend
-          payload={legendPayload}
-          content={<ChartLegendContent className="text-xs" />}
-        />
+        <ChartLegend content={<ChartLegendContent className="text-xs" />} />
       </PieChart>
     </ChartContainer>
   );

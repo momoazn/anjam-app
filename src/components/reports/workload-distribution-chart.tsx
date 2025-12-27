@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
 import type { WorkloadDistribution } from "@/lib/reports-utils";
@@ -63,7 +64,7 @@ export function WorkloadDistributionChart({ data }: Props) {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value, name, props) => {
+                    formatter={(value: any, name: any, props: any) => {
                       const workloadLevel = props?.payload?.workloadLevel as
                         | "low"
                         | "medium"

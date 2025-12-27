@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { reports } from "@/constants";
@@ -94,7 +95,7 @@ export function ProductivityTrendsChart({
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value, name, props) => [
+                    formatter={(value: any, name: any, props: any) => [
                       value,
                       props.payload?.isProjected
                         ? reports.charts.employee.productivityTrends

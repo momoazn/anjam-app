@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
 import type { EmployeeSummary } from "@/lib/reports-utils";
@@ -85,7 +86,7 @@ export function EmployeeComparisonChart({
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value, _name, props) => {
+                    formatter={(value: any, _name: any, props: any) => {
                       const metric = props?.payload?.metric;
                       const shouldAddPercent =
                         metric ===
