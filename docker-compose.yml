@@ -3,13 +3,13 @@ version: "3.8"
 services:
   anjam:
     build:
-      context: ..
-      dockerfile: infra/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8090:8090"
     volumes:
       # Mount the local data directory so the SQLite file is accessible on the host
-      - ../data:/app/data
+      - ./data:/app/data
     environment:
       # Set to false in production to prevent default admin creation
       # after the first run
