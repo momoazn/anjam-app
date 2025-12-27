@@ -57,7 +57,7 @@ export function SiteHeader() {
   }, [location.pathname]);
 
   return (
-    <header className="bg-background/80 sticky top-0 z-50 flex h-16 shrink-0 items-center border-b backdrop-blur-md">
+    <header className="bg-background/80 sticky top-0 z-50 flex h-[var(--ds-sizing-siteHeaderHeight)] shrink-0 items-center border-b backdrop-blur-md">
       <div className="flex h-full items-center px-4 lg:px-6">
         <SidebarTrigger className="hover:bg-muted/50 size-9 rounded-lg transition-all active:scale-95" />
       </div>

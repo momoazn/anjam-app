@@ -1,0 +1,235 @@
+# Design System Migration Checklist
+
+This file tracks migration progress for the design-system refactor. Update checkboxes as files are migrated to recipes/tokens.
+
+## Pages
+
+- [ ] src/pages/audit-logs.tsx
+- [ ] src/pages/create-project.tsx
+- [ ] src/pages/create-task.tsx
+- [ ] src/pages/create-user.tsx
+- [ ] src/pages/dashboard.tsx
+- [ ] src/pages/edit-project.tsx
+- [ ] src/pages/edit-task.tsx
+- [ ] src/pages/edit-user.tsx
+- [ ] src/pages/helps.tsx
+- [ ] src/pages/landing.tsx
+- [ ] src/pages/login.tsx
+- [ ] src/pages/my-tasks.tsx
+- [ ] src/pages/not-found.tsx
+- [ ] src/pages/notifications.tsx
+- [ ] src/pages/organizations/create.tsx
+- [ ] src/pages/pending-activation.tsx
+- [ ] src/pages/project-details.tsx
+- [ ] src/pages/project-tasks.tsx
+- [ ] src/pages/project-users.tsx
+- [ ] src/pages/projects.tsx
+- [ ] src/pages/register.tsx
+- [ ] src/pages/reports.tsx
+- [ ] src/pages/select-organization.tsx
+- [ ] src/pages/settings.tsx
+- [ ] src/pages/settings/members.tsx
+- [ ] src/pages/settings/organization.tsx
+- [ ] src/pages/settings/preferences.tsx
+- [ ] src/pages/tags.tsx
+- [ ] src/pages/task-board.tsx
+- [ ] src/pages/task-calendar.tsx
+- [ ] src/pages/task-details.tsx
+- [ ] src/pages/tasks.tsx
+- [ ] src/pages/timesheet.tsx
+- [ ] src/pages/users.test.tsx
+- [ ] src/pages/users.tsx
+
+## Components
+
+- [x] src/components/app-sidebar.tsx
+- [ ] src/components/audit/activity-stream.tsx
+- [ ] src/components/brand/logo.tsx
+- [ ] src/components/comments/mention-autocomplete.tsx
+- [ ] src/components/dashboard/charts-widget.tsx
+- [ ] src/components/dashboard/dashboard-header.tsx
+- [ ] src/components/dashboard/overdue-tasks-widget.tsx
+- [ ] src/components/dashboard/productivity-widget.tsx
+- [ ] src/components/dashboard/projects-widget.tsx
+- [ ] src/components/dashboard/stats-widget.tsx
+- [ ] src/components/dashboard/welcome-widget.tsx
+- [ ] src/components/design-system/blueprint-pattern.tsx
+- [ ] src/components/design-system/l-frame.tsx
+- [ ] src/components/design-system/spring-interactions.tsx
+- [ ] src/components/error-boundary.tsx
+- [ ] src/components/error/page-error-boundary.tsx
+- [x] src/components/forms/form-field.tsx
+- [ ] src/components/forms/project-fields.tsx
+- [ ] src/components/forms/task-fields.tsx
+- [ ] src/components/forms/time-estimate-fields.tsx
+- [ ] src/components/forms/user-fields.tsx
+- [ ] src/components/global-search.tsx
+- [ ] src/components/header-user-menu.tsx
+- [ ] src/components/help/help-article.tsx
+- [ ] src/components/help/help-categories.tsx
+- [ ] src/components/help/help-header.tsx
+- [ ] src/components/nav-main.tsx
+- [ ] src/components/nav-user.tsx
+- [ ] src/components/notification-badge.tsx
+- [ ] src/components/notification-dropdown.tsx
+- [ ] src/components/notifications/mentions-list.tsx
+- [ ] src/components/notifications/notification-filters.tsx
+- [ ] src/components/notifications/notification-item.tsx
+- [ ] src/components/notifications/notification-list.tsx
+- [ ] src/components/organization/org-switcher.tsx
+- [ ] src/components/page-header.tsx
+- [ ] src/components/page-transition.tsx
+- [ ] src/components/project/add-project-member-modal.tsx
+- [ ] src/components/project/delete-project-dialog.tsx
+- [ ] src/components/project/project-assets.tsx
+- [ ] src/components/project/project-details-sections.tsx
+- [ ] src/components/project/project-details-skeleton.tsx
+- [ ] src/components/project/project-header.tsx
+- [ ] src/components/project/project-list-group.tsx
+- [ ] src/components/project/project-members.tsx
+- [ ] src/components/project/project-role-info.tsx
+- [ ] src/components/project/project-sidebar.tsx
+- [ ] src/components/project/project-statuses-settings.tsx
+- [x] src/components/recipes/card-section.tsx
+- [x] src/components/recipes/empty-state.tsx
+- [x] src/components/recipes/form-field.tsx
+- [x] src/components/recipes/hero-header.tsx
+- [x] src/components/recipes/icon-box.tsx
+- [x] src/components/recipes/metric-card.tsx
+- [x] src/components/recipes/stat-card.tsx
+- [x] src/components/recipes/toolbar.tsx
+- [ ] src/components/reports/charts-section.tsx
+- [ ] src/components/reports/drilldown-drawer.tsx
+- [ ] src/components/reports/employee-comparison-chart.tsx
+- [ ] src/components/reports/employee-overview-cards.tsx
+- [ ] src/components/reports/employee-performance-table.tsx
+- [ ] src/components/reports/employee-productivity-chart.tsx
+- [ ] src/components/reports/filters-bar.tsx
+- [ ] src/components/reports/filters-section.tsx
+- [ ] src/components/reports/leaderboard.tsx
+- [ ] src/components/reports/metric-cards.tsx
+- [ ] src/components/reports/metrics-section.tsx
+- [ ] src/components/reports/overtime-analysis-chart.tsx
+- [ ] src/components/reports/priority-distribution.tsx
+- [ ] src/components/reports/productivity-trends-chart.tsx
+- [ ] src/components/reports/project-export-button.tsx
+- [ ] src/components/reports/table-section.tsx
+- [ ] src/components/reports/throughput-chart.tsx
+- [ ] src/components/reports/timeliness-donut.tsx
+- [ ] src/components/reports/workload-distribution-chart.tsx
+- [ ] src/components/route-skeleton.tsx
+- [ ] src/components/scroll-to-top.tsx
+- [ ] src/components/settings/about-section.tsx
+- [ ] src/components/settings/appearance-section.tsx
+- [ ] src/components/settings/preferences-section.tsx
+- [ ] src/components/settings/profile-section.tsx
+- [ ] src/components/settings/security-section.tsx
+- [ ] src/components/settings/settings-sidebar.tsx
+- [ ] src/components/sidebar/projects-submenu.tsx
+- [ ] src/components/sidebar/quick-create.tsx
+- [ ] src/components/sidebar/sidebar-badge.tsx
+- [ ] src/components/sidebar/task-views.tsx
+- [x] src/components/site-header.tsx
+- [ ] src/components/suspense/route-suspense.tsx
+- [ ] src/components/tags/tag-form-dialog.tsx
+- [ ] src/components/tags/tags-delete-dialog.tsx
+- [ ] src/components/tags/tags-header.tsx
+- [ ] src/components/tags/tags-list.tsx
+- [ ] src/components/task/board/board-card.tsx
+- [ ] src/components/task/board/board-column.tsx
+- [ ] src/components/task/bulk-actions-bar.tsx
+- [ ] src/components/task/comment-composer.tsx
+- [ ] src/components/task/comment-item.tsx
+- [ ] src/components/task/comments-list.tsx
+- [ ] src/components/task/manage-saved-filters-dialog.tsx
+- [ ] src/components/task/my-tasks-empty-state.tsx
+- [ ] src/components/task/my-tasks-header.tsx
+- [ ] src/components/task/my-tasks-skeleton.tsx
+- [ ] src/components/task/my-tasks-stats.tsx
+- [ ] src/components/task/my-tasks-tabs.tsx
+- [ ] src/components/task/save-filter-dialog.tsx
+- [ ] src/components/task/saved-filters-dropdown.tsx
+- [ ] src/components/task/subtasks.tsx
+- [ ] src/components/task/tag-picker.tsx
+- [ ] src/components/task/task-details-content.tsx
+- [ ] src/components/task/task-details-header.tsx
+- [ ] src/components/task/task-details-sidebar.tsx
+- [ ] src/components/task/task-details-skeleton.tsx
+- [ ] src/components/task/task-empty-state.tsx
+- [ ] src/components/task/task-filters-panel.tsx
+- [ ] src/components/task/task-filters.tsx
+- [ ] src/components/task/task-header.tsx
+- [ ] src/components/task/task-list-group.tsx
+- [ ] src/components/task/task-list-header.tsx
+- [ ] src/components/task/task-list-item.tsx
+- [ ] src/components/task/task-list-skeleton.tsx
+- [ ] src/components/task/task-list-view.tsx
+- [ ] src/components/task/task-pagination.tsx
+- [ ] src/components/task/task-subtasks-section.tsx
+- [ ] src/components/task/time-comparison.tsx
+- [ ] src/components/task/time-entries.tsx
+- [ ] src/components/task/time-entry-dialog.tsx
+- [ ] src/components/ui/accordion.tsx
+- [ ] src/components/ui/alert-dialog.tsx
+- [ ] src/components/ui/alert.tsx
+- [ ] src/components/ui/aspect-ratio.tsx
+- [ ] src/components/ui/avatar.tsx
+- [ ] src/components/ui/badge.test.tsx
+- [ ] src/components/ui/badge.tsx
+- [ ] src/components/ui/breadcrumb.tsx
+- [ ] src/components/ui/button-group.tsx
+- [x] src/components/ui/button.tsx
+- [ ] src/components/ui/calendar.tsx
+- [x] src/components/ui/card.tsx
+- [ ] src/components/ui/carousel.tsx
+- [ ] src/components/ui/chart.tsx
+- [ ] src/components/ui/checkbox.tsx
+- [ ] src/components/ui/collapsible.tsx
+- [ ] src/components/ui/combobox.tsx
+- [ ] src/components/ui/command.tsx
+- [ ] src/components/ui/context-menu.tsx
+- [ ] src/components/ui/date-picker.tsx
+- [ ] src/components/ui/delete-dialog.tsx
+- [ ] src/components/ui/dialog.tsx
+- [ ] src/components/ui/drawer.tsx
+- [ ] src/components/ui/dropdown-menu.tsx
+- [ ] src/components/ui/empty-state.tsx
+- [ ] src/components/ui/empty.tsx
+- [ ] src/components/ui/field.tsx
+- [ ] src/components/ui/file-upload.tsx
+- [x] src/components/ui/form.tsx
+- [ ] src/components/ui/hover-card.tsx
+- [ ] src/components/ui/input-group.tsx
+- [ ] src/components/ui/input-otp.tsx
+- [x] src/components/ui/input.tsx
+- [ ] src/components/ui/item.tsx
+- [ ] src/components/ui/kbd.tsx
+- [ ] src/components/ui/label.tsx
+- [ ] src/components/ui/menubar.tsx
+- [ ] src/components/ui/metric-card.tsx
+- [ ] src/components/ui/navigation-menu.tsx
+- [ ] src/components/ui/pagination.tsx
+- [ ] src/components/ui/popover.tsx
+- [ ] src/components/ui/progress.tsx
+- [ ] src/components/ui/radio-group.tsx
+- [ ] src/components/ui/resizable.tsx
+- [ ] src/components/ui/scroll-area.tsx
+- [ ] src/components/ui/select.tsx
+- [ ] src/components/ui/separator.tsx
+- [ ] src/components/ui/sheet.tsx
+- [ ] src/components/ui/sidebar.tsx
+- [ ] src/components/ui/skeleton.tsx
+- [ ] src/components/ui/slider.tsx
+- [ ] src/components/ui/sonner.tsx
+- [ ] src/components/ui/spinner.tsx
+- [ ] src/components/ui/switch.tsx
+- [ ] src/components/ui/table.tsx
+- [ ] src/components/ui/tabs.tsx
+- [ ] src/components/ui/textarea.tsx
+- [ ] src/components/ui/toggle-group.tsx
+- [ ] src/components/ui/toggle.tsx
+- [ ] src/components/ui/tooltip.tsx
+- [ ] src/components/user-avatar.tsx
+- [ ] src/components/user/delete-user-dialog.tsx
+- [ ] src/components/user/user-list-table.tsx
+- [ ] src/components/user/user-login-logs-dialog.tsx
