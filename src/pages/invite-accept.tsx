@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,15 +105,17 @@ export default function InviteAccept() {
 
     return (
       <div className="bg-background flex min-h-screen items-center justify-center p-4">
-        <div className="bg-card rounded-none border p-8 shadow-2xl">
-          <div className="flex flex-col items-center gap-4 text-center">
-            <IconAlertCircle className="text-destructive size-12" />
-            <h1 className="text-xl font-bold">{errorMessage}</h1>
-            <Button asChild>
-              <Link to="/login">{auth.register.loginButton}</Link>
-            </Button>
-          </div>
-        </div>
+        <Card className="rounded-none p-0 shadow-2xl">
+          <CardContent className="p-8">
+            <div className="flex flex-col items-center gap-4 text-center">
+              <IconAlertCircle className="text-destructive size-12" />
+              <h1 className="text-xl font-bold">{errorMessage}</h1>
+              <Button asChild>
+                <Link to="/login">{auth.register.loginButton}</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -163,130 +166,132 @@ export default function InviteAccept() {
             </h2>
           </div>
 
-          <div className="bg-card relative rounded-none border p-8 shadow-2xl lg:p-10">
-            <div className="mb-8 flex items-center justify-between border-b pb-6">
-              <div>
-                <h3 className="text-xl font-black tracking-tight">
-                  {auth.invite.joining.replace(
-                    "{orgName}",
-                    inviteInfo.organization.name,
+          <Card className="relative rounded-none p-0 shadow-2xl">
+            <CardContent className="p-8 lg:p-10">
+              <div className="mb-8 flex items-center justify-between border-b pb-6">
+                <div>
+                  <h3 className="text-xl font-black tracking-tight">
+                    {auth.invite.joining.replace(
+                      "{orgName}",
+                      inviteInfo.organization.name,
+                    )}
+                  </h3>
+                  <p className="text-muted-foreground mt-1 text-xs font-medium">
+                    {auth.invite.welcomeMessage}
+                  </p>
+                </div>
+                {inviteInfo.organization.logo ? (
+                  <img
+                    src={`/api/files/organizations/${inviteInfo.organization.id}/${inviteInfo.organization.logo}`}
+                    alt={inviteInfo.organization.name}
+                    className="size-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full text-lg font-bold">
+                    {inviteInfo.organization.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                      {auth.register.email}
+                    </Label>
+                    <IconMail className="text-muted-foreground/40 size-3" />
+                  </div>
+                  <Input
+                    type="email"
+                    value={email}
+                    dir="ltr"
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                    placeholder="name@company.com"
+                    required
+                    autoFocus
+                    disabled={submitting}
+                  />
+                  {errors.email && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.email}
+                    </p>
                   )}
-                </h3>
-                <p className="text-muted-foreground mt-1 text-xs font-medium">
-                  {auth.invite.welcomeMessage}
-                </p>
-              </div>
-              {inviteInfo.organization.logo ? (
-                <img
-                  src={`/api/files/organizations/${inviteInfo.organization.id}/${inviteInfo.organization.logo}`}
-                  alt={inviteInfo.organization.name}
-                  className="size-12 rounded-full object-cover"
-                />
-              ) : (
-                <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full text-lg font-bold">
-                  {inviteInfo.organization.name.charAt(0).toUpperCase()}
                 </div>
-              )}
-            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                    {auth.register.email}
-                  </Label>
-                  <IconMail className="text-muted-foreground/40 size-3" />
-                </div>
-                <Input
-                  type="email"
-                  value={email}
-                  dir="ltr"
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
-                  placeholder="name@company.com"
-                  required
-                  autoFocus
-                  disabled={submitting}
-                />
-                {errors.email && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                    {auth.register.password}
-                  </Label>
-                  <IconShieldLock className="text-muted-foreground/40 size-3" />
-                </div>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
-                  placeholder="••••••••"
-                  required
-                  dir="ltr"
-                  disabled={submitting}
-                />
-                {errors.password && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                    {auth.register.confirmPassword}
-                  </Label>
-                  <IconShieldLock className="text-muted-foreground/40 size-3" />
-                </div>
-                <Input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
-                  placeholder="••••••••"
-                  required
-                  dir="ltr"
-                  disabled={submitting}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
-                disabled={submitting}
-              >
-                <span className="flex items-center gap-2">
-                  {submitting
-                    ? auth.invite.joiningButton
-                    : auth.invite.joinButton}
-                  {!submitting && (
-                    <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                      {auth.register.password}
+                    </Label>
+                    <IconShieldLock className="text-muted-foreground/40 size-3" />
+                  </div>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                    placeholder="••••••••"
+                    required
+                    dir="ltr"
+                    disabled={submitting}
+                  />
+                  {errors.password && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.password}
+                    </p>
                   )}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                      {auth.register.confirmPassword}
+                    </Label>
+                    <IconShieldLock className="text-muted-foreground/40 size-3" />
+                  </div>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                    placeholder="••••••••"
+                    required
+                    dir="ltr"
+                    disabled={submitting}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
+                  disabled={submitting}
+                >
+                  <span className="flex items-center gap-2">
+                    {submitting
+                      ? auth.invite.joiningButton
+                      : auth.invite.joinButton}
+                    {!submitting && (
+                      <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                    )}
+                  </span>
+                </Button>
+              </form>
+              <div className="mt-6 flex items-center justify-between border-t pt-4">
+                <span className="text-muted-foreground text-xs font-semibold">
+                  {auth.invite.loginPrompt}
                 </span>
-              </Button>
-            </form>
-            <div className="mt-6 flex items-center justify-between border-t pt-4">
-              <span className="text-muted-foreground text-xs font-semibold">
-                {auth.invite.loginPrompt}
-              </span>
-              <Button variant="ghost" asChild>
-                <Link to="/login">{auth.register.loginButton}</Link>
-              </Button>
-            </div>
-          </div>
+                <Button variant="ghost" asChild>
+                  <Link to="/login">{auth.register.loginButton}</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
             {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}

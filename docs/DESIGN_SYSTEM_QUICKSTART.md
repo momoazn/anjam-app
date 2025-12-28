@@ -2,6 +2,14 @@
 
 **Full plan**: See [`design-system-plan.md`](./design-system-plan.md) for complete details.
 
+## Repo Reality (Read First)
+
+- This repo is **Tailwind v4 (CSS-first)** + **shadcn/ui**.
+- **Theme tokens already exist** in `src/index.css` (`:root` + `.dark`) and feed Tailwind via `@theme inline`.
+- The refactor goal is to make **radii/spacing/sizing/motion a 1-file change** by routing repeated patterns through tokens + recipes (and then migrating usage).
+
+**Workflow note**: avoid running the app after every change; when you’re done with a batch of edits, run `bun run check`.
+
 ## The Problem (30 seconds)
 
 You have scattered hardcoded styling across 40+ pages/components. Changing border-radius from `rounded-2xl` to `rounded-xl` requires editing **20+ files**. This plan fixes it by extracting tokens and building recipe components.
@@ -19,10 +27,11 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 **Option A: Token Extraction First (Recommended)**
 
-1. Audit hardcoded values: grep for `rounded-2xl`, `size-16`, `h-9`, `p-6`, etc.
-2. Create `src/design/tokens.json` with all unique values found
-3. Generate `tokens.ts` and emit CSS variables
-4. Build 2-3 critical recipes (IconBox, HeroHeader, FormField)
+1. Audit hardcoded values: `rg` for `rounded-2xl`, `size-16`, `h-9`, `p-6`, etc.
+2. Create `src/design/tokens.json` with the unique values you find (**if missing, create it**)
+3. Create `src/design/tokens.ts` from that JSON (manual at first; generator can come later)
+4. Add matching CSS variables in `src/index.css` so recipes can use `var(--...)` in Tailwind arbitrary values
+5. Build 2-3 critical recipes (IconBox, HeroHeader, FormField)
 
 **Option B: Recipe Components First**
 
@@ -37,7 +46,7 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 **Do NOT hardcode values in recipes**. All recipes must import from `src/design/tokens.ts`.
 
-**Do update the migration checklist** (`docs/design-system-migration.md`) as you go. It's your single source of truth.
+**Do keep a migration checklist** (`docs/design-system-migration.md`). If it doesn't exist yet, create it before migrating files.
 
 ## What Each Phase Solves
 
@@ -77,14 +86,16 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 ## Key Files
 
-| File                              | Purpose                                       |
-| --------------------------------- | --------------------------------------------- |
-| `src/design/tokens.json`          | Single source of truth for all design values  |
-| `src/design/tokens.ts`            | Auto-generated TS types for tokens            |
-| `src/components/recipes/*`        | Recipe components (IconBox, HeroHeader, etc.) |
-| `src/index.css`                   | CSS variables emitted from tokens             |
-| `docs/design-system-migration.md` | Checklist tracking migration progress         |
-| `docs/design-system-plan.md`      | Full implementation plan                      |
+| File                                  | Purpose                                                                                       |
+| ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `src/index.css`                       | Existing theme tokens + the place to add new `--ds-*` CSS variables                           |
+| `src/design/tokens.json`              | Planned single source of truth for non-color design values (spacing/sizing/radius/motion)     |
+| `src/design/tokens.ts`                | Planned TS export for tokens consumed by recipes                                              |
+| `src/components/ui/*`                 | shadcn primitives + some existing “recipe-ish” components (e.g. `metric-card`, `empty-state`) |
+| `src/components/forms/form-field.tsx` | Existing form wrapper (good starting point for tokenizing heights/radii)                      |
+| `src/components/recipes/*`            | Planned home for recipes (HeroHeader, IconBox, Toolbar, etc.)                                 |
+| `docs/design-system-migration.md`     | Checklist tracking migration progress (create if missing)                                     |
+| `docs/design-system-plan.md`          | Full implementation plan                                                                      |
 
 ## Example: Adding a New Page
 

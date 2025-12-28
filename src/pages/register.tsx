@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -128,20 +129,21 @@ export default function Register() {
             </h2>
           </div>
 
-          <div className="bg-card relative rounded-2xl border p-8 shadow-2xl lg:p-10">
-            <div className="mb-8 flex items-center justify-between border-b pb-6">
-              <div>
-                <h3 className="text-xl font-bold tracking-tight">
-                  {auth.register.title}
-                </h3>
-                <p className="text-muted-foreground mt-1 text-xs font-medium">
-                  {auth.register.initialAdminMessage}
-                </p>
+          <Card className="relative p-0 shadow-2xl">
+            <CardContent className="p-8 lg:p-10">
+              <div className="mb-8 flex items-center justify-between border-b pb-6">
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight">
+                    {auth.register.title}
+                  </h3>
+                  <p className="text-muted-foreground mt-1 text-xs font-medium">
+                    {auth.register.initialAdminMessage}
+                  </p>
+                </div>
+                <IconShieldLock className="text-primary/20 size-8" />
               </div>
-              <IconShieldLock className="text-primary/20 size-8" />
-            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
@@ -251,16 +253,17 @@ export default function Register() {
                   )}
                 </span>
               </Button>
-            </form>
-            <div className="mt-6 flex items-center justify-between border-t pt-4">
+              </form>
+              <div className="mt-6 flex items-center justify-between border-t pt-4">
               <span className="text-muted-foreground text-xs font-semibold">
                 {auth.register.haveAccountPrompt}
               </span>
               <Button variant="ghost" asChild>
                 <Link to="/login">{auth.register.loginButton}</Link>
               </Button>
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
             {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}

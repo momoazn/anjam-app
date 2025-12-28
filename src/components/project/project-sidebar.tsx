@@ -8,8 +8,10 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { projects } from "@/constants";
+import { cn } from "@/lib/utils";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
@@ -46,8 +48,8 @@ export function ProjectSidebar({
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="bg-card border-border/40 relative overflow-hidden rounded-2xl border shadow-sm">
-          <div className="relative z-10">
+        <Card className="relative overflow-hidden p-0">
+          <CardContent className="relative z-10 p-0">
             {tasksLoading ? (
               <div className="space-y-3 p-4">
                 <Skeleton className="h-10 w-full rounded-xl" />
@@ -113,8 +115,8 @@ export function ProjectSidebar({
                 ))}
               </div>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Access */}
@@ -129,8 +131,8 @@ export function ProjectSidebar({
           <div className="bg-border/20 h-px flex-1" />
         </div>
 
-        <div className="bg-card border-border/40 relative overflow-hidden rounded-2xl border p-2 shadow-sm">
-          <div className="relative z-10 space-y-1">
+        <Card className="relative overflow-hidden p-2">
+          <CardContent className="relative z-10 p-0 space-y-1">
             <Button
               variant="ghost"
               className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"
@@ -147,11 +149,9 @@ export function ProjectSidebar({
               {projects.users.title}
               <IconUsers className="size-4 opacity-40" />
             </Button>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
     </div>
   );
 }
-
-import { cn } from "@/lib/utils";

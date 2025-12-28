@@ -31,7 +31,7 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 ## Pain Points → What Must Become "1-File Changes"
 
 - **Change primary/foreground/background colors** → update CSS vars in one place, all components inherit. ✅ (Tokens exist but not fully enforced)
-- **Change border radius across app** → update `--radius` once, all recipes + `ui/*` inherit without editing 20+ files. ❌ (Currently `rounded-2xl`, `rounded-xl` scattered everywhere)
+- **Change border radius across app** → update `--ds-radius-card` once, all recipes + `ui/*` inherit without editing 20+ files. ❌ (Currently `rounded-2xl`, `rounded-xl` scattered everywhere)
 - **Change icon box size/styling** → update 1 recipe component, not 15+ locations. ❌ (Currently `size-16`, `size-12`, `size-4` mixed)
 - **Change form input height** → update input component + Field recipe, not 10+ files. ❌ (Currently `h-9 rounded-xl` duplicated)
 - **Change metric card labels** → update 1 recipe, not 3+ files. ❌ (Currently `text-muted-foreground/60 text-[10px]` hardcoded)
@@ -175,10 +175,10 @@ File-level “done” criteria (applies to every page/component in scope):
    ```css
    @layer theme {
      :root {
-       --spacing-card-padding: 1.5rem;
-       --radius-button: 0.75rem;
-       --sizing-icon-md: 1.5rem;
-       --motion-transition-normal: 300ms;
+       --ds-spacing-cardPadding: 1.5rem;
+       --ds-radius-button: 0.75rem;
+       --ds-sizing-iconBoxMd: 1.5rem;
+       --ds-motion-durationNormal: 300ms;
      }
    }
    ```
@@ -297,7 +297,7 @@ File-level “done” criteria (applies to every page/component in scope):
 
 ## "Will This Actually Fix It?" Checklist
 
-✅ **After completion, changing a token** (e.g., `--radius-card: 1rem` → `0.5rem`):
+✅ **After completion, changing a token** (e.g., `--ds-radius-card: 1rem` → `0.5rem`):
 
 - Dashboard hero header updates
 - Projects page hero updates
@@ -330,7 +330,7 @@ File-level “done” criteria (applies to every page/component in scope):
 
 ## Success Criteria
 
-- ✅ Changing `--radius-button` from `0.75rem` to `0.5rem` updates all buttons without per-file edits
+- ✅ Changing `--ds-radius-button` from `0.75rem` to `0.5rem` updates all buttons without per-file edits
 - ✅ Changing form input height token updates all forms without per-file edits
 - ✅ Changing icon size token updates all icon boxes without per-file edits
 - ✅ New pages use recipes/tokens with zero hardcoded design values

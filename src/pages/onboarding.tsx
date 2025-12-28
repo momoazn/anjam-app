@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -252,106 +253,108 @@ export default function Onboarding() {
   return (
     <div className="bg-background flex h-svh items-center justify-center p-4">
       <PageTransition className="w-full max-w-md" disableStagger>
-        <div className="bg-card rounded-none border p-8 shadow-2xl">
-          {/* Header */}
-          <div className="mb-8 flex items-center gap-4">
-            <Logo size={40} />
-            <div>
-              <h1 className="text-2xl font-black">{auth.onboarding.title}</h1>
-              <p className="text-muted-foreground text-sm">
-                {auth.onboarding.subtitle}
-              </p>
+        <Card className="rounded-none p-0 shadow-2xl">
+          <CardContent className="p-8">
+            {/* Header */}
+            <div className="mb-8 flex items-center gap-4">
+              <Logo size={40} />
+              <div>
+                <h1 className="text-2xl font-black">{auth.onboarding.title}</h1>
+                <p className="text-muted-foreground text-sm">
+                  {auth.onboarding.subtitle}
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* Progress */}
-          <div className="mb-8 flex justify-between">
-            {STEPS.map((step) => (
-              <div
-                key={step.id}
-                className={`flex flex-1 flex-col items-center gap-2 ${
-                  step.id < currentStep
-                    ? "text-primary"
-                    : step.id === currentStep
-                      ? "text-foreground"
-                      : "text-muted-foreground/50"
-                }`}
-              >
+            {/* Progress */}
+            <div className="mb-8 flex justify-between">
+              {STEPS.map((step) => (
                 <div
-                  className={`flex size-10 items-center justify-center rounded-full border-2 ${
+                  key={step.id}
+                  className={`flex flex-1 flex-col items-center gap-2 ${
                     step.id < currentStep
-                      ? "border-primary bg-primary text-primary-foreground"
+                      ? "text-primary"
                       : step.id === currentStep
-                        ? "border-primary"
-                        : "border-muted"
+                        ? "text-foreground"
+                        : "text-muted-foreground/50"
                   }`}
                 >
-                  {step.id < currentStep ? (
-                    <IconCheck className="size-5" />
-                  ) : (
-                    <step.icon className="size-5" />
-                  )}
+                  <div
+                    className={`flex size-10 items-center justify-center rounded-full border-2 ${
+                      step.id < currentStep
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : step.id === currentStep
+                          ? "border-primary"
+                          : "border-muted"
+                    }`}
+                  >
+                    {step.id < currentStep ? (
+                      <IconCheck className="size-5" />
+                    ) : (
+                      <step.icon className="size-5" />
+                    )}
+                  </div>
+                  <span className="text-xs font-medium">{step.title}</span>
                 </div>
-                <span className="text-xs font-medium">{step.title}</span>
+              ))}
+            </div>
+
+            {/* Step Content */}
+            <div className="mb-8 min-h-[200px]">
+              <div className="mb-4 flex items-center gap-3">
+                <CurrentIcon className="text-primary size-6" />
+                <h2 className="text-lg font-bold">
+                  {STEPS[currentStep - 1].title}
+                </h2>
               </div>
-            ))}
-          </div>
+              {renderStepContent()}
+            </div>
 
-          {/* Step Content */}
-          <div className="mb-8 min-h-[200px]">
-            <div className="mb-4 flex items-center gap-3">
-              <CurrentIcon className="text-primary size-6" />
-              <h2 className="text-lg font-bold">
-                {STEPS[currentStep - 1].title}
-              </h2>
-            </div>
-            {renderStepContent()}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between border-t pt-6">
-            <div>
-              {currentStep > 1 && (
+            {/* Actions */}
+            <div className="flex items-center justify-between border-t pt-6">
+              <div>
+                {currentStep > 1 && (
+                  <Button
+                    variant="ghost"
+                    onClick={handlePrevious}
+                    disabled={completeOnboarding.isPending}
+                  >
+                    <IconArrowRight className="mr-2 size-4" />
+                    {auth.onboarding.previous}
+                  </Button>
+                )}
+              </div>
+              <div className="flex gap-2">
                 <Button
-                  variant="ghost"
-                  onClick={handlePrevious}
+                  variant="outline"
+                  onClick={handleSkip}
                   disabled={completeOnboarding.isPending}
                 >
-                  <IconArrowRight className="mr-2 size-4" />
-                  {auth.onboarding.previous}
+                  {auth.onboarding.skip}
                 </Button>
-              )}
+                {currentStep < 3 ? (
+                  <Button
+                    onClick={handleNext}
+                    disabled={completeOnboarding.isPending}
+                  >
+                    {auth.onboarding.next}
+                    <IconArrowLeft className="ms-2 size-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleFinish}
+                    disabled={completeOnboarding.isPending}
+                  >
+                    {completeOnboarding.isPending
+                      ? "..."
+                      : auth.onboarding.finish}
+                    <IconCheck className="ms-2 size-4" />
+                  </Button>
+                )}
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={handleSkip}
-                disabled={completeOnboarding.isPending}
-              >
-                {auth.onboarding.skip}
-              </Button>
-              {currentStep < 3 ? (
-                <Button
-                  onClick={handleNext}
-                  disabled={completeOnboarding.isPending}
-                >
-                  {auth.onboarding.next}
-                  <IconArrowLeft className="ms-2 size-4" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleFinish}
-                  disabled={completeOnboarding.isPending}
-                >
-                  {completeOnboarding.isPending
-                    ? "..."
-                    : auth.onboarding.finish}
-                  <IconCheck className="ms-2 size-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </PageTransition>
     </div>
   );

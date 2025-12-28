@@ -1,7 +1,8 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { ReactNode } from "react";
 import { Icon as TablerIcon } from "@tabler/icons-react";
 import { LucideIcon } from "lucide-react";
-import { ReactNode } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { IconBox } from "@/components/recipes/icon-box";
 
 type PageHeaderProps = {
   title: string;
@@ -21,18 +22,16 @@ export function PageHeader({
       <CardContent className="p-6">
         <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-5 text-right">
-            <div className="bg-primary/10 text-primary flex size-14 items-center justify-center rounded-xl">
+            <IconBox size="md" tone="primary">
               <Icon className="size-7" strokeWidth={1.5} />
-            </div>
+            </IconBox>
             <div className="flex flex-col justify-center">
               <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
                 {title}
               </h1>
-              {description && (
-                <p className="text-muted-foreground mt-1 text-sm leading-relaxed font-medium">
-                  {description}
-                </p>
-              )}
+              <p className="text-muted-foreground mt-1 text-sm leading-relaxed font-medium">
+                {description}
+              </p>
             </div>
           </div>
 

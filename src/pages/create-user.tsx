@@ -11,6 +11,7 @@ import {
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { auth, common, users } from "@/constants";
 import { useCreateUser } from "@/hooks";
@@ -79,7 +80,8 @@ export default function CreateUser() {
         icon={IconUserPlus}
       />
 
-      <div className="bg-card border-border/40 rounded-2xl border p-8 shadow-sm">
+      <Card className="p-0">
+        <CardContent className="p-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <UserFields control={userFieldsControl} />
@@ -107,7 +109,8 @@ export default function CreateUser() {
             </div>
           </form>
         </Form>
-      </div>
+        </CardContent>
+      </Card>
     </PageTransition>
   );
 }

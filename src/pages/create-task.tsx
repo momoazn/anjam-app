@@ -18,6 +18,7 @@ import {
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";
 import { useCreateTask } from "@/hooks";
@@ -124,56 +125,91 @@ export default function CreateTask() {
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
               {/* Main Form Area */}
               <div className="space-y-10 lg:col-span-8">
-                <div className="bg-card rounded-xl border p-8 shadow-sm">
-                  <div className="mb-8 flex items-center gap-3 border-b pb-6">
-                    <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                      <IconCpu size={22} stroke={2} />
+                <Card className="p-0">
+                  <CardContent className="p-8">
+                    <div className="mb-8 flex items-center gap-3 border-b pb-6">
+                      <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                        <IconCpu size={22} stroke={2} />
+                      </div>
+                      <h2 className="text-xl font-bold">
+                        {tasks.details.detailsCardTitle}
+                      </h2>
                     </div>
-                    <h2 className="text-xl font-bold">
-                      {tasks.details.detailsCardTitle}
-                    </h2>
-                  </div>
 
-                  <TaskFields
-                    control={form.control}
-                    isInProject={isInProject}
-                  />
-                </div>
+                    <TaskFields
+                      control={form.control}
+                      isInProject={isInProject}
+                    />
+                  </CardContent>
+                </Card>
               </div>
 
               {/* Sidebar / Actions */}
               <div className="space-y-8 lg:col-span-4">
-                <div className="bg-primary text-primary-foreground shadow-primary/20 rounded-xl border p-6 shadow-xl">
-                  <div className="border-primary-foreground/20 mb-6 flex items-center gap-3 border-b pb-4">
-                    <IconActivity size={20} stroke={2.5} />
-                    <span className="text-sm font-bold">
-                      {common.messages.quickActions}
-                    </span>
-                  </div>
-
-                  <div className="space-y-6">
-                    <Button
-                      type="submit"
-                      disabled={isPending}
-                      className="text-primary h-12 w-full rounded-lg bg-white text-sm font-bold transition-all hover:bg-white/90 disabled:opacity-50"
-                    >
-                      {isPending ? (
-                        <IconLoader2 className="me-2 size-5 animate-spin" />
-                      ) : (
-                        <IconPlus className="me-2" size={22} stroke={3} />
-                      )}
-                      {isPending
-                        ? tasks.addTask.buttons.creating
-                        : tasks.addTask.buttons.create}
-                    </Button>
-
-                    <div className="text-primary-foreground/70 space-y-2 text-[11px] leading-relaxed font-medium">
-                      <p>• فیلدهای ستاره‌دار الزامی هستند</p>
-                      <p>• تسک‌ها برای جستجوی سراسری ایندکس می‌شوند</p>
-                      <p>• مسئول تسک اعلان دریافت خواهد کرد</p>
+                <Card className="bg-primary text-primary-foreground shadow-primary/20 border p-0 shadow-xl">
+                  <CardContent className="p-6">
+                    <div className="border-primary-foreground/20 mb-6 flex items-center gap-3 border-b pb-4">
+                      <IconActivity size={20} stroke={2.5} />
+                      <span className="text-sm font-bold">
+                        {common.messages.quickActions}
+                      </span>
                     </div>
-                  </div>
-                </div>
+
+                    <div className="space-y-6">
+                      <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="text-primary h-12 w-full rounded-lg bg-white text-sm font-bold transition-all hover:bg-white/90 disabled:opacity-50"
+                      >
+                        {isPending ? (
+                          <IconLoader2 className="me-2 size-5 animate-spin" />
+                        ) : (
+                          <IconPlus className="me-2" size={22} stroke={3} />
+                        )}
+                        {isPending
+                          ? tasks.addTask.buttons.creating
+                          : tasks.addTask.buttons.create}
+                      </Button>
+
+                      <div className="text-primary-foreground/70 space-y-2 text-[11px] leading-relaxed font-medium">
+                        <p>• فیلدهای ستاره‌دار الزامی هستند</p>
+                        <p>• تسک‌ها برای جستجوی سراسری ایندکس می‌شوند</p>
+                        <p>• مسئول تسک اعلان دریافت خواهد کرد</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-muted/30 p-0">
+                  <CardContent className="p-6">
+                    <h3 className="text-muted-foreground mb-4 text-xs font-bold tracking-tight">
+                      System Status
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="border-border/50 flex justify-between border-b pb-2">
+                        <span className="text-muted-foreground text-[11px] font-medium">
+                          Network
+                        </span>
+                        <span className="text-[11px] font-bold text-green-500">
+                          Online
+                        </span>
+                      </div>
+                      <div className="border-border/50 flex justify-between border-b pb-2">
+                        <span className="text-muted-foreground text-[11px] font-medium">
+                          Database
+                        </span>
+                        <span className="text-[11px] font-bold text-green-500">
+                          Connected
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground text-[11px] font-medium">
+                          Latency
+                        </span>
+                        <span className="text-[11px] font-bold">24ms</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </form>

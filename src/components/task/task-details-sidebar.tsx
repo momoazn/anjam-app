@@ -8,6 +8,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { formatTaskDate } from "@/lib/date-utils";
 import {
@@ -49,8 +50,8 @@ export function TaskDetailsSidebar({
           </span>
         </div>
 
-        <div className="bg-card relative overflow-hidden rounded-xl border p-6 shadow-sm">
-          <div className="relative z-10 space-y-6">
+        <Card className="relative overflow-hidden p-0">
+          <CardContent className="relative z-10 space-y-6 p-6">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground text-xs font-medium">
                 {tasks.details.statusLabel}
@@ -101,8 +102,8 @@ export function TaskDetailsSidebar({
                 </span>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Operator Actions Block */}
@@ -116,8 +117,8 @@ export function TaskDetailsSidebar({
           </span>
         </div>
 
-        <div className="bg-card relative overflow-hidden rounded-xl border p-4 shadow-sm">
-          <div className="relative z-10 space-y-2">
+        <Card className="relative overflow-hidden p-0">
+          <CardContent className="relative z-10 space-y-2 p-4">
             <Button
               variant="ghost"
               className="w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
@@ -137,13 +138,13 @@ export function TaskDetailsSidebar({
                 ? tasks.details.buttons.deleting
                 : tasks.details.buttons.delete}
             </Button>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Info Block */}
-      <div className="bg-muted/30 rounded-xl border border-dashed p-6">
-        <div className="flex flex-col items-center gap-3">
+      <Card className="border-dashed bg-muted/30 p-0">
+        <CardContent className="flex flex-col items-center gap-3 p-6">
           <IconInfoCircle className="text-muted-foreground size-6" />
           <div className="space-y-1 text-center">
             <p className="text-muted-foreground text-[10px] font-bold tracking-tight">
@@ -153,8 +154,8 @@ export function TaskDetailsSidebar({
               {digitsEnToFa(task.display_id)}
             </p>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

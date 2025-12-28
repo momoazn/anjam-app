@@ -100,7 +100,7 @@ export function AddProjectMemberModal({
                   placeholder={projects.users.addDialog.selectPlaceholder}
                 />
               </SelectTrigger>
-              <SelectContent className="border-border bg-card rounded-xl border">
+              <SelectContent className="border-border bg-card rounded-2xl border">
                 {availableUsers.length > 0 ? (
                   availableUsers.map((user) => (
                     <SelectItem
@@ -140,7 +140,7 @@ export function AddProjectMemberModal({
               <SelectTrigger className="border-border/40 bg-muted/5 h-12 rounded-xl border text-right text-xs font-bold tracking-tight focus:ring-0">
                 <SelectValue placeholder={projects.users.table.role} />
               </SelectTrigger>
-              <SelectContent className="border-border bg-card rounded-xl border">
+              <SelectContent className="border-border bg-card rounded-2xl border">
                 {projectRoles.map((role) => (
                   <SelectItem
                     key={role}

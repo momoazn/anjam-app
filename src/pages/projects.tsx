@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ProjectListGroup } from "@/components/project/project-list-group";
 import { PageTransition } from "@/components/page-transition";
-import { PageHeader } from "@/components/page-header";
+import { HeroHeader } from "@/components/recipes/hero-header";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
@@ -30,24 +30,33 @@ export default function Projects() {
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <PageHeader
+      <HeroHeader
+        icon={Target}
+        iconTone="primarySolid"
+        eyebrow={
+          <div className="flex items-center gap-2 opacity-40">
+            <span className="text-[10px] font-bold tracking-tight">
+              Project Registry
+            </span>
+            <div className="bg-foreground/20 h-px w-8" />
+          </div>
+        }
         title={projects.title}
-        description={projects.list.count.replace(
+        subtitle={projects.list.count.replace(
           "{count}",
           digitsEnToFa(userProjects?.length ?? 0).toString(),
         )}
-        icon={Target}
-        actions={
-          canCreateProject && (
+        action={
+          canCreateProject ? (
             <Button
-              className="h-14 gap-3 rounded-2xl px-8 text-lg font-bold shadow-sm transition-all active:scale-[0.98]"
+              className="hover:shadow-primary/10 h-14 gap-3 rounded-2xl px-8 text-lg font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"
               size="lg"
               onClick={() => navigate("/projects/new")}
             >
               <Plus className="size-6" />
               <span>{projects.create.button}</span>
             </Button>
-          )
+          ) : null
         }
       />
 

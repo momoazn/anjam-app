@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { IconCopy, IconLink, IconCheck } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconCopy,
+  IconLink,
+  IconUserPlus,
+  IconUsers,
+} from "@tabler/icons-react";
 import { toast } from "sonner";
 
 import { PageTransition } from "@/components/page-transition";
@@ -46,6 +52,8 @@ import {
   getInviteUrl,
 } from "@/hooks/organization-invites";
 import type { UsersResponse } from "@/lib/pocketbase-types";
+import { PageHeader } from "@/components/page-header";
+import { IconBox } from "@/components/recipes/icon-box";
 
 function getUserInitials(name: string): string {
   return name
@@ -162,19 +170,20 @@ export function OrgMembersPage() {
   };
 
   return (
-    <PageTransition className="container mx-auto py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="mb-2 text-3xl font-black tracking-tight">
-            {organization.members.title}
-          </h1>
-        </div>
-        <Button onClick={() => setIsInviteOpen(true)}>
+    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-6">
+      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <PageHeader
+          title={organization.members.title}
+          description="Manage your organization members and their roles"
+          icon={IconUsers}
+        />
+        <Button onClick={() => setIsInviteOpen(true)} className="h-11 px-6">
+          <IconUserPlus className="me-2 size-5" />
           {organization.members.invite}
         </Button>
       </div>
 
-      <div className="rounded-none border">
+      <div className="border-border bg-card relative overflow-hidden rounded-2xl border shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -378,16 +387,24 @@ export function OrgMembersPage() {
 
       {/* Invite Dialog */}
       <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{organization.members.inviteDialog.title}</DialogTitle>
-            <DialogDescription>
-              {organization.members.inviteDialog.description}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
+        <DialogContent className="border-border max-w-md overflow-hidden rounded-2xl border p-0 shadow-lg">
+          <div className="bg-primary/5 border-border border-b px-6 py-6">
+            <DialogHeader className="text-right">
+              <IconBox size="sm" tone="primary" className="mb-4">
+                <IconUserPlus className="size-7" />
+              </IconBox>
+              <DialogTitle className="text-2xl font-bold tracking-tight">
+                {organization.members.inviteDialog.title}
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground text-sm font-medium">
+                {organization.members.inviteDialog.description}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="space-y-6 p-6 text-right">
             <div className="space-y-2">
-              <label className="text-sm font-medium">
+              <label className="text-muted-foreground text-xs font-semibold tracking-wider">
                 {organization.members.inviteDialog.email}
               </label>
               <Input
@@ -395,47 +412,53 @@ export function OrgMembersPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 type="email"
+                className="h-11 rounded-xl"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">
+              <label className="text-muted-foreground text-xs font-semibold tracking-wider">
                 {organization.members.inviteDialog.role}
               </label>
               <Select
                 value={inviteRole}
                 onValueChange={(v) => setInviteRole(v as "admin" | "member")}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl text-right">
                   <SelectValue
                     placeholder={
                       organization.members.inviteDialog.rolePlaceholder
                     }
                   />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="admin" className="text-right">
                     {organization.members.roles.admin}
                   </SelectItem>
-                  <SelectItem value="member">
+                  <SelectItem value="member" className="text-right">
                     {organization.members.roles.member}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsInviteOpen(false)}>
-              {shared.cancel}
-            </Button>
+          <div className="bg-muted/30 border-border flex flex-row-reverse gap-3 border-t p-6">
             <Button
               onClick={handleInvite}
               disabled={isInviting || !inviteEmail}
+              className="h-11 flex-1 rounded-xl"
             >
               {isInviting
                 ? organization.members.sending
                 : organization.members.inviteDialog.send}
             </Button>
-          </DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsInviteOpen(false)}
+              className="h-11 flex-1 rounded-xl"
+            >
+              {shared.cancel}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -492,6 +515,7 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateLinkOpen(false)}
+              className="h-11 flex-1 rounded-xl"
             >
               {shared.cancel}
             </Button>

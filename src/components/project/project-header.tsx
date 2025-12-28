@@ -7,6 +7,7 @@ import {
   IconHash,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { common, projects } from "@/constants";
 import type { ProjectWithSupervisor } from "@/lib/pocketbase";
@@ -41,8 +42,8 @@ export function ProjectHeader({
   onBack,
 }: ProjectHeaderProps) {
   return (
-    <div className="bg-card border-border/40 relative mb-8 overflow-hidden rounded-2xl border shadow-sm">
-      <div className="relative z-10 p-6 md:p-8">
+    <Card className="relative mb-8 overflow-hidden p-0">
+      <CardContent className="relative z-10 p-6 md:p-8">
         <div className="mb-6 flex items-center justify-between">
           <Button
             variant="ghost"
@@ -141,7 +142,7 @@ export function ProjectHeader({
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
