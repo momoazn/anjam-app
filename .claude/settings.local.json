@@ -26,7 +26,9 @@
       "Bash(bun run types:generate:*)",
       "Bash(bun run lint:fix:*)",
       "Bash(go test:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(gh pr view:*)",
+      "Bash(gh api:*)"
     ],
     "deny": [],
     "ask": []
