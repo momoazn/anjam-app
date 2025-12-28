@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
 	"anjam/config"
 	"anjam/notifications"
+	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 // HandleTaskAssignmentNotification notifies the assigned user when a task is created.
@@ -175,6 +175,9 @@ func translateStatus(status string) string {
 
 // truncateString truncates a string to a maximum length.
 func truncateString(s string, maxLen int) string {
+	if maxLen < 4 {
+		return s
+	}
 	if len(s) <= maxLen {
 		return s
 	}
