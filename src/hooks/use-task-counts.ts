@@ -11,14 +11,17 @@ export function useTaskCounts() {
   const user = useAuthUser();
 
   const tasks = useMemo(() => {
-    const tasksData = queryClient.getQueryData<TaskWithProject[]>(
+    const tasksData = queryClient.getQueryData<{
+      items: TaskWithProject[];
+    }>(
       queryKeys.tasks.list({
         projectId: undefined,
         expandFields: "project,assignee",
         mode: "full",
       }),
     );
-    return (tasksData ?? []).filter((task) => !task.deleted_at);
+    const items = tasksData?.items ?? [];
+    return items.filter((task) => !task.deleted_at);
   }, [queryClient]);
 
   const counts = useMemo(() => {
