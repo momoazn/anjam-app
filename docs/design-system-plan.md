@@ -1,5 +1,7 @@
 # Design System Refactor Plan (Tailwind + shadcn)
 
+> Update (2025-12): The custom `--ds-*` token layer has been removed. This plan should be read with a primitives-first mindset: reuse shadcn components and Tailwind scale values (`p-6`, `rounded-xl`, `h-12`) instead of introducing a separate token system.
+
 This plan fixes the current "edit every file" pain by centralizing tokens, recipes, and guardrails in a way that matches shadcn best practices (CSS variables + registry style + custom utilities).
 
 ## Problem Statement: The Current Pain (Validated)
@@ -31,7 +33,7 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 ## Pain Points → What Must Become "1-File Changes"
 
 - **Change primary/foreground/background colors** → update CSS vars in one place, all components inherit. ✅ (Tokens exist but not fully enforced)
-- **Change border radius across app** → update `--ds-radius-card` once, all recipes + `ui/*` inherit without editing 20+ files. ❌ (Currently `rounded-2xl`, `rounded-xl` scattered everywhere)
+- **Change border radius across app** → update `--radius` once, all `rounded-*` utilities inherit without editing 20+ files. ❌ (Currently `rounded-2xl`, `rounded-xl` scattered everywhere)
 - **Change icon box size/styling** → update 1 recipe component, not 15+ locations. ❌ (Currently `size-16`, `size-12`, `size-4` mixed)
 - **Change form input height** → update input component + Field recipe, not 10+ files. ❌ (Currently `h-9 rounded-xl` duplicated)
 - **Change metric card labels** → update 1 recipe, not 3+ files. ❌ (Currently `text-muted-foreground/60 text-[10px]` hardcoded)
@@ -42,23 +44,23 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 
 ## Objectives (Clarified)
 
-- **Extract & enforce** single source of truth for: icon sizes/styles, form field heights, card dividers, spacing density, metric card styling, button groups, hero headers
-- **Token-driven shadcn primitives** so changes propagate without per-file edits.
+- **Standardize via primitives** for: icon sizes/styles, form field heights, card dividers, spacing density, metric card styling, button groups, hero headers
+- **Primitive-driven shadcn components** so changes propagate without per-file edits.
 - **Recipe components** for repeating patterns: `HeroHeader`, `IconBox`, `MetricCard`, `StatCard`, `CardDivider`, `EmptyState`, `FormField`, `Toolbar`
-- **Guardrails** to block raw colors/radii/spacing and enforce token/recipe usage.
+- **Guardrails** to block raw colors and encourage primitives/recipes.
 
 ## Current Constraints (Repo Reality)
 
 - This repo is on **Tailwind v4.1.18 (CSS-first)**: tokens and theming already live in `src/index.css` via `@theme inline`, plus `@layer base` and `@layer utilities`.
 - shadcn's Tailwind layer is imported via `@import "shadcn/tailwind.css";`. Our plan builds on top.
 - **No tailwind.config.js** (using inline theme in CSS).
-- **No separate tokens.json** — tokens are scattered across `src/index.css`, components have `designTokens` maps.
+- **No separate tokens.json** — use Tailwind scale + shadcn primitives; keep CSS vars for theme colors and radius.
 - **No recipe layer** — patterns are reimplemented in each page (e.g., HeroHeader reimplemented 4+ times).
 - **40+ pages/components** use custom Tailwind classes; no enforced standard.
 
 ## Principles (shadcn-aligned)
 
-- **Theme via CSS vars**: All colors/radii/spacing/motion exposed as CSS variables consumed by shadcn components.
+- **Theme via CSS vars**: Colors + radius via CSS variables; spacing/sizing via Tailwind scale.
 - **Custom style registry**: Treat our design layer as a custom shadcn style (extends:none) so future `shadcn add` stays consistent.
 - **Override centrally**: Use registryDependencies-style overrides (button, card, input) instead of ad-hoc tweaks.
 - **Custom utilities**: Ship motion/spacing/interaction helpers as Tailwind utilities, not scattered class strings.
@@ -66,28 +68,28 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 
 ## Deliverables (Phased)
 
-### Phase 1: Token Extraction & Enforcement (Foundation)
+### Phase 1: Primitive Alignment (Foundation)
 
-- `src/design/tokens.json` (authoritative source): icon sizes, form heights, card padding, divider styling, motion timing, spacing density
-- `src/design/tokens.ts` (auto-generated): TypeScript types for token access in components
-- Enhanced `src/index.css`: Emit CSS custom properties for all design decisions (not just colors)
-- ESLint rule + CI check: Block hardcoded `rounded-*`, `p-*`, `size-*`, `h-*`, `w-*` outside `src/design` with escape hatches
+- Replace ad-hoc `div` stacks with shadcn primitives (Card, Button, Input, Dialog, etc.)
+- Align sizing/spacing to Tailwind scale (`p-6`, `rounded-xl`, `h-12`)
+- Enhance `src/index.css` only for theme colors + radius
+- ESLint rule + CI check: Block raw colors and encourage primitives/recipes
 
 ### Phase 2: Recipe Components (Kill Duplication)
 
 - **`HeroHeader`** (replaces 4+ duplicates): icon-box, title, subtitle, action slots with standardized sizes/spacing
-- **`IconBox`** (replaces 15+ locations): size variants (xs, sm, md, lg), border-radius from tokens, hover effects
+- **`IconBox`** (replaces 15+ locations): size variants (xs, sm, md, lg) aligned to Tailwind scale
 - **`MetricCard`** (replaces ProjectsWidget/ProjectListGroup): label, value, progress bar with consistent sizing
-- **`FormField`** (wraps existing Field): Input height, label styling, message styling from tokens
-- **`CardSection`** (replaces repeated `border-b p-6`): Divider component with consistent border/padding from tokens
+- **`FormField`** (wraps existing Field): Input height, label styling, message styling via Tailwind scale
+- **`CardSection`** (replaces repeated `border-b p-6`): Divider component with consistent border/padding
 - **`StatCard`** (replaces dashboard stat hardcoding): Icon + label + value with consistent spacing
 - **`Toolbar`** (replaces scattered button groups): Button height, padding, divider width from tokens
 - **`EmptyState`** (enhance existing): Centralize padding, icon size, text styling
 
 ### Phase 3: Shadcn Primitive Updates
 
-- Refactor `ui/button`, `ui/card`, `ui/input`: Consume token values for radius, spacing, shadows
-- Refactor `ui/form` components: Input height, label size, message text size from tokens
+- Refactor `ui/button`, `ui/card`, `ui/input`: Use Tailwind scale + shadcn CSS vars for radius/colors
+- Refactor `ui/form` components: Input height, label size, message text size from Tailwind scale
 - Add `data-token` attributes for easier selector overrides
 
 ### Phase 4: Migration & Enforcement
@@ -115,79 +117,29 @@ File-level “done” criteria (applies to every page/component in scope):
 
 - Uses shadcn primitives and/or our recipes for surfaces/sections/typography instead of bespoke wrapper div stacks.
 - No raw theme colors (hex/oklch literals) except in whitelisted “visual blocks” (e.g., a single `LandingBackground`).
-- No scattered core radii/spacing/motion knobs in-line for shared patterns (they must be routed through tokens/recipes).
-- If a file needs an exception, it uses `// design-token-ignore` with a short reason.
+- No scattered core radii/spacing/motion knobs in-line for shared patterns (they must be routed through primitives/recipes).
+- If a file needs an exception, document it inline with a short reason.
 
 ## Workstreams & Steps (Prioritized)
 
-### **CRITICAL FIRST: Extract & Document Current Values**
+### **CRITICAL FIRST: Primitive Audit & Alignment**
 
 1. **Audit hardcoded design decisions** (Find all the pain points)
    - Run grep for `rounded-2xl`, `rounded-xl`, `size-16`, `size-12`, `h-9`, `p-6`, etc.
    - Document every unique value found for: icon sizes, border radii, form heights, padding, spacing
    - Create spreadsheet showing duplicates and inconsistencies (e.g., `text-2xl` vs `text-3xl` for metrics)
 
-2. **Create `src/design/tokens.json` (single source of truth)**
-
-   ```json
-   {
-     "spacing": {
-       "card-padding": "1.5rem",
-       "section-padding": "2rem",
-       "hero-padding": "2rem",
-       "form-label-gap": "0.25rem"
-     },
-     "radius": {
-       "button": "0.75rem",
-       "card": "1rem",
-       "input": "0.75rem",
-       "icon-box": "1rem",
-       "hero-header": "1.5rem"
-     },
-     "sizing": {
-       "icon-sm": "1rem",
-       "icon-md": "1.5rem",
-       "icon-lg": "2rem",
-       "icon-xl": "4rem",
-       "form-input-height": "2.25rem"
-     },
-     "motion": {
-       "transition-fast": "150ms",
-       "transition-normal": "300ms",
-       "transition-slow": "500ms",
-       "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
-     }
-   }
-   ```
-
-3. **Generate `src/design/tokens.ts`** from tokens.json
-
-   ```typescript
-   export const tokens = {
-     spacing: { ... },
-     radius: { ... },
-     sizing: { ... },
-     motion: { ... }
-   }
-   ```
-
-4. **Emit CSS variables into `src/index.css`**
-   ```css
-   @layer theme {
-     :root {
-       --ds-spacing-cardPadding: 1.5rem;
-       --ds-radius-button: 0.75rem;
-       --ds-sizing-iconBoxMd: 1.5rem;
-       --ds-motion-durationNormal: 300ms;
-     }
-   }
-   ```
+2. **Standardize via primitives first**
+   - Replace ad-hoc card wrappers with `Card`, `CardHeader`, `CardContent`, `CardFooter`
+   - Replace bespoke inputs/buttons with `Input`, `Button`, `Select`, `Dialog`
+   - Keep spacing/radii/sizing on the Tailwind scale (`p-6`, `rounded-xl`, `h-12`)
+   - Reserve CSS variables in `src/index.css` for theme colors + radius only
 
 ### **THEN: Build Recipe Components (Quick Wins)**
 
 5. **Create `src/components/recipes/icon-box.tsx`**
    - Variants: size (sm, md, lg, xl), tone (primary, secondary, muted)
-   - Uses token values for sizing and border-radius
+   - Uses Tailwind scale values for sizing and radius
    - Replaces 15+ hardcoded icon box patterns
 
    ```tsx
@@ -196,17 +148,17 @@ File-level “done” criteria (applies to every page/component in scope):
 
 6. **Create `src/components/recipes/hero-header.tsx`**
    - Props: icon, title, subtitle, action slot
-   - Uses tokens for spacing, border-radius, icon sizes
+   - Uses Tailwind scale for spacing, radius, icon sizes
    - Replaces 4+ hardcoded hero headers in Projects/Tasks pages
 
 7. **Create `src/components/recipes/metric-card.tsx`**
    - Props: label, value, icon, progress (optional)
-   - Uses tokens for sizing, label color, spacing
+   - Uses Tailwind scale for sizing, label color, spacing
    - Replaces ProjectsWidget/ProjectListGroup metric rendering
 
 8. **Create `src/components/recipes/form-field.tsx`**
    - Wraps existing Field component
-   - Uses tokens for input height, label size, message styling
+   - Uses Tailwind scale for input height, label size, message styling
    - Provides consistent form styling across all forms
 
 9. **Create `src/components/recipes/card-section.tsx`**
@@ -225,7 +177,7 @@ File-level “done” criteria (applies to every page/component in scope):
     - Rule: Forbid `size-*` (icons should use IconBox recipe)
     - Rule: Forbid `h-9`, `h-10`, etc. (inputs should use FormField recipe)
     - Rule: Forbid `p-6`, `px-4`, etc. for card padding (use CardSection recipe)
-    - Add escape hatch: `// design-token-ignore: reason` for exceptions
+    - Document exceptions inline with a short reason
 
 12. **Add CI check for token violations**
     - Run ESLint as part of `bun run check`
@@ -267,18 +219,16 @@ File-level “done” criteria (applies to every page/component in scope):
 
 ## Migration Checkpoints
 
-**Checkpoint 1** (After token extraction + 1-2 recipes):
+**Checkpoint 1** (After primitive alignment + 1-2 recipes):
 
-- `src/design/tokens.json` created and consumed in CSS
+- Card/Input/Button standardized in key flows
 - 2-3 critical recipes working (HeroHeader, IconBox, FormField)
-- ESLint rule active (not blocking yet, just reporting)
 - First page migrated to recipes as proof of concept
 
 **Checkpoint 2** (After Phase 1-2):
 
 - All shell components using recipes
 - Dashboard/Projects/Tasks pages using MetricCard, StatCard, HeroHeader
-- ESLint rule now enforcing with escape hatches allowed
 - 40%+ of codebase migrated
 
 **Checkpoint 3** (After Phase 3):
@@ -291,13 +241,11 @@ File-level “done” criteria (applies to every page/component in scope):
 **Checkpoint 4** (Complete):
 
 - 100% of pages/components migrated
-- Escape hatches removed or documented
-- ESLint rule blocks new violations
-- Global changes (e.g., radius token change) require edits in 0 files
+- Global changes (e.g., radius scale change) require edits only in primitives/recipes
 
 ## "Will This Actually Fix It?" Checklist
 
-✅ **After completion, changing a token** (e.g., `--ds-radius-card: 1rem` → `0.5rem`):
+✅ **After completion, changing `--radius`** (e.g., `0.5rem` → `0.375rem`):
 
 - Dashboard hero header updates
 - Projects page hero updates
@@ -306,7 +254,7 @@ File-level “done” criteria (applies to every page/component in scope):
 - Card sections update
 - Form inputs update
 - Empty states update
-- **0 files manually edited** (changes in `tokens.json` + `src/index.css` only)
+- **Centralized primitives** drive most UI changes (Card/Input/Button updates ripple everywhere)
 
 ✅ **Adding new pages** requires:
 
@@ -317,37 +265,32 @@ File-level “done” criteria (applies to every page/component in scope):
 
 ✅ **Guardrails prevent backsliding**:
 
-- `// design-token-ignore` comment required to bypass ESLint
-- CI reports token violations
-- Code review catches exceptions
+- Prefer shadcn primitives + recipes for new UI
+- Code review catches exceptions and custom wrappers
 
 ## Risks & Mitigations
 
-- **Drift between CSS vars and TS tokens** → generate TS + CSS from one JSON.
-- **Lint false positives** → allow scoped ignores; iterate thresholds.
-- **Migration churn** → do phased rollout and keep tokens stable until coverage is high.
+- **Inconsistent use of primitives** → require Card/Input/Button in review for surfaces & controls.
+- **Migration churn** → do phased rollout and keep spacing/radius scale stable until coverage is high.
 - **One-off marketing visuals** → isolate them into a small set of “blocks” (e.g., `LandingBackground`, `HeroSection`) so changes stay centralized.
 
 ## Success Criteria
 
-- ✅ Changing `--ds-radius-button` from `0.75rem` to `0.5rem` updates all buttons without per-file edits
-- ✅ Changing form input height token updates all forms without per-file edits
-- ✅ Changing icon size token updates all icon boxes without per-file edits
-- ✅ New pages use recipes/tokens with zero hardcoded design values
-- ✅ ESLint + CI enforce token usage; PRs fail if new hardcoding is added
+- ✅ Changing `--radius` updates rounded utilities without per-file edits
+- ✅ Changing input height class in `ui/input` updates all forms
+- ✅ Changing icon box sizes in recipe updates all icon boxes
+- ✅ New pages use primitives/recipes with minimal bespoke wrappers
 - ✅ 100% of `src/pages/**` and `src/components/**` migrated to recipes
-- ✅ Global UI change (e.g., "make all cards more compact") requires edits only in token definitions, not 20+ files
+- ✅ Global UI change (e.g., "make all cards more compact") requires edits in primitives/recipes, not 20+ files
 
 ## Implementation Notes for Agents/Developers
 
-**Phase 1 (Token Extraction)** is the critical foundation. Do not skip to recipes without tokens in place.
+**Phase 1 (Primitives First)** is the critical foundation. Do not skip to recipes without primitives in place.
 
-**Recipe Components** should all consume tokens via `src/design/tokens.ts`. Do not hardcode sizes/colors/spacing in recipes.
-
-**ESLint Enforcement** should use escape hatch comments (`// design-token-ignore: reason`) during migration, removed when file reaches "done".
+**Recipe Components** should use Tailwind scale values and shadcn primitives. Avoid bespoke wrappers.
 
 **Migration Checklist** at `docs/design-system-migration.md` is your single source of truth for progress. Update it frequently.
 
-**Visual Regression** is unlikely if you migrate to recipes without changing token values. Keep tokens stable during migration.
+**Visual Regression** is unlikely if you migrate to primitives/recipes without changing scale values. Keep spacing/radius stable during migration.
 
 **Testing**: Run `bun run check` after each phase. Add snapshot tests for recipes to catch regressions.

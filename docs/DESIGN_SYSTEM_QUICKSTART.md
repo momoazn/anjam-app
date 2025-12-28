@@ -6,7 +6,8 @@
 
 - This repo is **Tailwind v4 (CSS-first)** + **shadcn/ui**.
 - **Theme tokens already exist** in `src/index.css` (`:root` + `.dark`) and feed Tailwind via `@theme inline`.
-- The refactor goal is to make **radii/spacing/sizing/motion a 1-file change** by routing repeated patterns through tokens + recipes (and then migrating usage).
+- **No custom `--ds-*` token layer**. Use shadcn primitives + Tailwind scale for spacing/sizing/radius.
+- The refactor goal is to make **layout/radii/spacing changes consistent** by reusing primitives + recipes (and then migrating usage).
 
 **Workflow note**: avoid running the app after every change; when you’re done with a batch of edits, run `bun run check`.
 
@@ -18,33 +19,33 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 | Phase | Goal                                                    | Key Deliverables                                                                                  | Impact                                      |
 | ----- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| **1** | Extract token definitions from hardcoded values         | `src/design/tokens.json`, `tokens.ts`, CSS vars in `index.css`                                    | Foundation for all recipes                  |
-| **2** | Build recipe components that consume tokens             | 8 recipes: IconBox, HeroHeader, MetricCard, FormField, CardSection, StatCard, Toolbar, EmptyState | 15-40 files worth of duplication eliminated |
-| **3** | Update shadcn primitives to use tokens                  | Refactor `ui/button`, `ui/card`, `ui/input`, `ui/form`                                            | Consistent styling across all components    |
+| **1** | Replace ad-hoc div stacks with shadcn primitives         | Card, CardHeader/Content/Footer, Button, Input, Dialog, etc.                                      | Consistent surfaces & spacing               |
+| **2** | Build recipe components for repeated patterns            | 8 recipes: IconBox, HeroHeader, MetricCard, FormField, CardSection, StatCard, Toolbar, EmptyState | 15-40 files worth of duplication eliminated |
+| **3** | Align primitives with Tailwind scale + theme vars        | Refactor `ui/button`, `ui/card`, `ui/input`, `ui/form`                                            | Consistent styling across all components    |
 | **4** | Migrate pages/components to recipes + enforce with lint | 4 migration passes + ESLint rules                                                                 | 100% of codebase using recipes              |
 
 ## Getting Started
 
-**Option A: Token Extraction First (Recommended)**
+**Option A: Primitives First (Recommended)**
 
 1. Audit hardcoded values: `rg` for `rounded-2xl`, `size-16`, `h-9`, `p-6`, etc.
-2. Create `src/design/tokens.json` with the unique values you find (**if missing, create it**)
-3. Create `src/design/tokens.ts` from that JSON (manual at first; generator can come later)
-4. Add matching CSS variables in `src/index.css` so recipes can use `var(--...)` in Tailwind arbitrary values
+2. Replace ad-hoc card wrappers with `<Card />` + `<CardContent />`
+3. Replace bespoke inputs/buttons with `Input`, `Button`, `Select`, `Dialog`, etc.
+4. Keep spacing/radius in the Tailwind scale (`p-6`, `rounded-xl`, `h-12`)
 5. Build 2-3 critical recipes (IconBox, HeroHeader, FormField)
 
 **Option B: Recipe Components First**
 
 1. Start with the most painful duplication (icon boxes: 15+ locations)
-2. Build IconBox recipe using hardcoded values initially
-3. Extract those values into tokens later
+2. Build IconBox recipe using Tailwind scale values
+3. Keep it aligned to primitives (Card + Button + Input)
 4. Migrate pages to use recipes
 
 ## Critical Paths
 
-**Do NOT skip Phase 1 (Token Extraction)**. Recipes without tokens defeat the purpose—you'll still need per-recipe edits.
+**Do NOT skip Phase 1 (Primitives First)**. Recipes without primitives still cause per-file tweaks.
 
-**Do NOT hardcode values in recipes**. All recipes must import from `src/design/tokens.ts`.
+**Do NOT invent a new token layer**. Use shadcn primitives + Tailwind scale.
 
 **Do keep a migration checklist** (`docs/design-system-migration.md`). If it doesn't exist yet, create it before migrating files.
 
@@ -79,7 +80,7 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 | Checkpoint | Target          | Completed When                                              |
 | ---------- | --------------- | ----------------------------------------------------------- |
-| **CP1**    | Foundation      | `tokens.json` exists, 2-3 recipes working, ESLint reporting |
+| **CP1**    | Foundation      | Cards/inputs standardized, 2-3 recipes working, lint reporting |
 | **CP2**    | Quick wins      | 40% of codebase migrated (shell + high-traffic pages)       |
 | **CP3**    | Forms & cleanup | 70% of codebase migrated (all forms using recipes)          |
 | **CP4**    | Complete        | 100% migrated, lint enforced, no escape hatches needed      |
@@ -88,9 +89,7 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 | File                                  | Purpose                                                                                       |
 | ------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `src/index.css`                       | Existing theme tokens + the place to add new `--ds-*` CSS variables                           |
-| `src/design/tokens.json`              | Planned single source of truth for non-color design values (spacing/sizing/radius/motion)     |
-| `src/design/tokens.ts`                | Planned TS export for tokens consumed by recipes                                              |
+| `src/index.css`                       | Existing theme tokens (colors + radius) and Tailwind `@theme inline` definitions              |
 | `src/components/ui/*`                 | shadcn primitives + some existing “recipe-ish” components (e.g. `metric-card`, `empty-state`) |
 | `src/components/forms/form-field.tsx` | Existing form wrapper (good starting point for tokenizing heights/radii)                      |
 | `src/components/recipes/*`            | Planned home for recipes (HeroHeader, IconBox, Toolbar, etc.)                                 |
