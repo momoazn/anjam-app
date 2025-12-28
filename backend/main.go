@@ -14,8 +14,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/google/uuid"
@@ -76,6 +78,7 @@ func main() {
 	app.OnServe().BindFunc(applyProductionSettings)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 	app.OnServe().BindFunc(registerAuditHooksHandler)
+	app.OnServe().BindFunc(initializeAuditWorker)
 	registerOrganizationEndpoints(app)
 	registerInviteEndpoints(app)
 	registerPermissionsEndpoint(app)
@@ -188,25 +191,44 @@ func serveIndexHTML(staticFS fs.FS, w http.ResponseWriter, r *http.Request) erro
 // NOTE: Tag creation now expects organization to be provided by the client.
 
 func startApp(app *pocketbase.PocketBase) {
-	if app.IsDev() {
-		log.Println("Starting app in development mode...")
-		if err := app.Start(); err != nil {
-			log.Fatalf("Failed to start app in dev mode: %v", err)
-		}
-	} else {
-		log.Println("Starting app in production mode...")
-		if err := app.Bootstrap(); err != nil {
-			log.Fatalf("Failed to bootstrap app: %v", err)
-		}
+	// Set up signal handling for graceful shutdown
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-		// Start HTTP server on 0.0.0.0:8090 for container environments
-		log.Println("Starting HTTP server on 0.0.0.0:8090...")
-		if err := apis.Serve(app, apis.ServeConfig{
-			HttpAddr:        "0.0.0.0:8090",
-			ShowStartBanner: true,
-		}); err != nil {
-			log.Fatalf("Failed to start server: %v", err)
+	// Start app in a goroutine so we can handle shutdown signals
+	errChan := make(chan error, 1)
+	go func() {
+		if app.IsDev() {
+			log.Println("Starting app in development mode...")
+			errChan <- app.Start()
+		} else {
+			log.Println("Starting app in production mode...")
+			if err := app.Bootstrap(); err != nil {
+				errChan <- err
+				return
+			}
+
+			// Start HTTP server on 0.0.0.0:8090 for container environments
+			log.Println("Starting HTTP server on 0.0.0.0:8090...")
+			errChan <- apis.Serve(app, apis.ServeConfig{
+				HttpAddr:        "0.0.0.0:8090",
+				ShowStartBanner: true,
+			})
 		}
+	}()
+
+	// Wait for either an error or a shutdown signal
+	select {
+	case err := <-errChan:
+		if err != nil {
+			log.Fatalf("App error: %v", err)
+		}
+	case sig := <-sigChan:
+		log.Printf("Received signal %v, shutting down gracefully...", sig)
+		shutdownAuditWorker()
+		// Give PocketBase time to clean up
+		time.Sleep(1 * time.Second)
+		log.Println("Shutdown complete")
 	}
 }
 
@@ -572,5 +594,12 @@ func registerAuditHooksHandler(e *core.ServeEvent) error {
 
 	log.Println("Audit logging enabled for tasks and projects")
 
+	return e.Next()
+}
+
+// initializeAuditWorker initializes the async audit worker.
+// Called during OnServe() after the app is fully bootstrapped.
+func initializeAuditWorker(e *core.ServeEvent) error {
+	initAuditWorker(e.App)
 	return e.Next()
 }
