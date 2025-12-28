@@ -90,9 +90,13 @@ This file tracks migration progress for the design-system refactor. Update check
 - [x] src/components/project/project-role-info.tsx
 - [x] src/components/project/project-sidebar.tsx
 - [x] src/components/project/project-statuses-settings.tsx
+- [x] src/components/recipes/card-section.tsx
+- [x] src/components/recipes/empty-state.tsx
 - [x] src/components/recipes/form-field.tsx
 - [x] src/components/recipes/hero-header.tsx
 - [x] src/components/recipes/icon-box.tsx
+- [x] src/components/recipes/metric-card.tsx
+- [x] src/components/recipes/stat-card.tsx
 - [x] src/components/recipes/toolbar.tsx
 - [x] src/components/reports/charts-section.tsx
 - [x] src/components/reports/drilldown-drawer.tsx
