@@ -67,7 +67,7 @@ export function ReportsMetricCards({
     {
       id: "onTime",
       label: reports.onTimeRate,
-      value: onTimeRate,
+      value: Math.round(onTimeRate * 100),
       icon: IconCircleCheck,
       color: "text-green-500",
       suffix: "%",
