@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IconLoader2,
@@ -11,41 +10,23 @@ import {
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { z } from "zod";
 
-import { TaskFields } from "@/components/forms/task-fields";
+import {
+  TaskFields,
+  type TaskFormData,
+  taskFormSchema,
+} from "@/components/forms/task-fields";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { common, errors, tasks } from "@/constants";
+import { common, tasks } from "@/constants";
 import { useTask, useUpdateTask } from "@/hooks";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
-
-const taskFormSchema = z.object({
-  title: z.string().min(1, { message: errors.validation.titleRequired }),
-  description: z.string().min(1, { message: common.validation.required }),
-  assignee: z.string().min(1, { message: common.validation.required }),
-  priority: z.nativeEnum(TasksPriorityOptions),
-  status: z.nativeEnum(TasksStatusOptions),
-  project: z.string().optional(),
-  deadline: z.date().optional(),
-  estimated_hours: z
-    .union([z.string(), z.number()])
-    .optional()
-    .transform((v) => (v === "" || v === undefined ? undefined : Number(v)))
-    .pipe(z.number().min(0).max(999).optional()),
-  estimated_minutes: z
-    .union([z.string(), z.number()])
-    .optional()
-    .transform((v) => (v === "" || v === undefined ? undefined : Number(v)))
-    .pipe(z.number().min(0).max(59).optional()),
-});
-
-type TaskFormData = z.infer<typeof taskFormSchema>;
 
 export default function EditTask() {
   const { id } = useParams<{ id: string }>();
@@ -62,7 +43,7 @@ export default function EditTask() {
   });
 
   const form = useForm<TaskFormData>({
-    resolver: zodResolver(taskFormSchema) as any,
+    resolver: zodResolver(taskFormSchema),
     mode: "onChange",
     defaultValues: {
       title: "",
@@ -133,34 +114,23 @@ export default function EditTask() {
   }
 
   return (
-    <PageTransition className="bg-background relative min-h-screen p-4 lg:p-8">
+    <PageTransition className="bg-background relative min-h-full p-4 lg:p-8">
       <div className="relative mx-auto max-w-5xl space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col justify-between gap-6 border-b pb-8 md:flex-row md:items-end">
-          <div className="space-y-3">
-            <div className="text-primary flex items-center gap-2">
-              <IconTerminal2 size={18} stroke={2.5} />
-              <span className="text-[10px] font-bold tracking-tight">
-                Task Modification
-              </span>
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-              {tasks.edit.title}
-            </h1>
-            <p className="text-muted-foreground max-w-md text-sm leading-relaxed font-medium">
-              ویرایش جزئیات تسک {task?.display_id || task?.id}
-            </p>
-          </div>
-
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="h-11 rounded-lg px-6 font-bold"
-          >
-            <IconArrowLeft className="me-2" size={18} stroke={2.5} />
-            {common.cancel}
-          </Button>
-        </div>
+        <PageHeader
+          title={tasks.edit.title}
+          description={`ویرایش جزئیات تسک ${task?.display_id || task?.id}`}
+          icon={IconTerminal2}
+          actions={
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="h-11 rounded-lg px-6 font-bold"
+            >
+              <IconArrowLeft className="me-2" size={18} stroke={2.5} />
+              {common.cancel}
+            </Button>
+          }
+        />
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">

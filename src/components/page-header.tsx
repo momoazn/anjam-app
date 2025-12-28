@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Icon as TablerIcon } from "@tabler/icons-react";
 import { LucideIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { ReactNode } from "react";
 
 type PageHeaderProps = {
   title: string;
@@ -28,9 +28,11 @@ export function PageHeader({
               <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
                 {title}
               </h1>
-              <p className="text-muted-foreground mt-1 text-sm leading-relaxed font-medium">
-                {description}
-              </p>
+              {description && (
+                <p className="text-muted-foreground mt-1 text-sm leading-relaxed font-medium">
+                  {description}
+                </p>
+              )}
             </div>
           </div>
 

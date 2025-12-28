@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -30,7 +29,13 @@ import {
   getStatusColorVariant,
 } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { FormField as GenericFormField } from "./form-field";
 import {
   IconFilter,
@@ -41,9 +46,25 @@ import {
   IconClock,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { errors, common } from "@/constants";
+
+export const taskFormSchema = z.object({
+  title: z.string().min(1, { message: errors.validation.titleRequired }),
+  description: z.string().min(1, { message: common.validation.required }),
+  assignee: z.string().min(1, { message: common.validation.required }),
+  priority: z.nativeEnum(TasksPriorityOptions),
+  status: z.nativeEnum(TasksStatusOptions),
+  project: z.string().optional(),
+  deadline: z.date().optional(),
+  estimated_hours: z.number().min(0).max(999).optional(),
+  estimated_minutes: z.number().min(0).max(59).optional(),
+});
+
+export type TaskFormData = z.infer<typeof taskFormSchema>;
 
 type TaskFieldsProps = {
-  control: Control<any>;
+  control: Control<TaskFormData>;
   isInProject?: boolean;
 };
 
@@ -144,14 +165,31 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
               <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
                 <IconStack2 className="size-2" /> Project
               </span>
-              <GenericFormField
+              <ShadcnFormField
                 control={control}
                 name="project"
-                label=""
-                type="select"
-                options={projectOptions}
-                placeholder={tasks.addTask.selectProject}
-                className="h-6 border-none bg-transparent p-0 text-[10px]"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
+                        <SelectValue
+                          placeholder={tasks.addTask.selectProject}
+                        />
+                      </SelectTrigger>
+                      <SelectContent className="border-border bg-card rounded-lg border">
+                        {projectOptions.map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            value={option.value}
+                            className="text-[9px] font-bold"
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
               />
             </div>
           )}
@@ -160,14 +198,29 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
               <IconUser className="size-2" /> Assignee
             </span>
-            <GenericFormField
+            <ShadcnFormField
               control={control}
               name="assignee"
-              label=""
-              type="select"
-              options={assigneeOptions}
-              placeholder={tasks.addTask.unassigned}
-              className="h-6 border-none bg-transparent p-0 text-[10px]"
+              render={({ field }) => (
+                <FormItem className="space-y-0">
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
+                      <SelectValue placeholder={tasks.addTask.unassigned} />
+                    </SelectTrigger>
+                    <SelectContent className="border-border bg-card rounded-lg border">
+                      {assigneeOptions.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.value}
+                          className="text-[9px] font-bold"
+                        >
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
             />
           </div>
 
@@ -186,7 +239,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                 return (
                   <FormItem className="space-y-0">
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-muted/5 h-6 rounded-lg border-none px-1 text-right text-[10px] font-bold tracking-tight focus:ring-0">
+                      <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
                         <div className="flex items-center justify-end gap-1.5">
                           <span>
                             {TASK_STATUS_CONFIG[value]?.name ??
@@ -240,7 +293,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                 return (
                   <FormItem className="space-y-0">
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-muted/5 h-6 rounded-lg border-none px-1 text-right text-[10px] font-bold tracking-tight focus:ring-0">
+                      <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
                         <div className="flex items-center justify-end gap-1.5">
                           <span>{tasks.priority[value]}</span>
                           <PriorityIcon
@@ -288,7 +341,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                       setDate={field.onChange}
                       buttonProps={{
                         className:
-                          "h-6 rounded-lg border-none bg-muted/5 shadow-none px-1 font-bold text-[10px] tracking-tight focus:ring-0 text-right",
+                          "h-7 rounded-lg border-none bg-muted/5 shadow-none px-2 font-bold text-[10px] tracking-tight focus:ring-0 text-right",
                       }}
                     />
                   </FormControl>
@@ -302,8 +355,9 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
               <IconClock className="size-2" /> Estimate
             </span>
-            <div className="flex items-center justify-end gap-3">
+            <div className="flex items-center justify-end gap-4">
               <div className="flex items-center gap-1.5">
+                <span className="text-[8px] font-bold opacity-30">H</span>
                 <ShadcnFormField
                   control={control}
                   name="estimated_hours"
@@ -311,15 +365,15 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     <Input
                       {...field}
                       type="number"
-                      className="bg-muted/10 h-6 w-10 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
-                      placeholder="00"
+                      className="bg-muted/10 h-7 w-12 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
+                      placeholder="0"
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   )}
                 />
-                <span className="text-[8px] font-bold opacity-30">H</span>
               </div>
               <div className="flex items-center gap-1.5">
+                <span className="text-[8px] font-bold opacity-30">M</span>
                 <ShadcnFormField
                   control={control}
                   name="estimated_minutes"
@@ -327,13 +381,12 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                     <Input
                       {...field}
                       type="number"
-                      className="bg-muted/10 h-6 w-10 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
-                      placeholder="00"
+                      className="bg-muted/10 h-7 w-12 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
+                      placeholder="0"
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   )}
                 />
-                <span className="text-[8px] font-bold opacity-30">M</span>
               </div>
             </div>
           </div>

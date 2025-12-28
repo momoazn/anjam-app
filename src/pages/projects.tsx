@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 import { ProjectListGroup } from "@/components/project/project-list-group";
 import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useProjects } from "@/hooks";
 import { useAuthUser } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 
 export default function Projects() {
   const user = useAuthUser();
@@ -30,48 +30,26 @@ export default function Projects() {
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <div className="border-border/10 bg-card relative mb-12 flex flex-col gap-8 rounded-3xl border p-8 shadow-sm md:flex-row md:items-center md:justify-between lg:p-12">
-        <BlueprintPattern variant="dots" className="opacity-[0.02]" />
-
-        <div className="relative z-10 flex flex-col gap-6">
-          <div className="flex items-center gap-6">
-            <div className="bg-primary text-primary-foreground shadow-primary/20 flex size-16 items-center justify-center rounded-2xl shadow-lg">
-              <Target className="size-8" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 opacity-40">
-                <span className="text-[10px] font-bold tracking-tight">
-                  Project Registry
-                </span>
-                <div className="bg-foreground/20 h-px w-8" />
-              </div>
-              <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-                {projects.title}
-              </h1>
-            </div>
-          </div>
-
-          <p className="text-muted-foreground/60 max-w-md text-sm leading-relaxed font-medium">
-            {projects.list.count.replace(
-              "{count}",
-              digitsEnToFa(userProjects?.length ?? 0).toString(),
-            )}
-          </p>
-        </div>
-
-        {canCreateProject && (
-          <div className="relative z-10">
+      <PageHeader
+        title={projects.title}
+        description={projects.list.count.replace(
+          "{count}",
+          digitsEnToFa(userProjects?.length ?? 0).toString(),
+        )}
+        icon={Target}
+        actions={
+          canCreateProject && (
             <Button
-              className="hover:shadow-primary/10 h-14 gap-3 rounded-2xl px-8 text-lg font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"
+              className="h-14 gap-3 rounded-2xl px-8 text-lg font-bold shadow-sm transition-all active:scale-[0.98]"
               size="lg"
               onClick={() => navigate("/projects/new")}
             >
               <Plus className="size-6" />
               <span>{projects.create.button}</span>
             </Button>
-          </div>
-        )}
-      </div>
+          )
+        }
+      />
 
       {isLoadingProjects ? (
         <div className="flex h-full items-center justify-center py-24">
