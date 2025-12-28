@@ -1,5 +1,5 @@
 import { MetricCards } from "@/components/reports/metric-cards";
-import type { computeOverviewMetrics } from "@/lib/reports-utils";
+import type { computeOverviewMetrics } from "@/lib/reports";
 
 type MetricsSectionProps = {
   totals: ReturnType<typeof computeOverviewMetrics> | null;

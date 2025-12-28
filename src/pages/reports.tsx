@@ -35,7 +35,7 @@ import {
   filterTasksNonTime,
   getTimeRange,
   computeProductivityTrends,
-} from "@/lib/reports-utils";
+} from "@/lib/reports";
 import { reports } from "@/constants";
 import { useProjects, useTasks, useUsers, queryKeys } from "@/hooks";
 import type { TaskWithProject } from "@/lib/pocketbase";

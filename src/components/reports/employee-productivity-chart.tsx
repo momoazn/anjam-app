@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { reports } from "@/constants";
-import type { EmployeeBucket } from "@/lib/reports-utils";
+import type { EmployeeBucket } from "@/lib/reports";
 import {
   ChartContainer,
   ChartTooltip,
