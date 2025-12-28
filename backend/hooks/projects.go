@@ -9,6 +9,7 @@ import (
 
 	"github.com/pocketbase/pocketbase/core"
 	"anjam/config"
+	"anjam/notifications"
 	"anjam/utils"
 )
 
@@ -64,12 +65,15 @@ func HandleProjectMembersCreatedNotify(e *core.RecordEvent) error {
 	}
 
 	projectName := getProjectName(e.App, projectId)
-	return createNotification(e.App, userId, "system",
-		fmt.Sprintf(config.MsgAddedToProject, projectName),
-		fmt.Sprintf(config.MsgAddedToProjectDesc, projectName),
-		map[string]interface{}{
+	return notifications.New(e.App).
+		User(userId).
+		Type("system").
+		Title(fmt.Sprintf(config.MsgAddedToProject, projectName)).
+		Message(fmt.Sprintf(config.MsgAddedToProjectDesc, projectName)).
+		Data(map[string]interface{}{
 			"projectId": projectId,
-		})
+		}).
+		Send()
 }
 
 // getProjectName retrieves project name by ID, returns fallback if not found.
@@ -82,12 +86,4 @@ func getProjectName(app core.App, projectId string) string {
 		return name
 	}
 	return "project"
-}
-
-// createNotification creates a notification record.
-// This is a placeholder - the actual implementation is in the notifications package.
-func createNotification(app core.App, userId, notificationType, title, message string, data map[string]interface{}) error {
-	// Implementation is in notifications/builder.go
-	// This is a placeholder to allow compilation
-	return nil
 }

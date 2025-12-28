@@ -8,6 +8,7 @@ import (
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"anjam/config"
+	"anjam/notifications"
 )
 
 // HandleTaskAssignmentNotification notifies the assigned user when a task is created.
@@ -34,7 +35,7 @@ func HandleTaskAssignmentNotification(e *core.RecordEvent) error {
 
 	projectName := project.GetString("name")
 
-	return NewNotification(e.App).
+	return notifications.New(e.App).
 		User(assigneeId).
 		Type("task_assigned").
 		Title(fmt.Sprintf(config.MsgTaskAssigned, taskTitle)).
@@ -64,7 +65,7 @@ func HandleTaskUpdateNotification(e *core.RecordEvent) error {
 
 	taskTitle := e.Record.GetString("title")
 
-	return NewNotification(e.App).
+	return notifications.New(e.App).
 		User(assigneeId).
 		Type("task_assigned").
 		Title(fmt.Sprintf(config.MsgTaskUpdated, taskTitle)).
@@ -99,7 +100,7 @@ func HandleProjectUpdateNotification(e *core.RecordEvent) error {
 			continue // Don't notify the updater
 		}
 
-		err := NewNotification(e.App).
+		err := notifications.New(e.App).
 			User(pu.UserId).
 			Type("project_updated").
 			Title(fmt.Sprintf(config.MsgProjectUpdated, projectName)).
@@ -144,7 +145,7 @@ func HandleCommentNotification(e *core.RecordEvent) error {
 		return e.Next() // No assignee or self-comment
 	}
 
-	return NewNotification(e.App).
+	return notifications.New(e.App).
 		User(assigneeId).
 		Type("comment").
 		Title(fmt.Sprintf(config.MsgNewComment, taskTitle)).
@@ -178,43 +179,4 @@ func truncateString(s string, maxLen int) string {
 		return s
 	}
 	return s[:maxLen-3] + "..."
-}
-
-// NewNotification creates a new notification builder.
-// This is a placeholder - the actual implementation is in notifications/builder.go.
-func NewNotification(app core.App) NotificationBuilder {
-	return NotificationBuilder{}
-}
-
-// NotificationBuilder is a placeholder for the notification builder.
-type NotificationBuilder struct{}
-
-// User sets the user for the notification.
-func (b NotificationBuilder) User(userID string) NotificationBuilder {
-	return b
-}
-
-// Type sets the type of the notification.
-func (b NotificationBuilder) Type(notificationType string) NotificationBuilder {
-	return b
-}
-
-// Title sets the title of the notification.
-func (b NotificationBuilder) Title(title string) NotificationBuilder {
-	return b
-}
-
-// Message sets the message of the notification.
-func (b NotificationBuilder) Message(message string) NotificationBuilder {
-	return b
-}
-
-// Data sets the data of the notification.
-func (b NotificationBuilder) Data(data map[string]interface{}) NotificationBuilder {
-	return b
-}
-
-// Send sends the notification.
-func (b NotificationBuilder) Send() error {
-	return nil
 }
