@@ -54,7 +54,6 @@ import {
 import type { UsersResponse } from "@/lib/pocketbase-types";
 import { PageHeader } from "@/components/page-header";
 import { IconBox } from "@/components/recipes/icon-box";
-import { cn } from "@/lib/utils";
 
 function getUserInitials(name: string): string {
   return name
