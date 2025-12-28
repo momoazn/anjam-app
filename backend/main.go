@@ -20,15 +20,15 @@ import (
 	"syscall"
 	"time"
 
+	"anjam/config"
+	"anjam/handlers"
+	"anjam/helpers"
+	"anjam/hooks"
 	"github.com/google/uuid"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"anjam/config"
-	"anjam/handlers"
-	"anjam/helpers"
-	"anjam/hooks"
 )
 
 //go:embed dist
@@ -493,7 +493,7 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 
 	if err != nil {
 		// User not found - still log the attempt
-		logUserLogin(app, "", req, false, config.ErrUserNotFoundForLogin)
+		logUserLogin(app, "", req, false, config.ErrUserNotFound)
 		return
 	}
 
