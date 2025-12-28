@@ -17,7 +17,7 @@ Create a CircleCI context named `dokploy` and add:
 - `DOCKER_USERNAME=mohammadhmn`
 - `DOCKER_PASSWORD=<github_pat_with_write:packages>`
 - `DOCKER_TAG=latest`
-- `DOKPLOY_URL=https://<your-dokploy-domain>`
+- `DOKPLOY_URL=https://redstitch.ir`
 - `DOKPLOY_API_KEY=<dokploy-api-key>`
 - `DOKPLOY_APP_ID=<dokploy-app-id>`
 
