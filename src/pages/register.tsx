@@ -83,7 +83,7 @@ export default function Register() {
   const submitting = registerMutation.isPending;
 
   return (
-    <div className="bg-background relative flex min-h-screen items-stretch overflow-hidden">
+    <div className="bg-background relative flex h-svh items-stretch overflow-hidden">
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.02]"
         style={{

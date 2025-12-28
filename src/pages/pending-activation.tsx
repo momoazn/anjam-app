@@ -14,7 +14,7 @@ export default function PendingActivation() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-background relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+    <div className="bg-background relative flex h-svh items-center justify-center overflow-hidden p-4">
       {/* Structural Decor */}
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"

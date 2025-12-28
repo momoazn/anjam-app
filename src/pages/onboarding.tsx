@@ -250,7 +250,7 @@ export default function Onboarding() {
   const CurrentIcon = STEPS[currentStep - 1].icon;
 
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center p-4">
+    <div className="bg-background flex h-svh items-center justify-center p-4">
       <PageTransition className="w-full max-w-md" disableStagger>
         <div className="bg-card rounded-none border p-8 shadow-2xl">
           {/* Header */}

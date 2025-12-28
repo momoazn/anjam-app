@@ -24,7 +24,7 @@ const LandingPage = () => {
 
   return (
     <div
-      className="dir-rtl bg-background text-foreground selection:bg-primary/30 min-h-screen overflow-x-hidden font-sans"
+      className="dir-rtl bg-background text-foreground selection:bg-primary/30 overscroll-behavior-none h-svh overflow-x-hidden overflow-y-auto font-sans"
       dir="rtl"
     >
       {/* Background Grid */}

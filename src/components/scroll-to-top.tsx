@@ -6,7 +6,14 @@ export function ScrollToTop() {
 
   useEffect(() => {
     try {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const scrollable = document.querySelector(
+        'main[data-slot="sidebar-inset"]',
+      );
+      if (scrollable) {
+        scrollable.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } catch {
       window.scrollTo(0, 0);
     }

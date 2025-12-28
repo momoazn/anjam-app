@@ -45,7 +45,7 @@ const queryClient = new QueryClient({
 // Loading fallback component
 function LoadingFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex h-svh items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="text-muted-foreground size-8 animate-spin" />
         <p className="text-muted-foreground text-sm">{loading.application}</p>
@@ -84,9 +84,9 @@ function AppLayout() {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh overflow-hidden">
       {isLoggedIn && <AppSidebar variant="inset" />}
-      <SidebarInset>
+      <SidebarInset className="overscroll-behavior-none min-h-0 overflow-x-hidden overflow-y-auto">
         {isLoggedIn && <SiteHeader />}
         <Suspense fallback={<LoadingFallback />}>
           <MainContent />

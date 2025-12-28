@@ -74,7 +74,7 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-background relative flex min-h-screen items-stretch overflow-hidden">
+    <div className="bg-background relative flex h-svh items-stretch overflow-hidden">
       {/* Background Decor */}
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.02]"
