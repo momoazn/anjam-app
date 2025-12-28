@@ -728,6 +728,15 @@
       },
       {
         "hidden": false,
+        "id": "bool_onboarding_completed",
+        "name": "onboarding_completed",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,
@@ -2950,6 +2959,153 @@
     ],
     "indexes": [
       "CREATE UNIQUE INDEX idx_user_preferences_user ON user_preferences (user)"
+    ],
+    "system": false
+  },
+  {
+    "id": "pbc_org_invites",
+    "listRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")",
+    "viewRule": "",
+    "createRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= @request.body.organization && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")",
+    "updateRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")",
+    "deleteRule": "@request.auth.id != '' && @collection.organization_members.organization.id ?= organization.id && @collection.organization_members.user.id ?= @request.auth.id && (@collection.organization_members.role = \"owner\" || @collection.organization_members.role = \"admin\")",
+    "name": "organization_invites",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text_token",
+        "max": 64,
+        "min": 32,
+        "name": "token",
+        "pattern": "^[a-zA-Z0-9]+$",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "pbc_3967019237",
+        "hidden": false,
+        "id": "relation_organization",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "organization",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "select_role",
+        "maxSelect": 1,
+        "name": "role",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": ["admin", "member"]
+      },
+      {
+        "hidden": false,
+        "id": "number_max_uses",
+        "max": null,
+        "min": 1,
+        "name": "max_uses",
+        "onlyInt": true,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "hidden": false,
+        "id": "number_uses_count",
+        "max": null,
+        "min": 0,
+        "name": "uses_count",
+        "onlyInt": true,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "hidden": false,
+        "id": "date_expires_at",
+        "max": "",
+        "min": "",
+        "name": "expires_at",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "date"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation_created_by",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "created_by",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "bool_revoked",
+        "name": "revoked",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_org_invites_token ON organization_invites (token)",
+      "CREATE INDEX idx_org_invites_org ON organization_invites (organization)",
+      "CREATE INDEX idx_org_invites_expires ON organization_invites (expires_at)"
     ],
     "system": false
   }

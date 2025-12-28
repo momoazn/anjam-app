@@ -116,9 +116,10 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 			}
 
 			type OrgWithRole struct {
-				Organization *core.Record `json:"organization"`
-				Role         string       `json:"role"`
-				JoinedAt     string       `json:"joined_at"`
+				Organization        *core.Record `json:"organization"`
+				Role                string       `json:"role"`
+				JoinedAt            string       `json:"joined_at"`
+				OnboardingCompleted bool         `json:"onboarding_completed"`
 			}
 
 			result := make([]OrgWithRole, 0, len(memberships))
@@ -130,9 +131,10 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 				}
 
 				result = append(result, OrgWithRole{
-					Organization: org,
-					Role:         membership.GetString("role"),
-					JoinedAt:     membership.GetString("joined_at"),
+					Organization:        org,
+					Role:                membership.GetString("role"),
+					JoinedAt:            membership.GetString("joined_at"),
+					OnboardingCompleted: membership.GetBool("onboarding_completed"),
 				})
 			}
 

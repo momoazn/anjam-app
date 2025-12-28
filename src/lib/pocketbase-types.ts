@@ -15,6 +15,7 @@ export enum Collections {
   Comments = "comments",
   Mentions = "mentions",
   Notifications = "notifications",
+  OrganizationInvites = "organization_invites",
   OrganizationMembers = "organization_members",
   Organizations = "organizations",
   ProjectMembers = "project_members",
@@ -190,6 +191,24 @@ export type NotificationsRecord<Tdata = unknown> = {
   user: RecordIdString;
 };
 
+export enum OrganizationInvitesRoleOptions {
+  "admin" = "admin",
+  "member" = "member",
+}
+export type OrganizationInvitesRecord = {
+  created: IsoAutoDateString;
+  created_by?: RecordIdString;
+  expires_at: IsoDateString;
+  id: string;
+  max_uses?: number;
+  organization: RecordIdString;
+  revoked?: boolean;
+  role: OrganizationInvitesRoleOptions;
+  token: string;
+  updated: IsoAutoDateString;
+  uses_count?: number;
+};
+
 export enum OrganizationMembersRoleOptions {
   "owner" = "owner",
   "admin" = "admin",
@@ -208,6 +227,7 @@ export type OrganizationMembersRecord = {
   invited_by?: RecordIdString;
   joined_at?: IsoDateString;
   last_active_at?: IsoDateString;
+  onboarding_completed?: boolean;
   organization: RecordIdString;
   role: OrganizationMembersRoleOptions;
   status?: OrganizationMembersStatusOptions;
@@ -432,6 +452,8 @@ export type NotificationsResponse<
   Tdata = unknown,
   Texpand = unknown,
 > = Required<NotificationsRecord<Tdata>> & BaseSystemFields<Texpand>;
+export type OrganizationInvitesResponse<Texpand = unknown> =
+  Required<OrganizationInvitesRecord> & BaseSystemFields<Texpand>;
 export type OrganizationMembersResponse<Texpand = unknown> =
   Required<OrganizationMembersRecord> & BaseSystemFields<Texpand>;
 export type OrganizationsResponse<
@@ -475,6 +497,7 @@ export type CollectionRecords = {
   comments: CommentsRecord;
   mentions: MentionsRecord;
   notifications: NotificationsRecord;
+  organization_invites: OrganizationInvitesRecord;
   organization_members: OrganizationMembersRecord;
   organizations: OrganizationsRecord;
   project_members: ProjectMembersRecord;
@@ -499,6 +522,7 @@ export type CollectionResponses = {
   comments: CommentsResponse;
   mentions: MentionsResponse;
   notifications: NotificationsResponse;
+  organization_invites: OrganizationInvitesResponse;
   organization_members: OrganizationMembersResponse;
   organizations: OrganizationsResponse;
   project_members: ProjectMembersResponse;

@@ -23,7 +23,8 @@
       "Bash(bun run lint)",
       "Bash(bun run format:*)",
       "WebFetch(domain:pocketbase.io)",
-      "Bash(python3:*)"
+      "Bash(bun run types:generate:*)",
+      "Bash(bun run lint:fix:*)"
     ],
     "deny": [],
     "ask": []

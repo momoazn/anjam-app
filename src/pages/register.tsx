@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   IconMail,
   IconShieldLock,
-  IconUserBolt,
+  IconBuilding,
   IconFingerprint,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
@@ -14,60 +14,48 @@ import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth, app } from "@/constants";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { pb } from "@/lib/pocketbase";
+import { useRegisterWithOrg } from "@/hooks/organization-invites";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const deriveUsernameFromEmail = (email: string) => {
-  const base = email.split("@")[0] ?? "";
-  return base
-    .toLowerCase()
-    .replace(/[^a-z0-9._-]+/g, "-")
-    .replace(/^[-._]+|[-._]+$/g, "")
-    .slice(0, 50);
-};
-
 export default function Register() {
   const navigate = useNavigate();
+  const registerMutation = useRegisterWithOrg();
 
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [organizationName, setOrganizationName] = useState("");
   const [errors, setErrors] = useState<{
     email?: string;
-    username?: string;
     password?: string;
     confirmPassword?: string;
+    organizationName?: string;
   }>({});
-
-  const resolvedUsername = useMemo(() => {
-    if (username.trim()) return username.trim();
-    return deriveUsernameFromEmail(email.trim());
-  }, [email, username]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors: typeof errors = {};
     const trimmedEmail = email.trim().toLowerCase();
-    const trimmedPassword = password.trim();
-    const trimmedConfirm = confirmPassword.trim();
+    const trimmedOrgName = organizationName.trim();
 
     if (!trimmedEmail) newErrors.email = auth.errors.emailRequired;
     else if (!emailRegex.test(trimmedEmail)) {
       newErrors.email = auth.errors.emailInvalid;
     }
 
-    if (!resolvedUsername) newErrors.username = auth.errors.usernameRequired;
-    if (!trimmedPassword) newErrors.password = auth.errors.passwordRequired;
-    if (!trimmedConfirm) {
+    if (!password) newErrors.password = auth.errors.passwordRequired;
+    if (!confirmPassword) {
       newErrors.confirmPassword = auth.errors.passwordConfirmRequired;
-    } else if (trimmedPassword !== trimmedConfirm) {
+    } else if (password !== confirmPassword) {
       newErrors.confirmPassword = auth.errors.passwordsMismatch;
+    }
+
+    if (!trimmedOrgName) {
+      newErrors.organizationName =
+        auth.register.errors.organizationNameRequired;
     }
 
     setErrors(newErrors);
@@ -76,23 +64,23 @@ export default function Register() {
       return;
     }
 
-    try {
-      setSubmitting(true);
-      await pb.collection("users").create({
+    registerMutation.mutate(
+      {
         email: trimmedEmail,
-        username: resolvedUsername,
-        password: trimmedPassword,
-        passwordConfirm: trimmedConfirm,
-        role: "employee",
-      });
-      toast.success(auth.register.success);
-      navigate("/login", { replace: true });
-    } catch (error) {
-      handlePocketBaseError(error as Error);
-    } finally {
-      setSubmitting(false);
-    }
+        password,
+        passwordConfirm: confirmPassword,
+        organizationName: trimmedOrgName,
+      },
+      {
+        onSuccess: () => {
+          toast.success(auth.register.success);
+          navigate("/onboarding", { replace: true });
+        },
+      },
+    );
   };
+
+  const submitting = registerMutation.isPending;
 
   return (
     <div className="bg-background relative flex min-h-screen items-stretch overflow-hidden">
@@ -182,22 +170,21 @@ export default function Register() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                    {auth.register.username}
+                    {auth.register.organizationName}
                   </Label>
-                  <IconUserBolt className="text-muted-foreground/40 size-3" />
+                  <IconBuilding className="text-muted-foreground/40 size-3" />
                 </div>
                 <Input
                   type="text"
-                  value={username}
-                  dir="ltr"
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
                   className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                  placeholder={resolvedUsername || "username"}
+                  placeholder={auth.register.organizationNamePlaceholder}
                   disabled={submitting}
                 />
-                {errors.username && (
+                {errors.organizationName && (
                   <p className="text-destructive text-[10px] font-bold">
-                    {errors.username}
+                    {errors.organizationName}
                   </p>
                 )}
               </div>

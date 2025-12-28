@@ -78,6 +78,7 @@ func main() {
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 	app.OnServe().BindFunc(registerAuditHooksHandler)
 	registerOrganizationEndpoints(app)
+	registerInviteEndpoints(app)
 	registerPermissionsEndpoint(app)
 	registerBatchEndpoints(app)
 

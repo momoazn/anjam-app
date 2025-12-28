@@ -8,6 +8,7 @@ const (
 	CollectionUsers          = "users"
 	CollectionOrganizations  = "organizations"
 	CollectionOrgMembers     = "organization_members"
+	CollectionOrgInvites     = "organization_invites"
 	CollectionProjects       = "projects"
 	CollectionTasks          = "tasks"
 	CollectionNotifications  = "notifications"
@@ -26,6 +27,13 @@ const (
 	DefaultPageSize           = 50
 	MaxPageSize               = 100
 	MaxFailedLoginAttempts    = 5
+)
+
+// Invite configuration constants
+const (
+	InviteTokenLength      = 32
+	InviteExpirationDays   = 7
+	InviteDefaultMaxUses   = 50
 )
 
 // Role constants
@@ -174,4 +182,24 @@ const (
 
 	// Blocked reason template
 	MsgBlockedReason = "حساب به دلیل %d تلاش ناموفق برای ورود مسدود شد"
+
+	// Invite errors
+	ErrInviteNotFound          = "لینک دعوت نامعتبر است"
+	ErrInviteExpired           = "لینک دعوت منقضی شده است"
+	ErrInviteExhausted         = "ظرفیت استفاده از این لینک دعوت تکمیل شده است"
+	ErrInviteRevoked           = "این لینک دعوت لغو شده است"
+	ErrEmailAlreadyRegistered  = "این ایمیل قبلاً ثبت‌نام شده است. لطفاً وارد شوید"
+	ErrOrgNameRequired         = "نام سازمان الزامی است"
+	ErrInvalidInviteRole       = "نقش انتخاب‌شده نامعتبر است"
+	ErrFailedToCreateUser      = "خطا در ایجاد حساب کاربری"
+	ErrFailedToCreateOrg       = "خطا در ایجاد سازمان"
+	ErrFailedToCreateInvite    = "خطا در ایجاد لینک دعوت"
+	ErrNotOrgAdmin             = "شما مجوز مدیریت دعوت‌نامه‌ها را ندارید"
+
+	// Invite success messages
+	MsgInviteCreated           = "لینک دعوت ایجاد شد"
+	MsgInviteRevoked           = "لینک دعوت لغو شد"
+	MsgRegistrationSuccess     = "ثبت‌نام با موفقیت انجام شد"
+	MsgWelcomeToOrg            = "به %s خوش آمدید!"
+	MsgWelcomeToOrgDesc        = "شما به سازمان %s ملحق شدید"
 )

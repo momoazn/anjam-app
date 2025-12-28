@@ -25,6 +25,7 @@ import {
   useAuthIsLoggedIn,
   useAuthUser,
   useCurrentOrganization,
+  useCurrentOrgOnboardingCompleted,
   useAuthStore,
 } from "./store/auth-store";
 
@@ -204,6 +205,17 @@ const OrgMembers = createLazyPage(
     })),
   errors.pageLoad.notFound,
 );
+const InviteAccept = createLazyPage(
+  () =>
+    import("@/pages/invite-accept").then((module) => ({
+      default: module.InviteAccept,
+    })),
+  errors.pageLoad.notFound,
+);
+const Onboarding = createLazyPage(
+  () => import("@/pages/onboarding"),
+  errors.pageLoad.notFound,
+);
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -219,6 +231,7 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
   const currentOrg = useCurrentOrganization();
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
+  const onboardingCompleted = useCurrentOrgOnboardingCompleted();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -236,6 +249,11 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   // Redirect to organization selection if no organization is selected
   if (!currentOrg) {
     return <Navigate to="/select-organization" replace />;
+  }
+
+  // Redirect to onboarding if not completed for current organization
+  if (!onboardingCompleted) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;
@@ -358,30 +376,35 @@ const routes: RouteType[] = [
     path: "/dashboard",
     element: <Dashboard />,
     protected: true,
+    requiresOrg: true,
     title: navigation.dashboard,
   },
   {
     path: "/projects",
     element: <Projects />,
     protected: true,
+    requiresOrg: true,
     title: navigation.projects,
   },
   {
     path: "/projects/new",
     element: <CreateProject />,
     protected: true,
+    requiresOrg: true,
     title: projects.create.title,
   },
   {
     path: "/projects/:id/details",
     element: <ProjectDetails />,
     protected: true,
+    requiresOrg: true,
     title: projects.details.title,
   },
   {
     path: "/projects/:id/edit",
     element: <EditProject />,
     protected: true,
+    requiresOrg: true,
     title: projects.edit.title,
   },
   {
@@ -403,9 +426,23 @@ const routes: RouteType[] = [
     title: users.pendingActivation.title,
   },
   {
+    path: "/invite/:token",
+    element: <InviteAccept />,
+    protected: false,
+    title: auth.invite.title,
+  },
+  {
+    path: "/onboarding",
+    element: <Onboarding />,
+    protected: true,
+    requiresOrg: false,
+    title: auth.onboarding.title,
+  },
+  {
     path: "/tasks",
     element: <Tasks />,
     protected: true,
+    requiresOrg: true,
     title: tasks.title,
   },
   {
@@ -416,54 +453,63 @@ const routes: RouteType[] = [
       </PermissionProtectedRoute>
     ),
     protected: true,
+    requiresOrg: true,
     title: tasks.board.title, // Assuming a title for task board
   },
   {
     path: "/tasks/new",
     element: <CreateTask />,
     protected: true,
+    requiresOrg: true,
     title: tasks.addTask.title,
   },
   {
     path: "/tasks/:id",
     element: <TaskDetails />,
     protected: true,
+    requiresOrg: true,
     title: tasks.details.title,
   },
   {
     path: "/tasks/:id/edit",
     element: <EditTask />,
     protected: true,
+    requiresOrg: true,
     title: tasks.edit.title,
   },
   {
     path: "/tags",
     element: <Tags />,
     protected: true,
+    requiresOrg: true,
     title: tagsManagement.title,
   },
   {
     path: "/tasks/calendar",
     element: <TaskCalendar />,
     protected: true,
+    requiresOrg: true,
     title: tasks.calendar.title,
   },
   {
     path: "/my-tasks",
     element: <MyTasks />,
     protected: true,
+    requiresOrg: true,
     title: myTasks.title,
   },
   {
     path: "/timesheet",
     element: <Timesheet />,
     protected: true,
+    requiresOrg: true,
     title: navigationLabels.timesheet,
   },
   {
     path: "/projects/:id/tasks",
     element: <ProjectTasks />,
     protected: true,
+    requiresOrg: true,
     title: projects.projectTasks,
   },
   {
@@ -474,24 +520,28 @@ const routes: RouteType[] = [
       </PermissionProtectedRoute>
     ),
     protected: true,
+    requiresOrg: true,
     title: tasks.board.title,
   },
   {
     path: "/projects/:id/tasks/new",
     element: <CreateTask />,
     protected: true,
+    requiresOrg: true,
     title: tasks.addTask.title,
   },
   {
     path: "/tasks/new",
     element: <CreateTask />,
     protected: true,
+    requiresOrg: true,
     title: tasks.addTask.title,
   },
   {
     path: "/users",
     element: <Users />,
     protected: true,
+    requiresOrg: true,
     permission: "org.manage_members",
     title: users.title,
   },
@@ -499,6 +549,7 @@ const routes: RouteType[] = [
     path: "/users/new",
     element: <CreateUser />,
     protected: true,
+    requiresOrg: true,
     permission: "org.manage_members",
     title: users.create.title,
   },
@@ -506,6 +557,7 @@ const routes: RouteType[] = [
     path: "/users/:id/edit",
     element: <EditUser />,
     protected: true,
+    requiresOrg: true,
     permission: "org.manage_members",
     title: users.edit.title,
   },
@@ -513,24 +565,28 @@ const routes: RouteType[] = [
     path: "/projects/:id/users",
     element: <ProjectUsers />,
     protected: true,
+    requiresOrg: true,
     title: projects.users.title,
   },
   {
     path: "/reports",
     element: <Reports />,
     protected: true,
+    requiresOrg: true,
     title: navigation.reports,
   },
   {
     path: "/helps",
     element: <Helps />,
     protected: true,
+    requiresOrg: true,
     title: navigation.helps,
   },
   {
     path: "/settings",
     element: <Settings />,
     protected: true,
+    requiresOrg: true,
     title: navigation.settings,
   },
   {
@@ -544,6 +600,7 @@ const routes: RouteType[] = [
     path: "/notifications",
     element: <Notifications />,
     protected: true,
+    requiresOrg: true,
     title: navigation.notifications,
   },
   {
@@ -554,6 +611,7 @@ const routes: RouteType[] = [
       </PermissionProtectedRoute>
     ),
     protected: true,
+    requiresOrg: true,
     title: navigation.auditLogs,
   },
   {
@@ -612,7 +670,8 @@ export const AppRoutes = () => {
           } else if (
             route.path === "/login" ||
             route.path === "/register" ||
-            route.path === "/pending-activation"
+            route.path === "/pending-activation" ||
+            route.path === "/invite/:token"
           ) {
             element = <PublicRoute>{content}</PublicRoute>;
           }
