@@ -390,12 +390,7 @@ export function OrgMembersPage() {
         <DialogContent className="border-border max-w-md overflow-hidden rounded-2xl border p-0 shadow-lg">
           <div className="bg-primary/5 border-border border-b px-6 py-6">
             <DialogHeader className="text-right">
-              <IconBox
-                size="sm"
-                tone="primary"
-                className="mb-4"
-                radius="var(--radius-xl)"
-              >
+              <IconBox size="sm" tone="primary" className="mb-4">
                 <IconUserPlus className="size-7" />
               </IconBox>
               <DialogTitle className="text-2xl font-bold tracking-tight">

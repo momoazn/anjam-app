@@ -143,12 +143,7 @@ export function DashboardHeader({
         {/* Main Welcome Section */}
         <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-10">
           <div className="relative z-10 flex items-center gap-3">
-            <IconBox
-              icon={LayoutDashboard}
-              size="xs"
-              tone="primary"
-              radius="var(--radius-lg)"
-            />
+            <IconBox icon={LayoutDashboard} size="xs" tone="primary" />
             <div className="flex flex-col">
               <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                 {app.name}
@@ -230,7 +225,6 @@ export function DashboardHeader({
                       item.bg,
                     )}
                     iconClassName={cn(item.color)}
-                    radius="var(--radius-xl)"
                   />
                 </div>
               </div>
