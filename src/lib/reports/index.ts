@@ -31,17 +31,25 @@ export {
   countByPriority,
 } from "./metrics";
 
-// Re-export aggregation functions
+// Re-export employee aggregation functions
 export {
   computeEmployeeBuckets,
   computeProductivityTrend,
   computeEmployeeSummary,
+} from "./employee-aggregations";
+
+// Re-export team aggregation functions
+export {
   computeTeamAverages,
   buildLeaderboard,
+  computeProductivityTrends,
+} from "./team-aggregations";
+
+// Re-export workload aggregation functions
+export {
   computeOvertimeAnalysis,
   computeWorkloadDistribution,
-  computeProductivityTrends,
-} from "./aggregations";
+} from "./workload-aggregations";
 
 // Re-export time calculation functions
 export {
