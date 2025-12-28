@@ -4,10 +4,10 @@ package handlers
 import (
 	"log"
 
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
 	"anjam/config"
 	"anjam/helpers"
+	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 const (
@@ -181,7 +181,7 @@ func fetchUserLoginLogs(app core.App, userId string, pagination PaginationParams
 	`).Bind(dbx.Params{"userId": userId}).Row(&totalCount)
 	if err != nil {
 		log.Printf("Error counting login logs for user %q: %v", userId, err)
-		totalCount = len(logs)
+		return nil, 0, err
 	}
 
 	return logs, totalCount, nil
