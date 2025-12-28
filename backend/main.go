@@ -86,6 +86,7 @@ func main() {
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(hooks.HandleUserCreation)
+	app.OnRecordCreateExecute("projects").BindFunc(hooks.HandleProjectCreation)
 	app.OnRecordCreateExecute("tasks").BindFunc(hooks.HandleTaskCreation)
 	app.OnRecordValidate("tasks").BindFunc(validateTaskStatusTransition)
 	app.OnRecordUpdateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
