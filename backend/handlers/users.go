@@ -26,7 +26,7 @@ type userLoginLogRow struct {
 func HandleToggleUserActive(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
-	authRecord, err := requireAdmin(e)
+	authRecord, err := RequireAdmin(e)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func HandleToggleUserActive(e *core.RequestEvent) error {
 func HandleUnblockUser(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
-	_, err := requireAdmin(e)
+	_, err := RequireAdmin(e)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func HandleGetUserLoginLogs(e *core.RequestEvent) error {
 		return e.JSON(403, map[string]string{"error": config.ErrCannotViewOtherUserLogs})
 	}
 
-	pagination := parsePagination(e.Request)
+	pagination := ParsePagination(e.Request)
 
 	logs, totalCount, err := fetchUserLoginLogs(e.App, userId, pagination)
 	if err != nil {

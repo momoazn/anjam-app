@@ -6,21 +6,15 @@ import (
 	"strconv"
 	"strings"
 
+	"anjam/config"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"anjam/config"
 )
 
 // PaginationParams holds pagination parameters
 type PaginationParams struct {
 	Page    int
 	PerPage int
-}
-
-// parsePagination extracts pagination parameters from request query.
-// Returns default values if not provided or invalid.
-func parsePagination(r *http.Request) PaginationParams {
-	return ParsePagination(r)
 }
 
 // ParsePagination extracts pagination parameters from request query.
@@ -92,12 +86,6 @@ func ValidateAuth(e *core.RequestEvent) (*core.Record, error) {
 	return authRecord, nil
 }
 
-// requireAdmin validates that the authenticated user is an admin.
-// Returns the user record and error if validation fails.
-func requireAdmin(e *core.RequestEvent) (*core.Record, error) {
-	return RequireAdmin(e)
-}
-
 // RequireAdmin validates that the authenticated user is an admin.
 // Returns the user record and error if validation fails.
 func RequireAdmin(e *core.RequestEvent) (*core.Record, error) {
@@ -111,12 +99,6 @@ func RequireAdmin(e *core.RequestEvent) (*core.Record, error) {
 	}
 
 	return authRecord, nil
-}
-
-// requireRole validates that the authenticated user has one of the specified roles.
-// Returns the user record and error if validation fails.
-func requireRole(e *core.RequestEvent, roles ...string) (*core.Record, error) {
-	return RequireRole(e, roles...)
 }
 
 // RequireRole validates that the authenticated user has one of the specified roles.
