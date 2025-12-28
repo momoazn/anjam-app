@@ -49,6 +49,8 @@ var sensitiveFields = map[string]bool{
 
 // logAudit writes an audit log entry to the audit_logs collection.
 // Errors are logged but do not block the main operation (fail-open pattern).
+// Note: This function intentionally doesn't return errors on Save() failures to avoid
+// blocking the main workflow. Audit log failures are logged for monitoring purposes.
 func logAudit(app core.App, entry AuditEntry) {
 	auditCollection, err := app.FindCollectionByNameOrId(CollectionAuditLogs)
 	if err != nil {
