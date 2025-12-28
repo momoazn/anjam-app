@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 import { useAuthUser } from "@/store/auth-store";
 import { createMutation } from "./use-mutation-factory";
-import { notificationsUnreadCount } from "./query-keys";
+import { queryKeys } from "./query-keys";
 import {
   fetchUserNotifications,
   markAsRead,
@@ -21,7 +21,7 @@ export function useNotifications() {
   const userId = user?.id;
 
   const { refetch, ...query } = useQuery({
-    queryKey: notificationsUnreadCount(userId),
+    queryKey: queryKeys.notificationsUnreadCount(userId),
     queryFn: async () => {
       if (!userId) return [];
       return fetchUserNotifications(userId);
@@ -56,7 +56,7 @@ export function useUnreadCount() {
   const userId = user?.id;
 
   const { data: notifications = [] } = useQuery({
-    queryKey: notificationsUnreadCount(userId),
+    queryKey: queryKeys.notificationsUnreadCount(userId),
     queryFn: async () => {
       if (!userId) return [];
       return fetchUnreadNotifications(userId);
@@ -73,7 +73,7 @@ export function useMarkAsRead() {
   const mutation = createMutation<void, Error, string>(markAsRead, (client) => {
     if (user?.id) {
       client.invalidateQueries({
-        queryKey: notificationsUnreadCount(user.id),
+        queryKey: queryKeys.notificationsUnreadCount(user.id),
       });
     }
   });
@@ -94,7 +94,7 @@ export function useMarkAllAsRead() {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
         client.invalidateQueries({
-          queryKey: notificationsUnreadCount(targetUserId),
+          queryKey: queryKeys.notificationsUnreadCount(targetUserId),
         });
       }
     },
@@ -111,7 +111,7 @@ export function useDeleteNotification() {
     (client) => {
       if (user?.id) {
         client.invalidateQueries({
-          queryKey: notificationsUnreadCount(user.id),
+          queryKey: queryKeys.notificationsUnreadCount(user.id),
         });
       }
     },
@@ -133,7 +133,7 @@ export function useClearAll() {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
         client.invalidateQueries({
-          queryKey: notificationsUnreadCount(targetUserId),
+          queryKey: queryKeys.notificationsUnreadCount(targetUserId),
         });
       }
     },
@@ -155,7 +155,7 @@ export function useClearRead() {
       const targetUserId = userId || user?.id;
       if (targetUserId) {
         client.invalidateQueries({
-          queryKey: notificationsUnreadCount(targetUserId),
+          queryKey: queryKeys.notificationsUnreadCount(targetUserId),
         });
       }
     },
