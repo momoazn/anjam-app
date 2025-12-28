@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -129,14 +130,26 @@ func handleListInvites(e *core.RequestEvent) error {
 		return e.ForbiddenError(ErrNotOrgAdmin, nil)
 	}
 
-	// TODO: Add pagination support (limit/offset query params) to prevent
-	// performance issues when organizations have many invite links.
+	// Parse pagination params with defaults
+	limit := 50
+	offset := 0
+	if l := e.Request.URL.Query().Get("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 && parsed <= 100 {
+			limit = parsed
+		}
+	}
+	if o := e.Request.URL.Query().Get("offset"); o != "" {
+		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
+			offset = parsed
+		}
+	}
+
 	invites, err := e.App.FindRecordsByFilter(
 		CollectionOrgInvites,
 		"organization = {:orgId}",
 		"-created",
-		0,
-		0,
+		limit,
+		offset,
 		dbx.Params{"orgId": orgId},
 	)
 	if err != nil {
@@ -145,6 +158,8 @@ func handleListInvites(e *core.RequestEvent) error {
 
 	return e.JSON(200, map[string]any{
 		"invites": invites,
+		"limit":   limit,
+		"offset":  offset,
 	})
 }
 
