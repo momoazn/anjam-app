@@ -4,7 +4,7 @@ import { IconTable, IconTerminal } from "@tabler/icons-react";
 import { EmployeePerformanceTable } from "@/components/reports/employee-performance-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { reports } from "@/constants";
-import type { EmployeeSummary } from "@/lib/reports-utils";
+import type { EmployeeSummary } from "@/lib/reports";
 import type { UsersResponse } from "@/lib/pocketbase-types";
 
 type TableSectionProps = {

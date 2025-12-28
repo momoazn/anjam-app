@@ -4,34 +4,20 @@
  * This file consolidates all status-related functionality including:
  * - Status configuration and validation
  * - Color schemes and theming
- * - Icon mappings
- * - Priority utilities
  * - UI component mappings
+ *
+ * Icons and priority-specific utilities have been extracted to:
+ * - status-icons.ts: Task status icon mappings
+ * - status-priority.ts: Priority color and icon mappings
  */
 
-import {
-  Icon,
-  IconAlertCircle,
-  IconAntennaBars2,
-  IconAntennaBars3,
-  IconAntennaBars4,
-  IconAntennaBars5,
-  IconCircle,
-  IconCircleCheckFilled,
-  IconCircleHalf2,
-  IconCircleX,
-  IconClock,
-  IconEye,
-  IconFlask,
-  IconPlayerPause,
-} from "@tabler/icons-react";
-
 import { tasks } from "@/constants";
-import {
-  TasksPriorityOptions,
-  TasksResponse,
-  TasksStatusOptions,
-} from "./pocketbase-types";
+import { TasksResponse, TasksStatusOptions } from "./pocketbase-types";
+import { TASK_STATUS_ORDER } from "./status-icons";
+
+// Import icon and priority utilities from extracted modules
+export { taskStatusIcons, TASK_STATUS_ORDER } from "./status-icons";
+export { priorityColors, priorityIcons } from "./status-priority";
 
 /**
  * Task status configuration with comprehensive metadata
@@ -146,21 +132,6 @@ export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
   };
 
 /**
- * Ordered list of task statuses (by workflow order)
- */
-export const TASK_STATUS_ORDER: TasksStatusOptions[] = [
-  TasksStatusOptions.todo,
-  TasksStatusOptions.in_progress,
-  TasksStatusOptions.review,
-  TasksStatusOptions.testing,
-  TasksStatusOptions.pending,
-  TasksStatusOptions.blocked,
-  TasksStatusOptions.on_hold,
-  TasksStatusOptions.done,
-  TasksStatusOptions.canceled,
-];
-
-/**
  * Get the status configuration for a task
  * Falls back to 'todo' status if the task status is undefined or invalid
  */
@@ -270,49 +241,6 @@ export function isTerminalStatus(status: TasksStatusOptions): boolean {
   const config = TASK_STATUS_CONFIG[status];
   return config.isCompleted || config.isCanceled;
 }
-
-// ============================================================================
-// PRIORITY UTILITIES
-// ============================================================================
-
-/**
- * Priority color mappings for task priority indicators
- */
-export const priorityColors: Record<TasksPriorityOptions, string> = {
-  low: "text-emerald-600 dark:text-emerald-400",
-  medium: "text-amber-600 dark:text-amber-400",
-  high: "text-orange-600 dark:text-orange-400",
-  urgent: "text-rose-600 dark:text-rose-400",
-};
-
-/**
- * Priority icon mappings for task priority indicators
- */
-export const priorityIcons: Record<TasksPriorityOptions, Icon> = {
-  low: IconAntennaBars2,
-  medium: IconAntennaBars3,
-  high: IconAntennaBars4,
-  urgent: IconAntennaBars5,
-};
-
-// ============================================================================
-// STATUS-DERIVED MAPPINGS (for UI components)
-// ============================================================================
-
-/**
- * Status icons mapped to the centralized configuration
- */
-export const taskStatusIcons: Record<TasksStatusOptions, Icon> = {
-  [TasksStatusOptions.todo]: IconCircle,
-  [TasksStatusOptions.in_progress]: IconCircleHalf2,
-  [TasksStatusOptions.review]: IconEye,
-  [TasksStatusOptions.testing]: IconFlask,
-  [TasksStatusOptions.pending]: IconClock,
-  [TasksStatusOptions.blocked]: IconAlertCircle,
-  [TasksStatusOptions.on_hold]: IconPlayerPause,
-  [TasksStatusOptions.done]: IconCircleCheckFilled,
-  [TasksStatusOptions.canceled]: IconCircleX,
-};
 
 // ============================================================================
 // LEGACY COMPATIBILITY

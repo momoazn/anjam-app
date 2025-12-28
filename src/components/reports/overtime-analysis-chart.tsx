@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
-import type { OvertimeAnalysis } from "@/lib/reports-utils";
+import type { OvertimeAnalysis } from "@/lib/reports";
 import {
   ChartContainer,
   ChartTooltip,

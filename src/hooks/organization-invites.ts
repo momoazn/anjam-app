@@ -100,7 +100,7 @@ export function useOrganizationInvites() {
  */
 export function useInviteByToken(token: string) {
   return useQuery({
-    queryKey: queryKeys.orgInvites.byToken(token),
+    queryKey: queryKeys.orgInvites.listByToken(token),
     queryFn: async (): Promise<InviteInfo> => {
       const response = await fetch(`/api/v1/invites/${token}`);
 

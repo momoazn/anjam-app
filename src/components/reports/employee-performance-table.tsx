@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { reports } from "@/constants";
-import type { EmployeeSummary } from "@/lib/reports-utils";
+import type { EmployeeSummary } from "@/lib/reports";
 import { cn } from "@/lib/utils";
 
 type SortField = keyof EmployeeSummary;

@@ -2,7 +2,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
-import type { EmployeeSummary } from "@/lib/reports-utils";
+import type { EmployeeSummary } from "@/lib/reports";
 
 type Props = {
   summaries: EmployeeSummary[];

@@ -77,7 +77,7 @@ import type {
   computeProductivityTrends,
   computeTeamAverages,
   computeWorkloadDistribution,
-} from "@/lib/reports-utils";
+} from "@/lib/reports";
 
 type TimelinessKey = "on_time" | "overdue" | "no_deadline";
 

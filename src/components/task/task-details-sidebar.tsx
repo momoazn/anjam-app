@@ -143,7 +143,7 @@ export function TaskDetailsSidebar({
       </section>
 
       {/* Info Block */}
-      <Card className="border-dashed bg-muted/30 p-0">
+      <Card className="bg-muted/30 border-dashed p-0">
         <CardContent className="flex flex-col items-center gap-3 p-6">
           <IconInfoCircle className="text-muted-foreground size-6" />
           <div className="space-y-1 text-center">

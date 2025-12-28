@@ -5,12 +5,13 @@ import (
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
+	"anjam/handlers"
 )
 
 // handleGlobalSearch performs a unified search across tasks and projects
 func handleGlobalSearch(e *core.RequestEvent) error {
 	// Validate authentication
-	_, err := validateAuth(e)
+	_, err := handlers.ValidateAuth(e)
 	if err != nil {
 		return err
 	}

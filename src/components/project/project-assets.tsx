@@ -16,12 +16,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
 
   if (assets.length === 0) {
     return (
-      <Card
-        className={cn(
-          "rounded-2xl p-6",
-          className,
-        )}
-      >
+      <Card className={cn("rounded-2xl p-6", className)}>
         <div className="text-muted-foreground text-center">
           <FileIcon className="mx-auto mb-2 h-12 w-12 opacity-50" />
           <p>{projects.details.noFiles}</p>

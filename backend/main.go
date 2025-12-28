@@ -6,28 +6,29 @@ package main
 import (
 	"bytes"
 	"context"
-	"database/sql"
 	"embed"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path"
-	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
+	"anjam/config"
+	"anjam/handlers"
+	"anjam/helpers"
+	"anjam/hooks"
 	"github.com/google/uuid"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/security"
-	"anjam/helpers"
 )
 
 //go:embed dist
@@ -43,13 +44,13 @@ func allowDefaultCredentials(app core.App) bool {
 
 	// In production, allow defaults on initial bootstrap (no admins exist).
 	// If admins already exist, respect TM_ALLOW_DEFAULT_ACCOUNTS for any further defaults.
-	usersCollection, err := app.FindCollectionByNameOrId(CollectionUsers)
+	usersCollection, err := app.FindCollectionByNameOrId(config.CollectionUsers)
 	if err != nil {
 		// If collection doesn't exist yet, allow defaults
 		return true
 	}
 
-	totalAdmins, err := app.CountRecords(usersCollection.Id, dbx.HashExp{"role": RoleAdmin})
+	totalAdmins, err := app.CountRecords(usersCollection.Id, dbx.HashExp{"role": config.RoleAdmin})
 	if err != nil {
 		// On error, allow defaults (safer for first run)
 		return true
@@ -77,39 +78,41 @@ func main() {
 	app.OnServe().BindFunc(applyProductionSettings)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 	app.OnServe().BindFunc(registerAuditHooksHandler)
+	app.OnServe().BindFunc(initializeAuditWorker)
 	registerOrganizationEndpoints(app)
 	registerInviteEndpoints(app)
 	registerPermissionsEndpoint(app)
 	registerBatchEndpoints(app)
 
 	// --- Bind Record Event Handlers ---
-	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
-	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
+	app.OnRecordCreateExecute("users").BindFunc(hooks.HandleUserCreation)
+	app.OnRecordCreateExecute("projects").BindFunc(hooks.HandleProjectCreation)
+	app.OnRecordCreateExecute("tasks").BindFunc(hooks.HandleTaskCreation)
 	app.OnRecordValidate("tasks").BindFunc(validateTaskStatusTransition)
 	app.OnRecordUpdateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
 		setTaskStatusRef(e)
 		return e.Next()
 	})
-	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
-	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
-	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
+	app.OnRecordAfterCreateSuccess("tasks").BindFunc(hooks.HandleTaskAssignmentNotification)
+	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(hooks.HandleTaskUpdateNotification)
+	app.OnRecordAfterUpdateSuccess("projects").BindFunc(hooks.HandleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectCreatedStatuses)
-	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
+	app.OnRecordAfterCreateSuccess("comments").BindFunc(hooks.HandleCommentNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
-	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
+	app.OnRecordAfterCreateSuccess("project_members").BindFunc(hooks.HandleProjectMembersCreatedNotify)
 	app.OnRecordEnrich("audit_logs").BindFunc(handleAuditLogEnrich)
 	app.OnRecordAfterCreateSuccess("time_entries").BindFunc(handleTimeEntryCreated)
 	app.OnRecordAfterUpdateSuccess("time_entries").BindFunc(handleTimeEntryUpdated)
 	app.OnRecordAfterDeleteSuccess("time_entries").BindFunc(handleTimeEntryDeleted)
 
 	// --- Bind Authentication Event Handlers ---
-	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
+	app.OnRecordAuthWithPasswordRequest("users").BindFunc(hooks.HandleAuthRequest)
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.PATCH("/api/v1/users/{id}/toggle-active", handleToggleUserActive)
-		se.Router.PATCH("/api/v1/users/{id}/unblock", handleUnblockUser)
-		se.Router.GET("/api/v1/users/{id}/login-logs", handleGetUserLoginLogs)
+		se.Router.PATCH("/api/v1/users/{id}/toggle-active", handlers.HandleToggleUserActive)
+		se.Router.PATCH("/api/v1/users/{id}/unblock", handlers.HandleUnblockUser)
+		se.Router.GET("/api/v1/users/{id}/login-logs", handlers.HandleGetUserLoginLogs)
 		se.Router.GET("/api/v1/search", handleGlobalSearch)
 
 		return se.Next()
@@ -185,55 +188,54 @@ func serveIndexHTML(staticFS fs.FS, w http.ResponseWriter, r *http.Request) erro
 	return nil
 }
 
-func generateRandomCode() string {
-	return security.RandomStringWithAlphabet(CodeLength, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-}
-
 // handleGroupCreation validates manager assignment and ensures status defaults.
 // NOTE: Tag creation now expects organization to be provided by the client.
 
 func startApp(app *pocketbase.PocketBase) {
-	if app.IsDev() {
-		log.Println("Starting app in development mode...")
-		if err := app.Start(); err != nil {
-			log.Fatalf("Failed to start app in dev mode: %v", err)
-		}
-	} else {
-		log.Println("Starting app in production mode...")
-		if err := app.Bootstrap(); err != nil {
-			log.Fatalf("Failed to bootstrap app: %v", err)
-		}
+	// Set up signal handling for graceful shutdown
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-		// Start HTTP server on 0.0.0.0:8090 for container environments
-		log.Println("Starting HTTP server on 0.0.0.0:8090...")
-		if err := apis.Serve(app, apis.ServeConfig{
-			HttpAddr:        "0.0.0.0:8090",
-			ShowStartBanner: true,
-		}); err != nil {
-			log.Fatalf("Failed to start server: %v", err)
+	// Start app in a goroutine so we can handle shutdown signals
+	errChan := make(chan error, 1)
+	go func() {
+		if app.IsDev() {
+			log.Println("Starting app in development mode...")
+			errChan <- app.Start()
+		} else {
+			log.Println("Starting app in production mode...")
+			if err := app.Bootstrap(); err != nil {
+				errChan <- err
+				return
+			}
+
+			// Start HTTP server on 0.0.0.0:8090 for container environments
+			log.Println("Starting HTTP server on 0.0.0.0:8090...")
+			errChan <- apis.Serve(app, apis.ServeConfig{
+				HttpAddr:        "0.0.0.0:8090",
+				ShowStartBanner: true,
+			})
 		}
+	}()
+
+	// Wait for either an error or a shutdown signal
+	select {
+	case err := <-errChan:
+		if err != nil {
+			log.Fatalf("App error: %v", err)
+		}
+	case sig := <-sigChan:
+		log.Printf("Received signal %v, shutting down gracefully...", sig)
+		shutdownAuditWorker()
+		// Give PocketBase time to clean up
+		time.Sleep(1 * time.Second)
+		log.Println("Shutdown complete")
 	}
-}
-
-func handleProjectMembersCreatedNotify(e *core.RecordEvent) error {
-	userId := e.Record.GetString("user")
-	projectId := e.Record.GetString("project")
-	if userId == "" || projectId == "" {
-		return e.Next()
-	}
-
-	projectName := getProjectName(e.App, projectId)
-	return createNotification(e.App, userId, "system",
-		fmt.Sprintf(MsgAddedToProject, projectName),
-		fmt.Sprintf(MsgAddedToProjectDesc, projectName),
-		map[string]interface{}{
-			"projectId": projectId,
-		})
 }
 
 // getProjectName retrieves project name by ID, returns fallback if not found
 func getProjectName(app core.App, projectId string) string {
-	project, err := app.FindRecordById(CollectionProjects, projectId)
+	project, err := app.FindRecordById(config.CollectionProjects, projectId)
 	if err != nil {
 		return "project"
 	}
@@ -270,7 +272,7 @@ func ensureSuperuserExists(e *core.ServeEvent) error {
 }
 
 func ensurePocketBaseSuperuser(e *core.ServeEvent) error {
-	adminCollection, err := e.App.FindCollectionByNameOrId(CollectionSuperusers)
+	adminCollection, err := e.App.FindCollectionByNameOrId(config.CollectionSuperusers)
 	if err != nil {
 		log.Printf("Error finding _superusers collection: %v", err)
 		return err
@@ -312,7 +314,7 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 		return err
 	}
 
-	totalAdmins, err := e.App.CountRecords(usersCollection.Id, dbx.HashExp{"role": RoleAdmin})
+	totalAdmins, err := e.App.CountRecords(usersCollection.Id, dbx.HashExp{"role": config.RoleAdmin})
 	if err != nil {
 		log.Printf("Error counting admin users: %v", err)
 		return err
@@ -327,7 +329,7 @@ func ensureAppAdminUser(e *core.ServeEvent) error {
 		record := core.NewRecord(usersCollection)
 		record.Set("username", "admin")
 		record.Set("password", "admin12345")
-		record.Set("role", RoleAdmin)
+		record.Set("role", config.RoleAdmin)
 		record.Set("active", true) // Set admin as active by default
 
 		if err := e.App.Save(record); err != nil {
@@ -368,500 +370,7 @@ func serveStaticFilesAndOpenBrowser(e *core.ServeEvent) error {
 
 // --- Record Event Handlers ---
 
-func handleUserCreation(e *core.RecordEvent) error {
-	newUserRole := e.Record.GetString("role")
-
-	// RBAC validations are handled by schema rules:
-	// - Only admins can list/create/delete users (enforced by list/create/delete rules)
-	// - Users can update their own record (enforced by updateRule)
-	// - Organization membership controls visibility, so even org admins cannot read users from other tenants
-	// This handler focuses on setting defaults and data integrity.
-
-	// Set new users as active by default, except admins (always active)
-	if e.Record.Get("active") == nil {
-		if newUserRole == RoleAdmin {
-			e.Record.Set("active", true) // Admins are always active
-		} else {
-			e.Record.Set("active", true) // Regular users start active
-		}
-	}
-	// Initialize failed login attempts to 0
-	if e.Record.Get("failed_login_attempts") == nil {
-		e.Record.Set("failed_login_attempts", 0)
-	}
-	// Set blocked to false by default
-	if e.Record.Get("blocked") == nil {
-		e.Record.Set("blocked", false)
-	}
-	return e.Next()
-}
-
-func handleProjectCreation(e *core.RecordEvent) error {
-	if e.Record.GetString("code") != "" {
-		log.Printf("Project code (%q) already set for %q, skipping code generation.", e.Record.GetString("code"), e.Record.GetString("name"))
-		return e.Next()
-	}
-
-	projectCode, err := generateUniqueProjectCode(e.App)
-	if err != nil {
-		log.Printf("Error generating unique project code: %v", err)
-		return err
-	}
-
-	e.Record.Set("code", projectCode)
-	log.Printf("Generated unique project code %q for new project.", projectCode)
-	return e.Next()
-}
-
-func generateUniqueProjectCode(app core.App) (string, error) {
-	for attempt := 0; attempt < MaxCodeGenerationAttempts; attempt++ {
-		projectCode := generateRandomCode()
-
-		// Validate format before checking collision
-		if len(projectCode) != CodeLength {
-			return "", fmt.Errorf("generated code has invalid length %d (expected %d)", len(projectCode), CodeLength)
-		}
-
-		exists, err := app.FindFirstRecordByData(CollectionProjects, "code", projectCode)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return "", fmt.Errorf("database error checking code collision for %q: %w", projectCode, err)
-		}
-		if exists == nil {
-			return projectCode, nil
-		}
-		log.Printf("Project code collision for %q, generating a new one (attempt %d/%d).", projectCode, attempt+1, MaxCodeGenerationAttempts)
-	}
-	return "", fmt.Errorf("failed to generate unique project code after %d attempts (possible collision rate too high)", MaxCodeGenerationAttempts)
-}
-
-func handleTaskCreation(e *core.RecordEvent) error {
-	log.Printf("Task creation attempt by user %s for project %s", e.Record.GetString("creator"), e.Record.GetString("project"))
-	if err := setTaskDisplayID(e); err != nil {
-		log.Printf("Error setting task display ID: %v", err)
-		return err
-	}
-	setTaskDefaults(e)
-	setTaskStatusRef(e)
-
-	// Validate that all tags belong to the same organization as the project
-	if err := validateTaskTags(e); err != nil {
-		log.Printf("Error validating task tags: %v", err)
-		return err
-	}
-
-	log.Printf("Task creation successful, display_id: %s", e.Record.GetString("display_id"))
-	return e.Next()
-}
-
-func setTaskDisplayID(e *core.RecordEvent) error {
-	if e.Record.GetString("display_id") != "" {
-		return nil
-	}
-
-	projectId := e.Record.GetString("project")
-	project, err := e.App.FindRecordById(CollectionProjects, projectId)
-	if err != nil {
-		log.Printf("Error fetching project %q for task creation: %v", projectId, err)
-		return err
-	}
-	projectCode := project.GetString("code")
-
-	newTaskNumber, err := getNextTaskNumber(e.App, projectId)
-	if err != nil {
-		log.Printf("Error getting next task number for project %q: %v", projectId, err)
-		return err
-	}
-
-	displayID := fmt.Sprintf("%s-%03d", projectCode, newTaskNumber)
-	e.Record.Set("display_id", displayID)
-	log.Printf("Generated task display_id %q for project %q.", displayID, projectCode)
-	return nil
-}
-
-func getNextTaskNumber(app core.App, projectId string) (int, error) {
-	var lastTask struct {
-		DisplayID string `db:"display_id"`
-	}
-	err := app.RecordQuery("tasks").
-		Select("display_id").
-		Where(dbx.HashExp{"project": projectId}).
-		OrderBy("display_id DESC").
-		Limit(1).
-		One(&lastTask)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return 1, nil // No tasks exist yet
-		}
-		return 0, err
-	}
-
-	parts := strings.Split(lastTask.DisplayID, "-")
-	if len(parts) != 2 {
-		return 0, fmt.Errorf("invalid display_id format %q: expected format 'CODE-NUMBER'", lastTask.DisplayID)
-	}
-
-	lastNum, parseErr := strconv.Atoi(parts[1])
-	if parseErr != nil {
-		return 0, fmt.Errorf("invalid task number in display_id %q: %w", lastTask.DisplayID, parseErr)
-	}
-
-	return lastNum + 1, nil
-}
-
-func setTaskDefaults(e *core.RecordEvent) {
-	// Set default status
-	if e.Record.GetString("status") == "" {
-		e.Record.Set("status", TaskStatusTodo)
-	}
-	if e.Record.GetString("priority") == "" {
-		e.Record.Set("priority", PriorityMedium)
-	}
-}
-
-func validateTaskTags(e *core.RecordEvent) error {
-	projectId := e.Record.GetString("project")
-	if projectId == "" {
-		return nil // No project, skip validation
-	}
-
-	// Get project to find its organization
-	project, err := e.App.FindRecordById(CollectionProjects, projectId)
-	if err != nil {
-		return fmt.Errorf("failed to find project: %w", err)
-	}
-
-	projectOrgId := project.GetString("organization")
-	if projectOrgId == "" {
-		return nil // Project has no organization, skip validation
-	}
-
-	// Get tags from the task
-	tagIds := e.Record.GetStringSlice("tags")
-	if len(tagIds) == 0 {
-		return nil // No tags, nothing to validate
-	}
-
-	// Check each tag belongs to the same organization
-	for _, tagId := range tagIds {
-		tag, err := e.App.FindRecordById(CollectionTags, tagId)
-		if err != nil {
-			return fmt.Errorf("failed to find tag %s: %w", tagId, err)
-		}
-
-		tagOrgId := tag.GetString("organization")
-		if tagOrgId != projectOrgId {
-			return errors.New(ErrTagsMustBeInSameOrganization)
-		}
-	}
-
-	return nil
-}
-
 // --- Notification Handlers ---
-
-func handleTaskAssignmentNotification(e *core.RecordEvent) error {
-	assigneeId := e.Record.GetString("assignee")
-	if assigneeId == "" {
-		return e.Next() // No assignee, skip notification
-	}
-
-	// Don't notify if the assignee is the same as the creator/updater
-	if e.Record.GetString("creator") == assigneeId {
-		return e.Next()
-	}
-
-	taskTitle := e.Record.GetString("title")
-	projectId := e.Record.GetString("project")
-
-	project, err := e.App.FindRecordById(CollectionProjects, projectId)
-	if err != nil {
-		log.Printf("Error fetching project for notification: %v", err)
-		return e.Next()
-	}
-
-	projectName := project.GetString("name")
-
-	return NewNotification(e.App).
-		User(assigneeId).
-		Type("task_assigned").
-		Title(fmt.Sprintf(MsgTaskAssigned, taskTitle)).
-		Message(fmt.Sprintf(MsgTaskAssignedDesc, taskTitle, projectName)).
-		Data(map[string]interface{}{
-			"taskId":    e.Record.Id,
-			"projectId": projectId,
-		}).
-		Send()
-}
-
-func handleTaskUpdateNotification(e *core.RecordEvent) error {
-	// Only notify on status changes or important updates
-	oldStatus := e.Record.Original().GetString("status")
-	newStatus := e.Record.GetString("status")
-
-	if oldStatus == newStatus {
-		return e.Next()
-	}
-
-	assigneeId := e.Record.GetString("assignee")
-	if assigneeId == "" {
-		return e.Next()
-	}
-
-	taskTitle := e.Record.GetString("title")
-
-	return NewNotification(e.App).
-		User(assigneeId).
-		Type("task_assigned").
-		Title(fmt.Sprintf(MsgTaskUpdated, taskTitle)).
-		Message(fmt.Sprintf(MsgTaskStatusChanged, taskTitle, translateStatus(oldStatus), translateStatus(newStatus))).
-		Data(map[string]interface{}{
-			"taskId": e.Record.Id,
-		}).
-		Send()
-}
-
-func handleProjectUpdateNotification(e *core.RecordEvent) error {
-	projectName := e.Record.GetString("name")
-
-	// Get all users in this project
-	var projectUsers []struct {
-		UserId string `db:"user"`
-	}
-	err := e.App.DB().NewQuery(`
-		SELECT user FROM project_members WHERE project = {:projectId}
-	`).Bind(dbx.Params{"projectId": e.Record.Id}).All(&projectUsers)
-
-	if err != nil {
-		log.Printf("Error fetching project users for notification: %v", err)
-		return e.Next()
-	}
-
-	// Create notifications for all project members
-	for _, pu := range projectUsers {
-		if pu.UserId == e.Record.GetString("updated_by") {
-			continue // Don't notify the updater
-		}
-
-		err := NewNotification(e.App).
-			User(pu.UserId).
-			Type("project_updated").
-			Title(fmt.Sprintf(MsgProjectUpdated, projectName)).
-			Message(fmt.Sprintf(MsgProjectUpdatedDesc, projectName)).
-			Data(map[string]interface{}{
-				"projectId": e.Record.Id,
-			}).
-			Send()
-		if err != nil {
-			// Log the error but don't fail the parent operation
-			log.Printf("Warning: failed to create project update notification for user %s: %v", pu.UserId, err)
-		}
-	}
-
-	return e.Next()
-}
-
-func handleCommentNotification(e *core.RecordEvent) error {
-	commentText := e.Record.GetString("content")
-	if commentText == "" {
-		return e.Next()
-	}
-
-	taskId := e.Record.GetString("task")
-	if taskId == "" {
-		return e.Next()
-	}
-
-	// Get task details
-	task, err := e.App.FindRecordById(CollectionTasks, taskId)
-	if err != nil {
-		log.Printf("Error fetching task for comment notification: %v", err)
-		return e.Next()
-	}
-
-	taskTitle := task.GetString("title")
-	assigneeId := task.GetString("assignee")
-
-	if assigneeId == "" || assigneeId == e.Record.GetString("created_by") {
-		return e.Next() // No assignee or self-comment
-	}
-
-	return NewNotification(e.App).
-		User(assigneeId).
-		Type("comment").
-		Title(fmt.Sprintf(MsgNewComment, taskTitle)).
-		Message(fmt.Sprintf(MsgNewCommentDesc, taskTitle, truncateString(commentText, 100))).
-		Data(map[string]interface{}{
-			"taskId":    taskId,
-			"commentId": e.Record.Id,
-		}).
-		Send()
-}
-
-type NotificationBuilder struct {
-	app              core.App
-	userID           string
-	notificationType string
-	title            string
-	message          string
-	data             map[string]interface{}
-}
-
-func NewNotification(app core.App) *NotificationBuilder {
-	return &NotificationBuilder{app: app}
-}
-
-func (b *NotificationBuilder) User(userID string) *NotificationBuilder {
-	b.userID = userID
-	return b
-}
-
-func (b *NotificationBuilder) Type(notificationType string) *NotificationBuilder {
-	b.notificationType = notificationType
-	return b
-}
-
-func (b *NotificationBuilder) Title(title string) *NotificationBuilder {
-	b.title = title
-	return b
-}
-
-func (b *NotificationBuilder) Message(message string) *NotificationBuilder {
-	b.message = message
-	return b
-}
-
-func (b *NotificationBuilder) Data(data map[string]interface{}) *NotificationBuilder {
-	b.data = data
-	return b
-}
-
-func (b *NotificationBuilder) Send() error {
-	return createNotification(b.app, b.userID, b.notificationType, b.title, b.message, b.data)
-}
-
-func createNotification(app core.App, userId, notificationType, title, message string, data map[string]interface{}) error {
-	// Validate that the user exists before creating notification
-	if userId == "" {
-		return fmt.Errorf("cannot create notification: empty user ID")
-	}
-
-	notificationsCollection, err := app.FindCollectionByNameOrId(CollectionNotifications)
-	if err != nil {
-		return fmt.Errorf("cannot create notification: notifications collection not found: %w", err)
-	}
-
-	record := core.NewRecord(notificationsCollection)
-	record.Set("user", userId)
-	record.Set("type", notificationType)
-	record.Set("title", title)
-	record.Set("message", message)
-	if data != nil {
-		record.Set("data", data)
-	}
-
-	if err := app.Save(record); err != nil {
-		return fmt.Errorf("cannot create notification for user %s: %w", userId, err)
-	}
-
-	return nil
-}
-
-func truncateString(s string, maxLen int) string {
-	if len(s) <= maxLen {
-		return s
-	}
-	return s[:maxLen-3] + "..."
-}
-
-// validateAuth is a helper that validates authentication for API handlers.
-// Returns the authenticated user record or an error response.
-func validateAuth(e *core.RequestEvent) (*core.Record, error) {
-	requestInfo, err := e.RequestInfo()
-	if err != nil {
-		return nil, e.BadRequestError("Invalid request", err)
-	}
-	authRecord := requestInfo.Auth
-	if authRecord == nil {
-		return nil, e.JSON(401, map[string]string{"error": ErrAuthRequired})
-	}
-	return authRecord, nil
-}
-
-// translateStatus translates English status to Persian
-func translateStatus(status string) string {
-	switch status {
-	case TaskStatusTodo:
-		return StatusTodo
-	case TaskStatusInProgress:
-		return StatusInProgress
-	case TaskStatusDone:
-		return StatusDone
-	case TaskStatusCanceled:
-		return StatusCanceled
-	default:
-		return status
-	}
-}
-
-// --- Authentication Handlers ---
-
-func handleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
-	user := e.Record
-	if user == nil {
-		return e.Next()
-	}
-
-	// Check if user is active
-	if !user.GetBool("active") {
-		return apis.NewBadRequestError(ErrUserInactive, nil)
-	}
-
-	// Check if user is blocked
-	if user.GetBool("blocked") {
-		blockedReason := user.GetString("blocked_reason")
-		if blockedReason == "" {
-			blockedReason = ErrUserBlocked
-		}
-		return apis.NewBadRequestError(blockedReason, nil)
-	}
-
-	return e.Next()
-}
-
-// addRequestMetadataMiddleware injects request metadata (ID, IP, client) into context
-// so it can be used for auditing and tracking across the application.
-func addRequestMetadataMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestID := uuid.New().String()
-
-		ipAddress := extractIPAddress(r)
-
-		userAgent := r.Header.Get("User-Agent")
-		client := deriveClientType(userAgent)
-
-		ctx := r.Context()
-		ctx = context.WithValue(ctx, contextKeyRequestID, requestID)
-		ctx = context.WithValue(ctx, contextKeyIPAddress, ipAddress)
-		ctx = context.WithValue(ctx, contextKeyClient, client)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
-func deriveClientType(userAgent string) string {
-	ua := strings.ToLower(userAgent)
-	if strings.Contains(ua, "curl") || strings.Contains(ua, "wget") {
-		return "cli"
-	}
-	if strings.Contains(ua, "mozilla") || strings.Contains(ua, "chrome") || strings.Contains(ua, "safari") || strings.Contains(ua, "firefox") || strings.Contains(ua, "edge") {
-		return "web"
-	}
-	if strings.Contains(ua, "postman") || strings.Contains(ua, "insomnia") || strings.Contains(ua, "httpie") {
-		return "automation"
-	}
-	return "unknown"
-}
 
 type authRequest struct {
 	Identity string `json:"identity"`
@@ -955,7 +464,7 @@ func (r *responseRecorder) WriteHeader(code int) {
 func handleSuccessfulAuth(app core.App, identity string, req *http.Request) {
 	// Find user by identity (username or email)
 	user, err := app.FindFirstRecordByFilter(
-		CollectionUsers,
+		config.CollectionUsers,
 		"username = {:identity} || email = {:identity}",
 		dbx.Params{"identity": identity},
 	)
@@ -978,14 +487,14 @@ func handleSuccessfulAuth(app core.App, identity string, req *http.Request) {
 func handleFailedAuth(app core.App, identity string, req *http.Request) {
 	// Try to find user by identity
 	user, err := app.FindFirstRecordByFilter(
-		CollectionUsers,
+		config.CollectionUsers,
 		"username = {:identity} || email = {:identity}",
 		dbx.Params{"identity": identity},
 	)
 
 	if err != nil {
 		// User not found - still log the attempt
-		logUserLogin(app, "", req, false, ErrUserNotFoundForLogin)
+		logUserLogin(app, "", req, false, config.ErrUserNotFound)
 		return
 	}
 
@@ -995,10 +504,10 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 	user.Set("failed_login_attempts", failedAttempts)
 
 	// Check if we should block the user
-	if failedAttempts >= MaxFailedLoginAttempts {
+	if failedAttempts >= config.MaxFailedLoginAttempts {
 		user.Set("blocked", true)
 		user.Set("blocked_at", time.Now().Format(time.RFC3339))
-		user.Set("blocked_reason", fmt.Sprintf(MsgBlockedReason, MaxFailedLoginAttempts))
+		user.Set("blocked_reason", fmt.Sprintf(config.MsgBlockedReason, config.MaxFailedLoginAttempts))
 		log.Printf("User %s blocked after %d failed login attempts", user.Id, failedAttempts)
 	}
 
@@ -1007,17 +516,17 @@ func handleFailedAuth(app core.App, identity string, req *http.Request) {
 	}
 
 	// Log failed login
-	logUserLogin(app, user.Id, req, false, ErrWrongPassword)
+	logUserLogin(app, user.Id, req, false, config.ErrWrongPassword)
 }
 
 func logUserLogin(app core.App, userId string, req *http.Request, success bool, failureReason string) {
-	collection, err := app.FindCollectionByNameOrId(CollectionUserLoginLogs)
+	collection, err := app.FindCollectionByNameOrId(config.CollectionUserLoginLogs)
 	if err != nil {
 		log.Printf("Error finding user_login_logs collection: %v", err)
 		return
 	}
 
-	ipAddress := extractIPAddress(req)
+	ipAddress := handlers.ExtractIPAddress(req)
 
 	// Get user agent
 	userAgent := req.Header.Get("User-Agent")
@@ -1038,167 +547,40 @@ func logUserLogin(app core.App, userId string, req *http.Request, success bool, 
 	}
 }
 
-// --- User Management API Handlers ---
+// --- Authentication Handlers ---
 
-func handleToggleUserActive(e *core.RequestEvent) error {
-	userId := e.Request.PathValue("id")
+// addRequestMetadataMiddleware injects request metadata (ID, IP, client) into context
+// so it can be used for auditing and tracking across the application.
+func addRequestMetadataMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestID := uuid.New().String()
 
-	authRecord, err := requireAdmin(e)
-	if err != nil {
-		return err
-	}
+		ipAddress := handlers.ExtractIPAddress(r)
 
-	// Prevent admin from deactivating themselves
-	if authRecord.Id == userId {
-		return e.JSON(400, map[string]string{"error": ErrCannotDeactivateSelf})
-	}
+		userAgent := r.Header.Get("User-Agent")
+		client := deriveClientType(userAgent)
 
-	user, err := helpers.FindRecordByIDOrJSON(e, CollectionUsers, userId, ErrUserNotFound)
-	if err != nil {
-		return err
-	}
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, contextKeyRequestID, requestID)
+		ctx = context.WithValue(ctx, contextKeyIPAddress, ipAddress)
+		ctx = context.WithValue(ctx, contextKeyClient, client)
 
-	// Prevent deactivating admin users
-	if user.GetString("role") == RoleAdmin {
-		return e.JSON(400, map[string]string{"error": ErrCannotDeactivateAdmin})
-	}
-
-	// Toggle active status
-	currentActive := user.GetBool("active")
-	newActive := !currentActive
-	user.Set("active", newActive)
-
-	if err := e.App.Save(user); err != nil {
-		helpers.LogRecordError("toggling user active status", CollectionUsers, userId, err)
-		return e.JSON(500, map[string]string{"error": ErrFailedToUpdateUserStatus})
-	}
-
-	return e.JSON(200, map[string]interface{}{
-		"data": map[string]interface{}{
-			"active": newActive,
-		},
-		"meta": map[string]interface{}{
-			"message": func() string {
-				if newActive {
-					return MsgUserActivated
-				}
-				return MsgUserDeactivated
-			}(),
-		},
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func handleUnblockUser(e *core.RequestEvent) error {
-	userId := e.Request.PathValue("id")
-
-	_, err := requireAdmin(e)
-	if err != nil {
-		return err
+func deriveClientType(userAgent string) string {
+	ua := strings.ToLower(userAgent)
+	if strings.Contains(ua, "curl") || strings.Contains(ua, "wget") {
+		return "cli"
 	}
-
-	user, err := helpers.FindRecordByIDOrJSON(e, CollectionUsers, userId, ErrUserNotFound)
-	if err != nil {
-		return err
+	if strings.Contains(ua, "mozilla") || strings.Contains(ua, "chrome") || strings.Contains(ua, "safari") || strings.Contains(ua, "firefox") || strings.Contains(ua, "edge") {
+		return "web"
 	}
-
-	// Unblock the user
-	user.Set("blocked", false)
-	user.Set("blocked_at", "")
-	user.Set("blocked_reason", "")
-	user.Set("failed_login_attempts", 0)
-
-	if err := e.App.Save(user); err != nil {
-		helpers.LogRecordError("unblocking user", CollectionUsers, userId, err)
-		return e.JSON(500, map[string]string{"error": ErrFailedToUnblockUser})
+	if strings.Contains(ua, "postman") || strings.Contains(ua, "insomnia") || strings.Contains(ua, "httpie") {
+		return "automation"
 	}
-
-	return e.JSON(200, map[string]interface{}{
-		"data": map[string]interface{}{},
-		"meta": map[string]interface{}{
-			"message": MsgUserUnblocked,
-		},
-	})
-}
-
-type userLoginLogRow struct {
-	ID            string `db:"id" json:"id"`
-	User          string `db:"user" json:"user"`
-	IPAddress     string `db:"ip_address" json:"ip_address"`
-	UserAgent     string `db:"user_agent" json:"user_agent"`
-	Success       bool   `db:"success" json:"success"`
-	FailureReason string `db:"failure_reason" json:"failure_reason"`
-	Created       string `db:"created" json:"created"`
-}
-
-func canViewLoginLogs(authRecord *core.Record, userId string) bool {
-	role := authRecord.GetString("role")
-	return role == RoleAdmin || authRecord.Id == userId
-}
-
-func fetchUserLoginLogs(app core.App, userId string, pagination PaginationParams) ([]userLoginLogRow, int, error) {
-	var logs []userLoginLogRow
-	offset := (pagination.Page - 1) * pagination.PerPage
-	err := app.DB().NewQuery(`
-		SELECT id, user, ip_address, user_agent, success, failure_reason, created
-		FROM user_login_logs
-		WHERE user = {:userId}
-		ORDER BY created DESC
-		LIMIT {:limit} OFFSET {:offset}
-	`).Bind(dbx.Params{
-		"userId": userId,
-		"limit":  pagination.PerPage,
-		"offset": offset,
-	}).All(&logs)
-
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var totalCount int
-	err = app.DB().NewQuery(`
-		SELECT COUNT(*) FROM user_login_logs WHERE user = {:userId}
-	`).Bind(dbx.Params{"userId": userId}).Row(&totalCount)
-	if err != nil {
-		log.Printf("Error counting login logs for user %q: %v", userId, err)
-		totalCount = len(logs)
-	}
-
-	return logs, totalCount, nil
-}
-
-func handleGetUserLoginLogs(e *core.RequestEvent) error {
-	userId := e.Request.PathValue("id")
-
-	// Validate authentication
-	authRecord, err := validateAuth(e)
-	if err != nil {
-		return err
-	}
-
-	// Check permissions: admin can view any user's logs, users can only view their own
-	if !canViewLoginLogs(authRecord, userId) {
-		return e.JSON(403, map[string]string{"error": ErrCannotViewOtherUserLogs})
-	}
-
-	pagination := parsePagination(e.Request)
-
-	logs, totalCount, err := fetchUserLoginLogs(e.App, userId, pagination)
-	if err != nil {
-		log.Printf("Error fetching login logs for user %q: %v", userId, err)
-		return e.JSON(500, map[string]string{"error": ErrFailedToGetLoginLogs})
-	}
-
-	return e.JSON(200, map[string]interface{}{
-		"data": map[string]interface{}{
-			"items": logs,
-		},
-		"meta": map[string]interface{}{
-			"page":       pagination.Page,
-			"perPage":    pagination.PerPage,
-			"totalItems": totalCount,
-			"totalPages": (totalCount + pagination.PerPage - 1) / pagination.PerPage,
-		},
-	})
+	return "unknown"
 }
 
 // registerAuditHooksHandler registers audit hooks for Phase 1 collections (tasks, projects).
@@ -1208,10 +590,17 @@ func registerAuditHooksHandler(e *core.ServeEvent) error {
 	registerAuditLogsImmutabilityGuards(e.App)
 
 	// Register audit hooks for Phase 1 collections
-	registerAuditHooks(e.App, CollectionTasks)
-	registerAuditHooks(e.App, CollectionProjects)
+	registerAuditHooks(e.App, config.CollectionTasks)
+	registerAuditHooks(e.App, config.CollectionProjects)
 
 	log.Println("Audit logging enabled for tasks and projects")
 
+	return e.Next()
+}
+
+// initializeAuditWorker initializes the async audit worker.
+// Called during OnServe() after the app is fully bootstrapped.
+func initializeAuditWorker(e *core.ServeEvent) error {
+	initAuditWorker(e.App)
 	return e.Next()
 }
