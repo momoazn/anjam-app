@@ -1,0 +1,74 @@
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/base:stable
+
+jobs:
+  build-and-push:
+    executor: docker-executor
+    environment:
+      DOCKER_BUILDKIT: "1"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Validate docker-compose config
+          command: docker compose config
+      - run:
+          name: Login to registry
+          command: |
+            if [ -z "${DOCKER_USERNAME}" ] || [ -z "${DOCKER_PASSWORD}" ]; then
+              echo "Missing DOCKER_USERNAME or DOCKER_PASSWORD"
+              exit 1
+            fi
+            if [ -n "${DOCKER_REGISTRY}" ]; then
+              echo "${DOCKER_PASSWORD}" | docker login "${DOCKER_REGISTRY}" -u "${DOCKER_USERNAME}" --password-stdin
+            else
+              echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+            fi
+      - run:
+          name: Build image
+          command: |
+            if [ -z "${DOCKER_IMAGE}" ]; then
+              echo "Missing DOCKER_IMAGE (e.g. ghcr.io/org/anjam)"
+              exit 1
+            fi
+            TAG="${DOCKER_TAG:-${CIRCLE_SHA1}}"
+            docker build -t "${DOCKER_IMAGE}:${TAG}" .
+            if [ "${CIRCLE_BRANCH}" = "main" ] && [ "${TAG}" != "latest" ]; then
+              docker tag "${DOCKER_IMAGE}:${TAG}" "${DOCKER_IMAGE}:latest"
+            fi
+      - run:
+          name: Push image
+          command: |
+            TAG="${DOCKER_TAG:-${CIRCLE_SHA1}}"
+            docker push "${DOCKER_IMAGE}:${TAG}"
+            if [ "${CIRCLE_BRANCH}" = "main" ] && [ "${TAG}" != "latest" ]; then
+              docker push "${DOCKER_IMAGE}:latest"
+            fi
+      - run:
+          name: Trigger Dokploy deploy
+          command: |
+            if [ -z "${DOKPLOY_URL}" ] || [ -z "${DOKPLOY_API_KEY}" ] || [ -z "${DOKPLOY_APP_ID}" ]; then
+              echo "Missing DOKPLOY_URL, DOKPLOY_API_KEY, or DOKPLOY_APP_ID"
+              exit 1
+            fi
+            curl -X POST \
+              "${DOKPLOY_URL}/api/application.deploy" \
+              -H "accept: application/json" \
+              -H "x-api-key: ${DOKPLOY_API_KEY}" \
+              -H "Content-Type: application/json" \
+              -d "{\"applicationId\":\"${DOKPLOY_APP_ID}\"}"
+
+workflows:
+  build:
+    jobs:
+      - build-and-push:
+          context: dokploy
+          filters:
+            branches:
+              only:
+                - main
