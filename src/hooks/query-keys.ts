@@ -160,6 +160,6 @@ export const queryKeys = {
       ["organization_invites", "token", token] as const,
   },
 
-  notificationsUnreadCount: (userId: string) =>
+  notificationsUnreadCount: (userId: string | undefined) =>
     ["notifications", "unread-count", userId] as const,
 };
