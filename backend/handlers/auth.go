@@ -114,6 +114,8 @@ func RequireRole(e *core.RequestEvent, roles ...string) (*core.Record, error) {
 		if userRole == role {
 			return authRecord, nil
 		}
+
+		return nil, apis.NewForbiddenError(config.ErrPermissionDenied, nil)
 	}
 
 	return nil, apis.NewForbiddenError("دسترسی محدود شده", nil)

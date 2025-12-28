@@ -134,6 +134,7 @@ const (
 	ErrNoPermissionToChangeStatus    = "مجوز تغییر وضعیت را ندارید"
 	ErrNoAccessToProject             = "دسترسی لازم برای این پروژه را ندارید"
 	ErrOnlySupervisorCanChangeStatus = "فقط سرپرست پروژه می‌تواند وضعیت‌ها را تغییر دهد"
+	ErrPermissionDenied              = "دسترسی محدود شده"
 	ErrCannotDisableStatusInUse      = "امکان غیرفعال‌سازی وضعیتی که در حال استفاده است وجود ندارد"
 	ErrUserInactive                  = "حساب کاربری غیرفعال است"
 	ErrUserBlocked                   = "حساب کاربری مسدود شده است"
