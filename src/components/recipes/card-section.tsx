@@ -1,7 +1,6 @@
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { tokens } from "@/design/tokens";
 
 type CardSectionBorder = "none" | "top" | "bottom";
 
@@ -29,7 +28,6 @@ export function CardSection({
         "p-[var(--ds-spacing-cardPadding)]",
         className,
       )}
-      style={{ padding: tokens.spacing.cardPadding }}
       {...props}
     />
   );

@@ -13,6 +13,7 @@ const disallowedTokenClasses = [
   "size-16",
   "p-6",
   "h-12",
+  "h-14",
 ];
 
 const designSystemPlugin = {
@@ -45,7 +46,7 @@ const designSystemPlugin = {
 
         const checkText = (text, node) => {
           for (const token of disallowedTokenClasses) {
-            const re = new RegExp(`(^|\\\\s)${token}(\\\\s|$)`);
+            const re = new RegExp(`(^|\\s)${token}(\\s|$)`);
             if (re.test(text)) {
               context.report({
                 node,

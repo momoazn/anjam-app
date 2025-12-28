@@ -147,7 +147,7 @@ export function DashboardHeader({
               icon={LayoutDashboard}
               size="xs"
               tone="primary"
-              style={{ borderRadius: "var(--radius-lg)" }}
+              radius="var(--radius-lg)"
             />
             <div className="flex flex-col">
               <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
@@ -230,7 +230,7 @@ export function DashboardHeader({
                       item.bg,
                     )}
                     iconClassName={cn(item.color)}
-                    style={{ borderRadius: "var(--radius-xl)" }}
+                    radius="var(--radius-xl)"
                   />
                 </div>
               </div>

@@ -28,12 +28,14 @@ type IconBoxProps = React.ComponentProps<"div"> & {
   size?: IconBoxSize;
   tone?: IconBoxTone;
   iconClassName?: string;
+  radius?: string;
 };
 
 export function IconBox({
   icon: Icon,
   size = "lg",
   tone = "primary",
+  radius = tokens.radius.iconBox,
   className,
   iconClassName,
   style,
@@ -48,15 +50,14 @@ export function IconBox({
       className={cn(
         "inline-flex items-center justify-center",
         "transition-all will-change-transform",
+        "duration-[var(--ds-motion-durationNormal)] ease-[var(--ds-motion-easingSpring)]",
         toneClassByTone[tone],
         className,
       )}
       style={{
         width: tokens.sizing.iconBox[size],
         height: tokens.sizing.iconBox[size],
-        borderRadius: tokens.radius.iconBox,
-        transitionDuration: tokens.motion.durationNormal,
-        transitionTimingFunction: tokens.motion.easingSpring,
+        borderRadius: radius,
         ...style,
       }}
       {...props}

@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { tokens } from "@/design/tokens";
 import { cn } from "@/lib/utils";
 
 type FieldType = "input" | "textarea" | "select" | "file-upload";
@@ -112,10 +111,7 @@ export function FormField<T extends FieldValues>({
                 >
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
-                <SelectContent
-                  className="border-border bg-background border shadow-lg"
-                  style={{ borderRadius: tokens.radius.card }}
-                >
+                <SelectContent className="border-border bg-background rounded-[var(--ds-radius-card)] border shadow-lg">
                   {options?.map((option) => (
                     <SelectItem
                       key={option.value}

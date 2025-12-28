@@ -1,7 +1,6 @@
 import type * as React from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { tokens } from "@/design/tokens";
 import { cn } from "@/lib/utils";
 
 type EmptyStateProps = {
@@ -22,12 +21,8 @@ export function EmptyState({
   return (
     <Card className={cn("rounded-xl border-dashed shadow-none", className)}>
       <CardContent
-        className="flex flex-col items-center justify-center text-center"
+        className="flex flex-col items-center justify-center py-[var(--ds-spacing-emptyStatePaddingY)] text-center"
         data-animate-stagger
-        style={{
-          paddingTop: tokens.spacing.emptyStatePaddingY,
-          paddingBottom: tokens.spacing.emptyStatePaddingY,
-        }}
       >
         <div className="text-muted-foreground/40 mb-6 h-16 w-16">{icon}</div>
         <h3 className="mb-2 text-xl font-bold tracking-tight">{title}</h3>

@@ -110,7 +110,7 @@ export default function EditUser() {
       <div className="bg-card border-border/40 rounded-[var(--ds-radius-card)] border p-8 shadow-sm">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 opacity-20">
-            <IconLoader2 className="h-[var(--ds-sizing-formControlHeight)] w-12 animate-spin" />
+            <IconLoader2 className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)] animate-spin" />
           </div>
         ) : (
           <Form {...form}>

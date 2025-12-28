@@ -23,7 +23,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
         )}
       >
         <div className="text-muted-foreground text-center">
-          <FileIcon className="mx-auto mb-2 h-[var(--ds-sizing-formControlHeight)] w-12 opacity-50" />
+          <FileIcon className="mx-auto mb-2 h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)] opacity-50" />
           <p>{projects.details.noFiles}</p>
         </div>
       </Card>

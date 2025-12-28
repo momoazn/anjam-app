@@ -52,7 +52,7 @@ export function EmptyStateNoProjects({ onCreate }: { onCreate?: () => void }) {
   return (
     <EmptyState
       icon={
-        <FolderOpen className="h-[var(--ds-sizing-formControlHeight)] w-12" />
+        <FolderOpen className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
       }
       title={projects.list.noProjects}
       description={projects.create.description}
@@ -71,7 +71,7 @@ export function EmptyStateNoProjectsAccess() {
   return (
     <EmptyState
       icon={
-        <FolderOpen className="h-[var(--ds-sizing-formControlHeight)] w-12" />
+        <FolderOpen className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
       }
       title={projects.list.noProjects}
       description={organization.members.empty}
@@ -83,7 +83,7 @@ export function EmptyStateNoTasks({ onCreate }: { onCreate?: () => void }) {
   return (
     <EmptyState
       icon={
-        <ListTodo className="h-[var(--ds-sizing-formControlHeight)] w-12" />
+        <ListTodo className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
       }
       title={tasks.emptyState.noTasksYet}
       description={tasks.emptyState.noTasksYetDescription}
@@ -102,7 +102,7 @@ export function EmptyStateNoTasksViewer() {
   return (
     <EmptyState
       icon={
-        <ListTodo className="h-[var(--ds-sizing-formControlHeight)] w-12" />
+        <ListTodo className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
       }
       title={tasks.emptyState.projectNoTasksYet}
       description={tasks.emptyState.projectNoTasksYetDescription}
@@ -113,7 +113,9 @@ export function EmptyStateNoTasksViewer() {
 export function EmptyStateNoResults() {
   return (
     <EmptyState
-      icon={<SearchX className="h-[var(--ds-sizing-formControlHeight)] w-12" />}
+      icon={
+        <SearchX className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
+      }
       title={tasks.emptyState.noTasksFound}
       description={tasks.emptyState.noTasksFoundDescription}
     />
@@ -123,7 +125,9 @@ export function EmptyStateNoResults() {
 export function EmptyStateNoNotifications() {
   return (
     <EmptyState
-      icon={<BellOff className="h-[var(--ds-sizing-formControlHeight)] w-12" />}
+      icon={
+        <BellOff className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
+      }
       title={notifications.emptyState.title}
       description={notifications.emptyState.description}
     />
@@ -138,7 +142,7 @@ export function EmptyStateNoOrganization({
   return (
     <EmptyState
       icon={
-        <Building2 className="h-[var(--ds-sizing-formControlHeight)] w-12" />
+        <Building2 className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
       }
       title={organization.title}
       description={organization.create.formDescription}
@@ -156,7 +160,9 @@ export function EmptyStateNoOrganization({
 export function EmptyStateNoMembers({ onInvite }: { onInvite?: () => void }) {
   return (
     <EmptyState
-      icon={<Users className="h-[var(--ds-sizing-formControlHeight)] w-12" />}
+      icon={
+        <Users className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
+      }
       title={organization.members.empty}
       description={organization.members.invite}
       action={
@@ -174,7 +180,7 @@ export function EmptyStateNoComments() {
   return (
     <EmptyState
       icon={
-        <MessageCircle className="h-[var(--ds-sizing-formControlHeight)] w-12" />
+        <MessageCircle className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
       }
       title={comments.empty.noComments}
       description={comments.empty.beFirst}
@@ -186,7 +192,7 @@ export function EmptyStateNoActivity() {
   return (
     <EmptyState
       icon={
-        <Activity className="h-[var(--ds-sizing-formControlHeight)] w-12" />
+        <Activity className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)]" />
       }
       title={auditLogs.activityStream.title}
       description={auditLogs.activityStream.empty}
