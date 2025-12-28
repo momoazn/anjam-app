@@ -57,12 +57,13 @@ func (w *AuditWorker) run(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
-			// Graceful shutdown: flush remaining entries
+		case <-w.done:
+			// Shutdown signal received: flush remaining entries and drain queue
 			if len(batch) > 0 {
 				w.flushBatch(batch)
 			}
 			// Drain remaining queue entries
-			for {
+			for len(w.queue) > 0 {
 				select {
 				case entry := <-w.queue:
 					batch = append(batch, entry)
@@ -71,12 +72,12 @@ func (w *AuditWorker) run(ctx context.Context) {
 						batch = batch[:0]
 					}
 				default:
-					if len(batch) > 0 {
-						w.flushBatch(batch)
-					}
-					return
 				}
 			}
+			if len(batch) > 0 {
+				w.flushBatch(batch)
+			}
+			return
 		case entry := <-w.queue:
 			batch = append(batch, entry)
 			if len(batch) >= 10 {
