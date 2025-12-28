@@ -20,6 +20,12 @@ type PaginationParams struct {
 // parsePagination extracts pagination parameters from request query.
 // Returns default values if not provided or invalid.
 func parsePagination(r *http.Request) PaginationParams {
+	return ParsePagination(r)
+}
+
+// ParsePagination extracts pagination parameters from request query.
+// Returns default values if not provided or invalid.
+func ParsePagination(r *http.Request) PaginationParams {
 	page := 1
 	perPage := config.DefaultPageSize
 
@@ -89,6 +95,12 @@ func ValidateAuth(e *core.RequestEvent) (*core.Record, error) {
 // requireAdmin validates that the authenticated user is an admin.
 // Returns the user record and error if validation fails.
 func requireAdmin(e *core.RequestEvent) (*core.Record, error) {
+	return RequireAdmin(e)
+}
+
+// RequireAdmin validates that the authenticated user is an admin.
+// Returns the user record and error if validation fails.
+func RequireAdmin(e *core.RequestEvent) (*core.Record, error) {
 	authRecord, err := ValidateAuth(e)
 	if err != nil {
 		return nil, err
@@ -104,6 +116,12 @@ func requireAdmin(e *core.RequestEvent) (*core.Record, error) {
 // requireRole validates that the authenticated user has one of the specified roles.
 // Returns the user record and error if validation fails.
 func requireRole(e *core.RequestEvent, roles ...string) (*core.Record, error) {
+	return RequireRole(e, roles...)
+}
+
+// RequireRole validates that the authenticated user has one of the specified roles.
+// Returns the user record and error if validation fails.
+func RequireRole(e *core.RequestEvent, roles ...string) (*core.Record, error) {
 	authRecord, err := ValidateAuth(e)
 	if err != nil {
 		return nil, err
