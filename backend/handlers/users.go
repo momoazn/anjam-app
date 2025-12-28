@@ -2,13 +2,11 @@
 package handlers
 
 import (
-	"database/sql"
 	"log"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"anjam/backend/config"
+	"anjam/config"
 	"anjam/helpers"
 )
 
@@ -118,7 +116,7 @@ func HandleGetUserLoginLogs(e *core.RequestEvent) error {
 	userId := e.Request.PathValue("id")
 
 	// Validate authentication
-	authRecord, err := validateAuth(e)
+	authRecord, err := ValidateAuth(e)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"anjam/backend/config"
+	"anjam/config"
 )
 
 // PaginationParams holds pagination parameters
@@ -45,9 +45,9 @@ func parsePagination(r *http.Request) PaginationParams {
 	}
 }
 
-// extractIPAddress extracts the client IP address from the request.
+// ExtractIPAddress extracts the client IP address from the request.
 // It checks X-Forwarded-For, X-Real-IP, and finally RemoteAddr.
-func extractIPAddress(r *http.Request) string {
+func ExtractIPAddress(r *http.Request) string {
 	// Check X-Forwarded-For header (commonly used by proxies/load balancers)
 	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 		// X-Forwarded-For can contain multiple IPs separated by commas
@@ -72,9 +72,9 @@ func extractIPAddress(r *http.Request) string {
 	return host
 }
 
-// validateAuth is a helper that validates authentication for API handlers.
+// ValidateAuth is a helper that validates authentication for API handlers.
 // Returns the authenticated user record or an error response.
-func validateAuth(e *core.RequestEvent) (*core.Record, error) {
+func ValidateAuth(e *core.RequestEvent) (*core.Record, error) {
 	requestInfo, err := e.RequestInfo()
 	if err != nil {
 		return nil, e.BadRequestError("Invalid request", err)
@@ -89,7 +89,7 @@ func validateAuth(e *core.RequestEvent) (*core.Record, error) {
 // requireAdmin validates that the authenticated user is an admin.
 // Returns the user record and error if validation fails.
 func requireAdmin(e *core.RequestEvent) (*core.Record, error) {
-	authRecord, err := validateAuth(e)
+	authRecord, err := ValidateAuth(e)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func requireAdmin(e *core.RequestEvent) (*core.Record, error) {
 // requireRole validates that the authenticated user has one of the specified roles.
 // Returns the user record and error if validation fails.
 func requireRole(e *core.RequestEvent, roles ...string) (*core.Record, error) {
-	authRecord, err := validateAuth(e)
+	authRecord, err := ValidateAuth(e)
 	if err != nil {
 		return nil, err
 	}
