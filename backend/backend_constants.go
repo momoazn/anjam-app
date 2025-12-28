@@ -31,9 +31,9 @@ const (
 
 // Invite configuration constants
 const (
-	InviteTokenLength      = 32
-	InviteExpirationDays   = 7
-	InviteDefaultMaxUses   = 50
+	InviteTokenLength    = 32
+	InviteExpirationDays = 7
+	InviteDefaultMaxUses = 50
 )
 
 // Role constants
@@ -140,7 +140,6 @@ const (
 	ErrUserBlocked                   = "حساب کاربری مسدود شده است"
 	ErrUserNotFound                  = "کاربر یافت نشد"
 	ErrWrongPassword                 = "رمز عبور اشتباه"
-	ErrUserNotFoundForLogin          = "کاربر یافت نشد"
 
 	// User management errors
 	ErrOnlyAdmin                    = "فقط ادمین مجاز به انجام این عملیات است"
@@ -184,22 +183,22 @@ const (
 	MsgBlockedReason = "حساب به دلیل %d تلاش ناموفق برای ورود مسدود شد"
 
 	// Invite errors
-	ErrInviteNotFound          = "لینک دعوت نامعتبر است"
-	ErrInviteExpired           = "لینک دعوت منقضی شده است"
-	ErrInviteExhausted         = "ظرفیت استفاده از این لینک دعوت تکمیل شده است"
-	ErrInviteRevoked           = "این لینک دعوت لغو شده است"
-	ErrEmailAlreadyRegistered  = "این ایمیل قبلاً ثبت‌نام شده است. لطفاً وارد شوید"
-	ErrOrgNameRequired         = "نام سازمان الزامی است"
-	ErrInvalidInviteRole       = "نقش انتخاب‌شده نامعتبر است"
-	ErrFailedToCreateUser      = "خطا در ایجاد حساب کاربری"
-	ErrFailedToCreateOrg       = "خطا در ایجاد سازمان"
-	ErrFailedToCreateInvite    = "خطا در ایجاد لینک دعوت"
-	ErrNotOrgAdmin             = "شما مجوز مدیریت دعوت‌نامه‌ها را ندارید"
+	ErrInviteNotFound         = "لینک دعوت نامعتبر است"
+	ErrInviteExpired          = "لینک دعوت منقضی شده است"
+	ErrInviteExhausted        = "ظرفیت استفاده از این لینک دعوت تکمیل شده است"
+	ErrInviteRevoked          = "این لینک دعوت لغو شده است"
+	ErrEmailAlreadyRegistered = "این ایمیل قبلاً ثبت‌نام شده است. لطفاً وارد شوید"
+	ErrOrgNameRequired        = "نام سازمان الزامی است"
+	ErrInvalidInviteRole      = "نقش انتخاب‌شده نامعتبر است"
+	ErrFailedToCreateUser     = "خطا در ایجاد حساب کاربری"
+	ErrFailedToCreateOrg      = "خطا در ایجاد سازمان"
+	ErrFailedToCreateInvite   = "خطا در ایجاد لینک دعوت"
+	ErrNotOrgAdmin            = "شما مجوز مدیریت دعوت‌نامه‌ها را ندارید"
 
 	// Invite success messages
-	MsgInviteCreated           = "لینک دعوت ایجاد شد"
-	MsgInviteRevoked           = "لینک دعوت لغو شد"
-	MsgRegistrationSuccess     = "ثبت‌نام با موفقیت انجام شد"
-	MsgWelcomeToOrg            = "به %s خوش آمدید!"
-	MsgWelcomeToOrgDesc        = "شما به سازمان %s ملحق شدید"
+	MsgInviteCreated       = "لینک دعوت ایجاد شد"
+	MsgInviteRevoked       = "لینک دعوت لغو شد"
+	MsgRegistrationSuccess = "ثبت‌نام با موفقیت انجام شد"
+	MsgWelcomeToOrg        = "به %s خوش آمدید!"
+	MsgWelcomeToOrgDesc    = "شما به سازمان %s ملحق شدید"
 )
