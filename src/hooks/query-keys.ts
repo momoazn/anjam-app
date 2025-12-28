@@ -78,6 +78,8 @@ export const queryKeys = {
   notifications: {
     all: ["notifications"] as const,
     byUser: (userId: string) => ["notifications", "user", userId] as const,
+    unreadCount: (userId: string) =>
+      ["notifications", "unread-count", userId] as const,
   },
 
   auditLogs: {
@@ -125,6 +127,7 @@ export const queryKeys = {
     listByTask: (taskId: string) => ["subtasks", "task", taskId] as const,
     all: ["subtasks"] as const,
   },
+
   timeEntries: {
     listByTask: (taskId: string) => ["time_entries", "task", taskId] as const,
     all: ["time_entries"] as const,
@@ -153,7 +156,12 @@ export const queryKeys = {
     lists: () => ["organization_invites", "list"] as const,
     list: (orgId: string | undefined) =>
       ["organization_invites", "list", orgId] as const,
-    byToken: (token: string) =>
+    listByToken: (token: string) =>
       ["organization_invites", "token", token] as const,
   },
-} as const;
+
+  notificationsUnreadCount: (userId: string) =>
+    ["notifications", "unread-count", userId] as const,
+};
+
+export { queryKeys, notificationsUnreadCount };
