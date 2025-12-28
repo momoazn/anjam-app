@@ -51,9 +51,7 @@ function EmptyState({ icon, title, description, action }: EmptyStateProps) {
 export function EmptyStateNoProjects({ onCreate }: { onCreate?: () => void }) {
   return (
     <EmptyState
-      icon={
-        <FolderOpen className="h-12 w-12" />
-      }
+      icon={<FolderOpen className="h-12 w-12" />}
       title={projects.list.noProjects}
       description={projects.create.description}
       action={
@@ -70,9 +68,7 @@ export function EmptyStateNoProjects({ onCreate }: { onCreate?: () => void }) {
 export function EmptyStateNoProjectsAccess() {
   return (
     <EmptyState
-      icon={
-        <FolderOpen className="h-12 w-12" />
-      }
+      icon={<FolderOpen className="h-12 w-12" />}
       title={projects.list.noProjects}
       description={organization.members.empty}
     />
@@ -82,9 +78,7 @@ export function EmptyStateNoProjectsAccess() {
 export function EmptyStateNoTasks({ onCreate }: { onCreate?: () => void }) {
   return (
     <EmptyState
-      icon={
-        <ListTodo className="h-12 w-12" />
-      }
+      icon={<ListTodo className="h-12 w-12" />}
       title={tasks.emptyState.noTasksYet}
       description={tasks.emptyState.noTasksYetDescription}
       action={
@@ -101,9 +95,7 @@ export function EmptyStateNoTasks({ onCreate }: { onCreate?: () => void }) {
 export function EmptyStateNoTasksViewer() {
   return (
     <EmptyState
-      icon={
-        <ListTodo className="h-12 w-12" />
-      }
+      icon={<ListTodo className="h-12 w-12" />}
       title={tasks.emptyState.projectNoTasksYet}
       description={tasks.emptyState.projectNoTasksYetDescription}
     />
@@ -113,9 +105,7 @@ export function EmptyStateNoTasksViewer() {
 export function EmptyStateNoResults() {
   return (
     <EmptyState
-      icon={
-        <SearchX className="h-12 w-12" />
-      }
+      icon={<SearchX className="h-12 w-12" />}
       title={tasks.emptyState.noTasksFound}
       description={tasks.emptyState.noTasksFoundDescription}
     />
@@ -125,9 +115,7 @@ export function EmptyStateNoResults() {
 export function EmptyStateNoNotifications() {
   return (
     <EmptyState
-      icon={
-        <BellOff className="h-12 w-12" />
-      }
+      icon={<BellOff className="h-12 w-12" />}
       title={notifications.emptyState.title}
       description={notifications.emptyState.description}
     />
@@ -141,9 +129,7 @@ export function EmptyStateNoOrganization({
 }) {
   return (
     <EmptyState
-      icon={
-        <Building2 className="h-12 w-12" />
-      }
+      icon={<Building2 className="h-12 w-12" />}
       title={organization.title}
       description={organization.create.formDescription}
       action={
@@ -160,9 +146,7 @@ export function EmptyStateNoOrganization({
 export function EmptyStateNoMembers({ onInvite }: { onInvite?: () => void }) {
   return (
     <EmptyState
-      icon={
-        <Users className="h-12 w-12" />
-      }
+      icon={<Users className="h-12 w-12" />}
       title={organization.members.empty}
       description={organization.members.invite}
       action={
@@ -179,9 +163,7 @@ export function EmptyStateNoMembers({ onInvite }: { onInvite?: () => void }) {
 export function EmptyStateNoComments() {
   return (
     <EmptyState
-      icon={
-        <MessageCircle className="h-12 w-12" />
-      }
+      icon={<MessageCircle className="h-12 w-12" />}
       title={comments.empty.noComments}
       description={comments.empty.beFirst}
     />
@@ -191,9 +173,7 @@ export function EmptyStateNoComments() {
 export function EmptyStateNoActivity() {
   return (
     <EmptyState
-      icon={
-        <Activity className="h-12 w-12" />
-      }
+      icon={<Activity className="h-12 w-12" />}
       title={auditLogs.activityStream.title}
       description={auditLogs.activityStream.empty}
     />

@@ -132,7 +132,7 @@ export function ProjectSidebar({
         </div>
 
         <Card className="relative overflow-hidden p-2">
-          <CardContent className="relative z-10 p-0 space-y-1">
+          <CardContent className="relative z-10 space-y-1 p-0">
             <Button
               variant="ghost"
               className="hover:bg-primary hover:text-primary-foreground h-12 w-full justify-end gap-3 rounded-xl text-[11px] font-bold tracking-tight transition-all"

@@ -144,123 +144,123 @@ export default function Register() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                    {auth.register.email}
-                  </Label>
-                  <IconMail className="text-muted-foreground/40 size-3" />
-                </div>
-                <Input
-                  type="email"
-                  value={email}
-                  dir="ltr"
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                  placeholder="name@company.com"
-                  required
-                  autoFocus
-                  disabled={submitting}
-                />
-                {errors.email && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                    {auth.register.organizationName}
-                  </Label>
-                  <IconBuilding className="text-muted-foreground/40 size-3" />
-                </div>
-                <Input
-                  type="text"
-                  value={organizationName}
-                  onChange={(e) => setOrganizationName(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                  placeholder={auth.register.organizationNamePlaceholder}
-                  disabled={submitting}
-                />
-                {errors.organizationName && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.organizationName}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                    {auth.register.password}
-                  </Label>
-                  <IconShieldLock className="text-muted-foreground/40 size-3" />
-                </div>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                  placeholder="••••••••"
-                  required
-                  dir="ltr"
-                  disabled={submitting}
-                />
-                {errors.password && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                    {auth.register.confirmPassword}
-                  </Label>
-                  <IconShieldLock className="text-muted-foreground/40 size-3" />
-                </div>
-                <Input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                  placeholder="••••••••"
-                  required
-                  dir="ltr"
-                  disabled={submitting}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="group h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all active:scale-95"
-                disabled={submitting}
-              >
-                <span className="flex items-center gap-2">
-                  {submitting
-                    ? auth.register.registering
-                    : auth.register.registerButton}
-                  {!submitting && (
-                    <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
+                      {auth.register.email}
+                    </Label>
+                    <IconMail className="text-muted-foreground/40 size-3" />
+                  </div>
+                  <Input
+                    type="email"
+                    value={email}
+                    dir="ltr"
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    placeholder="name@company.com"
+                    required
+                    autoFocus
+                    disabled={submitting}
+                  />
+                  {errors.email && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.email}
+                    </p>
                   )}
-                </span>
-              </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
+                      {auth.register.organizationName}
+                    </Label>
+                    <IconBuilding className="text-muted-foreground/40 size-3" />
+                  </div>
+                  <Input
+                    type="text"
+                    value={organizationName}
+                    onChange={(e) => setOrganizationName(e.target.value)}
+                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    placeholder={auth.register.organizationNamePlaceholder}
+                    disabled={submitting}
+                  />
+                  {errors.organizationName && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.organizationName}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
+                      {auth.register.password}
+                    </Label>
+                    <IconShieldLock className="text-muted-foreground/40 size-3" />
+                  </div>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    placeholder="••••••••"
+                    required
+                    dir="ltr"
+                    disabled={submitting}
+                  />
+                  {errors.password && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.password}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
+                      {auth.register.confirmPassword}
+                    </Label>
+                    <IconShieldLock className="text-muted-foreground/40 size-3" />
+                  </div>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    placeholder="••••••••"
+                    required
+                    dir="ltr"
+                    disabled={submitting}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="group h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all active:scale-95"
+                  disabled={submitting}
+                >
+                  <span className="flex items-center gap-2">
+                    {submitting
+                      ? auth.register.registering
+                      : auth.register.registerButton}
+                    {!submitting && (
+                      <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                    )}
+                  </span>
+                </Button>
               </form>
               <div className="mt-6 flex items-center justify-between border-t pt-4">
-              <span className="text-muted-foreground text-xs font-semibold">
-                {auth.register.haveAccountPrompt}
-              </span>
-              <Button variant="ghost" asChild>
-                <Link to="/login">{auth.register.loginButton}</Link>
-              </Button>
+                <span className="text-muted-foreground text-xs font-semibold">
+                  {auth.register.haveAccountPrompt}
+                </span>
+                <Button variant="ghost" asChild>
+                  <Link to="/login">{auth.register.loginButton}</Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
