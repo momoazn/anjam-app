@@ -10,20 +10,20 @@ This document contains user stories for the Anjam task and project management ap
 4. [Dashboard & Navigation](#4-dashboard--navigation)
 5. [Project Setup](#5-project-setup)
 6. [Task Management](#6-task-management)
-7. [Calendar & Scheduling](#7-calendar--scheduling)
-8. [Task Collaboration](#8-task-collaboration)
-9. [Time Tracking & Timesheets](#9-time-tracking--timesheets)
-10. [Tags Management](#10-tags-management)
-11. [Saved Filters](#11-saved-filters)
-12. [Bulk Operations](#12-bulk-operations)
-13. [Notifications](#13-notifications)
-14. [User Management](#14-user-management)
-15. [Organization & Project Administration](#15-organization--project-administration)
-16. [Reports & Audit](#16-reports--audit)
-17. [Settings & Preferences](#17-settings--preferences)
-18. [Help & Documentation](#18-help--documentation)
-19. [File Management](#19-file-management)
-20. [UI State Actions](#20-ui-state-actions)
+7. [Task Collaboration](#7-task-collaboration)
+8. [Tags Management](#8-tags-management)
+9. [Notifications](#9-notifications)
+10. [User Management](#10-user-management)
+11. [Organization & Project Administration](#11-organization--project-administration)
+12. [Settings & Preferences](#12-settings--preferences)
+13. [Reports & Audit](#13-reports--audit)
+14. [Bulk Operations](#14-bulk-operations)
+15. [File Management](#15-file-management)
+16. [UI State Actions](#16-ui-state-actions)
+17. [Calendar & Scheduling](#17-calendar--scheduling)
+18. [Time Tracking & Timesheets](#18-time-tracking--timesheets)
+19. [Help & Documentation](#19-help--documentation)
+20. [Saved Filters](#20-saved-filters)
 
 ---
 
@@ -31,8 +31,8 @@ This document contains user stories for the Anjam task and project management ap
 
 ### US-001: User Registration
 
-**As a** new user  
-**I want to** register for an account  
+**As a** new user
+**I want to** register for an account
 **So that** I can access the application and start managing tasks and projects
 
 **Acceptance Criteria:**
@@ -40,14 +40,23 @@ This document contains user stories for the Anjam task and project management ap
 - User can enter email/username and password
 - System validates input fields
 - User receives confirmation upon successful registration
-- User is redirected to login page after registration
+- User is redirected to onboarding after registration
+
+**How to Test:**
+
+1. Navigate to `/register`
+2. Enter a valid email, password, and organization name
+3. Click "Register"
+4. Verify account is created and you're redirected to onboarding
+5. Try registering with invalid email format - verify error message
+6. Try registering with short password (<8 chars) - verify error message
 
 ---
 
 ### US-002: User Login
 
-**As a** registered user  
-**I want to** log in to the application  
+**As a** registered user
+**I want to** log in to the application
 **So that** I can access my tasks, projects, and organization data
 
 **Acceptance Criteria:**
@@ -58,35 +67,59 @@ This document contains user stories for the Anjam task and project management ap
 - Failed login attempts are tracked (max 5 before blocking)
 - User sees appropriate error messages for invalid credentials
 
+**How to Test:**
+
+1. Navigate to `/login`
+2. Enter valid credentials and click "Login"
+3. Verify redirect to dashboard
+4. Logout and try invalid password - verify error message
+5. Try 5 failed logins - verify account gets blocked
+6. As admin, unblock the user and verify login works again
+
 ---
 
 ### US-003: Password Reset
 
-**As a** user who forgot their password  
-**I want to** reset my password  
+**As a** user who forgot their password
+**I want to** reset my password
 **So that** I can regain access to my account
 
 **Acceptance Criteria:**
 
-- User can request password reset via email
-- User receives password reset link
-- User can set a new password
-- User can log in with new password
+- Users can change password from Settings → Security (when logged in)
+- Admins can reset a user's password via User Management
+
+**Implementation Note:** Self-service password reset via email is not implemented.
+
+**How to Test:**
+
+1. Login and navigate to Settings → Security
+2. Enter current password and new password
+3. Click "Change Password"
+4. Logout and login with new password
+5. As admin, edit another user and set a new password
 
 ---
 
 ### US-004: User Logout
 
-**As a** logged-in user  
-**I want to** log out of the application  
+**As a** logged-in user
+**I want to** log out of the application
 **So that** I can securely end my session
 
 **Acceptance Criteria:**
 
-- User can click logout button
+- User can click logout button in user menu
 - Session is terminated
 - User is redirected to login page
 - User must log in again to access the application
+
+**How to Test:**
+
+1. While logged in, click user avatar in header
+2. Click "Logout"
+3. Verify redirect to login page
+4. Try accessing `/dashboard` directly - verify redirect to login
 
 ---
 
@@ -94,8 +127,8 @@ This document contains user stories for the Anjam task and project management ap
 
 ### US-005: Create Organization
 
-**As a** user  
-**I want to** create a new organization  
+**As a** user
+**I want to** create a new organization
 **So that** I can organize my team and projects under a single entity
 
 **Acceptance Criteria:**
@@ -105,27 +138,43 @@ This document contains user stories for the Anjam task and project management ap
 - Organization slug is auto-generated
 - User can see organization in sidebar after creation
 
+**How to Test:**
+
+1. Navigate to `/organizations/new`
+2. Enter organization name and description
+3. Click "Create"
+4. Verify organization appears in sidebar
+5. Verify you are the owner (check Settings → Members)
+
 ---
 
 ### US-006: Switch Organization
 
-**As a** user who belongs to multiple organizations  
-**I want to** switch between organizations  
+**As a** user who belongs to multiple organizations
+**I want to** switch between organizations
 **So that** I can work on projects from different organizations
 
 **Acceptance Criteria:**
 
-- User can see all organizations they belong to in sidebar
+- User can see all organizations they belong to
 - User can select different organization
 - Context switches to selected organization
 - Projects and tasks filter to selected organization
+
+**How to Test:**
+
+1. Create or join a second organization
+2. Navigate to `/select-organization`
+3. Click on a different organization card
+4. Verify sidebar shows new organization
+5. Verify tasks and projects are filtered to new organization
 
 ---
 
 ### US-007: Accept Organization Invitation
 
-**As a** user who received an organization invitation  
-**I want to** accept the invitation  
+**As a** user who received an organization invitation
+**I want to** accept the invitation
 **So that** I can join the organization and access its projects
 
 **Acceptance Criteria:**
@@ -135,27 +184,42 @@ This document contains user stories for the Anjam task and project management ap
 - User is added to organization with specified role
 - User can access organization after acceptance
 
+**How to Test:**
+
+1. As org admin, invite an existing user by email
+2. As the invited user, check for invitation notification
+3. Accept the invitation
+4. Verify organization appears in organization list
+5. Verify assigned role is correct
+
 ---
 
 ### US-008: Invite Organization Member
 
-**As an** organization owner or admin  
-**I want to** invite users to join my organization  
+**As an** organization owner or admin
+**I want to** invite users to join my organization
 **So that** I can collaborate with team members
 
 **Acceptance Criteria:**
 
-- User can invite by email address
+- User can invite by email address (existing users only)
 - User can assign role (owner, admin, member)
-- Invited user receives notification
 - Invitation status is tracked (invited, active, suspended)
+
+**How to Test:**
+
+1. Navigate to Settings → Members
+2. Click "Invite Member"
+3. Enter email of existing user and select role
+4. Click "Send Invitation"
+5. Verify invitation appears in pending list
 
 ---
 
 ### US-009: Manage Organization Members
 
-**As an** organization owner or admin  
-**I want to** view and manage organization members  
+**As an** organization owner or admin
+**I want to** view and manage organization members
 **So that** I can control access and permissions
 
 **Acceptance Criteria:**
@@ -164,6 +228,14 @@ This document contains user stories for the Anjam task and project management ap
 - User can filter by status (invited, active, suspended)
 - User can update member roles
 - User can remove members from organization
+
+**How to Test:**
+
+1. Navigate to Settings → Members
+2. View member list with roles and status
+3. Change a member's role using dropdown
+4. Remove a member and verify they no longer appear
+5. Verify removed member loses access to organization
 
 ---
 
@@ -180,9 +252,15 @@ This document contains user stories for the Anjam task and project management ap
 - User can generate invite link
 - User can set role for invitees (admin/member)
 - User can set maximum uses for link
-- User can see invite token
-- Invite link is shareable
-- Invite has expiration date
+- Invite link is shareable with 7-day expiration
+
+**How to Test:**
+
+1. Navigate to Settings → Members
+2. Click "Create Invite Link"
+3. Select role and max uses
+4. Copy the generated link
+5. Verify link appears in invites list with correct settings
 
 ---
 
@@ -195,11 +273,17 @@ This document contains user stories for the Anjam task and project management ap
 **Acceptance Criteria:**
 
 - User can see list of all invites
-- User can see invite role
-- User can see usage count
-- User can see expiration date
+- User can see invite role, usage count, expiration date
 - User can see if invite is revoked
 - List is paginated
+
+**How to Test:**
+
+1. Navigate to Settings → Members → Invites tab
+2. Create several invite links
+3. Verify all invites are listed with correct details
+4. Share a link and have someone use it
+5. Verify usage count increments
 
 ---
 
@@ -211,11 +295,17 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can revoke invite
-- Revoked invites are marked
-- Revoked invites cannot be used
-- Action requires confirmation
+- User can revoke invite with confirmation
+- Revoked invites are marked and cannot be used
 - Revocation is immediate
+
+**How to Test:**
+
+1. Create an invite link
+2. Click revoke button on the invite
+3. Confirm the action
+4. Verify invite shows as revoked
+5. Try using the revoked link - verify it fails
 
 ---
 
@@ -227,12 +317,18 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can view invite details
+- User can view invite details (organization name, role)
 - User can register with invite link
-- User is automatically added to organization
-- User receives assigned role
+- User is automatically added to organization with assigned role
 - User is logged in after registration
-- Welcome notification is sent
+
+**How to Test:**
+
+1. Open invite link in incognito browser
+2. Verify organization name and role are displayed
+3. Enter email and password to register
+4. Verify automatic login and redirect to dashboard
+5. Verify organization membership with correct role
 
 ---
 
@@ -244,12 +340,18 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can provide email and password
-- User can provide organization name
-- User account is created
-- Organization is created
+- User can provide email, password, and organization name
+- User account and organization are created together
 - User becomes organization owner
 - User is logged in after registration
+
+**How to Test:**
+
+1. Navigate to `/register`
+2. Enter email, password, and organization name
+3. Click "Register"
+4. Verify both account and organization are created
+5. Verify you are the organization owner
 
 ---
 
@@ -261,12 +363,19 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can go through onboarding steps
-- User can create first project
-- User can invite team members
-- User can set preferences
-- Onboarding is marked as completed
-- User is redirected to dashboard
+- User can upload organization logo (optional)
+- User can add organization description (optional)
+- User can generate invite link for members (optional)
+- User is redirected to dashboard after completion
+
+**How to Test:**
+
+1. After registration, verify onboarding screen appears
+2. Upload a logo image
+3. Add a description
+4. Add team member emails (optional)
+5. Click "Complete" and verify redirect to dashboard
+6. Verify logo and description are saved
 
 ---
 
@@ -278,10 +387,15 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- Invited users skip onboarding
+- Invited users automatically skip onboarding
 - User goes directly to dashboard
-- Onboarding is marked as completed
-- User can access all features
+- User can access all features immediately
+
+**How to Test:**
+
+1. Accept an organization invite as new user
+2. Verify you go directly to dashboard (no onboarding)
+3. Verify all features are accessible
 
 ---
 
@@ -295,11 +409,18 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can see task statistics
-- User can see project overview
+- User can see task statistics (total, completed, in-progress, pending)
+- User can see project overview with progress
 - User can see recent notifications
-- User can navigate to different sections from dashboard
 - Dashboard shows data for current organization
+
+**How to Test:**
+
+1. Navigate to `/dashboard` or click logo
+2. Verify task stats match actual task counts
+3. Verify project progress bars are accurate
+4. Verify recent notifications are shown
+5. Switch organization and verify data updates
 
 ---
 
@@ -311,11 +432,18 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can search from header search bar
+- User can search via header search bar or Cmd/Ctrl+K
 - Search finds tasks and projects by name/ID
-- Results show relevant information
+- Results show relevant information (display ID, status)
 - User can click result to navigate
-- Search respects user permissions
+
+**How to Test:**
+
+1. Press Cmd/Ctrl+K to open search
+2. Type a task title (min 2 characters)
+3. Verify matching tasks appear with display IDs
+4. Click a result and verify navigation
+5. Search for a project code and verify it appears
 
 ---
 
@@ -331,7 +459,13 @@ This document contains user stories for the Anjam task and project management ap
 - User can navigate via breadcrumbs
 - User can use browser back button
 - User can click logo to return to dashboard
-- Navigation is intuitive and consistent
+
+**How to Test:**
+
+1. Click each sidebar menu item and verify navigation
+2. Use breadcrumbs to navigate back
+3. Use browser back button and verify it works
+4. Click logo from any page and verify return to dashboard
 
 ---
 
@@ -339,24 +473,31 @@ This document contains user stories for the Anjam task and project management ap
 
 ### US-010: Create Project
 
-**As an** admin or supervisor  
-**I want to** create a new project  
+**As an** admin or supervisor
+**I want to** create a new project
 **So that** I can organize tasks and collaborate with my team
 
 **Acceptance Criteria:**
 
 - User can create project with name, code, and description
-- Project code is auto-generated (3-letter uppercase)
+- Project code is 3-letter uppercase (auto-generated if omitted via API)
 - Project is associated with current organization
-- User can assign supervisor to project
-- Default statuses are created for the project
+- Default statuses are created automatically
+
+**How to Test:**
+
+1. Navigate to `/projects/new`
+2. Enter project name, code (e.g., "ABC"), and description
+3. Click "Create"
+4. Verify project appears in projects list
+5. Verify default statuses exist (todo, in_progress, review, etc.)
 
 ---
 
 ### US-011: View Project Details
 
-**As a** project member  
-**I want to** view project details  
+**As a** project member
+**I want to** view project details
 **So that** I can understand project context and access related information
 
 **Acceptance Criteria:**
@@ -364,44 +505,66 @@ This document contains user stories for the Anjam task and project management ap
 - User can see project name, code, description
 - User can see project statistics (tasks, completion, time spent)
 - User can see project members
-- User can navigate to project tasks and users
+- User can navigate to project tasks
+
+**How to Test:**
+
+1. Click a project card to open details
+2. Verify name, code, and description are displayed
+3. Check task statistics match actual counts
+4. View project members list
+5. Click "Tasks" to navigate to filtered task list
 
 ---
 
 ### US-012: Edit Project
 
-**As an** admin or project supervisor  
-**I want to** edit project information  
+**As an** admin or project supervisor
+**I want to** edit project information
 **So that** I can keep project details up to date
 
 **Acceptance Criteria:**
 
-- User can enter edit mode
 - User can update name, code, description
 - User can upload/delete project files
 - Changes are saved and reflected immediately
+
+**How to Test:**
+
+1. Open project details and click "Edit"
+2. Change the project name and description
+3. Upload a file attachment
+4. Save changes
+5. Verify changes are persisted after page refresh
 
 ---
 
 ### US-013: Delete Project
 
-**As an** admin or project supervisor  
-**I want to** delete a project  
+**As an** admin or project supervisor
+**I want to** delete a project
 **So that** I can remove obsolete projects
 
 **Acceptance Criteria:**
 
 - User can delete project with confirmation dialog
 - All related tasks and data are handled appropriately
-- User sees confirmation before deletion
 - Project is removed from list after deletion
+
+**How to Test:**
+
+1. Open project details
+2. Click "Delete" button
+3. Confirm deletion in dialog
+4. Verify project no longer appears in list
+5. Verify related tasks are also removed
 
 ---
 
 ### US-014: Add Project Member
 
-**As a** project owner or admin  
-**I want to** add members to a project  
+**As a** project owner or admin
+**I want to** add members to a project
 **So that** they can work on project tasks
 
 **Acceptance Criteria:**
@@ -411,12 +574,21 @@ This document contains user stories for the Anjam task and project management ap
 - Added member receives notification
 - Member appears in project members list
 
+**How to Test:**
+
+1. Open project details → Members tab
+2. Click "Add Member"
+3. Select an organization member and assign role
+4. Click "Add"
+5. Verify member appears in list with correct role
+6. Verify member received notification
+
 ---
 
 ### US-015: Manage Project Members
 
-**As a** project owner or admin  
-**I want to** manage project member roles and permissions  
+**As a** project owner or admin
+**I want to** manage project member roles and permissions
 **So that** I can control who can perform what actions
 
 **Acceptance Criteria:**
@@ -424,7 +596,15 @@ This document contains user stories for the Anjam task and project management ap
 - User can view all project members
 - User can update member roles
 - User can remove members from project
-- Changes reflect immediately in project
+- Changes reflect immediately
+
+**How to Test:**
+
+1. Open project details → Members tab
+2. Change a member's role using dropdown
+3. Verify role change is saved
+4. Remove a member from project
+5. Verify member no longer has project access
 
 ---
 
@@ -432,24 +612,33 @@ This document contains user stories for the Anjam task and project management ap
 
 ### US-016: Create Task
 
-**As a** user  
-**I want to** create a new task  
+**As a** user
+**I want to** create a new task
 **So that** I can track work items and assign them to team members
 
 **Acceptance Criteria:**
 
 - User can create task with title, description, project
 - User can assign task to team member
-- User can set priority, status, due date
-- User can add tags to task
+- User can set priority, status, due date, tags
 - Task display ID is auto-generated (PROJECT-001 format)
+
+**How to Test:**
+
+1. Click "New Task" button in header
+2. Fill in title, description, select project
+3. Assign to a team member
+4. Set priority, status, due date
+5. Add tags
+6. Click "Create"
+7. Verify task appears with auto-generated display ID
 
 ---
 
 ### US-017: View Task List
 
-**As a** user  
-**I want to** view my tasks in a list  
+**As a** user
+**I want to** view my tasks in a list
 **So that** I can see all tasks and their status
 
 **Acceptance Criteria:**
@@ -460,12 +649,20 @@ This document contains user stories for the Anjam task and project management ap
 - User can collapse/expand status sections
 - Employee role sees only assigned tasks
 
+**How to Test:**
+
+1. Navigate to `/tasks`
+2. Verify tasks are grouped by status
+3. Click column headers to sort
+4. Collapse/expand a status section
+5. Login as employee and verify only assigned tasks visible
+
 ---
 
 ### US-018: View Task Board (Kanban)
 
-**As a** user  
-**I want to** view tasks in a kanban board  
+**As a** user
+**I want to** view tasks in a kanban board
 **So that** I can visualize workflow and move tasks between statuses
 
 **Acceptance Criteria:**
@@ -475,12 +672,20 @@ This document contains user stories for the Anjam task and project management ap
 - User can reorder tasks within columns
 - Task status updates when moved to different column
 
+**How to Test:**
+
+1. Navigate to `/tasks/board`
+2. Verify tasks are in correct status columns
+3. Drag a task to a different column
+4. Verify status changed in task details
+5. Drag to reorder within a column
+
 ---
 
 ### US-019: View Task Details
 
-**As a** user  
-**I want to** view detailed information about a task  
+**As a** user
+**I want to** view detailed information about a task
 **So that** I can understand requirements and see all related information
 
 **Acceptance Criteria:**
@@ -489,14 +694,22 @@ This document contains user stories for the Anjam task and project management ap
 - User can see assignee, project, due date
 - User can see comments, subtasks, time entries
 - User can see activity stream/audit log
-- User can navigate between tabs
+
+**How to Test:**
+
+1. Click a task to open details page
+2. Verify all task fields are displayed
+3. Check comments tab for comments
+4. Check subtasks section
+5. Check time entries tab
+6. Toggle activity feed visibility
 
 ---
 
 ### US-020: Edit Task
 
-**As a** task creator or assignee  
-**I want to** edit task details  
+**As a** task creator or assignee
+**I want to** edit task details
 **So that** I can update information as requirements change
 
 **Acceptance Criteria:**
@@ -504,15 +717,24 @@ This document contains user stories for the Anjam task and project management ap
 - User can update task fields (title, description, status, priority, etc.)
 - User can change assignee
 - User can add/remove tags
-- Changes are saved and reflected immediately
+- Changes are saved immediately
 - Activity is logged in audit trail
+
+**How to Test:**
+
+1. Open task details and click "Edit"
+2. Change title, status, priority
+3. Change assignee
+4. Add/remove tags
+5. Save and verify changes persist
+6. Check activity stream for change log
 
 ---
 
 ### US-021: Delete Task
 
-**As a** task creator or admin  
-**I want to** delete a task  
+**As a** task creator or admin
+**I want to** delete a task
 **So that** I can remove obsolete or duplicate tasks
 
 **Acceptance Criteria:**
@@ -522,12 +744,22 @@ This document contains user stories for the Anjam task and project management ap
 - User can undo deletion within 5 seconds
 - Task disappears from lists after deletion
 
+**How to Test:**
+
+1. Open task details
+2. Click "Delete" button
+3. Confirm deletion
+4. Quickly click "Undo" in toast notification
+5. Verify task is restored
+6. Delete again and let timeout expire
+7. Verify task is gone from list
+
 ---
 
 ### US-022: Filter and Sort Tasks
 
-**As a** user  
-**I want to** filter and sort tasks  
+**As a** user
+**I want to** filter and sort tasks
 **So that** I can find specific tasks quickly
 
 **Acceptance Criteria:**
@@ -537,60 +769,121 @@ This document contains user stories for the Anjam task and project management ap
 - Filters persist across page navigation
 - User can clear filters easily
 
+**How to Test:**
+
+1. Open task list
+2. Apply filters (status, priority, assignee)
+3. Verify filtered results
+4. Navigate away and back - verify filters persist
+5. Click "Clear Filters"
+6. Verify all tasks are shown again
+
 ---
 
-## 8. Task Collaboration
+## 7. Task Collaboration
 
 ### US-023: Add Comment to Task
 
-**As a** user  
-**I want to** add comments to tasks  
+**As a** user
+**I want to** add comments to tasks
 **So that** I can communicate with team members about task progress
 
 **Acceptance Criteria:**
 
 - User can add comment with text
-- User can attach files to comments
+- User can attach files to comments (max 5 files, 5MB each)
 - User can mention other users with @mention
 - Comment appears in task comments list
 - Mentioned users receive notifications
+
+**How to Test:**
+
+1. Open task details → Comments tab
+2. Type a comment with @mention
+3. Attach a file
+4. Click "Post"
+5. Verify comment appears
+6. Verify mentioned user receives notification
 
 ---
 
 ### US-024: Reply to Comment
 
-**As a** user  
-**I want to** reply to existing comments  
+**As a** user
+**I want to** reply to existing comments
 **So that** I can have threaded conversations about tasks
 
 **Acceptance Criteria:**
 
 - User can reply to any comment
-- Reply is linked to parent comment
+- Reply is linked to parent comment (threaded view)
 - User can see comment thread structure
 - All participants receive notifications
+
+**How to Test:**
+
+1. Open task with existing comments
+2. Click "Reply" on a comment
+3. Type reply and post
+4. Verify reply appears nested under parent
+5. Verify thread can be collapsed/expanded
 
 ---
 
 ### US-025: Edit/Delete Comment
 
-**As a** comment author  
-**I want to** edit or delete my comments  
+**As a** comment author
+**I want to** edit or delete my comments
 **So that** I can correct mistakes or remove outdated information
 
 **Acceptance Criteria:**
 
 - User can edit own comments
 - User can delete own comments (soft delete)
-- Edited comments show edit indicator
+- Edited comments show "edited" indicator
 - Deleted comments are marked as deleted
+
+**How to Test:**
+
+1. Post a comment on a task
+2. Click edit icon on your comment
+3. Modify text and save
+4. Verify "edited" indicator appears
+5. Click delete icon
+6. Verify comment shows as deleted
+
+---
+
+### US-089: React to Comment
+
+**As a** user
+**I want to** add emoji reactions to comments
+**So that** I can quickly express feedback without writing a full reply
+
+**Acceptance Criteria:**
+
+- User can add reactions to any comment (👍, 👎, ❤️, 🎉, 😄, 🤔)
+- User can remove their own reactions
+- Reactions show count and who reacted (tooltip)
+- Active reactions are visually highlighted
+- Reactions are disabled on deleted comments
+
+**How to Test:**
+
+1. Open task with comments
+2. Click reaction button on a comment
+3. Select an emoji reaction
+4. Verify reaction appears with count
+5. Hover to see who reacted
+6. Click again to remove reaction
+7. Verify deleted comments have no reaction buttons
 
 ---
 
 ### US-026: Add Subtasks
 
-**As a** user  
-**I want to** add subtasks to a task  
+**As a** user
+**I want to** add subtasks to a task
 **So that** I can break down complex tasks into smaller actionable items
 
 **Acceptance Criteria:**
@@ -599,14 +892,23 @@ This document contains user stories for the Anjam task and project management ap
 - User can assign subtask to team member
 - Subtasks appear in checklist format
 - User can mark subtasks as done
-- User can reorder subtasks
+- User can reorder subtasks via drag-and-drop
+
+**How to Test:**
+
+1. Open task details → Subtasks section
+2. Click "Add Subtask"
+3. Enter title and optionally assign to member
+4. Click "Add"
+5. Verify subtask appears in checklist
+6. Drag to reorder subtasks
 
 ---
 
 ### US-027: Manage Subtasks
 
-**As a** user  
-**I want to** mark subtasks as done or reopen them  
+**As a** user
+**I want to** mark subtasks as done or reopen them
 **So that** I can track progress on task breakdown
 
 **Acceptance Criteria:**
@@ -616,28 +918,46 @@ This document contains user stories for the Anjam task and project management ap
 - User can delete subtasks
 - Subtask completion status is visible
 
+**How to Test:**
+
+1. Open task with subtasks
+2. Click checkbox to mark subtask done
+3. Verify visual indication of completion
+4. Click again to reopen
+5. Delete a subtask and verify removal
+
 ---
 
 ### US-028: Log Time Entry
 
-**As a** user  
-**I want to** log time spent on a task  
+**As a** user
+**I want to** log time spent on a task
 **So that** I can track my work hours and project time
 
 **Acceptance Criteria:**
 
 - User can log time with hours and minutes
 - User can add optional note
-- User can select date for time entry
 - Time entry is added to task
 - Task time aggregates update automatically
+
+**Implementation Note:** Time entry date selection isn't available; entries use record timestamp.
+
+**How to Test:**
+
+1. Open task details → Time Entries tab
+2. Click "Log Time"
+3. Enter hours/minutes and optional note
+4. Click "Save"
+5. Verify entry appears in list
+6. Verify task total time updates
 
 ---
 
 ### US-029: View Time Entries
 
-**As a** user  
-**I want to** view all time entries for a task  
+**As a** user
+**I want to** view all time entries for a task
 **So that** I can see how much time has been spent
 
 **Acceptance Criteria:**
@@ -647,12 +967,19 @@ This document contains user stories for the Anjam task and project management ap
 - User can see date, duration, and notes
 - Total time is displayed
 
+**How to Test:**
+
+1. Open task with time entries
+2. Verify entries are listed with user, duration, notes
+3. Verify total time matches sum of entries
+4. Check entries are grouped by date
+
 ---
 
 ### US-030: Edit Time Entry
 
-**As a** user (or admin/supervisor)  
-**I want to** edit or delete time entries  
+**As a** user (or admin/supervisor)
+**I want to** edit or delete time entries
 **So that** I can correct mistakes in time logging
 
 **Acceptance Criteria:**
@@ -662,12 +989,21 @@ This document contains user stories for the Anjam task and project management ap
 - User can delete time entries
 - Task time aggregates update after changes
 
+**How to Test:**
+
+1. Open task with your time entry
+2. Click edit on the entry
+3. Modify duration and save
+4. Verify changes are saved
+5. Delete an entry
+6. Verify total time recalculates
+
 ---
 
 ### US-031: Manual Time Editing
 
-**As an** admin, supervisor, or task assignee  
-**I want to** manually edit total time spent on a task  
+**As an** admin, supervisor, or task assignee
+**I want to** manually edit total time spent on a task
 **So that** I can adjust time for corrections or estimates
 
 **Acceptance Criteria:**
@@ -677,59 +1013,89 @@ This document contains user stories for the Anjam task and project management ap
 - Only authorized users can edit time
 - Activity is logged
 
+**How to Test:**
+
+1. Open task details (as assignee or admin)
+2. Click edit icon next to time display
+3. Enter new hours/minutes
+4. Save changes
+5. Verify time updates
+6. As regular user on unassigned task, verify edit not available
+
 ---
 
-## 10. Tags Management
+## 8. Tags Management
 
 ### US-032: Create Tag
 
-**As a** user  
-**I want to** create tags  
+**As a** user
+**I want to** create tags
 **So that** I can categorize and organize tasks
 
 **Acceptance Criteria:**
 
 - User can create tag with name and color
-- Tag is associated with user's organization
+- Tag is associated with organization
 - Tag appears in tag selector
 - User can use tag immediately after creation
+
+**How to Test:**
+
+1. Navigate to `/tags`
+2. Click "New Tag"
+3. Enter name and select color
+4. Click "Create"
+5. Verify tag appears in list
+6. Create a task and verify new tag is available
 
 ---
 
 ### US-033: Edit Tag
 
-**As a** tag creator  
-**I want to** edit tag name and color  
+**As a** tag creator
+**I want to** edit tag name and color
 **So that** I can update tag information
 
 **Acceptance Criteria:**
 
-- User can update tag name
-- User can change tag color
+- User can update tag name and color
 - Changes reflect in all tasks using the tag
 - Tag remains associated with same organization
+
+**How to Test:**
+
+1. Apply a tag to several tasks
+2. Edit the tag (change name/color)
+3. Verify changes appear on all tagged tasks
 
 ---
 
 ### US-034: Delete Tag
 
-**As a** tag creator  
-**I want to** delete tags  
+**As a** tag creator
+**I want to** delete tags
 **So that** I can remove obsolete tags
 
 **Acceptance Criteria:**
 
 - User can delete tag with confirmation
 - Tag is removed from all tasks
-- User sees confirmation dialog
 - Deletion cannot be undone
+
+**How to Test:**
+
+1. Create a tag and apply to tasks
+2. Delete the tag
+3. Confirm deletion in dialog
+4. Verify tag is removed from tasks
+5. Verify tag no longer appears in selectors
 
 ---
 
 ### US-035: Filter by Tags
 
-**As a** user  
-**I want to** filter tasks by tags  
+**As a** user
+**I want to** filter tasks by tags
 **So that** I can find tasks with specific categories
 
 **Acceptance Criteria:**
@@ -739,14 +1105,22 @@ This document contains user stories for the Anjam task and project management ap
 - Multiple tags can be selected
 - Filter persists across navigation
 
+**How to Test:**
+
+1. Apply different tags to various tasks
+2. Open task list and filter by a tag
+3. Verify only matching tasks shown
+4. Select multiple tags
+5. Verify filter persists after navigation
+
 ---
 
-## 13. Notifications
+## 9. Notifications
 
 ### US-036: View Notifications
 
-**As a** user  
-**I want to** view my notifications  
+**As a** user
+**I want to** view my notifications
 **So that** I can stay updated on task assignments, comments, and mentions
 
 **Acceptance Criteria:**
@@ -757,12 +1131,20 @@ This document contains user stories for the Anjam task and project management ap
 - User can sort by Newest/Oldest
 - Unread count is displayed
 
+**How to Test:**
+
+1. Navigate to `/notifications`
+2. Verify notifications are listed
+3. Filter by "Unread" only
+4. Sort by "Oldest"
+5. Check unread badge count in header
+
 ---
 
 ### US-037: Mark Notification as Read
 
-**As a** user  
-**I want to** mark notifications as read  
+**As a** user
+**I want to** mark notifications as read
 **So that** I can track which notifications I've seen
 
 **Acceptance Criteria:**
@@ -772,27 +1154,42 @@ This document contains user stories for the Anjam task and project management ap
 - Read status is saved
 - Unread count updates immediately
 
+**How to Test:**
+
+1. Open notifications with unread items
+2. Click on a notification (marks as read)
+3. Verify visual change (read styling)
+4. Click "Mark All as Read"
+5. Verify all are marked and badge updates
+
 ---
 
 ### US-038: Delete Notifications
 
-**As a** user  
-**I want to** delete notifications  
+**As a** user
+**I want to** delete notifications
 **So that** I can clean up my notification list
 
 **Acceptance Criteria:**
 
-- User can delete individual notification (with undo)
+- User can delete individual notification (with 5-second undo)
 - User can delete all notifications
 - User can delete only read notifications
-- Deletion can be undone within 5 seconds
+
+**How to Test:**
+
+1. Delete a single notification
+2. Click "Undo" in toast - verify restored
+3. Delete again and let timeout pass
+4. Use "Clear Read" to delete read notifications
+5. Use "Clear All" to delete everything
 
 ---
 
 ### US-039: Navigate from Notification
 
-**As a** user  
-**I want to** navigate to the task or comment from a notification  
+**As a** user
+**I want to** navigate to the task or comment from a notification
 **So that** I can quickly access relevant information
 
 **Acceptance Criteria:**
@@ -800,32 +1197,45 @@ This document contains user stories for the Anjam task and project management ap
 - User can click notification to navigate
 - User is taken to relevant task/comment
 - Notification is marked as read when clicked
-- User can navigate to mentioned items
+
+**How to Test:**
+
+1. Receive a task assignment notification
+2. Click the notification
+3. Verify navigation to task details
+4. Verify notification marked as read
 
 ---
 
-## 14. User Management
+## 10. User Management
 
 ### US-040: Create User
 
-**As an** admin or manager  
-**I want to** create new user accounts  
+**As an** admin or manager
+**I want to** create new user accounts
 **So that** I can add team members to the system
 
 **Acceptance Criteria:**
 
-- User can create account with username, email, password
+- User can create account with username and password
 - User can assign role (admin, supervisor, manager, employee)
-- User can assign to group
-- New user receives credentials
 - User appears in users list
+
+**How to Test:**
+
+1. Navigate to `/users` (as admin)
+2. Click "Create User"
+3. Enter username, password, and select role
+4. Click "Create"
+5. Verify user appears in list
+6. Login as new user to verify account works
 
 ---
 
 ### US-041: View Users
 
-**As an** admin, supervisor, or manager  
-**I want to** view all users  
+**As an** admin, supervisor, or manager
+**I want to** view all users
 **So that** I can manage team members
 
 **Acceptance Criteria:**
@@ -835,43 +1245,66 @@ This document contains user stories for the Anjam task and project management ap
 - User can filter and search users
 - List shows active/inactive status
 
+**How to Test:**
+
+1. Navigate to `/users`
+2. Verify user list is displayed
+3. Search for a specific user
+4. Filter by role
+5. Check active/inactive indicators
+
 ---
 
 ### US-042: Edit User
 
-**As an** admin or the user themselves  
-**I want to** edit user information  
+**As an** admin or the user themselves
+**I want to** edit user information
 **So that** I can update user details and roles
 
 **Acceptance Criteria:**
 
 - Admin can edit any user
 - User can edit own profile
-- User can update role, group, and other fields
-- Changes are saved and reflected immediately
+- User can update role and other fields
+- Changes are saved immediately
+
+**How to Test:**
+
+1. As admin, edit another user
+2. Change their role
+3. Save and verify changes persist
+4. As regular user, edit own profile
+5. Verify role change not available for self
 
 ---
 
 ### US-043: Toggle User Active Status
 
-**As an** admin  
-**I want to** activate or deactivate users  
+**As an** admin
+**I want to** activate or deactivate users
 **So that** I can control who has access to the system
 
 **Acceptance Criteria:**
 
 - Admin can toggle user active status
 - Inactive users cannot log in
-- Admin cannot deactivate themselves
-- Admin cannot deactivate other admins
+- Admin cannot deactivate themselves or other admins
 - Status change is logged
+
+**How to Test:**
+
+1. As admin, find a non-admin user
+2. Click toggle to deactivate
+3. Verify status changes
+4. Try to login as deactivated user - verify failure
+5. Re-activate and verify login works
 
 ---
 
 ### US-044: Unblock User
 
-**As an** admin  
-**I want to** unblock users who were blocked after failed login attempts  
+**As an** admin
+**I want to** unblock users who were blocked after failed login attempts
 **So that** they can regain access to their account
 
 **Acceptance Criteria:**
@@ -879,14 +1312,20 @@ This document contains user stories for the Anjam task and project management ap
 - Admin can unblock user
 - Failed login attempts counter is reset
 - User can log in immediately after unblocking
-- Block reason is cleared
+
+**How to Test:**
+
+1. As regular user, fail login 5 times to get blocked
+2. As admin, find user in list (shows blocked status)
+3. Click "Unblock"
+4. Verify user can now login
 
 ---
 
 ### US-045: View Login Logs
 
-**As an** admin or the user themselves  
-**I want to** view login history  
+**As an** admin or the user themselves
+**I want to** view login history
 **So that** I can monitor account security
 
 **Acceptance Criteria:**
@@ -896,14 +1335,22 @@ This document contains user stories for the Anjam task and project management ap
 - Logs show IP address, user agent, success/failure
 - Logs are paginated and sortable
 
+**How to Test:**
+
+1. Click user's action menu → "Login Logs"
+2. Verify log entries with timestamps
+3. Check IP and browser info
+4. Verify failed attempts are recorded
+5. Test pagination with many entries
+
 ---
 
-## 15. Organization & Project Administration
+## 11. Organization & Project Administration
 
 ### US-046: View Project Tasks
 
-**As a** project member  
-**I want to** view all tasks for a project  
+**As a** project member
+**I want to** view all tasks for a project
 **So that** I can see project progress and task list
 
 **Acceptance Criteria:**
@@ -913,104 +1360,156 @@ This document contains user stories for the Anjam task and project management ap
 - User can create tasks for project
 - User can switch to board view
 
+**How to Test:**
+
+1. Open project details
+2. Click "Tasks" button
+3. Verify only project tasks are shown
+4. Create new task - verify it's in project
+5. Switch to board view
+
 ---
 
 ### US-047: Manage Organization Settings
 
-**As an** organization owner or admin  
-**I want to** manage organization settings  
+**As an** organization owner or admin
+**I want to** manage organization settings
 **So that** I can configure organization preferences
 
 **Acceptance Criteria:**
 
 - User can access organization settings
-- User can update organization details
+- User can update organization details (name, logo, description)
 - User can manage organization members
 - Changes affect all organization projects
 
+**How to Test:**
+
+1. Navigate to Settings → Organization
+2. Update organization name
+3. Upload new logo
+4. Save changes
+5. Verify changes appear across application
+
 ---
 
-## 17. Settings & Preferences
+## 12. Settings & Preferences
 
 ### US-048: Update Profile
 
-**As a** user  
-**I want to** update my profile information  
+**As a** user
+**I want to** update my profile information
 **So that** my team members can see my current details
 
 **Acceptance Criteria:**
 
 - User can update name, email, and other profile fields
-- Changes are saved and reflected immediately
+- Changes are saved immediately
 - User can see updated information in profile
+
+**How to Test:**
+
+1. Navigate to Settings → Profile
+2. Update name and email
+3. Upload avatar
+4. Save changes
+5. Verify changes appear in user menu and comments
 
 ---
 
 ### US-049: Change Password
 
-**As a** user  
-**I want to** change my password  
+**As a** user
+**I want to** change my password
 **So that** I can maintain account security
 
 **Acceptance Criteria:**
 
 - User can enter current password
-- User can set new password
-- System validates password strength
+- User can set new password (min 8 characters)
 - User must confirm new password
 - Password is updated after confirmation
+
+**How to Test:**
+
+1. Navigate to Settings → Security
+2. Enter current password
+3. Enter new password and confirm
+4. Click "Change Password"
+5. Logout and login with new password
 
 ---
 
 ### US-050: Change Theme
 
-**As a** user  
-**I want to** change the application theme  
+**As a** user
+**I want to** change the application theme
 **So that** I can use the interface in my preferred color scheme
 
 **Acceptance Criteria:**
 
 - User can select Light, Dark, or System theme
 - Theme changes immediately
-- Preference is saved
-- Theme persists across sessions
+- Preference is saved and persists across sessions
+
+**How to Test:**
+
+1. Navigate to Settings → Appearance
+2. Select "Dark" theme
+3. Verify immediate change
+4. Refresh page - verify theme persists
+5. Select "System" and test OS theme change
 
 ---
 
 ### US-051: Configure Timezone
 
-**As a** user  
-**I want to** set my timezone  
+**As a** user
+**I want to** set my timezone
 **So that** dates and times are displayed in my local time
 
 **Acceptance Criteria:**
 
 - User can select timezone from dropdown
-- Dates and times display in selected timezone
 - Preference is saved
-- Timezone affects all date displays
+
+**Implementation Note:** Preference is saved but not all date displays are wired to it yet.
+
+**How to Test:**
+
+1. Navigate to Settings → Preferences
+2. Select a different timezone
+3. Save changes
+4. Verify preference is saved (check in subsequent visits)
 
 ---
 
 ### US-052: Configure Date Format
 
-**As a** user  
-**I want to** choose my preferred date format  
+**As a** user
+**I want to** choose my preferred date format
 **So that** dates are displayed in a familiar format
 
 **Acceptance Criteria:**
 
 - User can select date format (locale, yyyy/MM/dd, dd/MM/yyyy, MM/dd/yyyy)
-- Dates display in selected format
 - Preference is saved
-- Format applies to all date displays
+
+**Implementation Note:** Preference is saved but not all date displays are wired to it yet.
+
+**How to Test:**
+
+1. Navigate to Settings → Preferences
+2. Select different date format
+3. Save changes
+4. Verify preference persists
 
 ---
 
 ### US-053: Toggle Activity Feed
 
-**As a** user  
-**I want to** show or hide the activity feed in task details  
+**As a** user
+**I want to** show or hide the activity feed in task details
 **So that** I can customize my task view
 
 **Acceptance Criteria:**
@@ -1018,32 +1517,47 @@ This document contains user stories for the Anjam task and project management ap
 - User can toggle activity feed visibility
 - Setting is saved in preferences
 - Activity feed shows/hides based on preference
-- Change applies to all task detail views
+
+**How to Test:**
+
+1. Navigate to Settings → Preferences
+2. Toggle "Show Activity Feed" off
+3. Open a task details page
+4. Verify activity stream is hidden
+5. Toggle back on and verify it appears
 
 ---
 
-## 16. Reports & Audit
+## 13. Reports & Audit
 
 ### US-057: View Audit Logs
 
-**As an** admin  
-**I want to** view audit logs  
+**As an** admin
+**I want to** view audit logs
 **So that** I can track all changes and actions in the system
 
 **Acceptance Criteria:**
 
 - User can see all audit log entries
 - Logs show actor, action, resource, timestamp
-- User can filter by date, user, action, resource
+- User can filter by resource, action, client, and free-text search
 - User can view field-level changes
 - Logs are paginated
+
+**How to Test:**
+
+1. Navigate to `/audit-logs` (as admin)
+2. View log entries
+3. Filter by action type (create, update, delete)
+4. Filter by resource type (tasks, projects)
+5. Click entry to see field-level changes
 
 ---
 
 ### US-058: View Resource History
 
-**As an** admin  
-**I want to** view audit history for a specific resource  
+**As an** admin
+**I want to** view audit history for a specific resource
 **So that** I can see all changes made to a task or project
 
 **Acceptance Criteria:**
@@ -1053,30 +1567,93 @@ This document contains user stories for the Anjam task and project management ap
 - History shows field-level changes
 - History is chronologically ordered
 
+**How to Test:**
+
+1. Open task details → Activity tab
+2. Make several changes to the task
+3. Verify each change is logged
+4. Click to expand and see field-level diffs
+
 ---
 
 ### US-059: Generate Reports
 
-**As an** admin or supervisor  
-**I want to** generate reports  
+**As an** admin or supervisor
+**I want to** generate reports
 **So that** I can analyze productivity and project progress
 
 **Acceptance Criteria:**
 
-- User can generate various report types
-- User can filter reports by date, project
-- Reports can be exported
-- Reports show charts and visualizations
-- Reports respect user permissions
+- User can filter reports by date range, project, assignee, status, priority
+- Reports show comprehensive metrics (task counts, completion rates)
+- Reports include charts: timeliness, priority distribution, productivity trends, workload, overtime, employee comparison
+- Reports can be exported to Excel
+- Reports include drilldown capability (click metrics to see details)
+- Reports show leaderboard (top performers)
+
+**How to Test:**
+
+1. Navigate to `/reports` (as admin)
+2. Set date range filter
+3. Filter by specific project
+4. View various charts and metrics
+5. Click a metric to see drilldown
+6. Export to Excel and verify download
 
 ---
 
-## 13. Bulk Operations
+### US-090: View Employee Leaderboard
+
+**As an** admin or supervisor
+**I want to** view an employee leaderboard
+**So that** I can identify top performers and team productivity
+
+**Acceptance Criteria:**
+
+- User can see ranking of employees by task completion
+- Leaderboard shows completion counts and rates
+- User can filter by time range and project
+- Rankings update in real-time with report filters
+
+**How to Test:**
+
+1. Navigate to Reports page
+2. Locate the leaderboard component
+3. Apply different date range filters
+4. Verify rankings update accordingly
+5. Filter by project and verify leaderboard reflects it
+
+---
+
+### US-091: Export Reports to Excel
+
+**As an** admin or supervisor
+**I want to** export reports to Excel
+**So that** I can share analytics data or perform additional analysis
+
+**Acceptance Criteria:**
+
+- User can export current report view to Excel (.xlsx)
+- Export includes all filtered data
+- Export preserves date/project/assignee context
+- Download starts automatically
+
+**How to Test:**
+
+1. Open Reports page
+2. Apply some filters
+3. Click "Export to Excel"
+4. Verify .xlsx file downloads
+5. Open file and verify data matches report
+
+---
+
+## 14. Bulk Operations
 
 ### US-060: Select Multiple Tasks
 
-**As a** user  
-**I want to** select multiple tasks  
+**As a** user
+**I want to** select multiple tasks
 **So that** I can perform bulk actions on them
 
 **Acceptance Criteria:**
@@ -1087,12 +1664,20 @@ This document contains user stories for the Anjam task and project management ap
 - User can see count of selected tasks
 - User can clear selection
 
+**How to Test:**
+
+1. Open task list
+2. Click "Selection Mode" toggle
+3. Check several task checkboxes
+4. Verify selection count updates
+5. Click "Clear Selection"
+
 ---
 
 ### US-061: Bulk Assign Tasks
 
-**As a** user  
-**I want to** assign multiple tasks to a user at once  
+**As a** user
+**I want to** assign multiple tasks to a user at once
 **So that** I can efficiently manage task assignments
 
 **Acceptance Criteria:**
@@ -1101,14 +1686,21 @@ This document contains user stories for the Anjam task and project management ap
 - User can assign all selected tasks to a user
 - All tasks are updated simultaneously
 - User sees confirmation message
-- Activity is logged for each task
+
+**How to Test:**
+
+1. Enable selection mode
+2. Select 3+ tasks
+3. Click "Assign" in bulk actions bar
+4. Select a user
+5. Verify all tasks now assigned to that user
 
 ---
 
 ### US-062: Bulk Change Task Status
 
-**As a** user  
-**I want to** change the status of multiple tasks at once  
+**As a** user
+**I want to** change the status of multiple tasks at once
 **So that** I can quickly update task progress
 
 **Acceptance Criteria:**
@@ -1117,14 +1709,21 @@ This document contains user stories for the Anjam task and project management ap
 - User can change status for all selected tasks
 - All tasks are updated simultaneously
 - User sees confirmation message
-- Status transitions are validated
+
+**How to Test:**
+
+1. Enable selection mode
+2. Select tasks with different statuses
+3. Click "Status" in bulk actions bar
+4. Select new status
+5. Verify all tasks updated
 
 ---
 
 ### US-063: Bulk Change Task Priority
 
-**As a** user  
-**I want to** change the priority of multiple tasks at once  
+**As a** user
+**I want to** change the priority of multiple tasks at once
 **So that** I can quickly reprioritize work
 
 **Acceptance Criteria:**
@@ -1134,12 +1733,20 @@ This document contains user stories for the Anjam task and project management ap
 - All tasks are updated simultaneously
 - User sees confirmation message
 
+**How to Test:**
+
+1. Enable selection mode
+2. Select several tasks
+3. Click "Priority" in bulk actions bar
+4. Select new priority (e.g., "High")
+5. Verify all tasks updated
+
 ---
 
 ### US-064: Bulk Delete Tasks
 
-**As a** user  
-**I want to** delete multiple tasks at once  
+**As a** user
+**I want to** delete multiple tasks at once
 **So that** I can efficiently clean up obsolete tasks
 
 **Acceptance Criteria:**
@@ -1148,64 +1755,96 @@ This document contains user stories for the Anjam task and project management ap
 - User can delete all selected tasks
 - Confirmation dialog shows count of tasks to delete
 - All tasks are soft-deleted
-- User can undo deletion
+
+**Implementation Note:** Undo for bulk delete isn't implemented.
+
+**How to Test:**
+
+1. Enable selection mode
+2. Select multiple tasks
+3. Click "Delete" in bulk actions bar
+4. Confirm deletion in dialog
+5. Verify all selected tasks are removed
 
 ---
 
-## 14. File Management
+## 15. File Management
 
 ### US-065: Upload Files
 
-**As a** user  
-**I want to** upload files to tasks, projects, or comments  
+**As a** user
+**I want to** upload files to tasks, projects, or comments
 **So that** I can share documents and assets with my team
 
 **Acceptance Criteria:**
 
 - User can upload files via file picker
 - Multiple file types are supported
-- File size limits are enforced
-- Files are attached to task/project/comment
-- Upload progress is shown
+- File size limits are enforced (5MB for comments, larger for projects)
+- Files are attached to projects (assets), comments (attachments), org logo, and user avatar
+
+**Implementation Note:** Task-level attachments aren't implemented; use comment attachments instead.
+
+**How to Test:**
+
+1. Add a comment with file attachment
+2. Upload project asset in project edit
+3. Upload avatar in profile settings
+4. Try uploading oversized file - verify error
 
 ---
 
 ### US-066: Delete Files
 
-**As a** user  
-**I want to** delete uploaded files  
+**As a** user
+**I want to** delete uploaded files
 **So that** I can remove outdated or incorrect files
 
 **Acceptance Criteria:**
 
-- User can delete files they uploaded
-- Admin/supervisor can delete any file
+- User can delete project assets they uploaded (via project edit)
 - Deletion requires confirmation
-- File is removed from task/project/comment
+
+**Implementation Note:** Deleting comment attachments after posting isn't implemented.
+
+**How to Test:**
+
+1. Open project edit with assets
+2. Click delete on an asset
+3. Confirm deletion
+4. Verify asset is removed
 
 ---
 
 ### US-067: Preview Files
 
-**As a** user  
-**I want to** preview uploaded files  
+**As a** user
+**I want to** preview uploaded files
 **So that** I can view files without downloading them
 
 **Acceptance Criteria:**
 
 - User can click file to preview
 - Preview opens in modal or new tab
-- Supported file types show preview
+- Supported file types show preview (images, PDFs)
 - User can download file from preview
+
+**How to Test:**
+
+1. Open task with comment attachments
+2. Click an image attachment
+3. Verify preview opens
+4. Click download button
+5. Test with PDF file
 
 ---
 
-## 15. UI State Actions
+## 16. UI State Actions
 
 ### US-068: Toggle Sidebar
 
-**As a** user  
-**I want to** collapse or expand the sidebar  
+**As a** user
+**I want to** collapse or expand the sidebar
 **So that** I can maximize screen space when needed
 
 **Acceptance Criteria:**
@@ -1215,12 +1854,19 @@ This document contains user stories for the Anjam task and project management ap
 - Navigation remains accessible when collapsed
 - Toggle is smooth and responsive
 
+**How to Test:**
+
+1. Click sidebar toggle button
+2. Verify sidebar collapses
+3. Refresh page - verify state persists
+4. Click again to expand
+
 ---
 
 ### US-069: Undo Actions
 
-**As a** user  
-**I want to** undo actions  
+**As a** user
+**I want to** undo actions
 **So that** I can recover from mistakes
 
 **Acceptance Criteria:**
@@ -1228,26 +1874,40 @@ This document contains user stories for the Anjam task and project management ap
 - User sees undo option in toast notifications
 - User can undo within 5 seconds
 - Action is reversed when undone
-- Undo is available for delete operations
+- Undo is available for delete operations (tasks, notifications)
+
+**How to Test:**
+
+1. Delete a task
+2. Quickly click "Undo" in toast
+3. Verify task is restored
+4. Delete notification with undo
+5. Test undo timeout (wait 5+ seconds)
 
 ---
 
 ### US-070: Dismiss Notifications
 
-**As a** user  
-**I want to** dismiss toast notifications  
+**As a** user
+**I want to** dismiss toast notifications
 **So that** they don't clutter my screen
 
 **Acceptance Criteria:**
 
-- User can close toast notifications
+- User can close toast notifications manually
 - Notifications auto-dismiss after timeout
-- User can dismiss manually
 - Dismissed notifications don't reappear
+
+**How to Test:**
+
+1. Trigger a toast notification (e.g., save something)
+2. Click X to dismiss
+3. Verify immediate dismissal
+4. Trigger another and let it auto-dismiss
 
 ---
 
-## 16. Calendar & Scheduling
+## 17. Calendar & Scheduling
 
 ### US-071: View Task Calendar
 
@@ -1257,13 +1917,20 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can see calendar view with monthly layout
+- User can see calendar view with monthly layout (Jalali/Persian calendar)
 - Tasks with deadlines appear on their due dates
 - User can navigate between months
 - User can jump to current month
 - User can see task count for each day
-- User can click task to view details
 - Completed tasks are visually distinguished
+
+**How to Test:**
+
+1. Navigate to `/calendar`
+2. Create tasks with due dates
+3. Verify tasks appear on correct dates
+4. Navigate to different months
+5. Click "Today" to return to current month
 
 ---
 
@@ -1275,12 +1942,18 @@ This document contains user stories for the Anjam task and project management ap
 
 **Acceptance Criteria:**
 
-- User can go to previous month
-- User can go to next month
+- User can go to previous/next month
 - User can jump to today
 - Current day is highlighted
 - Days outside current month are dimmed
-- Navigation is smooth and responsive
+
+**How to Test:**
+
+1. Open calendar view
+2. Click previous month arrow
+3. Click next month arrow
+4. Click "Today" button
+5. Verify current day is highlighted
 
 ---
 
@@ -1296,11 +1969,17 @@ This document contains user stories for the Anjam task and project management ap
 - User can see completed tasks count
 - User can see pending tasks count
 - Statistics update in real-time
-- Statistics are displayed in calendar header
+
+**How to Test:**
+
+1. Open calendar view
+2. Check statistics in header (total, completed, pending)
+3. Complete a task with deadline in this month
+4. Verify statistics update
 
 ---
 
-## 17. Time Tracking & Timesheets
+## 18. Time Tracking & Timesheets
 
 ### US-074: View Timesheet
 
@@ -1313,9 +1992,15 @@ This document contains user stories for the Anjam task and project management ap
 - User can see weekly timesheet view
 - Each day shows tasks worked on
 - User can see time spent per task
-- User can see daily totals
-- User can see weekly total
-- Timesheet shows tasks with time logged
+- User can see daily totals and weekly total
+
+**How to Test:**
+
+1. Navigate to `/timesheet`
+2. Log time on several tasks
+3. Verify weekly grid shows entries
+4. Check daily totals
+5. Check weekly total
 
 ---
 
@@ -1331,7 +2016,13 @@ This document contains user stories for the Anjam task and project management ap
 - CSV includes date, task title, project, and minutes
 - File name includes date range
 - Download starts automatically
-- Exported data is accurate and complete
+
+**How to Test:**
+
+1. Open timesheet with entries
+2. Click "Export CSV"
+3. Verify file downloads
+4. Open CSV and verify data accuracy
 
 ---
 
@@ -1344,15 +2035,21 @@ This document contains user stories for the Anjam task and project management ap
 **Acceptance Criteria:**
 
 - User can see tasks for each day of the week
-- Each task shows project name
-- Each task shows time spent
+- Each task shows project name and time spent
 - Daily totals are calculated
 - Empty days show placeholder
 - User can click task to view details
 
+**How to Test:**
+
+1. Open timesheet
+2. View daily columns with task breakdowns
+3. Click on a task entry
+4. Verify navigation to task details
+
 ---
 
-## 18. Help & Documentation
+## 19. Help & Documentation
 
 ### US-077: Browse Help Articles
 
@@ -1365,8 +2062,14 @@ This document contains user stories for the Anjam task and project management ap
 - User can see help categories
 - User can browse articles by category
 - Articles are organized logically
-- User can read article content
 - Help is accessible from navigation
+
+**How to Test:**
+
+1. Navigate to `/help`
+2. Browse available categories
+3. Click a category to see articles
+4. Click an article to read content
 
 ---
 
@@ -1376,16 +2079,15 @@ This document contains user stories for the Anjam task and project management ap
 **I want to** search for help articles
 **So that** I can quickly find answers to my questions
 
-**Acceptance Criteria:**
+**Implementation Note:** Help search isn't implemented yet.
 
-- User can search help articles
-- Search results are relevant
-- User can click result to view article
-- Search is fast and responsive
+**How to Test:**
+
+- N/A - Feature not implemented
 
 ---
 
-## 19. Saved Filters
+## 20. Saved Filters
 
 ### US-079: Save Filter
 
@@ -1398,8 +2100,16 @@ This document contains user stories for the Anjam task and project management ap
 - User can save current filter settings
 - User can name the saved filter
 - Saved filter appears in dropdown
-- Filter is associated with user account
+- Saved filter is stored in browser localStorage
 - Multiple filters can be saved
+
+**How to Test:**
+
+1. Apply filters to task list
+2. Click "Save Filter"
+3. Enter a name
+4. Verify filter appears in dropdown
+5. Clear filters and apply saved filter
 
 ---
 
@@ -1414,8 +2124,16 @@ This document contains user stories for the Anjam task and project management ap
 - User can see list of saved filters
 - User can select filter to apply
 - Filter settings are applied immediately
-- View updates to show filtered results
 - Active filter is indicated
+- Saved filters are available on this device/browser only
+
+**How to Test:**
+
+1. Save a filter with multiple criteria
+2. Clear filters
+3. Click saved filter in dropdown
+4. Verify all criteria are applied
+5. Check active filter indicator
 
 ---
 
@@ -1430,61 +2148,32 @@ This document contains user stories for the Anjam task and project management ap
 - User can edit saved filter name
 - User can delete saved filters
 - User can set default filter
-- Changes are saved immediately
-- Confirmation required for deletion
+- Changes are saved immediately to localStorage
+
+**How to Test:**
+
+1. Click "Manage Filters"
+2. Rename a filter
+3. Delete a filter
+4. Set one as default
+5. Refresh and verify default is auto-applied
 
 ---
 
-## User Story Summary by Role
+## Implementation Notes
 
-### New User Journey
+The following features have known limitations:
 
-1. US-001: Register for account
-2. US-002: Login to application
-3. US-005: Create or join organization
-4. US-010: Create first project
-5. US-016: Create first task
-6. US-023: Add comment to task
-7. US-028: Log time on task
-8. US-087: Complete onboarding
-
-### Daily User Workflow
-
-1. US-002: Login
-2. US-054: View dashboard
-3. US-017: View task list
-4. US-071: View task calendar
-5. US-020: Update task status
-6. US-023: Add comments
-7. US-028: Log time
-8. US-074: View timesheet
-9. US-036: Check notifications
-
-### Administrator Workflow
-
-1. US-040: Create users
-2. US-005: Create organizations
-3. US-010: Create projects
-4. US-014: Add project members
-5. US-082: Create organization invites
-6. US-057: View audit logs
-7. US-059: Generate reports
+| Story          | Limitation                                                              |
+| -------------- | ----------------------------------------------------------------------- |
+| US-003         | Self-service password reset via email is not implemented                |
+| US-028         | Time entry date selection isn't available; entries use record timestamp |
+| US-051, US-052 | Preferences are saved but not all date displays are wired to them yet   |
+| US-064         | Undo for bulk task deletion isn't implemented                           |
+| US-065         | Task-level attachments not implemented; use comment attachments         |
+| US-066         | Deleting comment attachments after posting isn't implemented            |
+| US-078         | Help article search isn't implemented yet                               |
 
 ---
 
-## Notes
-
-- User stories are written from the perspective of different user roles
-- Acceptance criteria define what "done" means for each story
-- Stories are organized by typical usage flow
-- Some stories may have dependencies on others
-- Role-based permissions affect story availability
-- Stories can be prioritized and estimated for sprint planning
-- Invite links have expiration dates and usage limits for security
-- Timesheet exports are in CSV format for compatibility
-- Calendar view only shows tasks with deadlines
-- Saved filters are user-specific and persist across sessions
-
----
-
-_Last updated: 2025-12-28_
+_Last updated: 2025-12-29_

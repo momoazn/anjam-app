@@ -31,10 +31,12 @@ This document lists all user interface actions available in the Anjam task and p
 
 ### Registration & Login
 
-- **Register** - Create new account
+- **Register** - Create new account (with organization creation)
+- **Register with invite** - Create account using invite link
 - **Login** - Submit login form to access application
-- **Forgot password** - Password reset link
 - **Logout** - Sign out button in user menu
+
+_Note: Self-service password reset is not implemented. Users can change password from Settings → Security when logged in._
 
 ---
 
@@ -80,16 +82,25 @@ This document lists all user interface actions available in the Anjam task and p
 ### Dashboard
 
 - **View dashboard** - Navigate to dashboard (logo click or menu)
-- **View all tasks** - Navigate to tasks page
-- **View all projects** - Navigate to projects page
-- **View notifications** - Navigate to notifications page
-- **View reports** - Navigate to reports page
-- **Quick stats** - Click stats to filter/view details
+- **View task stats** - See total, completed, in-progress, pending tasks
+- **View overdue tasks** - See overdue tasks widget
+- **View due today** - See tasks due today count
+- **View this week completed** - See weekly completion stats
+- **View completion rate** - See percentage completion
+- **View recent tasks** - See 5 latest tasks
+- **View project stats** - See project progress bars
+- **View status distribution** - See pie chart of task statuses
+- **View productivity trends** - See 7-day trend chart
+- **View recent notifications** - See unread notifications first
+- **Quick navigate** - Click any stat/item to navigate to details
 
 ### Global Search
 
-- **Search** - Search input in header
-- **View search results** - Click result to navigate
+- **Open search** - Click search or use keyboard shortcut (Cmd/Ctrl+K)
+- **Search tasks and projects** - Type to search (min 2 characters)
+- **View search results** - See tasks with display ID, status; projects with code
+- **Navigate to result** - Click result or use Enter key
+- **Close search** - Press Escape or click outside
 - **Clear search** - Clear search input
 
 ### Navigation
@@ -127,6 +138,16 @@ This document lists all user interface actions available in the Anjam task and p
 - **Update member role** - Change role dropdown (owner, admin, member, viewer)
 - **Remove member** - Remove member from project
 - **View member details** - Click member to view details
+
+### Project Statuses
+
+- **View project statuses** - Navigate to project status settings
+- **Add custom status** - Create new status for project workflow
+- **Edit status** - Modify status name and color
+- **Reorder statuses** - Drag and drop to change status order
+- **Set default status** - Mark status as default for new tasks
+- **Mark as done status** - Mark status as completion state
+- **Delete status** - Remove status (only if no tasks use it)
 
 ---
 
@@ -192,17 +213,26 @@ This document lists all user interface actions available in the Anjam task and p
 - **Add comment** - Comment composer to add new comment
 - **Post comment** - Submit button to post comment
 - **Cancel** - Clear draft and close composer
-- **Attach file** - File upload button
+- **Attach file** - File upload button (max 5 files, 5MB each)
 - **Mention user** - @mention autocomplete dropdown
 - **Reply to comment** - Reply button on comments
-- **Edit comment** - Edit own comments
+- **Edit comment** - Edit own comments (shows "edited" indicator)
 - **Delete comment** - Delete button on own comments (soft delete)
+- **Expand/collapse thread** - Toggle nested replies visibility
+
+### Comment Reactions
+
+- **Add reaction** - Click reaction emoji to add (👍, 👎, ❤️, 🎉, 😄, 🤔)
+- **Remove reaction** - Click active reaction to remove
+- **View reactors** - Hover reaction to see who reacted
 
 ### Subtasks (Checklist)
 
 - **Add subtask** - Add item to checklist/subtasks
+- **Assign subtask** - Assign subtask to team member
 - **Mark subtask done** - Check off subtask as completed
 - **Reopen subtask** - Uncheck subtask to reopen
+- **Reorder subtasks** - Drag and drop to reorder subtasks
 - **Delete subtask** - Remove subtask from checklist
 
 ### Time Tracking
@@ -327,9 +357,21 @@ _Note: Admin/Manager only_
 ### Reports
 
 - **View reports** - Navigate to reports page
-- **Generate report** - Export data/report
-- **Filter reports** - Apply date/project filters
-- **View charts** - Interactive charts and visualizations
+- **Filter by date range** - Select time period for report
+- **Filter by project** - Filter report by specific project
+- **Filter by assignee** - Filter report by team member
+- **Filter by status** - Filter report by task status
+- **Filter by priority** - Filter report by task priority
+- **View metric cards** - See summary statistics (tasks, completion rates)
+- **View timeliness chart** - See on-time vs late vs pending analysis
+- **View priority distribution** - See tasks by priority chart
+- **View productivity trends** - See 7-day productivity line chart
+- **View workload distribution** - See tasks per employee chart
+- **View overtime analysis** - See overtime hours chart
+- **View employee comparison** - See employee performance comparison
+- **View leaderboard** - See top performers ranking
+- **Click metric for drilldown** - View detailed data for clicked metric
+- **Export to Excel** - Download report as Excel file (.xlsx)
 
 ---
 
@@ -423,8 +465,9 @@ _Available when tasks are in selection mode_
 
 - **View help articles** - Navigate to help page
 - **Browse categories** - View help categories
-- **Search help** - Search for help articles
 - **Read article** - View detailed help content
+
+_Note: Help search is not yet implemented._
 
 ---
 
@@ -464,13 +507,14 @@ _Available when tasks are in selection mode_
 ### Daily Workflow
 
 1. **Login** → Access application
-2. **View Dashboard** → Check overview
-3. **View Tasks** → See assigned tasks
+2. **View Dashboard** → Check overview and stats
+3. **View Tasks** → See assigned tasks (list or board view)
 4. **Update Task Status** → Move tasks through workflow
 5. **Add Comments** → Communicate on tasks
-6. **Log Time** → Track work hours
-7. **View Notifications** → Check updates
-8. **Search** → Find specific tasks/projects
+6. **React to Comments** → Quick feedback with emoji reactions
+7. **Log Time** → Track work hours
+8. **View Notifications** → Check updates
+9. **Search** → Find specific tasks/projects (Cmd/Ctrl+K)
 
 ### Administrative Workflow
 
@@ -489,14 +533,25 @@ _Available when tasks are in selection mode_
 - Some actions require confirmation dialogs for safety
 - Bulk operations are only available when items are selected
 - Time tracking actions have permission restrictions (admin/supervisor/assignee)
-- File uploads support multiple file types
+- File uploads support multiple file types (images, PDFs, documents)
+- Comment attachments: max 5 files, 5MB each
 - All destructive actions (delete, remove) have confirmation dialogs
 - Actions can be accessed through multiple entry points (buttons, menus, keyboard shortcuts)
-- Invite links have expiration dates and usage limits
+- Invite links have expiration dates (7 days) and usage limits (default 50)
 - Timesheet exports are in CSV format
-- Calendar view shows tasks with deadlines only
-- Saved filters are user-specific and persist across sessions
+- Calendar view shows tasks with deadlines only (uses Jalali/Persian calendar)
+- Saved filters are user-specific and persist in browser localStorage
+- Task deletion has 5-second undo via toast notification
+- Notification deletion has 5-second undo via toast notification
+
+### Not Yet Implemented
+
+- Self-service password reset via email
+- Time entry date selection (uses record timestamp)
+- Bulk delete undo for tasks
+- Delete comment attachments after posting
+- Help article search
 
 ---
 
-_Last updated: 2025-12-28_
+_Last updated: 2025-12-29_
