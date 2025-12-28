@@ -13,12 +13,14 @@ interface OrganizationWithRole {
   organization: OrganizationsResponse;
   role: OrgRole;
   joinedAt: string;
+  onboardingCompleted: boolean;
 }
 
 interface OrganizationsListItem {
   organization: OrganizationsResponse;
   role: OrgRole;
   joined_at: string;
+  onboarding_completed: boolean;
 }
 
 interface OrganizationsListResponse {
@@ -115,6 +117,7 @@ export const useAuthStore = create<AuthState>()(
               organization: item.organization,
               role: item.role,
               joinedAt: item.joined_at,
+              onboardingCompleted: item.onboarding_completed,
             }),
           );
 
@@ -198,6 +201,15 @@ export const useCurrentOrganization = () =>
   useAuthStore((state) => state.currentOrganization);
 export const useCurrentOrgRole = () =>
   useAuthStore((state) => state.currentOrgRole);
+export const useCurrentOrgOnboardingCompleted = () =>
+  useAuthStore((state) => {
+    const currentOrg = state.currentOrganization;
+    if (!currentOrg) return true; // No org, consider onboarding as complete
+    const orgWithRole = state.userOrganizations.find(
+      (o) => o.organization.id === currentOrg.id,
+    );
+    return orgWithRole?.onboardingCompleted ?? true;
+  });
 export const useAuthRole = () =>
   useAuthStore((state) => state.user?.role ?? null);
 export const useUserOrganizations = () =>

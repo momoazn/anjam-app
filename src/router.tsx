@@ -25,6 +25,7 @@ import {
   useAuthIsLoggedIn,
   useAuthUser,
   useCurrentOrganization,
+  useCurrentOrgOnboardingCompleted,
   useAuthStore,
 } from "./store/auth-store";
 
@@ -230,6 +231,7 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
   const currentOrg = useCurrentOrganization();
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
+  const onboardingCompleted = useCurrentOrgOnboardingCompleted();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -247,6 +249,11 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   // Redirect to organization selection if no organization is selected
   if (!currentOrg) {
     return <Navigate to="/select-organization" replace />;
+  }
+
+  // Redirect to onboarding if not completed for current organization
+  if (!onboardingCompleted) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;

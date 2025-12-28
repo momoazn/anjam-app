@@ -263,11 +263,14 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 	}
 
 	// Check if email already exists
-	existingUser, _ := e.App.FindFirstRecordByFilter(
+	existingUser, err := e.App.FindFirstRecordByFilter(
 		CollectionUsers,
 		"email = {:email}",
 		dbx.Params{"email": email},
 	)
+	if err != nil && err.Error() != "sql: no rows in result set" {
+		return e.InternalServerError("Failed to check existing user", err)
+	}
 	if existingUser != nil {
 		return e.BadRequestError(ErrEmailAlreadyRegistered, nil)
 	}
@@ -289,6 +292,7 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 		// Generate unique username with collision handling
 		baseUsername := deriveUsername(email)
 		username := baseUsername
+		usernameFound := false
 		for i := 0; i < 5; i++ {
 			existingUser, _ := txApp.FindFirstRecordByFilter(
 				CollectionUsers,
@@ -296,9 +300,13 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 				dbx.Params{"username": username},
 			)
 			if existingUser == nil {
+				usernameFound = true
 				break
 			}
-			username = fmt.Sprintf("%s_%s", baseUsername, security.RandomString(3))
+			username = fmt.Sprintf("%s_%s", baseUsername, security.RandomString(5))
+		}
+		if !usernameFound {
+			return fmt.Errorf("failed to generate unique username after 5 attempts")
 		}
 
 		newUser = core.NewRecord(usersCollection)
@@ -349,7 +357,9 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 				"organizationId": org.Id,
 			})
 			// Notification is non-critical - log error but don't fail the transaction
-			_ = txApp.Save(notification)
+			if saveErr := txApp.Save(notification); saveErr != nil {
+				txApp.Logger().Warn("Failed to save welcome notification", "user", newUser.Id, "err", saveErr)
+			}
 		}
 
 		return nil
@@ -405,18 +415,21 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 	}
 
 	// Check if email already exists
-	existingUser, _ := e.App.FindFirstRecordByFilter(
+	existingUser, err := e.App.FindFirstRecordByFilter(
 		CollectionUsers,
 		"email = {:email}",
 		dbx.Params{"email": email},
 	)
+	if err != nil && err.Error() != "sql: no rows in result set" {
+		return e.InternalServerError("Failed to check existing user", err)
+	}
 	if existingUser != nil {
 		return e.BadRequestError(ErrEmailAlreadyRegistered, nil)
 	}
 
 	var newUser *core.Record
 	var newOrg *core.Record
-	err := e.App.RunInTransaction(func(txApp core.App) error {
+	err = e.App.RunInTransaction(func(txApp core.App) error {
 		// Create user
 		usersCollection, err := txApp.FindCollectionByNameOrId(CollectionUsers)
 		if err != nil {
@@ -426,6 +439,7 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		// Generate unique username with collision handling
 		baseUsername := deriveUsername(email)
 		username := baseUsername
+		usernameFound := false
 		for i := 0; i < 5; i++ {
 			existingUser, _ := txApp.FindFirstRecordByFilter(
 				CollectionUsers,
@@ -433,9 +447,13 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 				dbx.Params{"username": username},
 			)
 			if existingUser == nil {
+				usernameFound = true
 				break
 			}
-			username = fmt.Sprintf("%s_%s", baseUsername, security.RandomString(3))
+			username = fmt.Sprintf("%s_%s", baseUsername, security.RandomString(5))
+		}
+		if !usernameFound {
+			return fmt.Errorf("failed to generate unique username after 5 attempts")
 		}
 
 		newUser = core.NewRecord(usersCollection)
@@ -458,16 +476,24 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		// Generate unique slug with collision handling
 		originalSlug := slugify(orgName)
 		slug := originalSlug
+		slugFound := false
 		for i := 0; i < 5; i++ {
-			existingOrg, err := txApp.FindFirstRecordByFilter(
+			existingOrg, findErr := txApp.FindFirstRecordByFilter(
 				CollectionOrganizations,
 				"slug = {:slug}",
 				dbx.Params{"slug": slug},
 			)
-			if err != nil || existingOrg == nil {
+			if findErr != nil && findErr.Error() != "sql: no rows in result set" {
+				return fmt.Errorf("failed to check slug collision: %w", findErr)
+			}
+			if existingOrg == nil {
+				slugFound = true
 				break
 			}
 			slug = fmt.Sprintf("%s-%s", originalSlug, generateShortID())
+		}
+		if !slugFound {
+			return fmt.Errorf("failed to generate unique slug after 5 attempts")
 		}
 
 		newOrg = core.NewRecord(orgCollection)

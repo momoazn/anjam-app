@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IconCopy, IconLink, IconCheck } from "@tabler/icons-react";
 import { toast } from "sonner";
 
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -161,7 +162,7 @@ export function OrgMembersPage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <PageTransition className="container mx-auto py-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="mb-2 text-3xl font-black tracking-tight">
@@ -533,6 +534,6 @@ export function OrgMembersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageTransition>
   );
 }
