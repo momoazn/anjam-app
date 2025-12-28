@@ -10,11 +10,6 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-const (
-	// ErrUserNotFound is returned when a user is not found
-	ErrUserNotFound = "کاربر یافت نشد"
-)
-
 // userLoginLogRow represents a single login log entry
 type userLoginLogRow struct {
 	ID            string `db:"id" json:"id"`
@@ -41,7 +36,7 @@ func HandleToggleUserActive(e *core.RequestEvent) error {
 		return e.JSON(400, map[string]string{"error": config.ErrCannotDeactivateSelf})
 	}
 
-	user, err := helpers.FindRecordByIDOrJSON(e, config.CollectionUsers, userId, ErrUserNotFound)
+	user, err := helpers.FindRecordByIDOrJSON(e, config.CollectionUsers, userId, config.ErrUserNotFound)
 	if err != nil {
 		return err
 	}
@@ -86,7 +81,7 @@ func HandleUnblockUser(e *core.RequestEvent) error {
 		return err
 	}
 
-	user, err := helpers.FindRecordByIDOrJSON(e, config.CollectionUsers, userId, ErrUserNotFound)
+	user, err := helpers.FindRecordByIDOrJSON(e, config.CollectionUsers, userId, config.ErrUserNotFound)
 	if err != nil {
 		return err
 	}
