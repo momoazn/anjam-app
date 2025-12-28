@@ -3,7 +3,7 @@ import { auth } from "../src/constants";
 
 test.describe("Authentication", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/login");
   });
 
   test("should display login page", async ({ page }) => {
@@ -40,7 +40,7 @@ test.describe("Authentication", () => {
 test.describe("Protected Routes", () => {
   test("should redirect unauthenticated users to login", async ({ page }) => {
     // Try to access protected route
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     // Should show login form
     await expect(page).toHaveURL(/\/login/);
@@ -56,9 +56,7 @@ test.describe("Protected Routes", () => {
     ).toBeVisible();
   });
 
-  test("should redirect from login to dashboard when authenticated", async () => {
-    // This test requires setting up authentication state
-    // For now, we'll skip the implementation details
-    test.skip();
+  test.skip("should redirect from login to dashboard when authenticated", async () => {
+    // This test requires setting up authentication state.
   });
 });
