@@ -2,7 +2,7 @@
 
 > Update (2025-12): This plan is primitives-first: reuse shadcn components and Tailwind scale values (`p-6`, `rounded-xl`, `h-12`) instead of introducing a separate token system.
 
-This plan fixes the current "edit every file" pain by centralizing tokens, recipes, and guardrails in a way that matches shadcn best practices (CSS variables + registry style + custom utilities).
+This plan fixes the current "edit every file" pain by centralizing primitives, recipes, and guardrails in a way that matches shadcn best practices (CSS variables + registry style + custom utilities).
 
 ## Problem Statement: The Current Pain (Validated)
 
@@ -13,7 +13,7 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 - Custom utilities for animations, patterns, and interactions
 - RTL support and spring physics animations
 
-**But**: The design tokens and recipes are **not fully extracted and enforced**, causing scattered hardcoded styling across 40+ pages/components. This means **every small UI change requires manual edits in 5-20 files**.
+**But**: The primitives and recipes are **not fully enforced**, causing scattered hardcoded styling across 40+ pages/components. This means **every small UI change requires manual edits in 5-20 files**.
 
 ### Concrete Examples of the Pain
 
@@ -46,7 +46,7 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 
 - **Standardize via primitives** for: icon sizes/styles, form field heights, card dividers, spacing density, metric card styling, button groups, hero headers
 - **Primitive-driven shadcn components** so changes propagate without per-file edits.
-- **Recipe components** for repeating patterns: `HeroHeader`, `IconBox`, `MetricCard`, `StatCard`, `CardDivider`, `EmptyState`, `FormField`, `Toolbar`
+- **Recipe components** for repeating patterns: `HeroHeader`, `IconBox`, `FormField`, `Toolbar`
 - **Guardrails** to block raw colors and encourage primitives/recipes.
 
 ## Current Constraints (Repo Reality)
@@ -79,12 +79,8 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 
 - **`HeroHeader`** (replaces 4+ duplicates): icon-box, title, subtitle, action slots with standardized sizes/spacing
 - **`IconBox`** (replaces 15+ locations): size variants (xs, sm, md, lg) aligned to Tailwind scale
-- **`MetricCard`** (replaces ProjectsWidget/ProjectListGroup): label, value, progress bar with consistent sizing
 - **`FormField`** (wraps existing Field): Input height, label styling, message styling via Tailwind scale
-- **`CardSection`** (replaces repeated `border-b p-6`): Divider component with consistent border/padding
-- **`StatCard`** (replaces dashboard stat hardcoding): Icon + label + value with consistent spacing
-- **`Toolbar`** (replaces scattered button groups): Button height, padding, divider width from tokens
-- **`EmptyState`** (enhance existing): Centralize padding, icon size, text styling
+- **`Toolbar`** (replaces scattered button groups): Button height, padding, divider width from scale
 
 ### Phase 3: Shadcn Primitive Updates
 
@@ -99,9 +95,9 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 - Phase 2 migration: High-traffic pages (dashboard, projects, tasks) → recipes
 - Phase 3 migration: Forms, modals, settings → refitted form recipes
 - Phase 4 migration: Long tail (remaining pages) until checklist complete
-- Lint enforcement: New code fails lint if it violates token rules (with escape hatches during migration)
+- Lint enforcement: New code fails lint if it violates primitive/recipe rules
 - Migration guide + design docs (how to use recipes, examples, do/don't)
-- Optional: Storybook or gallery page showing components with token switches
+- Optional: Storybook or gallery page showing components with style switches
 
 ## Repository Coverage (All Pages & Components)
 
@@ -151,24 +147,14 @@ File-level “done” criteria (applies to every page/component in scope):
    - Uses Tailwind scale for spacing, radius, icon sizes
    - Replaces 4+ hardcoded hero headers in Projects/Tasks pages
 
-7. **Create `src/components/recipes/metric-card.tsx`**
-   - Props: label, value, icon, progress (optional)
-   - Uses Tailwind scale for sizing, label color, spacing
-   - Replaces ProjectsWidget/ProjectListGroup metric rendering
-
-8. **Create `src/components/recipes/form-field.tsx`**
+7. **Create `src/components/recipes/form-field.tsx`**
    - Wraps existing Field component
    - Uses Tailwind scale for input height, label size, message styling
    - Provides consistent form styling across all forms
 
-9. **Create `src/components/recipes/card-section.tsx`**
-   - Props: border (top/bottom), padding, children
-   - Replaces scattered `border-b p-6` patterns
-   - Example: `<CardSection border="bottom">{children}</CardSection>`
-
-10. **Create `src/components/recipes/stat-card.tsx`**
-    - Props: icon, label, value, color
-    - Uses tokens for icon box styling, spacing, typography
+8. **Create `src/components/recipes/toolbar.tsx`**
+   - Props: variant, children
+   - Standardizes button-group surfaces and separators
 
 ### **NEXT: ESLint Guardrails**
 
@@ -176,29 +162,29 @@ File-level “done” criteria (applies to every page/component in scope):
     - Rule: Forbid `rounded-*` outside specific files (with exceptions)
     - Rule: Forbid `size-*` (icons should use IconBox recipe)
     - Rule: Forbid `h-9`, `h-10`, etc. (inputs should use FormField recipe)
-    - Rule: Forbid `p-6`, `px-4`, etc. for card padding (use CardSection recipe)
+    - Rule: Prefer Card + CardContent for consistent padding
     - Document exceptions inline with a short reason
 
-12. **Add CI check for token violations**
+12. **Add CI check for style violations**
     - Run ESLint as part of `bun run check`
-    - Report percentage of token-compliant code
+    - Report percentage of primitive/recipe-compliant code
     - Fail CI if hardcoded values increase
 
 ### **FINALLY: Migration (Phased Rollout)**
 
 13. **Phase 1: Shell components** (site-header, nav, layout)
-    - Migrate to recipe components: HeroHeader, IconBox, CardSection
-    - Update shadcn primitives to consume token values
+    - Migrate to recipe components: HeroHeader, IconBox, Toolbar
+    - Align shadcn primitives to the Tailwind scale
     - Target: 10% of codebase
 
 14. **Phase 2: High-traffic pages** (Dashboard, Projects, Tasks)
     - Replace hardcoded patterns with recipes
-    - Update stat rendering, metric cards, headers
+    - Update headers and icon boxes to recipes
     - Target: 40% of codebase
 
 15. **Phase 3: Forms & modals**
     - Refit all form fields with FormField recipe
-    - Update modal/dialog card styling with CardSection
+    - Update modal/dialog card styling with Card + CardContent
     - Target: 70% of codebase
 
 16. **Phase 4: Long tail** (remaining pages/components)
@@ -212,7 +198,7 @@ File-level “done” criteria (applies to every page/component in scope):
     - Note exceptions or reasons
 
 18. **Docs & Testing**
-    - Add `docs/design-system.md` (tokens, recipes, do/don't, how to use)
+    - Add `docs/design-system.md` (primitives, recipes, do/don't, how to use)
     - Add light smoke snapshot tests for recipes
     - Create PR checklist: "Uses recipes," "No raw colors/radius"
     - Run `bun run check` after each phase
@@ -228,14 +214,14 @@ File-level “done” criteria (applies to every page/component in scope):
 **Checkpoint 2** (After Phase 1-2):
 
 - All shell components using recipes
-- Dashboard/Projects/Tasks pages using MetricCard, StatCard, HeroHeader
+- Dashboard/Projects/Tasks pages using HeroHeader and IconBox
 - 40%+ of codebase migrated
 
 **Checkpoint 3** (After Phase 3):
 
 - All forms using FormField recipe
 - All form inputs now consistent height/styling
-- CardSection used throughout for dividers
+- Card + CardContent used throughout for dividers
 - 70%+ of codebase migrated
 
 **Checkpoint 4** (Complete):
@@ -258,7 +244,7 @@ File-level “done” criteria (applies to every page/component in scope):
 
 ✅ **Adding new pages** requires:
 
-- Import `HeroHeader`, `IconBox`, `MetricCard`, `FormField` from recipes
+- Import `HeroHeader`, `IconBox`, `FormField` from recipes
 - Compose UI from existing recipes
 - Zero custom Tailwind hardcoding for spacing/sizing/radius
 - ESLint enforces this on PR

@@ -7,6 +7,7 @@ import {
   type IconBoxSize,
   type IconBoxTone,
 } from "@/components/recipes/icon-box";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type HeroHeaderProps = React.ComponentProps<"div"> & {
@@ -38,11 +39,10 @@ export function HeroHeader({
   ...props
 }: HeroHeaderProps) {
   return (
-    <div
+    <Card
       data-slot="hero-header"
       className={cn(
-        "border-border/10 bg-card relative mb-12 flex flex-col gap-8 overflow-hidden border shadow-sm md:flex-row md:items-center md:justify-between",
-        "p-8 lg:p-12",
+        "border-border/10 relative mb-12 overflow-hidden border shadow-sm",
         "rounded-3xl",
         className,
       )}
@@ -53,28 +53,30 @@ export function HeroHeader({
         <BlueprintPattern variant="dots" className="opacity-[0.02]" />
       )}
 
-      <div className="relative z-10 flex flex-col gap-6">
-        <div className="flex items-center gap-6">
-          <IconBox icon={icon} size={iconSize} tone={iconTone} />
-          <div className="flex flex-col">
-            {eyebrow}
-            <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-              {title}
-            </h1>
+      <CardContent className="relative z-10 flex flex-col gap-8 p-8 md:flex-row md:items-center md:justify-between lg:p-12">
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center gap-6">
+            <IconBox icon={icon} size={iconSize} tone={iconTone} />
+            <div className="flex flex-col">
+              {eyebrow}
+              <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
+                {title}
+              </h1>
+            </div>
           </div>
+
+          {subtitle && (
+            <p className="text-muted-foreground/60 max-w-md text-sm leading-relaxed font-medium">
+              {subtitle}
+            </p>
+          )}
         </div>
 
-        {subtitle && (
-          <p className="text-muted-foreground/60 max-w-md text-sm leading-relaxed font-medium">
-            {subtitle}
-          </p>
-        )}
-      </div>
+        {action ? <div>{action}</div> : null}
 
-      {action ? <div className="relative z-10">{action}</div> : null}
-
-      {children}
-    </div>
+        {children}
+      </CardContent>
+    </Card>
   );
 }
 

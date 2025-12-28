@@ -13,16 +13,16 @@
 
 ## The Problem (30 seconds)
 
-You have scattered hardcoded styling across 40+ pages/components. Changing border-radius from `rounded-2xl` to `rounded-xl` requires editing **20+ files**. This plan fixes it by extracting tokens and building recipe components.
+You have scattered hardcoded styling across 40+ pages/components. Changing border-radius from `rounded-2xl` to `rounded-xl` requires editing **20+ files**. This plan fixes it by standardizing primitives and building recipe components.
 
 ## The Solution (4 Phases)
 
-| Phase | Goal                                                    | Key Deliverables                                                                                  | Impact                                      |
-| ----- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| **1** | Replace ad-hoc div stacks with shadcn primitives        | Card, CardHeader/Content/Footer, Button, Input, Dialog, etc.                                      | Consistent surfaces & spacing               |
-| **2** | Build recipe components for repeated patterns           | 8 recipes: IconBox, HeroHeader, MetricCard, FormField, CardSection, StatCard, Toolbar, EmptyState | 15-40 files worth of duplication eliminated |
-| **3** | Align primitives with Tailwind scale + theme vars       | Refactor `ui/button`, `ui/card`, `ui/input`, `ui/form`                                            | Consistent styling across all components    |
-| **4** | Migrate pages/components to recipes + enforce with lint | 4 migration passes + ESLint rules                                                                 | 100% of codebase using recipes              |
+| Phase | Goal                                                    | Key Deliverables                                             | Impact                                      |
+| ----- | ------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------- |
+| **1** | Replace ad-hoc div stacks with shadcn primitives        | Card, CardHeader/Content/Footer, Button, Input, Dialog, etc. | Consistent surfaces & spacing               |
+| **2** | Build recipe components for repeated patterns           | 4 recipes: IconBox, HeroHeader, FormField, Toolbar           | 15-40 files worth of duplication eliminated |
+| **3** | Align primitives with Tailwind scale + theme vars       | Refactor `ui/button`, `ui/card`, `ui/input`, `ui/form`       | Consistent styling across all components    |
+| **4** | Migrate pages/components to recipes + enforce with lint | 4 migration passes + ESLint rules                            | 100% of codebase using recipes              |
 
 ## Getting Started
 
@@ -53,22 +53,22 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 ### Phase 1: Stop editing `src/index.css` 100+ times
 
-- Icon sizes consolidated into tokens
-- Border radii consolidated into tokens
-- Form heights consolidated into tokens
-- Spacing/padding consolidated into tokens
+- Icon sizes consolidated into recipes
+- Border radii consolidated into shared utilities
+- Form heights consolidated into primitives
+- Spacing/padding consolidated into primitives
 
 ### Phase 2: Stop reimplementing hero headers, icon boxes, metric cards
 
 - 15+ hardcoded icon boxes → 1 `<IconBox />` component
 - 4+ hardcoded hero headers → 1 `<HeroHeader />` component
-- 3+ hardcoded metric cards → 1 `<MetricCard />` component
+- 3+ hardcoded metric cards → 1 shared metric-card component
 - 10+ hardcoded form fields → 1 `<FormField />` component
 
 ### Phase 3: Stop editing shadcn primitives
 
-- All shadcn components reference tokens, not hardcoded values
-- Changes to a token propagate everywhere
+- All shadcn components use primitives/scale, not ad-hoc values
+- Changes to a primitive/recipe propagate everywhere
 
 ### Phase 4: Prevent backsliding
 
@@ -91,8 +91,8 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 | ------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `src/index.css`                       | Existing theme tokens (colors + radius) and Tailwind `@theme inline` definitions              |
 | `src/components/ui/*`                 | shadcn primitives + some existing “recipe-ish” components (e.g. `metric-card`, `empty-state`) |
-| `src/components/forms/form-field.tsx` | Existing form wrapper (good starting point for tokenizing heights/radii)                      |
-| `src/components/recipes/*`            | Planned home for recipes (HeroHeader, IconBox, Toolbar, etc.)                                 |
+| `src/components/forms/form-field.tsx` | Existing form wrapper (good starting point for standardizing heights/radii)                   |
+| `src/components/recipes/*`            | Planned home for recipes (HeroHeader, IconBox, Toolbar, FormField)                            |
 | `docs/design-system-migration.md`     | Checklist tracking migration progress (create if missing)                                     |
 | `docs/design-system-plan.md`          | Full implementation plan                                                                      |
 
@@ -126,10 +126,10 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 ## Common Mistakes to Avoid
 
 ❌ Hardcoding values in recipes (defeats the purpose)
-❌ Skipping token extraction (recipes still can't propagate changes)
+❌ Skipping primitive alignment (recipes still can't propagate changes)
 ❌ Not updating the migration checklist (you'll forget what's done)
 ❌ Adding new code without recipes (breaks the system)
-❌ Changing token values during migration (causes visual churn)
+❌ Changing scale values during migration (causes visual churn)
 
 ## Questions?
 
