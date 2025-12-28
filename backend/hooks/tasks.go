@@ -8,12 +8,15 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"anjam/config"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
+
+var taskNumberMutex sync.Mutex
 
 // HandleTaskCreation handles task creation events.
 // It auto-generates task display IDs, ensures defaults, and validates tags.
@@ -65,7 +68,12 @@ func setTaskDisplayID(e *core.RecordEvent) error {
 }
 
 // getNextTaskNumber retrieves the next sequential task number for a project.
+// Note: This function has a potential race condition when tasks are created concurrently.
+// TODO: Consider implementing database-level constraint with retry logic for better concurrent safety.
 func getNextTaskNumber(app core.App, projectId string) (int, error) {
+	taskNumberMutex.Lock()
+	defer taskNumberMutex.Unlock()
+
 	var lastTask struct {
 		DisplayID string `db:"display_id"`
 	}
