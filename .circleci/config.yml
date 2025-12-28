@@ -29,7 +29,7 @@ commands:
             - /home/circleci/.bun/install/cache
 
 jobs:
-  check:
+  lint_typecheck:
     executor: go-bun
     steps:
       - checkout
@@ -40,13 +40,26 @@ jobs:
           command: bun install --frozen-lockfile
       - save-bun-cache
       - run:
-          name: Typecheck, lint, format
-          command: bun run check
+          name: Lint and typecheck
+          command: bun run type:check && bun run lint
+  tests:
+    executor: go-bun
+    steps:
+      - checkout
+      - install-bun
+      - restore-bun-cache
       - run:
-          name: Build (current platform)
-          command: bun run build
+          name: Install dependencies
+          command: bun install --frozen-lockfile
+      - save-bun-cache
+      - run:
+          name: Unit tests
+          command: bun run test:run
 
 workflows:
   check:
     jobs:
-      - check
+      - lint_typecheck
+      - tests:
+          requires:
+            - lint_typecheck
