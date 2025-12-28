@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { projects } from "@/constants";
+import { cn } from "@/lib/utils";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
@@ -153,5 +154,3 @@ export function ProjectSidebar({
     </div>
   );
 }
-
-import { cn } from "@/lib/utils";

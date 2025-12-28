@@ -161,7 +161,7 @@ export function StatsWidget({ stats, isLoading = false }: StatsWidgetProps) {
         icon={<AlertTriangle className="size-5" />}
         color="text-red-600 dark:text-red-400"
         textColor="text-red-700 dark:text-red-300"
-        borderColor="border-eed-200 dark:border-eed-900"
+        borderColor="border-red-200 dark:border-red-900"
       />
     </div>
   );
