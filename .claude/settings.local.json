@@ -24,7 +24,8 @@
       "Bash(bun run format:*)",
       "WebFetch(domain:pocketbase.io)",
       "Bash(bun run types:generate:*)",
-      "Bash(bun run lint:fix:*)"
+      "Bash(bun run lint:fix:*)",
+      "Bash(go test:*)"
     ],
     "deny": [],
     "ask": []
