@@ -6,7 +6,7 @@
 
 - This repo is **Tailwind v4 (CSS-first)** + **shadcn/ui**.
 - **Theme tokens already exist** in `src/index.css` (`:root` + `.dark`) and feed Tailwind via `@theme inline`.
-- **No custom `--ds-*` token layer**. Use shadcn primitives + Tailwind scale for spacing/sizing/radius.
+- **Use shadcn primitives + Tailwind scale** for spacing/sizing/radius.
 - The refactor goal is to make **layout/radii/spacing changes consistent** by reusing primitives + recipes (and then migrating usage).
 
 **Workflow note**: avoid running the app after every change; when you’re done with a batch of edits, run `bun run check`.
@@ -19,9 +19,9 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 | Phase | Goal                                                    | Key Deliverables                                                                                  | Impact                                      |
 | ----- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| **1** | Replace ad-hoc div stacks with shadcn primitives         | Card, CardHeader/Content/Footer, Button, Input, Dialog, etc.                                      | Consistent surfaces & spacing               |
-| **2** | Build recipe components for repeated patterns            | 8 recipes: IconBox, HeroHeader, MetricCard, FormField, CardSection, StatCard, Toolbar, EmptyState | 15-40 files worth of duplication eliminated |
-| **3** | Align primitives with Tailwind scale + theme vars        | Refactor `ui/button`, `ui/card`, `ui/input`, `ui/form`                                            | Consistent styling across all components    |
+| **1** | Replace ad-hoc div stacks with shadcn primitives        | Card, CardHeader/Content/Footer, Button, Input, Dialog, etc.                                      | Consistent surfaces & spacing               |
+| **2** | Build recipe components for repeated patterns           | 8 recipes: IconBox, HeroHeader, MetricCard, FormField, CardSection, StatCard, Toolbar, EmptyState | 15-40 files worth of duplication eliminated |
+| **3** | Align primitives with Tailwind scale + theme vars       | Refactor `ui/button`, `ui/card`, `ui/input`, `ui/form`                                            | Consistent styling across all components    |
 | **4** | Migrate pages/components to recipes + enforce with lint | 4 migration passes + ESLint rules                                                                 | 100% of codebase using recipes              |
 
 ## Getting Started
@@ -78,12 +78,12 @@ You have scattered hardcoded styling across 40+ pages/components. Changing borde
 
 ## Migration Checkpoints
 
-| Checkpoint | Target          | Completed When                                              |
-| ---------- | --------------- | ----------------------------------------------------------- |
+| Checkpoint | Target          | Completed When                                                 |
+| ---------- | --------------- | -------------------------------------------------------------- |
 | **CP1**    | Foundation      | Cards/inputs standardized, 2-3 recipes working, lint reporting |
-| **CP2**    | Quick wins      | 40% of codebase migrated (shell + high-traffic pages)       |
-| **CP3**    | Forms & cleanup | 70% of codebase migrated (all forms using recipes)          |
-| **CP4**    | Complete        | 100% migrated, lint enforced, no escape hatches needed      |
+| **CP2**    | Quick wins      | 40% of codebase migrated (shell + high-traffic pages)          |
+| **CP3**    | Forms & cleanup | 70% of codebase migrated (all forms using recipes)             |
+| **CP4**    | Complete        | 100% migrated, lint enforced, no escape hatches needed         |
 
 ## Key Files
 

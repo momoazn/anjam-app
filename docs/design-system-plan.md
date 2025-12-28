@@ -1,6 +1,6 @@
 # Design System Refactor Plan (Tailwind + shadcn)
 
-> Update (2025-12): The custom `--ds-*` token layer has been removed. This plan should be read with a primitives-first mindset: reuse shadcn components and Tailwind scale values (`p-6`, `rounded-xl`, `h-12`) instead of introducing a separate token system.
+> Update (2025-12): This plan is primitives-first: reuse shadcn components and Tailwind scale values (`p-6`, `rounded-xl`, `h-12`) instead of introducing a separate token system.
 
 This plan fixes the current "edit every file" pain by centralizing tokens, recipes, and guardrails in a way that matches shadcn best practices (CSS variables + registry style + custom utilities).
 
@@ -54,7 +54,7 @@ This plan fixes the current "edit every file" pain by centralizing tokens, recip
 - This repo is on **Tailwind v4.1.18 (CSS-first)**: tokens and theming already live in `src/index.css` via `@theme inline`, plus `@layer base` and `@layer utilities`.
 - shadcn's Tailwind layer is imported via `@import "shadcn/tailwind.css";`. Our plan builds on top.
 - **No tailwind.config.js** (using inline theme in CSS).
-- **No separate tokens.json** — use Tailwind scale + shadcn primitives; keep CSS vars for theme colors and radius.
+- Use Tailwind scale + shadcn primitives; keep CSS vars for theme colors and radius.
 - **No recipe layer** — patterns are reimplemented in each page (e.g., HeroHeader reimplemented 4+ times).
 - **40+ pages/components** use custom Tailwind classes; no enforced standard.
 
