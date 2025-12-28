@@ -206,7 +206,7 @@ export function CommentItem({
   if (deleted) {
     return (
       <div style={indentStyle}>
-        <div className="bg-muted/10 border-border/20 flex gap-4 rounded-[var(--ds-radius-card)] border p-4 text-right opacity-30 grayscale">
+        <div className="bg-muted/10 border-border/20 flex gap-4 rounded-2xl border p-4 text-right opacity-30 grayscale">
           <UserAvatar
             user={comment.expand.user}
             className="border-border/40 size-8 rounded-full border"

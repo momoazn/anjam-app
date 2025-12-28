@@ -21,7 +21,7 @@ export function EmptyState({
   return (
     <Card className={cn("rounded-xl border-dashed shadow-none", className)}>
       <CardContent
-        className="flex flex-col items-center justify-center py-[var(--ds-spacing-emptyStatePaddingY)] text-center"
+        className="flex flex-col items-center justify-center py-16 text-center"
         data-animate-stagger
       >
         <div className="text-muted-foreground/40 mb-6 h-16 w-16">{icon}</div>

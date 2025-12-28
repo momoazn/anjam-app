@@ -89,7 +89,7 @@ const LandingPage = () => {
           <Button
             asChild
             size="lg"
-            className="bg-primary text-primary-foreground h-[var(--ds-sizing-formControlHeight)] rounded-xl px-8 text-sm font-bold shadow-md transition-all hover:brightness-110 active:scale-95"
+            className="bg-primary text-primary-foreground h-12 rounded-xl px-8 text-sm font-bold shadow-md transition-all hover:brightness-110 active:scale-95"
           >
             <Link to="/login">{landing.ctaButton}</Link>
           </Button>
@@ -97,7 +97,7 @@ const LandingPage = () => {
             asChild
             size="lg"
             variant="outline"
-            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground h-[var(--ds-sizing-formControlHeight)] rounded-xl px-8 text-sm font-bold transition-all active:scale-95"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground h-12 rounded-xl px-8 text-sm font-bold transition-all active:scale-95"
           >
             <a href="#features">{landing.featuresButton}</a>
           </Button>
@@ -105,9 +105,9 @@ const LandingPage = () => {
 
         {/* Hero Visual - Dashboard UI Mock */}
         <div className="group animate-in fade-in zoom-in-95 relative mt-20 aspect-[16/10] w-full max-w-4xl delay-700 duration-1000">
-          <div className="bg-card relative flex h-full w-full flex-col overflow-hidden rounded-[var(--ds-radius-card)] border shadow-2xl">
+          <div className="bg-card relative flex h-full w-full flex-col overflow-hidden rounded-2xl border shadow-2xl">
             {/* Mock UI Header */}
-            <div className="border-border/40 bg-muted/20 flex h-[var(--ds-sizing-formControlHeight)] shrink-0 items-center justify-between border-b px-6">
+            <div className="border-border/40 bg-muted/20 flex h-12 shrink-0 items-center justify-between border-b px-6">
               <div className="flex gap-2">
                 <div className="h-3 w-3 rounded-full bg-rose-500/20"></div>
                 <div className="h-3 w-3 rounded-full bg-amber-500/20"></div>
@@ -120,7 +120,7 @@ const LandingPage = () => {
 
             <div className="grid flex-1 grid-cols-12 overflow-hidden">
               {/* Sidebar Mock */}
-              <div className="border-border/40 bg-muted/5 col-span-3 space-y-6 border-e p-[var(--ds-spacing-cardPadding)]">
+              <div className="border-border/40 bg-muted/5 col-span-3 space-y-6 border-e p-6">
                 <div className="space-y-3">
                   <div className="bg-muted/40 h-2.5 w-full rounded-full"></div>
                   <div className="bg-muted/20 h-2.5 w-3/4 rounded-full"></div>
@@ -301,9 +301,9 @@ const LandingPage = () => {
           ].map((feature) => (
             <div
               key={feature.id}
-              className="group bg-card hover:bg-primary/[0.02] relative overflow-hidden rounded-[var(--ds-radius-card)] border p-10 text-right transition-all duration-500"
+              className="group bg-card hover:bg-primary/[0.02] relative overflow-hidden rounded-2xl border p-10 text-right transition-all duration-500"
             >
-              <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-8 flex h-[var(--ds-sizing-formControlHeight)] w-12 items-center justify-center rounded-xl transition-all duration-500">
+              <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-8 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-500">
                 {feature.icon}
               </div>
               <h3 className="text-foreground mb-4 text-xl font-bold tracking-tight">
@@ -319,7 +319,7 @@ const LandingPage = () => {
 
       {/* Call to Action */}
       <section className="relative z-10 px-6 py-24">
-        <div className="group bg-primary relative mx-auto max-w-5xl overflow-hidden rounded-[var(--ds-radius-heroHeader)] p-16 text-center shadow-2xl md:p-28">
+        <div className="group bg-primary relative mx-auto max-w-5xl overflow-hidden rounded-3xl p-16 text-center shadow-2xl md:p-28">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)]"></div>
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.03]"></div>
 

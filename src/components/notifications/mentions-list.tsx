@@ -37,7 +37,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
   };
 
   return (
-    <section className="border-border/40 bg-card mt-10 space-y-4 rounded-xl border p-[var(--ds-spacing-cardPadding)] text-right shadow-sm">
+    <section className="border-border/40 bg-card mt-10 space-y-4 rounded-xl border p-6 text-right shadow-sm">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-foreground text-sm font-bold">

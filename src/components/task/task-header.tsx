@@ -86,7 +86,7 @@ export function TaskHeader({
         </Toolbar>
 
         <Button
-          className="h-14 gap-3 rounded-[var(--ds-radius-card)] px-8 text-base font-bold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="h-14 gap-3 rounded-2xl px-8 text-base font-bold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
           size="lg"
           onClick={onCreateTask}
         >

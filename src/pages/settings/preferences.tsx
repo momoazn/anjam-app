@@ -7,7 +7,7 @@ import { settings } from "@/constants";
 
 export function PreferencesPage() {
   return (
-    <PageTransition className="container mx-auto max-w-5xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto max-w-5xl p-4 md:p-6">
       <PageHeader
         title={settings.preferences.title}
         description={settings.preferences.description}

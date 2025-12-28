@@ -190,7 +190,7 @@ export function ChartsSection({
               <IconTerminal className="text-primary/40 size-3.5" />
             </div>
 
-            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border p-[var(--ds-spacing-cardPadding)]">
+            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border p-6">
               {hasTimeliness ? (
                 <Suspense
                   fallback={<Skeleton className="h-full w-full rounded-xl" />}
@@ -248,7 +248,7 @@ export function ChartsSection({
               <IconTerminal className="text-primary/40 size-3.5" />
             </div>
 
-            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border p-[var(--ds-spacing-cardPadding)]">
+            <div className="bg-muted/5 border-border/40 flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border p-6">
               {hasPriority ? (
                 <Suspense
                   fallback={<Skeleton className="h-full w-full rounded-xl" />}

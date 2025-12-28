@@ -215,7 +215,7 @@ export function SecuritySection() {
                 loginLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="group border-border/40 bg-card relative flex items-center rounded-[var(--ds-radius-card)] border p-3 shadow-sm transition-all hover:shadow-md"
+                    className="group border-border/40 bg-card relative flex items-center rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md"
                   >
                     <div className="bg-muted/30 border-border/40 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border">
                       {log.success ? (
@@ -257,7 +257,7 @@ export function SecuritySection() {
                   </div>
                 ))
               ) : (
-                <div className="bg-muted/10 border-border/40 rounded-[var(--ds-radius-card)] border border-dashed p-8 text-center grayscale">
+                <div className="bg-muted/10 border-border/40 rounded-2xl border border-dashed p-8 text-center grayscale">
                   <IconTerminal className="mx-auto mb-3 size-6 stroke-[1.5] opacity-20" />
                   <p className="text-[10px] font-bold tracking-tight opacity-40">
                     {settings.security.noLoginHistory}

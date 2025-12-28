@@ -82,7 +82,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
 
   if (isLoading) {
     return (
-      <div className="border-border/40 bg-muted/30 relative mb-8 overflow-hidden rounded-lg border p-[var(--ds-spacing-cardPadding)] shadow-sm">
+      <div className="border-border/40 bg-muted/30 relative mb-8 overflow-hidden rounded-lg border p-6 shadow-sm">
         <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Skeleton className="mb-2 h-8 w-64" />
@@ -98,7 +98,7 @@ export function WelcomeWidget({ isLoading = false }: WelcomeWidgetProps) {
   }
 
   return (
-    <div className="border-border/40 bg-muted/30 relative mb-8 overflow-hidden rounded-lg border p-[var(--ds-spacing-cardPadding)] shadow-sm">
+    <div className="border-border/40 bg-muted/30 relative mb-8 overflow-hidden rounded-lg border p-6 shadow-sm">
       <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-3 text-2xl font-bold tracking-tight md:text-3xl">

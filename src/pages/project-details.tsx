@@ -169,13 +169,13 @@ export default function ProjectDetails() {
 
   if (!project) {
     return (
-      <PageTransition className="container mx-auto p-[var(--ds-spacing-cardPadding)]">
+      <PageTransition className="container mx-auto p-6">
         <Card>
           <CardContent
             className="flex flex-col items-center justify-center py-12"
             data-animate-stagger
           >
-            <Folder className="text-muted-foreground mb-4 h-[var(--ds-sizing-formControlHeight)] w-12" />
+            <Folder className="text-muted-foreground mb-4 h-12 w-12" />
             <p className="text-muted-foreground">{projects.errors.notFound}</p>
             <Button
               variant="outline"
@@ -200,7 +200,7 @@ export default function ProjectDetails() {
     tasks?.reduce((sum, task) => sum + (task.time_spent_minutes || 0), 0) || 0;
 
   return (
-    <PageTransition className="container mx-auto space-y-6 p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto space-y-6 p-6">
       <ProjectHeader
         project={project}
         canEdit={canEdit}

@@ -141,7 +141,7 @@ export function DashboardHeader({
     <Card className="border-border bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm">
       <CardContent className="relative z-10 flex flex-col p-0 lg:flex-row lg:items-stretch">
         {/* Main Welcome Section */}
-        <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-[var(--ds-spacing-cardPadding)] lg:border-b-0 lg:p-10">
+        <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-10">
           <div className="relative z-10 flex items-center gap-3">
             <IconBox
               icon={LayoutDashboard}
@@ -161,7 +161,7 @@ export function DashboardHeader({
 
           <h1 className="relative z-10 mt-8 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             {isLoading ? (
-              <div className="bg-muted h-[var(--ds-sizing-formControlHeight)] w-3/4 animate-pulse rounded-lg" />
+              <div className="bg-muted h-12 w-3/4 animate-pulse rounded-lg" />
             ) : (
               digitsEnToFa(config.welcomeMessage)
             )}
@@ -202,7 +202,7 @@ export function DashboardHeader({
             {statItems.map((item) => (
               <div
                 key={item.label}
-                className="group hover:bg-card relative overflow-hidden p-[var(--ds-spacing-cardPadding)] transition-all duration-300"
+                className="group hover:bg-card relative overflow-hidden p-6 transition-all duration-300"
               >
                 <div className="relative z-10 flex items-center justify-between">
                   <div className="flex flex-col gap-1">

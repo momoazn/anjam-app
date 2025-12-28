@@ -196,7 +196,7 @@ export default function MyTasks() {
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       <PageHeader
         title={myTasksText.title}
         description={myTasksText.description}

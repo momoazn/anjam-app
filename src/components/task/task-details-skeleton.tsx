@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function TaskDetailsSkeleton() {
   return (
-    <PageTransition className="container mx-auto space-y-6 p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto space-y-6 p-6">
       <div className="flex items-center gap-4">
         <Skeleton className="h-10 w-10 rounded" />
         <div className="space-y-2">

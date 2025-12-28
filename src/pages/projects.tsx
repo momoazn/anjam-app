@@ -29,7 +29,7 @@ export default function Projects() {
   const canCreateProject = isAdmin || isSupervisor;
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       <HeroHeader
         icon={Target}
         iconTone="primarySolid"
@@ -49,7 +49,7 @@ export default function Projects() {
         action={
           canCreateProject ? (
             <Button
-              className="hover:shadow-primary/10 h-14 gap-3 rounded-[var(--ds-radius-card)] px-8 text-lg font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"
+              className="hover:shadow-primary/10 h-14 gap-3 rounded-2xl px-8 text-lg font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"
               size="lg"
               onClick={() => navigate("/projects/new")}
             >

@@ -211,7 +211,7 @@ export function PreferencesSection() {
 
   if (!user) {
     return (
-      <div className="bg-card border-border rounded-[var(--ds-radius-card)] border p-8 text-center shadow-sm">
+      <div className="bg-card border-border rounded-2xl border p-8 text-center shadow-sm">
         <p className="text-foreground text-base font-bold tracking-tight">
           {settings.preferences.signinRequired}
         </p>
@@ -222,7 +222,7 @@ export function PreferencesSection() {
   return (
     <div className="space-y-6 text-right">
       {/* UI Preferences */}
-      <section className="bg-card border-border rounded-[var(--ds-radius-card)] border p-[var(--ds-spacing-cardPadding)] shadow-sm">
+      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconSettings}
           title={settings.preferences.title}
@@ -240,7 +240,7 @@ export function PreferencesSection() {
       </section>
 
       {/* Display Settings */}
-      <section className="bg-card border-border rounded-[var(--ds-radius-card)] border p-[var(--ds-spacing-cardPadding)] shadow-sm">
+      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconPalette}
           title="تنظیمات نمایش"
@@ -340,7 +340,7 @@ export function PreferencesSection() {
       </section>
 
       {/* Notifications */}
-      <section className="bg-card border-border rounded-[var(--ds-radius-card)] border p-[var(--ds-spacing-cardPadding)] shadow-sm">
+      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconBell}
           title="اعلان‌ها"

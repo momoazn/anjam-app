@@ -43,8 +43,8 @@ export function OverdueTasksWidget({
   }
 
   return (
-    <Card className="relative mt-8 overflow-hidden rounded-[var(--ds-radius-card)] border border-rose-200 bg-rose-50 shadow-sm dark:border-rose-900/50 dark:bg-rose-950/20">
-      <CardHeader className="relative z-10 border-b border-rose-100 p-[var(--ds-spacing-cardPadding)] dark:border-rose-900/30">
+    <Card className="relative mt-8 overflow-hidden rounded-2xl border border-rose-200 bg-rose-50 shadow-sm dark:border-rose-900/50 dark:bg-rose-950/20">
+      <CardHeader className="relative z-10 border-b border-rose-100 p-6 dark:border-rose-900/30">
         <CardTitle className="flex items-center gap-3 text-sm font-bold text-rose-600 dark:text-rose-400">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-200 bg-rose-100 text-rose-600 dark:border-rose-800 dark:bg-rose-900/50">
             <AlertTriangle className="size-4" />
@@ -61,7 +61,7 @@ export function OverdueTasksWidget({
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="relative z-10 p-[var(--ds-spacing-cardPadding)]">
+      <CardContent className="relative z-10 p-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {overdueTasks.slice(0, 4).map((task, idx) => (
             <Button

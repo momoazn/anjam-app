@@ -25,7 +25,7 @@ export function CardSection({
       data-border={border}
       className={cn(
         borderClassByBorder[border],
-        "p-[var(--ds-spacing-cardPadding)]",
+        "p-6",
         className,
       )}
       {...props}

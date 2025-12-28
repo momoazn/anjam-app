@@ -248,7 +248,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
         <div className="bg-border/20 h-px flex-1" />
       </div>
 
-      <div className="bg-border/40 border-border/40 rounded-xl border p-[var(--ds-spacing-cardPadding)]">
+      <div className="bg-border/40 border-border/40 rounded-xl border p-6">
         <div className="border-border/20 space-y-4 border-b pb-4">
           <div className="flex items-end gap-3">
             <div className="flex-1">

@@ -183,7 +183,7 @@ export function MyTasksTabs({
             tasksByProject.map((project) => (
               <Card
                 key={project.projectId}
-                className="overflow-hidden rounded-[var(--ds-radius-card)] shadow-sm"
+                className="overflow-hidden rounded-2xl shadow-sm"
               >
                 <div className="bg-muted/20 border-b px-6 py-4">
                   <div className="flex items-center justify-between">
@@ -204,7 +204,7 @@ export function MyTasksTabs({
                     <Button
                       key={task.id}
                       variant="ghost"
-                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-[var(--ds-spacing-cardPadding)] text-right transition-colors focus-visible:ring-0"
+                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
                       onClick={() =>
                         onProjectTaskClick(project.projectId, task.id)
                       }

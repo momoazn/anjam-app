@@ -153,7 +153,7 @@ export default function TimesheetPage() {
 
   if (isLoading) {
     return (
-      <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
+      <PageTransition className="container mx-auto p-4 md:p-6">
         <div className="animate-pulse space-y-10">
           <div className="bg-muted/20 h-24 w-full rounded-xl" />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
@@ -167,7 +167,7 @@ export default function TimesheetPage() {
   }
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       <PageHeader
         title={navigationLabels.timesheet}
         description={`${digitsEnToFa(format(weekStart, "yyyy/MM/dd"))} — ${digitsEnToFa(format(weekEnd, "yyyy/MM/dd"))}`}

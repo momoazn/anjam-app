@@ -175,7 +175,7 @@ export function UserListTable({
   return (
     <div className="space-y-6">
       {isAdmin && selectedIds.length > 0 ? (
-        <div className="bg-primary/5 border-primary/20 animate-in fade-in slide-in-from-top-2 flex flex-wrap items-center gap-2 rounded-[var(--ds-radius-card)] border p-2 shadow-sm">
+        <div className="bg-primary/5 border-primary/20 animate-in fade-in slide-in-from-top-2 flex flex-wrap items-center gap-2 rounded-2xl border p-2 shadow-sm">
           <div className="bg-primary text-primary-foreground flex items-center gap-2 rounded-xl px-4 py-1.5 text-[10px] font-bold tracking-tight">
             <IconTerminal className="size-3" />
             {digitsEnToFa(selectedIds.length)} {notifications.selected}
@@ -223,7 +223,7 @@ export function UserListTable({
       ) : null}
 
       <div
-        className="bg-border/15 border-border/15 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border"
+        className="bg-border/15 border-border/15 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border"
         data-animate-stagger
       >
         {/* Table Head  */}
@@ -433,7 +433,7 @@ export function UserListTable({
       )}
 
       <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
-        <AlertDialogContent className="border-border rounded-[var(--ds-radius-card)] border shadow-lg">
+        <AlertDialogContent className="border-border rounded-2xl border shadow-lg">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center gap-3 text-rose-500">
               <IconTrash className="size-5" />
@@ -449,12 +449,12 @@ export function UserListTable({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="border-border rounded-[var(--ds-radius-button)] border text-[10px] font-bold tracking-tight">
+            <AlertDialogCancel className="border-border rounded-xl border text-[10px] font-bold tracking-tight">
               {common.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmBulkDelete}
-              className="border-border rounded-[var(--ds-radius-button)] border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
+              className="border-border rounded-xl border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
             >
               {usersText.delete.title}
             </AlertDialogAction>

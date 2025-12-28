@@ -6,7 +6,7 @@ import { IconAlertTriangle, IconSearch } from "@tabler/icons-react";
 
 export default function NotFound() {
   return (
-    <PageTransition className="flex min-h-[80vh] flex-col items-center justify-center p-[var(--ds-spacing-cardPadding)] text-center">
+    <PageTransition className="flex min-h-[80vh] flex-col items-center justify-center p-6 text-center">
       <div
         className="relative z-10 flex max-w-lg flex-col items-center gap-8"
         data-animate-stagger
@@ -36,14 +36,14 @@ export default function NotFound() {
         <div className="flex items-center gap-4 pt-8" data-animate-stagger>
           <Button
             asChild
-            className="h-[var(--ds-sizing-formControlHeight)] px-8 font-bold shadow-sm"
+            className="h-12 px-8 font-bold shadow-sm"
           >
             <Link to="/dashboard">{navigation.dashboard}</Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="h-[var(--ds-sizing-formControlHeight)] px-8 font-bold"
+            className="h-12 px-8 font-bold"
           >
             <Link to="/projects">{navigation.projects}</Link>
           </Button>

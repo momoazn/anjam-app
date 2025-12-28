@@ -119,17 +119,17 @@ export default function EditProject() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
       <PageHeader
         title={projects.edit.title}
         description={`Update information for project :: ${project?.name || id}`}
         icon={IconPencil}
       />
 
-      <div className="bg-card border-border/40 rounded-[var(--ds-radius-card)] border p-8 shadow-sm">
+      <div className="bg-card border-border/40 rounded-2xl border p-8 shadow-sm">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 opacity-20">
-            <IconLoader2 className="h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)] animate-spin" />
+            <IconLoader2 className="h-12 w-12 animate-spin" />
           </div>
         ) : (
           <Form {...form}>

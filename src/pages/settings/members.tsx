@@ -170,7 +170,7 @@ export function OrgMembersPage() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-6">
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <PageHeader
           title={organization.members.title}
@@ -183,7 +183,7 @@ export function OrgMembersPage() {
         </Button>
       </div>
 
-      <div className="border-border bg-card relative overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm">
+      <div className="border-border bg-card relative overflow-hidden rounded-2xl border shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -387,7 +387,7 @@ export function OrgMembersPage() {
 
       {/* Invite Dialog */}
       <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
-        <DialogContent className="border-border max-w-md overflow-hidden rounded-[var(--ds-radius-card)] border p-0 shadow-lg">
+        <DialogContent className="border-border max-w-md overflow-hidden rounded-2xl border p-0 shadow-lg">
           <div className="bg-primary/5 border-border border-b px-6 py-6">
             <DialogHeader className="text-right">
               <IconBox
@@ -407,7 +407,7 @@ export function OrgMembersPage() {
             </DialogHeader>
           </div>
 
-          <div className="space-y-6 p-[var(--ds-spacing-cardPadding)] text-right">
+          <div className="space-y-6 p-6 text-right">
             <div className="space-y-2">
               <label className="text-muted-foreground text-xs font-semibold tracking-wider">
                 {organization.members.inviteDialog.email}
@@ -417,7 +417,7 @@ export function OrgMembersPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 type="email"
-                className="h-11 rounded-[var(--ds-radius-button)]"
+                className="h-11 rounded-xl"
               />
             </div>
             <div className="space-y-2">
@@ -428,14 +428,14 @@ export function OrgMembersPage() {
                 value={inviteRole}
                 onValueChange={(v) => setInviteRole(v as "admin" | "member")}
               >
-                <SelectTrigger className="h-11 rounded-[var(--ds-radius-button)] text-right">
+                <SelectTrigger className="h-11 rounded-xl text-right">
                   <SelectValue
                     placeholder={
                       organization.members.inviteDialog.rolePlaceholder
                     }
                   />
                 </SelectTrigger>
-                <SelectContent className="rounded-[var(--ds-radius-button)]">
+                <SelectContent className="rounded-xl">
                   <SelectItem value="admin" className="text-right">
                     {organization.members.roles.admin}
                   </SelectItem>
@@ -446,11 +446,11 @@ export function OrgMembersPage() {
               </Select>
             </div>
           </div>
-          <div className="bg-muted/30 border-border flex flex-row-reverse gap-3 border-t p-[var(--ds-spacing-cardPadding)]">
+          <div className="bg-muted/30 border-border flex flex-row-reverse gap-3 border-t p-6">
             <Button
               onClick={handleInvite}
               disabled={isInviting || !inviteEmail}
-              className="h-11 flex-1 rounded-[var(--ds-radius-button)]"
+              className="h-11 flex-1 rounded-xl"
             >
               {isInviting
                 ? organization.members.sending
@@ -459,7 +459,7 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsInviteOpen(false)}
-              className="h-11 flex-1 rounded-[var(--ds-radius-button)]"
+              className="h-11 flex-1 rounded-xl"
             >
               {shared.cancel}
             </Button>
@@ -520,7 +520,7 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateLinkOpen(false)}
-              className="h-11 flex-1 rounded-[var(--ds-radius-button)]"
+              className="h-11 flex-1 rounded-xl"
             >
               {shared.cancel}
             </Button>

@@ -81,7 +81,7 @@ export function FormField<T extends FieldValues>({
                 disabled={disabled}
                 className={cn(
                   "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border font-bold transition-all focus:ring-0",
-                  "h-[var(--ds-sizing-formControlHeight)] rounded-[var(--ds-radius-input)]",
+                  "h-12 rounded-xl",
                   className,
                 )}
               />
@@ -92,7 +92,7 @@ export function FormField<T extends FieldValues>({
                 disabled={disabled}
                 className={cn(
                   "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border font-medium transition-all focus:ring-0",
-                  "rounded-[var(--ds-radius-input)]",
+                  "rounded-xl",
                   className,
                 )}
               />
@@ -105,13 +105,13 @@ export function FormField<T extends FieldValues>({
                 <SelectTrigger
                   className={cn(
                     "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border text-right text-xs font-bold tracking-tight transition-all focus:ring-0",
-                    "h-[var(--ds-sizing-formControlHeight)] rounded-[var(--ds-radius-input)]",
+                    "h-12 rounded-xl",
                     className,
                   )}
                 >
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
-                <SelectContent className="border-border bg-background rounded-[var(--ds-radius-card)] border shadow-lg">
+                <SelectContent className="border-border bg-background rounded-2xl border shadow-lg">
                   {options?.map((option) => (
                     <SelectItem
                       key={option.value}
@@ -137,7 +137,7 @@ export function FormField<T extends FieldValues>({
                 }}
                 className={cn(
                   "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border pt-2.5 font-bold transition-all focus:ring-0",
-                  "h-[var(--ds-sizing-formControlHeight)] rounded-[var(--ds-radius-input)]",
+                  "h-12 rounded-xl",
                   className,
                 )}
               />
@@ -148,7 +148,7 @@ export function FormField<T extends FieldValues>({
                 disabled={disabled}
                 className={cn(
                   "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border font-bold transition-all focus:ring-0",
-                  "h-[var(--ds-sizing-formControlHeight)] rounded-[var(--ds-radius-input)]",
+                  "h-12 rounded-xl",
                   className,
                 )}
               />

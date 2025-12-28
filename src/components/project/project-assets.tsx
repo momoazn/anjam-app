@@ -18,12 +18,12 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
     return (
       <Card
         className={cn(
-          "rounded-[var(--ds-radius-card)] p-[var(--ds-spacing-cardPadding)]",
+          "rounded-2xl p-6",
           className,
         )}
       >
         <div className="text-muted-foreground text-center">
-          <FileIcon className="mx-auto mb-2 h-[var(--ds-sizing-formControlHeight)] w-[var(--ds-sizing-formControlHeight)] opacity-50" />
+          <FileIcon className="mx-auto mb-2 h-12 w-12 opacity-50" />
           <p>{projects.details.noFiles}</p>
         </div>
       </Card>
@@ -68,7 +68,7 @@ export function ProjectAssets({ project, className }: ProjectAssetsProps) {
           return (
             <Card
               key={`${filename}-${index}`}
-              className="overflow-hidden rounded-[var(--ds-radius-card)] transition-shadow hover:shadow-md"
+              className="overflow-hidden rounded-2xl transition-shadow hover:shadow-md"
             >
               {/* Preview Area */}
               {isImage(filename) && thumbnailUrl ? (

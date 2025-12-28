@@ -104,7 +104,7 @@ function AppSidebarHeader() {
   const { isMobile, setOpenMobile, state } = useSidebar();
 
   return (
-    <SidebarHeader className="border-border/40 h-[var(--ds-sizing-siteHeaderHeight)] border-b p-0">
+    <SidebarHeader className="border-border/40 h-16 border-b p-0">
       <SidebarMenu className="h-full">
         <SidebarMenuItem className="h-full">
           <SidebarMenuButton

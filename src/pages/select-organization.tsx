@@ -62,7 +62,7 @@ export function SelectOrganizationPage() {
         {/* Create New Organization Card */}
         <button
           onClick={() => navigate("/organizations/new")}
-          className="group border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/5 relative flex flex-col items-center justify-center gap-4 rounded-[var(--ds-radius-card)] border border-dashed p-8 transition-all"
+          className="group border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/5 relative flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed p-8 transition-all"
         >
           <div className="border-muted-foreground/25 group-hover:border-primary/50 flex h-16 w-16 items-center justify-center rounded-full border border-dashed transition-colors">
             <IconPlus className="text-muted-foreground group-hover:text-primary h-8 w-8 transition-colors" />
@@ -86,7 +86,7 @@ export function SelectOrganizationPage() {
                 navigate("/dashboard");
               }}
               className={cn(
-                "group relative flex flex-col items-center gap-4 rounded-[var(--ds-radius-card)] border p-[var(--ds-spacing-cardPadding)] text-left transition-all",
+                "group relative flex flex-col items-center gap-4 rounded-2xl border p-6 text-left transition-all",
                 isSelected
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50 hover:bg-muted/5",

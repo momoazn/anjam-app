@@ -208,7 +208,7 @@ export default function Notifications() {
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       <PageHeader
         title={notificationsText.pageTitle}
         description={notificationsText.pageDescription}
@@ -247,7 +247,7 @@ export default function Notifications() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="bg-card hover:bg-muted/10 p-[var(--ds-spacing-cardPadding)] text-right transition-colors"
+              className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
             >
               <div className="mb-2 flex items-center justify-end gap-3">
                 <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
@@ -264,7 +264,7 @@ export default function Notifications() {
       </Card>
 
       <Card className="border-border overflow-hidden rounded-xl border shadow-sm">
-        <CardContent className="p-[var(--ds-spacing-cardPadding)]">
+        <CardContent className="p-6">
           <NotificationFilters
             filter={filter}
             sort={sort}

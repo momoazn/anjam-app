@@ -179,7 +179,6 @@ export default function CreateTask() {
                     </div>
                   </CardContent>
                 </Card>
-
                 <Card className="bg-muted/30 p-0">
                   <CardContent className="p-6">
                     <h3 className="text-muted-foreground mb-4 text-xs font-bold tracking-tight">

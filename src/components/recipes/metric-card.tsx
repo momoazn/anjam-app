@@ -3,7 +3,6 @@ import type { LucideIcon } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { tokens } from "@/design/tokens";
 import { cn } from "@/lib/utils";
 
 type MetricCardProps = {
@@ -33,10 +32,7 @@ export function MetricCard({
       : `${value}${suffix}`;
 
   return (
-    <Card
-      className={cn("border-border border shadow-sm", className)}
-      style={{ borderRadius: tokens.radius.button }}
-    >
+    <Card className={cn("border-border border shadow-sm", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-muted-foreground text-xs font-bold">
           {label}

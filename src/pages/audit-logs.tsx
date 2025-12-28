@@ -82,7 +82,7 @@ export default function AuditLogs() {
   const hasFilters = !!resource || !!action || !!client || !!search;
 
   return (
-    <PageTransition className="container mx-auto max-w-[1600px] p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto max-w-[1600px] p-4 md:p-6">
       <PageHeader
         title={auditLogs.title}
         description={
@@ -96,7 +96,7 @@ export default function AuditLogs() {
       <div className="space-y-10">
         {/* Filter Area */}
         <section className="space-y-4">
-          <div className="border-border/40 bg-border/40 flex items-center gap-px overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm">
+          <div className="border-border/40 bg-border/40 flex items-center gap-px overflow-hidden rounded-2xl border shadow-sm">
             <div className="border-border/20 bg-muted/20 flex h-10 shrink-0 items-center gap-2 border-s px-3">
               <IconSearch className="text-primary/60 size-3.5" />
               <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
@@ -129,7 +129,7 @@ export default function AuditLogs() {
             )}
           </div>
 
-          <div className="border-border/40 bg-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm sm:grid-cols-3">
+          <div className="border-border/40 bg-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border shadow-sm sm:grid-cols-3">
             <div className="border-border/10 bg-card flex h-16 flex-col justify-between border-s p-3">
               <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[8px] font-bold tracking-tight">
                 <IconFilter className="size-2.5" /> {auditLogs.filters.resource}
@@ -224,7 +224,7 @@ export default function AuditLogs() {
         </section>
 
         {/* Activity Table */}
-        <section className="border-border/40 bg-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border shadow-md">
+        <section className="border-border/40 bg-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border shadow-md">
           {/* Table Header */}
           <div className="border-border/40 bg-muted/20 sticky top-0 z-10 grid h-10 grid-cols-12 border-b backdrop-blur-sm">
             <div className="border-border/10 col-span-2 flex items-center justify-end border-s px-4">
@@ -349,7 +349,7 @@ export default function AuditLogs() {
                               </span>
                             </AccordionTrigger>
                             <AccordionContent className="p-0">
-                              <div className="bg-muted/10 space-y-4 p-[var(--ds-spacing-cardPadding)] text-right font-mono text-[10px]">
+                              <div className="bg-muted/10 space-y-4 p-6 text-right font-mono text-[10px]">
                                 {changes &&
                                   Object.entries(changes).map(
                                     ([field, diff]) => (

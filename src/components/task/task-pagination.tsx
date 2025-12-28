@@ -35,8 +35,8 @@ export function TaskPagination({
   if (totalTasks === 0) return null;
 
   return (
-    <Card className="border-border/40 rounded-[var(--ds-radius-card)] shadow-sm">
-      <CardContent className="flex flex-col gap-6 p-[var(--ds-spacing-cardPadding)] sm:flex-row sm:items-center sm:justify-between">
+    <Card className="border-border/40 rounded-2xl shadow-sm">
+      <CardContent className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Hash className="text-primary/40 size-4" />
           <div className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">

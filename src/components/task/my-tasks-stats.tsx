@@ -58,7 +58,7 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
   ];
 
   return (
-    <Card className="border-border/40 mb-8 overflow-hidden rounded-[var(--ds-radius-card)] shadow-sm">
+    <Card className="border-border/40 mb-8 overflow-hidden rounded-2xl shadow-sm">
       <CardContent
         className="grid grid-cols-2 gap-px p-0 sm:grid-cols-3 md:grid-cols-5"
         data-animate-stagger
@@ -66,7 +66,7 @@ export function MyTasksStats({ stats }: MyTasksStatsProps) {
         {statItems.map((stat) => (
           <div
             key={stat.label}
-            className="bg-card hover:bg-muted/10 group relative overflow-hidden p-[var(--ds-spacing-cardPadding)] text-right transition-colors"
+            className="bg-card hover:bg-muted/10 group relative overflow-hidden p-6 text-right transition-colors"
           >
             <div className="mb-2 flex items-center justify-end gap-3">
               <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">

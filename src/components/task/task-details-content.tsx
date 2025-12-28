@@ -179,7 +179,7 @@ export function TaskDetailsContent({
           <div className="bg-primary text-primary-foreground absolute -top-3 -right-3 z-10 flex size-10 items-center justify-center rounded-full shadow-lg">
             <IconQuote className="size-5" />
           </div>
-          <div className="bg-card relative overflow-hidden rounded-xl border p-[var(--ds-spacing-cardPadding)] shadow-sm">
+          <div className="bg-card relative overflow-hidden rounded-xl border p-6 shadow-sm">
             <p className="text-foreground/80 relative z-10 text-right text-base leading-relaxed font-medium whitespace-pre-wrap">
               {task.description}
             </p>
@@ -189,7 +189,7 @@ export function TaskDetailsContent({
 
       {/* Time Tracking */}
       <section className="bg-card relative overflow-hidden rounded-xl border shadow-sm">
-        <div className="relative z-10 p-[var(--ds-spacing-cardPadding)] md:p-8">
+        <div className="relative z-10 p-6 md:p-8">
           <div className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
@@ -232,7 +232,7 @@ export function TaskDetailsContent({
                       onHoursChange(Number(event.target.value))
                     }
                     disabled={isUpdatingTime}
-                    className="bg-background focus:ring-primary/20 h-[var(--ds-sizing-formControlHeight)] rounded-lg border text-right text-2xl font-bold tabular-nums"
+                    className="bg-background focus:ring-primary/20 h-12 rounded-lg border text-right text-2xl font-bold tabular-nums"
                   />
                 </div>
                 <div className="space-y-2">
@@ -248,7 +248,7 @@ export function TaskDetailsContent({
                       onMinutesChange(Number(event.target.value))
                     }
                     disabled={isUpdatingTime}
-                    className="bg-background focus:ring-primary/20 h-[var(--ds-sizing-formControlHeight)] rounded-lg border text-right text-2xl font-bold tabular-nums"
+                    className="bg-background focus:ring-primary/20 h-12 rounded-lg border text-right text-2xl font-bold tabular-nums"
                   />
                 </div>
               </div>
@@ -337,7 +337,7 @@ export function TaskDetailsContent({
 
       {/* Tabs Section */}
       <Tabs defaultValue="comments" className="w-full" dir="rtl">
-        <TabsList className="bg-muted/50 h-[var(--ds-sizing-formControlHeight)] w-full justify-start gap-1 rounded-xl p-1">
+        <TabsList className="bg-muted/50 h-12 w-full justify-start gap-1 rounded-xl p-1">
           <TabsTrigger
             value="comments"
             className="data-[state=active]:bg-background h-full flex-1 rounded-lg text-xs font-bold transition-all data-[state=active]:shadow-sm"
@@ -358,7 +358,7 @@ export function TaskDetailsContent({
         </TabsList>
 
         <div className="bg-card mt-6 rounded-xl border shadow-sm">
-          <div className="p-[var(--ds-spacing-cardPadding)] md:p-8">
+          <div className="p-6 md:p-8">
             <TabsContent value="comments" className="m-0 outline-none">
               <div className="space-y-8">
                 {commentsLoading ? (

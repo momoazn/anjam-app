@@ -114,7 +114,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
       </div>
 
       <div
-        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border"
+        className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border"
         data-animate-stagger
       >
         <div className="bg-muted/20 border-border/40 grid h-10 grid-cols-12 border-b">
@@ -243,7 +243,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
         open={Boolean(memberToRemove)}
         onOpenChange={(open) => !open && setMemberToRemove(null)}
       >
-        <AlertDialogContent className="border-border rounded-[var(--ds-radius-card)] border shadow-sm">
+        <AlertDialogContent className="border-border rounded-2xl border shadow-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl font-bold tracking-tight">
               {projects.users.remove.title}
@@ -253,13 +253,13 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel className="border-border rounded-[var(--ds-radius-button)] border text-[10px] font-bold tracking-tight">
+            <AlertDialogCancel className="border-border rounded-xl border text-[10px] font-bold tracking-tight">
               {common.cancel}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmRemove}
               disabled={isRemoving}
-              className="border-border rounded-[var(--ds-radius-button)] border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
+              className="border-border rounded-xl border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
             >
               {isRemoving && (
                 <IconLoader2 className="me-2 h-4 w-4 animate-spin" />

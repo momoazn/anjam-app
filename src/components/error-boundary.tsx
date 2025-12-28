@@ -62,7 +62,7 @@ export class ErrorBoundary extends Component<
       // Default error UI
       return (
         <div className="flex min-h-screen items-center justify-center p-4">
-          <Card className="w-full max-w-md rounded-[var(--ds-radius-card)] shadow-lg">
+          <Card className="w-full max-w-md rounded-2xl shadow-lg">
             <CardHeader className="text-center">
               <div className="bg-destructive/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
                 <AlertTriangle className="text-destructive size-6" />

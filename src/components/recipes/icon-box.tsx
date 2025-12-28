@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type * as React from "react";
 
-import { tokens } from "@/design/tokens";
 import { cn } from "@/lib/utils";
 
 type IconBoxSize = "xs" | "sm" | "md" | "lg";
@@ -12,6 +11,13 @@ const iconClassBySize: Record<IconBoxSize, string> = {
   sm: "size-6",
   md: "size-7",
   lg: "size-8",
+};
+
+const boxClassBySize: Record<IconBoxSize, string> = {
+  xs: "h-10 w-10",
+  sm: "h-12 w-12",
+  md: "h-14 w-14",
+  lg: "h-16 w-16",
 };
 
 const toneClassByTone: Record<IconBoxTone, string> = {
@@ -28,17 +34,14 @@ type IconBoxProps = React.ComponentProps<"div"> & {
   size?: IconBoxSize;
   tone?: IconBoxTone;
   iconClassName?: string;
-  radius?: string;
 };
 
 export function IconBox({
   icon: Icon,
   size = "lg",
   tone = "primary",
-  radius = tokens.radius.iconBox,
   className,
   iconClassName,
-  style,
   children,
   ...props
 }: IconBoxProps) {
@@ -48,18 +51,12 @@ export function IconBox({
       data-size={size}
       data-tone={tone}
       className={cn(
-        "inline-flex items-center justify-center",
-        "transition-all will-change-transform",
-        "duration-[var(--ds-motion-durationNormal)] ease-[var(--ds-motion-easingSpring)]",
+        "inline-flex items-center justify-center rounded-2xl",
+        "transition-all duration-300 ease-out will-change-transform",
+        boxClassBySize[size],
         toneClassByTone[tone],
         className,
       )}
-      style={{
-        width: tokens.sizing.iconBox[size],
-        height: tokens.sizing.iconBox[size],
-        borderRadius: radius,
-        ...style,
-      }}
       {...props}
     >
       {Icon ? (

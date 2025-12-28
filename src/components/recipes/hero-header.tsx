@@ -42,8 +42,8 @@ export function HeroHeader({
       data-slot="hero-header"
       className={cn(
         "border-border/10 bg-card relative mb-12 flex flex-col gap-8 overflow-hidden border shadow-sm md:flex-row md:items-center md:justify-between",
-        "p-[var(--ds-spacing-heroPadding)] lg:p-[var(--ds-spacing-heroPaddingLg)]",
-        "rounded-[var(--ds-radius-heroHeader)]",
+        "p-8 lg:p-12",
+        "rounded-3xl",
         className,
       )}
       style={style}

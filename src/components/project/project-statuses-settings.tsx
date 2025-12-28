@@ -407,7 +407,7 @@ export function ProjectStatusesSettings({
         </div>
       </div>
 
-      <div className="bg-muted/5 border-border/40 rounded-[var(--ds-radius-card)] border p-4">
+      <div className="bg-muted/5 border-border/40 rounded-2xl border p-4">
         <div className="border-border/20 grid grid-cols-12 items-center gap-3 border-b pb-3 text-right text-[9px] font-bold tracking-tight opacity-60">
           <div className="col-span-1" />
           <div className="col-span-3">{projectStatuses.headers.name}</div>
@@ -464,7 +464,7 @@ export function ProjectStatusesSettings({
       </div>
 
       {canManageStatuses && (
-        <div className="border-border/40 bg-muted/5 rounded-[var(--ds-radius-card)] border p-4">
+        <div className="border-border/40 bg-muted/5 rounded-2xl border p-4">
           <div className="mb-3 text-[10px] font-bold tracking-tight opacity-60">
             {projectStatuses.settings.addStatus}
           </div>

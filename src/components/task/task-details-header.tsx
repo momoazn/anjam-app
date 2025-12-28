@@ -6,6 +6,7 @@ import {
 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { formatTaskDate } from "@/lib/date-utils";
 import {
@@ -38,8 +39,8 @@ export function TaskDetailsHeader({
   const PriorityIcon = priorityIcons[task.priority];
 
   return (
-    <div className="bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm">
-      <div className="relative z-10 p-[var(--ds-spacing-cardPadding)] md:p-8">
+    <Card className="relative mb-8 overflow-hidden p-0">
+      <CardContent className="relative z-10 p-6 md:p-8">
         <div className="mb-6 flex items-center justify-between">
           <Button
             variant="ghost"
@@ -142,7 +143,7 @@ export function TaskDetailsHeader({
             </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

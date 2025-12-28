@@ -141,7 +141,7 @@ export function BulkActionsBar({
 
   return (
     <>
-      <div className="border-border bg-card animate-in fade-in slide-in-from-bottom-4 fixed start-1/2 bottom-8 z-50 flex -translate-x-1/2 items-center gap-4 rounded-[var(--ds-radius-card)] border p-2 shadow-lg transition-all">
+      <div className="border-border bg-card animate-in fade-in slide-in-from-bottom-4 fixed start-1/2 bottom-8 z-50 flex -translate-x-1/2 items-center gap-4 rounded-2xl border p-2 shadow-lg transition-all">
         <div className="bg-muted/20 border-border/40 flex items-center gap-3 rounded-xl border px-4 py-2">
           <div className="flex flex-col items-end">
             <span className="text-muted-foreground/40 mb-1 text-right text-[7px] leading-none font-bold tracking-tight">
@@ -252,7 +252,7 @@ export function BulkActionsBar({
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="border-border rounded-[var(--ds-radius-card)] border shadow-lg">
+        <AlertDialogContent className="border-border rounded-2xl border shadow-lg">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center gap-3 text-rose-500">
               <Trash2 className="size-5" />
@@ -270,14 +270,14 @@ export function BulkActionsBar({
           <AlertDialogFooter className="mt-6 gap-2">
             <AlertDialogCancel
               disabled={isLoading}
-              className="border-border rounded-[var(--ds-radius-button)] border text-[10px] font-bold tracking-tight"
+              className="border-border rounded-xl border text-[10px] font-bold tracking-tight"
             >
               {tasks.bulkActions.cancelButton}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isLoading}
-              className="border-border rounded-[var(--ds-radius-button)] border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
+              className="border-border rounded-xl border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
             >
               {isLoading
                 ? tasks.bulkActions.deletingButton

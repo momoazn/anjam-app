@@ -132,7 +132,7 @@ export function ProfileSection() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="flex flex-col items-start gap-8 lg:flex-row">
               <div className="group relative shrink-0">
-                <div className="bg-muted relative aspect-square h-24 w-24 overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm">
+                <div className="bg-muted relative aspect-square h-24 w-24 overflow-hidden rounded-2xl border shadow-sm">
                   {currentAvatarUrl ? (
                     <img
                       src={currentAvatarUrl}
@@ -267,7 +267,7 @@ export function ProfileSection() {
           <div className="bg-border h-px flex-1" />
         </div>
 
-        <div className="bg-muted/30 rounded-[var(--ds-radius-card)] border p-4 shadow-sm">
+        <div className="bg-muted/30 rounded-2xl border p-4 shadow-sm">
           <div className="grid gap-2">
             <span className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
               {settings.profile.email}

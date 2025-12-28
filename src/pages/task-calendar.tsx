@@ -42,7 +42,7 @@ const priorityColors = {
 const CalendarSkeleton = () => (
   <div className="space-y-6">
     <div className="bg-muted/20 border-border/40 h-16 w-full animate-pulse rounded-xl border" />
-    <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px overflow-hidden rounded-[var(--ds-radius-card)] border shadow-sm">
+    <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px overflow-hidden rounded-2xl border shadow-sm">
       {[
         "sk1",
         "sk2",
@@ -215,7 +215,7 @@ export default function TaskCalendar() {
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto p-4 md:p-6">
       <PageHeader
         title={tasksText.calendar.title}
         description={tasksText.calendar.description}
@@ -224,7 +224,7 @@ export default function TaskCalendar() {
       />
 
       {/* Navigation */}
-      <div className="border-border/40 bg-card mb-8 flex items-center justify-between overflow-hidden rounded-[var(--ds-radius-card)] border p-4 shadow-sm">
+      <div className="border-border/40 bg-card mb-8 flex items-center justify-between overflow-hidden rounded-2xl border p-4 shadow-sm">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -270,7 +270,7 @@ export default function TaskCalendar() {
       {isLoadingTasks ? (
         <CalendarSkeleton />
       ) : (
-        <div className="border-border/40 bg-border/40 overflow-hidden rounded-[var(--ds-radius-card)] border shadow-xl">
+        <div className="border-border/40 bg-border/40 overflow-hidden rounded-2xl border shadow-xl">
           {/* Weekday Headers */}
           <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px border-b">
             {weekdayNames.map((day) => (
@@ -347,7 +347,7 @@ export default function TaskCalendar() {
 
       {/* Empty State */}
       {!isLoadingTasks && tasksWithDeadlines.length === 0 && (
-        <div className="border-border/40 mt-8 flex flex-col items-center justify-center rounded-[var(--ds-radius-card)] border border-dashed py-24 text-center opacity-30 grayscale">
+        <div className="border-border/40 mt-8 flex flex-col items-center justify-center rounded-2xl border border-dashed py-24 text-center opacity-30 grayscale">
           <IconCalendar className="mb-4 size-12 stroke-[1]" />
           <h3 className="text-foreground mb-2 text-lg font-bold tracking-tight">
             {tasksText.calendar.noTasks}

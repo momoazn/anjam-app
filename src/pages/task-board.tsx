@@ -193,7 +193,7 @@ export function TaskBoardPage() {
     <PageTransition className="flex h-[calc(100vh-4rem)] flex-col">
       {/* Minimal Header */}
       <div className="bg-card border-border border-b">
-        <div className="relative z-10 flex flex-col gap-6 p-[var(--ds-spacing-cardPadding)] md:flex-row md:items-center md:justify-between md:px-8">
+        <div className="relative z-10 flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:px-8">
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2">
               <IconHash className="size-4" />

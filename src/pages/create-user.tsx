@@ -11,6 +11,7 @@ import {
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { auth, common, users } from "@/constants";
 import { useCreateUser } from "@/hooks";
@@ -72,14 +73,15 @@ export default function CreateUser() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-[var(--ds-spacing-cardPadding)]">
+    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
       <PageHeader
         title={users.create.title}
         description="Add a new user to the system"
         icon={IconUserPlus}
       />
 
-      <div className="bg-card border-border/40 rounded-[var(--ds-radius-card)] border p-8 shadow-sm">
+      <Card className="p-0">
+        <CardContent className="p-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             <UserFields control={userFieldsControl} />
@@ -107,7 +109,8 @@ export default function CreateUser() {
             </div>
           </form>
         </Form>
-      </div>
+        </CardContent>
+      </Card>
     </PageTransition>
   );
 }

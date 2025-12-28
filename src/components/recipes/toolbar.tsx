@@ -1,7 +1,6 @@
 import type * as React from "react";
 
 import { Separator } from "@/components/ui/separator";
-import { tokens } from "@/design/tokens";
 import { cn } from "@/lib/utils";
 
 type ToolbarProps = React.ComponentProps<"div"> & {
@@ -19,7 +18,6 @@ const variantClassByVariant: Record<
 export function Toolbar({
   variant = "muted",
   className,
-  style,
   ...props
 }: ToolbarProps) {
   return (
@@ -28,15 +26,10 @@ export function Toolbar({
       data-slot="toolbar"
       data-variant={variant}
       className={cn(
-        "flex flex-wrap items-center",
+        "flex flex-wrap items-center rounded-2xl p-1.5",
         variantClassByVariant[variant],
         className,
       )}
-      style={{
-        borderRadius: tokens.radius.toolbar,
-        padding: tokens.spacing.toolbarPadding,
-        ...style,
-      }}
       {...props}
     />
   );

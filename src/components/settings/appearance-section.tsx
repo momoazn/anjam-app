@@ -32,7 +32,7 @@ export function AppearanceSection() {
           <Button
             variant="outline"
             className={cn(
-              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-[var(--ds-radius-card)] border transition-all duration-200",
+              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-2xl border transition-all duration-200",
               theme === "light" &&
                 "bg-primary/5 border-primary text-primary ring-primary/20 ring-1",
             )}
@@ -52,7 +52,7 @@ export function AppearanceSection() {
           <Button
             variant="outline"
             className={cn(
-              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-[var(--ds-radius-card)] border transition-all duration-200",
+              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-2xl border transition-all duration-200",
               theme === "dark" &&
                 "bg-primary/5 border-primary text-primary ring-primary/20 ring-1",
             )}
@@ -72,7 +72,7 @@ export function AppearanceSection() {
           <Button
             variant="outline"
             className={cn(
-              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-[var(--ds-radius-card)] border transition-all duration-200",
+              "group relative flex h-24 flex-col items-center justify-center gap-3 rounded-2xl border transition-all duration-200",
               theme === "system" &&
                 "bg-primary/5 border-primary text-primary ring-primary/20 ring-1",
             )}
