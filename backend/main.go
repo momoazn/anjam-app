@@ -6,10 +6,8 @@ package main
 import (
 	"bytes"
 	"context"
-	"database/sql"
 	"embed"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -17,7 +15,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strconv"
 	"strings"
 	"time"
 
@@ -26,8 +23,10 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/security"
+	"anjam/config"
+	"anjam/handlers"
 	"anjam/helpers"
+	"anjam/hooks"
 )
 
 //go:embed dist
@@ -43,13 +42,13 @@ func allowDefaultCredentials(app core.App) bool {
 
 	// In production, allow defaults on initial bootstrap (no admins exist).
 	// If admins already exist, respect TM_ALLOW_DEFAULT_ACCOUNTS for any further defaults.
-	usersCollection, err := app.FindCollectionByNameOrId(CollectionUsers)
+	usersCollection, err := app.FindCollectionByNameOrId(config.CollectionUsers)
 	if err != nil {
 		// If collection doesn't exist yet, allow defaults
 		return true
 	}
 
-	totalAdmins, err := app.CountRecords(usersCollection.Id, dbx.HashExp{"role": RoleAdmin})
+	totalAdmins, err := app.CountRecords(usersCollection.Id, dbx.HashExp{"role": config.RoleAdmin})
 	if err != nil {
 		// On error, allow defaults (safer for first run)
 		return true
@@ -83,33 +82,33 @@ func main() {
 	registerBatchEndpoints(app)
 
 	// --- Bind Record Event Handlers ---
-	app.OnRecordCreateExecute("users").BindFunc(handleUserCreation)
-	app.OnRecordCreateExecute("tasks").BindFunc(handleTaskCreation)
+	app.OnRecordCreateExecute("users").BindFunc(hooks.HandleUserCreation)
+	app.OnRecordCreateExecute("tasks").BindFunc(hooks.HandleTaskCreation)
 	app.OnRecordValidate("tasks").BindFunc(validateTaskStatusTransition)
 	app.OnRecordUpdateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
 		setTaskStatusRef(e)
 		return e.Next()
 	})
-	app.OnRecordAfterCreateSuccess("tasks").BindFunc(handleTaskAssignmentNotification)
-	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(handleTaskUpdateNotification)
-	app.OnRecordAfterUpdateSuccess("projects").BindFunc(handleProjectUpdateNotification)
+	app.OnRecordAfterCreateSuccess("tasks").BindFunc(hooks.HandleTaskAssignmentNotification)
+	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(hooks.HandleTaskUpdateNotification)
+	app.OnRecordAfterUpdateSuccess("projects").BindFunc(hooks.HandleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectCreatedStatuses)
-	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentNotification)
+	app.OnRecordAfterCreateSuccess("comments").BindFunc(hooks.HandleCommentNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
-	app.OnRecordAfterCreateSuccess("project_members").BindFunc(handleProjectMembersCreatedNotify)
+	app.OnRecordAfterCreateSuccess("project_members").BindFunc(hooks.HandleProjectMembersCreatedNotify)
 	app.OnRecordEnrich("audit_logs").BindFunc(handleAuditLogEnrich)
 	app.OnRecordAfterCreateSuccess("time_entries").BindFunc(handleTimeEntryCreated)
 	app.OnRecordAfterUpdateSuccess("time_entries").BindFunc(handleTimeEntryUpdated)
 	app.OnRecordAfterDeleteSuccess("time_entries").BindFunc(handleTimeEntryDeleted)
 
 	// --- Bind Authentication Event Handlers ---
-	app.OnRecordAuthWithPasswordRequest("users").BindFunc(handleAuthRequest)
+	app.OnRecordAuthWithPasswordRequest("users").BindFunc(hooks.HandleAuthRequest)
 
 	// --- Custom API Endpoints ---
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.PATCH("/api/v1/users/{id}/toggle-active", handleToggleUserActive)
-		se.Router.PATCH("/api/v1/users/{id}/unblock", handleUnblockUser)
-		se.Router.GET("/api/v1/users/{id}/login-logs", handleGetUserLoginLogs)
+		se.Router.PATCH("/api/v1/users/{id}/toggle-active", handlers.HandleToggleUserActive)
+		se.Router.PATCH("/api/v1/users/{id}/unblock", handlers.HandleUnblockUser)
+		se.Router.GET("/api/v1/users/{id}/login-logs", handlers.HandleGetUserLoginLogs)
 		se.Router.GET("/api/v1/search", handleGlobalSearch)
 
 		return se.Next()
