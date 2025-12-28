@@ -163,5 +163,3 @@ export const queryKeys = {
   notificationsUnreadCount: (userId: string) =>
     ["notifications", "unread-count", userId] as const,
 };
-
-export { queryKeys, notificationsUnreadCount };
