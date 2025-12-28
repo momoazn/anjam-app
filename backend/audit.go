@@ -52,10 +52,18 @@ var sensitiveFields = map[string]bool{
 // Note: This function intentionally doesn't return errors on Save() failures to avoid
 // blocking the main workflow. Audit log failures are logged for monitoring purposes.
 func logAudit(app core.App, entry AuditEntry) {
+	if err := logAuditWithError(app, entry); err != nil {
+		log.Printf("Warning: Failed to write audit log entry (resource=%s, resource_id=%s): %v",
+			entry.Resource, entry.ResourceID, err)
+	}
+}
+
+// logAuditWithError writes an audit log entry to the audit_logs collection and returns any error.
+// This version is used by the audit worker to detect failures and trigger fallback logging.
+func logAuditWithError(app core.App, entry AuditEntry) error {
 	auditCollection, err := app.FindCollectionByNameOrId(CollectionAuditLogs)
 	if err != nil {
-		log.Printf("Warning: Cannot find audit_logs collection: %v", err)
-		return
+		return fmt.Errorf("cannot find audit_logs collection: %w", err)
 	}
 
 	record := core.NewRecord(auditCollection)
@@ -104,9 +112,10 @@ func logAudit(app core.App, entry AuditEntry) {
 	}
 
 	if err := app.Save(record); err != nil {
-		log.Printf("Warning: Failed to write audit log entry (resource=%s, resource_id=%s): %v",
-			entry.Resource, entry.ResourceID, err)
+		return fmt.Errorf("failed to save audit record: %w", err)
 	}
+
+	return nil
 }
 
 func resolveOrganizationID(app core.App, record *core.Record) string {

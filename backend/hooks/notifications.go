@@ -175,11 +175,14 @@ func translateStatus(status string) string {
 
 // truncateString truncates a string to a maximum length.
 func truncateString(s string, maxLen int) string {
-	if maxLen < 4 {
-		return s
-	}
 	if len(s) <= maxLen {
 		return s
+	}
+	if maxLen < 3 {
+		if maxLen < 0 {
+			maxLen = 0
+		}
+		return s[:maxLen]
 	}
 	return s[:maxLen-3] + "..."
 }

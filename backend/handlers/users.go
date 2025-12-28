@@ -175,7 +175,6 @@ func fetchUserLoginLogs(app core.App, userId string, pagination PaginationParams
 		SELECT COUNT(*) FROM user_login_logs WHERE user = {:userId}
 	`).Bind(dbx.Params{"userId": userId}).Row(&totalCount)
 	if err != nil {
-		log.Printf("Error counting login logs for user %q: %v", userId, err)
 		return nil, 0, err
 	}
 

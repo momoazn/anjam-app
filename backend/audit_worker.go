@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -57,6 +58,31 @@ func (w *AuditWorker) run(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
+			// Context canceled: flush remaining entries and drain queue
+			if len(batch) > 0 {
+				w.flushBatch(batch)
+			}
+			// Drain remaining queue entries
+			for len(w.queue) > 0 {
+				select {
+				case entry := <-w.queue:
+					batch = append(batch, entry)
+					if len(batch) >= 10 {
+						w.flushBatch(batch)
+						batch = batch[:0]
+					}
+				default:
+					// No more entries
+					if len(batch) > 0 {
+						w.flushBatch(batch)
+					}
+					return
+				}
+			}
+			if len(batch) > 0 {
+				w.flushBatch(batch)
+			}
+			return
 		case <-w.done:
 			// Shutdown signal received: flush remaining entries and drain queue
 			if len(batch) > 0 {
@@ -72,6 +98,11 @@ func (w *AuditWorker) run(ctx context.Context) {
 						batch = batch[:0]
 					}
 				default:
+					// No more entries
+					if len(batch) > 0 {
+						w.flushBatch(batch)
+					}
+					return
 				}
 			}
 			if len(batch) > 0 {
@@ -118,8 +149,20 @@ func (w *AuditWorker) flushBatch(batch []AuditEntry) {
 
 // writeToDB writes a batch of audit entries to the database
 func (w *AuditWorker) writeToDB(batch []AuditEntry) error {
+	var firstError error
+	failedCount := 0
+
 	for _, entry := range batch {
-		logAudit(w.app, entry)
+		if err := logAuditWithError(w.app, entry); err != nil {
+			failedCount++
+			if firstError == nil {
+				firstError = err
+			}
+		}
+	}
+
+	if failedCount > 0 {
+		return fmt.Errorf("failed to write %d/%d audit entries: %w", failedCount, len(batch), firstError)
 	}
 	return nil
 }
