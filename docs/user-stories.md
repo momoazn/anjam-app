@@ -6,19 +6,24 @@ This document contains user stories for the Anjam task and project management ap
 
 1. [Authentication & Initial Setup](#1-authentication--initial-setup)
 2. [Organization Setup](#2-organization-setup)
-3. [Project Setup](#3-project-setup)
-4. [Task Management](#4-task-management)
-5. [Task Collaboration](#5-task-collaboration)
-6. [Tags Management](#6-tags-management)
-7. [Notifications](#7-notifications)
-8. [User Management](#8-user-management)
-9. [Organization & Project Administration](#9-organization--project-administration)
-10. [Settings & Preferences](#10-settings--preferences)
-11. [Dashboard & Navigation](#11-dashboard--navigation)
-12. [Reports & Audit](#12-reports--audit)
-13. [Bulk Operations](#13-bulk-operations)
-14. [File Management](#14-file-management)
-15. [UI State Actions](#15-ui-state-actions)
+3. [Invitations & Onboarding](#3-invitations--onboarding)
+4. [Dashboard & Navigation](#4-dashboard--navigation)
+5. [Project Setup](#5-project-setup)
+6. [Task Management](#6-task-management)
+7. [Calendar & Scheduling](#7-calendar--scheduling)
+8. [Task Collaboration](#8-task-collaboration)
+9. [Time Tracking & Timesheets](#9-time-tracking--timesheets)
+10. [Tags Management](#10-tags-management)
+11. [Saved Filters](#11-saved-filters)
+12. [Bulk Operations](#12-bulk-operations)
+13. [Notifications](#13-notifications)
+14. [User Management](#14-user-management)
+15. [Organization & Project Administration](#15-organization--project-administration)
+16. [Reports & Audit](#16-reports--audit)
+17. [Settings & Preferences](#17-settings--preferences)
+18. [Help & Documentation](#18-help--documentation)
+19. [File Management](#19-file-management)
+20. [UI State Actions](#20-ui-state-actions)
 
 ---
 
@@ -162,7 +167,175 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 3. Project Setup
+## 3. Invitations & Onboarding
+
+### US-082: Create Organization Invite
+
+**As an** organization owner or admin
+**I want to** create an invite link
+**So that** I can invite new members to join my organization
+
+**Acceptance Criteria:**
+
+- User can generate invite link
+- User can set role for invitees (admin/member)
+- User can set maximum uses for link
+- User can see invite token
+- Invite link is shareable
+- Invite has expiration date
+
+---
+
+### US-083: View Organization Invites
+
+**As an** organization owner or admin
+**I want to** view all organization invites
+**So that** I can track invitation status
+
+**Acceptance Criteria:**
+
+- User can see list of all invites
+- User can see invite role
+- User can see usage count
+- User can see expiration date
+- User can see if invite is revoked
+- List is paginated
+
+---
+
+### US-084: Revoke Invite
+
+**As an** organization owner or admin
+**I want to** revoke an invite link
+**So that** I can prevent further use of the link
+
+**Acceptance Criteria:**
+
+- User can revoke invite
+- Revoked invites are marked
+- Revoked invites cannot be used
+- Action requires confirmation
+- Revocation is immediate
+
+---
+
+### US-085: Accept Invite
+
+**As a** new user
+**I want to** accept an organization invitation
+**So that** I can join the organization
+
+**Acceptance Criteria:**
+
+- User can view invite details
+- User can register with invite link
+- User is automatically added to organization
+- User receives assigned role
+- User is logged in after registration
+- Welcome notification is sent
+
+---
+
+### US-086: Register with Organization
+
+**As a** new user
+**I want to** register and create an organization at the same time
+**So that** I can get started quickly
+
+**Acceptance Criteria:**
+
+- User can provide email and password
+- User can provide organization name
+- User account is created
+- Organization is created
+- User becomes organization owner
+- User is logged in after registration
+
+---
+
+### US-087: Complete Onboarding
+
+**As a** new user
+**I want to** complete onboarding
+**So that** I can set up my workspace
+
+**Acceptance Criteria:**
+
+- User can go through onboarding steps
+- User can create first project
+- User can invite team members
+- User can set preferences
+- Onboarding is marked as completed
+- User is redirected to dashboard
+
+---
+
+### US-088: Skip Onboarding
+
+**As an** invited user
+**I want to** skip onboarding
+**So that** I can start working immediately
+
+**Acceptance Criteria:**
+
+- Invited users skip onboarding
+- User goes directly to dashboard
+- Onboarding is marked as completed
+- User can access all features
+
+---
+
+## 4. Dashboard & Navigation
+
+### US-054: View Dashboard
+
+**As a** user
+**I want to** view the dashboard
+**So that** I can see an overview of my tasks, projects, and activity
+
+**Acceptance Criteria:**
+
+- User can see task statistics
+- User can see project overview
+- User can see recent notifications
+- User can navigate to different sections from dashboard
+- Dashboard shows data for current organization
+
+---
+
+### US-055: Global Search
+
+**As a** user
+**I want to** search for tasks and projects
+**So that** I can quickly find what I'm looking for
+
+**Acceptance Criteria:**
+
+- User can search from header search bar
+- Search finds tasks and projects by name/ID
+- Results show relevant information
+- User can click result to navigate
+- Search respects user permissions
+
+---
+
+### US-056: Navigate Application
+
+**As a** user
+**I want to** navigate between different sections
+**So that** I can access all features of the application
+
+**Acceptance Criteria:**
+
+- User can navigate via sidebar menu
+- User can navigate via breadcrumbs
+- User can use browser back button
+- User can click logo to return to dashboard
+- Navigation is intuitive and consistent
+
+---
+
+## 5. Project Setup
 
 ### US-010: Create Project
 
@@ -255,7 +428,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 4. Task Management
+## 6. Task Management
 
 ### US-016: Create Task
 
@@ -366,7 +539,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 5. Task Collaboration
+## 8. Task Collaboration
 
 ### US-023: Add Comment to Task
 
@@ -506,7 +679,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 6. Tags Management
+## 10. Tags Management
 
 ### US-032: Create Tag
 
@@ -568,7 +741,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 7. Notifications
+## 13. Notifications
 
 ### US-036: View Notifications
 
@@ -631,7 +804,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 8. User Management
+## 14. User Management
 
 ### US-040: Create User
 
@@ -725,7 +898,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 9. Organization & Project Administration
+## 15. Organization & Project Administration
 
 ### US-046: View Project Tasks
 
@@ -757,7 +930,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 10. Settings & Preferences
+## 17. Settings & Preferences
 
 ### US-048: Update Profile
 
@@ -849,57 +1022,7 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
-## 11. Dashboard & Navigation
-
-### US-054: View Dashboard
-
-**As a** user  
-**I want to** view the dashboard  
-**So that** I can see an overview of my tasks, projects, and activity
-
-**Acceptance Criteria:**
-
-- User can see task statistics
-- User can see project overview
-- User can see recent notifications
-- User can navigate to different sections from dashboard
-- Dashboard shows data for current organization
-
----
-
-### US-055: Global Search
-
-**As a** user  
-**I want to** search for tasks and projects  
-**So that** I can quickly find what I'm looking for
-
-**Acceptance Criteria:**
-
-- User can search from header search bar
-- Search finds tasks and projects by name/ID
-- Results show relevant information
-- User can click result to navigate
-- Search respects user permissions
-
----
-
-### US-056: Navigate Application
-
-**As a** user  
-**I want to** navigate between different sections  
-**So that** I can access all features of the application
-
-**Acceptance Criteria:**
-
-- User can navigate via sidebar menu
-- User can navigate via breadcrumbs
-- User can use browser back button
-- User can click logo to return to dashboard
-- Navigation is intuitive and consistent
-
----
-
-## 12. Reports & Audit
+## 16. Reports & Audit
 
 ### US-057: View Audit Logs
 
@@ -1124,6 +1247,194 @@ This document contains user stories for the Anjam task and project management ap
 
 ---
 
+## 16. Calendar & Scheduling
+
+### US-071: View Task Calendar
+
+**As a** user
+**I want to** view my tasks in a calendar format
+**So that** I can see deadlines and plan my schedule
+
+**Acceptance Criteria:**
+
+- User can see calendar view with monthly layout
+- Tasks with deadlines appear on their due dates
+- User can navigate between months
+- User can jump to current month
+- User can see task count for each day
+- User can click task to view details
+- Completed tasks are visually distinguished
+
+---
+
+### US-072: Navigate Calendar
+
+**As a** user
+**I want to** navigate through the calendar
+**So that** I can view tasks for different time periods
+
+**Acceptance Criteria:**
+
+- User can go to previous month
+- User can go to next month
+- User can jump to today
+- Current day is highlighted
+- Days outside current month are dimmed
+- Navigation is smooth and responsive
+
+---
+
+### US-073: View Monthly Task Statistics
+
+**As a** user
+**I want to** see monthly task statistics
+**So that** I can track my productivity
+
+**Acceptance Criteria:**
+
+- User can see total tasks for the month
+- User can see completed tasks count
+- User can see pending tasks count
+- Statistics update in real-time
+- Statistics are displayed in calendar header
+
+---
+
+## 17. Time Tracking & Timesheets
+
+### US-074: View Timesheet
+
+**As a** user
+**I want to** view my timesheet
+**So that** I can see how much time I've spent on tasks
+
+**Acceptance Criteria:**
+
+- User can see weekly timesheet view
+- Each day shows tasks worked on
+- User can see time spent per task
+- User can see daily totals
+- User can see weekly total
+- Timesheet shows tasks with time logged
+
+---
+
+### US-075: Export Timesheet
+
+**As a** user
+**I want to** export my timesheet
+**So that** I can share or archive my time records
+
+**Acceptance Criteria:**
+
+- User can export timesheet as CSV
+- CSV includes date, task title, project, and minutes
+- File name includes date range
+- Download starts automatically
+- Exported data is accurate and complete
+
+---
+
+### US-076: View Daily Time Breakdown
+
+**As a** user
+**I want to** see detailed breakdown of time spent each day
+**So that** I can understand my daily productivity
+
+**Acceptance Criteria:**
+
+- User can see tasks for each day of the week
+- Each task shows project name
+- Each task shows time spent
+- Daily totals are calculated
+- Empty days show placeholder
+- User can click task to view details
+
+---
+
+## 18. Help & Documentation
+
+### US-077: Browse Help Articles
+
+**As a** user
+**I want to** browse help articles
+**So that** I can learn how to use the application
+
+**Acceptance Criteria:**
+
+- User can see help categories
+- User can browse articles by category
+- Articles are organized logically
+- User can read article content
+- Help is accessible from navigation
+
+---
+
+### US-078: Search Help
+
+**As a** user
+**I want to** search for help articles
+**So that** I can quickly find answers to my questions
+
+**Acceptance Criteria:**
+
+- User can search help articles
+- Search results are relevant
+- User can click result to view article
+- Search is fast and responsive
+
+---
+
+## 19. Saved Filters
+
+### US-079: Save Filter
+
+**As a** user
+**I want to** save my current filter configuration
+**So that** I can quickly apply it later
+
+**Acceptance Criteria:**
+
+- User can save current filter settings
+- User can name the saved filter
+- Saved filter appears in dropdown
+- Filter is associated with user account
+- Multiple filters can be saved
+
+---
+
+### US-080: Apply Saved Filter
+
+**As a** user
+**I want to** apply a saved filter
+**So that** I can quickly view filtered data
+
+**Acceptance Criteria:**
+
+- User can see list of saved filters
+- User can select filter to apply
+- Filter settings are applied immediately
+- View updates to show filtered results
+- Active filter is indicated
+
+---
+
+### US-081: Manage Saved Filters
+
+**As a** user
+**I want to** manage my saved filters
+**So that** I can keep them organized and up to date
+
+**Acceptance Criteria:**
+
+- User can edit saved filter name
+- User can delete saved filters
+- User can set default filter
+- Changes are saved immediately
+- Confirmation required for deletion
+
+---
+
 ## User Story Summary by Role
 
 ### New User Journey
@@ -1135,16 +1446,19 @@ This document contains user stories for the Anjam task and project management ap
 5. US-016: Create first task
 6. US-023: Add comment to task
 7. US-028: Log time on task
+8. US-087: Complete onboarding
 
 ### Daily User Workflow
 
 1. US-002: Login
 2. US-054: View dashboard
 3. US-017: View task list
-4. US-020: Update task status
-5. US-023: Add comments
-6. US-028: Log time
-7. US-036: Check notifications
+4. US-071: View task calendar
+5. US-020: Update task status
+6. US-023: Add comments
+7. US-028: Log time
+8. US-074: View timesheet
+9. US-036: Check notifications
 
 ### Administrator Workflow
 
@@ -1152,8 +1466,9 @@ This document contains user stories for the Anjam task and project management ap
 2. US-005: Create organizations
 3. US-010: Create projects
 4. US-014: Add project members
-5. US-057: View audit logs
-6. US-059: Generate reports
+5. US-082: Create organization invites
+6. US-057: View audit logs
+7. US-059: Generate reports
 
 ---
 
@@ -1165,7 +1480,11 @@ This document contains user stories for the Anjam task and project management ap
 - Some stories may have dependencies on others
 - Role-based permissions affect story availability
 - Stories can be prioritized and estimated for sprint planning
+- Invite links have expiration dates and usage limits for security
+- Timesheet exports are in CSV format for compatibility
+- Calendar view only shows tasks with deadlines
+- Saved filters are user-specific and persist across sessions
 
 ---
 
-_Last updated: 2024_
+_Last updated: 2025-12-28_

@@ -6,19 +6,24 @@ This document lists all user interface actions available in the Anjam task and p
 
 1. [Authentication & Initial Setup](#1-authentication--initial-setup)
 2. [Organization Setup](#2-organization-setup)
-3. [Project Setup](#3-project-setup)
-4. [Task Management](#4-task-management)
-5. [Task Collaboration](#5-task-collaboration)
-6. [Tags Management](#6-tags-management)
-7. [Notifications](#7-notifications)
-8. [User Management](#8-user-management)
-9. [Organization & Project Administration](#9-organization--project-administration)
-10. [Settings & Preferences](#10-settings--preferences)
-11. [Dashboard & Navigation](#11-dashboard--navigation)
-12. [Reports & Audit](#12-reports--audit)
-13. [Bulk Operations](#13-bulk-operations)
-14. [File Management](#14-file-management)
-15. [UI State Actions](#15-ui-state-actions)
+3. [Invitations & Onboarding](#3-invitations--onboarding)
+4. [Dashboard & Navigation](#4-dashboard--navigation)
+5. [Project Setup](#5-project-setup)
+6. [Task Management](#6-task-management)
+7. [Calendar & Scheduling](#7-calendar--scheduling)
+8. [Task Collaboration](#8-task-collaboration)
+9. [Time Tracking & Timesheets](#9-time-tracking--timesheets)
+10. [Tags Management](#10-tags-management)
+11. [Saved Filters](#11-saved-filters)
+12. [Bulk Operations](#12-bulk-operations)
+13. [Notifications](#13-notifications)
+14. [User Management](#14-user-management)
+15. [Organization & Project Administration](#15-organization--project-administration)
+16. [Reports & Audit](#16-reports--audit)
+17. [Settings & Preferences](#17-settings--preferences)
+18. [Help & Documentation](#18-help--documentation)
+19. [File Management](#19-file-management)
+20. [UI State Actions](#20-ui-state-actions)
 
 ---
 
@@ -50,7 +55,53 @@ This document lists all user interface actions available in the Anjam task and p
 
 ---
 
-## 3. Project Setup
+## 3. Invitations & Onboarding
+
+### Organization Invitations
+
+- **Create invite link** - Generate invite link for organization
+- **Set invite role** - Assign role for invited users (admin/member)
+- **Set max uses** - Set maximum number of uses for invite link
+- **View invites** - List all organization invites
+- **Revoke invite** - Deactivate invite link
+- **Accept invite** - Register using invite link
+- **View invite details** - See invite organization and role
+
+### Onboarding
+
+- **Complete onboarding** - Finish initial setup flow
+- **Skip onboarding** - Skip onboarding (for invited users)
+- **View pending activation** - See activation pending state
+
+---
+
+## 4. Dashboard & Navigation
+
+### Dashboard
+
+- **View dashboard** - Navigate to dashboard (logo click or menu)
+- **View all tasks** - Navigate to tasks page
+- **View all projects** - Navigate to projects page
+- **View notifications** - Navigate to notifications page
+- **View reports** - Navigate to reports page
+- **Quick stats** - Click stats to filter/view details
+
+### Global Search
+
+- **Search** - Search input in header
+- **View search results** - Click result to navigate
+- **Clear search** - Clear search input
+
+### Navigation
+
+- **Sidebar navigation** - Click menu items to navigate
+- **Breadcrumbs** - Navigate via breadcrumb links
+- **Back button** - Browser back navigation
+- **Logo click** - Navigate to dashboard
+
+---
+
+## 5. Project Setup
 
 ### Project Creation
 
@@ -79,7 +130,7 @@ This document lists all user interface actions available in the Anjam task and p
 
 ---
 
-## 4. Task Management
+## 6. Task Management
 
 ### Task Creation
 
@@ -134,7 +185,7 @@ This document lists all user interface actions available in the Anjam task and p
 
 ---
 
-## 5. Task Collaboration
+## 8. Task Collaboration
 
 ### Comments
 
@@ -171,7 +222,7 @@ This document lists all user interface actions available in the Anjam task and p
 
 ---
 
-## 6. Tags Management
+## 10. Tags Management
 
 ### Tags Creation & Management
 
@@ -186,7 +237,7 @@ This document lists all user interface actions available in the Anjam task and p
 
 ---
 
-## 7. Notifications
+## 13. Notifications
 
 ### Notifications Viewing & Management
 
@@ -205,7 +256,7 @@ This document lists all user interface actions available in the Anjam task and p
 
 ---
 
-## 8. User Management
+## 14. User Management
 
 _Note: Admin/Manager only_
 
@@ -228,7 +279,7 @@ _Note: Admin/Manager only_
 
 ---
 
-## 9. Organization & Project Administration
+## 15. Organization & Project Administration
 
 ### Project Administration
 
@@ -242,7 +293,7 @@ _Note: Admin/Manager only_
 
 ---
 
-## 10. Settings & Preferences
+## 17. Settings & Preferences
 
 ### Settings Navigation
 
@@ -264,33 +315,7 @@ _Note: Admin/Manager only_
 
 ---
 
-## 11. Dashboard & Navigation
-
-### Dashboard
-
-- **View dashboard** - Navigate to dashboard (logo click or menu)
-- **View all tasks** - Navigate to tasks page
-- **View all projects** - Navigate to projects page
-- **View notifications** - Navigate to notifications page
-- **View reports** - Navigate to reports page
-- **Quick stats** - Click stats to filter/view details
-
-### Global Search
-
-- **Search** - Search input in header
-- **View search results** - Click result to navigate
-- **Clear search** - Clear search input
-
-### Navigation
-
-- **Sidebar navigation** - Click menu items to navigate
-- **Breadcrumbs** - Navigate via breadcrumb links
-- **Back button** - Browser back navigation
-- **Logo click** - Navigate to dashboard
-
----
-
-## 12. Reports & Audit
+## 16. Reports & Audit
 
 ### Audit Logs
 
@@ -308,7 +333,7 @@ _Note: Admin/Manager only_
 
 ---
 
-## 13. Bulk Operations
+## 12. Bulk Operations
 
 _Available when tasks are in selection mode_
 
@@ -327,7 +352,7 @@ _Available when tasks are in selection mode_
 
 ---
 
-## 14. File Management
+## 19. File Management
 
 ### File Operations
 
@@ -337,7 +362,7 @@ _Available when tasks are in selection mode_
 
 ---
 
-## 15. UI State Actions
+## 20. UI State Actions
 
 ### General UI Interactions
 
@@ -346,6 +371,75 @@ _Available when tasks are in selection mode_
 - **Open/close dialogs** - Modal interactions
 - **Undo actions** - Undo via toast notifications
 - **Dismiss notifications** - Close toast messages
+
+---
+
+## 7. Calendar & Scheduling
+
+### Calendar View
+
+- **View task calendar** - Navigate to calendar page
+- **Navigate months** - Previous/next month buttons
+- **Go to today** - Jump to current month
+- **View monthly stats** - See total, completed, and pending tasks
+- **View task details** - Click task to navigate to task details
+- **View task count** - See number of tasks per day
+- **View month overview** - See all tasks with deadlines for the month
+
+---
+
+## 9. Time Tracking & Timesheets
+
+### Timesheet View
+
+- **View timesheet** - Navigate to timesheet page
+- **View weekly breakdown** - See time spent per day for current week
+- **View daily tasks** - See tasks worked on each day
+- **View daily totals** - See total time spent per day
+- **View weekly total** - See total time spent for the week
+- **Export timesheet** - Download timesheet as CSV
+- **Navigate to task** - Click task to view details
+
+### Time Entry Management
+
+- **Log time entry** - Open time entry dialog to log time
+- **Log time** - Submit time entry
+- **Cancel** - Close dialog without saving
+- **Set duration** - Hours/minutes input fields
+- **Add note** - Optional note field
+- **Select date** - Date picker for time entry date
+- **View time entries** - List of logged time entries
+- **Edit time entry** - Update existing time entry
+- **Delete time entry** - Remove time entry
+- **Edit time spent** - Manual time editing (admin/supervisor/assignee only)
+- **Save time** - Save manual time changes
+- **Cancel time edit** - Cancel time editing mode
+
+---
+
+## 18. Help & Documentation
+
+### Help Center
+
+- **View help articles** - Navigate to help page
+- **Browse categories** - View help categories
+- **Search help** - Search for help articles
+- **Read article** - View detailed help content
+
+---
+
+## 11. Saved Filters
+
+### Filter Management
+
+- **Save current filter** - Save current filter configuration
+- **Name filter** - Provide name for saved filter
+- **View saved filters** - Access saved filters dropdown
+- **Apply saved filter** - Select saved filter to apply
+- **Manage saved filters** - Open manage filters dialog
+- **Edit saved filter** - Modify existing saved filter
+- **Delete saved filter** - Remove saved filter
+- **Set as default** - Set filter as default for current view
 
 ---
 
@@ -398,7 +492,11 @@ _Available when tasks are in selection mode_
 - File uploads support multiple file types
 - All destructive actions (delete, remove) have confirmation dialogs
 - Actions can be accessed through multiple entry points (buttons, menus, keyboard shortcuts)
+- Invite links have expiration dates and usage limits
+- Timesheet exports are in CSV format
+- Calendar view shows tasks with deadlines only
+- Saved filters are user-specific and persist across sessions
 
 ---
 
-_Last updated: 2024_
+_Last updated: 2025-12-28_
