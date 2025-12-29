@@ -5,6 +5,7 @@ import { mutationInvalidators } from "@/lib/query-invalidators";
 import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
+import { useCurrentOrganization } from "@/store/auth-store";
 
 const { useUpdate: useUpdateTagMutation, useDelete: useDeleteTagMutation } =
   createCrudHooks<TagsRecord, TagsResponse>({
@@ -46,6 +47,8 @@ export function useTags() {
 export function useCreateTag(
   options?: UseMutationOptions<TagsResponse, Error, CreateTagInput>,
 ) {
+  const currentOrg = useCurrentOrganization();
+
   return useCreateTagMutation({
     ...options,
     mutationFn: (data) => {
@@ -53,14 +56,14 @@ export function useCreateTag(
       if (!currentUser) {
         throw new Error("User must be logged in to create a tag");
       }
-      if (!currentUser.group) {
+      if (!currentOrg) {
         throw new Error("User must belong to a group to create a tag");
       }
 
       // Merge the creator field with the provided data
       const tagData = {
         ...data,
-        group: currentUser.group,
+        organization: currentOrg.id,
         creator: currentUser.id,
       };
 

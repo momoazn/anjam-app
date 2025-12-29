@@ -85,9 +85,7 @@ export function createCrudHooks<TRecord, TResponse, TQueryKeys = unknown>(
 
   const useDeleteMutation = createMutation<TResponse, Error, string>(
     async (id: string) => {
-      const supportsSoftDelete = ["tasks", "projects", "comments"].includes(
-        collection,
-      );
+      const supportsSoftDelete = ["tasks", "comments"].includes(collection);
 
       if (supportsSoftDelete) {
         const result = await pb.collection(collection).update(id, {
@@ -149,9 +147,7 @@ export function createBulkOperations<TRecord, TResponse, TQueryKeys = unknown>(
     useBulkDelete: createMutation<void, Error, string[]>(
       async (ids: string[]) => {
         const timestamp = new Date().toISOString();
-        const supportsSoftDelete = ["tasks", "projects", "comments"].includes(
-          collection,
-        );
+        const supportsSoftDelete = ["tasks", "comments"].includes(collection);
 
         if (supportsSoftDelete) {
           const promises = ids.map((id) =>

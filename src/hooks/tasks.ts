@@ -194,7 +194,7 @@ export function useTasks(
 ) {
   const {
     projectId,
-    expandFields = "project,assignee",
+    expandFields = "project,assignee,tags",
     mode = "paged",
     page = 1,
     perPage = 50,
@@ -229,7 +229,7 @@ export function useTask(options: { id: string; enabled?: boolean }) {
     queryKey: queryKeys.tasks.detail(id),
     queryFn: async () => {
       const task = await pb.collection("tasks").getOne<TaskWithProject>(id, {
-        expand: "project,assignee,creator",
+        expand: "project,assignee,creator,tags",
       });
       if (task.deleted_at) {
         throw new Error("Task not found");

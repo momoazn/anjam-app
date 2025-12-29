@@ -5,6 +5,7 @@ import type {
   TasksResponse,
   TypedPocketBase,
   UsersResponse,
+  TagsResponse,
 } from "./pocketbase-types";
 
 // During development, the PocketBase server is running on localhost:8090
@@ -28,6 +29,7 @@ export type TaskWithProject = TasksResponse<{
   project: ProjectsResponse;
   assignee?: UsersResponse; // Make assignee optional in expand
   creator: UsersResponse;
+  tags?: TagsResponse[];
 }>;
 export type ProjectWithSupervisor = ProjectsResponse<{
   supervisor: UsersResponse;
