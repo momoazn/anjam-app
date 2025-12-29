@@ -6,7 +6,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { common, search } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
 import { useDebounce } from "use-debounce";
@@ -25,6 +25,9 @@ export function GlobalSearch() {
   const navigate = useNavigate();
 
   const { data, isLoading } = useGlobalSearch(debouncedQuery);
+  const taskResults = data?.tasks ?? [];
+  const projectResults = data?.projects ?? [];
+  const hasResults = taskResults.length > 0 || projectResults.length > 0;
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -65,6 +68,7 @@ export function GlobalSearch() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl overflow-hidden rounded-xl border p-0 shadow-2xl">
+          <DialogTitle className="sr-only">Global Search</DialogTitle>
           <Command
             shouldFilter={false}
             className="[&_[cmdk-group-heading]]:text-muted-foreground bg-transparent [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-input-wrapper]]:h-14 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:text-base [&_[cmdk-input]]:font-medium"
@@ -89,7 +93,7 @@ export function GlobalSearch() {
                 </div>
               )}
 
-              {!isLoading && !data && query.length > 0 && (
+              {!isLoading && query.length >= 2 && !hasResults && (
                 <CommandEmpty className="flex flex-col items-center justify-center py-12">
                   <IconHash className="text-muted-foreground/20 size-10" />
                   <p className="text-muted-foreground mt-3 text-sm font-medium">
@@ -98,11 +102,11 @@ export function GlobalSearch() {
                 </CommandEmpty>
               )}
 
-              {data && (
+              {data && hasResults && (
                 <div className="space-y-1">
-                  {data.tasks.length > 0 && (
+                  {taskResults.length > 0 && (
                     <CommandGroup heading="Tasks">
-                      {data.tasks.map((task) => (
+                      {taskResults.map((task) => (
                         <CommandItem
                           key={task.id}
                           value={`task-${task.id}`}
@@ -143,9 +147,9 @@ export function GlobalSearch() {
                     </CommandGroup>
                   )}
 
-                  {data.projects.length > 0 && (
+                  {projectResults.length > 0 && (
                     <CommandGroup heading="Projects">
-                      {data.projects.map((project) => (
+                      {projectResults.map((project) => (
                         <CommandItem
                           key={project.id}
                           value={`project-${project.id}`}

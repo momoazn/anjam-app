@@ -46,7 +46,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	}
 
 	// Transform tasks to lightweight DTO
-	var taskDTOs []map[string]interface{}
+	taskDTOs := make([]map[string]interface{}, 0)
 	for _, t := range tasks {
 		if canViewTask(e, t) {
 			projectName := ""
@@ -86,7 +86,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 		projects = []*core.Record{}
 	}
 
-	var projectDTOs []map[string]interface{}
+	projectDTOs := make([]map[string]interface{}, 0)
 	for _, p := range projects {
 		if canViewProject(e, p) {
 			projectDTOs = append(projectDTOs, map[string]interface{}{
