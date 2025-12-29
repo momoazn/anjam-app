@@ -234,7 +234,7 @@ export default function Tasks() {
     }
 
     if (selectedTag !== "all") {
-      parts.push(`tags ?= "${selectedTag}"`);
+      parts.push(`tags.id ?= "${selectedTag}"`);
     }
 
     return parts.join(" && ");
@@ -260,12 +260,22 @@ export default function Tasks() {
   });
 
   const taskQuery = useTasks({
-    expandFields: "project,assignee",
+    expandFields: "project,assignee,tags",
     mode: "paged",
     page,
     perPage,
     filter: filterExpression || undefined,
   });
+
+  console.log("Task Query Filter:", filterExpression);
+  console.log(
+    "Task Query Result:",
+    taskQuery.data?.items?.length,
+    "tasks found, totalItems:",
+    taskQuery.data?.totalItems,
+    "page:",
+    taskQuery.data?.page,
+  );
 
   const totalTasks = taskQuery.data?.totalItems ?? 0;
   const totalPages = taskQuery.data?.totalPages ?? 1;

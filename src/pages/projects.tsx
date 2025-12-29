@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useProjects } from "@/hooks";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export default function Projects() {
   const user = useAuthUser();
+  const currentOrgRole = useCurrentOrgRole();
   const navigate = useNavigate();
 
   const { data: userProjects, isPending: isLoadingProjects } = useProjects({
@@ -26,7 +27,10 @@ export default function Projects() {
 
   const isAdmin = user?.role === UsersRoleOptions.admin;
   const isSupervisor = user?.role === UsersRoleOptions.supervisor;
-  const canCreateProject = isAdmin || isSupervisor;
+  const isOrgOwner = currentOrgRole === "owner";
+  const isOrgAdmin = currentOrgRole === "admin";
+  const canCreateProject = isAdmin || isSupervisor || isOrgOwner || isOrgAdmin;
+  const canEditDelete = isAdmin || isSupervisor || isOrgOwner || isOrgAdmin;
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
@@ -73,7 +77,7 @@ export default function Projects() {
         <ProjectListGroup
           projects={userProjects ?? []}
           onEdit={handleEdit}
-          canEditDelete={isAdmin || isSupervisor}
+          canEditDelete={canEditDelete}
         />
       )}
     </PageTransition>

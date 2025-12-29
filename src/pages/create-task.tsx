@@ -50,6 +50,7 @@ export default function CreateTask() {
       deadline: undefined,
       estimated_hours: 0,
       estimated_minutes: 0,
+      tags: [],
     },
   });
 

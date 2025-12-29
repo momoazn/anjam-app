@@ -21,7 +21,7 @@ import { queryKeys } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrganization } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: projects.create.form.nameRequired }),
@@ -46,6 +46,7 @@ const projectFormSchema = z.object({
 export default function CreateProject() {
   const navigate = useNavigate();
   const user = useAuthUser();
+  const currentOrg = useCurrentOrganization();
   const queryClient = useQueryClient();
   const isAdmin = user?.role === "admin";
 
@@ -66,6 +67,10 @@ export default function CreateProject() {
       formData.append("name", data.name);
       formData.append("code", data.code.toUpperCase());
       formData.append("supervisor", data.supervisor || user?.id || "");
+
+      if (currentOrg?.id) {
+        formData.append("organization", currentOrg.id);
+      }
 
       if (data.description) {
         const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");

@@ -55,6 +55,7 @@ export default function EditTask() {
       deadline: undefined,
       estimated_hours: 0,
       estimated_minutes: 0,
+      tags: [],
     },
   });
 
@@ -74,6 +75,7 @@ export default function EditTask() {
         deadline: task.deadline ? new Date(task.deadline) : undefined,
         estimated_hours: hours || 0,
         estimated_minutes: minutes || 0,
+        tags: task.tags || [],
       });
     }
   }, [task, form]);
