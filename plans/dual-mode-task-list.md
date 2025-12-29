@@ -15,13 +15,22 @@ Conventions:
 - [ ] Confirm the v1 scope (Product disables: time tracking UI + `time_entries` writes + `/timesheet` + `/reports` + `/audit-logs`).
 - [ ] Decide product-mode `calendar` behavior (enabled or disabled).
 - [ ] Decide product-mode “Issues” sorting (keep current `order` sort vs introduce `updated`/`priority` sort without breaking board/reorder semantics).
+  - [ ] If changing sort, ensure it doesn’t break drag/reorder which currently depends on `order`.
+- [ ] Decide product-mode task default status (`todo` vs triage-first `pending`/“Backlog”).
 
 ---
 
 ## Phase 1 — Schema + Typegen
 
 - [ ] Update `backend/pb_schema.json`: add `organizations.mode` (`select`, values `operations|product`, default `operations`).
+- [ ] If you have existing data, consider a 2-step rollout:
+  - [ ] Add `mode` as optional + default first
+  - [ ] Backfill all orgs
+  - [ ] Then mark the field required
 - [ ] Run `bun run types:generate` and ensure `src/lib/pocketbase-types.ts` includes `mode` on `Organizations*` types.
+- [ ] Backfill existing organizations (if any) so `mode` is set (recommended: set to `operations`):
+  - [ ] Option A: PocketBase admin UI → organizations → set `mode` for existing records
+  - [ ] Option B: write a small one-off script (only if needed)
 - [ ] (Optional) Document how to toggle mode via PocketBase admin UI for local testing.
 
 ---
@@ -40,7 +49,8 @@ Conventions:
   - [ ] Option A: extend `src/store/auth-store.ts` to expose `currentOrgMode` and `currentOrgFeatures` derived from `currentOrganization`.
   - [ ] Option B: create `src/store/org-mode-store.ts` that reads from auth store and computes features.
 - [ ] Standardize org context for API requests:
-  - [ ] Update `src/lib/pocketbase.ts` to attach `X-Organization-ID` in `pb.beforeSend` when `currentOrganization` exists.
+  - [ ] Update `src/lib/pocketbase.ts` to attach `X-Organization-ID` in `pb.beforeSend` when a current org exists.
+    - [ ] Avoid circular imports (`auth-store` imports `pb`); read org id from persisted auth state in `localStorage` (`anjam-auth-storage`) or add a tiny non-react helper that both can use safely.
   - [ ] Confirm custom `fetch()` calls (e.g., invites) also include org context where needed (or leave as-is if endpoint path includes org id).
 
 ---
@@ -76,6 +86,7 @@ Conventions:
 - [ ] Rename “Saved Filters” copy to “Views” in product mode:
   - [ ] Update sidebar section title in `src/components/sidebar/task-views.tsx` (or where the label is defined).
   - [ ] Update any Tasks page strings that mention saved filters (dropdown/dialog titles) when in product mode.
+  - [ ] Ensure “Reports” nav becomes “Insights” in product mode (reports stay operations-only; leaderboard is implicitly disabled with reports).
 
 ---
 
@@ -95,6 +106,7 @@ Conventions:
   - [ ] If `features.timeTracking` is false: hide the “Total Time Spent” section and “Log time”/time entries UI.
   - [ ] If `features.auditLogs` is false: hide Activity Stream tab (or disable it with an explanatory empty state).
 - [ ] Ensure any time entry dialogs/mutations are unreachable in product mode via UI.
+  - [ ] Confirm create-task flow still sets a valid priority (priority is required; backend defaults to `medium` today).
 
 ---
 
@@ -129,6 +141,10 @@ Conventions:
   - [ ] Operations mode: keep existing default status set.
   - [ ] Product mode: seed a smaller set using existing keys (`pending` renamed “Backlog”, `todo`, `in_progress`, `done`, optional `canceled`).
 - [ ] Confirm task validation still passes (`validateTaskStatusTransition`) with the product-mode status set.
+- [ ] (If needed) Update `backend/hooks/tasks.go` task defaults by org mode:
+  - [ ] Resolve org mode from `tasks.project -> projects.organization -> organizations.mode`.
+  - [ ] Product mode: set default status to the chosen product default (`todo` or `pending`).
+  - [ ] Operations mode: keep default status as-is.
 
 ---
 

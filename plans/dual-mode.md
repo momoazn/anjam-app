@@ -21,6 +21,25 @@
 - Creating separate databases or forks
 - Changing core task/project data model (except adding mode + settings)
 
+Implementation checklist: `plans/dual-mode-task-list.md`.
+
+---
+
+# v1 Scope (What we will implement first)
+
+To keep implementation incremental and low-risk, v1 ships dual-mode with the following concrete decisions:
+
+1. `organizations.mode` exists and is the source of truth (`operations | product`).
+2. Product mode disables operational surfaces:
+   - UI: hide time tracking/time entries, timesheet, reports, audit logs
+   - Routes: block `/timesheet`, `/reports`, `/audit-logs` (and optionally `/tasks/calendar`)
+   - API: block `time_entries` create/update/delete (return `403 FEATURE_DISABLED`)
+3. Product mode “Inbox” starts as a **route alias** to existing `/my-tasks` (full Linear-like inbox can come later).
+4. Product mode “Issues” starts as a **route alias** to existing `/tasks` with product-default UI behavior.
+5. Product mode “Views” reuses existing saved filters + sidebar `TaskViews` (rename copy only).
+6. Product mode adds `/insights` as a lightweight replacement for `/reports` in navigation.
+7. Task defaults stay compatible with schema (priority required; default remains `medium`). Product default status is `todo` unless we explicitly switch to triage-first `pending`.
+
 ---
 
 # 0) Fit to Anjam (current architecture)
@@ -53,6 +72,8 @@ Notes (Anjam-specific):
 
 - The `organizations` collection already has a `settings` JSON field, so we can store per-mode settings there (no need for a separate JSON field unless we want it).
 - When modifying `backend/pb_schema.json`, **always** regenerate TypeScript types: `bun run types:generate` (never edit `src/lib/pocketbase-types.ts` manually).
+- Existing organizations created before this field existed should be backfilled to `operations` (via PocketBase admin UI or a one-time script) so mode resolution is deterministic.
+- Safer rollout (if you have existing production data): add the field as non-required first, backfill, then mark it required.
 
 ## 1.2 Organization.settings.modeSettings (recommended)
 
@@ -133,6 +154,7 @@ Implementation notes (Anjam):
 
 - Prefer adding `currentOrgMode` + `currentOrgFeatures` to `src/store/auth-store.ts`, or add a small dedicated store like `src/store/org-mode-store.ts`.
 - Consider attaching `X-Organization-ID` automatically via PocketBase JS SDK (`pb.beforeSend` in `src/lib/pocketbase.ts`) so backend enforcement can reliably know “current org” for collection requests.
+  - Note: be careful about circular imports (`auth-store` imports `pb`). A safe approach is to read the org id from the persisted auth state in `localStorage` (key `anjam-auth-storage`) inside `beforeSend`.
 
 ---
 
@@ -155,7 +177,6 @@ export function getFeatures(ctx): Features {
       timeTracking: false,
       timesheet: false,
       reports: false,
-      leaderboard: false,
       auditLogs: false,
       loginLogs: false,
       calendar: ctx.org.settings?.modeSettings?.features?.calendar ?? false,
@@ -166,7 +187,6 @@ export function getFeatures(ctx): Features {
     timeTracking: true,
     timesheet: true,
     reports: true,
-    leaderboard: true,
     auditLogs: true,
     loginLogs: true,
     calendar: true,
@@ -174,6 +194,10 @@ export function getFeatures(ctx): Features {
   };
 }
 ```
+
+Notes:
+
+- The “Leaderboard” is a component inside Reports; v1 doesn’t need a separate feature flag for it because `/reports` is product-disabled.
 
 ## 3.2 Enforcement layers (must do all)
 
@@ -272,7 +296,9 @@ Implementation:
 
 ### A) Inbox (NEW) — `/inbox`
 
-**Purpose:** a focused feed of what needs attention, built from existing task data.
+**v1 implementation:** `/inbox` is an alias to the existing `/my-tasks` page to ship dual-mode quickly.
+
+**v1.1+ purpose:** a focused feed of what needs attention, built from existing task data.
 
 **Content sections (top-to-bottom):**
 
@@ -281,14 +307,14 @@ Implementation:
 2. **Mentioned (unread)** (optional if you track mentions as notifications)
    If mention notifications exist: show unresolved mention notifications linked to tasks
 3. **Recently updated**
-   Filter: tasks where `updated_at last 7 days` AND user is participant (assignee, creator, commenter)
+   Filter: tasks where `updated last 7 days` AND user is participant (assignee, creator, commenter)
 
 **UI layout**
 
 - Left: list (like Linear)
 - Right: task detail panel (optional) OR navigates to task detail page
 - Sorting:
-  - Assigned: priority desc, updated_at desc
+  - Assigned: priority desc, updated desc
   - Mentioned: newest first
   - Updated: newest first
 
@@ -313,7 +339,7 @@ This is your existing task list, but opinionated.
 
 - A single list (not grouped sections by status by default)
 - Columns: ID, Title, Status, Assignee, Priority (optional), Due date (optional), Tags (optional)
-- Default sorting: `updated_at desc` or `priority desc then updated_at desc` (pick one; Linear uses “recency + priority feel”)
+- Default sorting: `-updated` or `priority desc then -updated` (pick one; Linear uses “recency + priority feel”)
 
 **Secondary tab inside Issues**
 
@@ -494,7 +520,7 @@ If statuses are org-wide instead of project-wide, apply similarly.
 Product mode:
 
 - Default status: `todo` (or `pending` if you prefer triage-first “Backlog”)
-- Default priority: None (or Medium) — decide based on your current usage
+- Default priority: keep current backend default (`medium`) because `tasks.priority` is required in schema
 - Default assignee: none
 
 Operations mode:
