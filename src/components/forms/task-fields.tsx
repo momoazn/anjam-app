@@ -44,10 +44,12 @@ import {
   IconCalendar,
   IconStack2,
   IconClock,
+  IconTag,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { errors, common } from "@/constants";
+import { TagPicker } from "../task/tag-picker";
 
 export const taskFormSchema = z.object({
   title: z.string().min(1, { message: errors.validation.titleRequired }),
@@ -59,6 +61,7 @@ export const taskFormSchema = z.object({
   deadline: z.date().optional(),
   estimated_hours: z.number().min(0).max(999).optional(),
   estimated_minutes: z.number().min(0).max(59).optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 export type TaskFormData = z.infer<typeof taskFormSchema>;
@@ -389,6 +392,27 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
                 />
               </div>
             </div>
+          </div>
+
+          <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
+            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
+              <IconTag className="size-2" /> Tags
+            </span>
+            <ShadcnFormField
+              control={control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem className="space-y-0">
+                  <FormControl>
+                    <TagPicker
+                      selectedTagIds={field.value || []}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-[9px] font-bold" />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import {
   IconInfoCircle,
   IconActivity,
   IconSettings,
+  IconTag,
 } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ export function TaskDetailsSidebar({
 }: TaskDetailsSidebarProps) {
   const StatusIcon = taskStatusIcons[task.status];
   const PriorityIcon = priorityIcons[task.priority];
+  const tags = task.expand?.tags || [];
 
   return (
     <div className="space-y-8">
@@ -83,6 +85,29 @@ export function TaskDetailsSidebar({
                 {tasks.priority[task.priority]}
               </Badge>
             </div>
+
+            {tags.length > 0 && (
+              <div className="space-y-2 border-t pt-4">
+                <span className="text-muted-foreground flex items-center gap-1.5 text-[10px] font-bold tracking-tight">
+                  <IconTag className="size-3" /> Tags
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((tag) => (
+                    <Badge
+                      key={tag.id}
+                      style={{
+                        backgroundColor: tag.color,
+                        color: "#FFFFFF",
+                        border: "none",
+                      }}
+                      className="px-2 py-0 text-[9px] font-bold"
+                    >
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-3 border-t pt-4">
               <div className="flex items-center justify-between text-xs">

@@ -182,7 +182,10 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
       {
         task: taskId,
         title,
-        assignee: newAssignee || undefined,
+        assignee:
+          newAssignee === "unassigned" || !newAssignee
+            ? undefined
+            : newAssignee,
         order: ordered.length + 1,
       },
       {
@@ -231,8 +234,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
       const oldIndex = items.findIndex((item) => item.id === active.id);
       const newIndex = items.findIndex((item) => item.id === over.id);
       const nextOrder = arrayMove(items, oldIndex, newIndex);
-      persistOrder(nextOrder).catch((error) => {
-        console.error(error);
+      persistOrder(nextOrder).catch(() => {
         toast.error("به‌روزرسانی ترتیب ناموفق بود");
       });
       return nextOrder;
@@ -269,12 +271,12 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
               </div>
               <div className="mt-2">
                 <Select
-                  value={newAssignee}
+                  value={newAssignee || "unassigned"}
                   onValueChange={(value) => setNewAssignee(value)}
                 >
                   <SelectTrigger className="border-border/40 bg-muted/5 rounded-lg text-right text-[11px]">
                     <span className="text-muted-foreground/60">
-                      {newAssignee
+                      {newAssignee && newAssignee !== "unassigned"
                         ? assigneeOptions.find(
                             (opt) => opt.value === newAssignee,
                           )?.label
@@ -282,7 +284,10 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
                     </span>
                   </SelectTrigger>
                   <SelectContent className="border-border bg-card rounded-xl border">
-                    <SelectItem value="" className="text-[10px] font-bold">
+                    <SelectItem
+                      value="unassigned"
+                      className="text-[10px] font-bold"
+                    >
                       {tasks.addTask.unassigned}
                     </SelectItem>
                     {assigneeOptions.map((option) => (

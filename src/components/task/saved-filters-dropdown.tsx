@@ -134,9 +134,16 @@ export function SavedFiltersDropdown({
                     )}
                   </div>
                   <div className="flex items-center gap-1">
-                    <button
+                    <div
+                      role="button"
+                      tabIndex={0}
                       onClick={(e) => handleSetDefault(filter.id, e)}
-                      className="hover:bg-accent rounded p-1 transition-colors"
+                      onKeyDown={(e: React.KeyboardEvent) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          handleSetDefault(filter.id, e as React.MouseEvent);
+                        }
+                      }}
+                      className="hover:bg-accent cursor-pointer rounded p-1 transition-colors"
                       title={
                         defaultFilterId === filter.id
                           ? savedFiltersText.removeDefault
@@ -150,14 +157,21 @@ export function SavedFiltersDropdown({
                             : "text-muted-foreground"
                         }`}
                       />
-                    </button>
-                    <button
+                    </div>
+                    <div
+                      role="button"
+                      tabIndex={0}
                       onClick={(e) => handleDeleteClick(filter, e)}
-                      className="hover:bg-destructive/10 rounded p-1 transition-colors"
+                      onKeyDown={(e: React.KeyboardEvent) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          handleDeleteClick(filter, e as React.MouseEvent);
+                        }
+                      }}
+                      className="hover:bg-destructive/10 cursor-pointer rounded p-1 transition-colors"
                       title={common.delete}
                     >
                       <Trash2 className="text-muted-foreground hover:text-destructive h-3.5 w-3.5" />
-                    </button>
+                    </div>
                   </div>
                 </DropdownMenuItem>
               ))}
