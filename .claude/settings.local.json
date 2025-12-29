@@ -5,6 +5,9 @@
       "Bash(bun run type:check)",
       "mcp__context7__get-library-docs",
       "mcp__context7__resolve-library-id",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_fill",
       "Bash(go build:*)",
       "Bash(bun run fmt)",
       "Bash(bun run lint:check:*)",
@@ -28,7 +31,8 @@
       "Bash(go test:*)",
       "Bash(git push)",
       "Bash(gh pr view:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
