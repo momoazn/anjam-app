@@ -492,6 +492,9 @@ func registerAuditLogsImmutabilityGuards(pbApp interface{}) {
 	}
 
 	app.OnRecordUpdate(CollectionAuditLogs).BindFunc(func(e *core.RecordEvent) error {
+		if e.Context == nil || e.Context.Value(contextKeyRequestID) == nil {
+			return e.Next()
+		}
 		return apis.NewForbiddenError("Audit logs are immutable and cannot be modified", nil)
 	})
 
