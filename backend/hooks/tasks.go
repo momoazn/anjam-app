@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"anjam/config"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -22,9 +23,7 @@ var taskNumberMutex sync.Mutex
 // It auto-generates task display IDs, ensures defaults, and validates tags.
 // This handler runs before record creation (OnRecordCreateExecute).
 func HandleTaskCreation(e *core.RecordEvent) error {
-	log.Printf("Task creation attempt by user %s for project %s", e.Record.GetString("creator"), e.Record.GetString("project"))
 	if err := setTaskDisplayID(e); err != nil {
-		log.Printf("Error setting task display ID: %v", err)
 		return err
 	}
 	setTaskDefaults(e)
@@ -32,11 +31,9 @@ func HandleTaskCreation(e *core.RecordEvent) error {
 
 	// Validate that all tags belong to the same organization as the project
 	if err := validateTaskTags(e); err != nil {
-		log.Printf("Error validating task tags: %v", err)
 		return err
 	}
 
-	log.Printf("Task creation successful, display_id: %s", e.Record.GetString("display_id"))
 	return e.Next()
 }
 
@@ -50,20 +47,17 @@ func setTaskDisplayID(e *core.RecordEvent) error {
 	projectId := e.Record.GetString("project")
 	project, err := e.App.FindRecordById(config.CollectionProjects, projectId)
 	if err != nil {
-		log.Printf("Error fetching project %q for task creation: %v", projectId, err)
 		return err
 	}
 	projectCode := project.GetString("code")
 
 	newTaskNumber, err := getNextTaskNumber(e.App, projectId)
 	if err != nil {
-		log.Printf("Error getting next task number for project %q: %v", projectId, err)
 		return err
 	}
 
 	displayID := fmt.Sprintf("%s-%03d", projectCode, newTaskNumber)
 	e.Record.Set("display_id", displayID)
-	log.Printf("Generated task display_id %q for project %q.", displayID, projectCode)
 	return nil
 }
 

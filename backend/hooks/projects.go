@@ -6,18 +6,57 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
-	"github.com/pocketbase/pocketbase/core"
 	"anjam/config"
 	"anjam/notifications"
 	"anjam/utils"
+
+	"github.com/pocketbase/pocketbase/core"
 )
+
+// HandleProjectCreatedMember automatically adds the project supervisor as a project owner.
+// This handler runs after successful record creation (OnRecordAfterCreateSuccess).
+func HandleProjectCreatedMember(e *core.RecordEvent) error {
+	projectID := e.Record.Id
+	supervisorID := e.Record.GetString("supervisor")
+
+	if projectID == "" || supervisorID == "" {
+		return e.Next()
+	}
+
+	collection, err := e.App.FindCollectionByNameOrId(config.CollectionProjectMembers)
+	if err != nil {
+		return err
+	}
+
+	// Check if already exists
+	existing, _ := e.App.FindFirstRecordByFilter(
+		config.CollectionProjectMembers,
+		"project = {:project} && user = {:user}",
+		map[string]any{"project": projectID, "user": supervisorID},
+	)
+	if existing != nil {
+		return e.Next()
+	}
+
+	record := core.NewRecord(collection)
+	record.Set("project", projectID)
+	record.Set("user", supervisorID)
+	record.Set("role", config.ProjectRoleOwner)
+	record.Set("added_at", time.Now().Format(time.RFC3339))
+
+	if err := e.App.Save(record); err != nil {
+		return err
+	}
+
+	return e.Next()
+}
 
 // HandleProjectCreation generates a unique project code if not already set.
 // This handler runs before record creation (OnRecordCreateExecute).
 func HandleProjectCreation(e *core.RecordEvent) error {
 	if e.Record.GetString("code") != "" {
-		log.Printf("Project code (%q) already set for %q, skipping code generation.", e.Record.GetString("code"), e.Record.GetString("name"))
 		return e.Next()
 	}
 
@@ -28,7 +67,6 @@ func HandleProjectCreation(e *core.RecordEvent) error {
 	}
 
 	e.Record.Set("code", projectCode)
-	log.Printf("Generated unique project code %q for new project.", projectCode)
 	return e.Next()
 }
 

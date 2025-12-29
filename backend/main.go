@@ -24,6 +24,7 @@ import (
 	"anjam/handlers"
 	"anjam/helpers"
 	"anjam/hooks"
+
 	"github.com/google/uuid"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
@@ -97,6 +98,7 @@ func main() {
 	app.OnRecordAfterUpdateSuccess("tasks").BindFunc(hooks.HandleTaskUpdateNotification)
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(hooks.HandleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectCreatedStatuses)
+	app.OnRecordAfterCreateSuccess("projects").BindFunc(hooks.HandleProjectCreatedMember)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(hooks.HandleCommentNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
 	app.OnRecordAfterCreateSuccess("project_members").BindFunc(hooks.HandleProjectMembersCreatedNotify)
