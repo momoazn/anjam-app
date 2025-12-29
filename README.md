@@ -176,6 +176,17 @@ When changing `backend/pb_schema.json`:
 
 The application serves both API and frontend from a single Go binary. The frontend build is embedded in the Go server.
 
+### Transactional Email (SMTP)
+
+PocketBase sends transactional emails (password reset, verification, etc.) via SMTP (configured in `backend/settings.go` from env vars):
+
+- `SMTP_HOST`, `SMTP_PORT`
+- `SMTP_USERNAME`, `SMTP_PASSWORD`
+- `SMTP_TLS`, `SMTP_AUTH_METHOD`, `SMTP_LOCAL_NAME`
+- `SMTP_SENDER_NAME`, `SMTP_SENDER_ADDRESS`
+
+If you want to use Resend, you can use their SMTP credentials here (no extra integration needed).
+
 ### Production Checklist
 
 - [ ] Change default admin credentials

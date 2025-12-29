@@ -30,6 +30,7 @@ pb_data/
 data/*
 !data/mock/
 !data/mock/**
+backend/data/
 
 tmp/
 .cache/
