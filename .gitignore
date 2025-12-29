@@ -46,6 +46,7 @@ backend/.gotmp/
 testing/
 
 # Test artifacts
+playwright/
 playwright-report/
 test-results/
 .playwright-mcp/
