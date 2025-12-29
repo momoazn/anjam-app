@@ -59,7 +59,7 @@ export function SavedFiltersDropdown({
     null,
   );
 
-  const handleDeleteClick = (filter: SavedFilter, e: React.MouseEvent) => {
+  const handleDeleteClick = (filter: SavedFilter, e: React.SyntheticEvent) => {
     e.stopPropagation();
     setFilterToDelete(filter);
     setDeleteDialogOpen(true);
@@ -73,7 +73,7 @@ export function SavedFiltersDropdown({
     }
   };
 
-  const handleSetDefault = (filterId: string, e: React.MouseEvent) => {
+  const handleSetDefault = (filterId: string, e: React.SyntheticEvent) => {
     e.stopPropagation();
     // Toggle default: if already default, clear it
     onSetDefault(defaultFilterId === filterId ? null : filterId);
@@ -140,7 +140,7 @@ export function SavedFiltersDropdown({
                       onClick={(e) => handleSetDefault(filter.id, e)}
                       onKeyDown={(e: React.KeyboardEvent) => {
                         if (e.key === "Enter" || e.key === " ") {
-                          handleSetDefault(filter.id, e as React.MouseEvent);
+                          handleSetDefault(filter.id, e);
                         }
                       }}
                       className="hover:bg-accent cursor-pointer rounded p-1 transition-colors"
@@ -164,7 +164,7 @@ export function SavedFiltersDropdown({
                       onClick={(e) => handleDeleteClick(filter, e)}
                       onKeyDown={(e: React.KeyboardEvent) => {
                         if (e.key === "Enter" || e.key === " ") {
-                          handleDeleteClick(filter, e as React.MouseEvent);
+                          handleDeleteClick(filter, e);
                         }
                       }}
                       className="hover:bg-destructive/10 cursor-pointer rounded p-1 transition-colors"
