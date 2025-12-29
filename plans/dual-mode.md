@@ -11,7 +11,9 @@
    - Navigation structure and labels
    - Defaults (statuses, views, settings)
 
-3. Mode is set at the **Organization level** and **toggled externally** (admin UI out of scope).
+3. Mode is set at the **Organization level** and **toggled externally** (admin UI out of scope for v1).
+   - For Anjam v1, “externally” means PocketBase admin UI or a direct DB update.
+   - Optional later: add an owner-only toggle in org settings.
 
 ## Non-goals
 
@@ -21,49 +23,60 @@
 
 ---
 
+# 0) Fit to Anjam (current architecture)
+
+Anjam today:
+
+- **Backend**: Go + PocketBase (SQLite). Schema source-of-truth is `backend/pb_schema.json`, imported at startup via `importSchema()` in `backend/main.go`.
+- **Frontend**: React + TypeScript (Vite), TanStack Query, Zustand auth store (`src/store/auth-store.ts`).
+- **Routing**: `src/router.tsx` defines the route table + guards (`ProtectedRoute`, `RequireOrganization`, and permission protection).
+- **Navigation**: `src/components/app-sidebar.tsx` renders the sidebar; permissions come from `usePermissions()` and `src/lib/permissions.ts`.
+
+This plan adapts “dual-mode” to those realities so it’s implementable without forking or major refactors.
+
+---
+
 # 1) Data Model & Configuration
 
 ## 1.1 Organization.mode (required)
 
-Add an enum field to organizations:
+Add a PocketBase `select` field to `organizations`:
 
-- `organizations.mode` : `ENUM('operations','product') NOT NULL DEFAULT 'operations'`
+- `organizations.mode`: `select` (maxSelect=1), values: `operations | product`, default: `operations`
 
 Behavior:
 
 - Mode is read on every request requiring organization context.
 - Mode changes apply immediately for all users in org.
 
-## 1.2 Organization.mode_settings (recommended)
+Notes (Anjam-specific):
 
-Add a JSON field to store per-mode configuration & future-proofing:
+- The `organizations` collection already has a `settings` JSON field, so we can store per-mode settings there (no need for a separate JSON field unless we want it).
+- When modifying `backend/pb_schema.json`, **always** regenerate TypeScript types: `bun run types:generate` (never edit `src/lib/pocketbase-types.ts` manually).
 
-- `organizations.mode_settings` : `JSONB NOT NULL DEFAULT {}`
+## 1.2 Organization.settings.modeSettings (recommended)
+
+Store per-mode configuration in the existing JSON field:
+
+- `organizations.settings.modeSettings`: object (optional)
 
 Example structure:
 
 ```json
 {
-  "product": {
-    "nav": "product_v1",
+  "modeSettings": {
+    "navPreset": "product_v1",
+    "features": {
+      "calendar": false,
+      "taskBoard": true,
+      "timeTracking": false,
+      "timesheet": false,
+      "reports": false,
+      "auditLogs": false,
+      "loginLogs": false
+    },
     "defaults": {
-      "statuses": ["Backlog", "Todo", "In Progress", "Done"],
-      "activityFeedCollapsed": true,
-      "priorityEnabled": true,
-      "boardEnabled": true,
-      "calendarEnabled": false,
-      "timeTrackingEnabled": false,
-      "reportsEnabled": false,
-      "auditLogsEnabled": false
-    }
-  },
-  "operations": {
-    "nav": "operations_v1",
-    "defaults": {
-      "timeTrackingEnabled": true,
-      "timesheetsEnabled": true,
-      "reportsEnabled": true,
-      "auditLogsEnabled": true
+      "activityFeedCollapsed": true
     }
   }
 }
@@ -75,12 +88,14 @@ If you don’t want JSON now, you can hardcode defaults by mode and add this lat
 
 # 2) Mode Fetching & App Bootstrapping
 
-## 2.1 Organization context endpoint (required)
+## 2.1 Current org context source-of-truth (required)
 
 Ensure the frontend has a single source of truth for the current org:
 
-- `GET /api/orgs/:orgId/context`
-  - Returns: org info + mode + feature flags derived from mode + user’s org role.
+- v1 (recommended): extend the existing org context already stored in `src/store/auth-store.ts`.
+  - The store already fetches `GET /api/v1/organizations` (`backend/organizations.go`) and stores `currentOrganization` + `currentOrgRole`.
+  - Once `organizations.mode` exists in schema, it will be included in the returned org record. The frontend can derive `features` from it.
+- v1.1 (optional): add `GET /api/v1/organizations/{orgId}/context` if we want the server to compute features/UI labels in one place.
 
 Response example:
 
@@ -90,16 +105,15 @@ Response example:
   "viewer": { "id": "...", "orgRole": "member" },
   "features": {
     "timeTracking": false,
-    "timesheets": false,
+    "timesheet": false,
     "reports": false,
     "auditLogs": false,
     "calendar": false,
-    "board": true,
-    "views": true
+    "taskBoard": true
   },
   "ui": {
     "navPreset": "product_v1",
-    "labels": { "users": "Members" }
+    "labels": { "tasks": "Issues" }
   }
 }
 ```
@@ -108,12 +122,17 @@ Response example:
 
 On app load and on org-switch:
 
-- Fetch context
-- Store in a global state (e.g., Zustand/Redux/React Context)
+- Ensure org mode is available (`currentOrganization.mode`)
+- Store derived `mode/features` in a global state (Zustand recommended)
 - Use it to:
   - Render correct sidebar/nav
   - Hide/disable routes
   - Drive wording (“Members” vs “Employees”)
+
+Implementation notes (Anjam):
+
+- Prefer adding `currentOrgMode` + `currentOrgFeatures` to `src/store/auth-store.ts`, or add a small dedicated store like `src/store/org-mode-store.ts`.
+- Consider attaching `X-Organization-ID` automatically via PocketBase JS SDK (`pb.beforeSend` in `src/lib/pocketbase.ts`) so backend enforcement can reliably know “current org” for collection requests.
 
 ---
 
@@ -123,8 +142,8 @@ On app load and on org-switch:
 
 Implement a shared module:
 
-- `featureGate.ts`
-  - Inputs: `org.mode`, `org.mode_settings`, `viewer.orgRole`
+- `src/lib/mode-features.ts`
+  - Inputs: `org.mode`, optional `organizations.settings.modeSettings`, `viewer.orgRole`
   - Outputs: boolean flags + route access rules
 
 Example:
@@ -134,27 +153,24 @@ export function getFeatures(ctx): Features {
   if (ctx.org.mode === "product") {
     return {
       timeTracking: false,
-      timesheets: false,
+      timesheet: false,
       reports: false,
       leaderboard: false,
       auditLogs: false,
       loginLogs: false,
-      calendar:
-        ctx.org.mode_settings?.product?.defaults?.calendarEnabled ?? false,
-      board: true,
-      views: true,
+      calendar: ctx.org.settings?.modeSettings?.features?.calendar ?? false,
+      taskBoard: true,
     };
   }
   return {
     timeTracking: true,
-    timesheets: true,
+    timesheet: true,
     reports: true,
     leaderboard: true,
     auditLogs: true,
     loginLogs: true,
     calendar: true,
-    board: true,
-    views: true,
+    taskBoard: true,
   };
 }
 ```
@@ -165,11 +181,16 @@ export function getFeatures(ctx): Features {
 2. **Routing**: block route access (redirect to safe page)
 3. **API**: protect endpoints (return `403 FEATURE_DISABLED` when not allowed)
 
+Anjam-specific details:
+
+- Routing: add a `FeatureProtectedRoute` (similar to `PermissionProtectedRoute`) and annotate routes in `src/router.tsx` with `feature?: FeatureKey`.
+- API: PocketBase exposes collections directly; enforce operations-only collections via record hooks (create/update/delete) and optionally request-level hooks (list/view) if we want a hard block.
+
 ---
 
 # 4) Navigation & Information Architecture
 
-You will ship **two sidebar presets**.
+We will ship **two sidebar presets**, implemented in `src/components/app-sidebar.tsx`, reusing the existing sidebar architecture (`NavMain`, `ProjectsSubmenu`, `TaskViews`).
 
 ## 4.1 Product mode navigation (Linear-inspired)
 
@@ -184,12 +205,12 @@ Sidebar:
 
 ### Route mapping
 
-- Inbox: `/inbox`
+- Inbox: `/inbox` (v1: alias to current `/my-tasks` to reduce work)
 - Issues: `/issues` (alias of `/tasks`)
 - Projects: `/projects`
-- Views: `/views` (alias of saved filters)
+- Views: (v1) keep the existing saved filters / `TaskViews` section; optional `/views` page later
 - Insights: `/insights`
-- Settings: `/settings`
+- Settings: use existing settings routes (`/settings/organization`, `/settings/members`)
 
 ### UX rules
 
@@ -197,19 +218,24 @@ Sidebar:
 - Default primary work screen: **Issues**
 - Keep “Board” as a secondary tab inside Issues (not a nav item)
 
+Anjam implementation notes:
+
+- `src/components/app-sidebar.tsx` logo currently links to `/dashboard`; in product mode it should link to `/inbox`.
+
 ## 4.2 Operations mode navigation
 
 Sidebar:
 
-1. Dashboard
-2. Tasks
-3. Projects
-4. Calendar
-5. Timesheet
-6. Reports
-7. Users
-8. Audit Logs
-9. Settings
+Keep current Anjam navigation (what exists today), including:
+
+1. Dashboard (`/dashboard`)
+2. Tasks (`/tasks`)
+3. Projects (`/projects`)
+4. Calendar (`/tasks/calendar`)
+5. Timesheet (`/timesheet`)
+6. Reports (`/reports`)
+7. Audit Logs (`/audit-logs`)
+8. Settings (`/settings/organization`, `/settings/members`)
 
 Route mapping can reuse your existing ones.
 
@@ -223,11 +249,13 @@ Add a mode-based label dictionary:
 
 ### Product mode labels
 
-- “Users” → “Members”
-- “Employee” → “Member”
-- “Supervisor/Manager” → removed from UI; treat as admin/member
-- “Productivity” → “Progress”
-- “Timesheet” → never shown
+Anjam uses centralized constants (mostly under `src/constants/*`), so in v1 keep label overrides scoped to navigation + page headers:
+
+- “Tasks” → “Issues”
+- “My Tasks” → “Inbox”
+- “Reports” → “Insights”
+- “Timesheet” → never shown (feature hidden)
+- Avoid surfacing “Supervisor”/“Manager” language in product mode UI (even if underlying data still supports it)
 
 ### Operations mode labels
 
@@ -235,8 +263,8 @@ Keep current labels as-is.
 
 Implementation:
 
-- `labels.ts` exports `getUILabels(mode)`
-- Replace hardcoded strings in nav + key screens
+- `src/lib/mode-labels.ts` exports `getModeLabels(mode)`
+- Update `src/components/app-sidebar.tsx` + key page headers to use mode labels (don’t rewrite all constants in v1)
 
 ---
 
@@ -290,7 +318,7 @@ This is your existing task list, but opinionated.
 **Secondary tab inside Issues**
 
 - `List` (default)
-- `Board` (optional, enabled by features.board)
+- `Board` (optional, enabled by `features.taskBoard`)
 
 **Status grouping**
 
@@ -311,14 +339,16 @@ This is your existing task list, but opinionated.
 
 ### C) Views (rename Saved Filters) — `/views`
 
-Use your existing saved filter system. Changes:
+Anjam status:
 
-- Rename UI from “Saved Filters” → “Views”
-- In product mode, move it into sidebar as a top-level nav item
-- Views list shows:
-  - Name
-  - Query summary chips
-  - Shortcut key (optional later)
+- “Saved filters” exist inside the Tasks page UI and the sidebar `TaskViews` section (no dedicated `/views` page yet).
+
+v1 changes:
+
+- Rename UI from “Saved Filters” → “Views” (product mode only)
+- Keep using localStorage for v1 (already the case)
+- Option A (lowest effort): rename the `TaskViews` section label and any “saved filters” copy to “Views” in product mode
+- Option B (later): add a `/views` page for managing saved filters (can reuse the existing manage dialog logic)
 
 **Storage**
 
@@ -345,7 +375,7 @@ Show only:
 
 **Data**
 
-- Use existing tasks table filtered by org & optionally by project
+- Use existing task data hooks (same source as `src/pages/tasks.tsx`), filtered to the current org and optionally to a selected project.
 
 ---
 
@@ -381,19 +411,29 @@ However, add:
 
 ## 6.1 Org roles displayed in UI
 
-- Product mode UI should only show: `Admin` and `Member`
-- If your DB already has more roles, map them:
-  - owner/admin/supervisor/manager → Admin
-  - employee/member → Member
+Anjam has two role concepts today:
+
+- Organization membership role (`organization_members.role`): `owner | admin | member`
+- Global user role (`users.role`): `admin | manager | supervisor | employee` (some UI still checks this)
+
+Product mode UI should only show: `Admin` and `Member`.
+Mapping (UI-only, v1):
+
+- org role `owner | admin` → Admin
+- org role `member` → Member
+
+If any screens still depend on `users.role` (e.g. supervisor selection on projects), product mode should avoid surfacing that complexity in UI (hide/rename/auto-default), but does not require a data migration.
 
 No data migration required—this is a display + permission mapping layer.
 
 ## 6.2 Permission checks (backend)
 
-Backend should continue to enforce existing roles, but in product mode:
+Backend permission enforcement should continue to use existing rules (org membership + project membership + existing collection rules/hooks).
 
-- Treat supervisor/manager as admin-equivalent
-- Prevent UI from creating those roles
+v1 expectation:
+
+- Do not change permission semantics; only change what the user can _see/reach_ in product mode.
+- Add explicit “feature disabled” enforcement for operations-only actions (notably time entries).
 
 ---
 
@@ -403,21 +443,18 @@ Backend should continue to enforce existing roles, but in product mode:
 
 ### Hide in navigation and remove entry points
 
-- Timesheets (`/timesheet`)
-- Reports (`/reports`)
-- Leaderboards (component inside reports)
-- Audit logs (`/audit-logs`) (can remain admin-only and not linked)
-- Login logs (`/login-logs`)
-- Time entry UI in task details
-- Manual time editing UI
+- Timesheet (`/timesheet`)
+- Reports (`/reports`) (replaced by `/insights`)
+- Audit logs (`/audit-logs`) and per-task Activity Stream (audit history UI)
+- User login logs surfaces (if any) and the API entry point used by UI (`/api/v1/users/{id}/login-logs`)
+- Time entry UI in task details (`src/components/task/task-details-content.tsx`)
 
 ### API behavior
 
-- Any time-tracking endpoints:
-  - Return `403 FEATURE_DISABLED` in product mode
+At minimum for v1:
 
-- Reports endpoints:
-  - `403 FEATURE_DISABLED`
+- Block creating/updating/deleting `time_entries` in product mode (return `403 FEATURE_DISABLED`).
+- Optional (recommended): block listing/viewing `audit_logs` in product mode unless we explicitly decide “audit remains admin-only even in product mode”.
 
 ### UI behavior
 
@@ -428,7 +465,7 @@ Backend should continue to enforce existing roles, but in product mode:
 ## 7.2 Optional in Product mode (behind feature flags)
 
 - Calendar: default off
-- Board: on (but secondary)
+- Task board: on (but secondary)
 - Activity stream: collapsed by default
 
 ---
@@ -440,7 +477,12 @@ Backend should continue to enforce existing roles, but in product mode:
 When a project is created:
 
 - If org.mode = product:
-  - Create statuses: Backlog, Todo, In Progress, Done
+  - Seed a simpler status set (Anjam uses `project_statuses`, seeded in `backend/project_statuses.go`):
+    - `pending` → “Backlog”
+    - `todo` → “Todo” (default)
+    - `in_progress` → “In Progress”
+    - `done` → “Done” (done)
+    - (optional) `canceled` → “Canceled” (done)
 
 - If org.mode = operations:
   - Keep your existing defaults (todo, in_progress, review, etc.)
@@ -451,7 +493,7 @@ If statuses are org-wide instead of project-wide, apply similarly.
 
 Product mode:
 
-- Default status: Todo (or Backlog if you prefer triage first)
+- Default status: `todo` (or `pending` if you prefer triage-first “Backlog”)
 - Default priority: None (or Medium) — decide based on your current usage
 - Default assignee: none
 
@@ -467,8 +509,8 @@ Operations mode:
 
 - `/tasks` remains valid
 - Add `/issues` → renders the same page as tasks but in product mode configuration
-- `/saved-filters` remains valid
-- Add `/views` → alias
+- `/my-tasks` remains valid
+- Add `/inbox` → alias of `/my-tasks` (product mode landing)
 
 ## 9.2 Mode-based home route
 
@@ -477,11 +519,16 @@ After login and org select:
 - Product mode: redirect to `/inbox`
 - Operations mode: redirect to `/dashboard` (or your current home)
 
+Anjam touchpoints to update:
+
+- `PublicRoute` redirect behavior (currently sends logged-in users to `/dashboard`)
+- Onboarding success redirect (`src/pages/onboarding.tsx` currently navigates to `/dashboard`)
+
 ---
 
 # 10) API Requirements & Server Enforcement
 
-## 10.1 Middleware: org mode resolver
+## 10.1 Mode resolver (backend helper + optional middleware)
 
 Every request with org context must resolve:
 
@@ -490,7 +537,12 @@ Every request with org context must resolve:
 - viewer role
 - features
 
-Attach to request context:
+Anjam-specific resolution strategy:
+
+- For record hooks (e.g., time entries), resolve org by traversing relations (`time_entries.task -> tasks.project -> projects.organization`) and then read `organizations.mode`.
+- For request-level enforcement (if we add it), standardize on `X-Organization-ID` and attach it from the frontend (e.g., PocketBase SDK `pb.beforeSend`).
+
+Attach to request context (if middleware is used):
 
 - `req.orgMode`
 - `req.features`
@@ -502,12 +554,27 @@ Standardize:
 ```json
 {
   "error": "FEATURE_DISABLED",
-  "feature": "timesheets",
+  "feature": "timesheet",
   "message": "Timesheets are not available in this workspace mode."
 }
 ```
 
 Frontend uses this to show “not available” UI.
+
+## 10.3 PocketBase enforcement points (Anjam v1)
+
+Minimum hard enforcement (recommended):
+
+- `time_entries` collection:
+  - Block create/update/delete in **product** mode via record hooks in `backend/main.go` (e.g., `OnRecordCreateExecute("time_entries")`, `OnRecordUpdateExecute("time_entries")`, `OnRecordDeleteExecute("time_entries")`).
+  - Resolve org mode by traversing relations: `time_entries.task -> tasks.project -> projects.organization -> organizations.mode`.
+  - Return `403 FEATURE_DISABLED` (consistent contract) when blocked.
+
+Optional (if we decide audit logs must be fully inaccessible in product mode):
+
+- `audit_logs` collection:
+  - Prefer UI + route blocking in v1 (fastest).
+  - If we need hard API blocking for list/view, standardize `X-Organization-ID` and enforce in a server-side request hook/middleware for audit log endpoints.
 
 ---
 
@@ -515,12 +582,14 @@ Frontend uses this to show “not available” UI.
 
 ## 11.1 Sidebar component
 
+- Primary file: `src/components/app-sidebar.tsx`
 - Replace static nav items with `getNavPreset(mode, features)`
 - Use labels dictionary for text
 - Hide nav links to disabled features
 
 ## 11.2 Tasks list page
 
+- Primary file: `src/pages/tasks.tsx`
 - Add product mode config:
   - default view = list (ungrouped)
   - grouping toggle
@@ -531,21 +600,21 @@ Frontend uses this to show “not available” UI.
 ## 11.3 Task detail page
 
 - Product mode:
-  - hide Time Entries tab entirely
-  - hide manual time editing
-  - collapse activity feed by default (but available via toggle)
+  - hide time tracking + time entries UI (`src/components/task/task-details-content.tsx`)
+  - hide Activity Stream tab (or make it feature-gated) to avoid surfacing audit history in product mode
 
 - Operations mode:
   - keep as-is
 
 ## 11.4 Saved filters page
 
-- Rename UI to Views in product mode
-- Add nav entry for product mode
+- Anjam currently has saved filters embedded in the Tasks page; v1 is mostly label + sidebar tweaks:
+  - Rename UI copy to “Views” in product mode
+  - Ensure `TaskViews` section behaves like a first-class “Views” concept in product mode
 
 ## 11.5 New pages
 
-- `/inbox` page
+- `/inbox` page (v1 can alias existing `/my-tasks` page)
 - `/insights` page
 
 ---
@@ -554,11 +623,12 @@ Frontend uses this to show “not available” UI.
 
 ## Phase 1 — Foundation (Mode & gating)
 
-1. DB migration: add `organizations.mode`, `organizations.mode_settings`
-2. Backend: add org context endpoint returning mode + features
-3. Frontend: global context store for org mode + features
-4. Implement feature gate module
-5. Route guard + nav gating
+1. Schema: add `organizations.mode` to `backend/pb_schema.json` (select values `operations|product`, default `operations`)
+2. Types: run `bun run types:generate`
+3. Frontend: add `src/lib/mode-features.ts` and store current org mode/features (Zustand)
+4. Frontend: add route guard by feature in `src/router.tsx` (e.g., `FeatureProtectedRoute`)
+5. Frontend: update `src/components/app-sidebar.tsx` to render nav preset per mode
+6. Backend: add enforcement for operations-only actions (v1: block `time_entries` writes in product mode via record hooks)
 
 ## Phase 2 — Product navigation & labels
 
@@ -568,16 +638,16 @@ Frontend uses this to show “not available” UI.
 
 ## Phase 3 — Product UX (Inbox, Issues tweaks, Views rename, Insights)
 
-1. Build Inbox page (queries + grouped lists)
+1. Add `/inbox` route (v1 can alias the existing `/my-tasks` page)
 2. Modify tasks list to behave as Issues in product mode
-3. Rename Saved Filters → Views in product mode
+3. Rename Saved Filters → Views in product mode (mostly copy + sidebar section title)
 4. Build Insights minimal page
 
 ## Phase 4 — Hide/disable HR features in Product mode
 
-1. Remove UI entry points + tabs for time tracking/timesheets/reports
+1. Remove UI entry points + tabs for time tracking/timesheet/reports
 2. Add route redirects for disabled routes
-3. Backend: return `FEATURE_DISABLED` for disabled endpoints
+3. Backend: return `FEATURE_DISABLED` for disabled actions/endpoints (custom endpoints + PocketBase collection hooks)
 
 ## Phase 5 — Defaults
 
@@ -611,8 +681,8 @@ Frontend uses this to show “not available” UI.
 ## 13.2 Feature enforcement
 
 - Product mode:
-  - All time tracking APIs return 403 FEATURE_DISABLED
-  - Reports APIs return 403 FEATURE_DISABLED
+  - Creating/updating/deleting `time_entries` returns 403 FEATURE_DISABLED
+  - Operations-only routes (`/timesheet`, `/reports`, `/audit-logs`) are blocked/redirected
 
 - Operations mode:
   - APIs work as before
