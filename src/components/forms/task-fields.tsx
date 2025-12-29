@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import type { Control } from "react-hook-form";
-import { useParams } from "react-router-dom";
 
 import DatePicker from "@/components/ui/date-picker";
 import {
@@ -47,32 +46,20 @@ import {
   IconTag,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
-import { z } from "zod";
-import { errors, common } from "@/constants";
 import { TagPicker } from "../task/tag-picker";
-
-export const taskFormSchema = z.object({
-  title: z.string().min(1, { message: errors.validation.titleRequired }),
-  description: z.string().min(1, { message: common.validation.required }),
-  assignee: z.string().min(1, { message: common.validation.required }),
-  priority: z.nativeEnum(TasksPriorityOptions),
-  status: z.nativeEnum(TasksStatusOptions),
-  project: z.string().optional(),
-  deadline: z.date().optional(),
-  estimated_hours: z.number().min(0).max(999).optional(),
-  estimated_minutes: z.number().min(0).max(59).optional(),
-  tags: z.array(z.string()).optional(),
-});
-
-export type TaskFormData = z.infer<typeof taskFormSchema>;
+import type { TaskFormData } from "@/components/forms/task-fields-schema";
 
 type TaskFieldsProps = {
   control: Control<TaskFormData>;
   isInProject?: boolean;
+  projectId?: string;
 };
 
-export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
-  const { id: projectId } = useParams<{ id: string }>();
+export function TaskFields({
+  control,
+  isInProject = false,
+  projectId,
+}: TaskFieldsProps) {
   const actualIsInProject = isInProject || Boolean(projectId);
 
   const { data: projectsData } = useProjects({ enabled: !actualIsInProject });
@@ -108,10 +95,13 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
 
   const statusOptions = useMemo(() => {
     if (projectStatuses && projectStatuses.length > 0) {
-      return projectStatuses.map((status) => ({
-        value: status.key as TasksStatusOptions,
-        label: status.name || status.key,
-      }));
+      const validStatuses = new Set(Object.values(TasksStatusOptions));
+      return projectStatuses
+        .filter((status) => validStatuses.has(status.key as TasksStatusOptions))
+        .map((status) => ({
+          value: status.key as TasksStatusOptions,
+          label: status.name || status.key,
+        }));
     }
 
     return Object.values(TasksStatusOptions).map((status) => ({
@@ -148,7 +138,7 @@ export function TaskFields({ control, isInProject = false }: TaskFieldsProps) {
             label={tasks.addTask.description}
             type="textarea"
             placeholder="Detailed Description"
-            className="min-h-[100px]"
+            className="min-h-25"
           />
         </div>
       </section>

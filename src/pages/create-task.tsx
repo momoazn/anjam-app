@@ -10,11 +10,11 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { TaskFields } from "@/components/forms/task-fields";
 import {
-  TaskFields,
-  type TaskFormData,
   taskFormSchema,
-} from "@/components/forms/task-fields";
+  type TaskFormData,
+} from "@/components/forms/task-fields-schema";
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -140,6 +140,7 @@ export default function CreateTask() {
                     <TaskFields
                       control={form.control}
                       isInProject={isInProject}
+                      projectId={projectId}
                     />
                   </CardContent>
                 </Card>
