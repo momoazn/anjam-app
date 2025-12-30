@@ -219,7 +219,7 @@ export function TimeEntryDialog({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="یادداشت کوتاه درباره این ثبت"
+                      placeholder={tasks.details.timeEntries.notePlaceholder}
                       rows={3}
                       className="bg-muted/10 placeholder:text-muted-foreground text-sm"
                     />

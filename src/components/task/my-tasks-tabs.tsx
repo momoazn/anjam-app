@@ -193,9 +193,9 @@ export function MyTasksTabs({
                     </h3>
                     <Badge variant="secondary" className="rounded-lg font-bold">
                       {digitsEnToFa(project.tasks.length)}{" "}
-                      {tasks.list.noTasks === "تسکی وجود ندارد"
-                        ? "تسک"
-                        : "tasks"}
+                      {project.tasks.length === 1
+                        ? tasks.list.task
+                        : tasks.list.tasks}
                     </Badge>
                   </div>
                 </div>

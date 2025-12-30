@@ -86,7 +86,7 @@ export function TaskDetailsHeader({
             <div className="text-primary/60 flex items-center gap-2">
               <IconHash className="size-4" />
               <span className="text-[10px] font-bold tracking-wider">
-                {task.display_id || "TASK-ID"}
+                {digitsEnToFa(task.display_id || "TASK-ID")}
               </span>
             </div>
 
@@ -97,7 +97,7 @@ export function TaskDetailsHeader({
             <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1.5">
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-bold tracking-wider opacity-60">
-                  Created By
+                  {tasks.details.createdBy}
                 </span>
                 <span className="text-foreground text-xs font-bold">
                   {task.expand?.creator
@@ -106,12 +106,12 @@ export function TaskDetailsHeader({
                         task.expand.creator.last_name,
                         task.expand.creator.username,
                       )
-                    : "System"}
+                    : tasks.details.system}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-bold tracking-wider opacity-60">
-                  Timestamp
+                  {tasks.details.timestamp}
                 </span>
                 <span className="text-foreground text-xs font-bold tabular-nums">
                   {digitsEnToFa(formatTaskDate(task.created))}

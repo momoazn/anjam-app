@@ -1,6 +1,6 @@
 import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { common, tasks } from "@/constants";
+import { common, tasks, system } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
 import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
@@ -32,7 +32,7 @@ export function TaskHeader({
           <div className="flex flex-col">
             <div className="flex items-center gap-2 opacity-40">
               <span className="font-mono text-[10px] font-bold tracking-tight">
-                System Registry
+                {system.registry}
               </span>
               <div className="bg-foreground/20 h-px w-8" />
             </div>

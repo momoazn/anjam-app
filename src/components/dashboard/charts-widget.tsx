@@ -228,7 +228,7 @@ export function ChartsWidget({
                               {digitsEnToFa(value?.toString() ?? "0")}
                             </span>
                             <span className="text-muted-foreground text-[10px] font-bold">
-                              تکمیل شده
+                              {dashboard.cards.completed}
                             </span>
                           </div>
                         </div>
@@ -274,7 +274,7 @@ export function ChartsWidget({
               variant="secondary"
               className="bg-primary/10 text-primary border-none px-2 py-0.5 text-[10px] font-bold"
             >
-              {digitsEnToFa(recentTasks.length)} کل
+              {digitsEnToFa(recentTasks.length)} {dashboard.cards.total}
             </Badge>
           </CardTitle>
         </CardHeader>

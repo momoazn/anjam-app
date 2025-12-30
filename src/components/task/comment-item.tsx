@@ -308,8 +308,10 @@ export function CommentItem({
                   className="border-border/40 rounded-lg text-[10px] font-bold tracking-tight"
                   onClick={onToggleThread}
                 >
-                  {isCollapsed ? "نمایش" : "پنهان‌سازی"} (
-                  {digitsEnToFa(replyCount)})
+                  {isCollapsed
+                    ? commentsConst.item.show
+                    : commentsConst.item.hide}{" "}
+                  ({digitsEnToFa(replyCount)})
                 </Button>
               )}
             </div>
@@ -444,7 +446,7 @@ export function CommentItem({
                               className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
                             >
                               <IconDownload className="size-3" />
-                              Download
+                              {commentsConst.item.download}
                             </a>
                             <a
                               href={fileUrl}
@@ -453,7 +455,7 @@ export function CommentItem({
                               className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
                             >
                               <IconPaperclip className="size-3" />
-                              View
+                              {commentsConst.item.view}
                             </a>
                           </div>
                         </div>

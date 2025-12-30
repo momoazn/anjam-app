@@ -228,21 +228,21 @@ export function SecuritySection() {
                     <div className="flex-1 px-3">
                       <div className="flex items-center gap-2">
                         <span className="text-muted-foreground/40 text-[8px] font-bold tracking-tight">
-                          Remote_Host
+                          {settings.security.remoteHost}
                         </span>
                         <IconServer className="size-2.5 opacity-20" />
                       </div>
                       <p className="text-[11px] font-bold tabular-nums">
-                        {log.ip_address || "Unknown IP"}
+                        {log.ip_address || settings.security.unknownIp}
                       </p>
                       <p className="text-muted-foreground/40 max-w-[240px] truncate text-[9px] font-bold">
-                        {log.user_agent || "Unknown Device"}
+                        {log.user_agent || settings.security.unknownDevice}
                       </p>
                     </div>
 
                     <div className="border-border/10 flex shrink-0 flex-col items-end border-l pl-3">
                       <span className="text-muted-foreground/40 mb-1 text-[7px] font-bold tracking-tight">
-                        Auth_Time
+                        {settings.security.authTime}
                       </span>
                       <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-bold tabular-nums">
                         <IconClock className="size-2.5 opacity-40" />

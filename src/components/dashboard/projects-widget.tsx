@@ -87,7 +87,7 @@ export function ProjectsWidget({
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                    Project {idx + 1}
+                    {dashboard.project} {digitsEnToFa(idx + 1)}
                   </span>
                   <CardTitle className="text-lg font-bold tracking-tight">
                     {project.name}

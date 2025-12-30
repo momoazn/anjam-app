@@ -68,7 +68,7 @@ export function GlobalSearch() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl overflow-hidden rounded-xl border p-0 shadow-2xl">
-          <DialogTitle className="sr-only">Global Search</DialogTitle>
+          <DialogTitle className="sr-only">{search.title}</DialogTitle>
           <Command
             shouldFilter={false}
             className="[&_[cmdk-group-heading]]:text-muted-foreground bg-transparent [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-input-wrapper]]:h-14 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:text-base [&_[cmdk-input]]:font-medium"
@@ -105,7 +105,7 @@ export function GlobalSearch() {
               {data && hasResults && (
                 <div className="space-y-1">
                   {taskResults.length > 0 && (
-                    <CommandGroup heading="Tasks">
+                    <CommandGroup heading={search.tasks}>
                       {taskResults.map((task) => (
                         <CommandItem
                           key={task.id}
@@ -148,7 +148,7 @@ export function GlobalSearch() {
                   )}
 
                   {projectResults.length > 0 && (
-                    <CommandGroup heading="Projects">
+                    <CommandGroup heading={search.projects}>
                       {projectResults.map((project) => (
                         <CommandItem
                           key={project.id}
@@ -190,7 +190,7 @@ export function GlobalSearch() {
                     ENTER
                   </kbd>
                   <span className="text-muted-foreground text-[10px] font-bold">
-                    Select
+                    {search.select}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -198,12 +198,12 @@ export function GlobalSearch() {
                     ESC
                   </kbd>
                   <span className="text-muted-foreground text-[10px] font-bold">
-                    Close
+                    {search.close}
                   </span>
                 </div>
               </div>
               <span className="text-muted-foreground/40 text-[10px] font-bold">
-                Global Search
+                {search.globalSearch}
               </span>
             </div>
           </Command>

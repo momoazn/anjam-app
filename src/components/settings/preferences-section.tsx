@@ -152,7 +152,7 @@ export function PreferencesSection() {
           },
         },
       });
-      toast.success("ترجیحات ذخیره شد");
+      toast.success(settings.appearance.saveSuccess);
     } catch (error) {
       handlePocketBaseError(error as Error);
     } finally {
@@ -177,7 +177,7 @@ export function PreferencesSection() {
       if (updates.theme) {
         setTheme(updates.theme);
       }
-      toast.success("ترجیحات ذخیره شد");
+      toast.success(settings.appearance.saveSuccess);
     } catch (error) {
       handlePocketBaseError(error as Error);
     } finally {
@@ -201,7 +201,7 @@ export function PreferencesSection() {
           },
         },
       });
-      toast.success("ترجیحات ذخیره شد");
+      toast.success(settings.appearance.saveSuccess);
     } catch (error) {
       handlePocketBaseError(error as Error);
     } finally {
@@ -226,7 +226,7 @@ export function PreferencesSection() {
         <SectionHeader
           icon={IconSettings}
           title={settings.preferences.title}
-          description="تنظیمات رابط کاربری سیستم"
+          description={settings.preferences.description}
         />
         <div className="space-y-1">
           <ToggleRow
@@ -243,13 +243,13 @@ export function PreferencesSection() {
       <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconPalette}
-          title="تنظیمات نمایش"
-          description="پارامترهای بصری سیستم"
+          title={settings.appearance.title}
+          description={settings.appearance.description}
         />
         <div className="grid gap-6 sm:grid-cols-3">
           <div className="space-y-2">
             <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              تم سیستم
+              {settings.appearance.theme}
             </label>
             <Select
               value={displayPreferences.theme}
@@ -261,7 +261,7 @@ export function PreferencesSection() {
               disabled={isBusy || !data}
             >
               <SelectTrigger className="h-11 rounded-xl text-right">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder={settings.appearance.theme} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {themeOptions.map((option) => (
@@ -279,7 +279,7 @@ export function PreferencesSection() {
 
           <div className="space-y-2">
             <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              منطقه زمانی
+              {settings.appearance.timezone}
             </label>
             <Select
               value={displayPreferences.timezone}
@@ -291,7 +291,7 @@ export function PreferencesSection() {
               disabled={isBusy || !data}
             >
               <SelectTrigger className="h-11 rounded-xl text-right">
-                <SelectValue placeholder="Timezone" />
+                <SelectValue placeholder={settings.appearance.timezone} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {timezoneOptions.map((option) => (
@@ -309,7 +309,7 @@ export function PreferencesSection() {
 
           <div className="space-y-2">
             <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              فرمت تاریخ
+              {settings.appearance.dateFormat}
             </label>
             <Select
               value={displayPreferences.dateFormat}
@@ -321,7 +321,7 @@ export function PreferencesSection() {
               disabled={isBusy || !data}
             >
               <SelectTrigger className="h-11 rounded-xl text-right">
-                <SelectValue placeholder="Date format" />
+                <SelectValue placeholder={settings.appearance.dateFormat} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {dateFormatOptions.map((option) => (
@@ -343,8 +343,8 @@ export function PreferencesSection() {
       <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconBell}
-          title="اعلان‌ها"
-          description="مدیریت دریافت اعلان‌های سیستم"
+          title={settings.preferences.notificationsTitle}
+          description={settings.preferences.notificationsDescription}
         />
         <div className="space-y-1">
           {(Object.keys(notificationToggles) as NotificationKey[]).map(

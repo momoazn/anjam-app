@@ -12,6 +12,7 @@ import type {
 import type { UsersResponse } from "@/lib/pocketbase-types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Layers } from "lucide-react";
+import { tasks } from "@/constants";
 
 export type TaskFiltersPanelProps = {
   currentFilters: TaskFilterValues;
@@ -78,7 +79,7 @@ export function TaskFiltersPanel({
         <div className="flex items-center gap-2">
           <Layers className="text-primary/60 size-3.5" />
           <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-            _Filter_Logic
+            {tasks.filters.labels.filterLogic}
           </span>
         </div>
 

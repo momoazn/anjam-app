@@ -72,7 +72,9 @@ export function BoardCard({ task }: BoardCardProps) {
       <div className="relative z-10 flex w-full items-start justify-between gap-2">
         <div className="flex items-center gap-1.5 opacity-40">
           <IconHash className="size-3" />
-          <span className="text-[10px] font-bold">{task.display_id}</span>
+          <span className="text-[10px] font-bold">
+            {digitsEnToFa(task.display_id)}
+          </span>
         </div>
         <div
           className={cn(

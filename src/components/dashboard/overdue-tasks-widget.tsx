@@ -81,7 +81,7 @@ export function OverdueTasksWidget({
                 <div className="min-w-0 flex-1 text-right">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-semibold tracking-tight text-rose-500/60">
-                      Task {idx + 1}
+                      {dashboard.cards.task} {digitsEnToFa(idx + 1)}
                     </span>
                   </div>
                   <p className="text-foreground mt-0.5 truncate text-sm font-semibold">

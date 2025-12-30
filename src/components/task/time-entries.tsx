@@ -71,7 +71,7 @@ export function TimeEntries({
           note: payload.note,
         },
       });
-      toast.success("ورودی زمانی به‌روزرسانی شد");
+      toast.success(tasks.details.timeTracking.updateSuccess);
       setEditingEntry(null);
     } catch (error) {
       handlePocketBaseError(error as Error);
@@ -80,7 +80,7 @@ export function TimeEntries({
 
   const handleDelete = (entryId: string) => {
     deleteTimeEntry.mutate(entryId, {
-      onSuccess: () => toast.success("ورودی زمانی حذف شد"),
+      onSuccess: () => toast.success(tasks.details.timeTracking.deleteSuccess),
       onError: (error: unknown) => handlePocketBaseError(error as Error),
     });
   };
@@ -88,7 +88,7 @@ export function TimeEntries({
   if (isLoading) {
     return (
       <p className="text-muted-foreground text-right text-sm">
-        در حال بارگذاری ورودی‌های زمانی...
+        {tasks.details.timeTracking.loading}
       </p>
     );
   }

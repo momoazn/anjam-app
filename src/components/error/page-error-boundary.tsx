@@ -1,4 +1,5 @@
 import React from "react";
+import { shared } from "@/constants";
 
 type Props = {
   children: React.ReactNode;
@@ -26,16 +27,16 @@ export class PageErrorBoundary extends React.Component<Props, State> {
       return (
         <div className="flex min-h-screen items-center justify-center p-4">
           <div className="max-w-md text-center">
-            <h1 className="text-xl font-semibold">Something went wrong</h1>
+            <h1 className="text-xl font-semibold">{shared.error}</h1>
             <p className="text-muted-foreground mt-2 text-sm">
-              {this.state.error.message || "An unexpected error occurred."}
+              {this.state.error.message || shared.messages.notFound}
             </p>
             <button
               type="button"
               onClick={this.handleRetry}
               className="bg-primary text-primary-foreground mt-4 inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-bold"
             >
-              Retry
+              {shared.retry}
             </button>
           </div>
         </div>

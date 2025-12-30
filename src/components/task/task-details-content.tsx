@@ -115,7 +115,7 @@ export function TaskDetailsContent({
     note?: string;
   }) => {
     if (!authUser?.id) {
-      toast.error("برای ثبت زمان باید وارد شوید");
+      toast.error(tasks.details.timeTracking.authRequired);
       return;
     }
 
@@ -126,7 +126,7 @@ export function TaskDetailsContent({
         minutes: payload.minutes,
         note: payload.note,
       });
-      toast.success("زمان با موفقیت ثبت شد");
+      toast.success(tasks.details.timeTracking.saveSuccess);
       onTaskRefresh?.();
       setIsTimeEntryDialogOpen(false);
     } catch (error: unknown) {
@@ -140,7 +140,7 @@ export function TaskDetailsContent({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           {
-            label: "Assignee",
+            label: tasks.details.assignee,
             value: task.expand?.assignee ? (
               formatUserName(
                 task.expand.assignee.first_name,
@@ -155,12 +155,12 @@ export function TaskDetailsContent({
             icon: IconUser,
           },
           {
-            label: "Project",
+            label: tasks.details.project,
             value: task.expand?.project?.name || tasks.details.unknownProject,
             icon: IconTarget,
           },
           {
-            label: "Deadline",
+            label: tasks.details.deadline,
             value: task.deadline ? (
               digitsEnToFa(formatTaskDate(task.deadline))
             ) : (
@@ -214,7 +214,7 @@ export function TaskDetailsContent({
                     {tasks.details.timeTracking.title}
                   </h3>
                   <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
-                    Resource Allocation Metrics
+                    {tasks.details.timeTracking.metrics}
                   </span>
                 </div>
               </div>
@@ -295,7 +295,7 @@ export function TaskDetailsContent({
               <div className="flex flex-col items-baseline justify-between gap-8 md:flex-row md:items-center">
                 <div className="text-right">
                   <div className="text-muted-foreground mb-1.5 text-[10px] font-bold tracking-tight">
-                    Total Time Spent
+                    {tasks.details.timeTracking.totalTimeSpent}
                   </div>
                   <p className="text-primary text-5xl font-bold tracking-tighter md:text-6xl">
                     {formatTimeSpent(task.time_spent_minutes) ||
@@ -305,7 +305,7 @@ export function TaskDetailsContent({
 
                 <div className="w-full max-w-md flex-1">
                   <div className="text-muted-foreground mb-3 text-right text-[10px] font-bold tracking-tight">
-                    Efficiency Index
+                    {tasks.details.timeTracking.efficiencyIndex}
                   </div>
                   <TimeComparison
                     estimatedMinutes={task.estimated_minutes || 0}
@@ -375,7 +375,7 @@ export function TaskDetailsContent({
               {auditLogs.activityStream.title}
               {isProductMode && !activityExpanded && (
                 <span className="bg-muted text-muted-foreground ms-2 rounded px-1.5 py-0.5 text-[10px]">
-                  Collapsed
+                  {auditLogs.activityStream.collapsed}
                 </span>
               )}
             </TabsTrigger>
@@ -420,7 +420,7 @@ export function TaskDetailsContent({
                     dir="rtl"
                     onClick={() => setActivityExpanded(true)}
                   >
-                    Click to load activity history
+                    {auditLogs.activityStream.clickToLoad}
                   </div>
                 )
               ) : (

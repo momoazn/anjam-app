@@ -89,7 +89,7 @@ export function TaskDetailsSidebar({
             {tags.length > 0 && (
               <div className="space-y-2 border-t pt-4">
                 <span className="text-muted-foreground flex items-center gap-1.5 text-[10px] font-bold tracking-tight">
-                  <IconTag className="size-3" /> Tags
+                  <IconTag className="size-3" /> {tasks.details.tags}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map((tag) => (

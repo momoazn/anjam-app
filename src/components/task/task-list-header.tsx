@@ -78,7 +78,7 @@ export function TaskListHeader({
             <div className="flex items-center gap-2 opacity-40">
               <IconHash className="size-3" />
               <span className="text-[10px] font-bold tracking-tight">
-                {status}
+                {tasks.filters.status}
               </span>
             </div>
             <h2 className="text-xl font-bold tracking-tight">

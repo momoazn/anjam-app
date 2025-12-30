@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { savedFilters as savedFiltersConstants, shared } from "@/constants";
 
 /**
  * Views Page - Manage Saved Filters
@@ -69,17 +70,17 @@ export default function Views() {
   const handleSetDefault = (filterId: string) => {
     if (defaultFilterId === filterId) {
       setAsDefault(null);
-      toast.success("Default view cleared");
+      toast.success(savedFiltersConstants.views.toast.defaultCleared);
     } else {
       setAsDefault(filterId);
-      toast.success("Default view set");
+      toast.success(savedFiltersConstants.views.toast.defaultSet);
     }
   };
 
   const handleDeleteConfirm = () => {
     if (deleteTarget) {
       deleteFilter(deleteTarget);
-      toast.success("View deleted");
+      toast.success(savedFiltersConstants.views.toast.deleted);
       setDeleteTarget(null);
     }
   };
@@ -95,8 +96,8 @@ export default function Views() {
           </h1>
           <p className="text-muted-foreground mt-2">
             {mode === "product"
-              ? "Quick access to your saved task views"
-              : "Manage your saved task filters"}
+              ? savedFiltersConstants.views.description
+              : savedFiltersConstants.views.manageDescription}
           </p>
         </div>
 
@@ -107,8 +108,8 @@ export default function Views() {
               <IconEye className="text-muted-foreground mb-4 h-12 w-12 opacity-40" />
               <p className="text-muted-foreground text-center">
                 {mode === "product"
-                  ? "No views saved yet. Create views from the Issues page filters."
-                  : "No saved filters yet. Save filters from the Tasks page."}
+                  ? savedFiltersConstants.views.noViews
+                  : savedFiltersConstants.views.noFilters}
               </p>
               <Button
                 variant="outline"
@@ -117,7 +118,9 @@ export default function Views() {
                   navigate(mode === "product" ? "/issues" : "/tasks")
                 }
               >
-                Go to {mode === "product" ? "Issues" : "Tasks"}
+                {mode === "product"
+                  ? savedFiltersConstants.views.goToIssues
+                  : savedFiltersConstants.views.goToTasks}
               </Button>
             </CardContent>
           </Card>
@@ -136,14 +139,15 @@ export default function Views() {
                       <span className="truncate">{filter.name}</span>
                       {isDefault && (
                         <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
-                          Default
+                          {savedFiltersConstants.views.default}
                         </span>
                       )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-muted-foreground mb-4 text-xs">
-                      Created {new Date(filter.createdAt).toLocaleDateString()}
+                      {savedFiltersConstants.createdAt}{" "}
+                      {new Date(filter.createdAt).toLocaleDateString("fa-IR")}
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -153,7 +157,11 @@ export default function Views() {
                           e.stopPropagation();
                           handleSetDefault(filter.id);
                         }}
-                        title={isDefault ? "Clear default" : "Set as default"}
+                        title={
+                          isDefault
+                            ? savedFiltersConstants.views.clearDefault
+                            : savedFiltersConstants.views.setDefault
+                        }
                       >
                         {isDefault ? (
                           <IconStarFilled className="text-warning h-4 w-4" />
@@ -187,16 +195,17 @@ export default function Views() {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete View</AlertDialogTitle>
+              <AlertDialogTitle>
+                {savedFiltersConstants.views.deleteTitle}
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this view? This action cannot be
-                undone.
+                {savedFiltersConstants.views.deleteDescription}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{shared.cancel}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDeleteConfirm}>
-                Delete
+                {shared.delete}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

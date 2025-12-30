@@ -175,7 +175,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   const handleCreate = () => {
     const title = newTitle.trim();
     if (!title) {
-      toast.error("عنوان مورد را وارد کنید");
+      toast.error(tasks.details.subtasks.titleRequired);
       return;
     }
     createSubtask.mutate(
@@ -192,7 +192,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
         onSuccess: () => {
           setNewTitle("");
           setNewAssignee("");
-          toast.success("مورد جدید اضافه شد");
+          toast.success(tasks.details.subtasks.addSuccess);
         },
         onError: (error: unknown) => {
           handlePocketBaseError(error as Error);
@@ -210,7 +210,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
 
   const handleDelete = (id: string) => {
     deleteSubtask.mutate(id, {
-      onSuccess: () => toast.success("مورد حذف شد"),
+      onSuccess: () => toast.success(tasks.details.subtasks.deleteSuccess),
       onError: (error: unknown) => handlePocketBaseError(error as Error),
     });
   };
@@ -235,7 +235,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
       const newIndex = items.findIndex((item) => item.id === over.id);
       const nextOrder = arrayMove(items, oldIndex, newIndex);
       persistOrder(nextOrder).catch(() => {
-        toast.error("به‌روزرسانی ترتیب ناموفق بود");
+        toast.error(tasks.details.subtasks.orderUpdateError);
       });
       return nextOrder;
     });
@@ -245,7 +245,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     <section className="space-y-4">
       <div className="flex items-center gap-4">
         <span className="text-primary/60 text-[10px] font-bold tracking-tight">
-          Work_Breakdown
+          {tasks.details.subtasks.workBreakdown}
         </span>
         <div className="bg-border/20 h-px flex-1" />
       </div>

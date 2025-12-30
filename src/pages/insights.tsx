@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTasks } from "@/hooks/tasks";
 import { useCurrentOrganization } from "@/store/auth-store";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { reports } from "@/constants";
 
 /**
  * Insights Page - Product Mode
@@ -80,9 +81,10 @@ export default function Insights() {
 
   // Calculate percentage change
   const getPercentageChange = (current: number, previous: number) => {
-    if (previous === 0) return current > 0 ? "+100%" : "0%";
+    if (previous === 0) return current > 0 ? "+۱۰۰٪" : "۰٪";
     const change = ((current - previous) / previous) * 100;
-    return change > 0 ? `+${change.toFixed(0)}%` : `${change.toFixed(0)}%`;
+    const formattedChange = digitsEnToFa(Math.abs(change).toFixed(0));
+    return change > 0 ? `+${formattedChange}٪` : `-${formattedChange}٪`;
   };
 
   if (isLoading) {
@@ -90,7 +92,7 @@ export default function Insights() {
       <PageTransition>
         <div className="flex h-full items-center justify-center">
           <div className="text-muted-foreground animate-pulse">
-            Loading insights...
+            {reports.insights.loading}
           </div>
         </div>
       </PageTransition>
@@ -106,9 +108,11 @@ export default function Insights() {
             <IconRocket className="size-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Insights</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {reports.insights.title}
+            </h1>
             <p className="text-muted-foreground mt-1">
-              Track your team's progress and productivity
+              {reports.insights.description}
             </p>
           </div>
         </div>
@@ -119,7 +123,7 @@ export default function Insights() {
           <Card className="bg-card/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Created This Week
+                {reports.insights.createdThisWeek}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -131,7 +135,7 @@ export default function Insights() {
                   insights.createdThisWeek,
                   insights.createdLastWeek,
                 )}{" "}
-                from last week
+                {reports.insights.fromLastWeek}
               </p>
             </CardContent>
           </Card>
@@ -140,7 +144,7 @@ export default function Insights() {
           <Card className="bg-card/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Completed This Week
+                {reports.insights.completedThisWeek}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -152,7 +156,7 @@ export default function Insights() {
                   insights.completedThisWeek,
                   insights.completedLastWeek,
                 )}{" "}
-                from last week
+                {reports.insights.fromLastWeek}
               </p>
             </CardContent>
           </Card>
@@ -160,14 +164,16 @@ export default function Insights() {
           {/* In Progress */}
           <Card className="bg-card/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {reports.insights.inProgress}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {digitsEnToFa(insights.inProgress)}
               </div>
               <p className="text-muted-foreground text-xs">
-                Currently active tasks
+                {reports.insights.currentlyActive}
               </p>
             </CardContent>
           </Card>

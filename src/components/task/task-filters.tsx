@@ -169,7 +169,7 @@ export function TaskFilters({
         <div className="bg-muted/30 flex h-9 shrink-0 items-center gap-2 rounded-xl px-3">
           <Search className="text-muted-foreground/60 size-3.5" />
           <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-            Search
+            {tasks.filters.labels.search}
           </span>
         </div>
 
@@ -190,7 +190,7 @@ export function TaskFilters({
             className="h-9 gap-2 rounded-xl px-4 text-[10px] font-bold tracking-tight text-rose-500 transition-all hover:bg-rose-500/10 hover:text-rose-600"
           >
             <Eraser className="size-3.5" />
-            Reset
+            {tasks.filters.labels.reset}
           </Button>
         )}
       </div>
@@ -279,7 +279,7 @@ export function TaskFilters({
         <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
-              Assignee
+              {tasks.filters.labels.assignee}
             </span>
             <User className="size-3" />
           </div>
@@ -321,7 +321,7 @@ export function TaskFilters({
         <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
-              Timeframe
+              {tasks.filters.labels.timeframe}
             </span>
             <Calendar className="size-3" />
           </div>
@@ -355,7 +355,9 @@ export function TaskFilters({
         {/* Tag Filter */}
         <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
-            <span className="text-[9px] font-bold tracking-tight">Tags</span>
+            <span className="text-[9px] font-bold tracking-tight">
+              {tasks.filters.labels.tags}
+            </span>
             <Tag className="size-3" />
           </div>
           <Select
@@ -390,7 +392,7 @@ export function TaskFilters({
           <div className="flex shrink-0 items-center gap-2 px-1">
             <Filter className="text-primary/60 size-3" />
             <span className="text-primary/60 text-[10px] font-bold tracking-tight">
-              Active Filters
+              {tasks.filters.labels.activeFilters}
             </span>
           </div>
 

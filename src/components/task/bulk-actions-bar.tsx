@@ -145,12 +145,12 @@ export function BulkActionsBar({
         <div className="bg-muted/20 border-border/40 flex items-center gap-3 rounded-xl border px-4 py-2">
           <div className="flex flex-col items-end">
             <span className="text-muted-foreground/40 mb-1 text-right text-[7px] leading-none font-bold tracking-tight">
-              Selection_Mode
+              {common.buttons.selectionMode}
             </span>
             <div className="flex items-center gap-2">
               <Terminal className="text-primary size-3" />
               <span className="text-xs font-bold">
-                {digitsEnToFa(selectedCount)} ITEMS
+                {digitsEnToFa(selectedCount)} {tasks.pagination.items}
               </span>
             </div>
           </div>

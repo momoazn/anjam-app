@@ -1,5 +1,6 @@
 import { UserAvatar } from "@/components/user-avatar";
 import { formatUserName } from "@/lib/utils";
+import { comments } from "@/constants";
 
 export type MentionOption = {
   id: string;
@@ -29,7 +30,7 @@ export function MentionAutocomplete({
   return (
     <div className="border-border/40 bg-card mt-2 max-h-56 overflow-auto rounded-xl border p-2 text-right shadow-sm">
       <div className="text-muted-foreground mb-2 text-[10px] font-bold tracking-tight">
-        Mention
+        {comments.item.mention}
       </div>
       <div className="space-y-1">
         {items.map((item, index) => (

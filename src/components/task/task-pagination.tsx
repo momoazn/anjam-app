@@ -50,7 +50,7 @@ export function TaskPagination({
         <div className="flex flex-wrap items-center gap-6">
           <div className="flex items-center gap-3">
             <span className="text-muted-foreground/40 text-[9px] font-bold tracking-tight">
-              Page Size
+              {tasks.pagination.pageSize}
             </span>
             <Select
               value={currentPerPage.toString()}
@@ -66,7 +66,7 @@ export function TaskPagination({
                     value={size.toString()}
                     className="text-[10px] font-medium"
                   >
-                    {digitsEnToFa(size)} Items
+                    {digitsEnToFa(size)} {tasks.pagination.items}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -88,7 +88,7 @@ export function TaskPagination({
 
             <div className="flex flex-col items-center">
               <span className="text-muted-foreground/40 mb-1 text-[9px] leading-none font-bold tracking-tight">
-                Page
+                {tasks.pagination.pageLabel}
               </span>
               <span className="text-xs font-bold tabular-nums">
                 {digitsEnToFa(currentPage)}{" "}

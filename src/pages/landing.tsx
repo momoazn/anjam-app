@@ -37,7 +37,7 @@ const LandingPage = () => {
       {/* Navigation */}
       <nav className="border-border/40 bg-background/40 relative z-20 mx-auto flex max-w-7xl items-center justify-between border-b px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <Logo size={28} />
+          <Logo size={40} />
           <div className="flex flex-col text-right">
             <span className="font-arad text-[14px] leading-none font-bold tracking-tight">
               {landing.brandName}

@@ -236,17 +236,17 @@ function AppSidebarHeader() {
             >
               <div className="relative">
                 <Logo
-                  size={28}
+                  size={40}
                   className="shrink-0 transition-transform duration-300"
                 />
               </div>
               {state === "expanded" && (
-                <div className="flex flex-col">
+                <div className="flex flex-col items-start">
                   <span className="text-sm font-bold tracking-tight">
                     {app.name}
                   </span>
                   <span className="text-muted-foreground text-[10px] font-medium">
-                    Task Management
+                    {app.description}
                   </span>
                 </div>
               )}
