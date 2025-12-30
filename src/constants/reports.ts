@@ -303,6 +303,16 @@ export const reports = {
       fallbackProjectName: shared.noName,
     },
   },
+  insights: {
+    title: "بینش‌ها",
+    description: "روند پیشرفت و بهره‌وری تیم خود را دنبال کنید",
+    createdThisWeek: "ایجاد شده در این هفته",
+    completedThisWeek: "تکمیل شده در این هفته",
+    inProgress: "در حال انجام",
+    fromLastWeek: "نسبت به هفته گذشته",
+    currentlyActive: "تسک‌های فعال فعلی",
+    loading: "در حال بارگذاری بینش‌ها...",
+  },
   cards: {
     statusDistribution: "توزیع وضعیت تسک‌ها",
     priorityDistribution: "توزیع اولویت‌ها",
@@ -338,6 +348,7 @@ export const dashboard = {
   chart: {
     count: "تعداد",
   },
+  project: "پروژه",
   fallbacks: {
     noDate: "بدون تاریخ",
     noDeadline: "ندارد",
@@ -365,6 +376,7 @@ export const dashboard = {
     viewAll: "مشاهده همه",
     progress: "پیشرفت",
     completed: shared.completed,
+    total: shared.total,
     remaining: "باقی مانده",
     taskStatusDistribution: "توزیع وضعیت تسک‌ها",
     productivityTrend: "روند بهره‌وری (۷ روز)",
@@ -373,6 +385,7 @@ export const dashboard = {
     noProject: "بدون پروژه",
     noActivityFound: "فعالیتی یافت نشد",
     overdueTasks: "تسک‌های سررسید گذشته",
+    task: "تسک",
   },
   statDescriptions: {
     totalTasks: "تعداد کل تسک‌های قابل دسترسی شما",

@@ -2,6 +2,7 @@
 
 export const app = {
   name: "انجام",
+  description: "مدیریت تسک‌ها",
 } as const;
 
 // Shared constants used across multiple modules
@@ -134,6 +135,7 @@ export const common = {
     yes: shared.yes,
     no: shared.no,
     multiSelect: "انتخاب چندتایی",
+    selectionMode: "حالت انتخاب",
     cancelSelection: "لغو انتخاب",
     backToList: "بازگشت به لیست",
     back: shared.back,
@@ -228,6 +230,7 @@ export const navigationLabels = {
   status: "وضعیت",
   workspace: "فضای کاری",
   admin: "مدیریت",
+  index: "شاخص",
 } as const;
 
 export const themeLabels = {

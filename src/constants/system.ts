@@ -162,6 +162,8 @@ export const auditLogs = {
     original: "مقدار قبلی",
     newValue: "مقدار جدید",
     empty: "تغییری برای نمایش وجود ندارد",
+    collapsed: "بسته شده",
+    clickToLoad: "برای بارگذاری تاریخچه فعالیت کلیک کنید",
   },
   table: {
     changes: "تغییرات",
@@ -235,11 +237,15 @@ export const settings = {
     },
   },
   appearance: {
-    title: "تم برنامه",
-    description: "ظاهر برنامه را متناسب با سلیقه خود شخصی‌سازی کنید.",
+    title: "تنظیمات نمایش",
+    description: "پارامترهای بصری سیستم",
+    theme: "تم سیستم",
+    timezone: "منطقه زمانی",
+    dateFormat: "فرمت تاریخ",
     light: "روشن",
     dark: "تاریک",
     system: "سیستم",
+    saveSuccess: "ترجیحات ذخیره شد",
   },
   security: {
     changePasswordTitle: "تغییر رمز عبور",
@@ -251,6 +257,10 @@ export const settings = {
     activeSessionsTitle: "نشست‌های فعال",
     activeSessionsDescription: "تاریخچه ورودهای اخیر به حساب کاربری شما.",
     noLoginHistory: "هیچ سابقه ورودی یافت نشد.",
+    remoteHost: "آدرس میزبان",
+    authTime: "زمان ورود",
+    unknownIp: "آی‌پی نامشخص",
+    unknownDevice: "دستگاه نامشخص",
     toast: {
       passwordChanged: "رمز عبور تغییر کرد",
       passwordChangedDescription: "رمز عبور شما با موفقیت تغییر یافت.",
@@ -264,9 +274,11 @@ export const settings = {
   },
   preferences: {
     title: "ترجیحات کاربری",
-    description: "تنظیمات نمایش فید فعالیت و اعلان‌های شخصی",
+    description: "تنظیمات رابط کاربری سیستم",
     activityDisabled: "نمایش فید فعالیت برای شما غیرفعال شده است",
     signinRequired: "برای مدیریت این قسمت ابتدا وارد حساب کاربری‌تان شوید",
+    notificationsTitle: "اعلان‌ها",
+    notificationsDescription: "مدیریت دریافت اعلان‌های سیستم",
     toggles: {
       activityFeed: {
         label: "فید فعالیت",
@@ -286,6 +298,12 @@ export const settings = {
     title: "درباره برنامه",
     version: "نسخه ۱.۰.۰",
     description: "این برنامه جهت مدیریت پروژه‌ها و تسک‌های تیمی طراحی شده است.",
+    manifest: "مشخصات نرم‌افزار",
+    buildVersion: "نسخه ساخت",
+    architecture: "معماری",
+    framework: "فریم‌ورک PocketBase",
+    uiEngine: "موتور رابط کاربری",
+    uiStack: "React + Tailwind CSS",
   },
 } as const;
 
@@ -785,4 +803,8 @@ export const timesheet = {
     "برای ثبت تایم‌شیت، روی تسک‌ها زمان ثبت کنید یا یک تسک جدید بسازید.",
   createTaskCta: "ساخت تسک جدید",
   calendarCta: "مشاهده تقویم تسک‌ها",
+} as const;
+
+export const system = {
+  registry: "ثبت سیستم",
 } as const;

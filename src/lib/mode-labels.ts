@@ -31,23 +31,23 @@ export function getModeLabels(mode: OrgMode | undefined | null): ModeLabels {
 
   if (orgMode === "product") {
     return {
-      home: "Inbox", // Linear-inspired: Inbox as home
-      tasks: "Issues", // Linear terminology: Issues
-      myTasks: "Inbox", // My tasks → Inbox
-      reports: "Insights", // Reports → Insights (lightweight)
-      members: "Members", // Keep simple: Members
-      savedFilters: "Views", // Saved Filters → Views
+      home: "صندوق ورودی",
+      tasks: "تسک‌ها",
+      myTasks: "صندوق ورودی",
+      reports: "بینش‌ها",
+      members: "اعضا",
+      savedFilters: "نماها",
     };
   }
 
   // Operations mode: current labels unchanged
   return {
-    home: "Dashboard",
-    tasks: "Tasks",
-    myTasks: "My Tasks",
-    reports: "Reports",
-    members: "Users",
-    savedFilters: "Saved Filters",
+    home: "داشبورد",
+    tasks: "تسک‌ها",
+    myTasks: "تسک‌های من",
+    reports: "گزارش‌ها",
+    members: "کاربران",
+    savedFilters: "فیلترهای ذخیره شده",
   };
 }
 

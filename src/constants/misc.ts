@@ -7,7 +7,13 @@ export const create = {
 } as const;
 
 export const search = {
+  title: "جستجوی سراسری",
   placeholder: "جستجو در تسک‌ها و پروژه‌ها...",
+  tasks: "تسک‌ها",
+  projects: "پروژه‌ها",
+  select: "انتخاب",
+  close: "بستن",
+  globalSearch: "جستجوی سراسری",
 } as const;
 
 export const header = {
