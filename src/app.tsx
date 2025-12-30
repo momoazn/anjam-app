@@ -17,6 +17,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import { useNotifications } from "@/hooks/notifications";
 import { useTheme } from "@/hooks/use-theme";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 import { loading } from "@/constants";
 import { AppRoutes } from "./router";
@@ -72,6 +73,7 @@ function AppLayout() {
   const isLoggedIn = useAuthIsLoggedIn();
   const location = useLocation();
   useNotifications(); // Auto-subscribes
+  useKeyboardShortcuts(); // Global keyboard shortcuts
 
   const isLandingPage = location.pathname === "/";
 

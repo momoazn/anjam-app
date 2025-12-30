@@ -143,8 +143,113 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 			})
 		})
 
+		// GET /api/v1/organizations/:orgId/context
+		// Returns org context including mode, viewer role, derived features, and UI labels
+		se.Router.GET("/api/v1/organizations/{orgId}/context", func(e *core.RequestEvent) error {
+			user := e.Auth
+			if user == nil {
+				return e.UnauthorizedError("Authentication required", nil)
+			}
+
+			orgId := e.Request.PathValue("orgId")
+			if orgId == "" {
+				return e.BadRequestError("Organization ID is required", nil)
+			}
+
+			// Fetch the organization
+			org, err := e.App.FindRecordById(CollectionOrganizations, orgId)
+			if err != nil {
+				return e.NotFoundError("Organization not found", err)
+			}
+
+			// Fetch viewer's membership to get their role
+			membership, err := e.App.FindFirstRecordByFilter(
+				CollectionOrgMembers,
+				"user = {:user} && organization = {:org} && status = 'active'",
+				dbx.Params{"user": user.Id, "org": orgId},
+			)
+			if err != nil {
+				return e.ForbiddenError("You are not a member of this organization", err)
+			}
+
+			viewerRole := membership.GetString("role")
+			mode := org.GetString("mode")
+			if mode == "" {
+				mode = "operations" // Default for backward compatibility
+			}
+
+			// Derive features based on mode
+			features := deriveOrgFeatures(mode)
+
+			// Derive labels based on mode
+			labels := deriveOrgLabels(mode)
+
+			return e.JSON(200, map[string]any{
+				"organization": org,
+				"viewer": map[string]any{
+					"role":      viewerRole,
+					"joined_at": membership.GetString("joined_at"),
+				},
+				"mode":     mode,
+				"features": features,
+				"labels":   labels,
+			})
+		})
+
 		return se.Next()
 	})
+}
+
+// deriveOrgFeatures returns feature flags based on organization mode
+func deriveOrgFeatures(mode string) map[string]bool {
+	if mode == "product" {
+		return map[string]bool{
+			"timeTracking": false,
+			"timesheet":    false,
+			"reports":      false,
+			"auditLogs":    false,
+			"loginLogs":    false,
+			"calendar":     false, // Can be configured via settings
+			"taskBoard":    true,
+			"activityFeed": false,
+		}
+	}
+
+	// Operations mode: all features enabled
+	return map[string]bool{
+		"timeTracking": true,
+		"timesheet":    true,
+		"reports":      true,
+		"auditLogs":    true,
+		"loginLogs":    true,
+		"calendar":     true,
+		"taskBoard":    true,
+		"activityFeed": true,
+	}
+}
+
+// deriveOrgLabels returns UI labels based on organization mode
+func deriveOrgLabels(mode string) map[string]string {
+	if mode == "product" {
+		return map[string]string{
+			"home":         "Inbox",
+			"tasks":        "Issues",
+			"myTasks":      "Inbox",
+			"reports":      "Insights",
+			"members":      "Members",
+			"savedFilters": "Views",
+		}
+	}
+
+	// Operations mode: default labels
+	return map[string]string{
+		"home":         "Dashboard",
+		"tasks":        "Tasks",
+		"myTasks":      "My Tasks",
+		"reports":      "Reports",
+		"members":      "Users",
+		"savedFilters": "Saved Filters",
+	}
 }
 
 func slugify(text string) string {

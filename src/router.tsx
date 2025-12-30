@@ -179,6 +179,10 @@ const Insights = createLazyPage(
   () => import("@/pages/insights"),
   errors.pageLoad.notFound,
 );
+const Views = createLazyPage(
+  () => import("@/pages/views"),
+  errors.pageLoad.notFound,
+);
 const NotFound = createLazyPage(
   () => import("@/pages/not-found"),
   errors.pageLoad.notFound,
@@ -447,6 +451,21 @@ const routes: RouteType[] = [
     protected: true,
     requiresOrg: true,
     title: "Insights",
+  },
+  // Views page and saved-filters alias
+  {
+    path: "/views",
+    element: <Views />,
+    protected: true,
+    requiresOrg: true,
+    title: "Views",
+  },
+  {
+    path: "/saved-filters",
+    element: <Views />,
+    protected: true,
+    requiresOrg: true,
+    title: "Saved Filters",
   },
   {
     path: "/projects",

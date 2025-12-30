@@ -37,7 +37,11 @@ import { formatTimeSpent } from "@/lib/time-utils";
 import { formatUserName } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { handlePocketBaseError } from "@/lib/error-handler";
-import { useAuthUser, useCurrentOrgFeatures } from "@/store/auth-store";
+import {
+  useAuthUser,
+  useCurrentOrgFeatures,
+  useCurrentOrgMode,
+} from "@/store/auth-store";
 import { isFeatureEnabled } from "@/lib/mode-features";
 import {
   useCreateTimeEntry,
@@ -90,7 +94,13 @@ export function TaskDetailsContent({
 
   const showActivityFeed = userPreferencesData.ui.showActivityFeed;
   const features = useCurrentOrgFeatures();
+  const mode = useCurrentOrgMode();
   const showTimeTracking = isFeatureEnabled(features, "timeTracking");
+  // In product mode, activity stream is available but collapsed by default
+  // This allows users to expand and view history if needed
+  const isProductMode = mode === "product";
+  const activityFeedAvailable = isProductMode || showActivityFeed;
+  const [activityExpanded, setActivityExpanded] = useState(!isProductMode);
 
   const timeEntryMutation = useCreateTimeEntry();
   const [replyTarget, setReplyTarget] = useState<CommentWithUser | null>(null);
@@ -355,13 +365,19 @@ export function TaskDetailsContent({
               {digitsEnToFa(comments.length)}
             </span>
           </TabsTrigger>
-          {showActivityFeed && (
+          {activityFeedAvailable && (
             <TabsTrigger
               value="history"
               className="data-[state=active]:bg-background h-full flex-1 rounded-lg text-xs font-bold transition-all data-[state=active]:shadow-sm"
+              onClick={() => setActivityExpanded(true)}
             >
               <IconHistory className="ms-1.5 size-4" />
               {auditLogs.activityStream.title}
+              {isProductMode && !activityExpanded && (
+                <span className="bg-muted text-muted-foreground ms-2 rounded px-1.5 py-0.5 text-[10px]">
+                  Collapsed
+                </span>
+              )}
             </TabsTrigger>
           )}
         </TabsList>
@@ -395,8 +411,18 @@ export function TaskDetailsContent({
               </div>
             </TabsContent>
             <TabsContent value="history" className="m-0 outline-none">
-              {showActivityFeed ? (
-                <ActivityStream resource="tasks" resourceId={task.id} />
+              {activityFeedAvailable ? (
+                activityExpanded ? (
+                  <ActivityStream resource="tasks" resourceId={task.id} />
+                ) : (
+                  <div
+                    className="text-muted-foreground cursor-pointer py-12 text-center text-xs font-bold tracking-tight opacity-50 transition-opacity hover:opacity-80"
+                    dir="rtl"
+                    onClick={() => setActivityExpanded(true)}
+                  >
+                    Click to load activity history
+                  </div>
+                )
               ) : (
                 <div
                   className="text-muted-foreground py-12 text-center text-xs font-bold tracking-tight opacity-50"
