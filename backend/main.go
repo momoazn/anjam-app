@@ -107,6 +107,11 @@ func main() {
 	app.OnRecordAfterUpdateSuccess("time_entries").BindFunc(handleTimeEntryUpdated)
 	app.OnRecordAfterDeleteSuccess("time_entries").BindFunc(handleTimeEntryDeleted)
 
+	// Enforce product mode restrictions on time_entries
+	app.OnRecordCreateExecute("time_entries").BindFunc(enforceTimeEntriesProductMode)
+	app.OnRecordUpdateExecute("time_entries").BindFunc(enforceTimeEntriesProductMode)
+	app.OnRecordDeleteExecute("time_entries").BindFunc(enforceTimeEntriesProductMode)
+
 	// --- Bind Authentication Event Handlers ---
 	app.OnRecordAuthWithPasswordRequest("users").BindFunc(hooks.HandleAuthRequest)
 
@@ -604,5 +609,38 @@ func registerAuditHooksHandler(e *core.ServeEvent) error {
 // Called during OnServe() after the app is fully bootstrapped.
 func initializeAuditWorker(e *core.ServeEvent) error {
 	initAuditWorker(e.App)
+	return e.Next()
+}
+
+// enforceTimeEntriesProductMode blocks time entry operations in product mode
+//
+// This is the final enforcement layer. Even if UI/routing checks fail,
+// the API will reject the operation.
+//
+// Pattern: OnRecordCreateExecute/UpdateExecute/DeleteExecute
+// Returns 403 Forbidden for product mode orgs
+func enforceTimeEntriesProductMode(e *core.RecordEvent) error {
+	// Resolve the organization mode from the time entry record
+	mode, err := ResolveOrgModeFromTimeEntry(e.App, e.Record)
+	if err != nil {
+		// On resolution error, log warning but allow operation
+		// (safer to allow than to block on uncertain state)
+		log.Printf("Warning: failed to resolve org mode for time entry: %v", err)
+		return e.Next()
+	}
+
+	// Block if organization is in product mode
+	if mode == OrgModeProduct {
+		return apis.NewApiError(
+			403,
+			"Time tracking is not available in this workspace mode.",
+			map[string]any{
+				"error":   "FEATURE_DISABLED",
+				"feature": "timesheet",
+			},
+		)
+	}
+
+	// Allow the operation
 	return e.Next()
 }

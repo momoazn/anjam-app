@@ -18,7 +18,27 @@ type defaultProjectStatus struct {
 	IsDone    bool
 }
 
-var defaultProjectStatuses = []defaultProjectStatus{
+/**
+ * Product mode statuses (simpler set for startups)
+ *
+ * Linear-inspired: Backlog, Todo, In Progress, Done, Canceled
+ * Cleaner workflow for product teams
+ */
+var productModeStatuses = []defaultProjectStatus{
+	{Key: "pending", Name: "Backlog", Color: "slate", Order: 1},
+	{Key: "todo", Name: "Todo", Color: "blue", Order: 2, IsDefault: true},
+	{Key: "in_progress", Name: "In Progress", Color: "purple", Order: 3},
+	{Key: "done", Name: "Done", Color: "green", Order: 4, IsDone: true},
+	{Key: "canceled", Name: "Canceled", Color: "gray", Order: 5, IsDone: true},
+}
+
+/**
+ * Operations mode statuses (comprehensive set for HR)
+ *
+ * Full workflow: Todo, In Progress, Review, Testing, Pending, Blocked, On Hold, Done, Canceled
+ * Supports detailed tracking for operations/HR teams
+ */
+var operationsModeStatuses = []defaultProjectStatus{
 	{Key: "todo", Name: "Todo", Color: "slate", Order: 1, IsDefault: true},
 	{Key: "in_progress", Name: "In Progress", Color: "blue", Order: 2},
 	{Key: "review", Name: "Review", Color: "purple", Order: 3},
@@ -36,7 +56,32 @@ func ensureDefaultProjectStatuses(app core.App, projectID string) error {
 		return err
 	}
 
-	for _, status := range defaultProjectStatuses {
+	// Resolve organization mode for this project
+	project, err := app.FindRecordById("projects", projectID)
+	if err != nil {
+		return fmt.Errorf("failed to fetch project: %w", err)
+	}
+
+	orgID := project.GetString("organization")
+	if orgID == "" {
+		return fmt.Errorf("project missing organization reference")
+	}
+
+	org, err := app.FindRecordById("organizations", orgID)
+	if err != nil {
+		return fmt.Errorf("failed to fetch organization: %w", err)
+	}
+
+	// Select status set based on mode
+	mode := org.GetString("mode")
+	var statuses []defaultProjectStatus
+	if mode == "product" {
+		statuses = productModeStatuses
+	} else {
+		statuses = operationsModeStatuses
+	}
+
+	for _, status := range statuses {
 		existing, _ := app.FindFirstRecordByFilter(
 			"project_statuses",
 			"project = {:project} && key = {:key}",
