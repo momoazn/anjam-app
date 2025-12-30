@@ -19,6 +19,7 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import type { ModeLabels } from "@/lib/mode-labels";
 
 const viewItems = [
   {
@@ -53,16 +54,23 @@ const viewItems = [
   },
 ] as const;
 
-export function TaskViews() {
+interface TaskViewsProps {
+  labels?: ModeLabels; // Optional mode labels for product mode
+}
+
+export function TaskViews({ labels }: TaskViewsProps) {
   const counts = useTaskCounts();
   const { state, isMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
+
+  // Get the label for saved filters (Views in product mode)
+  const sectionTitle = labels?.savedFilters ?? navigationSectionLabels.tasks;
 
   return (
     <SidebarGroup className="py-2">
       {state === "expanded" && (
         <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-tight">
-          {navigationSectionLabels.tasks}
+          {sectionTitle}
         </SidebarGroupLabel>
       )}
       <SidebarGroupContent>
