@@ -18,9 +18,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/constants";
 import { pb } from "@/lib/pocketbase";
-import { useCurrentOrganization, useAuthStore } from "@/store/auth-store";
+import {
+  useCurrentOrganization,
+  useCurrentOrgMode,
+  useAuthStore,
+} from "@/store/auth-store";
 import { queryKeys } from "@/hooks/query-keys";
 import { handlePocketBaseError } from "@/lib/error-handler";
+import { getHomeRoute } from "@/lib/mode-features";
 
 const STEPS = [
   {
@@ -47,6 +52,7 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const currentOrg = useCurrentOrganization();
+  const mode = useCurrentOrgMode();
   const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -109,7 +115,7 @@ export default function Onboarding() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
       fetchOrgs();
-      navigate("/dashboard", { replace: true });
+      navigate(getHomeRoute(mode), { replace: true });
     },
     onError: (error) => {
       handlePocketBaseError(error);

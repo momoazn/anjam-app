@@ -5,12 +5,14 @@ import { organization } from "@/constants";
 import {
   useUserOrganizations,
   useCurrentOrganization,
+  useCurrentOrgMode,
   useAuthStore,
 } from "@/store/auth-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { pb } from "@/lib/pocketbase";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { getHomeRoute } from "@/lib/mode-features";
 
 function getOrgInitials(name: string): string {
   return name
@@ -46,6 +48,13 @@ export function SelectOrganizationPage() {
   const navigate = useNavigate();
   const userOrganizations = useUserOrganizations();
   const currentOrg = useCurrentOrganization();
+  const mode = useCurrentOrgMode();
+
+  const handleOrgSelect = (orgId: string) => {
+    // Switch to this organization
+    useAuthStore.getState().switchOrganization(orgId);
+    navigate(getHomeRoute(mode));
+  };
 
   return (
     <div className="container mx-auto max-w-4xl py-12">
@@ -80,11 +89,7 @@ export function SelectOrganizationPage() {
           return (
             <button
               key={org.id}
-              onClick={() => {
-                // Switch to this organization
-                useAuthStore.getState().switchOrganization(org.id);
-                navigate("/dashboard");
-              }}
+              onClick={() => handleOrgSelect(org.id)}
               className={cn(
                 "group relative flex flex-col items-center gap-4 rounded-2xl border p-6 text-left transition-all",
                 isSelected
