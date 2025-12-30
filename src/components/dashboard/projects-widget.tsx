@@ -140,7 +140,7 @@ export function ProjectsWidget({
                 <div className="flex items-center gap-1.5">
                   <Hash className="text-primary size-2.5" />
                   <span className="text-muted-foreground text-[10px] font-medium">
-                    PRJ-{project.id.slice(0, 4).toUpperCase()}
+                    {dashboard.project}-{project.id.slice(0, 4).toUpperCase()}
                   </span>
                 </div>
               </div>

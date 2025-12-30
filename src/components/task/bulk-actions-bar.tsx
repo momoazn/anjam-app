@@ -63,7 +63,7 @@ export function BulkActionsBar({
       toast.success(
         tasks.bulkActions.assignSuccess.replace(
           "{count}",
-          String(selectedCount),
+          digitsEnToFa(selectedCount),
         ),
       );
     } catch {
@@ -80,7 +80,7 @@ export function BulkActionsBar({
       toast.success(
         tasks.bulkActions.statusSuccess.replace(
           "{count}",
-          String(selectedCount),
+          digitsEnToFa(selectedCount),
         ),
       );
     } catch {
@@ -114,7 +114,7 @@ export function BulkActionsBar({
       toast.success(
         tasks.bulkActions.deleteSuccess.replace(
           "{count}",
-          String(selectedCount),
+          digitsEnToFa(selectedCount),
         ),
       );
       setShowDeleteDialog(false);
