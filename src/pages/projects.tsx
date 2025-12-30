@@ -40,7 +40,7 @@ export default function Projects() {
         eyebrow={
           <div className="flex items-center gap-2 opacity-40">
             <span className="text-[10px] font-bold tracking-tight">
-              Project Registry
+              {projects.title}
             </span>
             <div className="bg-foreground/20 h-px w-8" />
           </div>
@@ -69,7 +69,7 @@ export default function Projects() {
           <div className="relative flex flex-col items-center">
             <Loader2 className="text-primary size-12 animate-spin opacity-20" />
             <span className="text-muted-foreground/50 mt-4 text-[10px] font-bold tracking-tight">
-              Loading Projects...
+              {projects.files.uploading}
             </span>
           </div>
         </div>

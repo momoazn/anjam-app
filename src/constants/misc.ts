@@ -119,7 +119,7 @@ export const myTasks = {
 // Project Status Settings
 export const projectStatuses = {
   settings: {
-    title: "Project_Statuses",
+    title: "وضعیت‌های پروژه",
     addStatus: "افزودن وضعیت",
     placeholder: "نام وضعیت",
   },
@@ -157,9 +157,9 @@ export const projectRoles = {
     viewer: "دسترسی فقط خواندنی",
   },
   labels: {
-    owner: "Owner",
-    admin: "Admin",
-    member: "Member",
-    viewer: "Viewer",
+    owner: "مالک",
+    admin: "ادمین",
+    member: "عضو",
+    viewer: "مشاهده‌گر",
   },
 } as const;

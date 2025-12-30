@@ -15,7 +15,7 @@ import { ProjectAssets } from "@/components/project/project-assets";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Textarea } from "@/components/ui/textarea";
-import { projects } from "@/constants";
+import { auditLogs, projects } from "@/constants";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { formatDateLocale } from "@/lib/date-utils";
 import { stripHtml } from "@/lib/excel-export";
@@ -56,7 +56,7 @@ export function ProjectDetailsSections({
             <IconTerminal className="size-4" />
           </div>
           <span className="text-primary text-[10px] font-bold tracking-tight">
-            01_Identity_Log
+            {projects.details.information}
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -64,7 +64,7 @@ export function ProjectDetailsSections({
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {[
             {
-              label: "Supervisor_ID",
+              label: projects.details.supervisor,
               value: supervisor ? (
                 formatUserName(
                   supervisor.first_name,
@@ -77,18 +77,18 @@ export function ProjectDetailsSections({
               icon: IconUser,
             },
             {
-              label: "Temporal_Start",
+              label: projects.details.createdAt,
               value: digitsEnToFa(formatDateLocale(project.created)),
               icon: IconCalendar,
             },
             {
-              label: "Internal_Hash",
+              label: "شناسه_سیستمی",
               value: project.id,
               icon: IconTerminal,
               mono: true,
             },
             {
-              label: "Latest_Sync",
+              label: projects.details.updatedAt,
               value: digitsEnToFa(formatDateLocale(project.updated)),
               icon: IconHistory,
             },
@@ -129,7 +129,7 @@ export function ProjectDetailsSections({
             <IconFileText className="size-4" />
           </div>
           <span className="text-primary text-[10px] font-bold tracking-tight">
-            02_Project_Brief
+            {projects.details.description}
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -143,7 +143,7 @@ export function ProjectDetailsSections({
               />
               <div className="relative z-10 space-y-3 text-right">
                 <span className="text-primary text-[10px] font-bold tracking-tight">
-                  Input_Buffer :: Description_Edit
+                  {projects.edit.description}
                 </span>
                 <Textarea
                   value={editedDescription.replace(/<br>/g, "\n")}
@@ -181,7 +181,7 @@ export function ProjectDetailsSections({
             <IconUpload className="size-4" />
           </div>
           <span className="text-primary text-[10px] font-bold tracking-tight">
-            03_Asset_Stream
+            {projects.details.files}
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -248,7 +248,7 @@ export function ProjectDetailsSections({
             <IconActivity className="size-4" />
           </div>
           <span className="text-primary text-[10px] font-bold tracking-tight">
-            06_Operation_Log
+            {auditLogs.activityStream.title}
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>

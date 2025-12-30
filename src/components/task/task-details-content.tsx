@@ -28,6 +28,7 @@ import {
   auditLogs,
   comments as commentsText,
   settings,
+  shared,
   tasks,
 } from "@/constants";
 import type { CommentWithUser } from "@/hooks/comments";
@@ -155,7 +156,7 @@ export function TaskDetailsContent({
             icon: IconUser,
           },
           {
-            label: tasks.details.project,
+            label: shared.project,
             value: task.expand?.project?.name || tasks.details.unknownProject,
             icon: IconTarget,
           },

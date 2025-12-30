@@ -139,7 +139,7 @@ export function ProjectListGroup({
 
                   <div className="flex flex-col items-end">
                     <span className="text-muted-foreground text-[10px] font-bold tracking-wider">
-                      Tasks
+                      {projectLabels.tasks}
                     </span>
                     <div className="mt-1 flex items-center gap-1.5 font-bold">
                       <span className="text-lg tabular-nums">

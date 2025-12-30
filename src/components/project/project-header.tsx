@@ -72,7 +72,7 @@ export function ProjectHeader({
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end">
               <div className="flex-1 space-y-2">
                 <span className="text-primary text-[10px] font-bold tracking-tight">
-                  Project Name
+                  {projects.create.form.name}
                 </span>
                 <Input
                   value={editedName}
@@ -83,7 +83,7 @@ export function ProjectHeader({
               </div>
               <div className="w-full space-y-2 lg:w-40">
                 <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
-                  Project Code
+                  {projects.create.form.code}
                 </span>
                 <Input
                   value={editedCode}
@@ -136,7 +136,7 @@ export function ProjectHeader({
                   <IconStack2 className="size-4" />
                 </div>
                 <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                  Active Project Module
+                  {projects.projectTasks}
                 </span>
               </div>
             </div>

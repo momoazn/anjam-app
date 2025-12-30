@@ -25,7 +25,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { projects, common } from "@/constants";
+import {
+  projects,
+  common,
+  projectRoles as projectRoleLabels,
+} from "@/constants";
 import {
   useProjectMembers,
   useUpdateProjectMemberRole,
@@ -100,7 +104,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
         <div className="flex items-center gap-3">
           <IconUsers className="text-primary size-4" />
           <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
-            Project Members
+            {projects.users.title}
           </span>
         </div>
         {canManageMembers && (
@@ -187,7 +191,11 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                           value={role}
                           className="text-right text-[9px] font-bold"
                         >
-                          {role}
+                          {
+                            projectRoleLabels.labels[
+                              role as keyof typeof projectRoleLabels.labels
+                            ]
+                          }
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -197,7 +205,11 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                     variant="outline"
                     className="border-border/40 bg-muted/30 text-muted-foreground rounded-lg text-[9px] font-bold tracking-tight"
                   >
-                    {member.role}
+                    {
+                      projectRoleLabels.labels[
+                        member.role as keyof typeof projectRoleLabels.labels
+                      ]
+                    }
                   </Badge>
                 )}
               </div>

@@ -34,14 +34,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { projectStatuses } from "@/constants/misc";
 
 const colorOptions = [
-  { value: "slate", label: "Slate" },
-  { value: "blue", label: "Blue" },
-  { value: "purple", label: "Purple" },
-  { value: "amber", label: "Amber" },
-  { value: "cyan", label: "Cyan" },
-  { value: "orange", label: "Orange" },
-  { value: "gray", label: "Gray" },
-  { value: "green", label: "Green" },
+  { value: "slate", label: "سنگی" },
+  { value: "blue", label: "آبی" },
+  { value: "purple", label: "بنفش" },
+  { value: "amber", label: "کهربایی" },
+  { value: "cyan", label: "فیروزه‌ای" },
+  { value: "orange", label: "نارنجی" },
+  { value: "gray", label: "خاکستری" },
+  { value: "green", label: "سبز" },
 ];
 
 function slugifyKey(value: string) {

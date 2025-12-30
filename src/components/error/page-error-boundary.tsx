@@ -1,5 +1,5 @@
 import React from "react";
-import { shared } from "@/constants";
+import { errors, shared } from "@/constants";
 
 type Props = {
   children: React.ReactNode;
@@ -29,7 +29,7 @@ export class PageErrorBoundary extends React.Component<Props, State> {
           <div className="max-w-md text-center">
             <h1 className="text-xl font-semibold">{shared.error}</h1>
             <p className="text-muted-foreground mt-2 text-sm">
-              {this.state.error.message || shared.messages.notFound}
+              {this.state.error.message || errors.pageLoad.notFound}
             </p>
             <button
               type="button"

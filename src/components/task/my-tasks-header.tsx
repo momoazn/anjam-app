@@ -1,7 +1,13 @@
 import { Plus, User, CheckSquare, Layers } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { common, myTasks as myTasksText, tasks, app } from "@/constants";
+import {
+  common,
+  myTasks as myTasksText,
+  navigationLabels,
+  tasks,
+  app,
+} from "@/constants";
 import { cn } from "@/lib/utils";
 
 type MyTasksHeaderProps = {

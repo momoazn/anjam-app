@@ -10,7 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { projects, common } from "@/constants";
+import {
+  projects,
+  common,
+  projectRoles as projectRoleLabels,
+} from "@/constants";
 import { useOrganizationMembers } from "@/hooks";
 import { useAddProjectMember } from "@/hooks/project-members";
 import { formatUserName } from "@/lib/utils";
@@ -147,7 +151,11 @@ export function AddProjectMemberModal({
                     value={role}
                     className="text-right text-[10px] font-bold"
                   >
-                    {role}
+                    {
+                      projectRoleLabels.labels[
+                        role as keyof typeof projectRoleLabels.labels
+                      ]
+                    }
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -156,7 +164,7 @@ export function AddProjectMemberModal({
 
           <div className="space-y-3">
             <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-              Role Matrix
+              ماتریس نقش‌ها
             </span>
             <div className="space-y-2">
               {projectRoles.map((role) => (
