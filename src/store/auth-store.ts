@@ -236,6 +236,7 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
         currentOrganization: state.currentOrganization,
         currentOrgRole: state.currentOrgRole,
+        userOrganizations: state.userOrganizations,
       }),
     },
   ),
