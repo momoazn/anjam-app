@@ -316,7 +316,9 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
 
         <div className="mt-6 space-y-3">
           {isLoadingSubtasks ? (
-            <p className="text-muted-foreground">در حال بارگذاری...</p>
+            <p className="text-muted-foreground">
+              {tasks.details.timeTracking.loading}
+            </p>
           ) : ordered.length > 0 ? (
             <DndContext
               collisionDetection={closestCenter}

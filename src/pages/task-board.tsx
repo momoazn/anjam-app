@@ -22,7 +22,7 @@ import { PageTransition } from "@/components/page-transition";
 import { pb, TaskWithProject } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks/query-keys";
 import { TASK_STATUS_ORDER, TASK_STATUS_CONFIG } from "@/lib/status-utils";
-import { tasks as tasksText } from "@/constants";
+import { tasks as tasksText, common } from "@/constants";
 import {
   TasksStatusOptions,
   TasksRecord,
@@ -198,7 +198,8 @@ export function TaskBoardPage() {
             <div className="text-muted-foreground flex items-center gap-2">
               <IconHash className="size-4" />
               <span className="text-xs font-bold tracking-tight">
-                {projectId ? project?.code : "GLOBAL"} / BOARD
+                {projectId ? project?.code : common.buttons.all} /{" "}
+                {tasksText.board.title}
               </span>
             </div>
 
@@ -228,7 +229,7 @@ export function TaskBoardPage() {
               className="h-11 px-6 font-bold"
             >
               <IconList className="ms-2 size-4" />
-              List View
+              {common.buttons.view}
             </Button>
 
             <Button

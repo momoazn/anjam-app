@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconTerminal, IconHash } from "@tabler/icons-react";
+import { common, tasks as tasksText } from "@/constants";
 
 interface BoardColumnProps {
   status: TaskStatusConfig;
@@ -89,7 +90,9 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
             {tasks.length === 0 && (
               <div className="flex flex-col items-center justify-center py-24 opacity-10 grayscale">
                 <IconHash className="size-12 stroke-1" />
-                <p className="mt-4 text-xs font-bold">خالی</p>
+                <p className="mt-4 text-xs font-bold">
+                  {tasksText.list.noTasks}
+                </p>
               </div>
             )}
           </div>
@@ -100,7 +103,7 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
       <div className="border-border/20 bg-card flex items-center justify-between border-t px-6 py-3 opacity-40">
         <div className="flex items-center gap-2">
           <div className="bg-primary size-2 animate-pulse rounded-full" />
-          <span className="text-[10px] font-bold">فعال</span>
+          <span className="text-[10px] font-bold">{common.states.active}</span>
         </div>
         <span className="text-[10px] font-bold">{status.key.slice(0, 8)}</span>
       </div>
