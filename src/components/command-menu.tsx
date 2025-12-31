@@ -5,11 +5,11 @@
  * Fuzzy search, context-aware suggestions, keyboard navigation.
  */
 import { IconSearch } from "@tabler/icons-react";
-import { commandify } from "cmdk";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { commandMenu } from "@/constants";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -20,6 +20,26 @@ interface CommandItem {
   action: () => void;
   keywords?: string[];
   shortcut?: string;
+}
+
+/**
+ * Simple fuzzy filter for commands
+ */
+function filterCommands(
+  commands: CommandItem[],
+  search: string,
+): CommandItem[] {
+  if (!search) return commands;
+
+  const searchTerm = search.toLowerCase();
+
+  return commands.filter((cmd) => {
+    const labelMatch = cmd.label.toLowerCase().includes(searchTerm);
+    const keywordsMatch = cmd.keywords?.some((keyword) =>
+      keyword.toLowerCase().includes(searchTerm),
+    );
+    return labelMatch || keywordsMatch;
+  });
 }
 
 export function CommandMenu() {
@@ -34,17 +54,21 @@ export function CommandMenu() {
     // Navigation
     {
       id: "nav-inbox",
-      label: isProductMode ? "صندوق ورودی" : "تسک‌های من",
+      label: isProductMode
+        ? commandMenu.product.inbox
+        : commandMenu.operations.myTasks,
       icon: IconSearch,
       action: () => {
         navigate(isProductMode ? "/inbox" : "/my-tasks");
         setOpen(false);
       },
-      keywords: ["inbox", "tasks", "my tasks", "صندوق", "تسک"],
+      keywords: commandMenu.keywords.inbox,
     },
     {
       id: "nav-dashboard",
-      label: isProductMode ? "داشبورد" : "داشبورد",
+      label: isProductMode
+        ? commandMenu.product.dashboard
+        : commandMenu.operations.dashboard,
       icon: () => (
         <svg
           className="size-4"
@@ -64,11 +88,11 @@ export function CommandMenu() {
         navigate("/dashboard");
         setOpen(false);
       },
-      keywords: ["dashboard", "home", "داشبورد"],
+      keywords: commandMenu.keywords.dashboard,
     },
     {
       id: "nav-projects",
-      label: "پروژه‌ها",
+      label: commandMenu.product.projects,
       icon: () => (
         <svg
           className="size-4"
@@ -88,12 +112,14 @@ export function CommandMenu() {
         navigate("/projects");
         setOpen(false);
       },
-      keywords: ["projects", "پروژه"],
+      keywords: commandMenu.keywords.projects,
     },
     // Task actions
     {
       id: "task-new",
-      label: isProductMode ? "ایجاد مورد جدید" : "ایجاد تسک جدید",
+      label: isProductMode
+        ? commandMenu.product.createItem
+        : commandMenu.operations.createTask,
       icon: () => (
         <svg
           className="size-4"
@@ -113,24 +139,15 @@ export function CommandMenu() {
         navigate("/tasks/new");
         setOpen(false);
       },
-      keywords: [
-        "new",
-        "create",
-        "task",
-        "issue",
-        "ایجاد",
-        "تسک",
-        "مورد",
-        "جدید",
-      ],
-      shortcut: "N",
+      keywords: commandMenu.keywords.new,
+      shortcut: commandMenu.shortcuts.new,
     },
     // Product mode specific commands
     ...(isProductMode
       ? [
           {
             id: "nav-insights",
-            label: "بینش‌ها",
+            label: commandMenu.product.insights,
             icon: () => (
               <svg
                 className="size-4"
@@ -150,21 +167,14 @@ export function CommandMenu() {
               navigate("/insights");
               setOpen(false);
             },
-            keywords: [
-              "insights",
-              "reports",
-              "analytics",
-              "views",
-              "بینش",
-              "گزارش",
-            ],
+            keywords: commandMenu.keywords.insights,
           },
         ]
       : []),
     // Settings
     {
       id: "nav-settings",
-      label: "تنظیمات",
+      label: commandMenu.product.settings,
       icon: () => (
         <svg
           className="size-4"
@@ -190,7 +200,7 @@ export function CommandMenu() {
         navigate("/settings");
         setOpen(false);
       },
-      keywords: ["settings", "preferences", "تنظیمات"],
+      keywords: commandMenu.keywords.settings,
     },
   ];
 
@@ -208,7 +218,7 @@ export function CommandMenu() {
   }, []);
 
   // Filter commands based on search
-  const filteredCommands = commandify(commands, search);
+  const filteredCommands = filterCommands(commands, search);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -246,7 +256,9 @@ export function CommandMenu() {
                 : "",
             )}
             placeholder={
-              isProductMode ? "جستجو یا دستور تایپ کنید..." : "تایپ کنید..."
+              isProductMode
+                ? commandMenu.product.placeholder
+                : commandMenu.operations.placeholder
             }
           />
           <kbd
@@ -257,7 +269,7 @@ export function CommandMenu() {
                 : "border-border bg-muted text-muted-foreground",
             )}
           >
-            <span className="text-xs">⌘</span>K
+            <span className="text-xs">{commandMenu.shortcuts.commandK}</span>
           </kbd>
         </div>
         <div className="max-h-[300px] overflow-y-auto p-2">
@@ -270,11 +282,11 @@ export function CommandMenu() {
                   : "text-muted-foreground",
               )}
             >
-              نتیجه‌ای یافت نشد.
+              {commandMenu.product.noResults}
             </p>
           ) : (
             <div className="flex flex-col gap-1" dir="rtl">
-              {filteredCommands.map((cmd) => {
+              {filteredCommands.map((cmd: CommandItem) => {
                 const Icon = cmd.icon;
                 return (
                   <button
