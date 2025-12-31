@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserAvatar } from "@/components/user-avatar";
 import { task as taskLabels, tasks } from "@/constants";
-import { useLinearClasses } from "@/hooks/use-linear-theme";
+import { useProductClasses } from "@/hooks/use-product-theme";
 import { formatDateShort } from "@/lib/date-utils";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
@@ -40,7 +40,7 @@ function TaskListItemInner({
   onSelectionChange,
 }: TaskListItemProps) {
   const navigate = useNavigate();
-  const linearClasses = useLinearClasses();
+  const productClasses = useProductClasses();
 
   const StatusIcon = taskStatusIcons[task.status];
   const statusIconColor = getStatusColorVariant(task.status, "icon");
@@ -68,11 +68,11 @@ function TaskListItemInner({
       className={cn(
         "group relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b p-0 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0",
         // Linear theme styling for product mode
-        linearClasses.surface,
-        linearClasses.transition,
-        linearClasses.kbdFocus,
+        productClasses.surface,
+        productClasses.transition,
+        productClasses.kbdFocus,
         "hover:bg-white/5",
-        isSelected && (linearClasses.selected || "bg-primary/5"),
+        isSelected && (productClasses.selected || "bg-primary/5"),
         className,
       )}
       onClick={handleClick}
@@ -95,7 +95,7 @@ function TaskListItemInner({
               "flex size-8 items-center justify-center rounded-lg border transition-all duration-300 group-hover:scale-110",
               priorityIconColor,
               // Linear beveled edge for product mode
-              linearClasses.beveled,
+              productClasses.beveled,
             )}
           >
             <PriorityIcon className="size-4" />
@@ -128,7 +128,7 @@ function TaskListItemInner({
             className={cn(
               "flex size-5 items-center justify-center rounded border",
               statusIconColor,
-              linearClasses.beveled,
+              productClasses.beveled,
             )}
           >
             <StatusIcon className="size-3.5 shrink-0" />
@@ -146,7 +146,7 @@ function TaskListItemInner({
                 variant="outline"
                 className={cn(
                   "rounded-md px-1.5 py-0 text-[10px] font-medium",
-                  linearClasses.beveled,
+                  productClasses.beveled,
                 )}
               >
                 {tag}

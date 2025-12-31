@@ -1,13 +1,13 @@
 /**
  * Mode Theme Module
  *
- * Provides utilities for applying Linear Design System theming
+ * Provides utilities for applying mode-specific theming
  * based on the current organization mode.
  */
 import type { OrgMode } from "./mode-features";
 
 /**
- * Apply Linear theme class to document body when in product mode
+ * Apply product theme class to document body when in product mode
  * Removes the class when in operations mode
  *
  * @param mode Current organization mode
@@ -18,19 +18,21 @@ export function applyModeTheme(mode: OrgMode | null | undefined): void {
   const body = document.body;
 
   if (mode === "product") {
-    body.classList.add("linear-theme");
+    body.classList.add("product-theme");
   } else {
-    body.classList.remove("linear-theme");
+    body.classList.remove("product-theme");
   }
 }
 
 /**
- * Check if Linear theme should be applied
+ * Check if product theme should be applied
  *
  * @param mode Current organization mode
- * @returns true if Linear theme is active
+ * @returns true if product theme is active
  */
-export function isLinearThemeActive(mode: OrgMode | null | undefined): boolean {
+export function isProductThemeActive(
+  mode: OrgMode | null | undefined,
+): boolean {
   return mode === "product";
 }
 
@@ -38,19 +40,19 @@ export function isLinearThemeActive(mode: OrgMode | null | undefined): boolean {
  * Get mode-specific CSS class names
  *
  * @param mode Current organization mode
- * @returns Object with conditional class names for Linear theming
+ * @returns Object with conditional class names for product theming
  */
-export function getLinearClasses(mode: OrgMode | null | undefined) {
-  const isLinear = isLinearThemeActive(mode);
+export function getProductClasses(mode: OrgMode | null | undefined) {
+  const isProduct = isProductThemeActive(mode);
 
   return {
-    canvas: isLinear ? "linear-canvas" : "",
-    surface: isLinear ? "linear-surface" : "",
-    elevated: isLinear ? "linear-elevated" : "",
-    beveled: isLinear ? "linear-beveled" : "",
-    selected: isLinear ? "linear-selected" : "",
-    transition: isLinear ? "linear-transition" : "",
-    kbdFocus: isLinear ? "linear-kbd-focus" : "",
-    glass: isLinear ? "linear-glass" : "",
+    canvas: isProduct ? "product-canvas" : "",
+    surface: isProduct ? "product-surface" : "",
+    elevated: isProduct ? "product-elevated" : "",
+    beveled: isProduct ? "product-beveled" : "",
+    selected: isProduct ? "product-selected" : "",
+    transition: isProduct ? "product-transition" : "",
+    kbdFocus: isProduct ? "product-kbd-focus" : "",
+    glass: isProduct ? "product-glass" : "",
   };
 }

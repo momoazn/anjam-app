@@ -19,7 +19,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
-import { useLinearThemeEffect } from "@/hooks/use-linear-theme";
+import { useProductThemeEffect } from "@/hooks/use-product-theme";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 
@@ -103,7 +103,7 @@ function AppLayout() {
 
 function App() {
   useTheme();
-  useLinearThemeEffect(); // Apply Linear theme based on org mode
+  useProductThemeEffect(); // Apply product theme based on org mode
 
   return (
     <ErrorBoundary>

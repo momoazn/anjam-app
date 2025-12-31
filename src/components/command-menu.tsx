@@ -199,15 +199,15 @@ export function CommandMenu() {
       <DialogOverlay
         className={cn(
           "bg-black/80 backdrop-blur-sm",
-          // Linear glassmorphism for product mode
-          isProductMode && "linear-glass",
+          // Glassmorphism for product mode
+          isProductMode && "product-glass",
         )}
       />
       <DialogContent
         className={cn(
           "overflow-hidden p-0 shadow-2xl",
-          // Linear styling for product mode
-          isProductMode ? "linear-elevated linear-beveled" : "bg-card",
+          // Product mode styling
+          isProductMode ? "product-elevated product-beveled" : "bg-card",
         )}
         showCloseButton={false}
       >
@@ -216,7 +216,7 @@ export function CommandMenu() {
             className={cn(
               "size-4 shrink-0",
               isProductMode
-                ? "text-[var(--linear-text-secondary)]"
+                ? "text-[var(--product-text-secondary)]"
                 : "text-muted-foreground",
             )}
           />
@@ -226,7 +226,7 @@ export function CommandMenu() {
             className={cn(
               "flex h-12 w-full rounded-md bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
               isProductMode
-                ? "text-[var(--linear-text-primary)] placeholder:text-[var(--linear-text-tertiary)]"
+                ? "text-[var(--product-text-primary)] placeholder:text-[var(--product-text-tertiary)]"
                 : "",
             )}
             placeholder={
@@ -237,7 +237,7 @@ export function CommandMenu() {
             className={cn(
               "pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100",
               isProductMode
-                ? "border-[var(--linear-border)] text-[var(--linear-text-tertiary)]"
+                ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
                 : "border-border bg-muted text-muted-foreground",
             )}
           >
@@ -250,7 +250,7 @@ export function CommandMenu() {
               className={cn(
                 "p-4 text-center text-sm",
                 isProductMode
-                  ? "text-[var(--linear-text-secondary)]"
+                  ? "text-[var(--product-text-secondary)]"
                   : "text-muted-foreground",
               )}
             >
@@ -269,7 +269,7 @@ export function CommandMenu() {
                       "hover:bg-accent hover:text-accent-foreground",
                       "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                       isProductMode
-                        ? "text-[var(--linear-text-secondary)] hover:text-[var(--linear-text-primary)] linear-kbd-focus"
+                        ? "text-[var(--product-text-secondary)] hover:text-[var(--product-text-primary)] product-kbd-focus"
                         : "",
                     )}
                   >
@@ -277,7 +277,7 @@ export function CommandMenu() {
                       className={cn(
                         "size-4 shrink-0",
                         isProductMode
-                          ? "text-[var(--linear-text-tertiary)]"
+                          ? "text-[var(--product-text-tertiary)]"
                           : "text-muted-foreground",
                       )}
                     />
@@ -287,7 +287,7 @@ export function CommandMenu() {
                         className={cn(
                           "pointer-events-none ml-2 inline-flex h-5 select-none items-center rounded border px-1.5 font-mono text-[10px]",
                           isProductMode
-                            ? "border-[var(--linear-border)] text-[var(--linear-text-tertiary)]"
+                            ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
                             : "border-border bg-muted text-muted-foreground",
                         )}
                       >
