@@ -32,7 +32,7 @@ export interface SearchResponse {
  * @returns Search results with matching tasks and projects
  */
 export async function search(query: string): Promise<SearchResponse> {
-  const res = await pb.send<{ data: SearchResponse }>("/api/search", {
+  const res = await pb.send<{ data: SearchResponse }>("/api/v1/search", {
     params: { q: query },
   });
   return res.data;
