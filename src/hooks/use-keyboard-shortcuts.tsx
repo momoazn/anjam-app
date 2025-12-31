@@ -176,7 +176,6 @@ export function useKeyboardShortcuts() {
           "g + d/t/m/p/r/s: Navigate (Dashboard/Tasks/My-tasks/Projects/Reports/timeSheet) [operations mode]",
         );
         console.log("c: Create new task/issue");
-        console.log("/: Focus search");
         return;
       }
 

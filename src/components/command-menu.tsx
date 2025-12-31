@@ -180,7 +180,6 @@ export function CommandMenu() {
         icon: Plus,
         action: navigateToNewTask,
         keywords: commandMenu.keywords.new,
-        shortcut: commandMenu.shortcuts.new,
         type: "command",
       },
     ];
