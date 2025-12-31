@@ -565,7 +565,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			IPAddress:    getIPAddress(e),
 		}
 
-		logAudit(app, entry)
+		logAuditAsync(app, entry)
 		return e.Next()
 	})
 
@@ -602,7 +602,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			IPAddress:    getIPAddress(e),
 		}
 
-		logAudit(app, entry)
+		logAuditAsync(app, entry)
 		return e.Next()
 	})
 
@@ -637,7 +637,7 @@ func registerAuditHooks(pbApp interface{}, collectionName string) {
 			entry.Message = fmt.Sprintf("Deleted %s: %s", collectionName, resourceName)
 		}
 
-		logAudit(app, entry)
+		logAuditAsync(app, entry)
 		return e.Next()
 	})
 }
