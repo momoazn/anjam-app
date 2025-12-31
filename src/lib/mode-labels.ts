@@ -4,10 +4,10 @@
  * Provides UI label overrides based on organization mode.
  * Centralizes all user-facing text that differs between modes.
  *
- * Product mode uses English terminology:
- * - Tasks → Issues
- * - Reports → Insights
- * - Saved Filters → Views
+ * Product mode uses Persian terminology aligned with Linear-inspired UX:
+ * - Tasks → موردها
+ * - Reports → بینش‌ها
+ * - Saved Filters → نماها
  */
 import type { OrgMode } from "./mode-features";
 
