@@ -22,6 +22,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { BoardCard } from "@/components/task/board/board-card";
 import { BoardColumn } from "@/components/task/board/board-column";
@@ -189,61 +190,58 @@ export function TaskBoardPage() {
     );
   }
 
+  const headerActions = (
+    <div className="flex flex-wrap gap-3">
+      <Button
+        variant="outline"
+        onClick={() =>
+          navigate(projectId ? `/projects/${projectId}/tasks` : "/tasks")
+        }
+        className="h-11 px-6 font-bold"
+      >
+        <IconList className="ms-2 size-4" />
+        {common.buttons.view}
+      </Button>
+
+      <Button
+        onClick={() =>
+          navigate(
+            projectId ? `/projects/${projectId}/tasks/new` : "/tasks/new",
+          )
+        }
+        className="h-11 px-6 font-bold shadow-sm"
+      >
+        <IconPlus className="ms-2 size-5" />
+        {tasksText.addTask.buttons.newTask}
+      </Button>
+    </div>
+  );
+
   return (
     <PageTransition className="flex h-[calc(100vh-4rem)] flex-col">
-      {/* Minimal Header */}
       <div className="bg-card border-border border-b">
-        <div className="relative z-10 flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:px-8">
-          <div className="space-y-2">
-            <div className="text-muted-foreground flex items-center gap-2">
-              <IconHash className="size-4" />
-              <span className="text-xs font-bold tracking-tight">
-                {projectId ? project?.code : common.buttons.all} /{" "}
-                {tasksText.board.title}
-              </span>
-            </div>
-
-            <h1 className="text-3xl font-bold tracking-tight">
-              {projectId ? project?.name : tasksText.board.title}
-            </h1>
-
-            <div className="flex items-center gap-2">
-              <div className="bg-primary/10 text-primary flex size-5 items-center justify-center rounded-md">
-                <IconLayoutGrid className="size-3.5" />
+        <div className="container mx-auto px-6 py-4 md:px-8">
+          <PageHeader
+            variant="minimal"
+            title={projectId ? project?.name : tasksText.board.title}
+            subtitle={tasksText.header.tasksFound.replace(
+              "{count}",
+              digitsEnToFa(tasksData.length).toString(),
+            )}
+            icon={IconLayoutGrid}
+            iconSize="sm"
+            eyebrow={
+              <div className="text-muted-foreground flex items-center gap-2">
+                <IconHash className="size-4" />
+                <span className="text-xs font-bold tracking-tight">
+                  {projectId ? project?.code : common.buttons.all} /{" "}
+                  {tasksText.board.title}
+                </span>
               </div>
-              <span className="text-muted-foreground text-xs font-medium">
-                {tasksText.header.tasksFound.replace(
-                  "{count}",
-                  digitsEnToFa(tasksData.length).toString(),
-                )}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              onClick={() =>
-                navigate(projectId ? `/projects/${projectId}/tasks` : "/tasks")
-              }
-              className="h-11 px-6 font-bold"
-            >
-              <IconList className="ms-2 size-4" />
-              {common.buttons.view}
-            </Button>
-
-            <Button
-              onClick={() =>
-                navigate(
-                  projectId ? `/projects/${projectId}/tasks/new` : "/tasks/new",
-                )
-              }
-              className="h-11 px-6 font-bold shadow-sm"
-            >
-              <IconPlus className="ms-2 size-5" />
-              {tasksText.addTask.buttons.newTask}
-            </Button>
-          </div>
+            }
+            actions={headerActions}
+            className="mb-0 border-0 shadow-none"
+          />
         </div>
       </div>
 

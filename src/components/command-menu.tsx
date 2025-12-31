@@ -5,11 +5,12 @@
  * Fuzzy search, context-aware suggestions, keyboard navigation.
  */
 import { IconSearch } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 import { commandMenu } from "@/constants";
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -45,9 +46,13 @@ function filterCommands(
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
   const navigate = useNavigate();
   const currentOrgMode = useAuthStore((state) => state.currentOrgMode);
   const isProductMode = currentOrgMode === "product";
+  const { resolvedTheme } = useTheme();
+  const isProductVisualTheme = isProductMode && resolvedTheme === "dark";
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Define commands based on current context
   const commands: CommandItem[] = [
@@ -92,7 +97,9 @@ export function CommandMenu() {
     },
     {
       id: "nav-projects",
-      label: commandMenu.product.projects,
+      label: isProductMode
+        ? commandMenu.product.projects
+        : commandMenu.operations.projects,
       icon: () => (
         <svg
           className="size-4"
@@ -174,7 +181,9 @@ export function CommandMenu() {
     // Settings
     {
       id: "nav-settings",
-      label: commandMenu.product.settings,
+      label: isProductMode
+        ? commandMenu.product.settings
+        : commandMenu.operations.settings,
       icon: () => (
         <svg
           className="size-4"
@@ -204,36 +213,100 @@ export function CommandMenu() {
     },
   ];
 
-  // Keyboard shortcut to open command menu
+  // Keyboard shortcuts to open command menu (Cmd/Ctrl+K or `/` when not typing)
   useEffect(() => {
+    const isEditableTarget = (target: EventTarget | null) => {
+      if (!(target instanceof HTMLElement)) return false;
+      const tag = target.tagName;
+      return tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable;
+    };
+
     const down = (e: KeyboardEvent) => {
-      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+      // Avoid interfering with typing or other shortcuts
+      if (isEditableTarget(e.target)) return;
+
+      const isModK = e.key === "k" && (e.metaKey || e.ctrlKey);
+      const isSlash = e.key === "/";
+
+      if (isModK || isSlash) {
         e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
+        }
         setOpen((open) => !open);
       }
     };
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    // Use capture phase to intercept before other handlers (e.g., browser shortcuts)
+    document.addEventListener("keydown", down, { capture: true });
+    return () =>
+      document.removeEventListener("keydown", down, { capture: true });
+  }, []);
+
+  // Allow other components to open the command menu (e.g., header button)
+  useEffect(() => {
+    const handleOpenEvent = () => setOpen(true);
+    window.addEventListener("command-menu:open", handleOpenEvent);
+    return () =>
+      window.removeEventListener("command-menu:open", handleOpenEvent);
   }, []);
 
   // Filter commands based on search
   const filteredCommands = filterCommands(commands, search);
 
+  // Reset active item when search changes or menu opens
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setActiveIndex(0);
+  }, [search, open, filteredCommands.length]);
+
+  // Focus the search input when the menu opens
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
+
+  // Keyboard navigation inside the command list
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (filteredCommands.length === 0) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex((i) => (i + 1) % filteredCommands.length);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((i) =>
+          i - 1 < 0 ? filteredCommands.length - 1 : i - 1,
+        );
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        filteredCommands[activeIndex]?.action();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [open, filteredCommands, activeIndex]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogOverlay
         className={cn(
-          "bg-black/80 backdrop-blur-sm",
+          "backdrop-blur-sm",
+          isProductVisualTheme
+            ? "bg-[rgba(12,12,14,0.6)]"
+            : "bg-[rgba(0,0,0,0.28)]",
           // Glassmorphism for product mode
-          isProductMode && "product-glass",
+          isProductVisualTheme && "product-glass",
         )}
       />
       <DialogContent
         className={cn(
           "overflow-hidden p-0 shadow-2xl",
           // Product mode styling
-          isProductMode ? "product-elevated product-beveled" : "bg-card",
+          isProductVisualTheme ? "product-elevated product-beveled" : "bg-card",
         )}
         showCloseButton={false}
       >
@@ -241,17 +314,18 @@ export function CommandMenu() {
           <IconSearch
             className={cn(
               "size-4 shrink-0",
-              isProductMode
+              isProductVisualTheme
                 ? "text-[var(--product-text-secondary)]"
                 : "text-muted-foreground",
             )}
           />
           <input
+            ref={inputRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className={cn(
               "flex h-12 w-full rounded-md bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
-              isProductMode
+              isProductVisualTheme
                 ? "text-[var(--product-text-primary)] placeholder:text-[var(--product-text-tertiary)]"
                 : "",
             )}
@@ -264,7 +338,7 @@ export function CommandMenu() {
           <kbd
             className={cn(
               "pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100",
-              isProductMode
+              isProductVisualTheme
                 ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
                 : "border-border bg-muted text-muted-foreground",
             )}
@@ -277,16 +351,18 @@ export function CommandMenu() {
             <p
               className={cn(
                 "p-4 text-center text-sm",
-                isProductMode
+                isProductVisualTheme
                   ? "text-[var(--product-text-secondary)]"
                   : "text-muted-foreground",
               )}
             >
-              {commandMenu.product.noResults}
+              {isProductMode
+                ? commandMenu.product.noResults
+                : commandMenu.operations.noResults}
             </p>
           ) : (
             <div className="flex flex-col gap-1" dir="rtl">
-              {filteredCommands.map((cmd: CommandItem) => {
+              {filteredCommands.map((cmd: CommandItem, idx) => {
                 const Icon = cmd.icon;
                 return (
                   <button
@@ -296,15 +372,22 @@ export function CommandMenu() {
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all",
                       "hover:bg-accent hover:text-accent-foreground",
                       "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-                      isProductMode
+                      isProductVisualTheme
                         ? "text-[var(--product-text-secondary)] hover:text-[var(--product-text-primary)] product-kbd-focus"
                         : "",
+                      idx === activeIndex &&
+                        (isProductVisualTheme
+                          ? "product-selected"
+                          : "bg-accent/20"),
                     )}
+                    data-active={idx === activeIndex}
+                    tabIndex={idx === activeIndex ? 0 : -1}
+                    onMouseEnter={() => setActiveIndex(idx)}
                   >
                     <Icon
                       className={cn(
                         "size-4 shrink-0",
-                        isProductMode
+                        isProductVisualTheme
                           ? "text-[var(--product-text-tertiary)]"
                           : "text-muted-foreground",
                       )}
@@ -314,7 +397,7 @@ export function CommandMenu() {
                       <kbd
                         className={cn(
                           "pointer-events-none ml-2 inline-flex h-5 select-none items-center rounded border px-1.5 font-mono text-[10px]",
-                          isProductMode
+                          isProductVisualTheme
                             ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
                             : "border-border bg-muted text-muted-foreground",
                         )}
