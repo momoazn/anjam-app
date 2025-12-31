@@ -240,18 +240,6 @@ func startApp(app *pocketbase.PocketBase) {
 	}
 }
 
-// getProjectName retrieves project name by ID, returns fallback if not found
-func getProjectName(app core.App, projectId string) string {
-	project, err := app.FindRecordById(config.CollectionProjects, projectId)
-	if err != nil {
-		return "project"
-	}
-	if name := project.GetString("name"); name != "" {
-		return name
-	}
-	return "project"
-}
-
 // --- Serve Event Handlers ---
 
 func importSchema(e *core.ServeEvent) error {

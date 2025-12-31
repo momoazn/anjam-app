@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/security"
+
+	"anjam/helpers"
 )
 
 // registerOrganizationEndpoints sets up org creation and listing routes.
@@ -38,7 +37,7 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 				return e.BadRequestError("Organization name too long (max 200 chars)", nil)
 			}
 
-			slug := slugify(name)
+			slug := helpers.Slugify(name)
 			for i := 0; i < 5; i++ {
 				existingOrg, err := e.App.FindFirstRecordByFilter(
 					CollectionOrganizations,
@@ -48,7 +47,7 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 				if err != nil || existingOrg == nil {
 					break
 				}
-				slug = fmt.Sprintf("%s-%s", slug, generateShortID())
+				slug = fmt.Sprintf("%s-%s", slug, helpers.GenerateShortID())
 			}
 
 			var newOrg *core.Record
@@ -250,23 +249,4 @@ func deriveOrgLabels(mode string) map[string]string {
 		"members":      "Users",
 		"savedFilters": "Saved Filters",
 	}
-}
-
-func slugify(text string) string {
-	slug := strings.ToLower(strings.TrimSpace(text))
-	slug = strings.ReplaceAll(slug, " ", "-")
-
-	reg := regexp.MustCompile("[^a-z0-9-]+")
-	slug = reg.ReplaceAllString(slug, "")
-
-	reg = regexp.MustCompile("-+")
-	slug = reg.ReplaceAllString(slug, "-")
-
-	slug = strings.Trim(slug, "-")
-
-	return slug
-}
-
-func generateShortID() string {
-	return security.RandomString(6)
 }
