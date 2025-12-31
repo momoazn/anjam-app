@@ -10,6 +10,12 @@ import (
 	"anjam/config"
 )
 
+// Pre-compiled regex patterns for Slugify (performance optimization)
+var (
+	slugInvalidCharsRegex = regexp.MustCompile(`[^a-z0-9-]+`)
+	slugMultipleHyphens   = regexp.MustCompile(`-+`)
+)
+
 // GetProjectName retrieves project name by ID, returns fallback if not found.
 func GetProjectName(app core.App, projectId string) string {
 	project, err := app.FindRecordById(config.CollectionProjects, projectId)
@@ -27,11 +33,8 @@ func Slugify(text string) string {
 	slug := strings.ToLower(strings.TrimSpace(text))
 	slug = strings.ReplaceAll(slug, " ", "-")
 
-	reg := regexp.MustCompile("[^a-z0-9-]+")
-	slug = reg.ReplaceAllString(slug, "")
-
-	reg = regexp.MustCompile("-+")
-	slug = reg.ReplaceAllString(slug, "-")
+	slug = slugInvalidCharsRegex.ReplaceAllString(slug, "")
+	slug = slugMultipleHyphens.ReplaceAllString(slug, "-")
 
 	slug = strings.Trim(slug, "-")
 

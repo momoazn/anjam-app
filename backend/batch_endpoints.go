@@ -124,7 +124,10 @@ func handleBatchUpdateTasks(e *core.RequestEvent) error {
 	}
 
 	if updated == 0 {
-		return e.BadRequestError("No tasks updated", errors.New("no tasks with permission to update"))
+		if lastErr != nil {
+			return e.InternalServerError("Failed to update any tasks", lastErr)
+		}
+		return e.BadRequestError("No tasks were updated. This may be due to invalid IDs or insufficient permissions.", nil)
 	}
 
 	response := map[string]any{

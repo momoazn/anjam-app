@@ -107,12 +107,13 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 interface ChartTooltipContentProps {
   active?: boolean;
   payload?: Array<{
-    color?: string;
-    dataKey?: string | number;
-    name?: string;
-    payload?: Record<string, unknown>;
     type?: string;
+    color?: string;
+    name?: string;
     value?: string | number;
+    dataKey?: string | number;
+    payload?: Record<string, unknown>;
+    graphicalItemId: string;
   }>;
   className?: string;
   indicator?: "dot" | "line" | "dashed" | "none";
@@ -121,15 +122,31 @@ interface ChartTooltipContentProps {
   label?: string | number;
   labelFormatter?: (
     value: React.ReactNode | string | number | undefined,
-    payload: unknown[],
+    payload: Array<{
+      type?: string;
+      color?: string;
+      name?: string;
+      value?: string | number;
+      dataKey?: string | number;
+      payload?: Record<string, unknown>;
+      graphicalItemId: string;
+    }>,
   ) => React.ReactNode;
   labelClassName?: string;
   formatter?: (
     value: string | number,
     name: string,
-    item: unknown,
+    item: {
+      type?: string;
+      color?: string;
+      name?: string;
+      value?: string | number;
+      dataKey?: string | number;
+      payload?: Record<string, unknown>;
+      graphicalItemId: string;
+    },
     index: number,
-    payload: unknown,
+    payload?: Record<string, unknown>,
   ) => React.ReactNode;
   color?: string;
   nameKey?: string;

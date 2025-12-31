@@ -28,7 +28,7 @@ const crudHooks = createCrudHooks<
   TasksRecord,
   TasksResponse,
   typeof queryKeys.tasks,
-  Create<Collections.Tasks>
+  Omit<Create<Collections.Tasks>, "task_number">
 >({
   collection: "tasks",
   queryKeys: queryKeys.tasks,
@@ -253,7 +253,11 @@ export function useTask(options: { id: string; enabled?: boolean }) {
  * @returns Mutation function for creating tasks
  */
 export function useCreateTask(
-  options?: UseMutationOptions<TasksResponse, Error, Create<Collections.Tasks>>,
+  options?: UseMutationOptions<
+    TasksResponse,
+    Error,
+    Omit<Create<Collections.Tasks>, "task_number">
+  >,
 ) {
   return useCreateTaskMutation(options);
 }

@@ -533,7 +533,7 @@ export type CreateAuth<T> = {
 // Create type for Base collections
 export type CreateBase<T> = {
 	id?: RecordIdString
-} & Omit<ProcessCreateAndUpdateFields<T>, 'task_number'>
+} & ProcessCreateAndUpdateFields<T>
 
 // Update type for Auth collections
 export type UpdateAuth<T> = Partial<
@@ -549,7 +549,7 @@ export type UpdateAuth<T> = Partial<
 
 // Update type for Base collections
 export type UpdateBase<T> = Partial<
-	Omit<ProcessCreateAndUpdateFields<T>, keyof BaseSystemFields | 'task_number'>
+	Omit<ProcessCreateAndUpdateFields<T>, keyof BaseSystemFields>
 >
 
 // Get the correct create type for any collection
