@@ -138,6 +138,9 @@ export const tasks = {
     completedTasks: shared.completed,
     pendingTasks: shared.pending,
     overdueTasks: "گذشته‌موعد",
+    total: "کل",
+    done: "انجام شده",
+    currentMonth: "ماه جاری",
   },
 
   // Bulk actions

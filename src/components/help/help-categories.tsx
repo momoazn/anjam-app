@@ -186,7 +186,7 @@ export function HelpCategories() {
                 <div className="py-12 text-center opacity-40">
                   <IconTerminal className="mx-auto mb-4 size-10 stroke-[1]" />
                   <p className="text-[10px] font-bold tracking-tight">
-                    Module_ :: Under_Expansion
+                    {helps.content.underExpansion}
                   </p>
                 </div>
               )}

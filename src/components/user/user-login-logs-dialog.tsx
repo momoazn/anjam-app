@@ -150,10 +150,10 @@ export function UserLoginLogsDialog({
                     <TableRow key={log.id}>
                       <TableCell className="text-right">{date}</TableCell>
                       <TableCell className="text-right font-mono">
-                        {time}
+                        {digitsEnToFa(time)}
                       </TableCell>
                       <TableCell className="text-right font-mono">
-                        {log.ip_address || "-"}
+                        {log.ip_address ? digitsEnToFa(log.ip_address) : "-"}
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge

@@ -7,6 +7,7 @@ export const users = {
   title: "کاربران",
   list: {
     count: "{count} کاربر",
+    loading: "در حال بارگذاری کاربران...",
   },
   table: {
     columns: {

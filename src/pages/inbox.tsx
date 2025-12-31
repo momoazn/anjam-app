@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyStateNoTasks } from "@/components/ui/empty-state";
 import { IconInbox } from "@tabler/icons-react";
 import { TaskWithProject } from "@/lib/pocketbase";
+import { inbox } from "@/constants";
 
 /**
  * Inbox Page - Product Mode
@@ -81,7 +82,7 @@ export default function Inbox() {
       <PageTransition>
         <div className="flex h-full items-center justify-center">
           <div className="text-muted-foreground animate-pulse">
-            Loading inbox...
+            {inbox.loading}
           </div>
         </div>
       </PageTransition>
@@ -92,22 +93,20 @@ export default function Inbox() {
     <PageTransition>
       <div className="container mx-auto space-y-6 p-6">
         {/* Page Header */}
-        <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+        <div className="text-right">
+          <h1 className="flex items-center justify-end gap-2 text-3xl font-bold tracking-tight">
+            {inbox.title}
             <IconInbox className="h-8 w-8" />
-            Inbox
           </h1>
-          <p className="text-muted-foreground mt-2">
-            Stay on top of your tasks and updates
-          </p>
+          <p className="text-muted-foreground mt-2">{inbox.description}</p>
         </div>
 
         <div className="space-y-6">
           {/* Assigned to me Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="text-right">
               <CardTitle className="text-lg">
-                Assigned to me ({sections.assigned.length})
+                {inbox.sections.assigned} ({sections.assigned.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -131,9 +130,9 @@ export default function Inbox() {
           {/* Mentioned Section (v1: placeholder) */}
           {sections.mentioned.length > 0 && (
             <Card>
-              <CardHeader>
+              <CardHeader className="text-right">
                 <CardTitle className="text-lg">
-                  Mentioned ({sections.mentioned.length})
+                  {inbox.sections.mentioned} ({sections.mentioned.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -148,15 +147,16 @@ export default function Inbox() {
 
           {/* Recently Updated Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="text-right">
               <CardTitle className="text-lg">
-                Recently updated ({sections.recentlyUpdated.length})
+                {inbox.sections.recentlyUpdated} (
+                {sections.recentlyUpdated.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               {sections.recentlyUpdated.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  No recent updates in the last 7 days
+                <p className="text-muted-foreground text-right text-sm">
+                  {inbox.noRecentUpdates}
                 </p>
               ) : (
                 <div className="space-y-2">

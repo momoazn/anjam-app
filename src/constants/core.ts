@@ -57,6 +57,10 @@ export const shared = {
   name: "نام",
   code: "کد",
   description: "توضیحات",
+  action: "عملیات",
+  resource: "منبع",
+  previous: "قبلی",
+  next: "بعدی",
   status: "وضعیت",
   priority: "اولویت",
   assignee: "مسئول",
@@ -78,8 +82,6 @@ export const shared = {
   no: "خیر",
   total: "کل",
   today: "امروز",
-  previous: "قبلی",
-  next: "بعدی",
   more: "بیشتر",
   preview: "پیش‌نمایش",
   confirm: "تایید",
@@ -143,6 +145,7 @@ export const common = {
   },
   connectors: {
     and: "و",
+    to: "تا",
   },
 
   // Validation messages

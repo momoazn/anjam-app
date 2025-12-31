@@ -7,6 +7,10 @@ import { tasks } from "./tasks";
 export const reports = {
   title: "گزارش‌ها",
   dashboardTitle: "گزارش‌ها",
+  sections: {
+    configuration: "پیکربندی",
+    statistics: "آمار",
+  },
   tabs: {
     overview: "مرور",
     team: "تیم",
@@ -190,6 +194,7 @@ export const reports = {
       },
       productivityTrends: {
         title: "روند بهره‌وری",
+        analysis: "تحلیل روند",
         description: "تحلیل روند بهره‌وری در طول زمان",
         chartTitle: "روند بهره‌وری",
         projectedNextPeriod: "پیش‌بینی دوره بعد",
@@ -225,6 +230,9 @@ export const reports = {
         vsTeam: "در برابر میانگین تیم",
         noData: "داده‌ای برای مقایسه وجود ندارد",
       },
+      benchmarkComparison: {
+        title: "مقایسه با شاخص تیم",
+      },
       emptyStates: {
         noEmployees: "کارمندی برای نمایش نیست",
         noData: "داده‌ای برای نمایش گزارش نیست",
@@ -241,7 +249,7 @@ export const reports = {
         overtimeIndicator: "برآورد ساعات اضافه‌کاری مورد نیاز",
       },
       overtimeAnalysis: {
-        title: "تحلیل اضافه‌کاری و بار کاری",
+        title: "تحلیل اضافه‌کاری",
         description: "بررسی الگوهای اضافه‌کاری و توزیع بار کاری",
         chartTitle: "شاخص‌های اضافه‌کاری",
         workloadChartTitle: "توزیع بار کاری",
@@ -263,9 +271,13 @@ export const reports = {
         },
         noData: "داده‌ای برای نمایش وجود ندارد",
       },
+      workload: {
+        title: "توزیع بار کاری",
+      },
     },
   },
   filters: {
+    title: "فیلترهای گزارش",
     search: shared.search,
     status: shared.status,
     priority: shared.priority,
@@ -273,6 +285,16 @@ export const reports = {
     project: shared.project,
     dateRange: "بازه زمانی",
     all: shared.all,
+    timeframe: "بازه زمانی",
+    selectedCount: "{count} مورد انتخاب شده",
+    allProjects: "همه پروژه‌ها",
+    allAssignees: "همه مسئولین",
+    allStatuses: "همه وضعیت‌ها",
+    allPriorities: "همه اولویت‌ها",
+    reset: "بازنشانی",
+    activeDump: "فعال :: تخلیه",
+    entries: "مورد",
+    entry: "مورد",
   },
   tables: {
     performance: {

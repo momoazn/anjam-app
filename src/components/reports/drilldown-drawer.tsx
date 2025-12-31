@@ -33,6 +33,12 @@ const STATUS_LABELS = {
   in_progress: reports.inProgress,
   done: reports.completed,
   canceled: reports.canceled,
+  pending: reports.pending,
+  blocked: reports.blocked,
+  review: reports.review,
+  testing: reports.testing,
+  ready: reports.ready,
+  on_hold: reports.on_hold,
 };
 
 const PRIORITY_LABELS = {
@@ -70,7 +76,7 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
         <div className="scrollbar-none flex-1 overflow-auto">
           {rows.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale">
-              <IconHash className="mb-4 size-10 stroke-[1]" />
+              <IconHash className="mb-4 size-10 stroke-1" />
               <p className="text-[10px] font-bold tracking-tight">
                 {reports.noTasksFound}
               </p>
@@ -141,10 +147,10 @@ export function DrilldownDrawer({ open, onOpenChange, rows, title }: Props) {
 
         <div className="bg-muted/20 border-border/40 flex items-center justify-between border-t px-6 py-2">
           <span className="text-muted-foreground/40 text-[8px] font-bold tracking-tight">
-            _Active :: _Dump
+            {reports.filters.activeDump}
           </span>
           <span className="text-[10px] font-bold tabular-nums">
-            {digitsEnToFa(rows.length)} ENTRIES
+            {digitsEnToFa(rows.length)} {reports.filters.entries}
           </span>
         </div>
       </DrawerContent>

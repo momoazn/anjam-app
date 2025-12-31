@@ -1,4 +1,4 @@
-import { reports, tasks } from "@/constants";
+import { common, reports, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconCalendar,
@@ -135,10 +135,10 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
   return (
     <div className="bg-border/40 flex flex-wrap items-center gap-px overflow-hidden rounded-xl">
       {/* Time Segment */}
-      <div className="bg-card border-border/10 flex h-16 min-w-[160px] flex-col justify-between border-s p-3">
+      <div className="bg-card border-border/10 flex h-16 min-w-40 flex-col justify-between border-s p-3">
         <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
           <span className="text-[7px] font-bold tracking-tight">
-            Time_Frame
+            {reports.filters.timeframe}
           </span>
           <IconCalendar className="size-2.5" />
         </div>
@@ -168,7 +168,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-35 flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-bold tracking-tight">
@@ -180,8 +180,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
               <IconChevronDown className="size-3 opacity-20" />
               <span className="text-[11px] font-bold tracking-tight">
                 {selectedProjects.length > 0
-                  ? `${digitsEnToFa(selectedProjects.length)} Selected`
-                  : "All Projects"}
+                  ? reports.filters.selectedCount.replace(
+                      "{count}",
+                      digitsEnToFa(selectedProjects.length),
+                    )
+                  : reports.filters.allProjects}
               </span>
             </div>
           </Button>
@@ -226,7 +229,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-35 flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-bold tracking-tight">
@@ -238,8 +241,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
               <IconChevronDown className="size-3 opacity-20" />
               <span className="text-[11px] font-bold tracking-tight">
                 {selectedUsers.length > 0
-                  ? `${digitsEnToFa(selectedUsers.length)} Selected`
-                  : "All Assignees"}
+                  ? reports.filters.selectedCount.replace(
+                      "{count}",
+                      digitsEnToFa(selectedUsers.length),
+                    )
+                  : reports.filters.allAssignees}
               </span>
             </div>
           </Button>
@@ -284,7 +290,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-35 flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-bold tracking-tight">
@@ -296,8 +302,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
               <IconChevronDown className="size-3 opacity-20" />
               <span className="text-[11px] font-bold tracking-tight">
                 {selectedStatuses.length > 0
-                  ? `${digitsEnToFa(selectedStatuses.length)} Selected`
-                  : "All Statuses"}
+                  ? reports.filters.selectedCount.replace(
+                      "{count}",
+                      digitsEnToFa(selectedStatuses.length),
+                    )
+                  : reports.filters.allStatuses}
               </span>
             </div>
           </Button>
@@ -342,7 +351,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-[140px] flex-col justify-between border-s p-3 text-right transition-colors"
+            className="bg-card border-border/10 hover:bg-muted/30 flex h-16 min-w-35 flex-col justify-between border-s p-3 text-right transition-colors"
           >
             <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
               <span className="text-[7px] font-bold tracking-tight">
@@ -354,8 +363,11 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
               <IconChevronDown className="size-3 opacity-20" />
               <span className="text-[11px] font-bold tracking-tight">
                 {selectedPriorities.length > 0
-                  ? `${digitsEnToFa(selectedPriorities.length)} Selected`
-                  : "All Priorities"}
+                  ? reports.filters.selectedCount.replace(
+                      "{count}",
+                      digitsEnToFa(selectedPriorities.length),
+                    )
+                  : reports.filters.allPriorities}
               </span>
             </div>
           </Button>
@@ -404,11 +416,13 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
         >
           <div className="mb-1 flex items-center justify-end gap-1.5 opacity-40">
             <span className="text-[7px] font-bold tracking-tight">
-              Reset_Gates
+              {reports.filters.reset}
             </span>
             <IconX className="size-2.5" />
           </div>
-          <span className="text-[10px] font-bold tracking-tight">_00</span>
+          <span className="text-[10px] font-bold tracking-tight">
+            {digitsEnToFa("00")}
+          </span>
         </Button>
       )}
 
@@ -424,7 +438,9 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
               })
             }
           />
-          <span className="text-[10px] font-bold opacity-30">TO</span>
+          <span className="text-[10px] font-bold opacity-30">
+            {common.connectors.to}
+          </span>
           <DatePicker
             date={value.timeRange.end}
             setDate={(d) =>

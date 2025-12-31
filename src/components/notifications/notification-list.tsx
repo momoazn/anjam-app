@@ -4,7 +4,11 @@ import { isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 import { NotificationItem } from "@/components/notifications/notification-item";
 import { EmptyStateNoNotifications } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { notifications as notificationsText } from "@/constants";
+import {
+  loading,
+  notifications as notificationsText,
+  shared,
+} from "@/constants";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 
 const getDateGroup = (dateString?: string | null) => {
@@ -73,7 +77,7 @@ export function NotificationList({
           <IconBell className="text-primary size-10 animate-pulse opacity-20" />
         </div>
         <h3 className="text-muted-foreground text-sm font-bold">
-          در حال دریافت اعلان‌ها...
+          {loading.notifications}
         </h3>
       </div>
     );
@@ -85,11 +89,11 @@ export function NotificationList({
         <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-xl bg-rose-500/10">
           <IconBell className="size-10 text-rose-500" />
         </div>
-        <h3 className="mb-2 text-lg font-bold text-rose-500">
-          خطا در برقراری ارتباط
-        </h3>
+        <h3 className="mb-2 text-lg font-bold text-rose-500">{shared.error}</h3>
         <p className="text-muted-foreground text-sm font-medium">
-          {error instanceof Error ? error.message : "An error occurred"}
+          {error instanceof Error
+            ? error.message
+            : "نتوانستیم اعلان‌ها را بارگذاری کنیم"}
         </p>
       </div>
     );

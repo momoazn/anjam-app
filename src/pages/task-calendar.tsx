@@ -193,14 +193,14 @@ export default function TaskCalendar() {
           variant="outline"
           className="text-primary rounded-lg border-transparent text-[10px] font-semibold tracking-tight"
         >
-          {digitsEnToFa(monthStats.total)} TOTAL
+          {digitsEnToFa(monthStats.total)} {tasksText.calendar.total}
         </Badge>
         <div className="bg-border/40 mx-1 h-4 w-px" />
         <Badge
           variant="outline"
           className="rounded-lg border-transparent text-[10px] font-semibold tracking-tight text-emerald-500"
         >
-          {digitsEnToFa(monthStats.completed)} DONE
+          {digitsEnToFa(monthStats.completed)} {tasksText.calendar.done}
         </Badge>
       </div>
       <Button
@@ -237,7 +237,7 @@ export default function TaskCalendar() {
 
           <div className="flex min-w-[140px] flex-col items-end">
             <span className="text-muted-foreground/40 mb-1 text-[8px] font-bold tracking-tight">
-              Current Month
+              {tasksText.calendar.currentMonth}
             </span>
             <h2 className="text-lg font-bold tracking-tight">
               {format(currentMonth, "MMMM yyyy", { locale: undefined })}

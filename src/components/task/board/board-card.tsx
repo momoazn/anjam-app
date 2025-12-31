@@ -15,6 +15,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { useNavigate } from "react-router-dom";
 import { IconHash, IconClock, IconTarget } from "@tabler/icons-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { dashboard } from "@/constants";
 
 interface BoardCardProps {
   task: TaskWithProject;
@@ -115,14 +116,12 @@ export function BoardCard({ task }: BoardCardProps) {
             )}
           </div>
 
-          {task.expand?.project && (
-            <div className="flex items-center gap-1 opacity-40">
-              <IconTarget className="size-3" />
-              <span className="max-w-[100px] truncate text-[10px] font-bold">
-                {task.expand.project.name}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-1 opacity-40">
+            <IconTarget className="size-3" />
+            <span className="max-w-[100px] truncate text-[10px] font-bold">
+              {task.expand?.project?.name || dashboard.cards.noProject}
+            </span>
+          </div>
         </div>
 
         {task.deadline && (

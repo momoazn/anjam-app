@@ -116,6 +116,18 @@ export const myTasks = {
   },
 } as const;
 
+export const inbox = {
+  title: "صندوق ورودی",
+  description: "پیگیری تسک‌ها و به‌روزرسانی‌های شما",
+  loading: "در حال بارگذاری صندوق ورودی...",
+  noRecentUpdates: "هیچ به‌روزرسانی در ۷ روز گذشته وجود ندارد",
+  sections: {
+    assigned: "اختصاص داده شده به من",
+    mentioned: "اشاره شده",
+    recentlyUpdated: "اخیراً به‌روز شده",
+  },
+} as const;
+
 // Project Status Settings
 export const projectStatuses = {
   settings: {

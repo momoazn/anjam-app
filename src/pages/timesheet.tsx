@@ -133,11 +133,11 @@ export default function TimesheetPage() {
     <div className="flex items-center gap-4">
       <div className="border-border me-2 flex flex-col items-end border-e pe-4">
         <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
-          Weekly Total
+          {timesheet.weeklyTotal}
         </span>
         <div className="text-primary text-right text-sm font-bold tabular-nums">
-          {digitsEnToFa(weeklyTotalTime.hours)}h{" "}
-          {digitsEnToFa(weeklyTotalTime.minutes)}m
+          {digitsEnToFa(weeklyTotalTime.hours)} {timesheet.hoursUnit}{" "}
+          {digitsEnToFa(weeklyTotalTime.minutes)} {timesheet.minutesUnit}
         </div>
       </div>
       <Button
@@ -213,8 +213,8 @@ export default function TimesheetPage() {
                   <div className="text-primary mt-3 flex items-center justify-end gap-1.5">
                     <IconClock className="size-3.5" />
                     <span className="text-xs font-bold tabular-nums">
-                      {digitsEnToFa(totalTime.hours)}h{" "}
-                      {digitsEnToFa(totalTime.minutes)}m
+                      {digitsEnToFa(totalTime.hours)} {timesheet.hoursUnit}{" "}
+                      {digitsEnToFa(totalTime.minutes)} {timesheet.minutesUnit}
                     </span>
                   </div>
                 ) : (
@@ -246,8 +246,9 @@ export default function TimesheetPage() {
                           <IconClock className="size-3" />
                           <span className="text-[10px] font-bold tabular-nums">
                             {tTime.hours > 0 &&
-                              `${digitsEnToFa(tTime.hours)}h `}
-                            {digitsEnToFa(tTime.minutes)}m
+                              `${digitsEnToFa(tTime.hours)} ${timesheet.hoursUnit} `}
+                            {digitsEnToFa(tTime.minutes)}{" "}
+                            {timesheet.minutesUnit}
                           </span>
                         </div>
                       </div>

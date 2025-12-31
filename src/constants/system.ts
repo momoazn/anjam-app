@@ -143,6 +143,15 @@ export const auditLogs = {
     system: "سیستم",
     unknown: "نامشخص",
   },
+  filters: {
+    search: shared.search,
+    clear: shared.clear,
+    resource: shared.resource,
+    allPlaceholder: "همه",
+    all: shared.all,
+    action: shared.action,
+    client: "کلاینت",
+  },
   empty: {
     empty: "—",
     noResults: "موردی برای نمایش وجود ندارد",
@@ -190,18 +199,11 @@ export const auditLogs = {
     automation: "اتوماسیون",
     unknown: "نامشخص",
   },
-  filters: {
-    resource: "منبع",
-    action: "عملیات",
-    actor: "کاربر",
-    client: "کلاینت",
-    dateFrom: "از تاریخ",
-    dateTo: "تا تاریخ",
-    search: "جستجو",
-    all: "همه",
-    allPlaceholder: "همه",
-    clear: "پاک کردن",
+  pagination: {
+    pageOf: "صفحه {page} از {totalPages}",
   },
+  totalEntries: "{count} مورد ثبت شده",
+  description: "لاگ فعالیت‌های کل سیستم",
 } as const;
 
 export const settings = {
@@ -246,6 +248,19 @@ export const settings = {
     dark: "تاریک",
     system: "سیستم",
     saveSuccess: "ترجیحات ذخیره شد",
+    timezones: {
+      auto: "خودکار",
+      utc: "UTC",
+      tehran: "Asia/Tehran",
+      london: "Europe/London",
+      newYork: "America/New_York",
+    },
+    dateFormats: {
+      locale: "مطابق تنظیمات دستگاه",
+      ymd: "YYYY/MM/DD",
+      dmy: "DD/MM/YYYY",
+      mdy: "MM/DD/YYYY",
+    },
   },
   security: {
     changePasswordTitle: "تغییر رمز عبور",
@@ -317,6 +332,7 @@ export const helps = {
     support: "تماس با پشتیبانی",
   },
   content: {
+    underExpansion: "ماژول در حال توسعه",
     dashboard: "داشبورد اصلی آمار و اطلاعات کلی را نمایش می‌دهد",
     gettingStarted: {
       title: "شروع کار",
@@ -803,6 +819,9 @@ export const timesheet = {
     "برای ثبت تایم‌شیت، روی تسک‌ها زمان ثبت کنید یا یک تسک جدید بسازید.",
   createTaskCta: "ساخت تسک جدید",
   calendarCta: "مشاهده تقویم تسک‌ها",
+  weeklyTotal: "مجموع هفته",
+  hoursUnit: "ساعت",
+  minutesUnit: "دقیقه",
 } as const;
 
 export const system = {

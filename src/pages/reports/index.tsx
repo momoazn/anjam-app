@@ -117,7 +117,7 @@ export default function Reports() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-[1600px] p-6 md:p-10">
+    <PageTransition className="container mx-auto max-w-7xl p-6 md:p-10">
       <PageHeader
         title={reports.dashboardTitle}
         description={`${reports.range.label} ${digitsEnToFa(rangeLabel)}`}
@@ -128,7 +128,7 @@ export default function Reports() {
         <section className="space-y-6">
           <div className="flex items-center gap-4">
             <span className="text-primary/60 text-[10px] font-bold tracking-tight">
-              Configuration
+              {reports.sections.configuration}
             </span>
             <div className="bg-border/20 h-px flex-1" />
           </div>
@@ -146,7 +146,7 @@ export default function Reports() {
         <section className="space-y-8">
           <div className="flex items-center gap-4">
             <span className="text-primary/60 text-[10px] font-bold tracking-tight">
-              Statistics Summary
+              {reports.sections.statistics}
             </span>
             <div className="bg-border/20 h-px flex-1" />
           </div>

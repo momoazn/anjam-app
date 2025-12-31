@@ -59,7 +59,7 @@ function LoadingFallback() {
 function MainContent() {
   return (
     <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
+      <div className="@container flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-6">
           <AppRoutes />
         </div>

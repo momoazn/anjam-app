@@ -167,7 +167,7 @@ function TaskListItemInner({
           >
             {task.deadline
               ? digitsEnToFa(formatDateShort(task.deadline))
-              : "---"}
+              : digitsEnToFa("---")}
           </span>
         </div>
 

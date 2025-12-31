@@ -29,7 +29,7 @@ import {
 import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { auditLogs } from "@/constants";
+import { auditLogs, common } from "@/constants";
 import { useAuditLogs } from "@/hooks/audit-logs";
 import type {
   AuditLogsActionOptions,
@@ -82,13 +82,16 @@ export default function AuditLogs() {
   const hasFilters = !!resource || !!action || !!client || !!search;
 
   return (
-    <PageTransition className="container mx-auto max-w-[1600px] p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-400 p-4 md:p-6">
       <PageHeader
         title={auditLogs.title}
         description={
           data
-            ? `${digitsEnToFa(data.totalItems)} total entries recorded`
-            : "System-wide activity log"
+            ? auditLogs.totalEntries.replace(
+                "{count}",
+                digitsEnToFa(data.totalItems),
+              )
+            : auditLogs.description
         }
         icon={IconHistory}
       />
@@ -100,14 +103,14 @@ export default function AuditLogs() {
             <div className="border-border/20 bg-muted/20 flex h-10 shrink-0 items-center gap-2 border-s px-3">
               <IconSearch className="text-primary/60 size-3.5" />
               <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                Search
+                {auditLogs.filters.search}
               </span>
             </div>
             <div className="group relative h-10 flex-1">
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Filter activities..."
+                placeholder={auditLogs.filters.search}
                 className="h-full w-full border-none bg-transparent px-4 text-xs font-bold tracking-tight transition-all outline-none focus:ring-0"
               />
             </div>
@@ -124,7 +127,7 @@ export default function AuditLogs() {
                 className="border-border/20 h-10 gap-2 rounded-xl border-e px-4 text-[10px] font-bold tracking-tight text-rose-500 transition-all hover:bg-rose-500/10"
               >
                 <IconX className="size-3" />
-                Reset Filters
+                {auditLogs.filters.clear}
               </Button>
             )}
           </div>
@@ -400,7 +403,9 @@ export default function AuditLogs() {
           {data && data.totalPages > 1 && (
             <div className="border-border/40 bg-muted/20 flex items-center justify-between border-t px-6 py-3">
               <div className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                Page {digitsEnToFa(page)} of {digitsEnToFa(data.totalPages)}
+                {auditLogs.pagination.pageOf
+                  .replace("{page}", digitsEnToFa(page))
+                  .replace("{totalPages}", digitsEnToFa(data.totalPages))}
               </div>
               <div className="flex gap-2">
                 <Button
@@ -410,7 +415,7 @@ export default function AuditLogs() {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
-                  Previous
+                  {common.pagination.previous}
                 </Button>
                 <Button
                   variant="outline"
@@ -421,7 +426,7 @@ export default function AuditLogs() {
                   }
                   disabled={page === data.totalPages}
                 >
-                  Next
+                  {common.pagination.next}
                 </Button>
               </div>
             </div>

@@ -39,7 +39,7 @@ export function TimeComparison({
     }
 
     if (parts.length === 0) {
-      parts.push(`0 ${common.time.minutesShort}`);
+      parts.push(`${digitsEnToFa(0)} ${common.time.minutesShort}`);
     }
 
     return parts.join(" ");

@@ -181,7 +181,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(15)}
                 >
-                  +15{task.min}
+                  +{digitsEnToFa(15)}
+                  {task.min}
                 </Button>
                 <Button
                   type="button"
@@ -189,7 +190,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(30)}
                 >
-                  +30{task.min}
+                  +{digitsEnToFa(30)}
+                  {task.min}
                 </Button>
                 <Button
                   type="button"
@@ -197,7 +199,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(60)}
                 >
-                  +1{task.hour}
+                  +{digitsEnToFa(1)}
+                  {task.hour}
                 </Button>
                 <Button
                   type="button"
@@ -205,7 +208,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(120)}
                 >
-                  +2{task.hour}
+                  +{digitsEnToFa(2)}
+                  {task.hour}
                 </Button>
               </div>
             </div>

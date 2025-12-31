@@ -77,7 +77,7 @@ export default function Users() {
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="border-primary h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" />
               <h3 className="text-muted-foreground mt-4 text-sm font-medium">
-                Loading users...
+                {usersText.list.loading}
               </h3>
             </div>
           ) : (

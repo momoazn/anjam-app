@@ -27,18 +27,18 @@ type NotificationPayload = typeof DEFAULT_NOTIFICATION_PREFERENCES;
 type DisplayPayload = PreferencesPayload["display"];
 
 const timezoneOptions = [
-  { value: "auto", label: "خودکار" },
-  { value: "UTC", label: "UTC" },
-  { value: "Asia/Tehran", label: "Asia/Tehran" },
-  { value: "Europe/London", label: "Europe/London" },
-  { value: "America/New_York", label: "America/New_York" },
+  { value: "auto", label: settings.appearance.timezones.auto },
+  { value: "UTC", label: settings.appearance.timezones.utc },
+  { value: "Asia/Tehran", label: settings.appearance.timezones.tehran },
+  { value: "Europe/London", label: settings.appearance.timezones.london },
+  { value: "America/New_York", label: settings.appearance.timezones.newYork },
 ];
 
 const dateFormatOptions = [
-  { value: "locale", label: "مطابق تنظیمات دستگاه" },
-  { value: "yyyy/MM/dd", label: "YYYY/MM/DD" },
-  { value: "dd/MM/yyyy", label: "DD/MM/YYYY" },
-  { value: "MM/dd/yyyy", label: "MM/DD/YYYY" },
+  { value: "locale", label: settings.appearance.dateFormats.locale },
+  { value: "yyyy/MM/dd", label: settings.appearance.dateFormats.ymd },
+  { value: "dd/MM/yyyy", label: settings.appearance.dateFormats.dmy },
+  { value: "MM/dd/yyyy", label: settings.appearance.dateFormats.mdy },
 ];
 
 const themeOptions = [
