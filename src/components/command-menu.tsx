@@ -5,6 +5,14 @@
  * Fuzzy search, context-aware suggestions, keyboard navigation.
  */
 import { IconSearch } from "@tabler/icons-react";
+import Fuse from "fuse.js";
+import {
+  BarChart3,
+  FolderOpen,
+  LayoutGrid,
+  Plus,
+  Settings,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -24,7 +32,7 @@ interface CommandItem {
 }
 
 /**
- * Simple fuzzy filter for commands
+ * Fuzzy filter for commands using fuse.js
  */
 function filterCommands(
   commands: CommandItem[],
@@ -32,15 +40,12 @@ function filterCommands(
 ): CommandItem[] {
   if (!search) return commands;
 
-  const searchTerm = search.toLowerCase();
-
-  return commands.filter((cmd) => {
-    const labelMatch = cmd.label.toLowerCase().includes(searchTerm);
-    const keywordsMatch = cmd.keywords?.some((keyword) =>
-      keyword.toLowerCase().includes(searchTerm),
-    );
-    return labelMatch || keywordsMatch;
+  const fuse = new Fuse(commands, {
+    keys: ["label", "keywords"],
+    threshold: 0.4,
   });
+
+  return fuse.search(search).map((result) => result.item);
 }
 
 export function CommandMenu() {
@@ -53,6 +58,18 @@ export function CommandMenu() {
   const { resolvedTheme } = useTheme();
   const isProductVisualTheme = isProductMode && resolvedTheme === "dark";
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setActiveIndex(0);
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen) {
+      setActiveIndex(0);
+    }
+  };
 
   // Define commands based on current context
   const commands: CommandItem[] = [
@@ -74,21 +91,7 @@ export function CommandMenu() {
       label: isProductMode
         ? commandMenu.product.dashboard
         : commandMenu.operations.dashboard,
-      icon: () => (
-        <svg
-          className="size-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-          />
-        </svg>
-      ),
+      icon: LayoutGrid,
       action: () => {
         navigate("/dashboard");
         setOpen(false);
@@ -100,21 +103,7 @@ export function CommandMenu() {
       label: isProductMode
         ? commandMenu.product.projects
         : commandMenu.operations.projects,
-      icon: () => (
-        <svg
-          className="size-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-          />
-        </svg>
-      ),
+      icon: FolderOpen,
       action: () => {
         navigate("/projects");
         setOpen(false);
@@ -127,21 +116,7 @@ export function CommandMenu() {
       label: isProductMode
         ? commandMenu.product.createItem
         : commandMenu.operations.createTask,
-      icon: () => (
-        <svg
-          className="size-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
-      ),
+      icon: Plus,
       action: () => {
         navigate("/tasks/new");
         setOpen(false);
@@ -155,21 +130,7 @@ export function CommandMenu() {
           {
             id: "nav-insights",
             label: commandMenu.product.insights,
-            icon: () => (
-              <svg
-                className="size-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-            ),
+            icon: BarChart3,
             action: () => {
               navigate("/insights");
               setOpen(false);
@@ -184,27 +145,7 @@ export function CommandMenu() {
       label: isProductMode
         ? commandMenu.product.settings
         : commandMenu.operations.settings,
-      icon: () => (
-        <svg
-          className="size-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      ),
+      icon: Settings,
       action: () => {
         navigate("/settings");
         setOpen(false);
@@ -255,12 +196,6 @@ export function CommandMenu() {
   // Filter commands based on search
   const filteredCommands = filterCommands(commands, search);
 
-  // Reset active item when search changes or menu opens
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setActiveIndex(0);
-  }, [search, open, filteredCommands.length]);
-
   // Focus the search input when the menu opens
   useEffect(() => {
     if (open && inputRef.current) {
@@ -291,7 +226,7 @@ export function CommandMenu() {
   }, [open, filteredCommands, activeIndex]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogOverlay
         className={cn(
           "backdrop-blur-sm",
@@ -322,7 +257,7 @@ export function CommandMenu() {
           <input
             ref={inputRef}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className={cn(
               "flex h-12 w-full rounded-md bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
               isProductVisualTheme
@@ -367,6 +302,7 @@ export function CommandMenu() {
                 return (
                   <button
                     key={cmd.id}
+                    type="button"
                     onClick={cmd.action}
                     className={cn(
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all",

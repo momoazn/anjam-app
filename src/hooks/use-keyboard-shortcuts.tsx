@@ -198,7 +198,7 @@ export function useKeyboardShortcuts() {
         clearTimeout(goPrefixTimeoutRef.current);
       }
     };
-    // Refs are stable and don't need to be in dependencies
+    // Ref objects are stable and don't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, mode, features, isInputFocused, location.pathname]);
 }
