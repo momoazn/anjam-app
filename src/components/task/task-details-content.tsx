@@ -1,3 +1,4 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconClock,
   IconHistory,
@@ -11,14 +12,11 @@ import {
   IconCalendar,
   IconQuote,
 } from "@tabler/icons-react";
-import { useState } from "react";
-import { toast } from "sonner";
-
 import { ActivityStream } from "@/components/audit/activity-stream";
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
-import { TimeComparison } from "@/components/task/time-comparison";
 import { TaskSubtasksSection } from "@/components/task/task-subtasks-section";
+import { TimeComparison } from "@/components/task/time-comparison";
 import { TimeEntries } from "@/components/task/time-entries";
 import { TimeEntryDialog } from "@/components/task/time-entry-dialog";
 import { Button } from "@/components/ui/button";
@@ -31,24 +29,25 @@ import {
   shared,
   tasks,
 } from "@/constants";
-import type { CommentWithUser } from "@/hooks/comments";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import { formatTaskDate } from "@/lib/date-utils";
-import { formatTimeSpent } from "@/lib/time-utils";
-import { formatUserName } from "@/lib/utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import {
-  useAuthUser,
-  useCurrentOrgFeatures,
-  useCurrentOrgMode,
-} from "@/store/auth-store";
-import { isFeatureEnabled } from "@/lib/mode-features";
 import {
   useCreateTimeEntry,
   useUserPreferences,
   DEFAULT_USER_PREFERENCES,
 } from "@/hooks";
+import type { CommentWithUser } from "@/hooks/comments";
+import { formatTaskDate } from "@/lib/date-utils";
+import { handlePocketBaseError } from "@/lib/error-handler";
+import { isFeatureEnabled } from "@/lib/mode-features";
+import type { TaskWithProject } from "@/lib/pocketbase";
+import { formatTimeSpent } from "@/lib/time-utils";
+import { formatUserName } from "@/lib/utils";
+import {
+  useAuthUser,
+  useCurrentOrgFeatures,
+  useCurrentOrgMode,
+} from "@/store/auth-store";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export type TaskDetailsContentProps = {
   task: TaskWithProject;
@@ -348,10 +347,11 @@ export function TaskDetailsContent({
               estimatedMinutes={task.estimated_minutes}
             />
           </div>
-
-          <TaskSubtasksSection task={task} />
         </div>
       )}
+
+      {/* Subtasks - Always show regardless of mode */}
+      <TaskSubtasksSection task={task} />
 
       {/* Tabs Section */}
       <Tabs defaultValue="comments" className="w-full" dir="rtl">
