@@ -5,6 +5,7 @@ import (
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
+	"anjam/config"
 	"anjam/handlers"
 )
 
@@ -23,16 +24,17 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 				"tasks":    []interface{}{},
 				"projects": []interface{}{},
 			},
-			"meta": map[string]interface{}{},
+			"meta": map[string]interface{}{
+				"total_results": 0,
+			},
 		})
 	}
 
 	// --- Search Tasks ---
-	// Using FindRecordsByFilter which allows PocketBase-like filter syntax
 	taskFilter := "title ~ {:q} || display_id ~ {:q}"
 
 	tasks, err := e.App.FindRecordsByFilter(
-		"tasks", // Collection name
+		config.CollectionTasks,
 		taskFilter,
 		"-created",
 		10,
@@ -41,18 +43,17 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	)
 	if err != nil {
 		log.Printf("Search tasks error: %v", err)
-		// Don't fail the whole search, just return empty tasks
 		tasks = []*core.Record{}
 	}
 
 	// Transform tasks to lightweight DTO
 	taskDTOs := make([]map[string]interface{}, 0)
 	for _, t := range tasks {
-		if canViewTask(e, t) {
+		if canViewRecord(e, t) {
 			projectName := ""
 			projectId := t.GetString("project")
 			if projectId != "" {
-				project, err := e.App.FindRecordById("projects", projectId)
+				project, err := e.App.FindRecordById(config.CollectionProjects, projectId)
 				if err != nil {
 					log.Printf("Warning: failed to fetch project %s for task %s: %v", projectId, t.Id, err)
 				} else if project != nil {
@@ -74,7 +75,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	// --- Search Projects ---
 	projectFilter := "name ~ {:q} || code ~ {:q}"
 	projects, err := e.App.FindRecordsByFilter(
-		"projects",
+		config.CollectionProjects,
 		projectFilter,
 		"-created",
 		10,
@@ -88,7 +89,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 
 	projectDTOs := make([]map[string]interface{}, 0)
 	for _, p := range projects {
-		if canViewProject(e, p) {
+		if canViewRecord(e, p) {
 			projectDTOs = append(projectDTOs, map[string]interface{}{
 				"id":          p.Id,
 				"name":        p.GetString("name"),
@@ -103,37 +104,24 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 			"tasks":    taskDTOs,
 			"projects": projectDTOs,
 		},
-		"meta": map[string]interface{}{},
+		"meta": map[string]interface{}{
+			"total_results": len(taskDTOs) + len(projectDTOs),
+		},
 	})
 }
 
-// Helper to check view permission for search results (mirroring the API rule roughly)
-func canViewTask(e *core.RequestEvent, task *core.Record) bool {
+// canViewRecord checks if the current user can view the given record
+func canViewRecord(e *core.RequestEvent, record *core.Record) bool {
 	requestInfo, err := e.RequestInfo()
 	if err != nil {
 		return false
 	}
 
-	rule := task.Collection().ViewRule
+	rule := record.Collection().ViewRule
 	if rule == nil {
 		return false
 	}
 
-	canAccess, _ := e.App.CanAccessRecord(task, requestInfo, rule)
-	return canAccess
-}
-
-func canViewProject(e *core.RequestEvent, project *core.Record) bool {
-	requestInfo, err := e.RequestInfo()
-	if err != nil {
-		return false
-	}
-
-	rule := project.Collection().ViewRule
-	if rule == nil {
-		return false
-	}
-
-	canAccess, _ := e.App.CanAccessRecord(project, requestInfo, rule)
+	canAccess, _ := e.App.CanAccessRecord(record, requestInfo, rule)
 	return canAccess
 }
