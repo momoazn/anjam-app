@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/tools/security"
 
 	"anjam/helpers"
 )
@@ -474,7 +476,7 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		}
 
 		// Generate unique slug with collision handling
-		originalSlug := slugify(orgName)
+		originalSlug := helpers.Slugify(orgName)
 		slug := originalSlug
 		slugFound := false
 		for i := 0; i < 5; i++ {
@@ -490,7 +492,7 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 				slugFound = true
 				break
 			}
-			slug = fmt.Sprintf("%s-%s", originalSlug, generateShortID())
+			slug = fmt.Sprintf("%s-%s", originalSlug, helpers.GenerateShortID())
 		}
 		if !slugFound {
 			return fmt.Errorf("failed to generate unique slug after 5 attempts")
