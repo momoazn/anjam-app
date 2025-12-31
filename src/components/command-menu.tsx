@@ -34,17 +34,17 @@ export function CommandMenu() {
     // Navigation
     {
       id: "nav-inbox",
-      label: isProductMode ? "Inbox" : "تسک‌های من",
+      label: isProductMode ? "صندوق ورودی" : "تسک‌های من",
       icon: IconSearch,
       action: () => {
         navigate(isProductMode ? "/inbox" : "/my-tasks");
         setOpen(false);
       },
-      keywords: ["inbox", "tasks", "my tasks", "تسک"],
+      keywords: ["inbox", "tasks", "my tasks", "صندوق", "تسک"],
     },
     {
       id: "nav-dashboard",
-      label: isProductMode ? "Dashboard" : "داشبورد",
+      label: isProductMode ? "داشبورد" : "داشبورد",
       icon: () => (
         <svg
           className="size-4"
@@ -68,7 +68,7 @@ export function CommandMenu() {
     },
     {
       id: "nav-projects",
-      label: isProductMode ? "Projects" : "پروژه‌ها",
+      label: "پروژه‌ها",
       icon: () => (
         <svg
           className="size-4"
@@ -93,7 +93,7 @@ export function CommandMenu() {
     // Task actions
     {
       id: "task-new",
-      label: isProductMode ? "New issue" : "ایجاد تسک جدید",
+      label: isProductMode ? "ایجاد مورد جدید" : "ایجاد تسک جدید",
       icon: () => (
         <svg
           className="size-4"
@@ -113,7 +113,16 @@ export function CommandMenu() {
         navigate("/tasks/new");
         setOpen(false);
       },
-      keywords: ["new", "create", "task", "issue", "ایجاد", "تسک", "جدید"],
+      keywords: [
+        "new",
+        "create",
+        "task",
+        "issue",
+        "ایجاد",
+        "تسک",
+        "مورد",
+        "جدید",
+      ],
       shortcut: "N",
     },
     // Product mode specific commands
@@ -121,7 +130,7 @@ export function CommandMenu() {
       ? [
           {
             id: "nav-insights",
-            label: "Insights",
+            label: "بینش‌ها",
             icon: () => (
               <svg
                 className="size-4"
@@ -141,14 +150,21 @@ export function CommandMenu() {
               navigate("/insights");
               setOpen(false);
             },
-            keywords: ["insights", "reports", "analytics", "views"],
+            keywords: [
+              "insights",
+              "reports",
+              "analytics",
+              "views",
+              "بینش",
+              "گزارش",
+            ],
           },
         ]
       : []),
     // Settings
     {
       id: "nav-settings",
-      label: isProductMode ? "Settings" : "تنظیمات",
+      label: "تنظیمات",
       icon: () => (
         <svg
           className="size-4"
@@ -230,7 +246,7 @@ export function CommandMenu() {
                 : "",
             )}
             placeholder={
-              isProductMode ? "Type a command or search..." : "تایپ کنید..."
+              isProductMode ? "جستجو یا دستور تایپ کنید..." : "تایپ کنید..."
             }
           />
           <kbd
@@ -254,7 +270,7 @@ export function CommandMenu() {
                   : "text-muted-foreground",
               )}
             >
-              No results found.
+              نتیجه‌ای یافت نشد.
             </p>
           ) : (
             <div className="flex flex-col gap-1" dir="rtl">
