@@ -1,4 +1,3 @@
-"use client";
 
 import { CircleIcon } from "@phosphor-icons/react";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";

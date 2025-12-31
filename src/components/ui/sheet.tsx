@@ -1,4 +1,3 @@
-"use client";
 
 import { XIcon } from "@phosphor-icons/react";
 import { Dialog as SheetPrimitive } from "radix-ui";

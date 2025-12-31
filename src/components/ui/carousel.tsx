@@ -1,4 +1,3 @@
-"use client";
 
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import useEmblaCarousel, {

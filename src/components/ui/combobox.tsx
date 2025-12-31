@@ -1,4 +1,3 @@
-"use client";
 
 import { Combobox as ComboboxPrimitive } from "@base-ui/react";
 import { CaretDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
