@@ -5,6 +5,7 @@ import type {
   UserPreferencesRecord,
   UserPreferencesResponse,
 } from "@/lib/pocketbase-types";
+import { queryKeys } from "./query-keys";
 
 export type UserPreferences = {
   ui: {
@@ -42,7 +43,7 @@ export function useUserPreferences() {
   const user = pb.authStore.record;
 
   return useQuery({
-    queryKey: ["user_preferences", user?.id ?? ""],
+    queryKey: queryKeys.userPreferences.byUser(user?.id),
     queryFn: async (): Promise<UserPreferencesResponse> => {
       if (!user) {
         throw new Error("User not authenticated");
@@ -94,7 +95,7 @@ export function useUpdateUserPreferences() {
     onSuccess: () => {
       if (!user?.id) return;
       queryClient.invalidateQueries({
-        queryKey: ["user_preferences", user.id],
+        queryKey: queryKeys.userPreferences.byUser(user.id),
       });
     },
   });

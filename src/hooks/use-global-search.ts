@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { pb } from "@/lib/pocketbase";
+import { queryKeys } from "@/hooks/query-keys";
 
 export interface SearchResultTask {
   id: string;
@@ -25,7 +26,7 @@ export interface SearchResponse {
 
 export function useGlobalSearch(query: string) {
   return useQuery<SearchResponse>({
-    queryKey: ["global-search", query],
+    queryKey: queryKeys.globalSearch.byQuery(query),
     queryFn: async () => {
       // Using send() to call the custom endpoint
       const res = await pb.send<{ data: SearchResponse }>("/api/v1/search", {

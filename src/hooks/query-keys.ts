@@ -160,4 +160,22 @@ export const queryKeys = {
     listByToken: (token: string) =>
       ["organization_invites", "token", token] as const,
   },
+
+  userPreferences: {
+    byUser: (userId: string | undefined) =>
+      ["user_preferences", userId] as const,
+  },
+
+  mentions: {
+    byUser: (userId: string | undefined) => ["mentions", userId] as const,
+  },
+
+  permissions: {
+    byOrg: (orgId: string | undefined, projectId?: string) =>
+      ["permissions", orgId, projectId] as const,
+  },
+
+  globalSearch: {
+    byQuery: (query: string) => ["global-search", query] as const,
+  },
 };
