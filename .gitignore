@@ -53,3 +53,5 @@ test-results/
 
 .worktrees/
 .env
+
+audit_fallback.jsonl
