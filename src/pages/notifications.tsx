@@ -12,16 +12,17 @@ import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { MentionsList } from "@/components/notifications/mentions-list";
 import { NotificationFilters } from "@/components/notifications/notification-filters";
 import type {
   NotificationFilter,
   NotificationSort,
 } from "@/components/notifications/notification-filters";
 import { NotificationList } from "@/components/notifications/notification-list";
-import { MentionsList } from "@/components/notifications/mentions-list";
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { common, notifications as notificationsText } from "@/constants";
+import { useMentions } from "@/hooks";
 import {
   useClearAll,
   useClearRead,
@@ -37,11 +39,9 @@ import {
   useMarkAsRead,
   useNotifications,
 } from "@/hooks/notifications";
-import { useMentions } from "@/hooks";
 import type { MentionsResponse } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
+import { useAuthUser } from "@/store/auth-store";
 
 export default function Notifications() {
   const user = useAuthUser();

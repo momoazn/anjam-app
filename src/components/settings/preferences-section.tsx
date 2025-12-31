@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { toast } from "sonner";
+import { IconBell, IconPalette, IconSettings } from "@tabler/icons-react";
 import { useState } from "react";
-import { IconPalette, IconBell, IconSettings } from "@tabler/icons-react";
+import { toast } from "sonner";
+
 import {
   Select,
   SelectContent,
@@ -27,18 +28,18 @@ type NotificationPayload = typeof DEFAULT_NOTIFICATION_PREFERENCES;
 type DisplayPayload = PreferencesPayload["display"];
 
 const timezoneOptions = [
-  { value: "auto", label: "خودکار" },
-  { value: "UTC", label: "UTC" },
-  { value: "Asia/Tehran", label: "Asia/Tehran" },
-  { value: "Europe/London", label: "Europe/London" },
-  { value: "America/New_York", label: "America/New_York" },
+  { value: "auto", label: settings.appearance.timezones.auto },
+  { value: "UTC", label: settings.appearance.timezones.utc },
+  { value: "Asia/Tehran", label: settings.appearance.timezones.tehran },
+  { value: "Europe/London", label: settings.appearance.timezones.london },
+  { value: "America/New_York", label: settings.appearance.timezones.newYork },
 ];
 
 const dateFormatOptions = [
-  { value: "locale", label: "مطابق تنظیمات دستگاه" },
-  { value: "yyyy/MM/dd", label: "YYYY/MM/DD" },
-  { value: "dd/MM/yyyy", label: "DD/MM/YYYY" },
-  { value: "MM/dd/yyyy", label: "MM/DD/YYYY" },
+  { value: "locale", label: settings.appearance.dateFormats.locale },
+  { value: "yyyy/MM/dd", label: settings.appearance.dateFormats.ymd },
+  { value: "dd/MM/yyyy", label: settings.appearance.dateFormats.dmy },
+  { value: "MM/dd/yyyy", label: settings.appearance.dateFormats.mdy },
 ];
 
 const themeOptions = [
@@ -152,7 +153,7 @@ export function PreferencesSection() {
           },
         },
       });
-      toast.success("ترجیحات ذخیره شد");
+      toast.success(settings.appearance.saveSuccess);
     } catch (error) {
       handlePocketBaseError(error as Error);
     } finally {
@@ -177,7 +178,7 @@ export function PreferencesSection() {
       if (updates.theme) {
         setTheme(updates.theme);
       }
-      toast.success("ترجیحات ذخیره شد");
+      toast.success(settings.appearance.saveSuccess);
     } catch (error) {
       handlePocketBaseError(error as Error);
     } finally {
@@ -201,7 +202,7 @@ export function PreferencesSection() {
           },
         },
       });
-      toast.success("ترجیحات ذخیره شد");
+      toast.success(settings.appearance.saveSuccess);
     } catch (error) {
       handlePocketBaseError(error as Error);
     } finally {
@@ -226,7 +227,7 @@ export function PreferencesSection() {
         <SectionHeader
           icon={IconSettings}
           title={settings.preferences.title}
-          description="تنظیمات رابط کاربری سیستم"
+          description={settings.preferences.description}
         />
         <div className="space-y-1">
           <ToggleRow
@@ -243,13 +244,13 @@ export function PreferencesSection() {
       <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconPalette}
-          title="تنظیمات نمایش"
-          description="پارامترهای بصری سیستم"
+          title={settings.appearance.title}
+          description={settings.appearance.description}
         />
         <div className="grid gap-6 sm:grid-cols-3">
           <div className="space-y-2">
             <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              تم سیستم
+              {settings.appearance.theme}
             </label>
             <Select
               value={displayPreferences.theme}
@@ -261,7 +262,7 @@ export function PreferencesSection() {
               disabled={isBusy || !data}
             >
               <SelectTrigger className="h-11 rounded-xl text-right">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder={settings.appearance.theme} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {themeOptions.map((option) => (
@@ -279,7 +280,7 @@ export function PreferencesSection() {
 
           <div className="space-y-2">
             <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              منطقه زمانی
+              {settings.appearance.timezone}
             </label>
             <Select
               value={displayPreferences.timezone}
@@ -291,7 +292,7 @@ export function PreferencesSection() {
               disabled={isBusy || !data}
             >
               <SelectTrigger className="h-11 rounded-xl text-right">
-                <SelectValue placeholder="Timezone" />
+                <SelectValue placeholder={settings.appearance.timezone} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {timezoneOptions.map((option) => (
@@ -309,7 +310,7 @@ export function PreferencesSection() {
 
           <div className="space-y-2">
             <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              فرمت تاریخ
+              {settings.appearance.dateFormat}
             </label>
             <Select
               value={displayPreferences.dateFormat}
@@ -321,7 +322,7 @@ export function PreferencesSection() {
               disabled={isBusy || !data}
             >
               <SelectTrigger className="h-11 rounded-xl text-right">
-                <SelectValue placeholder="Date format" />
+                <SelectValue placeholder={settings.appearance.dateFormat} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {dateFormatOptions.map((option) => (
@@ -343,8 +344,8 @@ export function PreferencesSection() {
       <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
         <SectionHeader
           icon={IconBell}
-          title="اعلان‌ها"
-          description="مدیریت دریافت اعلان‌های سیستم"
+          title={settings.preferences.notificationsTitle}
+          description={settings.preferences.notificationsDescription}
         />
         <div className="space-y-1">
           {(Object.keys(notificationToggles) as NotificationKey[]).map(

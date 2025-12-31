@@ -1,17 +1,18 @@
+import { Layers } from "lucide-react";
 import { useState } from "react";
 
 import { ManageSavedFiltersDialog } from "@/components/task/manage-saved-filters-dialog";
 import { SaveFilterDialog } from "@/components/task/save-filter-dialog";
 import { SavedFiltersDropdown } from "@/components/task/saved-filters-dropdown";
 import { TaskFilters } from "@/components/task/task-filters";
+import { Card, CardContent } from "@/components/ui/card";
+import { tasks } from "@/constants";
 import type { SavedFilter } from "@/hooks/use-saved-filters";
 import type {
   TaskFilterValues,
   UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
 import type { UsersResponse } from "@/lib/pocketbase-types";
-import { Card, CardContent } from "@/components/ui/card";
-import { Layers } from "lucide-react";
 
 export type TaskFiltersPanelProps = {
   currentFilters: TaskFilterValues;
@@ -78,7 +79,7 @@ export function TaskFiltersPanel({
         <div className="flex items-center gap-2">
           <Layers className="text-primary/60 size-3.5" />
           <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-            _Filter_Logic
+            {tasks.filters.labels.filterLogic}
           </span>
         </div>
 

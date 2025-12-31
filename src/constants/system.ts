@@ -143,6 +143,15 @@ export const auditLogs = {
     system: "سیستم",
     unknown: "نامشخص",
   },
+  filters: {
+    search: shared.search,
+    clear: shared.clear,
+    resource: shared.resource,
+    allPlaceholder: "همه",
+    all: shared.all,
+    action: shared.action,
+    client: "کلاینت",
+  },
   empty: {
     empty: "—",
     noResults: "موردی برای نمایش وجود ندارد",
@@ -162,6 +171,8 @@ export const auditLogs = {
     original: "مقدار قبلی",
     newValue: "مقدار جدید",
     empty: "تغییری برای نمایش وجود ندارد",
+    collapsed: "بسته شده",
+    clickToLoad: "برای بارگذاری تاریخچه فعالیت کلیک کنید",
   },
   table: {
     changes: "تغییرات",
@@ -188,18 +199,11 @@ export const auditLogs = {
     automation: "اتوماسیون",
     unknown: "نامشخص",
   },
-  filters: {
-    resource: "منبع",
-    action: "عملیات",
-    actor: "کاربر",
-    client: "کلاینت",
-    dateFrom: "از تاریخ",
-    dateTo: "تا تاریخ",
-    search: "جستجو",
-    all: "همه",
-    allPlaceholder: "همه",
-    clear: "پاک کردن",
+  pagination: {
+    pageOf: "صفحه {page} از {totalPages}",
   },
+  totalEntries: "{count} مورد ثبت شده",
+  description: "لاگ فعالیت‌های کل سیستم",
 } as const;
 
 export const settings = {
@@ -235,11 +239,28 @@ export const settings = {
     },
   },
   appearance: {
-    title: "تم برنامه",
-    description: "ظاهر برنامه را متناسب با سلیقه خود شخصی‌سازی کنید.",
+    title: "تنظیمات نمایش",
+    description: "پارامترهای بصری سیستم",
+    theme: "تم سیستم",
+    timezone: "منطقه زمانی",
+    dateFormat: "فرمت تاریخ",
     light: "روشن",
     dark: "تاریک",
     system: "سیستم",
+    saveSuccess: "ترجیحات ذخیره شد",
+    timezones: {
+      auto: "خودکار",
+      utc: "UTC",
+      tehran: "Asia/Tehran",
+      london: "Europe/London",
+      newYork: "America/New_York",
+    },
+    dateFormats: {
+      locale: "مطابق تنظیمات دستگاه",
+      ymd: "YYYY/MM/DD",
+      dmy: "DD/MM/YYYY",
+      mdy: "MM/DD/YYYY",
+    },
   },
   security: {
     changePasswordTitle: "تغییر رمز عبور",
@@ -251,6 +272,10 @@ export const settings = {
     activeSessionsTitle: "نشست‌های فعال",
     activeSessionsDescription: "تاریخچه ورودهای اخیر به حساب کاربری شما.",
     noLoginHistory: "هیچ سابقه ورودی یافت نشد.",
+    remoteHost: "آدرس میزبان",
+    authTime: "زمان ورود",
+    unknownIp: "آی‌پی نامشخص",
+    unknownDevice: "دستگاه نامشخص",
     toast: {
       passwordChanged: "رمز عبور تغییر کرد",
       passwordChangedDescription: "رمز عبور شما با موفقیت تغییر یافت.",
@@ -264,9 +289,11 @@ export const settings = {
   },
   preferences: {
     title: "ترجیحات کاربری",
-    description: "تنظیمات نمایش فید فعالیت و اعلان‌های شخصی",
+    description: "تنظیمات رابط کاربری سیستم",
     activityDisabled: "نمایش فید فعالیت برای شما غیرفعال شده است",
     signinRequired: "برای مدیریت این قسمت ابتدا وارد حساب کاربری‌تان شوید",
+    notificationsTitle: "اعلان‌ها",
+    notificationsDescription: "مدیریت دریافت اعلان‌های سیستم",
     toggles: {
       activityFeed: {
         label: "فید فعالیت",
@@ -286,6 +313,12 @@ export const settings = {
     title: "درباره برنامه",
     version: "نسخه ۱.۰.۰",
     description: "این برنامه جهت مدیریت پروژه‌ها و تسک‌های تیمی طراحی شده است.",
+    manifest: "مشخصات نرم‌افزار",
+    buildVersion: "نسخه ساخت",
+    architecture: "معماری",
+    framework: "فریم‌ورک PocketBase",
+    uiEngine: "موتور رابط کاربری",
+    uiStack: "React + Tailwind CSS",
   },
 } as const;
 
@@ -299,6 +332,7 @@ export const helps = {
     support: "تماس با پشتیبانی",
   },
   content: {
+    underExpansion: "ماژول در حال توسعه",
     dashboard: "داشبورد اصلی آمار و اطلاعات کلی را نمایش می‌دهد",
     gettingStarted: {
       title: "شروع کار",
@@ -785,4 +819,11 @@ export const timesheet = {
     "برای ثبت تایم‌شیت، روی تسک‌ها زمان ثبت کنید یا یک تسک جدید بسازید.",
   createTaskCta: "ساخت تسک جدید",
   calendarCta: "مشاهده تقویم تسک‌ها",
+  weeklyTotal: "مجموع هفته",
+  hoursUnit: "ساعت",
+  minutesUnit: "دقیقه",
+} as const;
+
+export const system = {
+  registry: "ثبت سیستم",
 } as const;

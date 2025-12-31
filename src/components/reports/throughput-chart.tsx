@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { charts, reports } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -10,6 +9,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { charts, reports } from "@/constants";
 
 const chartConfig = {
   completed: {

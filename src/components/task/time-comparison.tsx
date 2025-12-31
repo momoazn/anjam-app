@@ -1,7 +1,8 @@
-import { Clock, AlertTriangle } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { AlertTriangle, Clock } from "lucide-react";
+
 import { common, task } from "@/constants";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface TimeComparisonProps {
   estimatedMinutes?: number;
@@ -39,7 +40,7 @@ export function TimeComparison({
     }
 
     if (parts.length === 0) {
-      parts.push(`0 ${common.time.minutesShort}`);
+      parts.push(`${digitsEnToFa(0)} ${common.time.minutesShort}`);
     }
 
     return parts.join(" ");

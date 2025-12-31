@@ -1,35 +1,36 @@
-import { useState, useMemo } from "react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
+  IconCalendar,
   IconChevronLeft,
   IconChevronRight,
-  IconCalendar,
   IconHash,
   IconPlus,
 } from "@tabler/icons-react";
-import { PageTransition } from "@/components/page-transition";
+import {
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameMonth,
+  isToday,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
+} from "date-fns-jalali";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { PageHeader } from "@/components/page-header";
-import { Button } from "@/components/ui/button";
+import { PageTransition } from "@/components/page-transition";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { common, tasks as tasksText } from "@/constants";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { getTaskStatus, isTaskCompleted } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  format,
-  addMonths,
-  subMonths,
-  startOfWeek,
-  endOfWeek,
-  isSameMonth,
-  isToday,
-} from "date-fns-jalali";
 import { cn } from "@/lib/utils";
 
 const priorityColors = {
@@ -193,14 +194,14 @@ export default function TaskCalendar() {
           variant="outline"
           className="text-primary rounded-lg border-transparent text-[10px] font-semibold tracking-tight"
         >
-          {digitsEnToFa(monthStats.total)} TOTAL
+          {digitsEnToFa(monthStats.total)} {tasksText.calendar.total}
         </Badge>
         <div className="bg-border/40 mx-1 h-4 w-px" />
         <Badge
           variant="outline"
           className="rounded-lg border-transparent text-[10px] font-semibold tracking-tight text-emerald-500"
         >
-          {digitsEnToFa(monthStats.completed)} DONE
+          {digitsEnToFa(monthStats.completed)} {tasksText.calendar.done}
         </Badge>
       </div>
       <Button
@@ -235,9 +236,9 @@ export default function TaskCalendar() {
             <IconChevronRight className="size-5" />
           </Button>
 
-          <div className="flex min-w-[140px] flex-col items-end">
+          <div className="flex min-w-35 flex-col items-end">
             <span className="text-muted-foreground/40 mb-1 text-[8px] font-bold tracking-tight">
-              Current Month
+              {tasksText.calendar.currentMonth}
             </span>
             <h2 className="text-lg font-bold tracking-tight">
               {format(currentMonth, "MMMM yyyy", { locale: undefined })}
@@ -295,7 +296,7 @@ export default function TaskCalendar() {
                 <div
                   key={dateString}
                   className={cn(
-                    "group flex min-h-[140px] flex-col p-2 transition-colors",
+                    "group flex min-h-35 flex-col p-2 transition-colors",
                     !isCurrentMonth
                       ? "bg-muted/10 opacity-40 grayscale"
                       : "bg-card hover:bg-muted/5",
@@ -348,7 +349,7 @@ export default function TaskCalendar() {
       {/* Empty State */}
       {!isLoadingTasks && tasksWithDeadlines.length === 0 && (
         <div className="border-border/40 mt-8 flex flex-col items-center justify-center rounded-2xl border border-dashed py-24 text-center opacity-30 grayscale">
-          <IconCalendar className="mb-4 size-12 stroke-[1]" />
+          <IconCalendar className="mb-4 size-12 stroke-1" />
           <h3 className="text-foreground mb-2 text-lg font-bold tracking-tight">
             {tasksText.calendar.noTasks}
           </h3>

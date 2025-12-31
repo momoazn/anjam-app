@@ -1,6 +1,7 @@
 import { IconLogout, IconUserCircle } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,11 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-
 import { navigation, user as userLabels, users } from "@/constants";
 import type { UsersRecord } from "@/lib/pocketbase-types";
 import { useAuthActions, useAuthUser } from "@/store/auth-store";
+
 import { UserAvatar } from "./user-avatar";
 
 type UserInfoProps = {

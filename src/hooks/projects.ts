@@ -4,13 +4,13 @@
  * Provides hooks for fetching, creating, updating, and deleting projects.
  * Includes supervisor relationship handling and flexible sorting options.
  */
+import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
-import { useQuery, UseMutationOptions } from "@tanstack/react-query";
-import { pb, ProjectWithSupervisor } from "../lib/pocketbase";
-import { ProjectsResponse, ProjectsRecord } from "../lib/pocketbase-types";
+import { ProjectWithSupervisor, pb } from "../lib/pocketbase";
+import { ProjectsRecord, ProjectsResponse } from "../lib/pocketbase-types";
 import { mutationInvalidators } from "../lib/query-invalidators";
-import { queryKeys } from "./query-keys";
 import { createCrudHooks } from "./factories/use-crud-factory";
+import { queryKeys } from "./query-keys";
 
 const {
   useCreate: useCreateProjectMutation,

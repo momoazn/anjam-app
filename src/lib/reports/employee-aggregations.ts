@@ -1,12 +1,13 @@
-import { isWithinInterval, format, startOfQuarter } from "date-fns-jalali";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { format, isWithinInterval, startOfQuarter } from "date-fns-jalali";
 import { faIR } from "date-fns/locale";
+
 import type { TaskWithProject } from "../pocketbase";
-import type { UsersRecord, IsoAutoDateString } from "../pocketbase-types";
+import type { IsoAutoDateString, UsersRecord } from "../pocketbase-types";
 import { TasksStatusOptions, UsersRoleOptions } from "../pocketbase-types";
 import type {
-  EmployeeBucketsResult,
   EmployeeBucket,
+  EmployeeBucketsResult,
   EmployeeSummary,
 } from "./types";
 

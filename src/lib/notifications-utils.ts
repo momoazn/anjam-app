@@ -1,6 +1,6 @@
+import { queryKeys } from "@/hooks/query-keys";
 import { pb } from "@/lib/pocketbase";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
-import { queryKeys } from "@/hooks/query-keys";
 
 export function getNotificationsQueryKey(userId?: string) {
   return userId

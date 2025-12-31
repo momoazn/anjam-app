@@ -1,10 +1,10 @@
 import {
   IconAdjustmentsHorizontal,
+  IconChevronLeft,
   IconInfoCircle,
   IconPalette,
   IconShield,
   IconUser,
-  IconChevronLeft,
 } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";

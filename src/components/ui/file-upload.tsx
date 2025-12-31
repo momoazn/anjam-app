@@ -1,18 +1,19 @@
+import {
+  IconFile,
+  IconFileText,
+  IconFileZip,
+  IconPhoto,
+  IconUpload,
+  IconX,
+} from "@tabler/icons-react";
+import { useCallback } from "react";
+import { toast } from "sonner";
+
+import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { FileWithPreview, useFileUpload } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
-import {
-  IconUpload,
-  IconX,
-  IconFile,
-  IconPhoto,
-  IconFileText,
-  IconFileZip,
-} from "@tabler/icons-react";
-import { useCallback } from "react";
-import { toast } from "sonner";
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 
 type FileUploadProps = {
   value?: FileWithPreview[];

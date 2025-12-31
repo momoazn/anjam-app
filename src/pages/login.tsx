@@ -1,24 +1,24 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import {
+  IconFingerprint,
+  IconServer,
+  IconShieldLock,
+  IconUserBolt,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import {
-  IconShieldLock,
-  IconUserBolt,
-  IconServer,
-  IconFingerprint,
-} from "@tabler/icons-react";
 
 import { Logo } from "@/components/brand/logo";
-import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { auth, app } from "@/constants";
+import { app, auth } from "@/constants";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
 import { useAuthStore } from "@/store/auth-store";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 function isUsersRecord(record: object | null): record is UsersResponse {
   return (

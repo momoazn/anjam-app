@@ -1,10 +1,11 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconPencil,
-  IconTrash,
-  IconInfoCircle,
   IconActivity,
+  IconInfoCircle,
+  IconPencil,
   IconSettings,
   IconTag,
+  IconTrash,
 } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,14 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { formatTaskDate } from "@/lib/date-utils";
+import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   getStatusColorVariant,
   priorityColors,
   priorityIcons,
   taskStatusIcons,
 } from "@/lib/status-utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
 
 export type TaskDetailsSidebarProps = {
@@ -89,7 +89,7 @@ export function TaskDetailsSidebar({
             {tags.length > 0 && (
               <div className="space-y-2 border-t pt-4">
                 <span className="text-muted-foreground flex items-center gap-1.5 text-[10px] font-bold tracking-tight">
-                  <IconTag className="size-3" /> Tags
+                  <IconTag className="size-3" /> {tasks.details.tags}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map((tag) => (

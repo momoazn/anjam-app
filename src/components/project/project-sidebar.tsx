@@ -1,19 +1,20 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconChartBar,
-  IconList,
-  IconUsers,
-  IconClock,
   IconActivity,
+  IconChartBar,
   IconCircleCheck,
+  IconClock,
+  IconList,
   IconSettings,
+  IconUsers,
 } from "@tabler/icons-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { projects } from "@/constants";
-import { cn } from "@/lib/utils";
+import { common, projects } from "@/constants";
 import { formatTimeSpent } from "@/lib/time-utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { cn } from "@/lib/utils";
 
 type ProjectSidebarProps = {
   tasksLoading: boolean;
@@ -43,7 +44,7 @@ export function ProjectSidebar({
             <IconActivity className="size-4" />
           </div>
           <span className="text-primary text-[10px] font-bold tracking-wider">
-            Project Status
+            {projects.details.statistics}
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>
@@ -126,7 +127,7 @@ export function ProjectSidebar({
             <IconSettings className="size-4" />
           </div>
           <span className="text-primary text-[10px] font-bold tracking-wider">
-            Quick Access
+            {common.messages.quickActions}
           </span>
           <div className="bg-border/20 h-px flex-1" />
         </div>

@@ -1,5 +1,6 @@
-import { test, expect } from "@playwright/test";
-import { TEST_USERS, TEST_TAG } from "../../fixtures/test-data";
+import { expect, test } from "@playwright/test";
+
+import { TEST_TAG, TEST_USERS } from "../../fixtures/test-data";
 
 test.describe("Tags Management (US-032 to US-035)", () => {
   test.beforeEach(async ({ page }) => {

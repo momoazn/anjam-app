@@ -1,6 +1,6 @@
-import { test, expect } from "../../fixtures/auth";
-import { ProjectsPage } from "../../pages/projects.page";
+import { expect, test } from "../../fixtures/auth";
 import { TEST_PROJECT } from "../../fixtures/test-data";
+import { ProjectsPage } from "../../pages/projects.page";
 
 test.describe("Projects - CRUD (US-010 to US-013)", () => {
   test.beforeEach(async ({ page }) => {

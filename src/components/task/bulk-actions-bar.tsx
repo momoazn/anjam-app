@@ -1,15 +1,8 @@
-import { X, Trash2, Users, Flag, RefreshCw, Terminal } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { Flag, RefreshCw, Terminal, Trash2, Users, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +13,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { common, tasks } from "@/constants";
 import {
   TasksPriorityOptions,
   type TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface BulkActionsBarProps {
   selectedCount: number;
@@ -63,7 +63,7 @@ export function BulkActionsBar({
       toast.success(
         tasks.bulkActions.assignSuccess.replace(
           "{count}",
-          String(selectedCount),
+          digitsEnToFa(selectedCount),
         ),
       );
     } catch {
@@ -80,7 +80,7 @@ export function BulkActionsBar({
       toast.success(
         tasks.bulkActions.statusSuccess.replace(
           "{count}",
-          String(selectedCount),
+          digitsEnToFa(selectedCount),
         ),
       );
     } catch {
@@ -114,7 +114,7 @@ export function BulkActionsBar({
       toast.success(
         tasks.bulkActions.deleteSuccess.replace(
           "{count}",
-          String(selectedCount),
+          digitsEnToFa(selectedCount),
         ),
       );
       setShowDeleteDialog(false);
@@ -145,12 +145,12 @@ export function BulkActionsBar({
         <div className="bg-muted/20 border-border/40 flex items-center gap-3 rounded-xl border px-4 py-2">
           <div className="flex flex-col items-end">
             <span className="text-muted-foreground/40 mb-1 text-right text-[7px] leading-none font-bold tracking-tight">
-              Selection_Mode
+              {common.buttons.selectionMode}
             </span>
             <div className="flex items-center gap-2">
               <Terminal className="text-primary size-3" />
               <span className="text-xs font-bold">
-                {digitsEnToFa(selectedCount)} ITEMS
+                {digitsEnToFa(selectedCount)} {tasks.pagination.items}
               </span>
             </div>
           </div>

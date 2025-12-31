@@ -1,9 +1,9 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconUsers } from "@tabler/icons-react";
 import { useParams } from "react-router-dom";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { ProjectMembersSection } from "@/components/project/project-members";
 import { projects } from "@/constants";
 import { useProjectMembers } from "@/hooks/project-members";

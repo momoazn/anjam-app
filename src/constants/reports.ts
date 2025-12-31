@@ -1,5 +1,4 @@
 // Reports & dashboard constants
-
 import { shared } from "./core";
 import { tasks } from "./tasks";
 
@@ -7,6 +6,10 @@ import { tasks } from "./tasks";
 export const reports = {
   title: "گزارش‌ها",
   dashboardTitle: "گزارش‌ها",
+  sections: {
+    configuration: "پیکربندی",
+    statistics: "آمار",
+  },
   tabs: {
     overview: "مرور",
     team: "تیم",
@@ -190,6 +193,7 @@ export const reports = {
       },
       productivityTrends: {
         title: "روند بهره‌وری",
+        analysis: "تحلیل روند",
         description: "تحلیل روند بهره‌وری در طول زمان",
         chartTitle: "روند بهره‌وری",
         projectedNextPeriod: "پیش‌بینی دوره بعد",
@@ -225,6 +229,9 @@ export const reports = {
         vsTeam: "در برابر میانگین تیم",
         noData: "داده‌ای برای مقایسه وجود ندارد",
       },
+      benchmarkComparison: {
+        title: "مقایسه با شاخص تیم",
+      },
       emptyStates: {
         noEmployees: "کارمندی برای نمایش نیست",
         noData: "داده‌ای برای نمایش گزارش نیست",
@@ -241,7 +248,7 @@ export const reports = {
         overtimeIndicator: "برآورد ساعات اضافه‌کاری مورد نیاز",
       },
       overtimeAnalysis: {
-        title: "تحلیل اضافه‌کاری و بار کاری",
+        title: "تحلیل اضافه‌کاری",
         description: "بررسی الگوهای اضافه‌کاری و توزیع بار کاری",
         chartTitle: "شاخص‌های اضافه‌کاری",
         workloadChartTitle: "توزیع بار کاری",
@@ -263,9 +270,13 @@ export const reports = {
         },
         noData: "داده‌ای برای نمایش وجود ندارد",
       },
+      workload: {
+        title: "توزیع بار کاری",
+      },
     },
   },
   filters: {
+    title: "فیلترهای گزارش",
     search: shared.search,
     status: shared.status,
     priority: shared.priority,
@@ -273,6 +284,16 @@ export const reports = {
     project: shared.project,
     dateRange: "بازه زمانی",
     all: shared.all,
+    timeframe: "بازه زمانی",
+    selectedCount: "{count} مورد انتخاب شده",
+    allProjects: "همه پروژه‌ها",
+    allAssignees: "همه مسئولین",
+    allStatuses: "همه وضعیت‌ها",
+    allPriorities: "همه اولویت‌ها",
+    reset: "بازنشانی",
+    activeDump: "فعال :: تخلیه",
+    entries: "مورد",
+    entry: "مورد",
   },
   tables: {
     performance: {
@@ -302,6 +323,16 @@ export const reports = {
       },
       fallbackProjectName: shared.noName,
     },
+  },
+  insights: {
+    title: "بینش‌ها",
+    description: "روند پیشرفت و بهره‌وری تیم خود را دنبال کنید",
+    createdThisWeek: "ایجاد شده در این هفته",
+    completedThisWeek: "تکمیل شده در این هفته",
+    inProgress: "در حال انجام",
+    fromLastWeek: "نسبت به هفته گذشته",
+    currentlyActive: "تسک‌های فعال فعلی",
+    loading: "در حال بارگذاری بینش‌ها...",
   },
   cards: {
     statusDistribution: "توزیع وضعیت تسک‌ها",
@@ -338,6 +369,7 @@ export const dashboard = {
   chart: {
     count: "تعداد",
   },
+  project: "پروژه",
   fallbacks: {
     noDate: "بدون تاریخ",
     noDeadline: "ندارد",
@@ -365,6 +397,7 @@ export const dashboard = {
     viewAll: "مشاهده همه",
     progress: "پیشرفت",
     completed: shared.completed,
+    total: shared.total,
     remaining: "باقی مانده",
     taskStatusDistribution: "توزیع وضعیت تسک‌ها",
     productivityTrend: "روند بهره‌وری (۷ روز)",
@@ -373,6 +406,7 @@ export const dashboard = {
     noProject: "بدون پروژه",
     noActivityFound: "فعالیتی یافت نشد",
     overdueTasks: "تسک‌های سررسید گذشته",
+    task: "تسک",
   },
   statDescriptions: {
     totalTasks: "تعداد کل تسک‌های قابل دسترسی شما",

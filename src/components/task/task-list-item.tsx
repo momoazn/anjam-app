@@ -1,3 +1,5 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconClock, IconHash, IconTarget } from "@tabler/icons-react";
 import { isToday } from "date-fns-jalali";
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,20 +8,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserAvatar } from "@/components/user-avatar";
-import { task as taskLabels } from "@/constants";
+import { task as taskLabels, tasks } from "@/constants";
 import { formatDateShort } from "@/lib/date-utils";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
 import {
+  getStatusColorVariant,
   priorityColors,
   priorityIcons,
   taskStatusIcons,
-  getStatusColorVariant,
 } from "@/lib/status-utils";
+import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { isTaskCompleted, isTaskCanceled } from "@/lib/status-utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconHash, IconTarget, IconClock } from "@tabler/icons-react";
 
 type TaskListItemProps = {
   task: TaskWithProject;
@@ -100,7 +100,7 @@ function TaskListItemInner({
           <div className="flex items-center gap-1 opacity-40">
             <IconHash className="size-2.5" />
             <span className="font-mono text-[10px] font-bold">
-              {task.display_id}
+              {digitsEnToFa(task.display_id)}
             </span>
           </div>
 
@@ -150,7 +150,7 @@ function TaskListItemInner({
           <div className="flex items-center gap-1 opacity-40">
             <IconClock className="size-2.5" />
             <span className="text-[10px] font-bold tracking-wider">
-              Deadline
+              {tasks.list.deadline}
             </span>
           </div>
           <span
@@ -167,7 +167,7 @@ function TaskListItemInner({
           >
             {task.deadline
               ? digitsEnToFa(formatDateShort(task.deadline))
-              : "---"}
+              : digitsEnToFa("---")}
           </span>
         </div>
 

@@ -2,10 +2,10 @@ import PocketBase from "pocketbase";
 
 import type {
   ProjectsResponse,
+  TagsResponse,
   TasksResponse,
   TypedPocketBase,
   UsersResponse,
-  TagsResponse,
 } from "./pocketbase-types";
 
 // During development, the PocketBase server is running on localhost:8090
@@ -17,6 +17,35 @@ import type {
 const baseUrl = import.meta.env.PROD ? "/" : "http://127.0.0.1:8090/";
 
 export const pb = new PocketBase(baseUrl) as TypedPocketBase;
+
+/**
+ * Automatically attach organization context to all API requests
+ *
+ * This allows the backend to:
+ * 1. Verify org context in API endpoints
+ * 2. Enforce mode-based restrictions on operations
+ * 3. Audit which org each operation belongs to
+ *
+ * Reads from localStorage to avoid circular dependency with auth-store.ts
+ */
+pb.beforeSend = function (_url, options) {
+  try {
+    const storage = localStorage.getItem("anjam-auth-storage");
+    if (storage) {
+      const parsed = JSON.parse(storage);
+      const orgId = parsed?.state?.currentOrganization?.id;
+
+      if (orgId && options.headers) {
+        options.headers["X-Organization-ID"] = orgId;
+      }
+    }
+  } catch (err) {
+    // Silently fail - not critical if header missing
+    console.warn("Failed to attach org context:", err);
+  }
+
+  return options;
+};
 
 export async function customApiCall<TResponse>(
   path: string,
@@ -30,6 +59,7 @@ export type TaskWithProject = TasksResponse<{
   assignee?: UsersResponse; // Make assignee optional in expand
   creator: UsersResponse;
   tags?: TagsResponse[];
+  status_ref: Record<string, unknown>; // For status expansion
 }>;
 export type ProjectWithSupervisor = ProjectsResponse<{
   supervisor: UsersResponse;

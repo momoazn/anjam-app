@@ -1,13 +1,12 @@
-import { useMemo, useState } from "react";
 import {
+  IconHash,
   IconLoader2,
   IconTrash,
   IconUsers,
-  IconHash,
 } from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { AddProjectMemberModal } from "@/components/project/add-project-member-modal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -25,17 +26,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { projects, common } from "@/constants";
+import { UserAvatar } from "@/components/user-avatar";
+import {
+  common,
+  projectRoles as projectRoleLabels,
+  projects,
+} from "@/constants";
 import {
   useProjectMembers,
-  useUpdateProjectMemberRole,
   useRemoveProjectMember,
+  useUpdateProjectMemberRole,
 } from "@/hooks/project-members";
 import { usePermissions } from "@/hooks/usePermissions";
-import { formatUserName } from "@/lib/utils";
 import { pb } from "@/lib/pocketbase";
-import { UserAvatar } from "@/components/user-avatar";
-import { AddProjectMemberModal } from "@/components/project/add-project-member-modal";
+import { formatUserName } from "@/lib/utils";
 
 const projectRoles = ["owner", "admin", "member", "viewer"] as const;
 
@@ -100,7 +104,7 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
         <div className="flex items-center gap-3">
           <IconUsers className="text-primary size-4" />
           <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
-            Project Members
+            {projects.users.title}
           </span>
         </div>
         {canManageMembers && (
@@ -187,7 +191,11 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                           value={role}
                           className="text-right text-[9px] font-bold"
                         >
-                          {role}
+                          {
+                            projectRoleLabels.labels[
+                              role as keyof typeof projectRoleLabels.labels
+                            ]
+                          }
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -197,7 +205,11 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                     variant="outline"
                     className="border-border/40 bg-muted/30 text-muted-foreground rounded-lg text-[9px] font-bold tracking-tight"
                   >
-                    {member.role}
+                    {
+                      projectRoleLabels.labels[
+                        member.role as keyof typeof projectRoleLabels.labels
+                      ]
+                    }
                   </Badge>
                 )}
               </div>

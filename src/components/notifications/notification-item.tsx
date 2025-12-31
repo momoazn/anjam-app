@@ -1,11 +1,11 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconEye, IconTrash, IconClock, IconHash } from "@tabler/icons-react";
+import { IconClock, IconEye, IconHash, IconTrash } from "@tabler/icons-react";
 import { format } from "date-fns-jalali";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { notifications as notificationsText } from "@/constants";
+import { notifications as notificationsText, shared } from "@/constants";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 
@@ -91,7 +91,7 @@ export function NotificationItem({
       <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-e px-4">
         <div className="flex flex-col items-center">
           <span className="text-muted-foreground/40 mb-1 text-[10px] font-bold">
-            زمان
+            {shared.time}
           </span>
           <div className="text-foreground/60 flex items-center gap-1.5 text-[10px] font-bold tabular-nums">
             <IconClock className="text-primary/40 size-3" />

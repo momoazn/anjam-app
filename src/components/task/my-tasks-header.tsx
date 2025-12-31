@@ -1,7 +1,13 @@
-import { Plus, User, CheckSquare, Layers } from "lucide-react";
+import { CheckSquare, Layers, Plus, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { common, myTasks as myTasksText, tasks, app } from "@/constants";
+import {
+  app,
+  common,
+  myTasks as myTasksText,
+  navigationLabels,
+  tasks,
+} from "@/constants";
 import { cn } from "@/lib/utils";
 
 type MyTasksHeaderProps = {
@@ -35,7 +41,8 @@ export function MyTasksHeader({
             <div className="text-primary flex items-center gap-2">
               <Layers className="size-3" />
               <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                {app.name} / Workspace / Index
+                {app.name} / {navigationLabels.workspace} /{" "}
+                {navigationLabels.index}
               </span>
             </div>
             <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">

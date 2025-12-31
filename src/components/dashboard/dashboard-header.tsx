@@ -1,5 +1,7 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   AlertTriangle,
+  ArrowUpRight,
   BarChart3,
   Calendar,
   CheckCircle,
@@ -9,19 +11,17 @@ import {
   Plus,
   Target,
   Users,
-  ArrowUpRight,
 } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { IconBox } from "@/components/recipes/icon-box";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { app, dashboard, users } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import { useAuthRole } from "@/store/auth-store";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconBox } from "@/components/recipes/icon-box";
 
 type DashboardHeaderProps = {
   stats?: {

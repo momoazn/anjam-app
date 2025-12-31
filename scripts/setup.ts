@@ -2,20 +2,20 @@
  * Setup script - Initializes the database with seed data
  * Clears existing data and seeds the database with mock data
  */
-
 import PocketBase from "pocketbase";
+
 import type { TypedPocketBase } from "@/lib/pocketbase-types";
 
+import mockComments from "./mock-data/comments.json";
+import mockNotifications from "./mock-data/notifications.json";
+import mockOrgMembers from "./mock-data/organization_members.json";
+import mockOrganizations from "./mock-data/organizations.json";
+import mockProjectMembers from "./mock-data/project_members.json";
+import mockProjects from "./mock-data/projects.json";
+import mockTags from "./mock-data/tags.json";
+import mockTasks from "./mock-data/tasks.json";
 // Mock data imports
 import mockUsers from "./mock-data/users.json";
-import mockOrganizations from "./mock-data/organizations.json";
-import mockOrgMembers from "./mock-data/organization_members.json";
-import mockProjects from "./mock-data/projects.json";
-import mockProjectMembers from "./mock-data/project_members.json";
-import mockTasks from "./mock-data/tasks.json";
-import mockComments from "./mock-data/comments.json";
-import mockTags from "./mock-data/tags.json";
-import mockNotifications from "./mock-data/notifications.json";
 
 // Constants
 const PB_URL = process.env.POCKETBASE_URL || "http://127.0.0.1:8090/";

@@ -1,39 +1,40 @@
-import { test as setup } from "@playwright/test";
-import { TEST_USERS } from "./fixtures/test-data";
 import fs from "fs";
 import path from "path";
 
-const authFile = "playwright/.auth/user.json";
+import { type Page, test as setup } from "@playwright/test";
 
-setup("authenticate as manager", async ({ page }) => {
-  // Create auth directory if it doesn't exist
-  const authDir = path.dirname(authFile);
-  if (!fs.existsSync(authDir)) {
-    fs.mkdirSync(authDir, { recursive: true });
+import { TEST_USERS } from "./fixtures/test-data";
+
+const authDir = "playwright/.auth";
+const authFileUser = `${authDir}/user.json`;
+const authFileProductMode = `${authDir}/user-product-mode.json`;
+
+async function authenticateAndSelectOrg(
+  page: Page,
+  email: string,
+  password: string,
+  orgSlugPattern: RegExp,
+) {
+  const authDirPath = path.dirname(authFileUser);
+  if (!fs.existsSync(authDirPath)) {
+    fs.mkdirSync(authDirPath, { recursive: true });
   }
 
-  // Login
   await page.goto("/login");
-
-  // Wait for page to load
   await page.waitForLoadState("networkidle");
 
-  // Fill credentials using role-based queries (Playwright best practice)
   const textboxes = page.getByRole("textbox");
-  await textboxes.first().fill(TEST_USERS.manager.email);
-  await textboxes.nth(1).fill(TEST_USERS.manager.password);
+  await textboxes.first().fill(email);
+  await textboxes.nth(1).fill(password);
 
-  // Click login
   await page.getByRole("button", { name: /ورود|login/i }).click();
 
-  // Wait for navigation and dashboard to load
   await page.waitForURL(/\/(dashboard|select-organization|onboarding)/);
   await page.waitForLoadState("networkidle");
 
-  // If on select-organization, select the first available organization
   const orgSelector = page
     .locator('[role="button"]')
-    .filter({ has: page.locator("text=/[A-Z]{3}/") });
+    .filter({ has: page.locator(`text=/${orgSlugPattern.source}/`) });
   const orgCount = await orgSelector.count();
 
   if (orgCount > 0) {
@@ -41,9 +42,31 @@ setup("authenticate as manager", async ({ page }) => {
     await page.waitForURL(/\/dashboard/);
     await page.waitForLoadState("networkidle");
   }
+}
 
-  // Save storage state
-  await page.context().storageState({ path: authFile });
+setup("authenticate as manager (operations mode org1)", async ({ page }) => {
+  await authenticateAndSelectOrg(
+    page,
+    TEST_USERS.manager.email,
+    TEST_USERS.manager.password,
+    /^org1$/,
+  );
+  await page.context().storageState({ path: authFileUser });
+  console.log("✅ Authentication setup complete (org1 - operations mode)");
+});
 
-  console.log("✅ Authentication setup complete");
+setup("authenticate as supervisor (product mode org2)", async ({ page }) => {
+  const authDirPath = path.dirname(authFileProductMode);
+  if (!fs.existsSync(authDirPath)) {
+    fs.mkdirSync(authDirPath, { recursive: true });
+  }
+
+  await authenticateAndSelectOrg(
+    page,
+    TEST_USERS.supervisor.email,
+    TEST_USERS.supervisor.password,
+    /^org2$/,
+  );
+  await page.context().storageState({ path: authFileProductMode });
+  console.log("✅ Authentication setup complete (org2 - product mode)");
 });

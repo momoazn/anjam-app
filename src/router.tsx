@@ -19,14 +19,19 @@ import {
   ui,
   users,
 } from "@/constants";
-import type { Permission } from "./lib/permissions";
+
 import { usePermissions } from "./hooks/usePermissions";
+import type { FeatureKey } from "./lib/mode-features";
+import { getHomeRoute, isFeatureEnabled } from "./lib/mode-features";
+import type { Permission } from "./lib/permissions";
 import {
   useAuthIsLoggedIn,
-  useAuthUser,
-  useCurrentOrganization,
-  useCurrentOrgOnboardingCompleted,
   useAuthStore,
+  useAuthUser,
+  useCurrentOrgFeatures,
+  useCurrentOrgMode,
+  useCurrentOrgOnboardingCompleted,
+  useCurrentOrganization,
 } from "./store/auth-store";
 
 // Standardized error fallback component for lazy-loaded routes
@@ -171,6 +176,14 @@ const AuditLogs = createLazyPage(
   () => import("@/pages/audit-logs"),
   errors.pageLoad.notFound,
 );
+const Insights = createLazyPage(
+  () => import("@/pages/insights"),
+  errors.pageLoad.notFound,
+);
+const Views = createLazyPage(
+  () => import("@/pages/views"),
+  errors.pageLoad.notFound,
+);
 const NotFound = createLazyPage(
   () => import("@/pages/not-found"),
   errors.pageLoad.notFound,
@@ -295,11 +308,49 @@ const PermissionProtectedRoute = ({
   return <>{children}</>;
 };
 
-// PublicRoute component (redirects authenticated users to dashboard)
+/**
+ * FeatureProtectedRoute - Route guard that blocks access to features disabled in current org mode
+ *
+ * Usage:
+ *   <FeatureProtectedRoute feature="timesheet">
+ *     <Timesheet />
+ *   </FeatureProtectedRoute>
+ *
+ * If feature is disabled, redirects to home route for the current mode.
+ */
+const FeatureProtectedRoute = ({
+  children,
+  feature,
+  redirectTo,
+}: {
+  children: React.ReactNode;
+  feature: FeatureKey;
+  redirectTo?: string;
+}) => {
+  const features = useCurrentOrgFeatures();
+  const mode = useCurrentOrgMode();
+  const isLoggedIn = useAuthIsLoggedIn();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isFeatureEnabled(features, feature)) {
+    // Redirect to mode-appropriate home (product: /inbox, operations: /dashboard)
+    const fallback = redirectTo ?? getHomeRoute(mode);
+    return <Navigate to={fallback} replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// PublicRoute component (redirects authenticated users to appropriate home)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsLoggedIn();
+  const mode = useCurrentOrgMode();
+
   if (isLoggedIn) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={getHomeRoute(mode)} replace />;
   }
   return <>{children}</>;
 };
@@ -309,6 +360,7 @@ type RouteType = {
   element: React.ReactNode;
   protected: boolean;
   permission?: string;
+  feature?: FeatureKey; // NEW: for feature-gated routes
   title?: string;
   requiresOrg?: boolean; // If true, requires organization to be selected
 };
@@ -378,6 +430,43 @@ const routes: RouteType[] = [
     protected: true,
     requiresOrg: true,
     title: navigation.dashboard,
+  },
+  // Product mode route aliases
+  {
+    path: "/inbox",
+    element: <MyTasks />,
+    protected: true,
+    requiresOrg: true,
+    title: "Inbox",
+  },
+  {
+    path: "/issues",
+    element: <Tasks />,
+    protected: true,
+    requiresOrg: true,
+    title: "Issues",
+  },
+  {
+    path: "/insights",
+    element: <Insights />,
+    protected: true,
+    requiresOrg: true,
+    title: "Insights",
+  },
+  // Views page and saved-filters alias
+  {
+    path: "/views",
+    element: <Views />,
+    protected: true,
+    requiresOrg: true,
+    title: "Views",
+  },
+  {
+    path: "/saved-filters",
+    element: <Views />,
+    protected: true,
+    requiresOrg: true,
+    title: "Saved Filters",
   },
   {
     path: "/projects",
@@ -500,9 +589,14 @@ const routes: RouteType[] = [
   },
   {
     path: "/timesheet",
-    element: <Timesheet />,
+    element: (
+      <FeatureProtectedRoute feature="timesheet">
+        <Timesheet />
+      </FeatureProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
+    feature: "timesheet",
     title: navigationLabels.timesheet,
   },
   {
@@ -570,9 +664,14 @@ const routes: RouteType[] = [
   },
   {
     path: "/reports",
-    element: <Reports />,
+    element: (
+      <FeatureProtectedRoute feature="reports">
+        <Reports />
+      </FeatureProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
+    feature: "reports",
     title: navigation.reports,
   },
   {
@@ -607,11 +706,14 @@ const routes: RouteType[] = [
     path: "/audit-logs",
     element: (
       <PermissionProtectedRoute permission="org.manage_members">
-        <AuditLogs />
+        <FeatureProtectedRoute feature="auditLogs">
+          <AuditLogs />
+        </FeatureProtectedRoute>
       </PermissionProtectedRoute>
     ),
     protected: true,
     requiresOrg: true,
+    feature: "auditLogs",
     title: navigation.auditLogs,
   },
   {

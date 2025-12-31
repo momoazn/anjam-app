@@ -3,13 +3,14 @@
  *
  * Provides hooks for fetching audit logs for admin console and resource-specific history.
  */
-
 import { useQuery } from "@tanstack/react-query";
+
 import {
-  listAuditLogs,
-  getAuditLogsForResource,
   type AuditLogsListParams,
+  getAuditLogsForResource,
+  listAuditLogs,
 } from "@/lib/audit-log-service";
+
 import { queryKeys } from "./query-keys";
 
 /**

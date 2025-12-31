@@ -1,21 +1,22 @@
+import { IconUpload } from "@tabler/icons-react";
 import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
 import { FileUpload } from "@/components/ui/file-upload";
 import {
   FormControl,
-  FormField as ShadcnFormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormField as ShadcnFormField,
 } from "@/components/ui/form";
 import { projects } from "@/constants";
 import { useUsers } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
+
 import { FormField as GenericFormField } from "./form-field";
-import { IconUpload } from "@tabler/icons-react";
 
 type ProjectFieldsProps = {
   control: Control<{

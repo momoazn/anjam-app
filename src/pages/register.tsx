@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconMail,
-  IconShieldLock,
   IconBuilding,
   IconFingerprint,
+  IconMail,
+  IconShieldLock,
 } from "@tabler/icons-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Logo } from "@/components/brand/logo";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { auth, app } from "@/constants";
+import { app, auth } from "@/constants";
 import { useRegisterWithOrg } from "@/hooks/organization-invites";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

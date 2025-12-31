@@ -1,15 +1,15 @@
-import { IconTerminal, IconStack2 } from "@tabler/icons-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconStack2, IconTerminal } from "@tabler/icons-react";
 
 import {
-  FiltersBar,
   type Filters,
+  FiltersBar,
   type TimeRange,
 } from "@/components/reports/filters-bar";
 import { ProjectExportButton } from "@/components/reports/project-export-button";
 import { reports } from "@/constants";
 import type { ProjectWithSupervisor, TaskWithProject } from "@/lib/pocketbase";
 import type { ProjectsResponse, UsersResponse } from "@/lib/pocketbase-types";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export type FiltersSectionState = {
   timeRange: TimeRange;
@@ -41,7 +41,9 @@ export function FiltersSection({
         data-animate-stagger
       >
         <div className="mb-6 flex items-center justify-end gap-2 text-right opacity-40">
-          <span className="text-[10px] font-bold tracking-tight">_Filter_</span>
+          <span className="text-[10px] font-bold tracking-tight">
+            {reports.filters.title}
+          </span>
           <IconTerminal className="text-primary size-3.5" />
         </div>
         <FiltersBar
@@ -93,7 +95,7 @@ export function FiltersSection({
                     </h3>
                     <div className="flex items-center justify-end gap-2 text-right">
                       <span className="text-muted-foreground/60 text-[10px] font-bold">
-                        _Entry
+                        {reports.filters.entry}
                       </span>
                       <div className="bg-border/40 h-px w-4" />
                       <span className="text-xs font-bold tabular-nums">

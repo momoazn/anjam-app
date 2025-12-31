@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Folder } from "lucide-react";
 import { ClientResponseError } from "pocketbase";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { PageTransition } from "@/components/page-transition";
-import { ProjectDetailsSkeleton } from "@/components/project/project-details-skeleton";
 import { ProjectDetailsSections } from "@/components/project/project-details-sections";
+import { ProjectDetailsSkeleton } from "@/components/project/project-details-skeleton";
 import { ProjectHeader } from "@/components/project/project-header";
 import { ProjectSidebar } from "@/components/project/project-sidebar";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { errors, projects } from "@/constants";
 import { queryKeys } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
-import { pb, type ProjectWithSupervisor } from "@/lib/pocketbase";
+import { type ProjectWithSupervisor, pb } from "@/lib/pocketbase";
 import type { TasksResponse } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 

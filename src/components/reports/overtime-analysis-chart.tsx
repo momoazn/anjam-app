@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { reports } from "@/constants";
-import type { OvertimeAnalysis } from "@/lib/reports";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { reports } from "@/constants";
+import type { OvertimeAnalysis } from "@/lib/reports";
 
 type Props = {
   data: OvertimeAnalysis[];

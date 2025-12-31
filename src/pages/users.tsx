@@ -3,14 +3,14 @@ import { IconPlus, IconUsers } from "@tabler/icons-react";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { Button } from "@/components/ui/button";
 import { DeleteUserDialog } from "@/components/user/delete-user-dialog";
 import { UserListTable } from "@/components/user/user-list-table";
-import { Button } from "@/components/ui/button";
 import { users as usersText } from "@/constants";
-import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useUsers } from "@/hooks";
+import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function Users() {
@@ -77,7 +77,7 @@ export default function Users() {
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="border-primary h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" />
               <h3 className="text-muted-foreground mt-4 text-sm font-medium">
-                Loading users...
+                {usersText.list.loading}
               </h3>
             </div>
           ) : (

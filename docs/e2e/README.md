@@ -202,9 +202,9 @@ Access test credentials and UI text constants:
 
 ```typescript
 import {
-  TEST_USERS,
   TEST_PROJECT,
   TEST_TASK,
+  TEST_USERS,
   UI_TEXT,
 } from "../fixtures/test-data";
 
@@ -266,11 +266,11 @@ Reusable utility functions:
 
 ```typescript
 import {
+  createProject,
+  createTask,
+  getToastMessage,
   loginAs,
   selectOrganization,
-  createTask,
-  createProject,
-  getToastMessage,
   waitForApiCall,
 } from "../utils/helpers";
 

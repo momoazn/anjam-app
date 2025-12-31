@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { test as base, expect, Page } from "@playwright/test";
+import { Page, test as base, expect } from "@playwright/test";
+
 import { TEST_USERS } from "./test-data";
 
 type AuthFixtures = {

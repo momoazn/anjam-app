@@ -1,6 +1,6 @@
-import { test, expect } from "../../fixtures/auth";
-import { DashboardPage } from "../../pages/dashboard.page";
+import { expect, test } from "../../fixtures/auth";
 import { TEST_USERS } from "../../fixtures/test-data";
+import { DashboardPage } from "../../pages/dashboard.page";
 
 test.describe("Authentication - Logout (US-004)", () => {
   test.beforeEach(async ({ page }) => {

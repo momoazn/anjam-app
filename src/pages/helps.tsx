@@ -1,7 +1,8 @@
-import { PageTransition } from "@/components/page-transition";
+import { IconHelp } from "@tabler/icons-react";
+
 import { HelpCategories } from "@/components/help/help-categories";
 import { PageHeader } from "@/components/page-header";
-import { IconHelp } from "@tabler/icons-react";
+import { PageTransition } from "@/components/page-transition";
 import { helps } from "@/constants";
 
 export default function Helps() {

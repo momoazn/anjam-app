@@ -1,7 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-hooks/preserve-manual-memoization */
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   endOfDay,
   endOfMonth,
@@ -11,29 +9,31 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
+import { PageTransition } from "@/components/page-transition";
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
 import { TaskFiltersPanel } from "@/components/task/task-filters-panel";
 import { TaskHeader } from "@/components/task/task-header";
 import { TaskListView } from "@/components/task/task-list-view";
 import { TaskPagination } from "@/components/task/task-pagination";
-import { PageTransition } from "@/components/page-transition";
 import { savedFilters as savedFiltersText } from "@/constants";
-import { useToast } from "@/hooks/use-toast";
-import { ALL_FILTER_VALUE, useTaskFilters } from "@/hooks/use-task-filters";
-import { useSavedFilters } from "@/hooks/use-saved-filters";
 import {
   useBulkDeleteTasks,
   useBulkUpdateTasks,
   useTasks,
 } from "@/hooks/tasks";
+import { useSavedFilters } from "@/hooks/use-saved-filters";
+import { ALL_FILTER_VALUE, useTaskFilters } from "@/hooks/use-task-filters";
+import { useToast } from "@/hooks/use-toast";
 import { useUsers } from "@/hooks/users";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
-  TasksStatusOptions,
   type TasksPriorityOptions,
+  TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { statusOrder, TASK_STATUS_CONFIG } from "@/lib/status-utils";
+import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function Tasks() {

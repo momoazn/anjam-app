@@ -1,12 +1,13 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { format } from "date-fns-jalali";
+import { AlertTriangle, Calendar, Hash } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Calendar, Hash } from "lucide-react";
-import { dashboard, tasks } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { UserAvatar } from "@/components/user-avatar";
-import { useNavigate } from "react-router-dom";
-import { format } from "date-fns-jalali";
+import { dashboard, tasks } from "@/constants";
 import type { TasksPriorityOptions } from "@/lib/pocketbase-types";
 
 type AssigneePreview = {
@@ -81,7 +82,7 @@ export function OverdueTasksWidget({
                 <div className="min-w-0 flex-1 text-right">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-semibold tracking-tight text-rose-500/60">
-                      Task {idx + 1}
+                      {dashboard.cards.task} {digitsEnToFa(idx + 1)}
                     </span>
                   </div>
                   <p className="text-foreground mt-0.5 truncate text-sm font-semibold">

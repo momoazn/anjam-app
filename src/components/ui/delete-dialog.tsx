@@ -1,3 +1,5 @@
+import { Loader2 } from "lucide-react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,8 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { common } from "@/constants";
-import { useDeleteTask, useDeleteProject, useDeleteUser } from "@/hooks";
-import { Loader2 } from "lucide-react";
+import { useDeleteProject, useDeleteTask, useDeleteUser } from "@/hooks";
 
 type DeleteDialogProps = {
   open: boolean;

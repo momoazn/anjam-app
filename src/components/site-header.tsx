@@ -1,6 +1,10 @@
+import { Moon, Sun } from "lucide-react";
+import { Fragment, useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+import { GlobalSearch } from "@/components/global-search";
 import { HeaderUserMenu } from "@/components/header-user-menu";
 import { NotificationDropdown } from "@/components/notification-dropdown";
-import { GlobalSearch } from "@/components/global-search";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,9 +23,6 @@ import {
 } from "@/components/ui/tooltip";
 import { navigation, themeLabels } from "@/constants";
 import { useTheme } from "@/hooks/use-theme";
-import { Sun, Moon } from "lucide-react";
-import { Fragment, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
 
 export function SiteHeader() {
   const { resolvedTheme, toggleTheme } = useTheme();

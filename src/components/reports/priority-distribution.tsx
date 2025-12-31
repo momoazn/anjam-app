@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { reports, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Cell, Pie, PieChart } from "recharts";
 
@@ -10,6 +9,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { reports, tasks } from "@/constants";
 import type { TasksPriorityOptions } from "@/lib/pocketbase-types";
 
 const chartConfig = {

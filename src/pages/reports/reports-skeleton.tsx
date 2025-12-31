@@ -1,9 +1,10 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
-import { PageHeader } from "@/components/page-header";
-import { PageTransition } from "@/components/page-transition";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconChartBar } from "@tabler/icons-react";
+
+import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { reports } from "@/constants";
 
 interface ReportsSkeletonProps {

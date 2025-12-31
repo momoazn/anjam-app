@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IconLoader2, IconPencil } from "@tabler/icons-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,8 +8,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { ProjectFields } from "@/components/forms/project-fields";
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { ProjectStatusesSettings } from "@/components/project/project-statuses-settings";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";

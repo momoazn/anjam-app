@@ -1,5 +1,5 @@
-import { IconBell } from "@tabler/icons-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconBell } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import { notification, notifications } from "@/constants";

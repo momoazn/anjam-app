@@ -1,12 +1,13 @@
 import {
-  keepPreviousData,
   QueryClient,
   QueryClientProvider,
+  keepPreviousData,
 } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { Suspense } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -14,13 +15,14 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
+import { loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
-import { loading } from "@/constants";
+
 import { AppRoutes } from "./router";
-import { useLocation } from "react-router-dom";
+
 type RetryableError = {
   status?: number;
 };
@@ -58,7 +60,7 @@ function LoadingFallback() {
 function MainContent() {
   return (
     <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
+      <div className="@container flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-6">
           <AppRoutes />
         </div>
@@ -72,6 +74,7 @@ function AppLayout() {
   const isLoggedIn = useAuthIsLoggedIn();
   const location = useLocation();
   useNotifications(); // Auto-subscribes
+  useKeyboardShortcuts(); // Global keyboard shortcuts
 
   const isLandingPage = location.pathname === "/";
 

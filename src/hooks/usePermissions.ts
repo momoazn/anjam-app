@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
+
+import {
+  type OrgRole,
+  type Permission,
+  type ProjectRole,
+  computePermissions,
+} from "@/lib/permissions";
 import { pb } from "@/lib/pocketbase";
 import { useAuthStore } from "@/store/auth-store";
-import {
-  computePermissions,
-  type Permission,
-  type OrgRole,
-  type ProjectRole,
-} from "@/lib/permissions";
 
 interface PermissionsResponse {
   user_id: string;

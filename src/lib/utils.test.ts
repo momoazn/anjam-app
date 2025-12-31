@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { cn, getUserInitials, formatUserName } from "./utils";
+import { describe, expect, it } from "vitest";
+
+import { cn, formatUserName, getUserInitials } from "./utils";
 
 describe("cn", () => {
   it("should merge class names correctly", () => {

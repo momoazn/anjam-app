@@ -1,9 +1,12 @@
-import { Edit, Target, Trash, Users, FileText, Layers } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconActivity, IconHash } from "@tabler/icons-react";
+import { Edit, FileText, Layers, Target, Trash, Users } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   project as projectLabels,
   projects as projectsText,
@@ -11,9 +14,6 @@ import {
 import { useTasks } from "@/hooks";
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconHash, IconActivity } from "@tabler/icons-react";
-import { Progress } from "@/components/ui/progress";
 
 type ProjectListGroupProps = {
   projects: ProjectsResponse[];
@@ -139,7 +139,7 @@ export function ProjectListGroup({
 
                   <div className="flex flex-col items-end">
                     <span className="text-muted-foreground text-[10px] font-bold tracking-wider">
-                      Tasks
+                      {projectLabels.tasks}
                     </span>
                     <div className="mt-1 flex items-center gap-1.5 font-bold">
                       <span className="text-lg tabular-nums">

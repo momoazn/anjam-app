@@ -1,6 +1,6 @@
-import { test, expect } from "../../fixtures/auth";
-import { LoginPage } from "../../pages/login.page";
+import { expect, test } from "../../fixtures/auth";
 import { TEST_USERS } from "../../fixtures/test-data";
+import { LoginPage } from "../../pages/login.page";
 
 test.describe("Authentication - Login (US-002)", () => {
   test("user should log in with valid credentials", async ({ page }) => {

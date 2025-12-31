@@ -4,6 +4,7 @@ import { comments as commentsText } from "@/constants";
 import { CommentWithUser } from "@/hooks/comments";
 import { useProjectMembers } from "@/hooks/project-members";
 import { cn } from "@/lib/utils";
+
 import { CommentItem } from "./comment-item";
 
 type CommentsListProps = {

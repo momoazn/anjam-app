@@ -3,7 +3,6 @@
  *
  * Extracted from status-utils.ts as part of Priority 5 refactoring
  */
-
 import {
   Icon,
   IconAntennaBars2,
@@ -11,6 +10,7 @@ import {
   IconAntennaBars4,
   IconAntennaBars5,
 } from "@tabler/icons-react";
+
 import { TasksPriorityOptions } from "./pocketbase-types";
 
 /**

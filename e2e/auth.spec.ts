@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+
 import { auth } from "../src/constants";
 
 test.describe("Authentication", () => {

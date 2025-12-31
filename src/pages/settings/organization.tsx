@@ -1,18 +1,18 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { IconBuilding, IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { IconBuilding, IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import { z } from "zod";
 
+import { FormField } from "@/components/forms/form-field";
+import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { FormField } from "@/components/forms/form-field";
 import { organization, shared } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { useCurrentOrganization } from "@/store/auth-store";
-import { PageHeader } from "@/components/page-header";
-import { PageTransition } from "@/components/page-transition";
 
 const orgSettingsSchema = z.object({
   name: z.string().min(1).max(200),

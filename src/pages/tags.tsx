@@ -1,20 +1,20 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconPlus, IconTag } from "@tabler/icons-react";
 import { useState } from "react";
-import { IconTag, IconPlus } from "@tabler/icons-react";
 
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { TagFormDialog } from "@/components/tags/tag-form-dialog";
 import { TagsDeleteDialog } from "@/components/tags/tags-delete-dialog";
 import { TagsList } from "@/components/tags/tags-list";
 import { Button } from "@/components/ui/button";
 import { tagsManagement } from "@/constants";
+import { useDeleteTag, useTags } from "@/hooks/tags";
 import { useToast } from "@/hooks/use-toast";
-import { useTags, useDeleteTag } from "@/hooks/tags";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import type { TagsResponse } from "@/lib/pocketbase-types";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthRole } from "@/store/auth-store";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export default function TagsManagement() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);

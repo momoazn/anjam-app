@@ -240,12 +240,18 @@ export enum OrganizationsPlanOptions {
   "pro" = "pro",
   "enterprise" = "enterprise",
 }
+
+export enum OrganizationsModeOptions {
+  "operations" = "operations",
+  "product" = "product",
+}
 export type OrganizationsRecord<Tsettings = unknown> = {
   active?: boolean;
   created: IsoAutoDateString;
   description?: HTMLString;
   id: string;
   logo?: FileNameString;
+  mode?: OrganizationsModeOptions;
   name: string;
   plan?: OrganizationsPlanOptions;
   settings?: null | Tsettings;
@@ -544,7 +550,8 @@ type ProcessCreateAndUpdateFields<T> = Omit<
     // Omit AutoDate fields
     [K in keyof T as Extract<T[K], IsoAutoDateString> extends never
       ? K
-      : never]: T[K] extends infer U // Convert FileNameString to File
+      : never]: // Convert FileNameString to File
+    T[K] extends infer U
       ? U extends FileNameString | FileNameString[]
         ? U extends any[]
           ? File[]

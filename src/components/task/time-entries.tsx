@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
 import { IconClock, IconEdit, IconTrash } from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { TimeEntryDialog } from "@/components/task/time-entry-dialog";
@@ -13,12 +13,12 @@ import {
 } from "@/hooks";
 import { formatDateISO, formatTaskDate } from "@/lib/date-utils";
 import { handlePocketBaseError } from "@/lib/error-handler";
-import { formatTimeSpent } from "@/lib/time-utils";
-import { formatUserName } from "@/lib/utils";
 import type {
   TimeEntriesResponse,
   UsersResponse,
 } from "@/lib/pocketbase-types";
+import { formatTimeSpent } from "@/lib/time-utils";
+import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
 type TimeEntriesProps = {
@@ -71,7 +71,7 @@ export function TimeEntries({
           note: payload.note,
         },
       });
-      toast.success("ورودی زمانی به‌روزرسانی شد");
+      toast.success(tasks.details.timeTracking.updateSuccess);
       setEditingEntry(null);
     } catch (error) {
       handlePocketBaseError(error as Error);
@@ -80,7 +80,7 @@ export function TimeEntries({
 
   const handleDelete = (entryId: string) => {
     deleteTimeEntry.mutate(entryId, {
-      onSuccess: () => toast.success("ورودی زمانی حذف شد"),
+      onSuccess: () => toast.success(tasks.details.timeTracking.deleteSuccess),
       onError: (error: unknown) => handlePocketBaseError(error as Error),
     });
   };
@@ -88,7 +88,7 @@ export function TimeEntries({
   if (isLoading) {
     return (
       <p className="text-muted-foreground text-right text-sm">
-        در حال بارگذاری ورودی‌های زمانی...
+        {tasks.details.timeTracking.loading}
       </p>
     );
   }

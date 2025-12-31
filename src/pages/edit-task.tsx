@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IconLoader2,
-  IconDeviceFloppy,
-  IconTerminal2,
+  IconActivity,
   IconArrowLeft,
   IconCpu,
-  IconActivity,
+  IconDeviceFloppy,
+  IconLoader2,
+  IconTerminal2,
 } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -13,11 +13,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { TaskFields } from "@/components/forms/task-fields";
 import {
-  taskFormSchema,
   type TaskFormData,
+  taskFormSchema,
 } from "@/components/forms/task-fields-schema";
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";

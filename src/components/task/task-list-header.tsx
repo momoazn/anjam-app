@@ -1,3 +1,5 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconHash } from "@tabler/icons-react";
 import {
   Check,
   ChevronDown,
@@ -18,8 +20,6 @@ import { task, tasks } from "@/constants";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconHash } from "@tabler/icons-react";
 
 export type TaskSortMode = "default" | "priority" | "date";
 
@@ -78,7 +78,7 @@ export function TaskListHeader({
             <div className="flex items-center gap-2 opacity-40">
               <IconHash className="size-3" />
               <span className="text-[10px] font-bold tracking-tight">
-                {status}
+                {tasks.filters.status}
               </span>
             </div>
             <h2 className="text-xl font-bold tracking-tight">

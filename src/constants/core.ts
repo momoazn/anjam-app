@@ -2,6 +2,7 @@
 
 export const app = {
   name: "انجام",
+  description: "مدیریت تسک‌ها",
 } as const;
 
 // Shared constants used across multiple modules
@@ -56,6 +57,10 @@ export const shared = {
   name: "نام",
   code: "کد",
   description: "توضیحات",
+  action: "عملیات",
+  resource: "منبع",
+  previous: "قبلی",
+  next: "بعدی",
   status: "وضعیت",
   priority: "اولویت",
   assignee: "مسئول",
@@ -77,8 +82,6 @@ export const shared = {
   no: "خیر",
   total: "کل",
   today: "امروز",
-  previous: "قبلی",
-  next: "بعدی",
   more: "بیشتر",
   preview: "پیش‌نمایش",
   confirm: "تایید",
@@ -134,6 +137,7 @@ export const common = {
     yes: shared.yes,
     no: shared.no,
     multiSelect: "انتخاب چندتایی",
+    selectionMode: "حالت انتخاب",
     cancelSelection: "لغو انتخاب",
     backToList: "بازگشت به لیست",
     back: shared.back,
@@ -141,6 +145,7 @@ export const common = {
   },
   connectors: {
     and: "و",
+    to: "تا",
   },
 
   // Validation messages
@@ -228,6 +233,7 @@ export const navigationLabels = {
   status: "وضعیت",
   workspace: "فضای کاری",
   admin: "مدیریت",
+  index: "شاخص",
 } as const;
 
 export const themeLabels = {

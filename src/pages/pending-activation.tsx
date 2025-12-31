@@ -1,14 +1,14 @@
-import { useNavigate } from "react-router-dom";
 import {
   IconClock,
+  IconLock,
   IconMail,
   IconShieldCheck,
-  IconLock,
 } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/page-transition";
-import { users as usersText, app } from "@/constants";
+import { Button } from "@/components/ui/button";
+import { app, users as usersText } from "@/constants";
 
 export default function PendingActivation() {
   const navigate = useNavigate();

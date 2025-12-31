@@ -1,23 +1,21 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { format } from "date-fns-jalali";
 import {
-  IconPencil,
-  IconDotsVertical,
-  IconTrash,
-  IconClock,
   IconCheck,
-  IconX,
-  IconLoader2,
+  IconClock,
   IconCornerUpLeft,
-  IconPaperclip,
-  IconPhoto,
-  IconFileTypePdf,
-  IconFile,
+  IconDotsVertical,
   IconDownload,
+  IconFile,
+  IconFileTypePdf,
+  IconLoader2,
+  IconPaperclip,
+  IconPencil,
+  IconPhoto,
+  IconTrash,
+  IconX,
 } from "@tabler/icons-react";
+import { format } from "date-fns-jalali";
 import { useEffect, useRef, useState } from "react";
-
-import { pb } from "@/lib/pocketbase";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,10 +31,12 @@ import {
   useSoftDeleteComment,
   useUpdateComment,
 } from "@/hooks/comments";
-import { useAuthUser } from "@/store/auth-store";
-import { cn } from "@/lib/utils";
-import { UserAvatar } from "../user-avatar";
 import { handlePocketBaseError } from "@/lib/error-handler";
+import { pb } from "@/lib/pocketbase";
+import { cn } from "@/lib/utils";
+import { useAuthUser } from "@/store/auth-store";
+
+import { UserAvatar } from "../user-avatar";
 
 const formatCommentDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -308,8 +308,10 @@ export function CommentItem({
                   className="border-border/40 rounded-lg text-[10px] font-bold tracking-tight"
                   onClick={onToggleThread}
                 >
-                  {isCollapsed ? "نمایش" : "پنهان‌سازی"} (
-                  {digitsEnToFa(replyCount)})
+                  {isCollapsed
+                    ? commentsConst.item.show
+                    : commentsConst.item.hide}{" "}
+                  ({digitsEnToFa(replyCount)})
                 </Button>
               )}
             </div>
@@ -444,7 +446,7 @@ export function CommentItem({
                               className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
                             >
                               <IconDownload className="size-3" />
-                              Download
+                              {commentsConst.item.download}
                             </a>
                             <a
                               href={fileUrl}
@@ -453,7 +455,7 @@ export function CommentItem({
                               className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
                             >
                               <IconPaperclip className="size-3" />
-                              View
+                              {commentsConst.item.view}
                             </a>
                           </div>
                         </div>

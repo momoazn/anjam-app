@@ -1,20 +1,22 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconClock, IconHash, IconTarget } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/user-avatar";
+import { dashboard } from "@/constants";
 import { formatDateShort } from "@/lib/date-utils";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
 import {
+  getStatusColorVariant,
   priorityColors,
   priorityIcons,
-  getStatusColorVariant,
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { UserAvatar } from "@/components/user-avatar";
-import { useNavigate } from "react-router-dom";
-import { IconHash, IconClock, IconTarget } from "@tabler/icons-react";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface BoardCardProps {
   task: TaskWithProject;
@@ -72,7 +74,9 @@ export function BoardCard({ task }: BoardCardProps) {
       <div className="relative z-10 flex w-full items-start justify-between gap-2">
         <div className="flex items-center gap-1.5 opacity-40">
           <IconHash className="size-3" />
-          <span className="text-[10px] font-bold">{task.display_id}</span>
+          <span className="text-[10px] font-bold">
+            {digitsEnToFa(task.display_id)}
+          </span>
         </div>
         <div
           className={cn(
@@ -113,14 +117,12 @@ export function BoardCard({ task }: BoardCardProps) {
             )}
           </div>
 
-          {task.expand?.project && (
-            <div className="flex items-center gap-1 opacity-40">
-              <IconTarget className="size-3" />
-              <span className="max-w-[100px] truncate text-[10px] font-bold">
-                {task.expand.project.name}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-1 opacity-40">
+            <IconTarget className="size-3" />
+            <span className="max-w-[100px] truncate text-[10px] font-bold">
+              {task.expand?.project?.name || dashboard.cards.noProject}
+            </span>
+          </div>
         </div>
 
         {task.deadline && (

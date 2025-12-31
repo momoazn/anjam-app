@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   Select,
   SelectContent,
@@ -9,12 +16,6 @@ import {
 } from "@/components/ui/select";
 import { reports } from "@/constants";
 import type { EmployeeBucket } from "@/lib/reports";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 type Props = {
   buckets: EmployeeBucket[];

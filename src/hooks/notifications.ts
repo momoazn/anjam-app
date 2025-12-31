@@ -1,20 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
-import { useAuthUser } from "@/store/auth-store";
-import { createMutation } from "./use-mutation-factory";
-import { queryKeys } from "./query-keys";
+
 import {
+  deleteMultipleNotifications,
+  deleteNotification,
+  fetchAllNotifications,
+  fetchReadNotifications,
+  fetchUnreadNotifications,
   fetchUserNotifications,
   markAsRead,
   markMultipleAsRead,
-  deleteNotification,
-  deleteMultipleNotifications,
   subscribeToNotifications,
   unsubscribeFromNotifications,
-  fetchUnreadNotifications,
-  fetchAllNotifications,
-  fetchReadNotifications,
 } from "@/lib/notifications-utils";
+import { useAuthUser } from "@/store/auth-store";
+
+import { queryKeys } from "./query-keys";
+import { createMutation } from "./use-mutation-factory";
 
 export function useNotifications() {
   const user = useAuthUser();

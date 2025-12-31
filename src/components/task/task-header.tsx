@@ -1,11 +1,12 @@
-import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { common, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { cn } from "@/lib/utils";
+import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
+
 import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 import { IconBox } from "@/components/recipes/icon-box";
 import { Toolbar, ToolbarSeparator } from "@/components/recipes/toolbar";
+import { Button } from "@/components/ui/button";
+import { common, system, tasks } from "@/constants";
+import { cn } from "@/lib/utils";
 
 type TaskHeaderProps = {
   totalTasks: number;
@@ -32,7 +33,7 @@ export function TaskHeader({
           <div className="flex flex-col">
             <div className="flex items-center gap-2 opacity-40">
               <span className="font-mono text-[10px] font-bold tracking-tight">
-                System Registry
+                {system.registry}
               </span>
               <div className="bg-foreground/20 h-px w-8" />
             </div>

@@ -1,13 +1,14 @@
-import { cn } from "@/lib/utils";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { reports } from "@/constants";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   IconActivity,
+  IconAlertTriangle,
   IconCircleCheck,
   IconClock,
-  IconAlertTriangle,
 } from "@tabler/icons-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { reports } from "@/constants";
+import { cn } from "@/lib/utils";
 
 interface MetricCard {
   id: string;
@@ -84,7 +85,7 @@ export function ReportsMetricCards({
           key={card.id}
           className="border-border/40 overflow-hidden rounded-2xl shadow-sm transition-all hover:scale-[1.02]"
         >
-          <CardContent className="bg-border/40 bg-card flex items-center justify-between p-8">
+          <CardContent className="bg-border/40 flex items-center justify-between p-8">
             <div className="space-y-3">
               <p className="text-muted-foreground text-xs font-medium tracking-tight">
                 {card.label}

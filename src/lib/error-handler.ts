@@ -1,6 +1,8 @@
 import { toast } from "sonner";
+
 import { auth, errors } from "@/constants";
-import { logError, logDebug } from "./logger";
+
+import { logDebug, logError } from "./logger";
 
 type ValidationError = {
   code: string;

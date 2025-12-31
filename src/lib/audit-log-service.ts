@@ -4,19 +4,17 @@
  * Provides type-safe functions for fetching audit logs with filtering and pagination.
  * Includes sensitive field masking for security.
  */
-
 /**
  * Audit Log Service
  *
  * Provides type-safe functions for fetching audit logs with filtering and pagination.
  * Includes sensitive field masking for security.
  */
-
 import { pb } from "./pocketbase";
 import type {
-  AuditLogsResponse,
   AuditLogsActionOptions,
   AuditLogsClientOptions,
+  AuditLogsResponse,
   UsersResponse,
 } from "./pocketbase-types";
 

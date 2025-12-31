@@ -7,7 +7,13 @@ export const create = {
 } as const;
 
 export const search = {
+  title: "جستجوی سراسری",
   placeholder: "جستجو در تسک‌ها و پروژه‌ها...",
+  tasks: "تسک‌ها",
+  projects: "پروژه‌ها",
+  select: "انتخاب",
+  close: "بستن",
+  globalSearch: "جستجوی سراسری",
 } as const;
 
 export const header = {
@@ -110,10 +116,22 @@ export const myTasks = {
   },
 } as const;
 
+export const inbox = {
+  title: "صندوق ورودی",
+  description: "پیگیری تسک‌ها و به‌روزرسانی‌های شما",
+  loading: "در حال بارگذاری صندوق ورودی...",
+  noRecentUpdates: "هیچ به‌روزرسانی در ۷ روز گذشته وجود ندارد",
+  sections: {
+    assigned: "اختصاص داده شده به من",
+    mentioned: "اشاره شده",
+    recentlyUpdated: "اخیراً به‌روز شده",
+  },
+} as const;
+
 // Project Status Settings
 export const projectStatuses = {
   settings: {
-    title: "Project_Statuses",
+    title: "وضعیت‌های پروژه",
     addStatus: "افزودن وضعیت",
     placeholder: "نام وضعیت",
   },
@@ -151,9 +169,9 @@ export const projectRoles = {
     viewer: "دسترسی فقط خواندنی",
   },
   labels: {
-    owner: "Owner",
-    admin: "Admin",
-    member: "Member",
-    viewer: "Viewer",
+    owner: "مالک",
+    admin: "ادمین",
+    member: "عضو",
+    viewer: "مشاهده‌گر",
   },
 } as const;

@@ -1,6 +1,8 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
+import type { OrgFeatures, OrgMode } from "@/lib/mode-features";
+import { getOrgFeatures } from "@/lib/mode-features";
 import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationsResponse,
@@ -8,6 +10,17 @@ import type {
 } from "@/lib/pocketbase-types";
 
 type OrgRole = "owner" | "admin" | "member";
+
+/**
+ * Organization settings type for mode features
+ */
+interface OrganizationSettings {
+  modeSettings?: {
+    features?: {
+      calendar?: boolean;
+    };
+  };
+}
 
 interface OrganizationWithRole {
   organization: OrganizationsResponse;
@@ -37,6 +50,10 @@ interface AuthState {
   currentOrgRole: OrgRole | null;
   userOrganizations: OrganizationWithRole[];
 
+  // Mode context (NEW)
+  currentOrgMode: OrgMode | null;
+  currentOrgFeatures: OrgFeatures;
+
   // Loading states
   isLoading: boolean;
   isLoadingOrgs: boolean;
@@ -64,6 +81,8 @@ export const useAuthStore = create<AuthState>()(
       currentOrganization: null,
       currentOrgRole: null,
       userOrganizations: [],
+      currentOrgMode: null, // NEW
+      currentOrgFeatures: getOrgFeatures(undefined), // NEW
       isLoading: false,
       isLoadingOrgs: false,
 
@@ -94,9 +113,16 @@ export const useAuthStore = create<AuthState>()(
 
       // Set current organization context
       setCurrentOrganization: (org, role) => {
+        const mode = org?.mode ?? null;
+        // Cast settings to the expected type
+        const settings = org?.settings as OrganizationSettings | undefined;
+        const features = getOrgFeatures(mode, settings);
+
         set({
           currentOrganization: org,
           currentOrgRole: role,
+          currentOrgMode: mode,
+          currentOrgFeatures: features,
         });
       },
 
@@ -125,9 +151,19 @@ export const useAuthStore = create<AuthState>()(
 
           const { currentOrganization } = get();
           if (!currentOrganization && orgs.length > 0) {
+            const firstOrg = orgs[0].organization;
+            const mode = firstOrg.mode ?? null;
+            // Cast settings to the expected type
+            const settings = firstOrg.settings as
+              | OrganizationSettings
+              | undefined;
+            const features = getOrgFeatures(mode, settings);
+
             set({
-              currentOrganization: orgs[0].organization,
+              currentOrganization: firstOrg,
               currentOrgRole: orgs[0].role,
+              currentOrgMode: mode,
+              currentOrgFeatures: features,
             });
           }
         } catch (error) {
@@ -147,9 +183,18 @@ export const useAuthStore = create<AuthState>()(
         );
 
         if (orgWithRole) {
+          const mode = orgWithRole.organization.mode ?? null;
+          // Cast settings to the expected type
+          const settings = orgWithRole.organization.settings as
+            | OrganizationSettings
+            | undefined;
+          const features = getOrgFeatures(mode, settings);
+
           set({
             currentOrganization: orgWithRole.organization,
             currentOrgRole: orgWithRole.role,
+            currentOrgMode: mode,
+            currentOrgFeatures: features,
           });
         }
       },
@@ -163,6 +208,8 @@ export const useAuthStore = create<AuthState>()(
           currentOrganization: null,
           currentOrgRole: null,
           userOrganizations: [],
+          currentOrgMode: null,
+          currentOrgFeatures: getOrgFeatures(undefined),
         });
       },
 
@@ -174,6 +221,8 @@ export const useAuthStore = create<AuthState>()(
           currentOrganization: null,
           currentOrgRole: null,
           userOrganizations: [],
+          currentOrgMode: null,
+          currentOrgFeatures: getOrgFeatures(undefined),
           isLoading: false,
           isLoadingOrgs: false,
         });
@@ -187,6 +236,7 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
         currentOrganization: state.currentOrganization,
         currentOrgRole: state.currentOrgRole,
+        userOrganizations: state.userOrganizations,
       }),
     },
   ),
@@ -234,3 +284,8 @@ export const useAuthActions = () => {
 
   return { login, logout, updateUser };
 };
+
+export const useCurrentOrgMode = () =>
+  useAuthStore((state) => state.currentOrgMode);
+export const useCurrentOrgFeatures = () =>
+  useAuthStore((state) => state.currentOrgFeatures);

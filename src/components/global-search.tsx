@@ -1,3 +1,11 @@
+import { IconActivity, IconHash, IconTarget } from "@tabler/icons-react";
+import { FileText, Folder, Loader2, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDebounce } from "use-debounce";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -9,14 +17,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { common, search } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
-import { useDebounce } from "use-debounce";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Folder, Loader2, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IconHash, IconTarget, IconActivity } from "@tabler/icons-react";
 
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
@@ -68,10 +69,10 @@ export function GlobalSearch() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl overflow-hidden rounded-xl border p-0 shadow-2xl">
-          <DialogTitle className="sr-only">Global Search</DialogTitle>
+          <DialogTitle className="sr-only">{search.title}</DialogTitle>
           <Command
             shouldFilter={false}
-            className="[&_[cmdk-group-heading]]:text-muted-foreground bg-transparent [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-input-wrapper]]:h-14 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:text-base [&_[cmdk-input]]:font-medium"
+            className="**:[[cmdk-group-heading]]:text-muted-foreground bg-transparent **:[[cmdk-group-heading]]:px-4 **:[[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-input-wrapper]]:h-14 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:text-base [&_[cmdk-input]]:font-medium"
           >
             <div className="relative flex items-center px-4">
               <Search className="text-muted-foreground/50 mr-3 size-5" />
@@ -83,7 +84,7 @@ export function GlobalSearch() {
               />
             </div>
 
-            <CommandList className="scrollbar-none max-h-[400px] overflow-y-auto p-2">
+            <CommandList className="scrollbar-none max-h-100 overflow-y-auto p-2">
               {isLoading && (
                 <div className="flex flex-col items-center justify-center py-12">
                   <Loader2 className="text-primary/40 size-8 animate-spin" />
@@ -105,7 +106,7 @@ export function GlobalSearch() {
               {data && hasResults && (
                 <div className="space-y-1">
                   {taskResults.length > 0 && (
-                    <CommandGroup heading="Tasks">
+                    <CommandGroup heading={search.tasks}>
                       {taskResults.map((task) => (
                         <CommandItem
                           key={task.id}
@@ -148,7 +149,7 @@ export function GlobalSearch() {
                   )}
 
                   {projectResults.length > 0 && (
-                    <CommandGroup heading="Projects">
+                    <CommandGroup heading={search.projects}>
                       {projectResults.map((project) => (
                         <CommandItem
                           key={project.id}
@@ -190,7 +191,7 @@ export function GlobalSearch() {
                     ENTER
                   </kbd>
                   <span className="text-muted-foreground text-[10px] font-bold">
-                    Select
+                    {search.select}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -198,12 +199,12 @@ export function GlobalSearch() {
                     ESC
                   </kbd>
                   <span className="text-muted-foreground text-[10px] font-bold">
-                    Close
+                    {search.close}
                   </span>
                 </div>
               </div>
               <span className="text-muted-foreground/40 text-[10px] font-bold">
-                Global Search
+                {search.globalSearch}
               </span>
             </div>
           </Command>

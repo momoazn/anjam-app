@@ -1,8 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { PageTransition } from "@/components/page-transition";
-import { navigation, notFound, app } from "@/constants";
-import { Link } from "react-router-dom";
 import { IconAlertTriangle, IconSearch } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
+
+import { PageTransition } from "@/components/page-transition";
+import { Button } from "@/components/ui/button";
+import { app, navigation, notFound } from "@/constants";
 
 export default function NotFound() {
   return (

@@ -1,12 +1,12 @@
-import { ChevronLeft, Target, Hash } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { ChevronLeft, Hash, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { dashboard, reports } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type Project = {
   id: string;
@@ -87,7 +87,7 @@ export function ProjectsWidget({
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                    Project {idx + 1}
+                    {dashboard.project} {digitsEnToFa(idx + 1)}
                   </span>
                   <CardTitle className="text-lg font-bold tracking-tight">
                     {project.name}
@@ -140,7 +140,7 @@ export function ProjectsWidget({
                 <div className="flex items-center gap-1.5">
                   <Hash className="text-primary size-2.5" />
                   <span className="text-muted-foreground text-[10px] font-medium">
-                    PRJ-{project.id.slice(0, 4).toUpperCase()}
+                    {dashboard.project}-{project.id.slice(0, 4).toUpperCase()}
                   </span>
                 </div>
               </div>

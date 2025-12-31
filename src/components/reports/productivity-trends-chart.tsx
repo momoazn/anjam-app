@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
+
 import { Badge } from "@/components/ui/badge";
-import { reports } from "@/constants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Line, LineChart, XAxis, YAxis, ReferenceLine } from "recharts";
+import { reports } from "@/constants";
 
 type Props = {
   historical: Array<{ key: string; label: string; count: number }>;

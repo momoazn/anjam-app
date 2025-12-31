@@ -20,16 +20,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
 import {
   navigation,
   user as userLabels,
   users as usersText,
 } from "@/constants";
 import type { UsersRecord } from "@/lib/pocketbase-types";
-import { useAuthActions, useAuthUser } from "@/store/auth-store";
-import { UserAvatar } from "./user-avatar";
 import { cn } from "@/lib/utils";
+import { useAuthActions, useAuthUser } from "@/store/auth-store";
+
+import { UserAvatar } from "./user-avatar";
 
 type UserInfoProps = {
   user: UsersRecord;

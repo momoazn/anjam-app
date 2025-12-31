@@ -1,6 +1,6 @@
-import type { TaskWithProject } from "@/lib/pocketbase";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
+
 import {
   ALL_FILTER_VALUE,
   DEFAULT_TASK_FILTERS,
@@ -9,6 +9,7 @@ import {
   isValidStatus,
 } from "@/lib/filter-utils";
 import type { TaskFilterValues } from "@/lib/filter-utils";
+import type { TaskWithProject } from "@/lib/pocketbase";
 
 export { ALL_FILTER_VALUE, DEFAULT_TASK_FILTERS };
 export type { TaskFilterValues };

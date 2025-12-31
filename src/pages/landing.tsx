@@ -1,3 +1,4 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   BarChart3,
   Clock,
@@ -13,10 +14,9 @@ import { Link } from "react-router-dom";
 
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { useAuthIsLoggedIn } from "@/store/auth-store";
-import { useTheme } from "@/hooks/use-theme";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { landing } from "@/constants";
+import { useTheme } from "@/hooks/use-theme";
+import { useAuthIsLoggedIn } from "@/store/auth-store";
 
 const LandingPage = () => {
   const isLoggedIn = useAuthIsLoggedIn();
@@ -29,15 +29,15 @@ const LandingPage = () => {
     >
       {/* Background Grid */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.15] dark:opacity-20">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[40px_40px]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-100px,oklch(0.45_0.12_250/0.15),transparent)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(var(--color-foreground)_1px,transparent_1px)] bg-[size:20px_20px] opacity-5"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(var(--color-foreground)_1px,transparent_1px)] bg-size-[20px_20px] opacity-5"></div>
       </div>
 
       {/* Navigation */}
       <nav className="border-border/40 bg-background/40 relative z-20 mx-auto flex max-w-7xl items-center justify-between border-b px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <Logo size={28} />
+          <Logo size={40} />
           <div className="flex flex-col text-right">
             <span className="font-arad text-[14px] leading-none font-bold tracking-tight">
               {landing.brandName}
@@ -77,7 +77,7 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <header className="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pt-24 pb-12 text-center">
-        <h1 className="animate-in fade-in slide-in-from-bottom-8 from-foreground via-foreground to-foreground/60 relative mb-6 bg-gradient-to-b bg-clip-text text-5xl font-bold tracking-tight text-transparent delay-200 duration-1000 md:text-7xl">
+        <h1 className="animate-in fade-in slide-in-from-bottom-8 from-foreground via-foreground to-foreground/60 relative mb-6 bg-linear-to-b bg-clip-text text-5xl font-bold tracking-tight text-transparent delay-200 duration-1000 md:text-7xl">
           {landing.shortBrandName}
         </h1>
 
@@ -104,7 +104,7 @@ const LandingPage = () => {
         </div>
 
         {/* Hero Visual - Dashboard UI Mock */}
-        <div className="group animate-in fade-in zoom-in-95 relative mt-20 aspect-[16/10] w-full max-w-4xl delay-700 duration-1000">
+        <div className="group animate-in fade-in zoom-in-95 relative mt-20 aspect-16/10 w-full max-w-4xl delay-700 duration-1000">
           <div className="bg-card relative flex h-full w-full flex-col overflow-hidden rounded-2xl border shadow-2xl">
             {/* Mock UI Header */}
             <div className="border-border/40 bg-muted/20 flex h-12 shrink-0 items-center justify-between border-b px-6">
@@ -177,7 +177,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className="from-card pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent to-transparent"></div>
+            <div className="from-card pointer-events-none absolute inset-0 bg-linear-to-t via-transparent to-transparent"></div>
           </div>
         </div>
       </header>
@@ -301,7 +301,7 @@ const LandingPage = () => {
           ].map((feature) => (
             <div
               key={feature.id}
-              className="group bg-card hover:bg-primary/[0.02] relative overflow-hidden rounded-2xl border p-10 text-right transition-all duration-500"
+              className="group bg-card hover:bg-primary/2 relative overflow-hidden rounded-2xl border p-10 text-right transition-all duration-500"
             >
               <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-8 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-500">
                 {feature.icon}
@@ -321,7 +321,7 @@ const LandingPage = () => {
       <section className="relative z-10 px-6 py-24">
         <div className="group bg-primary relative mx-auto max-w-5xl overflow-hidden rounded-3xl p-16 text-center shadow-2xl md:p-28">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)]"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.03]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-size-[40px_40px] opacity-[0.03]"></div>
 
           <div className="relative z-10">
             <h2 className="mb-8 text-5xl font-bold tracking-tight text-white md:text-7xl">

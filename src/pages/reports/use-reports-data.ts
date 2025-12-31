@@ -1,7 +1,8 @@
-import { useMemo } from "react";
-import { pb, ProjectWithSupervisor } from "@/lib/pocketbase";
-import { useProjects, useTasks, useUsers, queryKeys } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+
+import { queryKeys, useProjects, useTasks, useUsers } from "@/hooks";
+import { ProjectWithSupervisor, pb } from "@/lib/pocketbase";
 
 export function useReportsData() {
   const { data: tasksResult, isPending: tasksPending } = useTasks({

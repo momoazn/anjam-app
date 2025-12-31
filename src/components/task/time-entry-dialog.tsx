@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { zodResolver } from "@hookform/resolvers/zod";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -22,11 +26,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { parseTimeInput, minutesToHoursAndMinutes } from "@/lib/time-utils";
 import { common, task, tasks } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { AlertTriangle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
 
 const timeEntrySchema = z.object({
   hours: z
@@ -181,7 +182,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(15)}
                 >
-                  +15{task.min}
+                  +{digitsEnToFa(15)}
+                  {task.min}
                 </Button>
                 <Button
                   type="button"
@@ -189,7 +191,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(30)}
                 >
-                  +30{task.min}
+                  +{digitsEnToFa(30)}
+                  {task.min}
                 </Button>
                 <Button
                   type="button"
@@ -197,7 +200,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(60)}
                 >
-                  +1{task.hour}
+                  +{digitsEnToFa(1)}
+                  {task.hour}
                 </Button>
                 <Button
                   type="button"
@@ -205,7 +209,8 @@ export function TimeEntryDialog({
                   size="sm"
                   onClick={() => handleAddQuickTime(120)}
                 >
-                  +2{task.hour}
+                  +{digitsEnToFa(2)}
+                  {task.hour}
                 </Button>
               </div>
             </div>
@@ -219,7 +224,7 @@ export function TimeEntryDialog({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="یادداشت کوتاه درباره این ثبت"
+                      placeholder={tasks.details.timeEntries.notePlaceholder}
                       rows={3}
                       className="bg-muted/10 placeholder:text-muted-foreground text-sm"
                     />

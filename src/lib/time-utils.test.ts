@@ -1,10 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+import { task } from "@/constants";
+
 import {
   formatTimeSpent,
-  parseTimeInput,
   minutesToHoursAndMinutes,
+  parseTimeInput,
 } from "./time-utils";
-import { task } from "@/constants";
 
 // Mock the persian-tools module
 vi.mock("@persian-tools/persian-tools", () => ({

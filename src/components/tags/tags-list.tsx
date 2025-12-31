@@ -1,9 +1,9 @@
 import {
+  IconHash,
   IconPencil,
   IconPlus,
   IconTag,
   IconTrash,
-  IconHash,
 } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ const TagsListSkeleton = () => (
 const EmptyState = ({ onCreateClick }: { onCreateClick: () => void }) => (
   <div className="border-border/40 flex flex-col items-center justify-center rounded-3xl border border-dashed py-24 text-center">
     <div className="bg-muted/30 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
-      <IconTag className="text-muted-foreground/40 size-10 stroke-[1]" />
+      <IconTag className="text-muted-foreground/40 size-10 stroke-1" />
     </div>
     <h3 className="text-foreground mb-2 text-lg font-bold tracking-tight">
       {tagsManagement.noTags}

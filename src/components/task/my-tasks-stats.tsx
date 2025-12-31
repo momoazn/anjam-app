@@ -1,15 +1,15 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconActivity,
-  IconCircleCheck,
-  IconClock,
   IconAlertTriangle,
+  IconCircleCheck,
   IconCircleX,
+  IconClock,
 } from "@tabler/icons-react";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { common, myTasks as myTasksText } from "@/constants";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 
 export type MyTasksStatsValues = {
   total: number;

@@ -1,4 +1,6 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
+import { CalendarIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -9,8 +11,6 @@ import {
 } from "@/components/ui/popover";
 import { datePicker } from "@/constants";
 import { cn } from "@/lib/utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { CalendarIcon } from "lucide-react";
 
 type DatePickerProps = {
   date: Date | undefined;

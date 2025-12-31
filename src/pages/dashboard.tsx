@@ -6,16 +6,17 @@ import {
   startOfWeek,
 } from "date-fns-jalali";
 import { useMemo } from "react";
+
+import { ChartsWidget } from "@/components/dashboard/charts-widget";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { OverdueTasksWidget } from "@/components/dashboard/overdue-tasks-widget";
+import { ProductivityWidget } from "@/components/dashboard/productivity-widget";
+import { ProjectsWidget } from "@/components/dashboard/projects-widget";
 import { PageTransition } from "@/components/page-transition";
 import { tasks } from "@/constants";
 import { useNotifications, useProjects, useTasks } from "@/hooks";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { getStatusColorVariant } from "@/lib/status-utils";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { ProductivityWidget } from "@/components/dashboard/productivity-widget";
-import { ProjectsWidget } from "@/components/dashboard/projects-widget";
-import { ChartsWidget } from "@/components/dashboard/charts-widget";
-import { OverdueTasksWidget } from "@/components/dashboard/overdue-tasks-widget";
 
 export default function Dashboard() {
   const { data: userTasksResult, isPending: isLoadingTasks } = useTasks({

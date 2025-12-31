@@ -1,5 +1,4 @@
 // Organization domain constants (users, projects)
-
 import { shared } from "./core";
 
 // User management module constants
@@ -7,6 +6,7 @@ export const users = {
   title: "کاربران",
   list: {
     count: "{count} کاربر",
+    loading: "در حال بارگذاری کاربران...",
   },
   table: {
     columns: {

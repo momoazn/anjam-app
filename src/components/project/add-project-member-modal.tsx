@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
 import { IconTerminal, IconX } from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ProjectRoleInfo } from "@/components/project/project-role-info";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -10,11 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { projects, common } from "@/constants";
+import {
+  common,
+  projectRoles as projectRoleLabels,
+  projects,
+} from "@/constants";
 import { useOrganizationMembers } from "@/hooks";
 import { useAddProjectMember } from "@/hooks/project-members";
 import { formatUserName } from "@/lib/utils";
-import { ProjectRoleInfo } from "@/components/project/project-role-info";
 
 const projectRoles = ["owner", "admin", "member", "viewer"] as const;
 
@@ -147,7 +151,11 @@ export function AddProjectMemberModal({
                     value={role}
                     className="text-right text-[10px] font-bold"
                   >
-                    {role}
+                    {
+                      projectRoleLabels.labels[
+                        role as keyof typeof projectRoleLabels.labels
+                      ]
+                    }
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -156,7 +164,7 @@ export function AddProjectMemberModal({
 
           <div className="space-y-3">
             <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-              Role Matrix
+              ماتریس نقش‌ها
             </span>
             <div className="space-y-2">
               {projectRoles.map((role) => (

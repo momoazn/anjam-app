@@ -1,3 +1,5 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconClock, IconDownload, IconHistory } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   eachDayOfInterval,
@@ -7,16 +9,15 @@ import {
   startOfWeek,
 } from "date-fns";
 import { faIR } from "date-fns/locale";
-import { IconClock, IconDownload, IconHistory } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
-import { PageTransition } from "@/components/page-transition";
+import { Link } from "react-router-dom";
+
 import { PageHeader } from "@/components/page-header";
-import { common, reports, timesheet, navigationLabels } from "@/constants";
+import { PageTransition } from "@/components/page-transition";
+import { Button } from "@/components/ui/button";
+import { common, navigationLabels, reports, timesheet } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { useAuthStore } from "@/store/auth-store";
-import { Link } from "react-router-dom";
 
 export default function TimesheetPage() {
   const { user } = useAuthStore();
@@ -133,11 +134,11 @@ export default function TimesheetPage() {
     <div className="flex items-center gap-4">
       <div className="border-border me-2 flex flex-col items-end border-e pe-4">
         <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
-          Weekly Total
+          {timesheet.weeklyTotal}
         </span>
         <div className="text-primary text-right text-sm font-bold tabular-nums">
-          {digitsEnToFa(weeklyTotalTime.hours)}h{" "}
-          {digitsEnToFa(weeklyTotalTime.minutes)}m
+          {digitsEnToFa(weeklyTotalTime.hours)} {timesheet.hoursUnit}{" "}
+          {digitsEnToFa(weeklyTotalTime.minutes)} {timesheet.minutesUnit}
         </div>
       </div>
       <Button
@@ -198,7 +199,7 @@ export default function TimesheetPage() {
           {tasksByDay.map(({ date, tasks: dayTasks, totalTime }) => (
             <div
               key={date.toISOString()}
-              className="bg-card border-border flex min-h-[400px] flex-col overflow-hidden rounded-xl border shadow-sm"
+              className="bg-card border-border flex min-h-100 flex-col overflow-hidden rounded-xl border shadow-sm"
             >
               <div className="bg-muted/30 border-border border-b p-4 text-right">
                 <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
@@ -213,8 +214,8 @@ export default function TimesheetPage() {
                   <div className="text-primary mt-3 flex items-center justify-end gap-1.5">
                     <IconClock className="size-3.5" />
                     <span className="text-xs font-bold tabular-nums">
-                      {digitsEnToFa(totalTime.hours)}h{" "}
-                      {digitsEnToFa(totalTime.minutes)}m
+                      {digitsEnToFa(totalTime.hours)} {timesheet.hoursUnit}{" "}
+                      {digitsEnToFa(totalTime.minutes)} {timesheet.minutesUnit}
                     </span>
                   </div>
                 ) : (
@@ -246,8 +247,9 @@ export default function TimesheetPage() {
                           <IconClock className="size-3" />
                           <span className="text-[10px] font-bold tabular-nums">
                             {tTime.hours > 0 &&
-                              `${digitsEnToFa(tTime.hours)}h `}
-                            {digitsEnToFa(tTime.minutes)}m
+                              `${digitsEnToFa(tTime.hours)} ${timesheet.hoursUnit} `}
+                            {digitsEnToFa(tTime.minutes)}{" "}
+                            {timesheet.minutesUnit}
                           </span>
                         </div>
                       </div>

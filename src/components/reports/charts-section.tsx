@@ -1,14 +1,38 @@
-import { Suspense, lazy } from "react";
-import type { ReactNode } from "react";
 import {
+  IconActivity,
+  IconChartPie,
   IconInfoCircle,
   IconTerminal,
-  IconChartPie,
-  IconUsers,
   IconUser,
-  IconActivity,
+  IconUsers,
 } from "@tabler/icons-react";
 import { isWithinInterval } from "date-fns-jalali";
+import { Suspense, lazy } from "react";
+import type { ReactNode } from "react";
+
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { reports } from "@/constants";
+import type { TaskWithProject } from "@/lib/pocketbase";
+import type {
+  TasksPriorityOptions,
+  UsersResponse,
+} from "@/lib/pocketbase-types";
+import type {
+  EmployeeBucket,
+  buildLeaderboard,
+  computeEmployeeSummary,
+  computeOvertimeAnalysis,
+  computeProductivityTrends,
+  computeTeamAverages,
+  computeWorkloadDistribution,
+} from "@/lib/reports";
 
 const Leaderboard = lazy(() =>
   import("@/components/reports/leaderboard").then((m) => ({
@@ -55,29 +79,6 @@ const WorkloadDistributionChart = lazy(() =>
     default: m.WorkloadDistributionChart,
   })),
 );
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { reports } from "@/constants";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type {
-  TasksPriorityOptions,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
-import type {
-  buildLeaderboard,
-  EmployeeBucket,
-  computeEmployeeSummary,
-  computeOvertimeAnalysis,
-  computeProductivityTrends,
-  computeTeamAverages,
-  computeWorkloadDistribution,
-} from "@/lib/reports";
 
 type TimelinessKey = "on_time" | "overdue" | "no_deadline";
 
@@ -302,7 +303,7 @@ export function ChartsSection({
         <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-xl border md:grid-cols-2">
           <div className="bg-card p-8">
             <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
-              Overtime_Analysis
+              {reports.charts.employee.overtimeAnalysis.title}
             </h3>
             <Suspense
               fallback={<Skeleton className="h-80 w-full rounded-xl" />}
@@ -314,7 +315,7 @@ export function ChartsSection({
           </div>
           <div className="bg-card p-8">
             <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
-              Workload_Distribution
+              {reports.charts.employee.workload.title}
             </h3>
             <Suspense
               fallback={<Skeleton className="h-80 w-full rounded-xl" />}
@@ -338,7 +339,7 @@ export function ChartsSection({
         <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-xl border md:grid-cols-2">
           <div className="bg-card p-8">
             <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
-              Productivity_Metric
+              {reports.charts.employee.productivityChart.title}
             </h3>
             <Suspense
               fallback={<Skeleton className="h-80 w-full rounded-xl" />}
@@ -372,7 +373,7 @@ export function ChartsSection({
 
           <div className="bg-card p-8">
             <h3 className="mb-6 text-xs font-bold tracking-tight opacity-40">
-              Benchmark_Comparison
+              {reports.charts.employee.benchmarkComparison.title}
             </h3>
             <Suspense
               fallback={<Skeleton className="h-80 w-full rounded-xl" />}
@@ -395,7 +396,7 @@ export function ChartsSection({
             <div className="mb-8 text-right">
               <div className="mb-1 flex items-center justify-end gap-2">
                 <span className="text-primary/60 text-[10px] font-bold tracking-tight">
-                  Trend_Analysis
+                  {reports.charts.employee.productivityTrends.analysis}
                 </span>
                 <IconActivity className="text-primary/40 size-3" />
               </div>
@@ -431,7 +432,7 @@ export function ChartsSection({
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
           <div className="bg-muted/5 border-border/40 rounded-xl border p-8">
             <h3 className="mb-8 text-xs font-bold tracking-tight opacity-40">
-              Overtime_
+              {reports.charts.employee.overtimeAnalysis.title}
             </h3>
             <Suspense
               fallback={<Skeleton className="h-80 w-full rounded-xl" />}
@@ -443,7 +444,7 @@ export function ChartsSection({
           </div>
           <div className="bg-muted/5 border-border/40 rounded-xl border p-8">
             <h3 className="mb-8 text-xs font-bold tracking-tight opacity-40">
-              Load_Balancing
+              {reports.charts.employee.workload.title}
             </h3>
             <Suspense
               fallback={<Skeleton className="h-80 w-full rounded-xl" />}

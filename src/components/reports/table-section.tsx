@@ -1,11 +1,11 @@
-import { Suspense } from "react";
 import { IconTable, IconTerminal } from "@tabler/icons-react";
+import { Suspense } from "react";
 
 import { EmployeePerformanceTable } from "@/components/reports/employee-performance-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { reports } from "@/constants";
-import type { EmployeeSummary } from "@/lib/reports";
 import type { UsersResponse } from "@/lib/pocketbase-types";
+import type { EmployeeSummary } from "@/lib/reports";
 
 type TableSectionProps = {
   summaries: EmployeeSummary[];
@@ -29,7 +29,7 @@ export function TableSection({
         <div className="flex items-center gap-2">
           <IconTable className="text-primary/60 size-4" />
           <h3 className="text-sm font-bold tracking-tight">
-            Employee_Performance_Matrix
+            {reports.charts.employee.performanceTable.title}
           </h3>
         </div>
         <div className="bg-border/20 h-px flex-1" />

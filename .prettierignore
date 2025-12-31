@@ -1,6 +1,2 @@
-pnpm-lock.yaml
-node_modules
-package-lock.json
-playwright-report
-test-results
-.playwright-mcp
+# Auto-generated file - never edit manually
+src/lib/pocketbase-types.ts

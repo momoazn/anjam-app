@@ -1,26 +1,31 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   IconArrowLeft,
   IconArrowRight,
   IconCheck,
-  IconPhotoPlus,
   IconFileDescription,
+  IconPhotoPlus,
   IconUserPlus,
 } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Logo } from "@/components/brand/logo";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PageTransition } from "@/components/page-transition";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/constants";
-import { pb } from "@/lib/pocketbase";
-import { useCurrentOrganization, useAuthStore } from "@/store/auth-store";
 import { queryKeys } from "@/hooks/query-keys";
 import { handlePocketBaseError } from "@/lib/error-handler";
+import { getHomeRoute } from "@/lib/mode-features";
+import { pb } from "@/lib/pocketbase";
+import {
+  useAuthStore,
+  useCurrentOrgMode,
+  useCurrentOrganization,
+} from "@/store/auth-store";
 
 const STEPS = [
   {
@@ -47,6 +52,7 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const currentOrg = useCurrentOrganization();
+  const mode = useCurrentOrgMode();
   const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -109,7 +115,7 @@ export default function Onboarding() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
       fetchOrgs();
-      navigate("/dashboard", { replace: true });
+      navigate(getHomeRoute(mode), { replace: true });
     },
     onError: (error) => {
       handlePocketBaseError(error);

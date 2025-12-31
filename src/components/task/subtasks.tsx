@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useMemo, useState } from "react";
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { DndContext, type DragEndEvent, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
   arrayMove,
@@ -15,19 +14,10 @@ import {
   IconTrash,
   IconUser,
 } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { tasks } from "@/constants";
-import {
-  useCreateSubtask,
-  useDeleteSubtask,
-  useProjectUsers,
-  useSubtasks,
-  useUpdateSubtask,
-} from "@/hooks";
-import { formatTaskDate } from "@/lib/date-utils";
-import { formatUserName, cn } from "@/lib/utils";
-import { handlePocketBaseError } from "@/lib/error-handler";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,10 +26,20 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { pb } from "@/lib/pocketbase";
-import { useQueryClient } from "@tanstack/react-query";
+import { tasks } from "@/constants";
+import {
+  useCreateSubtask,
+  useDeleteSubtask,
+  useProjectUsers,
+  useSubtasks,
+  useUpdateSubtask,
+} from "@/hooks";
 import { queryKeys } from "@/hooks/query-keys";
+import { formatTaskDate } from "@/lib/date-utils";
+import { handlePocketBaseError } from "@/lib/error-handler";
+import { pb } from "@/lib/pocketbase";
 import type { SubtasksResponse, UsersResponse } from "@/lib/pocketbase-types";
+import { cn, formatUserName } from "@/lib/utils";
 
 type SubtaskWithAssignee = SubtasksResponse<{ assignee?: UsersResponse }>;
 
@@ -175,7 +175,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   const handleCreate = () => {
     const title = newTitle.trim();
     if (!title) {
-      toast.error("عنوان مورد را وارد کنید");
+      toast.error(tasks.details.subtasks.titleRequired);
       return;
     }
     createSubtask.mutate(
@@ -192,7 +192,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
         onSuccess: () => {
           setNewTitle("");
           setNewAssignee("");
-          toast.success("مورد جدید اضافه شد");
+          toast.success(tasks.details.subtasks.addSuccess);
         },
         onError: (error: unknown) => {
           handlePocketBaseError(error as Error);
@@ -210,7 +210,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
 
   const handleDelete = (id: string) => {
     deleteSubtask.mutate(id, {
-      onSuccess: () => toast.success("مورد حذف شد"),
+      onSuccess: () => toast.success(tasks.details.subtasks.deleteSuccess),
       onError: (error: unknown) => handlePocketBaseError(error as Error),
     });
   };
@@ -235,7 +235,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
       const newIndex = items.findIndex((item) => item.id === over.id);
       const nextOrder = arrayMove(items, oldIndex, newIndex);
       persistOrder(nextOrder).catch(() => {
-        toast.error("به‌روزرسانی ترتیب ناموفق بود");
+        toast.error(tasks.details.subtasks.orderUpdateError);
       });
       return nextOrder;
     });
@@ -245,7 +245,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     <section className="space-y-4">
       <div className="flex items-center gap-4">
         <span className="text-primary/60 text-[10px] font-bold tracking-tight">
-          Work_Breakdown
+          {tasks.details.subtasks.workBreakdown}
         </span>
         <div className="bg-border/20 h-px flex-1" />
       </div>
@@ -316,7 +316,9 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
 
         <div className="mt-6 space-y-3">
           {isLoadingSubtasks ? (
-            <p className="text-muted-foreground">در حال بارگذاری...</p>
+            <p className="text-muted-foreground">
+              {tasks.details.timeTracking.loading}
+            </p>
           ) : ordered.length > 0 ? (
             <DndContext
               collisionDetection={closestCenter}
