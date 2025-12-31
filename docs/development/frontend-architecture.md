@@ -34,16 +34,15 @@ We use strict path aliases and standard libraries.
 
 ```tsx
 // UI Components from local shadcn library
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+// Data Fetching
+import { useMutation, useQuery } from "@tanstack/react-query";
 // Form Handling
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-// Data Fetching
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 ```
 
 ### Data Fetching (Hooks)

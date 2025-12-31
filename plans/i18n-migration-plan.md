@@ -218,6 +218,7 @@ src/
    ```typescript
    // src/hooks/use-i18n.ts
    import { useTranslation as useReactI18next } from "react-i18next";
+
    import type { TranslationKey } from "@/i18n/types";
 
    export function useTranslation(ns: string) {
@@ -384,8 +385,8 @@ export function TaskListItem({ task }) {
 
    ```typescript
    // Combines constants with i18n for lists that need labels
-   import { i18n } from "@/i18n/i18n";
    import { TASK_STATUSES } from "@/constants/tasks";
+   import { i18n } from "@/i18n/i18n";
 
    export function getTaskStatusOptions() {
      return Object.entries(TASK_STATUSES).map(([key, config]) => ({
@@ -466,8 +467,8 @@ export const TASK_PRIORITIES = {
 
 ```typescript
 // src/lib/constants-i18n.ts
+import { TASK_PRIORITIES, TASK_STATUSES } from "@/constants/tasks";
 import { i18n } from "@/i18n/i18n";
-import { TASK_STATUSES, TASK_PRIORITIES } from "@/constants/tasks";
 
 export function getTaskStatusOptions() {
   return Object.entries(TASK_STATUSES).map(([, config]) => ({
@@ -664,7 +665,8 @@ export function StatusBadge({ status }: { status: string }) {
 
   ```typescript
   // src/test/i18n-utils.test.ts
-  import { describe, it, expect } from "vitest";
+  import { describe, expect, it } from "vitest";
+
   import { validateTranslationKeys } from "@/test/i18n-utils";
 
   describe("i18n translations", () => {

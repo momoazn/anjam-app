@@ -412,7 +412,6 @@ export function getDefaultTaskStatus(mode: OrgMode | undefined): string {
  * Provides UI label overrides based on organization mode.
  * Centralizes all user-facing text that differs between modes.
  */
-
 import type { OrgMode } from "./mode-features";
 
 /**
@@ -489,7 +488,7 @@ return <h1>{labels.tasks}</h1>;  // Renders "Issues" in product, "Tasks" in oper
 **Line ~8 - Add imports:**
 
 ```typescript
-import type { OrgMode, OrgFeatures } from "@/lib/mode-features";
+import type { OrgFeatures, OrgMode } from "@/lib/mode-features";
 import { getOrgFeatures } from "@/lib/mode-features";
 ```
 
@@ -701,9 +700,9 @@ pb.beforeSend = function (url, options) {
 **Add imports at line ~30:**
 
 ```typescript
-import { useCurrentOrgFeatures, useCurrentOrgMode } from "./store/auth-store";
 import type { FeatureKey } from "./lib/mode-features";
-import { isFeatureEnabled, getHomeRoute } from "./lib/mode-features";
+import { getHomeRoute, isFeatureEnabled } from "./lib/mode-features";
+import { useCurrentOrgFeatures, useCurrentOrgMode } from "./store/auth-store";
 ```
 
 **Add component after PermissionProtectedRoute (line ~296):**
@@ -930,10 +929,11 @@ navigate(getHomeRoute(mode));
 **Add imports at line ~33:**
 
 ```typescript
-import { useCurrentOrgMode, useCurrentOrgFeatures } from "@/store/auth-store";
-import { getModeLabels } from "@/lib/mode-labels";
-import { isFeatureEnabled } from "@/lib/mode-features";
 import { IconInbox, IconLightbulb } from "@tabler/icons-react";
+
+import { isFeatureEnabled } from "@/lib/mode-features";
+import { getModeLabels } from "@/lib/mode-labels";
+import { useCurrentOrgFeatures, useCurrentOrgMode } from "@/store/auth-store";
 ```
 
 **Add nav preset builder before component (around line ~42):**
@@ -1256,8 +1256,8 @@ export function TaskViews({ labels }: TaskViewsProps) {
 **Add imports:**
 
 ```typescript
-import { useCurrentOrgFeatures } from "@/store/auth-store";
 import { isFeatureEnabled } from "@/lib/mode-features";
+import { useCurrentOrgFeatures } from "@/store/auth-store";
 ```
 
 **In component function, get features:**
@@ -2092,13 +2092,14 @@ const Inbox = createLazyPage(
 **Implementation:**
 
 ```typescript
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import {
+  type OrgMode,
+  getDefaultTaskStatus,
+  getHomeRoute,
   getOrgFeatures,
   isFeatureEnabled,
-  getHomeRoute,
-  getDefaultTaskStatus,
-  type OrgMode,
 } from "./mode-features";
 
 describe("mode-features", () => {
@@ -2198,7 +2199,7 @@ describe("mode-features", () => {
 **Implementation:**
 
 ```typescript
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Dual Mode Feature Switching", () => {
   test.beforeEach(async ({ page }) => {
