@@ -128,14 +128,3 @@ func ResolveOrgModeFromTask(app core.App, task *core.Record) (OrgMode, error) {
 
 	return OrgMode(mode), nil
 }
-
-// IsFeatureDisabledError creates a standardized error response
-//
-// Returns a formatted error message indicating a feature is not available
-// in the current organization's mode.
-func IsFeatureDisabledError(feature string) error {
-	return fmt.Errorf(
-		"FEATURE_DISABLED: %s is not available in this workspace mode",
-		feature,
-	)
-}
