@@ -27,23 +27,24 @@ export function CommandMenu() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const currentOrgMode = useAuthStore((state) => state.currentOrgMode);
+  const isProductMode = currentOrgMode === "product";
 
   // Define commands based on current context
   const commands: CommandItem[] = [
     // Navigation
     {
       id: "nav-inbox",
-      label: currentOrgMode === "product" ? "صندوق ورودی" : "تسک‌های من",
+      label: isProductMode ? "Inbox" : "تسک‌های من",
       icon: IconSearch,
       action: () => {
-        navigate(currentOrgMode === "product" ? "/inbox" : "/my-tasks");
+        navigate(isProductMode ? "/inbox" : "/my-tasks");
         setOpen(false);
       },
-      keywords: ["inbox", "tasks", "my tasks", "صندوق", "تسک"],
+      keywords: ["inbox", "tasks", "my tasks", "تسک"],
     },
     {
       id: "nav-dashboard",
-      label: "داشبورد",
+      label: isProductMode ? "Dashboard" : "داشبورد",
       icon: () => (
         <svg
           className="size-4"
@@ -67,7 +68,7 @@ export function CommandMenu() {
     },
     {
       id: "nav-projects",
-      label: "پروژه‌ها",
+      label: isProductMode ? "Projects" : "پروژه‌ها",
       icon: () => (
         <svg
           className="size-4"
@@ -92,7 +93,7 @@ export function CommandMenu() {
     // Task actions
     {
       id: "task-new",
-      label: "ایجاد تسک جدید",
+      label: isProductMode ? "New issue" : "ایجاد تسک جدید",
       icon: () => (
         <svg
           className="size-4"
@@ -112,15 +113,15 @@ export function CommandMenu() {
         navigate("/tasks/new");
         setOpen(false);
       },
-      keywords: ["new", "create", "task", "ایجاد", "تسک", "جدید"],
+      keywords: ["new", "create", "task", "issue", "ایجاد", "تسک", "جدید"],
       shortcut: "N",
     },
     // Product mode specific commands
-    ...(currentOrgMode === "product"
+    ...(isProductMode
       ? [
           {
             id: "nav-insights",
-            label: "بینش‌ها",
+            label: "Insights",
             icon: () => (
               <svg
                 className="size-4"
@@ -140,14 +141,14 @@ export function CommandMenu() {
               navigate("/insights");
               setOpen(false);
             },
-            keywords: ["insights", "reports", "analytics", "بینش", "گزارش"],
+            keywords: ["insights", "reports", "analytics", "views"],
           },
         ]
       : []),
     // Settings
     {
       id: "nav-settings",
-      label: "تنظیمات",
+      label: isProductMode ? "Settings" : "تنظیمات",
       icon: () => (
         <svg
           className="size-4"
@@ -199,16 +200,14 @@ export function CommandMenu() {
         className={cn(
           "bg-black/80 backdrop-blur-sm",
           // Linear glassmorphism for product mode
-          currentOrgMode === "product" && "linear-glass",
+          isProductMode && "linear-glass",
         )}
       />
       <DialogContent
         className={cn(
           "overflow-hidden p-0 shadow-2xl",
           // Linear styling for product mode
-          currentOrgMode === "product"
-            ? "linear-elevated linear-beveled"
-            : "bg-card",
+          isProductMode ? "linear-elevated linear-beveled" : "bg-card",
         )}
         showCloseButton={false}
       >
@@ -216,7 +215,7 @@ export function CommandMenu() {
           <IconSearch
             className={cn(
               "size-4 shrink-0",
-              currentOrgMode === "product"
+              isProductMode
                 ? "text-[var(--linear-text-secondary)]"
                 : "text-muted-foreground",
             )}
@@ -226,20 +225,18 @@ export function CommandMenu() {
             onChange={(e) => setSearch(e.target.value)}
             className={cn(
               "flex h-12 w-full rounded-md bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
-              currentOrgMode === "product"
+              isProductMode
                 ? "text-[var(--linear-text-primary)] placeholder:text-[var(--linear-text-tertiary)]"
                 : "",
             )}
             placeholder={
-              currentOrgMode === "product"
-                ? "Type a command or search..."
-                : "تایپ کنید..."
+              isProductMode ? "Type a command or search..." : "تایپ کنید..."
             }
           />
           <kbd
             className={cn(
               "pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100",
-              currentOrgMode === "product"
+              isProductMode
                 ? "border-[var(--linear-border)] text-[var(--linear-text-tertiary)]"
                 : "border-border bg-muted text-muted-foreground",
             )}
@@ -252,7 +249,7 @@ export function CommandMenu() {
             <p
               className={cn(
                 "p-4 text-center text-sm",
-                currentOrgMode === "product"
+                isProductMode
                   ? "text-[var(--linear-text-secondary)]"
                   : "text-muted-foreground",
               )}
@@ -271,7 +268,7 @@ export function CommandMenu() {
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all",
                       "hover:bg-accent hover:text-accent-foreground",
                       "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-                      currentOrgMode === "product"
+                      isProductMode
                         ? "text-[var(--linear-text-secondary)] hover:text-[var(--linear-text-primary)] linear-kbd-focus"
                         : "",
                     )}
@@ -279,7 +276,7 @@ export function CommandMenu() {
                     <Icon
                       className={cn(
                         "size-4 shrink-0",
-                        currentOrgMode === "product"
+                        isProductMode
                           ? "text-[var(--linear-text-tertiary)]"
                           : "text-muted-foreground",
                       )}
@@ -289,7 +286,7 @@ export function CommandMenu() {
                       <kbd
                         className={cn(
                           "pointer-events-none ml-2 inline-flex h-5 select-none items-center rounded border px-1.5 font-mono text-[10px]",
-                          currentOrgMode === "product"
+                          isProductMode
                             ? "border-[var(--linear-border)] text-[var(--linear-text-tertiary)]"
                             : "border-border bg-muted text-muted-foreground",
                         )}

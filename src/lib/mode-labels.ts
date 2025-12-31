@@ -3,6 +3,11 @@
  *
  * Provides UI label overrides based on organization mode.
  * Centralizes all user-facing text that differs between modes.
+ *
+ * Product mode uses Linear terminology:
+ * - Tasks → Issues
+ * - Reports → Insights
+ * - Saved Filters → Views
  */
 import type { OrgMode } from "./mode-features";
 
@@ -12,8 +17,8 @@ import type { OrgMode } from "./mode-features";
 export interface ModeLabels {
   // Navigation and pages
   home: string; // Home page title
-  tasks: string; // Tasks page title
-  myTasks: string; // My tasks section title
+  tasks: string; // Tasks page title (Issues in product mode)
+  myTasks: string; // My tasks section title (Inbox in product mode)
   reports: string; // Reports/Insights title
   members: string; // Members/Users title
   savedFilters: string; // Saved Filters/Views title
@@ -30,12 +35,12 @@ export function getModeLabels(mode: OrgMode | undefined | null): ModeLabels {
 
   if (orgMode === "product") {
     return {
-      home: "صندوق ورودی",
-      tasks: "تسک‌ها",
-      myTasks: "صندوق ورودی",
-      reports: "بینش‌ها",
-      members: "اعضا",
-      savedFilters: "نماها",
+      home: "Inbox",
+      tasks: "Issues",
+      myTasks: "Inbox",
+      reports: "Insights",
+      members: "Members",
+      savedFilters: "Views",
     };
   }
 
