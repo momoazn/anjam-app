@@ -40,3 +40,4 @@ export {
   projectRoles,
   inbox,
 } from "./misc";
+export { commandMenu } from "./command-menu";

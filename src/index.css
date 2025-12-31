@@ -374,6 +374,94 @@
   }
 }
 
+/* Product Mode Theme - Dark, keyboard-first design */
+.product-theme {
+  /* Canvas (Level 0) - The darkest layer */
+  --product-background: #0c0c0e;
+  /* Surface (Level 1) - Primary workspace */
+  --product-surface: #161618;
+  /* Elevated (Level 2) - Modals and popovers */
+  --product-elevated: #1c1c1e;
+  /* Accent Blue */
+  --product-accent: #5e6ad2;
+  --product-accent-hover: #6e7ae2;
+  /* Borders with subtle top-down light simulation */
+  --product-border: rgba(255, 255, 255, 0.08);
+  --product-border-elevated: rgba(255, 255, 255, 0.12);
+  /* Text - Cool Greys */
+  --product-text-primary: rgba(255, 255, 255, 0.95);
+  --product-text-secondary: rgba(255, 255, 255, 0.65);
+  --product-text-tertiary: rgba(255, 255, 255, 0.45);
+  --product-text-quaternary: rgba(255, 255, 255, 0.3);
+  /* Status colors */
+  --product-status-backlog: rgba(255, 255, 255, 0.3);
+  --product-status-todo: rgba(255, 255, 255, 0.5);
+  --product-status-in-progress: #f5a623;
+  --product-status-done: #4caf50;
+  --product-status-canceled: rgba(255, 255, 255, 0.2);
+  /* Priority colors */
+  --product-priority-urgent: #ef4444;
+  --product-priority-high: #f59e0b;
+  --product-priority-medium: #6366f1;
+  --product-priority-low: rgba(255, 255, 255, 0.4);
+  /* Selection ring (halo effect) */
+  --product-ring: rgba(94, 106, 210, 0.5);
+  --product-ring-glow: rgba(94, 106, 210, 0.3);
+}
+
+/* Product mode utilities */
+@layer utilities {
+  /* Layering system - Z-axis hierarchy */
+  .product-canvas {
+    background-color: var(--product-background);
+  }
+
+  .product-surface {
+    background-color: var(--product-surface);
+    border: 1px solid var(--product-border);
+  }
+
+  .product-elevated {
+    background-color: var(--product-elevated);
+    border-top: 1px solid var(--product-border-elevated);
+    border-bottom: 1px solid var(--product-border);
+    /* Glassmorphism effect */
+    backdrop-filter: blur(20px);
+  }
+
+  /* Subtle luminance - beveled edges */
+  .product-beveled {
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Selection ring with glow for active/selected elements */
+  .product-selected {
+    box-shadow:
+      0 0 0 2px var(--product-ring),
+      0 0 0 4px var(--product-ring-glow);
+  }
+
+  /* Fast transitions for responsive feel */
+  .product-transition {
+    transition: all 150ms ease-out;
+  }
+
+  /* Keyboard-focused element styling */
+  .product-kbd-focus:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--product-accent),
+      0 0 0 4px var(--product-ring-glow);
+    outline: none;
+  }
+
+  /* Glassmorphism overlay */
+  .product-glass {
+    background: rgba(22, 22, 24, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}
+
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
   [data-page-transition],

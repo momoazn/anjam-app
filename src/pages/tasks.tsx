@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-hooks/preserve-manual-memoization */
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   endOfDay,
   endOfMonth,
@@ -9,16 +10,24 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
+import { Toolbar, ToolbarSeparator } from "@/components/recipes/toolbar";
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
 import { TaskFiltersPanel } from "@/components/task/task-filters-panel";
-import { TaskHeader } from "@/components/task/task-header";
 import { TaskListView } from "@/components/task/task-list-view";
 import { TaskPagination } from "@/components/task/task-pagination";
-import { savedFilters as savedFiltersText } from "@/constants";
+import { Button } from "@/components/ui/button";
+import {
+  common,
+  savedFilters as savedFiltersText,
+  system,
+  tasks,
+} from "@/constants";
 import {
   useBulkDeleteTasks,
   useBulkUpdateTasks,
@@ -34,6 +43,7 @@ import {
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
+import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function Tasks() {
@@ -385,12 +395,70 @@ export default function Tasks() {
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <TaskHeader
-        totalTasks={totalTasks}
-        selectionMode={selectionMode}
-        onToggleSelection={toggleSelectionMode}
-        onNavigateBoard={() => navigate("/tasks/board")}
-        onCreateTask={() => navigate("/tasks/new")}
+      <PageHeader
+        variant="toolbar"
+        icon={ListTodo}
+        title={tasks.allTasks}
+        subtitle={
+          totalTasks > 0
+            ? tasks.header.tasksFound.replace(
+                "{count}",
+                digitsEnToFa(totalTasks).toString(),
+              )
+            : tasks.header.manageTasks
+        }
+        eyebrow={
+          <div className="flex items-center gap-2 opacity-40">
+            <span className="font-mono text-[10px] font-bold tracking-tight">
+              {system.registry}
+            </span>
+            <div className="bg-foreground/20 h-px w-8" />
+          </div>
+        }
+        actions={
+          <>
+            <Toolbar className="gap-1">
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => navigate("/tasks/board")}
+                className="hover:bg-background h-12 gap-2 rounded-xl px-5 font-bold transition-all"
+              >
+                <LayoutGrid className="size-4" />
+                <span className="text-sm">{tasks.board.title}</span>
+              </Button>
+
+              <ToolbarSeparator className="bg-border/40 mx-1 h-6 w-px" />
+
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={toggleSelectionMode}
+                className={cn(
+                  "h-12 gap-2 rounded-xl px-5 font-bold transition-all",
+                  selectionMode &&
+                    "bg-primary text-primary-foreground hover:bg-primary/90",
+                )}
+              >
+                <CheckSquare className="size-4" />
+                <span className="text-sm">
+                  {selectionMode
+                    ? common.buttons.cancelSelection
+                    : common.buttons.multiSelect}
+                </span>
+              </Button>
+            </Toolbar>
+
+            <Button
+              className="h-14 gap-3 rounded-2xl px-8 text-base font-bold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+              size="lg"
+              onClick={() => navigate("/tasks/new")}
+            >
+              <Plus className="size-5" />
+              <span>{tasks.addTask.buttons.newTask}</span>
+            </Button>
+          </>
+        }
       />
 
       <TaskFiltersPanel

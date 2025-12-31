@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserAvatar } from "@/components/user-avatar";
 import { task as taskLabels, tasks } from "@/constants";
+import { useProductClasses } from "@/hooks/use-product-theme";
 import { formatDateShort } from "@/lib/date-utils";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
@@ -39,6 +40,7 @@ function TaskListItemInner({
   onSelectionChange,
 }: TaskListItemProps) {
   const navigate = useNavigate();
+  const productClasses = useProductClasses();
 
   const StatusIcon = taskStatusIcons[task.status];
   const statusIconColor = getStatusColorVariant(task.status, "icon");
@@ -64,15 +66,20 @@ function TaskListItemInner({
     <Button
       variant="ghost"
       className={cn(
-        "group bg-card hover:bg-muted/30 relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b p-0 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0",
-        isSelected && "bg-primary/5",
+        "group relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b p-0 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0",
+        // Linear theme styling for product mode
+        productClasses.surface,
+        productClasses.transition,
+        productClasses.kbdFocus,
+        "hover:bg-white/5",
+        isSelected && (productClasses.selected || "bg-primary/5"),
         className,
       )}
       onClick={handleClick}
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Selection & Priority Zone */}
-      <div className="bg-muted/5 flex w-12 shrink-0 flex-col items-center justify-center gap-2 border-s py-3">
+      <div className="flex w-12 shrink-0 flex-col items-center justify-center gap-2 border-s py-3">
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
@@ -85,8 +92,10 @@ function TaskListItemInner({
         ) : (
           <div
             className={cn(
-              "bg-background/50 flex size-8 items-center justify-center rounded-lg border transition-all duration-300 group-hover:scale-110",
+              "flex size-8 items-center justify-center rounded-lg border transition-all duration-300 group-hover:scale-110",
               priorityIconColor,
+              // Linear beveled edge for product mode
+              productClasses.beveled,
             )}
           >
             <PriorityIcon className="size-4" />
@@ -117,13 +126,14 @@ function TaskListItemInner({
         <div className="mt-1.5 flex items-center gap-3">
           <div
             className={cn(
-              "bg-background/50 flex size-5 items-center justify-center rounded border",
+              "flex size-5 items-center justify-center rounded border",
               statusIconColor,
+              productClasses.beveled,
             )}
           >
             <StatusIcon className="size-3.5 shrink-0" />
           </div>
-          <span className="text-foreground group-hover:text-primary truncate text-base font-bold transition-colors">
+          <span className="truncate text-base font-bold transition-colors group-hover:text-primary">
             {task.title}
           </span>
         </div>
@@ -134,7 +144,10 @@ function TaskListItemInner({
               <Badge
                 key={tag}
                 variant="outline"
-                className="bg-background/50 text-muted-foreground rounded-md px-1.5 py-0 text-[10px] font-medium"
+                className={cn(
+                  "rounded-md px-1.5 py-0 text-[10px] font-medium",
+                  productClasses.beveled,
+                )}
               >
                 {tag}
               </Badge>
@@ -156,11 +169,8 @@ function TaskListItemInner({
           <span
             className={cn(
               "mt-0.5 text-xs font-bold tabular-nums",
-              !task.deadline && "text-muted-foreground/20",
-              task.deadline &&
-                !isOverdue &&
-                !isDeadlineToday &&
-                "text-muted-foreground",
+              !task.deadline && "opacity-20",
+              task.deadline && !isOverdue && !isDeadlineToday && "opacity-60",
               isDeadlineToday && "text-amber-600 dark:text-amber-400",
               isOverdue && "text-rose-600 dark:text-rose-400",
             )}

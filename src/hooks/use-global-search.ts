@@ -10,6 +10,6 @@ export function useGlobalSearch(query: string) {
     queryKey: queryKeys.globalSearch.byQuery(query),
     queryFn: () => search(query),
     enabled: query.trim().length >= 2,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 }

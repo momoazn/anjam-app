@@ -1,8 +1,7 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon, Search, Sun } from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import { GlobalSearch } from "@/components/global-search";
 import { HeaderUserMenu } from "@/components/header-user-menu";
 import { NotificationDropdown } from "@/components/notification-dropdown";
 import {
@@ -21,12 +20,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { navigation, themeLabels } from "@/constants";
+import { commandMenu, navigation, themeLabels } from "@/constants";
 import { useTheme } from "@/hooks/use-theme";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export function SiteHeader() {
   const { resolvedTheme, toggleTheme } = useTheme();
   const location = useLocation();
+  const currentOrgMode = useCurrentOrgMode();
 
   const crumbs = useMemo(() => {
     const path = location.pathname;
@@ -94,7 +95,25 @@ export function SiteHeader() {
         </Breadcrumb>
 
         <div className="hidden w-[320px] xl:block">
-          <GlobalSearch />
+          <Button
+            variant="outline"
+            className="bg-muted/50 hover:bg-muted relative h-10 w-full justify-start rounded-lg border px-4 font-medium transition-all"
+            onClick={() => {
+              window.dispatchEvent(new Event("command-menu:open"));
+            }}
+          >
+            <span className="flex items-center gap-3">
+              <Search className="text-muted-foreground size-4" />
+              <span className="text-muted-foreground hidden text-sm lg:inline-flex">
+                {currentOrgMode === "product"
+                  ? commandMenu.product.placeholder
+                  : commandMenu.operations.placeholder}
+              </span>
+            </span>
+            <kbd className="bg-background text-muted-foreground absolute end-2 top-2 hidden h-6 items-center gap-1 rounded-md border px-1.5 font-mono text-[10px] font-medium select-none sm:flex">
+              <span className="text-[12px]">⌘</span>K
+            </kbd>
+          </Button>
         </div>
       </div>
 

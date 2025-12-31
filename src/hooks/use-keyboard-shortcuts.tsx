@@ -164,19 +164,6 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      // "/" to focus search (common pattern)
-      if (normalizedKey === "/" && !e.repeat) {
-        e.preventDefault();
-        // Try to find and focus search input
-        const searchInput = document.querySelector<HTMLInputElement>(
-          'input[type="search"], input[placeholder*="search"], input[placeholder*="Search"], input[name="search"]',
-        );
-        if (searchInput) {
-          searchInput.focus();
-        }
-        return;
-      }
-
       // "?" for keyboard shortcuts help (future)
       if (normalizedKey === "shift+/" && !e.repeat) {
         // Could open a keyboard shortcuts modal
@@ -189,7 +176,6 @@ export function useKeyboardShortcuts() {
           "g + d/t/m/p/r/s: Navigate (Dashboard/Tasks/My-tasks/Projects/Reports/timeSheet) [operations mode]",
         );
         console.log("c: Create new task/issue");
-        console.log("/: Focus search");
         return;
       }
 
@@ -211,6 +197,8 @@ export function useKeyboardShortcuts() {
         clearTimeout(goPrefixTimeoutRef.current);
       }
     };
+    // Ref objects are stable and don't need to be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, mode, features, isInputFocused, location.pathname]);
 }
 

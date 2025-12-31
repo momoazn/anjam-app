@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import {
   AlertDialog,
@@ -89,18 +90,16 @@ export default function Views() {
   return (
     <PageTransition>
       <div className="container mx-auto space-y-6 p-6">
-        {/* Page Header */}
-        <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
-            <IconEye className="h-8 w-8" />
-            {labels.savedFilters}
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {mode === "product"
+        <PageHeader
+          variant="minimal"
+          title={labels.savedFilters}
+          subtitle={
+            mode === "product"
               ? savedFiltersConstants.views.description
-              : savedFiltersConstants.views.manageDescription}
-          </p>
-        </div>
+              : savedFiltersConstants.views.manageDescription
+          }
+          icon={IconEye}
+        />
 
         {/* Views List */}
         {savedFilters.length === 0 ? (
