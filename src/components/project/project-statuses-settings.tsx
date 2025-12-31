@@ -29,7 +29,7 @@ import { Switch } from "@/components/ui/switch";
 import { projectStatuses } from "@/constants/misc";
 import { useProjectStatuses } from "@/hooks/project-statuses";
 import { queryKeys } from "@/hooks/query-keys";
-import { usePermissions } from "@/hooks/usePermissions";
+import { usePermissions } from "@/hooks/use-permissions";
 import { pb } from "@/lib/pocketbase";
 import type { ProjectStatusesResponse } from "@/lib/pocketbase-types";
 

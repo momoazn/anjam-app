@@ -31,7 +31,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { app, navigation, navigationLabels } from "@/constants";
-import { usePermissions } from "@/hooks/usePermissions";
+import { usePermissions } from "@/hooks/use-permissions";
 import { isFeatureEnabled } from "@/lib/mode-features";
 import { getModeLabels } from "@/lib/mode-labels";
 import type { Permission } from "@/lib/permissions";

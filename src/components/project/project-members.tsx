@@ -37,7 +37,7 @@ import {
   useRemoveProjectMember,
   useUpdateProjectMemberRole,
 } from "@/hooks/project-members";
-import { usePermissions } from "@/hooks/usePermissions";
+import { usePermissions } from "@/hooks/use-permissions";
 import { pb } from "@/lib/pocketbase";
 import { formatUserName } from "@/lib/utils";
 
