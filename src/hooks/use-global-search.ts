@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks/query-keys";
+import { pb } from "@/lib/pocketbase";
 
 export interface SearchResultTask {
   id: string;

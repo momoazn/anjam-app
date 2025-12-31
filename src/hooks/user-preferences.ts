@@ -5,6 +5,7 @@ import type {
   UserPreferencesRecord,
   UserPreferencesResponse,
 } from "@/lib/pocketbase-types";
+
 import { queryKeys } from "./query-keys";
 
 export type UserPreferences = {
