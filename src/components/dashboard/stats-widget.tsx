@@ -1,5 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   AlertTriangle,
   BarChart3,
@@ -8,8 +7,10 @@ import {
   Clock,
   ListTodo,
 } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { dashboard } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
 
 type StatsWidgetProps = {

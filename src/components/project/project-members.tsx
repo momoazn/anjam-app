@@ -1,13 +1,12 @@
-import { useMemo, useState } from "react";
 import {
+  IconHash,
   IconLoader2,
   IconTrash,
   IconUsers,
-  IconHash,
 } from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { AddProjectMemberModal } from "@/components/project/add-project-member-modal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -25,21 +26,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UserAvatar } from "@/components/user-avatar";
 import {
-  projects,
   common,
   projectRoles as projectRoleLabels,
+  projects,
 } from "@/constants";
 import {
   useProjectMembers,
-  useUpdateProjectMemberRole,
   useRemoveProjectMember,
+  useUpdateProjectMemberRole,
 } from "@/hooks/project-members";
 import { usePermissions } from "@/hooks/usePermissions";
-import { formatUserName } from "@/lib/utils";
 import { pb } from "@/lib/pocketbase";
-import { UserAvatar } from "@/components/user-avatar";
-import { AddProjectMemberModal } from "@/components/project/add-project-member-modal";
+import { formatUserName } from "@/lib/utils";
 
 const projectRoles = ["owner", "admin", "member", "viewer"] as const;
 

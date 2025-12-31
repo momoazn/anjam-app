@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import type { TasksResponse } from "./pocketbase-types";
 import {
   Collections,
@@ -8,6 +9,8 @@ import {
   TasksTaskTypeOptions,
 } from "./pocketbase-types";
 import {
+  TASK_STATUS_CONFIG,
+  TASK_STATUS_ORDER,
   getAllTaskStatuses,
   getStatusByKey,
   getStatusColorClass,
@@ -16,8 +19,6 @@ import {
   isTaskCanceled,
   isTaskCompleted,
   isTerminalStatus,
-  TASK_STATUS_CONFIG,
-  TASK_STATUS_ORDER,
 } from "./status-utils";
 
 const createMockTask = (

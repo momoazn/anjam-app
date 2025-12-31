@@ -1,6 +1,6 @@
-import { test, expect } from "../../fixtures/auth";
-import { TasksPage } from "../../pages/tasks.page";
+import { expect, test } from "../../fixtures/auth";
 import { TEST_TASK } from "../../fixtures/test-data";
+import { TasksPage } from "../../pages/tasks.page";
 
 test.describe("Tasks - CRUD (US-016 to US-021)", () => {
   test.beforeEach(async ({ page }) => {

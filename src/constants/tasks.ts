@@ -1,5 +1,4 @@
 // Task domain constants (tasks, comments, tags, saved filters)
-
 import { shared } from "./core";
 
 // Tasks module constants

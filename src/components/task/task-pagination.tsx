@@ -1,4 +1,8 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { ChevronLeft, ChevronRight, Hash } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -6,10 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { ChevronLeft, ChevronRight, Hash } from "lucide-react";
 
 export type TaskPaginationProps = {
   totalTasks: number;

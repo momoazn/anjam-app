@@ -1,3 +1,4 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -24,7 +25,6 @@ import { common, settings, users } from "@/constants";
 import { formatDateTime } from "@/lib/date-utils";
 import { pb } from "@/lib/pocketbase";
 import { UsersResponse } from "@/lib/pocketbase-types";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type LoginLog = {
   id: string;

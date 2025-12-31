@@ -1,12 +1,13 @@
-import { useMemo } from "react";
-import { startOfWeek, endOfWeek, subWeeks } from "date-fns";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconRocket } from "@tabler/icons-react";
+import { endOfWeek, startOfWeek, subWeeks } from "date-fns";
+import { useMemo } from "react";
+
 import { PageTransition } from "@/components/page-transition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { reports } from "@/constants";
 import { useTasks } from "@/hooks/tasks";
 import { useCurrentOrganization } from "@/store/auth-store";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { reports } from "@/constants";
 
 /**
  * Insights Page - Product Mode

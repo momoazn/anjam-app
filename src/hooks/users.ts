@@ -4,19 +4,19 @@
  * Provides hooks for fetching, creating, updating, and deleting users.
  * Includes project-user relationship handling and simplified user data.
  */
+import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
-import { useQuery, UseMutationOptions } from "@tanstack/react-query";
 import { customApiCall, pb } from "../lib/pocketbase";
-import { mutationInvalidators } from "../lib/query-invalidators";
 import {
-  UsersResponse,
-  UsersRecord,
   ProjectMembersResponse,
   ProjectMembersRoleOptions,
+  UsersRecord,
+  UsersResponse,
 } from "../lib/pocketbase-types";
+import { mutationInvalidators } from "../lib/query-invalidators";
+import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
-import { createCrudHooks } from "./factories/use-crud-factory";
 
 type UsersListOptions = {
   enabled?: boolean;

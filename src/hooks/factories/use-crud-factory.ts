@@ -2,9 +2,9 @@
  * Generic CRUD hook factory for creating standardized create/update/delete hooks
  * Eliminates boilerplate code across tasks, projects, users, groups, and other collections
  */
-
 import type { QueryClient } from "@tanstack/react-query";
 import type { RecordModel } from "pocketbase";
+
 import { pb } from "../../lib/pocketbase";
 import { createMutation } from "../use-mutation-factory";
 

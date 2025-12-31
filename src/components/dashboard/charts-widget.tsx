@@ -1,31 +1,31 @@
-import { BarChart3, Clock, TrendingUp, Layers, Calendar } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { format, isPast, isToday } from "date-fns-jalali";
+import { BarChart3, Calendar, Clock, Layers, TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Cell,
   Line,
   LineChart,
   Pie,
   PieChart,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   XAxis,
   YAxis,
-  Tooltip as RechartsTooltip,
 } from "recharts";
-import { useNavigate } from "react-router-dom";
-import { format, isPast, isToday } from "date-fns-jalali";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
-import { dashboard, tasks } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/user-avatar";
-import { getStatusColorVariant } from "@/lib/status-utils";
+import { dashboard, tasks } from "@/constants";
 import type {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
+import { getStatusColorVariant } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 
 type PieChartData = {

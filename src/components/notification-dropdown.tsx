@@ -1,34 +1,34 @@
-import {
-  IconCheck,
-  IconTrash,
-  IconEye,
-  IconBellOff,
-  IconActivity,
-} from "@tabler/icons-react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import {
+  IconActivity,
+  IconBellOff,
+  IconCheck,
+  IconEye,
+  IconTrash,
+} from "@tabler/icons-react";
 import { format } from "date-fns-jalali";
 import { useNavigate } from "react-router-dom";
 
+import { NotificationBadge } from "@/components/notification-badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { NotificationBadge } from "@/components/notification-badge";
 import {
   notification as notificationText,
   notifications as notificationsText,
 } from "@/constants";
 import {
-  useNotifications,
-  useMarkAsRead,
-  useMarkAllAsRead,
   useClearAll,
+  useMarkAllAsRead,
+  useMarkAsRead,
+  useNotifications,
 } from "@/hooks/notifications";
-import { useAuthUser } from "@/store/auth-store";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
+import { useAuthUser } from "@/store/auth-store";
 
 type NotificationDropdownProps = {
   align?: "start" | "center" | "end";

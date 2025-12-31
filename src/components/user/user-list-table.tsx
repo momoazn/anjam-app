@@ -1,29 +1,18 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconPencil,
+  IconHash,
   IconHistory,
+  IconLockOpen,
+  IconPencil,
   IconPower,
   IconShield,
-  IconTrash,
-  IconLockOpen,
   IconTerminal,
+  IconTrash,
   IconX,
-  IconHash,
 } from "@tabler/icons-react";
-
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,12 +23,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { common, notifications, users as usersText } from "@/constants";
-import { UsersResponse } from "@/lib/pocketbase-types";
 import { useDeleteUser, useToggleUserActive, useUnblockUser } from "@/hooks";
+import { UsersResponse } from "@/lib/pocketbase-types";
+import { cn } from "@/lib/utils";
+
 import { UserAvatar } from "../user-avatar";
 import { UserLoginLogsDialog } from "./user-login-logs-dialog";
-import { cn } from "@/lib/utils";
 
 type UserListTableProps = {
   users: UsersResponse[];

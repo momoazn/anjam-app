@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import {
+  getDefaultTaskStatus,
+  getHomeRoute,
   getOrgFeatures,
   isFeatureEnabled,
-  getHomeRoute,
-  getDefaultTaskStatus,
 } from "./mode-features";
 
 describe("mode-features", () => {

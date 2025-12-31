@@ -1,6 +1,7 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format, isWithinInterval } from "date-fns-jalali";
 import { faIR } from "date-fns/locale";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+
 import type { TaskWithProject } from "../pocketbase";
 import { TasksStatusOptions } from "../pocketbase-types";
 import type { CompletionTrendData, ThroughputDataPoint } from "./types";

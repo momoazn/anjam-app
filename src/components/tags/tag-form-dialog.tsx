@@ -13,8 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { common, tagsManagement } from "@/constants";
-import { useToast } from "@/hooks/use-toast";
 import { useCreateTag, useUpdateTag } from "@/hooks/tags";
+import { useToast } from "@/hooks/use-toast";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import type { TagsResponse } from "@/lib/pocketbase-types";
 

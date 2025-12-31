@@ -1,7 +1,9 @@
-import type { UsersResponse, FileNameString } from "@/lib/pocketbase-types";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { FileNameString, UsersResponse } from "@/lib/pocketbase-types";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { render } from "@/test/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import Users from "./users";
 
 const mockNavigate = vi.fn();

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { queryKeys } from "@/hooks/query-keys";
+
 import { mutationInvalidators } from "./query-invalidators";
 
 describe("mutationInvalidators.crud", () => {

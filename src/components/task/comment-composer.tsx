@@ -3,15 +3,15 @@ import { useMemo, useRef, useState } from "react";
 
 import { MentionAutocomplete } from "@/components/comments/mention-autocomplete";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/ui/file-upload";
-import { FileWithPreview } from "@/hooks/use-file-upload";
+import { Textarea } from "@/components/ui/textarea";
 import { comments } from "@/constants";
-import { useProjectMembers } from "@/hooks/project-members";
 import { useCreateComment } from "@/hooks/comments";
 import type { CommentWithUser } from "@/hooks/comments";
-import { useAuthUser } from "@/store/auth-store";
+import { useProjectMembers } from "@/hooks/project-members";
+import { FileWithPreview } from "@/hooks/use-file-upload";
 import { formatUserName } from "@/lib/utils";
+import { useAuthUser } from "@/store/auth-store";
 
 type CommentComposerProps = {
   taskId: string;

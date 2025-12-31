@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
 import { IconTerminal, IconX } from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ProjectRoleInfo } from "@/components/project/project-role-info";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -11,14 +12,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  projects,
   common,
   projectRoles as projectRoleLabels,
+  projects,
 } from "@/constants";
 import { useOrganizationMembers } from "@/hooks";
 import { useAddProjectMember } from "@/hooks/project-members";
 import { formatUserName } from "@/lib/utils";
-import { ProjectRoleInfo } from "@/components/project/project-role-info";
 
 const projectRoles = ["owner", "admin", "member", "viewer"] as const;
 

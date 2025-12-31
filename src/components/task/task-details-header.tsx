@@ -1,14 +1,17 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconPencil,
-  IconTrash,
   IconChevronRight,
   IconHash,
+  IconPencil,
+  IconTrash,
 } from "@tabler/icons-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { formatTaskDate } from "@/lib/date-utils";
+import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   getStatusColorVariant,
   priorityColors,
@@ -16,8 +19,6 @@ import {
   taskStatusIcons,
 } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
 
 export type TaskDetailsHeaderProps = {

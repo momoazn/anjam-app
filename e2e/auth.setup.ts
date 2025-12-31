@@ -1,7 +1,9 @@
-import { test as setup } from "@playwright/test";
-import { TEST_USERS } from "./fixtures/test-data";
 import fs from "fs";
 import path from "path";
+
+import { test as setup } from "@playwright/test";
+
+import { TEST_USERS } from "./fixtures/test-data";
 
 const authFile = "playwright/.auth/user.json";
 

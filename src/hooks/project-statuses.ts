@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { pb } from "@/lib/pocketbase";
 import type { ProjectStatusesResponse } from "@/lib/pocketbase-types";
+
 import { queryKeys } from "./query-keys";
 
 export function useProjectStatuses({

@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { IconSettings } from "@tabler/icons-react";
+import { useState } from "react";
 
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { AboutSection } from "@/components/settings/about-section";
 import { AppearanceSection } from "@/components/settings/appearance-section";
 import { PreferencesSection } from "@/components/settings/preferences-section";

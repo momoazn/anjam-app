@@ -3,10 +3,10 @@ import type { Control, FieldValues, Path } from "react-hook-form";
 
 import {
   FormControl,
-  FormField as ShadcnFormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormField as ShadcnFormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -80,7 +80,7 @@ export function FormField<T extends FieldValues>({
                 autoFocus={autoFocus}
                 disabled={disabled}
                 className={cn(
-                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border font-bold transition-all focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/2 border font-bold transition-all focus:ring-0",
                   "h-12 rounded-xl",
                   className,
                 )}
@@ -91,7 +91,7 @@ export function FormField<T extends FieldValues>({
                 placeholder={placeholder}
                 disabled={disabled}
                 className={cn(
-                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border font-medium transition-all focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/2 border font-medium transition-all focus:ring-0",
                   "rounded-xl",
                   className,
                 )}
@@ -104,7 +104,7 @@ export function FormField<T extends FieldValues>({
               >
                 <SelectTrigger
                   className={cn(
-                    "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border text-right text-xs font-bold tracking-tight transition-all focus:ring-0",
+                    "border-border bg-background focus:border-primary/40 focus:bg-primary/2 border text-right text-xs font-bold tracking-tight transition-all focus:ring-0",
                     "h-12 rounded-xl",
                     className,
                   )}
@@ -136,7 +136,7 @@ export function FormField<T extends FieldValues>({
                   }
                 }}
                 className={cn(
-                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border pt-2.5 font-bold transition-all focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/2 border pt-2.5 font-bold transition-all focus:ring-0",
                   "h-12 rounded-xl",
                   className,
                 )}
@@ -147,7 +147,7 @@ export function FormField<T extends FieldValues>({
                 placeholder={placeholder}
                 disabled={disabled}
                 className={cn(
-                  "border-border bg-background focus:border-primary/40 focus:bg-primary/[0.02] border font-bold transition-all focus:ring-0",
+                  "border-border bg-background focus:border-primary/40 focus:bg-primary/2 border font-bold transition-all focus:ring-0",
                   "h-12 rounded-xl",
                   className,
                 )}

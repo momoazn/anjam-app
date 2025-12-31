@@ -1,12 +1,12 @@
-import { Plus, User, CheckSquare, Layers } from "lucide-react";
+import { CheckSquare, Layers, Plus, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
+  app,
   common,
   myTasks as myTasksText,
   navigationLabels,
   tasks,
-  app,
 } from "@/constants";
 import { cn } from "@/lib/utils";
 

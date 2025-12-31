@@ -1,22 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  IconActivity,
+  IconArrowLeft,
+  IconCpu,
   IconLoader2,
   IconPlus,
   IconTerminal2,
-  IconArrowLeft,
-  IconCpu,
-  IconActivity,
 } from "@tabler/icons-react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { TaskFields } from "@/components/forms/task-fields";
 import {
-  taskFormSchema,
   type TaskFormData,
+  taskFormSchema,
 } from "@/components/forms/task-fields-schema";
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";

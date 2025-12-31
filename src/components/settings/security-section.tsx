@@ -1,17 +1,18 @@
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconShieldLock,
   IconActivity,
+  IconCheck,
   IconClock,
   IconLoader2,
-  IconCheck,
-  IconX,
-  IconTerminal,
   IconServer,
+  IconShieldLock,
+  IconTerminal,
+  IconX,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +29,6 @@ import { useToast } from "@/hooks/use-toast";
 import { pb } from "@/lib/pocketbase";
 import type { UserLoginLogsResponse } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 const passwordSchema = z
   .object({
@@ -235,7 +235,7 @@ export function SecuritySection() {
                       <p className="text-[11px] font-bold tabular-nums">
                         {log.ip_address || settings.security.unknownIp}
                       </p>
-                      <p className="text-muted-foreground/40 max-w-[240px] truncate text-[9px] font-bold">
+                      <p className="text-muted-foreground/40 max-w-60 truncate text-[9px] font-bold">
                         {log.user_agent || settings.security.unknownDevice}
                       </p>
                     </div>

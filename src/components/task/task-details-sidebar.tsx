@@ -1,10 +1,11 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconPencil,
-  IconTrash,
-  IconInfoCircle,
   IconActivity,
+  IconInfoCircle,
+  IconPencil,
   IconSettings,
   IconTag,
+  IconTrash,
 } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,14 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { formatTaskDate } from "@/lib/date-utils";
+import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   getStatusColorVariant,
   priorityColors,
   priorityIcons,
   taskStatusIcons,
 } from "@/lib/status-utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
 
 export type TaskDetailsSidebarProps = {

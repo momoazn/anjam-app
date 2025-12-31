@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconLoader2, IconUserEdit } from "@tabler/icons-react";
 import { useEffect } from "react";
-import { useForm, type Control } from "react-hook-form";
+import { type Control, useForm } from "react-hook-form";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
@@ -9,14 +9,14 @@ import {
   UserFields,
   type UserFieldsFormValues,
 } from "@/components/forms/user-fields";
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { auth, common, users } from "@/constants";
 import { useUpdateUser, useUser } from "@/hooks";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { handlePocketBaseError } from "@/lib/error-handler";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 const formSchema = z.object({

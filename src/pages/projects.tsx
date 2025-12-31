@@ -1,15 +1,15 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Loader2, Plus, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { ProjectListGroup } from "@/components/project/project-list-group";
 import { PageTransition } from "@/components/page-transition";
+import { ProjectListGroup } from "@/components/project/project-list-group";
 import { HeroHeader } from "@/components/recipes/hero-header";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useProjects } from "@/hooks";
+import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export default function Projects() {
   const user = useAuthUser();

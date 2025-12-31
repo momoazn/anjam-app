@@ -1,19 +1,29 @@
+import {
+  IconCalendar,
+  IconClock,
+  IconFilter,
+  IconHash,
+  IconStack2,
+  IconTag,
+  IconUser,
+} from "@tabler/icons-react";
 import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
+import type { TaskFormData } from "@/components/forms/task-fields-schema";
 import DatePicker from "@/components/ui/date-picker";
 import {
   FormControl,
-  FormField as ShadcnFormField,
   FormItem,
   FormMessage,
+  FormField as ShadcnFormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { tasks } from "@/constants";
 import {
   useProjectStatuses,
-  useProjects,
   useProjectUsers,
+  useProjects,
   useUsers,
 } from "@/hooks";
 import {
@@ -21,13 +31,16 @@ import {
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import {
+  TASK_STATUS_CONFIG,
+  getStatusColorVariant,
   priorityColors,
   priorityIcons,
   taskStatusIcons,
-  TASK_STATUS_CONFIG,
-  getStatusColorVariant,
 } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+
+import { TagPicker } from "../task/tag-picker";
 import {
   Select,
   SelectContent,
@@ -36,18 +49,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { FormField as GenericFormField } from "./form-field";
-import {
-  IconFilter,
-  IconHash,
-  IconUser,
-  IconCalendar,
-  IconStack2,
-  IconClock,
-  IconTag,
-} from "@tabler/icons-react";
-import { cn } from "@/lib/utils";
-import { TagPicker } from "../task/tag-picker";
-import type { TaskFormData } from "@/components/forms/task-fields-schema";
 
 type TaskFieldsProps = {
   control: Control<TaskFormData>;

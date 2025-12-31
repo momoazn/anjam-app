@@ -1,10 +1,11 @@
+import { Download, FileIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { projects } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { ProjectsResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
-import { Download, FileIcon } from "lucide-react";
 
 type ProjectAssetsProps = {
   project: ProjectsResponse;

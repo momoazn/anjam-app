@@ -1,17 +1,15 @@
-import { common, reports, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconCalendar,
+  IconChevronDown,
   IconFilter,
   IconX,
-  IconChevronDown,
 } from "@tabler/icons-react";
 import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import DatePicker from "@/components/ui/date-picker";
-import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
 import {
   Popover,
   PopoverContent,
@@ -24,12 +22,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { common, reports, tasks } from "@/constants";
 import type {
   ProjectsRecord,
   TasksPriorityOptions,
   TasksStatusOptions,
   UsersRecord,
 } from "@/lib/pocketbase-types";
+import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
 
 export type TimeRange = {

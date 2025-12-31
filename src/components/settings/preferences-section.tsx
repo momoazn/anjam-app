@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { toast } from "sonner";
+import { IconBell, IconPalette, IconSettings } from "@tabler/icons-react";
 import { useState } from "react";
-import { IconPalette, IconBell, IconSettings } from "@tabler/icons-react";
+import { toast } from "sonner";
+
 import {
   Select,
   SelectContent,

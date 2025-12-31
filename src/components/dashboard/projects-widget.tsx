@@ -1,12 +1,12 @@
-import { ChevronLeft, Target, Hash } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { ChevronLeft, Hash, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { dashboard, reports } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type Project = {
   id: string;

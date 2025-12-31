@@ -3,7 +3,6 @@
  *
  * Extracted from status-utils.ts as part of Priority 5 refactoring
  */
-
 import {
   Icon,
   IconAlertCircle,
@@ -16,6 +15,7 @@ import {
   IconFlask,
   IconPlayerPause,
 } from "@tabler/icons-react";
+
 import { TasksStatusOptions } from "./pocketbase-types";
 
 export const taskStatusIcons: Record<TasksStatusOptions, Icon> = {

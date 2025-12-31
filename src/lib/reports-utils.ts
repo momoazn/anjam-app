@@ -1,4 +1,4 @@
-import { reports, tasks } from "@/constants";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   format,
   isWithinInterval,
@@ -6,7 +6,9 @@ import {
   startOfYear,
 } from "date-fns-jalali";
 import { faIR } from "date-fns/locale";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+
+import { reports, tasks } from "@/constants";
+
 import type { TaskWithProject } from "./pocketbase";
 import type { IsoAutoDateString, UsersRecord } from "./pocketbase-types";
 import {
@@ -14,6 +16,9 @@ import {
   TasksStatusOptions,
   UsersRoleOptions,
 } from "./pocketbase-types";
+// Status labels mapping
+// Import centralized status config
+import { TASK_STATUS_CONFIG } from "./status-utils";
 
 // Types for chart data
 export type StatusDistributionData = {
@@ -49,10 +54,6 @@ export type TaskStatsData = {
   inProgressTasks: number;
   pendingTasks: number;
 };
-
-// Status labels mapping
-// Import centralized status config
-import { TASK_STATUS_CONFIG } from "./status-utils";
 
 // Priority labels mapping
 const PRIORITY_LABELS = {

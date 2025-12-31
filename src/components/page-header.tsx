@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
 import { Icon as TablerIcon } from "@tabler/icons-react";
 import { LucideIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { ReactNode } from "react";
+
 import { IconBox } from "@/components/recipes/icon-box";
+import { Card, CardContent } from "@/components/ui/card";
 
 type PageHeaderProps = {
   title: string;

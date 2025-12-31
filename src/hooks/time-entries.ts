@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { pb } from "@/lib/pocketbase";
 import { queryKeys } from "@/hooks/query-keys";
+import { pb } from "@/lib/pocketbase";
 import type {
   TimeEntriesRecord,
   TimeEntriesResponse,
   UsersResponse,
 } from "@/lib/pocketbase-types";
+
 import { createCrudHooks } from "./factories/use-crud-factory";
 
 const crudHooks = createCrudHooks<TimeEntriesRecord, TimeEntriesResponse>({

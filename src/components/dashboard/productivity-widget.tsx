@@ -1,18 +1,18 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
+  Activity,
   AlertTriangle,
   Bell,
   Calendar,
   Plus,
   Zap,
-  Activity,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { dashboard } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
 
 type ProductivityWidgetProps = {

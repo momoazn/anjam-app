@@ -1,9 +1,8 @@
-import { useMemo } from "react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconHash, IconLayoutGrid } from "@tabler/icons-react";
+import { useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useProjects } from "@/hooks/projects";
-import { useTaskCounts } from "@/hooks/use-task-counts";
-import { navigation, navigationSectionLabels } from "@/constants";
+
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -13,8 +12,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { navigation, navigationSectionLabels } from "@/constants";
+import { useProjects } from "@/hooks/projects";
+import { useTaskCounts } from "@/hooks/use-task-counts";
 import { cn } from "@/lib/utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export function ProjectsSubmenu() {
   const { data: projects = [] } = useProjects();

@@ -1,17 +1,20 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
+  IconCalendar,
   IconClock,
+  IconDeviceFloppy,
   IconHistory,
   IconLoader2,
   IconMessages,
   IconPencil,
-  IconDeviceFloppy,
-  IconX,
-  IconUser,
-  IconTarget,
-  IconCalendar,
   IconQuote,
+  IconTarget,
+  IconUser,
+  IconX,
 } from "@tabler/icons-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import { ActivityStream } from "@/components/audit/activity-stream";
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
@@ -30,9 +33,9 @@ import {
   tasks,
 } from "@/constants";
 import {
+  DEFAULT_USER_PREFERENCES,
   useCreateTimeEntry,
   useUserPreferences,
-  DEFAULT_USER_PREFERENCES,
 } from "@/hooks";
 import type { CommentWithUser } from "@/hooks/comments";
 import { formatTaskDate } from "@/lib/date-utils";
@@ -46,8 +49,6 @@ import {
   useCurrentOrgFeatures,
   useCurrentOrgMode,
 } from "@/store/auth-store";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export type TaskDetailsContentProps = {
   task: TaskWithProject;

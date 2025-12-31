@@ -1,20 +1,22 @@
-import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import {
-  useProjects,
-  useProject,
-  useProjectWithSupervisor,
-  useCreateProject,
-  useUpdateProject,
-  useDeleteProject,
-} from "./projects";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type {
   IsoAutoDateString,
   ProjectsResponse,
 } from "@/lib/pocketbase-types";
 import { Collections } from "@/lib/pocketbase-types";
+
+import {
+  useCreateProject,
+  useDeleteProject,
+  useProject,
+  useProjectWithSupervisor,
+  useProjects,
+  useUpdateProject,
+} from "./projects";
 
 // Mock data
 const getFullListMock = vi.fn();

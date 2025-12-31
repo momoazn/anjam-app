@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Check, ChevronsUpDown, X } from "lucide-react";
+import { useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +16,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { tagsManagement, tasks } from "@/constants";
 import { useTags } from "@/hooks/tags";
 import type { TagsResponse } from "@/lib/pocketbase-types";
-import { tagsManagement, tasks } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { cn } from "@/lib/utils";
 
 interface TagPickerProps {
   selectedTagIds: string[];

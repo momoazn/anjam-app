@@ -2,10 +2,10 @@ import PocketBase from "pocketbase";
 
 import type {
   ProjectsResponse,
+  TagsResponse,
   TasksResponse,
   TypedPocketBase,
   UsersResponse,
-  TagsResponse,
 } from "./pocketbase-types";
 
 // During development, the PocketBase server is running on localhost:8090

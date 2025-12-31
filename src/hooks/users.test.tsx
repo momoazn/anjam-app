@@ -1,18 +1,20 @@
-import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
+
 import {
-  useUsers,
-  useUser,
-  useProjectUsers,
   useCreateUser,
-  useUpdateUser,
   useDeleteUser,
+  useProjectUsers,
   useToggleUserActive,
   useUnblockUser,
+  useUpdateUser,
+  useUser,
+  useUsers,
 } from "./users";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock data
 const getFullListMock = vi.fn();

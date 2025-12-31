@@ -1,15 +1,8 @@
-import { X, Trash2, Users, Flag, RefreshCw, Terminal } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { Flag, RefreshCw, Terminal, Trash2, Users, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +13,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { common, tasks } from "@/constants";
 import {
   TasksPriorityOptions,
   type TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 interface BulkActionsBarProps {
   selectedCount: number;

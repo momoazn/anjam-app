@@ -1,3 +1,14 @@
+import {
+  Calendar,
+  Eraser,
+  Filter,
+  Hash,
+  Search,
+  Tag,
+  User,
+  X,
+} from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { tasks } from "@/constants";
+import { useTags } from "@/hooks/tags";
 import {
   ALL_FILTER_VALUE,
   type UseTaskFiltersReturn,
@@ -21,17 +32,6 @@ import {
 } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
-import {
-  Search,
-  X,
-  Filter,
-  Hash,
-  Eraser,
-  User,
-  Calendar,
-  Tag,
-} from "lucide-react";
-import { useTags } from "@/hooks/tags";
 
 const priorityOrder: TasksPriorityOptions[] = [
   TasksPriorityOptions.low,

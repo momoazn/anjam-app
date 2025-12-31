@@ -1,19 +1,20 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconChartBar,
-  IconList,
-  IconUsers,
-  IconClock,
   IconActivity,
+  IconChartBar,
   IconCircleCheck,
+  IconClock,
+  IconList,
   IconSettings,
+  IconUsers,
 } from "@tabler/icons-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { common, projects } from "@/constants";
-import { cn } from "@/lib/utils";
 import { formatTimeSpent } from "@/lib/time-utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { cn } from "@/lib/utils";
 
 type ProjectSidebarProps = {
   tasksLoading: boolean;

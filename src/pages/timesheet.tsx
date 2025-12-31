@@ -1,3 +1,5 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconClock, IconDownload, IconHistory } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   eachDayOfInterval,
@@ -7,16 +9,15 @@ import {
   startOfWeek,
 } from "date-fns";
 import { faIR } from "date-fns/locale";
-import { IconClock, IconDownload, IconHistory } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
-import { PageTransition } from "@/components/page-transition";
+import { Link } from "react-router-dom";
+
 import { PageHeader } from "@/components/page-header";
-import { common, reports, timesheet, navigationLabels } from "@/constants";
+import { PageTransition } from "@/components/page-transition";
+import { Button } from "@/components/ui/button";
+import { common, navigationLabels, reports, timesheet } from "@/constants";
 import { pb } from "@/lib/pocketbase";
 import { minutesToHoursAndMinutes } from "@/lib/time-utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { useAuthStore } from "@/store/auth-store";
-import { Link } from "react-router-dom";
 
 export default function TimesheetPage() {
   const { user } = useAuthStore();
@@ -198,7 +199,7 @@ export default function TimesheetPage() {
           {tasksByDay.map(({ date, tasks: dayTasks, totalTime }) => (
             <div
               key={date.toISOString()}
-              className="bg-card border-border flex min-h-[400px] flex-col overflow-hidden rounded-xl border shadow-sm"
+              className="bg-card border-border flex min-h-100 flex-col overflow-hidden rounded-xl border shadow-sm"
             >
               <div className="bg-muted/30 border-border border-b p-4 text-right">
                 <span className="text-muted-foreground text-[10px] font-bold tracking-tight">

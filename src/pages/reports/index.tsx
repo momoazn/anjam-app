@@ -1,26 +1,28 @@
-import { lazy, Suspense, useState, useMemo } from "react";
-import { IconChartBar } from "@tabler/icons-react";
-import { PageHeader } from "@/components/page-header";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconChartBar } from "@tabler/icons-react";
+import { Suspense, lazy, useMemo, useState } from "react";
+
+import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { ChartsSection } from "@/components/reports/charts-section";
+import { FiltersSection } from "@/components/reports/filters-section";
+import { TableSection } from "@/components/reports/table-section";
+import { reports } from "@/constants";
+import type { TaskWithProject } from "@/lib/pocketbase";
+import { filterTasksByControls } from "@/lib/reports";
+
+import { ReportsMetricCards } from "./metric-cards";
+import { ReportsSkeleton } from "./reports-skeleton";
+import type { DrilldownState } from "./types";
+import { useReportsData } from "./use-reports-data";
+import { useReportsFilters } from "./use-reports-filters";
+import { useReportsMetrics } from "./use-reports-metrics";
 
 const DrilldownDrawer = lazy(() =>
   import("@/components/reports/drilldown-drawer").then((m) => ({
     default: m.DrilldownDrawer,
   })),
 );
-import { FiltersSection } from "@/components/reports/filters-section";
-import { ChartsSection } from "@/components/reports/charts-section";
-import { TableSection } from "@/components/reports/table-section";
-import { PageTransition } from "@/components/page-transition";
-import { reports } from "@/constants";
-import { useReportsData } from "./use-reports-data";
-import { useReportsFilters } from "./use-reports-filters";
-import { useReportsMetrics } from "./use-reports-metrics";
-import { ReportsSkeleton } from "./reports-skeleton";
-import { ReportsMetricCards } from "./metric-cards";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { DrilldownState } from "./types";
-import { filterTasksByControls } from "@/lib/reports";
 
 export default function Reports() {
   const { tasks, users, projects, projectsWithSupervisor, isLoading } =

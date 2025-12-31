@@ -1,25 +1,14 @@
-import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   BookmarkIcon,
-  Star,
-  Settings,
-  Trash2,
   Check,
   Save,
+  Settings,
+  Star,
+  Trash2,
 } from "lucide-react";
-import { common, savedFilters as savedFiltersText } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import type { SavedFilter } from "@/hooks/use-saved-filters";
+import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +19,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { common, savedFilters as savedFiltersText } from "@/constants";
+import type { SavedFilter } from "@/hooks/use-saved-filters";
 
 interface SavedFiltersDropdownProps {
   savedFilters: SavedFilter[];

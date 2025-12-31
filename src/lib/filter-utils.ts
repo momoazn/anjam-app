@@ -1,9 +1,10 @@
+import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
+
 import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
-import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
 
 export const ALL_FILTER_VALUE = "all";
 

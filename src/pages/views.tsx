@@ -1,17 +1,14 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   IconEye,
-  IconTrash,
   IconStar,
   IconStarFilled,
+  IconTrash,
 } from "@tabler/icons-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
 import { PageTransition } from "@/components/page-transition";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSavedFilters } from "@/hooks/use-saved-filters";
-import { useCurrentOrgMode } from "@/store/auth-store";
-import { getModeLabels } from "@/lib/mode-labels";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,8 +19,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { savedFilters as savedFiltersConstants, shared } from "@/constants";
+import { useSavedFilters } from "@/hooks/use-saved-filters";
+import { getModeLabels } from "@/lib/mode-labels";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 /**
  * Views Page - Manage Saved Filters

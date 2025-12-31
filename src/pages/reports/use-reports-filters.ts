@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
-import type { FilterState, BucketType } from "./types";
+
+import type { BucketType, FilterState } from "./types";
 
 export function useReportsFilters() {
   const [filtersState, setFiltersState] = useState<FilterState>({

@@ -1,21 +1,22 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconClock, IconHash, IconTarget } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/user-avatar";
+import { dashboard } from "@/constants";
 import { formatDateShort } from "@/lib/date-utils";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
 import {
+  getStatusColorVariant,
   priorityColors,
   priorityIcons,
-  getStatusColorVariant,
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { UserAvatar } from "@/components/user-avatar";
-import { useNavigate } from "react-router-dom";
-import { IconHash, IconClock, IconTarget } from "@tabler/icons-react";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { dashboard } from "@/constants";
 
 interface BoardCardProps {
   task: TaskWithProject;

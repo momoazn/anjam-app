@@ -3,14 +3,14 @@ import { IconPlus, IconUsers } from "@tabler/icons-react";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { Button } from "@/components/ui/button";
 import { DeleteUserDialog } from "@/components/user/delete-user-dialog";
 import { UserListTable } from "@/components/user/user-list-table";
-import { Button } from "@/components/ui/button";
 import { users as usersText } from "@/constants";
-import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useUsers } from "@/hooks";
+import { UsersResponse, UsersRoleOptions } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 export default function Users() {

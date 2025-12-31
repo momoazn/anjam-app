@@ -1,5 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconEye, IconTrash, IconClock, IconHash } from "@tabler/icons-react";
+import { IconClock, IconEye, IconHash, IconTrash } from "@tabler/icons-react";
 import { format } from "date-fns-jalali";
 
 import { Badge } from "@/components/ui/badge";

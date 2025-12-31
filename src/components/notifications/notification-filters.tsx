@@ -1,7 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconSortAscending,
   IconCheck,
+  IconSortAscending,
   IconTrash,
   IconX,
 } from "@tabler/icons-react";

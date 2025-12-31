@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   IconCheck,
   IconCopy,
@@ -6,21 +5,15 @@ import {
   IconUserPlus,
   IconUsers,
 } from "@tabler/icons-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { IconBox } from "@/components/recipes/icon-box";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -36,24 +30,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { organization, shared } from "@/constants";
-import { pb } from "@/lib/pocketbase";
-import { useAuthUser } from "@/store/auth-store";
 import {
-  useOrganizationMembers,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { organization, shared } from "@/constants";
+import {
   useInviteOrgMember,
+  useOrganizationMembers,
   useRemoveOrgMember,
 } from "@/hooks";
 import {
-  useOrganizationInvites,
-  useCreateOrgInvite,
-  useRevokeOrgInvite,
   getInviteStatus,
   getInviteUrl,
+  useCreateOrgInvite,
+  useOrganizationInvites,
+  useRevokeOrgInvite,
 } from "@/hooks/organization-invites";
+import { pb } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
-import { PageHeader } from "@/components/page-header";
-import { IconBox } from "@/components/recipes/icon-box";
+import { useAuthUser } from "@/store/auth-store";
 
 function getUserInitials(name: string): string {
   return name

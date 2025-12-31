@@ -1,17 +1,18 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { Activity, Layers, Layout } from "lucide-react";
+
+import { MyTasksEmptyState } from "@/components/task/my-tasks-empty-state";
+import { MyTasksSkeleton } from "@/components/task/my-tasks-skeleton";
+import { TaskListGroup } from "@/components/task/task-list-group";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TaskListGroup } from "@/components/task/task-list-group";
-import { MyTasksEmptyState } from "@/components/task/my-tasks-empty-state";
-import { MyTasksSkeleton } from "@/components/task/my-tasks-skeleton";
 import { myTasks as myTasksText, tasks } from "@/constants";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { cn } from "@/lib/utils";
-import { Activity, Layout, Layers } from "lucide-react";
 
 export type MyTasksTabsProps = {
   activeTab: string;

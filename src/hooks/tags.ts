@@ -1,11 +1,13 @@
-import { useQuery, type UseMutationOptions } from "@tanstack/react-query";
+import { type UseMutationOptions, useQuery } from "@tanstack/react-query";
+
 import { pb } from "@/lib/pocketbase";
-import type { TagsResponse, TagsRecord } from "@/lib/pocketbase-types";
+import type { TagsRecord, TagsResponse } from "@/lib/pocketbase-types";
 import { mutationInvalidators } from "@/lib/query-invalidators";
+import { useCurrentOrganization } from "@/store/auth-store";
+
 import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
-import { useCurrentOrganization } from "@/store/auth-store";
 
 const { useUpdate: useUpdateTagMutation, useDelete: useDeleteTagMutation } =
   createCrudHooks<TagsRecord, TagsResponse>({

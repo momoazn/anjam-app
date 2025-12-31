@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+
 import { TEST_USERS } from "../../fixtures/test-data";
 
 test.describe("Settings & Preferences (US-048 to US-053)", () => {

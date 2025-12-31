@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Organizations - CRUD (US-005, US-006)", () => {
   test("user should create organization", async ({ page }) => {

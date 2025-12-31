@@ -1,14 +1,15 @@
-import { useMemo } from "react";
+import { IconInbox } from "@tabler/icons-react";
 import { subDays } from "date-fns";
+import { useMemo } from "react";
+
 import { PageTransition } from "@/components/page-transition";
 import { TaskListItem } from "@/components/task/task-list-item";
-import { useTasks } from "@/hooks/tasks";
-import { useAuthUser } from "@/store/auth-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyStateNoTasks } from "@/components/ui/empty-state";
-import { IconInbox } from "@tabler/icons-react";
-import { TaskWithProject } from "@/lib/pocketbase";
 import { inbox } from "@/constants";
+import { useTasks } from "@/hooks/tasks";
+import { TaskWithProject } from "@/lib/pocketbase";
+import { useAuthUser } from "@/store/auth-store";
 
 /**
  * Inbox Page - Product Mode

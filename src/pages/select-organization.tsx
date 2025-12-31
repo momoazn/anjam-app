@@ -1,18 +1,19 @@
-import { useNavigate } from "react-router-dom";
 import { IconPlus } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
-import { organization } from "@/constants";
-import {
-  useUserOrganizations,
-  useCurrentOrganization,
-  useCurrentOrgMode,
-  useAuthStore,
-} from "@/store/auth-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { pb } from "@/lib/pocketbase";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { organization } from "@/constants";
 import { getHomeRoute } from "@/lib/mode-features";
+import { pb } from "@/lib/pocketbase";
+import type { OrganizationsResponse } from "@/lib/pocketbase-types";
+import { cn } from "@/lib/utils";
+import {
+  useAuthStore,
+  useCurrentOrgMode,
+  useCurrentOrganization,
+  useUserOrganizations,
+} from "@/store/auth-store";
 
 function getOrgInitials(name: string): string {
   return name
@@ -22,8 +23,6 @@ function getOrgInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2);
 }
-
-import type { OrganizationsResponse } from "@/lib/pocketbase-types";
 
 function getOrgLogoUrl(org: OrganizationsResponse | null): string | undefined {
   if (!org?.logo) return undefined;

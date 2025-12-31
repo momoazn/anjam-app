@@ -1,16 +1,18 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
+  IconActivity,
   IconCalendar,
   IconFileText,
   IconHistory,
+  IconQuote,
+  IconTerminal,
   IconTrash,
   IconUpload,
   IconUser,
-  IconTerminal,
-  IconQuote,
-  IconActivity,
 } from "@tabler/icons-react";
 
 import { ActivityStream } from "@/components/audit/activity-stream";
+import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 import { ProjectAssets } from "@/components/project/project-assets";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
@@ -21,8 +23,7 @@ import { formatDateLocale } from "@/lib/date-utils";
 import { stripHtml } from "@/lib/excel-export";
 import type { ProjectWithSupervisor } from "@/lib/pocketbase";
 import { formatUserName } from "@/lib/utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
+import { cn } from "@/lib/utils";
 
 type ProjectDetailsSectionsProps = {
   project: ProjectWithSupervisor;
@@ -263,5 +264,3 @@ export function ProjectDetailsSections({
     </div>
   );
 }
-
-import { cn } from "@/lib/utils";

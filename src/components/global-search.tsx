@@ -1,3 +1,11 @@
+import { IconActivity, IconHash, IconTarget } from "@tabler/icons-react";
+import { FileText, Folder, Loader2, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDebounce } from "use-debounce";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -9,14 +17,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { common, search } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
-import { useDebounce } from "use-debounce";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Folder, Loader2, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IconHash, IconTarget, IconActivity } from "@tabler/icons-react";
 
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
@@ -71,7 +72,7 @@ export function GlobalSearch() {
           <DialogTitle className="sr-only">{search.title}</DialogTitle>
           <Command
             shouldFilter={false}
-            className="[&_[cmdk-group-heading]]:text-muted-foreground bg-transparent [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-input-wrapper]]:h-14 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:text-base [&_[cmdk-input]]:font-medium"
+            className="**:[[cmdk-group-heading]]:text-muted-foreground bg-transparent **:[[cmdk-group-heading]]:px-4 **:[[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-input-wrapper]]:h-14 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:text-base [&_[cmdk-input]]:font-medium"
           >
             <div className="relative flex items-center px-4">
               <Search className="text-muted-foreground/50 mr-3 size-5" />
@@ -83,7 +84,7 @@ export function GlobalSearch() {
               />
             </div>
 
-            <CommandList className="scrollbar-none max-h-[400px] overflow-y-auto p-2">
+            <CommandList className="scrollbar-none max-h-100 overflow-y-auto p-2">
               {isLoading && (
                 <div className="flex flex-col items-center justify-center py-12">
                   <Loader2 className="text-primary/40 size-8 animate-spin" />

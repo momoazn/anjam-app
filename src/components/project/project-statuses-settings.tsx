@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { DndContext, type DragEndEvent, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
   arrayMove,
@@ -8,16 +7,17 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  IconCheck,
   IconGripVertical,
   IconPlus,
   IconTrash,
-  IconCheck,
 } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -25,13 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { projectStatuses } from "@/constants/misc";
 import { useProjectStatuses } from "@/hooks/project-statuses";
+import { queryKeys } from "@/hooks/query-keys";
 import { usePermissions } from "@/hooks/usePermissions";
 import { pb } from "@/lib/pocketbase";
 import type { ProjectStatusesResponse } from "@/lib/pocketbase-types";
-import { queryKeys } from "@/hooks/query-keys";
-import { useQueryClient } from "@tanstack/react-query";
-import { projectStatuses } from "@/constants/misc";
 
 const colorOptions = [
   { value: "slate", label: "سنگی" },

@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useMemo, useState } from "react";
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { DndContext, type DragEndEvent, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
   arrayMove,
@@ -15,19 +14,10 @@ import {
   IconTrash,
   IconUser,
 } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { tasks } from "@/constants";
-import {
-  useCreateSubtask,
-  useDeleteSubtask,
-  useProjectUsers,
-  useSubtasks,
-  useUpdateSubtask,
-} from "@/hooks";
-import { formatTaskDate } from "@/lib/date-utils";
-import { formatUserName, cn } from "@/lib/utils";
-import { handlePocketBaseError } from "@/lib/error-handler";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,10 +26,20 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { pb } from "@/lib/pocketbase";
-import { useQueryClient } from "@tanstack/react-query";
+import { tasks } from "@/constants";
+import {
+  useCreateSubtask,
+  useDeleteSubtask,
+  useProjectUsers,
+  useSubtasks,
+  useUpdateSubtask,
+} from "@/hooks";
 import { queryKeys } from "@/hooks/query-keys";
+import { formatTaskDate } from "@/lib/date-utils";
+import { handlePocketBaseError } from "@/lib/error-handler";
+import { pb } from "@/lib/pocketbase";
 import type { SubtasksResponse, UsersResponse } from "@/lib/pocketbase-types";
+import { cn, formatUserName } from "@/lib/utils";
 
 type SubtaskWithAssignee = SubtasksResponse<{ assignee?: UsersResponse }>;
 

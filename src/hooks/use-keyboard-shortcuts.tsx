@@ -1,7 +1,8 @@
-import { useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useCurrentOrgMode, useCurrentOrgFeatures } from "@/store/auth-store";
+import { useCallback, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { isFeatureEnabled } from "@/lib/mode-features";
+import { useCurrentOrgFeatures, useCurrentOrgMode } from "@/store/auth-store";
 
 /**
  * Parse a keyboard event into a normalized key string

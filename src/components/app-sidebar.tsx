@@ -1,25 +1,25 @@
-import { NavLink } from "react-router-dom";
 import {
-  IconDashboard,
   IconBell,
-  IconTag,
   IconChartBar,
   IconClock,
-  IconUsers,
-  IconHelp,
-  IconSettings,
+  IconDashboard,
   IconFileDescription,
+  IconFileText,
+  IconHelp,
   IconInbox,
   IconRocket,
-  IconFileText,
+  IconSettings,
+  IconTag,
+  IconUsers,
 } from "@tabler/icons-react";
+import { NavLink } from "react-router-dom";
 
 import { Logo } from "@/components/brand/logo";
 import { NavMain } from "@/components/nav-main";
-import { QuickCreate } from "@/components/sidebar/quick-create";
-import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";
-import { TaskViews } from "@/components/sidebar/task-views";
 import { OrgSwitcher } from "@/components/organization/org-switcher";
+import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";
+import { QuickCreate } from "@/components/sidebar/quick-create";
+import { TaskViews } from "@/components/sidebar/task-views";
 import {
   Sidebar,
   SidebarContent,
@@ -31,17 +31,17 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { app, navigation, navigationLabels } from "@/constants";
+import { usePermissions } from "@/hooks/usePermissions";
+import { isFeatureEnabled } from "@/lib/mode-features";
+import { getModeLabels } from "@/lib/mode-labels";
 import type { Permission } from "@/lib/permissions";
 import { isOrgAdmin } from "@/lib/permissions";
-import { usePermissions } from "@/hooks/usePermissions";
 import {
   useAuthUser,
-  useCurrentOrgRole,
-  useCurrentOrgMode,
   useCurrentOrgFeatures,
+  useCurrentOrgMode,
+  useCurrentOrgRole,
 } from "@/store/auth-store";
-import { getModeLabels } from "@/lib/mode-labels";
-import { isFeatureEnabled } from "@/lib/mode-features";
 
 type NavItem = {
   title: string;

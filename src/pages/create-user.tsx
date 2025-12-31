@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconLoader2, IconUserPlus } from "@tabler/icons-react";
-import { useForm, type Control } from "react-hook-form";
+import { type Control, useForm } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
@@ -8,8 +8,8 @@ import {
   UserFields,
   type UserFieldsFormValues,
 } from "@/components/forms/user-fields";
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";

@@ -1,18 +1,6 @@
+import { Check, Edit2, Star, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Star, Trash2, Edit2, Check, X } from "lucide-react";
-import { common, savedFilters as savedFiltersText } from "@/constants";
-import type { SavedFilter } from "@/hooks/use-saved-filters";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +11,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { common, savedFilters as savedFiltersText } from "@/constants";
+import type { SavedFilter } from "@/hooks/use-saved-filters";
 
 interface ManageSavedFiltersDialogProps {
   open: boolean;

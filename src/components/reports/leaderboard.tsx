@@ -1,9 +1,9 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconTrophy,
+  IconActivity,
   IconCircleCheck,
   IconClock,
-  IconActivity,
+  IconTrophy,
 } from "@tabler/icons-react";
 
 import { reports } from "@/constants";
@@ -25,7 +25,7 @@ export function Leaderboard({ rows, onRowClick }: Props) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center opacity-30 grayscale">
         <div className="border-border/15 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border">
-          <IconTrophy className="size-10 stroke-[1]" />
+          <IconTrophy className="size-10 stroke-1" />
         </div>
         <p className="text-[10px] font-bold tracking-tight">{reports.noData}</p>
       </div>

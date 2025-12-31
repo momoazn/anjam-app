@@ -1,13 +1,14 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+
 import { projects } from "@/constants";
 import {
   DEFAULT_ALLOWED_TYPES,
   DEFAULT_MAX_SIZE,
   type FileWithPreview,
   addPreviewIfNeeded,
-  getFileIcon,
   formatFileSize,
+  getFileIcon,
   validateFile,
 } from "@/lib/file-utils";
 

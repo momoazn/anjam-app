@@ -19,19 +19,20 @@ import {
   ui,
   users,
 } from "@/constants";
-import type { Permission } from "./lib/permissions";
+
 import { usePermissions } from "./hooks/usePermissions";
+import type { FeatureKey } from "./lib/mode-features";
+import { getHomeRoute, isFeatureEnabled } from "./lib/mode-features";
+import type { Permission } from "./lib/permissions";
 import {
   useAuthIsLoggedIn,
-  useAuthUser,
-  useCurrentOrganization,
-  useCurrentOrgOnboardingCompleted,
-  useCurrentOrgMode,
-  useCurrentOrgFeatures,
   useAuthStore,
+  useAuthUser,
+  useCurrentOrgFeatures,
+  useCurrentOrgMode,
+  useCurrentOrgOnboardingCompleted,
+  useCurrentOrganization,
 } from "./store/auth-store";
-import type { FeatureKey } from "./lib/mode-features";
-import { isFeatureEnabled, getHomeRoute } from "./lib/mode-features";
 
 // Standardized error fallback component for lazy-loaded routes
 const PageLoadError = ({ message }: { message: string }) => (

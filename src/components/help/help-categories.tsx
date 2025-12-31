@@ -1,23 +1,24 @@
 import {
+  IconAlertTriangle,
+  IconBook,
+  IconChartBar,
+  IconCpu,
+  IconFilter,
+  IconList,
+  IconMessages,
+  IconShield,
+  IconTarget,
+  IconTerminal,
+} from "@tabler/icons-react";
+
+import { HelpArticle } from "@/components/help/help-article";
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpArticle } from "@/components/help/help-article";
 import { helps } from "@/constants";
-import {
-  IconTerminal,
-  IconBook,
-  IconCpu,
-  IconShield,
-  IconTarget,
-  IconList,
-  IconFilter,
-  IconMessages,
-  IconChartBar,
-  IconAlertTriangle,
-} from "@tabler/icons-react";
 
 export function HelpCategories() {
   const { gettingStarted, features, roles, troubleshooting } = helps.content;
@@ -61,7 +62,7 @@ export function HelpCategories() {
     >
       {categories.map((cat) => (
         <AccordionItem key={cat.id} value={cat.id} className="border-none">
-          <AccordionTrigger className="bg-card hover:bg-muted/30 [&[data-state=open]]:bg-primary/5 [&[data-state=open]]:text-primary h-16 flex-row-reverse gap-4 px-6 transition-all hover:no-underline">
+          <AccordionTrigger className="bg-card hover:bg-muted/30 data-[state=open]:bg-primary/5 data-[state=open]:text-primary h-16 flex-row-reverse gap-4 px-6 transition-all hover:no-underline">
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-bold tracking-tight">
                 {cat.title}
@@ -184,7 +185,7 @@ export function HelpCategories() {
                 "troubleshooting",
               ].includes(cat.id) && (
                 <div className="py-12 text-center opacity-40">
-                  <IconTerminal className="mx-auto mb-4 size-10 stroke-[1]" />
+                  <IconTerminal className="mx-auto mb-4 size-10 stroke-1" />
                   <p className="text-[10px] font-bold tracking-tight">
                     {helps.content.underExpansion}
                   </p>

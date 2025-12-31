@@ -1,5 +1,4 @@
 // Organization domain constants (users, projects)
-
 import { shared } from "./core";
 
 // User management module constants

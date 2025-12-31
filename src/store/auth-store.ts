@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
+import type { OrgFeatures, OrgMode } from "@/lib/mode-features";
+import { getOrgFeatures } from "@/lib/mode-features";
 import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationsResponse,
   UsersResponse,
 } from "@/lib/pocketbase-types";
-import type { OrgMode, OrgFeatures } from "@/lib/mode-features";
-import { getOrgFeatures } from "@/lib/mode-features";
 
 type OrgRole = "owner" | "admin" | "member";
 

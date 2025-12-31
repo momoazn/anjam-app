@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/auth";
+import { expect, test } from "../../fixtures/auth";
 
 test.describe("Dashboard & Navigation (US-054 to US-056)", () => {
   test.beforeEach(async ({ page }) => {

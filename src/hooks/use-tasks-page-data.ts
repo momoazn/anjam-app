@@ -8,8 +8,8 @@
  * This eliminates unnecessary requests for projects and project-user relationships
  * that aren't needed on the tasks page.
  */
-
 import { useQuery } from "@tanstack/react-query";
+
 import { pb } from "../lib/pocketbase";
 import { UsersResponse } from "../lib/pocketbase-types";
 import { queryKeys } from "./query-keys";

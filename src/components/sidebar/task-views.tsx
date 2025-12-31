@@ -1,6 +1,13 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import {
+  IconAlertTriangle,
+  IconChecklist,
+  IconClock,
+  IconList,
+  IconLoader,
+} from "@tabler/icons-react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useTaskCounts } from "@/hooks/use-task-counts";
-import { navigation, navigationSectionLabels } from "@/constants";
+
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,16 +17,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  IconChecklist,
-  IconClock,
-  IconAlertTriangle,
-  IconLoader,
-  IconList,
-} from "@tabler/icons-react";
-import { cn } from "@/lib/utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { navigation, navigationSectionLabels } from "@/constants";
+import { useTaskCounts } from "@/hooks/use-task-counts";
 import type { ModeLabels } from "@/lib/mode-labels";
+import { cn } from "@/lib/utils";
 
 const viewItems = [
   {

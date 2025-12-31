@@ -1,6 +1,5 @@
-import { IconX, IconTerminal, IconHash } from "@tabler/icons-react";
-import { dashboard, reports, tasks } from "@/constants";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconHash, IconTerminal, IconX } from "@tabler/icons-react";
 
 import {
   Drawer,
@@ -8,6 +7,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { dashboard, reports, tasks } from "@/constants";
 
 type TaskRow = {
   id: string;

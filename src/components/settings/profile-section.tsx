@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import {
   IconCamera,
+  IconFingerprint,
   IconLoader2,
   IconTerminal,
-  IconUserCircle,
-  IconFingerprint,
   IconUser,
+  IconUserCircle,
 } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {

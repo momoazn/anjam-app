@@ -1,6 +1,7 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 type SidebarBadgeProps = {
   count: number;

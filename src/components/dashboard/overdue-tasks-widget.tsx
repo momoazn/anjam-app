@@ -1,12 +1,13 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { format } from "date-fns-jalali";
+import { AlertTriangle, Calendar, Hash } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Calendar, Hash } from "lucide-react";
-import { dashboard, tasks } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { UserAvatar } from "@/components/user-avatar";
-import { useNavigate } from "react-router-dom";
-import { format } from "date-fns-jalali";
+import { dashboard, tasks } from "@/constants";
 import type { TasksPriorityOptions } from "@/lib/pocketbase-types";
 
 type AssigneePreview = {

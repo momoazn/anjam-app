@@ -1,10 +1,12 @@
-import { useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuthUser } from "@/store/auth-store";
-import { queryKeys } from "./query-keys";
+import { isPast, isToday } from "date-fns";
+import { useMemo } from "react";
+
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
-import { isToday, isPast } from "date-fns";
+import { useAuthUser } from "@/store/auth-store";
+
+import { queryKeys } from "./query-keys";
 
 export function useTaskCounts() {
   const queryClient = useQueryClient();

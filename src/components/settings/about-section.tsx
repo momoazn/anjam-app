@@ -1,7 +1,7 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconCircleCheck, IconTerminal } from "@tabler/icons-react";
 
 import { app, settings } from "@/constants";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 
 export function AboutSection() {
   return (

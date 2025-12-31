@@ -2,8 +2,8 @@
  * Query invalidation helpers for standardized cache management
  * Provides reusable invalidation patterns for collections and related data
  */
-
 import { QueryClient, QueryKey } from "@tanstack/react-query";
+
 import { queryKeys } from "@/hooks/query-keys";
 
 /**

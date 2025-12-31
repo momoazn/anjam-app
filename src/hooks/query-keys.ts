@@ -1,7 +1,6 @@
 /**
  * Centralized query key factory for React Query cache management.
  */
-
 import type { AuditLogsListParams } from "@/lib/audit-log-service";
 
 /**

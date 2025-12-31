@@ -1,11 +1,12 @@
+import { BarChart3, LayoutDashboard, Plus, Target, Users } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { BarChart3, LayoutDashboard, Plus, Target, Users } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { dashboard, users } from "@/constants";
-import { useAuthRole, useAuthUser } from "@/store/auth-store";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
+import { useAuthRole, useAuthUser } from "@/store/auth-store";
 
 type WelcomeWidgetProps = {
   isLoading?: boolean;

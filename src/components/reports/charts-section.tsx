@@ -1,14 +1,38 @@
-import { Suspense, lazy } from "react";
-import type { ReactNode } from "react";
 import {
+  IconActivity,
+  IconChartPie,
   IconInfoCircle,
   IconTerminal,
-  IconChartPie,
-  IconUsers,
   IconUser,
-  IconActivity,
+  IconUsers,
 } from "@tabler/icons-react";
 import { isWithinInterval } from "date-fns-jalali";
+import { Suspense, lazy } from "react";
+import type { ReactNode } from "react";
+
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { reports } from "@/constants";
+import type { TaskWithProject } from "@/lib/pocketbase";
+import type {
+  TasksPriorityOptions,
+  UsersResponse,
+} from "@/lib/pocketbase-types";
+import type {
+  EmployeeBucket,
+  buildLeaderboard,
+  computeEmployeeSummary,
+  computeOvertimeAnalysis,
+  computeProductivityTrends,
+  computeTeamAverages,
+  computeWorkloadDistribution,
+} from "@/lib/reports";
 
 const Leaderboard = lazy(() =>
   import("@/components/reports/leaderboard").then((m) => ({
@@ -55,29 +79,6 @@ const WorkloadDistributionChart = lazy(() =>
     default: m.WorkloadDistributionChart,
   })),
 );
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { reports } from "@/constants";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type {
-  TasksPriorityOptions,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
-import type {
-  buildLeaderboard,
-  EmployeeBucket,
-  computeEmployeeSummary,
-  computeOvertimeAnalysis,
-  computeProductivityTrends,
-  computeTeamAverages,
-  computeWorkloadDistribution,
-} from "@/lib/reports";
 
 type TimelinessKey = "on_time" | "overdue" | "no_deadline";
 

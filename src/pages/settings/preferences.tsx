@@ -1,7 +1,7 @@
 import { IconSettings } from "@tabler/icons-react";
 
-import { PageTransition } from "@/components/page-transition";
 import { PageHeader } from "@/components/page-header";
+import { PageTransition } from "@/components/page-transition";
 import { PreferencesSection } from "@/components/settings/preferences-section";
 import { settings } from "@/constants";
 

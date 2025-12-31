@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Authentication - Register (US-001)", () => {
   test("user should register with valid email and password", async ({

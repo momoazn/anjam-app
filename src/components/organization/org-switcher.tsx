@@ -1,7 +1,10 @@
+import { IconCheck, IconChevronDown, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IconCheck, IconChevronDown, IconPlus } from "@tabler/icons-react";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,21 +13,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useSidebar } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { organization as organizationConstants } from "@/constants";
+import { pb } from "@/lib/pocketbase";
+import type { OrganizationsResponse } from "@/lib/pocketbase-types";
+import { cn } from "@/lib/utils";
 import {
   useAuthStore,
-  useCurrentOrganization,
   useCurrentOrgRole,
+  useCurrentOrganization,
   useUserOrganizations,
 } from "@/store/auth-store";
-import { pb } from "@/lib/pocketbase";
-import { cn } from "@/lib/utils";
-import { organization as organizationConstants } from "@/constants";
-import type { OrganizationsResponse } from "@/lib/pocketbase-types";
 
 // =============================================================================
 // Types

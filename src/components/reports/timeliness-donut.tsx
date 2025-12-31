@@ -1,7 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Cell, Pie, PieChart } from "recharts";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { reports } from "@/constants";
 
 import {
   ChartContainer,
@@ -10,6 +8,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { reports } from "@/constants";
 
 const chartConfig = {
   on_time: {

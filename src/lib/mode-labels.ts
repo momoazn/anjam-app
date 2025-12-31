@@ -4,7 +4,6 @@
  * Provides UI label overrides based on organization mode.
  * Centralizes all user-facing text that differs between modes.
  */
-
 import type { OrgMode } from "./mode-features";
 
 /**

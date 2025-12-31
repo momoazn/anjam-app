@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
 import { IconClock, IconEdit, IconTrash } from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { TimeEntryDialog } from "@/components/task/time-entry-dialog";
@@ -13,12 +13,12 @@ import {
 } from "@/hooks";
 import { formatDateISO, formatTaskDate } from "@/lib/date-utils";
 import { handlePocketBaseError } from "@/lib/error-handler";
-import { formatTimeSpent } from "@/lib/time-utils";
-import { formatUserName } from "@/lib/utils";
 import type {
   TimeEntriesResponse,
   UsersResponse,
 } from "@/lib/pocketbase-types";
+import { formatTimeSpent } from "@/lib/time-utils";
+import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
 type TimeEntriesProps = {

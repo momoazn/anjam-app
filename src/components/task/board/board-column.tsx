@@ -3,19 +3,21 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { BoardCard } from "./board-card";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconHash, IconTerminal } from "@tabler/icons-react";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { common, tasks as tasksText } from "@/constants";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import {
   TaskStatusConfig,
-  taskStatusIcons,
   getStatusColorVariant,
+  taskStatusIcons,
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconTerminal, IconHash } from "@tabler/icons-react";
-import { common, tasks as tasksText } from "@/constants";
+
+import { BoardCard } from "./board-card";
 
 interface BoardColumnProps {
   status: TaskStatusConfig;
