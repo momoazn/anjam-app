@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"anjam/config"
+	"anjam/helpers"
 	"anjam/notifications"
 	"anjam/utils"
 
@@ -102,7 +103,7 @@ func HandleProjectMembersCreatedNotify(e *core.RecordEvent) error {
 		return e.Next()
 	}
 
-	projectName := getProjectName(e.App, projectId)
+	projectName := helpers.GetProjectName(e.App, projectId)
 	return notifications.New(e.App).
 		User(userId).
 		Type("system").
@@ -112,16 +113,4 @@ func HandleProjectMembersCreatedNotify(e *core.RecordEvent) error {
 			"projectId": projectId,
 		}).
 		Send()
-}
-
-// getProjectName retrieves project name by ID, returns fallback if not found.
-func getProjectName(app core.App, projectId string) string {
-	project, err := app.FindRecordById(config.CollectionProjects, projectId)
-	if err != nil {
-		return "project"
-	}
-	if name := project.GetString("name"); name != "" {
-		return name
-	}
-	return "project"
 }

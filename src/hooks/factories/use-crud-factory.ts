@@ -11,7 +11,11 @@ import { createMutation } from "../use-mutation-factory";
 /**
  * Configuration for CRUD hooks
  */
-export interface CrudConfig<TResponse, TQueryKeys = unknown> {
+export interface CrudConfig<
+  TResponse,
+  TQueryKeys = unknown,
+  TCreateData = unknown,
+> {
   /** PocketBase collection name */
   collection: string;
 
@@ -35,6 +39,9 @@ export interface CrudConfig<TResponse, TQueryKeys = unknown> {
 
   /** Optional response mapping function */
   mapToResponse?: (record: RecordModel) => TResponse;
+
+  /** Optional custom create data type (for excluding auto-generated fields) */
+  createDataType?: TCreateData;
 }
 
 /**
@@ -42,18 +49,19 @@ export interface CrudConfig<TResponse, TQueryKeys = unknown> {
  * @param config - Configuration object with collection, queryKeys, and invalidators
  * @returns Object with create, update, and delete mutation hooks
  */
-export function createCrudHooks<TRecord, TResponse, TQueryKeys = unknown>(
-  config: CrudConfig<TResponse, TQueryKeys>,
-) {
+export function createCrudHooks<
+  TRecord,
+  TResponse,
+  TQueryKeys = unknown,
+  TCreateData = Omit<TRecord, "id" | "created" | "updated">,
+>(config: CrudConfig<TResponse, TQueryKeys, TCreateData>) {
   const { collection, invalidators, relatedInvalidators } = config;
 
-  const useCreateMutation = createMutation<
-    TResponse,
-    Error,
-    Omit<TRecord, "id" | "created" | "updated">
-  >(
+  const useCreateMutation = createMutation<TResponse, Error, TCreateData>(
     async (data) => {
-      const result = await pb.collection(collection).create(data);
+      const result = await pb
+        .collection(collection)
+        .create(data as Record<string, unknown>);
       return config.mapToResponse
         ? config.mapToResponse(result)
         : (result as unknown as TResponse);

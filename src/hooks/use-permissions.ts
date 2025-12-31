@@ -1,24 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { queryKeys } from "@/hooks/query-keys";
 import {
   type OrgRole,
   type Permission,
   type ProjectRole,
   computePermissions,
 } from "@/lib/permissions";
-import { pb } from "@/lib/pocketbase";
+import {
+  type PermissionsResponse,
+  getPermissions,
+} from "@/lib/permissions-service";
 import { useAuthStore } from "@/store/auth-store";
-
-interface PermissionsResponse {
-  user_id: string;
-  organization_id: string;
-  organization_role: OrgRole | null;
-  project_id: string | null;
-  project_role: ProjectRole | null;
-  is_org_owner: boolean;
-  is_org_admin: boolean;
-  permissions: Record<string, boolean>;
-}
 
 interface UsePermissionsResult {
   isLoading: boolean;
@@ -41,23 +34,13 @@ export function usePermissions(projectId?: string): UsePermissionsResult {
   const orgId = currentOrganization?.id;
 
   const query = useQuery({
-    queryKey: ["permissions", orgId, projectId],
+    queryKey: queryKeys.permissions.byOrg(orgId, projectId),
     queryFn: async (): Promise<PermissionsResponse> => {
       if (!orgId) {
         throw new Error("No organization selected");
       }
 
-      const params = new URLSearchParams();
-      params.set("organization_id", orgId);
-      if (projectId) {
-        params.set("project_id", projectId);
-      }
-
-      const response = await pb.send(`/api/v1/permissions?${params}`, {
-        method: "GET",
-      });
-
-      return response as PermissionsResponse;
+      return getPermissions(orgId, projectId);
     },
     enabled: !!orgId,
     staleTime: 30000,

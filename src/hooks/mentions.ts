@@ -3,11 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { pb } from "@/lib/pocketbase";
 import type { MentionsResponse } from "@/lib/pocketbase-types";
 
+import { queryKeys } from "./query-keys";
+
 export function useMentions() {
   const user = pb.authStore.record;
 
   return useQuery<MentionsResponse[]>({
-    queryKey: ["mentions", user?.id ?? ""],
+    queryKey: queryKeys.mentions.byUser(user?.id),
     queryFn: async (): Promise<MentionsResponse[]> => {
       if (!user?.id) {
         throw new Error("User not authenticated");

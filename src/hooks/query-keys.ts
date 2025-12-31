@@ -76,13 +76,15 @@ export const queryKeys = {
 
   notifications: {
     all: ["notifications"] as const,
-    byUser: (userId: string) => ["notifications", "user", userId] as const,
-    unreadCount: (userId: string) =>
+    byUser: (userId: string | undefined) =>
+      ["notifications", "user", userId] as const,
+    unreadList: (userId: string | undefined) =>
+      ["notifications", "unread-list", userId] as const,
+    unreadCount: (userId: string | undefined) =>
       ["notifications", "unread-count", userId] as const,
   },
 
   auditLogs: {
-    all: ["audit_logs"] as const,
     lists: () => ["audit_logs", "list"] as const,
     list: (params?: AuditLogsListParams) => {
       const defaults = {
@@ -159,6 +161,21 @@ export const queryKeys = {
       ["organization_invites", "token", token] as const,
   },
 
-  notificationsUnreadCount: (userId: string | undefined) =>
-    ["notifications", "unread-count", userId] as const,
+  userPreferences: {
+    byUser: (userId: string | undefined) =>
+      ["user_preferences", userId] as const,
+  },
+
+  mentions: {
+    byUser: (userId: string | undefined) => ["mentions", userId] as const,
+  },
+
+  permissions: {
+    byOrg: (orgId: string | undefined, projectId?: string) =>
+      ["permissions", orgId, projectId] as const,
+  },
+
+  globalSearch: {
+    byQuery: (query: string) => ["global-search", query] as const,
+  },
 };

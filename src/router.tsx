@@ -20,7 +20,7 @@ import {
   users,
 } from "@/constants";
 
-import { usePermissions } from "./hooks/usePermissions";
+import { usePermissions } from "./hooks/use-permissions";
 import type { FeatureKey } from "./lib/mode-features";
 import { getHomeRoute, isFeatureEnabled } from "./lib/mode-features";
 import type { Permission } from "./lib/permissions";

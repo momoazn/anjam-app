@@ -2,16 +2,12 @@
 package hooks
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
 	"sync"
-	"time"
 
 	"anjam/config"
+	"anjam/helpers"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
@@ -27,7 +23,7 @@ func HandleTaskCreation(e *core.RecordEvent) error {
 		return err
 	}
 	setTaskDefaults(e)
-	setTaskStatusRef(e)
+	helpers.SetTaskStatusRef(e)
 
 	// Validate that all tags belong to the same organization as the project
 	if err := validateTaskTags(e); err != nil {
@@ -56,25 +52,26 @@ func setTaskDisplayID(e *core.RecordEvent) error {
 		return err
 	}
 
-	displayID := fmt.Sprintf("%s-%03d", projectCode, newTaskNumber)
+	displayID := fmt.Sprintf("%s-%06d", projectCode, newTaskNumber)
 	e.Record.Set("display_id", displayID)
+	e.Record.Set("task_number", newTaskNumber)
 	return nil
 }
 
 // getNextTaskNumber retrieves the next sequential task number for a project.
-// Note: This function has a potential race condition when tasks are created concurrently.
-// TODO: Consider implementing database-level constraint with retry logic for better concurrent safety.
+// Uses task_number field for ordering, which is an integer and avoids string
+// sorting issues (e.g., "ABC-1000" sorting before "ABC-999").
 func getNextTaskNumber(app core.App, projectId string) (int, error) {
 	taskNumberMutex.Lock()
 	defer taskNumberMutex.Unlock()
 
 	var lastTask struct {
-		DisplayID string `db:"display_id"`
+		TaskNumber int `db:"task_number"`
 	}
 	err := app.RecordQuery("tasks").
-		Select("display_id").
+		Select("task_number").
 		Where(dbx.HashExp{"project": projectId}).
-		OrderBy("display_id DESC").
+		OrderBy("task_number DESC").
 		Limit(1).
 		One(&lastTask)
 
@@ -85,17 +82,7 @@ func getNextTaskNumber(app core.App, projectId string) (int, error) {
 		return 0, err
 	}
 
-	parts := strings.Split(lastTask.DisplayID, "-")
-	if len(parts) != 2 {
-		return 0, fmt.Errorf("invalid display_id format %q: expected format 'CODE-NUMBER'", lastTask.DisplayID)
-	}
-
-	lastNum, parseErr := strconv.Atoi(parts[1])
-	if parseErr != nil {
-		return 0, fmt.Errorf("invalid task number in display_id %q: %w", lastTask.DisplayID, parseErr)
-	}
-
-	return lastNum + 1, nil
+	return lastTask.TaskNumber + 1, nil
 }
 
 // setTaskDefaults sets default values for task fields.
@@ -147,57 +134,4 @@ func validateTaskTags(e *core.RecordEvent) error {
 	}
 
 	return nil
-}
-
-// setTaskStatusRef sets the status_ref field based on the task's project and status key.
-func setTaskStatusRef(e *core.RecordEvent) {
-	projectID := resolveTaskProjectID(e)
-	statusKey := e.Record.GetString("status")
-	if projectID == "" || statusKey == "" {
-		return
-	}
-
-	record, err := resolveProjectStatus(e.App, projectID, statusKey)
-	if err != nil {
-		log.Printf("Warning: failed to resolve project status ref for task %s: %v", e.Record.Id, err)
-		return
-	}
-
-	e.Record.Set("status_ref", record.Id)
-	e.Record.Set("updated", time.Now().Format(time.RFC3339))
-}
-
-// resolveTaskProjectID returns current project ID from the record or its original state.
-func resolveTaskProjectID(e *core.RecordEvent) string {
-	projectID := e.Record.GetString("project")
-	if projectID != "" {
-		return projectID
-	}
-
-	if original := e.Record.Original(); original != nil {
-		return original.GetString("project")
-	}
-
-	return ""
-}
-
-// resolveProjectStatus returns matching project_status record for a project and key.
-func resolveProjectStatus(app core.App, projectID, key string) (*core.Record, error) {
-	if projectID == "" || key == "" {
-		return nil, fmt.Errorf("projectID or status key missing")
-	}
-
-	record, err := app.FindFirstRecordByFilter(
-		"project_statuses",
-		"project = {:project} && key = {:key}",
-		map[string]any{"project": projectID, "key": key},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch status: %w", err)
-	}
-	if record == nil {
-		return nil, fmt.Errorf("status %q not found for project %s", key, projectID)
-	}
-
-	return record, nil
 }

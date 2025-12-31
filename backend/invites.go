@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/security"
+
+	"anjam/helpers"
 )
 
 // registerInviteEndpoints sets up invite-related API routes.
@@ -290,7 +290,7 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 		}
 
 		// Generate unique username with collision handling
-		baseUsername := deriveUsername(email)
+		baseUsername := helpers.DeriveUsername(email)
 		username := baseUsername
 		usernameFound := false
 		for i := 0; i < 5; i++ {
@@ -437,7 +437,7 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		}
 
 		// Generate unique username with collision handling
-		baseUsername := deriveUsername(email)
+		baseUsername := helpers.DeriveUsername(email)
 		username := baseUsername
 		usernameFound := false
 		for i := 0; i < 5; i++ {
@@ -593,22 +593,4 @@ func isOrgAdmin(app core.App, userId, orgId string) bool {
 		dbx.Params{"userId": userId, "orgId": orgId},
 	)
 	return err == nil && membership != nil
-}
-
-// deriveUsername creates a username from email
-func deriveUsername(email string) string {
-	base := strings.Split(email, "@")[0]
-	username := strings.ToLower(base)
-	// Replace invalid characters
-	username = strings.ReplaceAll(username, ".", "_")
-	username = strings.ReplaceAll(username, "+", "_")
-	// Ensure minimum length
-	if len(username) < 3 {
-		username = username + security.RandomString(3-len(username))
-	}
-	// Truncate if too long
-	if len(username) > 50 {
-		username = username[:50]
-	}
-	return username
 }
