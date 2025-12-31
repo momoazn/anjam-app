@@ -549,7 +549,7 @@ export type UpdateAuth<T> = Partial<
 
 // Update type for Base collections
 export type UpdateBase<T> = Partial<
-	Omit<ProcessCreateAndUpdateFields<T>, keyof BaseSystemFields>
+	Omit<ProcessCreateAndUpdateFields<T>, keyof BaseSystemFields | 'task_number'>
 >
 
 // Get the correct create type for any collection

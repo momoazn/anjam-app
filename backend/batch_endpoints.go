@@ -26,6 +26,7 @@ var protectedBatchFields = map[string]bool{
 	"updated":     true,
 	"updated_by":  true,
 	"display_id":  true,
+	"task_number": true,
 	"deleted":     true,
 	"deleted_by":  true,
 	"deleted_at":  true,
@@ -105,6 +106,13 @@ func handleBatchUpdateTasks(e *core.RequestEvent) error {
 
 		for key, value := range body.Updates {
 			record.Set(key, value)
+		}
+
+		// Re-evaluate permissions after applying changes to prevent bypass via updates
+		canAccessUpdated, _ := e.App.CanAccessRecord(record, requestInfo, rule)
+		if !canAccessUpdated {
+			failed++
+			continue
 		}
 
 		if err := e.App.Save(record); err != nil {
