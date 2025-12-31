@@ -63,6 +63,7 @@ export const createMockTask = (
   created: "2024-01-01T00:00:00.000Z" as unknown as IsoAutoDateString,
   updated: "2024-01-01T00:00:00.000Z" as unknown as IsoAutoDateString,
   display_id: "TST-001",
+  task_number: 1,
   title: "Test Task",
   description: "Test task description",
   assignee: "user123",

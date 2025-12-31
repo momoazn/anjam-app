@@ -1081,6 +1081,18 @@
         "type": "text"
       },
       {
+        "hidden": false,
+        "id": "number_task_number",
+        "max": null,
+        "min": 1,
+        "name": "task_number",
+        "onlyInt": true,
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "number"
+      },
+      {
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text724990059",
@@ -1323,6 +1335,7 @@
     "indexes": [
       "CREATE INDEX idx_tasks_status ON tasks (status)",
       "CREATE UNIQUE INDEX idx_tasks_display_id ON tasks (display_id)",
+      "CREATE UNIQUE INDEX idx_tasks_project_task_number ON tasks (project, task_number)",
       "CREATE INDEX idx_tasks_assignee ON tasks (assignee)",
       "CREATE INDEX idx_tasks_project ON tasks (project)"
     ],

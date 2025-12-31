@@ -12,6 +12,8 @@ import {
 
 import { TaskWithProject, pb } from "../lib/pocketbase";
 import {
+  Collections,
+  Create,
   TasksRecord,
   TasksResponse,
   UsersResponse,
@@ -22,7 +24,12 @@ import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
 
-const crudHooks = createCrudHooks<TasksRecord, TasksResponse>({
+const crudHooks = createCrudHooks<
+  TasksRecord,
+  TasksResponse,
+  typeof queryKeys.tasks,
+  Create<Collections.Tasks>
+>({
   collection: "tasks",
   queryKeys: queryKeys.tasks,
   invalidators: mutationInvalidators.crud.tasks,
@@ -246,11 +253,7 @@ export function useTask(options: { id: string; enabled?: boolean }) {
  * @returns Mutation function for creating tasks
  */
 export function useCreateTask(
-  options?: UseMutationOptions<
-    TasksResponse,
-    Error,
-    Omit<TasksRecord, "id" | "created" | "updated">
-  >,
+  options?: UseMutationOptions<TasksResponse, Error, Create<Collections.Tasks>>,
 ) {
   return useCreateTaskMutation(options);
 }

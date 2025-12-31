@@ -2,11 +2,8 @@
 package hooks
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 	"sync"
 
 	"anjam/config"
@@ -55,25 +52,26 @@ func setTaskDisplayID(e *core.RecordEvent) error {
 		return err
 	}
 
-	displayID := fmt.Sprintf("%s-%03d", projectCode, newTaskNumber)
+	displayID := fmt.Sprintf("%s-%06d", projectCode, newTaskNumber)
 	e.Record.Set("display_id", displayID)
+	e.Record.Set("task_number", newTaskNumber)
 	return nil
 }
 
 // getNextTaskNumber retrieves the next sequential task number for a project.
-// Note: This function has a potential race condition when tasks are created concurrently.
-// TODO: Consider implementing database-level constraint with retry logic for better concurrent safety.
+// Uses task_number field for ordering, which is an integer and avoids string
+// sorting issues (e.g., "ABC-1000" sorting before "ABC-999").
 func getNextTaskNumber(app core.App, projectId string) (int, error) {
 	taskNumberMutex.Lock()
 	defer taskNumberMutex.Unlock()
 
 	var lastTask struct {
-		DisplayID string `db:"display_id"`
+		TaskNumber int `db:"task_number"`
 	}
 	err := app.RecordQuery("tasks").
-		Select("display_id").
+		Select("task_number").
 		Where(dbx.HashExp{"project": projectId}).
-		OrderBy("display_id DESC").
+		OrderBy("task_number DESC").
 		Limit(1).
 		One(&lastTask)
 
@@ -84,17 +82,7 @@ func getNextTaskNumber(app core.App, projectId string) (int, error) {
 		return 0, err
 	}
 
-	parts := strings.Split(lastTask.DisplayID, "-")
-	if len(parts) != 2 {
-		return 0, fmt.Errorf("invalid display_id format %q: expected format 'CODE-NUMBER'", lastTask.DisplayID)
-	}
-
-	lastNum, parseErr := strconv.Atoi(parts[1])
-	if parseErr != nil {
-		return 0, fmt.Errorf("invalid task number in display_id %q: %w", lastTask.DisplayID, parseErr)
-	}
-
-	return lastNum + 1, nil
+	return lastTask.TaskNumber + 1, nil
 }
 
 // setTaskDefaults sets default values for task fields.
