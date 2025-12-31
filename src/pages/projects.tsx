@@ -2,9 +2,9 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Loader2, Plus, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { ProjectListGroup } from "@/components/project/project-list-group";
-import { HeroHeader } from "@/components/recipes/hero-header";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { useProjects } from "@/hooks";
@@ -34,7 +34,8 @@ export default function Projects() {
 
   return (
     <PageTransition className="container mx-auto p-4 md:p-6">
-      <HeroHeader
+      <PageHeader
+        variant="hero"
         icon={Target}
         iconTone="primarySolid"
         eyebrow={
@@ -50,7 +51,7 @@ export default function Projects() {
           "{count}",
           digitsEnToFa(userProjects?.length ?? 0).toString(),
         )}
-        action={
+        actions={
           canCreateProject ? (
             <Button
               className="hover:shadow-primary/10 h-14 gap-3 rounded-2xl px-8 text-lg font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"

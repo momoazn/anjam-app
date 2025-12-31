@@ -2,6 +2,7 @@ import { IconInbox } from "@tabler/icons-react";
 import { subDays } from "date-fns";
 import { useMemo } from "react";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { TaskListItem } from "@/components/task/task-list-item";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -93,14 +94,12 @@ export default function Inbox() {
   return (
     <PageTransition>
       <div className="container mx-auto space-y-6 p-6">
-        {/* Page Header */}
-        <div className="text-right">
-          <h1 className="flex items-center justify-end gap-2 text-3xl font-bold tracking-tight">
-            {inbox.title}
-            <IconInbox className="h-8 w-8" />
-          </h1>
-          <p className="text-muted-foreground mt-2">{inbox.description}</p>
-        </div>
+        <PageHeader
+          variant="minimal"
+          title={inbox.title}
+          subtitle={inbox.description}
+          icon={IconInbox}
+        />
 
         <div className="space-y-6">
           {/* Assigned to me Section */}

@@ -3,6 +3,7 @@ import { IconRocket } from "@tabler/icons-react";
 import { endOfWeek, startOfWeek, subWeeks } from "date-fns";
 import { useMemo } from "react";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
@@ -103,20 +104,12 @@ export default function Insights() {
   return (
     <PageTransition>
       <div className="container mx-auto space-y-6 p-6">
-        {/* Page Header */}
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
-            <IconRocket className="size-5" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {reports.insights.title}
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              {reports.insights.description}
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          variant="minimal"
+          title={reports.insights.title}
+          subtitle={reports.insights.description}
+          icon={IconRocket}
+        />
 
         {/* Metrics Grid */}
         <div className="grid gap-4 md:grid-cols-3">
