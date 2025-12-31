@@ -48,7 +48,10 @@ func GenerateShortID() string {
 
 // DeriveUsername creates a username from an email address.
 func DeriveUsername(email string) string {
-	base := strings.Split(email, "@")[0]
+	base := email
+	if strings.Contains(email, "@") {
+		base = strings.Split(email, "@")[0]
+	}
 	username := strings.ToLower(base)
 	// Replace invalid characters
 	username = strings.ReplaceAll(username, ".", "_")

@@ -3,7 +3,7 @@
  *
  * Provides type-safe functions for fetching user permissions.
  */
-import type { OrgRole, ProjectRole } from "./permissions";
+import type { OrgRole, Permission, ProjectRole } from "./permissions";
 import { pb } from "./pocketbase";
 
 export interface PermissionsResponse {
@@ -14,7 +14,7 @@ export interface PermissionsResponse {
   project_role: ProjectRole | null;
   is_org_owner: boolean;
   is_org_admin: boolean;
-  permissions: Record<string, boolean>;
+  permissions: Record<Permission, boolean>;
 }
 
 /**
