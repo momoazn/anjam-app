@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { CommandMenu } from "@/components/command-menu";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
@@ -18,6 +19,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { useLinearThemeEffect } from "@/hooks/use-linear-theme";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsLoggedIn } from "@/store/auth-store";
 
@@ -101,6 +103,7 @@ function AppLayout() {
 
 function App() {
   useTheme();
+  useLinearThemeEffect(); // Apply Linear theme based on org mode
 
   return (
     <ErrorBoundary>
@@ -109,6 +112,7 @@ function App() {
           <NuqsAdapter>
             <ScrollToTop />
             <AppLayout />
+            <CommandMenu />
             <Toaster
               position="bottom-right"
               className="font-arad"
