@@ -13,7 +13,7 @@ import {
   Plus,
   Settings,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
@@ -68,91 +68,96 @@ export function CommandMenu() {
     setOpen(isOpen);
     if (isOpen) {
       setActiveIndex(0);
+    } else {
+      setSearch("");
     }
   };
 
   // Define commands based on current context
-  const commands: CommandItem[] = [
-    // Navigation
-    {
-      id: "nav-inbox",
-      label: isProductMode
-        ? commandMenu.product.inbox
-        : commandMenu.operations.myTasks,
-      icon: IconSearch,
-      action: () => {
-        navigate(isProductMode ? "/inbox" : "/my-tasks");
-        setOpen(false);
+  const commands: CommandItem[] = useMemo(
+    () => [
+      // Navigation
+      {
+        id: "nav-inbox",
+        label: isProductMode
+          ? commandMenu.product.inbox
+          : commandMenu.operations.myTasks,
+        icon: IconSearch,
+        action: () => {
+          navigate(isProductMode ? "/inbox" : "/my-tasks");
+          setOpen(false);
+        },
+        keywords: commandMenu.keywords.inbox,
       },
-      keywords: commandMenu.keywords.inbox,
-    },
-    {
-      id: "nav-dashboard",
-      label: isProductMode
-        ? commandMenu.product.dashboard
-        : commandMenu.operations.dashboard,
-      icon: LayoutGrid,
-      action: () => {
-        navigate("/dashboard");
-        setOpen(false);
+      {
+        id: "nav-dashboard",
+        label: isProductMode
+          ? commandMenu.product.dashboard
+          : commandMenu.operations.dashboard,
+        icon: LayoutGrid,
+        action: () => {
+          navigate("/dashboard");
+          setOpen(false);
+        },
+        keywords: commandMenu.keywords.dashboard,
       },
-      keywords: commandMenu.keywords.dashboard,
-    },
-    {
-      id: "nav-projects",
-      label: isProductMode
-        ? commandMenu.product.projects
-        : commandMenu.operations.projects,
-      icon: FolderOpen,
-      action: () => {
-        navigate("/projects");
-        setOpen(false);
+      {
+        id: "nav-projects",
+        label: isProductMode
+          ? commandMenu.product.projects
+          : commandMenu.operations.projects,
+        icon: FolderOpen,
+        action: () => {
+          navigate("/projects");
+          setOpen(false);
+        },
+        keywords: commandMenu.keywords.projects,
       },
-      keywords: commandMenu.keywords.projects,
-    },
-    // Task actions
-    {
-      id: "task-new",
-      label: isProductMode
-        ? commandMenu.product.createItem
-        : commandMenu.operations.createTask,
-      icon: Plus,
-      action: () => {
-        navigate("/tasks/new");
-        setOpen(false);
+      // Task actions
+      {
+        id: "task-new",
+        label: isProductMode
+          ? commandMenu.product.createItem
+          : commandMenu.operations.createTask,
+        icon: Plus,
+        action: () => {
+          navigate("/tasks/new");
+          setOpen(false);
+        },
+        keywords: commandMenu.keywords.new,
+        shortcut: commandMenu.shortcuts.new,
       },
-      keywords: commandMenu.keywords.new,
-      shortcut: commandMenu.shortcuts.new,
-    },
-    // Product mode specific commands
-    ...(isProductMode
-      ? [
-          {
-            id: "nav-insights",
-            label: commandMenu.product.insights,
-            icon: BarChart3,
-            action: () => {
-              navigate("/insights");
-              setOpen(false);
+      // Product mode specific commands
+      ...(isProductMode
+        ? [
+            {
+              id: "nav-insights",
+              label: commandMenu.product.insights,
+              icon: BarChart3,
+              action: () => {
+                navigate("/insights");
+                setOpen(false);
+              },
+              keywords: commandMenu.keywords.insights,
             },
-            keywords: commandMenu.keywords.insights,
-          },
-        ]
-      : []),
-    // Settings
-    {
-      id: "nav-settings",
-      label: isProductMode
-        ? commandMenu.product.settings
-        : commandMenu.operations.settings,
-      icon: Settings,
-      action: () => {
-        navigate("/settings");
-        setOpen(false);
+          ]
+        : []),
+      // Settings
+      {
+        id: "nav-settings",
+        label: isProductMode
+          ? commandMenu.product.settings
+          : commandMenu.operations.settings,
+        icon: Settings,
+        action: () => {
+          navigate("/settings");
+          setOpen(false);
+        },
+        keywords: commandMenu.keywords.settings,
       },
-      keywords: commandMenu.keywords.settings,
-    },
-  ];
+    ],
+    [isProductMode, navigate],
+  );
 
   // Keyboard shortcuts to open command menu (Cmd/Ctrl+K or `/` when not typing)
   useEffect(() => {
@@ -172,9 +177,6 @@ export function CommandMenu() {
       if (isModK || isSlash) {
         e.preventDefault();
         e.stopPropagation();
-        if (typeof e.stopImmediatePropagation === "function") {
-          e.stopImmediatePropagation();
-        }
         setOpen((open) => !open);
       }
     };
