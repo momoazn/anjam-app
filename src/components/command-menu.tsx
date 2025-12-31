@@ -93,6 +93,52 @@ export function CommandMenu() {
     }
   }, []);
 
+  const navigateToInbox = useCallback(() => {
+    navigate(isProductMode ? "/inbox" : "/my-tasks");
+    setOpen(false);
+  }, [isProductMode, navigate]);
+
+  const navigateToDashboard = useCallback(() => {
+    navigate("/dashboard");
+    setOpen(false);
+  }, [navigate]);
+
+  const navigateToProjects = useCallback(() => {
+    navigate("/projects");
+    setOpen(false);
+  }, [navigate]);
+
+  const navigateToNewTask = useCallback(() => {
+    navigate("/tasks/new");
+    setOpen(false);
+  }, [navigate]);
+
+  const navigateToInsights = useCallback(() => {
+    navigate("/insights");
+    setOpen(false);
+  }, [navigate]);
+
+  const navigateToSettings = useCallback(() => {
+    navigate("/settings");
+    setOpen(false);
+  }, [navigate]);
+
+  const navigateToTask = useCallback(
+    (taskId: string) => {
+      navigate(`/tasks/${taskId}`);
+      setOpen(false);
+    },
+    [navigate],
+  );
+
+  const navigateToProject = useCallback(
+    (projectId: string) => {
+      navigate(`/projects/${projectId}/details`);
+      setOpen(false);
+    },
+    [navigate],
+  );
+
   // Define commands based on current context
   const commands: CommandItem[] = useMemo((): CommandItem[] => {
     const items: CommandItem[] = [
@@ -102,10 +148,7 @@ export function CommandMenu() {
           ? commandMenu.product.inbox
           : commandMenu.operations.myTasks,
         icon: IconSearch,
-        action: () => {
-          navigate(isProductMode ? "/inbox" : "/my-tasks");
-          setOpen(false);
-        },
+        action: navigateToInbox,
         keywords: commandMenu.keywords.inbox,
         type: "command",
       },
@@ -115,10 +158,7 @@ export function CommandMenu() {
           ? commandMenu.product.dashboard
           : commandMenu.operations.dashboard,
         icon: LayoutGrid,
-        action: () => {
-          navigate("/dashboard");
-          setOpen(false);
-        },
+        action: navigateToDashboard,
         keywords: commandMenu.keywords.dashboard,
         type: "command",
       },
@@ -128,10 +168,7 @@ export function CommandMenu() {
           ? commandMenu.product.projects
           : commandMenu.operations.projects,
         icon: FolderOpen,
-        action: () => {
-          navigate("/projects");
-          setOpen(false);
-        },
+        action: navigateToProjects,
         keywords: commandMenu.keywords.projects,
         type: "command",
       },
@@ -141,10 +178,7 @@ export function CommandMenu() {
           ? commandMenu.product.createItem
           : commandMenu.operations.createTask,
         icon: Plus,
-        action: () => {
-          navigate("/tasks/new");
-          setOpen(false);
-        },
+        action: navigateToNewTask,
         keywords: commandMenu.keywords.new,
         shortcut: commandMenu.shortcuts.new,
         type: "command",
@@ -156,10 +190,7 @@ export function CommandMenu() {
         id: "nav-insights",
         label: commandMenu.product.insights,
         icon: IconActivity,
-        action: () => {
-          navigate("/insights");
-          setOpen(false);
-        },
+        action: navigateToInsights,
         keywords: commandMenu.keywords.insights,
         type: "command",
       });
@@ -171,16 +202,21 @@ export function CommandMenu() {
         ? commandMenu.product.settings
         : commandMenu.operations.settings,
       icon: Settings,
-      action: () => {
-        navigate("/settings");
-        setOpen(false);
-      },
+      action: navigateToSettings,
       keywords: commandMenu.keywords.settings,
       type: "command",
     });
 
     return items;
-  }, [isProductMode, navigate]);
+  }, [
+    isProductMode,
+    navigateToInbox,
+    navigateToDashboard,
+    navigateToProjects,
+    navigateToNewTask,
+    navigateToInsights,
+    navigateToSettings,
+  ]);
 
   // Transform search results to menu items
   const searchResults: SearchResultItem[] = useMemo((): SearchResultItem[] => {
@@ -196,10 +232,7 @@ export function CommandMenu() {
             id: `task-${task.id}`,
             label: task.title,
             icon: FileText,
-            action: () => {
-              navigate(`/tasks/${task.id}`);
-              setOpen(false);
-            },
+            action: () => navigateToTask(task.id),
             subtitle: `${task.display_id}`,
             badge: task.status,
             type: "task",
@@ -216,10 +249,7 @@ export function CommandMenu() {
             id: `project-${project.id}`,
             label: project.name,
             icon: FolderOpen,
-            action: () => {
-              navigate(`/projects/${project.id}/details`);
-              setOpen(false);
-            },
+            action: () => navigateToProject(project.id),
             subtitle: project.code,
             type: "project",
           });
@@ -228,7 +258,7 @@ export function CommandMenu() {
     }
 
     return items;
-  }, [searchData, navigate]);
+  }, [searchData, navigateToTask, navigateToProject]);
 
   // Filter commands based on search
   const filteredCommands = useMemo(() => {
@@ -257,17 +287,17 @@ export function CommandMenu() {
       const isModK = e.key === "k" && (e.metaKey || e.ctrlKey);
       const isSlash = e.key === "/";
 
-      if (isModK || isSlash) {
+      if ((isModK || isSlash) && !open) {
         e.preventDefault();
         e.stopPropagation();
-        setOpen((open) => !open);
+        setOpen(true);
       }
     };
 
     document.addEventListener("keydown", down, { capture: true });
     return () =>
       document.removeEventListener("keydown", down, { capture: true });
-  }, []);
+  }, [open]);
 
   // Allow other components to open the command menu (e.g., header button)
   useEffect(() => {
@@ -282,6 +312,18 @@ export function CommandMenu() {
     if (open && inputRef.current) {
       inputRef.current.focus();
     }
+  }, [open]);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   // Keyboard navigation inside the command list
@@ -302,8 +344,9 @@ export function CommandMenu() {
       }
     };
 
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    document.addEventListener("keydown", handler, { capture: true });
+    return () =>
+      document.removeEventListener("keydown", handler, { capture: true });
   }, [open, allItems, activeIndex]);
 
   const hasSearchResults =
