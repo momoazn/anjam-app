@@ -10,6 +10,7 @@
     "dev:server": "air",
     "build": "bun run scripts/build.ts --current-platform",
     "build:client": "bun x --bun vite build",
+    "build:analyze": "ANALYZE=true bun x --bun vite build",
     "build:server": "bun run scripts/build.ts --skip-client --current-platform",
     "build:linux": "bun run scripts/build.ts --skip-client --skip-windows --skip-mac",
     "build:windows": "bun run scripts/build.ts --skip-client --skip-linux --skip-mac",
@@ -86,6 +87,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.57.0",
+    "@tanstack/react-query-devtools": "^5.91.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@trivago/prettier-plugin-sort-imports": "^6.0.0",
@@ -105,6 +107,7 @@
     "pocketbase-typegen": "^1.3.2",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "rollup-plugin-visualizer": "^6.0.5",
     "terser": "^5.44.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.50.1",
