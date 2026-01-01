@@ -74,8 +74,8 @@ export function TaskFiltersPanel({
   const [manageFiltersDialogOpen, setManageFiltersDialogOpen] = useState(false);
 
   return (
-    <div className="mb-10 space-y-6" data-animate-stagger>
-      <div className="border-border/20 flex items-center justify-between border-b pb-4">
+    <div className="mb-8 space-y-5" data-animate-stagger>
+      <div className="border-border/20 flex items-center justify-between border-b pb-3.5">
         <div className="flex items-center gap-2">
           <Layers className="text-primary/60 size-3.5" />
           <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
@@ -96,8 +96,8 @@ export function TaskFiltersPanel({
         />
       </div>
 
-      <Card className="border-border/40 rounded-2xl">
-        <CardContent className="p-6">
+      <Card className="border-border/40 rounded-xl">
+        <CardContent className="p-5">
           <TaskFilters
             searchTerm={searchTerm}
             selectedStatus={selectedStatus}

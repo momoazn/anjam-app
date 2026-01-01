@@ -79,7 +79,7 @@ function TaskListItemInner({
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Selection & Priority Zone */}
-      <div className="flex w-12 shrink-0 flex-col items-center justify-center gap-2 border-s py-3">
+      <div className="flex w-11 shrink-0 flex-col items-center justify-center gap-2 border-e py-2.5">
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
@@ -92,7 +92,7 @@ function TaskListItemInner({
         ) : (
           <div
             className={cn(
-              "flex size-8 items-center justify-center rounded-lg border transition-all duration-300 group-hover:scale-110",
+              "flex size-7.5 items-center justify-center rounded-lg border transition-all duration-300 group-hover:scale-110",
               priorityIconColor,
               // Linear beveled edge for product mode
               productClasses.beveled,
@@ -104,8 +104,8 @@ function TaskListItemInner({
       </div>
 
       {/* Main Content Zone */}
-      <div className="flex min-w-0 grow flex-col justify-center px-4 py-3 text-right">
-        <div className="flex items-center gap-3">
+      <div className="flex min-w-0 grow flex-col justify-center px-4 py-2.5 text-right">
+        <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-1 opacity-40">
             <IconHash className="size-2.5" />
             <span className="font-mono text-[10px] font-bold">
@@ -123,7 +123,7 @@ function TaskListItemInner({
           )}
         </div>
 
-        <div className="mt-1.5 flex items-center gap-3">
+        <div className="mt-1 flex items-center gap-2.5">
           <div
             className={cn(
               "flex size-5 items-center justify-center rounded border",
@@ -133,13 +133,13 @@ function TaskListItemInner({
           >
             <StatusIcon className="size-3.5 shrink-0" />
           </div>
-          <span className="truncate text-base font-bold transition-colors group-hover:text-primary">
+          <span className="truncate text-sm font-bold transition-colors group-hover:text-primary">
             {task.title}
           </span>
         </div>
 
         {task.tags && task.tags.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
             {task.tags.map((tag) => (
               <Badge
                 key={tag}
@@ -157,7 +157,7 @@ function TaskListItemInner({
       </div>
 
       {/* Meta & Assignee Zone */}
-      <div className="flex items-center gap-6 px-6">
+      <div className="flex items-center gap-5 px-5">
         {/* Deadline Indicator */}
         <div className="hidden flex-col items-end text-right sm:flex">
           <div className="flex items-center gap-1 opacity-40">
@@ -186,7 +186,7 @@ function TaskListItemInner({
           <TaskAssigneeAvatar
             assignee={assigneeRecord}
             hasAssigneeId={!!task.assignee}
-            size="lg"
+            size="md"
             className="transition-all duration-300 group-hover:scale-110"
           />
         </div>
