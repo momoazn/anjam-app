@@ -42,13 +42,12 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "border-border/40 bg-background flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm font-medium tracking-tight transition-all outline-none select-none",
+        "border-border/40 bg-card/30 flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm font-medium tracking-tight transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] outline-none select-none",
         "hover:bg-muted/30 hover:border-border/60",
-        "focus:border-primary focus:ring-0",
+        "focus:border-primary/50 focus:ring-primary/20 focus:ring-4",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "data-[placeholder]:text-muted-foreground/40 data-[placeholder]:font-medium",
         "data-[size=default]:h-10 data-[size=sm]:h-8",
-        "dark:bg-muted/10",
         "*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,

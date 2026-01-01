@@ -1,7 +1,8 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { LucideIcon } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Card, CardContent, CardHeader } from "./card";
+import { TechnicalLabel } from "./technical-label";
 
 type MetricCardProps = {
   title: string;
@@ -14,13 +15,12 @@ type MetricCardProps = {
 
 /**
  * Reusable metric card component for displaying KPIs and statistics
- * Eliminates duplicate Card structures across the codebase
  */
 export function MetricCard({
   title,
   value,
   icon: Icon,
-  valueColor = "text-3xl font-bold tracking-tight",
+  valueColor = "text-4xl font-black tracking-tighter",
   formatNumber = true,
   suffix = "",
 }: MetricCardProps) {
@@ -30,12 +30,14 @@ export function MetricCard({
       : `${value}${suffix}`;
 
   return (
-    <Card className="border-border rounded-xl border shadow-sm">
+    <Card className="rounded-2xl border-border/40 shadow-sm" beveled>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-muted-foreground text-xs font-bold">
+        <TechnicalLabel className="text-[10px] font-black">
           {title}
-        </CardTitle>
-        <Icon className="text-primary/40 h-4 w-4" />
+        </TechnicalLabel>
+        <div className="bg-primary/5 flex size-8 items-center justify-center rounded-lg border border-primary/10">
+          <Icon className="text-primary size-4" />
+        </div>
       </CardHeader>
       <CardContent>
         <div className={valueColor}>{displayValue}</div>

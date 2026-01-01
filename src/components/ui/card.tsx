@@ -5,8 +5,14 @@ import { cn } from "@/lib/utils";
 function Card({
   className,
   size = "default",
+  beveled = true,
+  hoverable = false,
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: React.ComponentProps<"div"> & {
+  size?: "default" | "sm";
+  beveled?: boolean;
+  hoverable?: boolean;
+}) {
   return (
     <div
       data-slot="card"
@@ -15,6 +21,10 @@ function Card({
       className={cn(
         "bg-card text-card-foreground group/card flex flex-col gap-4 overflow-hidden border py-4 text-xs/relaxed shadow-sm has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-2 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0",
         "rounded-2xl *:[img:first-child]:rounded-t-2xl *:[img:last-child]:rounded-b-2xl",
+        "transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+        beveled && "product-beveled",
+        hoverable &&
+          "hover:border-primary/40 hover:shadow-md hover:scale-[1.01]",
         className,
       )}
       {...props}

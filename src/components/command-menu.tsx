@@ -16,8 +16,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { TechnicalLabel } from "@/components/ui/technical-label";
 import { commandMenu } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
 import { useTheme } from "@/hooks/use-theme";
@@ -500,32 +500,19 @@ export function CommandMenu() {
                       />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col items-start">
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate font-bold tracking-tight">
+                        {item.label}
+                      </span>
                       {"subtitle" in item && item.subtitle && (
-                        <span
-                          className={cn(
-                            "truncate text-xs",
-                            isProductVisualTheme
-                              ? "text-[var(--product-text-tertiary)]"
-                              : "text-muted-foreground",
-                          )}
-                        >
+                        <TechnicalLabel className="truncate opacity-70">
                           {item.subtitle}
-                        </span>
+                        </TechnicalLabel>
                       )}
                     </div>
                     {"badge" in item && item.badge && (
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "rounded-md px-2 py-0.5 text-[10px] font-bold",
-                          isProductVisualTheme
-                            ? "bg-[var(--product-bg-secondary)]"
-                            : "",
-                        )}
-                      >
+                      <TechnicalLabel className="bg-primary/10 text-primary rounded border border-primary/20 px-1.5 py-0.5 text-[8px] font-black uppercase opacity-100">
                         {item.badge}
-                      </Badge>
+                      </TechnicalLabel>
                     )}
                     {item.type === "command" &&
                       "shortcut" in item &&
