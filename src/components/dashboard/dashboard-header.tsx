@@ -138,11 +138,11 @@ export function DashboardHeader({
   ];
 
   return (
-    <Card className="border-border bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm">
+    <Card className="border-border bg-card relative mb-6 overflow-hidden rounded-xl border shadow-sm">
       <CardContent className="relative z-10 flex flex-col p-0 lg:flex-row lg:items-stretch">
         {/* Main Welcome Section */}
-        <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-8">
-          <div className="relative z-10 flex items-center gap-3">
+        <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-5 lg:border-b-0 lg:p-6">
+          <div className="relative z-10 flex items-center gap-2.5">
             <IconBox size="xs" tone="primary">
               <LayoutDashboard className="size-full p-1" />
             </IconBox>
@@ -156,28 +156,28 @@ export function DashboardHeader({
             </div>
           </div>
 
-          <h1 className="relative z-10 mt-8 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+          <h1 className="relative z-10 mt-6 text-2xl font-bold tracking-tight md:text-3xl lg:text-4xl">
             {isLoading ? (
-              <div className="bg-muted h-12 w-3/4 animate-pulse rounded-lg" />
+              <div className="bg-muted h-10 w-3/4 animate-pulse rounded-lg" />
             ) : (
               digitsEnToFa(config.welcomeMessage)
             )}
           </h1>
 
-          <p className="text-muted-foreground relative z-10 mt-4 max-w-2xl text-lg leading-relaxed">
+          <p className="text-muted-foreground relative z-10 mt-3 max-w-2xl text-base leading-relaxed">
             {config.welcomeSubtitle}
           </p>
 
-          <div className="relative z-10 mt-8 flex flex-wrap gap-3">
+          <div className="relative z-10 mt-5 flex flex-wrap gap-2.5">
             {config.quickActions.map((action) => (
               <Button
                 key={action.title}
                 onClick={action.action}
                 variant={action.variant}
                 className={cn(
-                  "group h-11 gap-2.5 rounded-xl px-6 text-sm font-bold transition-all duration-300",
+                  "group h-10 gap-2 rounded-lg px-5 text-sm font-bold transition-all duration-300",
                   action.variant === "default"
-                    ? "bg-primary text-primary-foreground shadow-sm hover:shadow-md"
+                    ? "bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:scale-[1.02]"
                     : "border-border hover:border-primary/40 hover:bg-primary/5",
                 )}
               >
@@ -186,7 +186,7 @@ export function DashboardHeader({
                 </span>
                 <span>{action.title}</span>
                 {action.variant === "default" && (
-                  <ArrowUpRight className="h-4 w-4 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-[-4px] group-hover:opacity-100" />
+                  <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-[-3px] group-hover:opacity-100" />
                 )}
               </Button>
             ))}
@@ -194,20 +194,20 @@ export function DashboardHeader({
         </div>
 
         {/* Stats Sidebar */}
-        <div className="border-border/40 bg-muted/5 lg:w-[300px] lg:border-s">
-          <div className="divide-border/40 grid h-full grid-cols-1 divide-y sm:grid-cols-2 lg:grid-cols-1">
+        <div className="border-border/40 bg-muted/5 lg:w-[280px] lg:border-s">
+          <div className="divide-border/40 grid h-full grid-cols-2 divide-y sm:grid-cols-2 lg:grid-cols-2">
             {statItems.map((item) => (
               <div
                 key={item.label}
-                className="group hover:bg-card relative overflow-hidden p-6 transition-all duration-300"
+                className="group hover:bg-card relative overflow-hidden p-4 transition-all duration-300"
               >
                 <div className="relative z-10 flex items-center justify-between">
                   <div className="flex flex-col gap-1">
                     <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                       {item.label}
                     </span>
-                    <div className="mt-1 flex items-baseline gap-2">
-                      <span className="text-3xl font-bold tracking-tight">
+                    <div className="mt-1 flex items-baseline gap-1.5">
+                      <span className="text-2xl font-bold tracking-tight">
                         {isLoading ? "---" : digitsEnToFa(item.value)}
                       </span>
                       <div
@@ -221,9 +221,9 @@ export function DashboardHeader({
                   <IconBox
                     size="sm"
                     tone="custom"
-                    className="bg-primary/10 text-primary h-10 w-10 shrink-0"
+                    className="bg-primary/10 text-primary h-9 w-9 shrink-0"
                   >
-                    <item.icon className="size-5" />
+                    <item.icon className="size-4.5" />
                   </IconBox>
                 </div>
               </div>
