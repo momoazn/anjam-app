@@ -328,35 +328,6 @@
     animation-delay: 0.1s;
   }
 
-  /* Spring physics transitions */
-  .spring-transition {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .spring-transition-slow {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .spring-transition-fast {
-    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Interactive element effects */
-  .hover-scale-spring:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .hover-scale-spring:active {
-    transform: scale(0.98);
-    transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .btn-spring:active {
-    transform: translateY(1px);
-    transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
   /* Scrollbar visibility utility */
   .scrollbar-none {
     scrollbar-width: none !important;
@@ -365,19 +336,6 @@
 
   .scrollbar-none::-webkit-scrollbar {
     display: none !important;
-  }
-
-  .text-vertical {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-  }
-
-  .mask-fade-bottom {
-    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-  }
-
-  .mask-fade-top {
-    mask-image: linear-gradient(to top, black 80%, transparent 100%);
   }
 }
 
