@@ -131,7 +131,7 @@ export default function TimesheetPage() {
   };
 
   const headerActions = (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-3">
       <div className="border-border me-2 flex flex-col items-end border-e pe-4">
         <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
           {timesheet.weeklyTotal}
@@ -144,9 +144,9 @@ export default function TimesheetPage() {
       <Button
         onClick={handleExport}
         variant="outline"
-        className="h-11 px-6 font-bold shadow-sm"
+        className="h-10 gap-2 rounded-xl px-4 text-sm font-bold shadow-sm transition-all"
       >
-        <IconDownload className="ms-2 size-4" />
+        <IconDownload className="size-4" />
         {common.buttons.export}
       </Button>
     </div>
@@ -154,7 +154,7 @@ export default function TimesheetPage() {
 
   if (isLoading) {
     return (
-      <PageTransition className="container mx-auto p-4 md:p-6">
+      <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
         <div className="animate-pulse space-y-10">
           <div className="bg-muted/20 h-24 w-full rounded-xl" />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
@@ -168,7 +168,7 @@ export default function TimesheetPage() {
   }
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={navigationLabels.timesheet}
         description={`${digitsEnToFa(format(weekStart, "yyyy/MM/dd"))} — ${digitsEnToFa(format(weekEnd, "yyyy/MM/dd"))}`}

@@ -36,7 +36,6 @@ export default function Projects() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         icon={Target}
-        iconTone="primarySolid"
         eyebrow={
           <div className="flex items-center gap-2 opacity-40">
             <span className="text-[10px] font-bold tracking-tight">
@@ -53,11 +52,10 @@ export default function Projects() {
         actions={
           canCreateProject ? (
             <Button
-              className="hover:shadow-primary/10 h-14 gap-3 rounded-2xl px-8 text-lg font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"
-              size="lg"
+              className="h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
               onClick={() => navigate("/projects/new")}
             >
-              <Plus className="size-6" />
+              <Plus className="size-4.5" />
               <span>{projects.create.button}</span>
             </Button>
           ) : null

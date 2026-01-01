@@ -103,7 +103,7 @@ function StandardPageHeader({
     >
       <CardContent className="p-5">
         <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-5 text-right">
+          <div className="flex items-start gap-4 text-right">
             <div className="flex shrink-0">
               <IconBox size={iconSize} tone={iconTone}>
                 <Icon className="size-full p-1" />
@@ -111,7 +111,7 @@ function StandardPageHeader({
             </div>
             <div className="flex flex-col justify-center">
               {eyebrow && <div className="mb-1">{eyebrow}</div>}
-              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+              <h1 className="text-xl font-bold tracking-tight md:text-2xl">
                 {title}
               </h1>
               {(subtitle || description) && (

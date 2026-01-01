@@ -22,12 +22,7 @@ import { TaskFiltersPanel } from "@/components/task/task-filters-panel";
 import { TaskListView } from "@/components/task/task-list-view";
 import { TaskPagination } from "@/components/task/task-pagination";
 import { Button } from "@/components/ui/button";
-import {
-  common,
-  savedFilters as savedFiltersText,
-  system,
-  tasks,
-} from "@/constants";
+import { common, savedFilters as savedFiltersText, tasks } from "@/constants";
 import {
   useBulkDeleteTasks,
   useBulkUpdateTasks,
@@ -396,41 +391,31 @@ export default function Tasks() {
               )
             : tasks.header.manageTasks
         }
-        eyebrow={
-          <div className="flex items-center gap-2 opacity-40">
-            <span className="font-mono text-[10px] font-bold tracking-tight">
-              {system.registry}
-            </span>
-            <div className="bg-foreground/20 h-px w-8" />
-          </div>
-        }
         actions={
-          <>
-            <Toolbar className="gap-1">
+          <div className="flex items-center gap-2">
+            <Toolbar variant="transparent" className="p-0 gap-0">
               <Button
                 variant="ghost"
-                size="lg"
                 onClick={() => navigate("/tasks/board")}
-                className="hover:bg-background h-12 gap-2 rounded-xl px-5 font-bold transition-all"
+                className="hover:bg-muted/50 h-10 gap-2 rounded-lg px-4 text-sm font-bold transition-all"
               >
                 <LayoutGrid className="size-4" />
-                <span className="text-sm">{tasks.board.title}</span>
+                <span>{tasks.board.title}</span>
               </Button>
 
-              <ToolbarSeparator className="bg-border/40 mx-1 h-6 w-px" />
+              <ToolbarSeparator className="bg-border/40 mx-2 h-5 w-px" />
 
               <Button
                 variant="ghost"
-                size="lg"
                 onClick={toggleSelectionMode}
                 className={cn(
-                  "h-12 gap-2 rounded-xl px-5 font-bold transition-all",
+                  "hover:bg-muted/50 h-10 gap-2 rounded-lg px-4 text-sm font-bold transition-all",
                   selectionMode &&
-                    "bg-primary text-primary-foreground hover:bg-primary/90",
+                    "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30",
                 )}
               >
                 <CheckSquare className="size-4" />
-                <span className="text-sm">
+                <span>
                   {selectionMode
                     ? common.buttons.cancelSelection
                     : common.buttons.multiSelect}
@@ -439,14 +424,13 @@ export default function Tasks() {
             </Toolbar>
 
             <Button
-              className="h-14 gap-3 rounded-2xl px-8 text-base font-bold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-              size="lg"
+              className="h-10 gap-2 rounded-lg px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
               onClick={() => navigate("/tasks/new")}
             >
-              <Plus className="size-5" />
+              <Plus className="size-4.5" />
               <span>{tasks.addTask.buttons.newTask}</span>
             </Button>
-          </>
+          </div>
         }
       />
 

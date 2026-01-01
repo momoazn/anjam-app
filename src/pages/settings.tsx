@@ -18,7 +18,7 @@ export default function SettingsPage() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={settings.title}
-        description={settings.description}
+        subtitle={settings.description}
         icon={IconSettings}
       />
 
