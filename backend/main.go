@@ -100,6 +100,10 @@ func main() {
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(hooks.HandleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectCreatedStatuses)
 	app.OnRecordAfterCreateSuccess("projects").BindFunc(hooks.HandleProjectCreatedMember)
+	app.OnRecordAfterDeleteSuccess("projects").BindFunc(func(e *core.RecordEvent) error {
+		hooks.CleanupProjectMutex(e.Record.Id)
+		return nil
+	})
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(hooks.HandleCommentNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
 	app.OnRecordAfterCreateSuccess("project_members").BindFunc(hooks.HandleProjectMembersCreatedNotify)

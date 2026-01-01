@@ -183,13 +183,15 @@ func WithError(err error) map[string]interface{} {
 // Fields creates a map for structured fields
 func Fields(keysAndValues ...interface{}) map[string]interface{} {
 	if len(keysAndValues)%2 != 0 {
-		log.Panicf("helpers.Fields expects an even number of arguments, but got %d", len(keysAndValues))
+		log.Printf("[ERROR] helpers.Fields expects an even number of arguments, but got %d", len(keysAndValues))
+		return make(map[string]interface{})
 	}
 	fields := make(map[string]interface{}, len(keysAndValues)/2)
 	for i := 0; i < len(keysAndValues); i += 2 {
 		key, ok := keysAndValues[i].(string)
 		if !ok {
-			log.Panicf("helpers.Fields expects string keys, but got %T for key at index %d", keysAndValues[i], i)
+			log.Printf("[ERROR] helpers.Fields expects string keys, but got %T for key at index %d", keysAndValues[i], i)
+			continue
 		}
 		fields[key] = keysAndValues[i+1]
 	}

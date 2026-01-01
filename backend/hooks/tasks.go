@@ -22,6 +22,14 @@ var (
 	projectMutexesLock sync.Mutex
 )
 
+// CleanupProjectMutex removes the mutex for a deleted project.
+// This should be called when a project is deleted to prevent memory leaks.
+func CleanupProjectMutex(projectId string) {
+	projectMutexesLock.Lock()
+	defer projectMutexesLock.Unlock()
+	delete(projectMutexes, projectId)
+}
+
 // getProjectMutex returns the mutex for a specific project, creating one if needed.
 func getProjectMutex(projectId string) *sync.Mutex {
 	projectMutexesLock.Lock()
