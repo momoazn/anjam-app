@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/pocketbase/pocketbase/core"
+
+	"anjam/config"
 )
 
 // Version information - can be set at build time via ldflags
@@ -36,6 +38,8 @@ type CheckResult struct {
 }
 
 var startTime = time.Now()
+
+const memoryWarnThresholdMB uint64 = 500
 
 // registerHealthEndpoints adds health check and readiness endpoints to the application.
 // These endpoints are useful for container orchestration (Kubernetes, Docker Swarm)
@@ -124,7 +128,7 @@ func registerHealthEndpoints(app core.App) {
 // checkDatabase verifies database connectivity by running a simple query
 func checkDatabase(app core.App) CheckResult {
 	// Try to count a simple query to verify DB is accessible
-	_, err := app.CountRecords("users")
+	_, err := app.CountRecords(config.CollectionUsers)
 	if err != nil {
 		return CheckResult{
 			Status:  "error",
@@ -143,7 +147,7 @@ func checkMemory() CheckResult {
 
 	// Warn if allocated memory exceeds 500MB
 	allocMB := memStats.Alloc / 1024 / 1024
-	if allocMB > 500 {
+	if allocMB > memoryWarnThresholdMB {
 		return CheckResult{
 			Status:  "warning",
 			Message: "High memory usage",

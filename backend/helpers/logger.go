@@ -105,7 +105,7 @@ func (l *Logger) log(level LogLevel, msg string, fields map[string]interface{}) 
 		Timestamp: time.Now().Format(time.RFC3339),
 		Level:     level.String(),
 		Message:   msg,
-		Source:    getCallerInfo(3),
+		Source:    getCallerInfo(4),
 		Fields:    fields,
 	}
 
@@ -180,11 +180,14 @@ func WithError(err error) map[string]interface{} {
 
 // Fields creates a map for structured fields
 func Fields(keysAndValues ...interface{}) map[string]interface{} {
-	fields := make(map[string]interface{})
-	for i := 0; i < len(keysAndValues)-1; i += 2 {
+	if len(keysAndValues)%2 != 0 {
+		log.Panicf("helpers.Fields expects an even number of arguments, but got %d", len(keysAndValues))
+	}
+	fields := make(map[string]interface{}, len(keysAndValues)/2)
+	for i := 0; i < len(keysAndValues); i += 2 {
 		key, ok := keysAndValues[i].(string)
 		if !ok {
-			continue
+			log.Panicf("helpers.Fields expects string keys, but got %T for key at index %d", keysAndValues[i], i)
 		}
 		fields[key] = keysAndValues[i+1]
 	}
