@@ -170,7 +170,7 @@ export function OrgMembersPage() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <PageHeader
           title={organization.members.title}

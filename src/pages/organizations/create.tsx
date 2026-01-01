@@ -93,7 +93,7 @@ export function CreateOrganizationPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-2xl py-12">
+    <div className="container mx-auto max-w-7xl py-12">
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold tracking-tight">
           {organization.create.title}

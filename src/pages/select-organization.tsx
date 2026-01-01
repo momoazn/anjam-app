@@ -56,7 +56,7 @@ export function SelectOrganizationPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-4xl py-12">
+    <div className="container mx-auto max-w-7xl py-12">
       <div className="mb-12 text-center">
         <h1 className="mb-4 text-3xl font-bold tracking-tight">
           {organization.select.title}

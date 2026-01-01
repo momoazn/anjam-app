@@ -33,7 +33,7 @@ export default function Projects() {
   const canEditDelete = isAdmin || isSupervisor || isOrgOwner || isOrgAdmin;
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         variant="hero"
         icon={Target}
