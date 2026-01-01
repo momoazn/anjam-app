@@ -14,7 +14,27 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-var taskNumberMutex sync.Mutex
+// projectMutexes provides per-project locking for task number generation.
+// This allows concurrent task creation in different projects while ensuring
+// sequential number generation within each project.
+var (
+	projectMutexes     = make(map[string]*sync.Mutex)
+	projectMutexesLock sync.Mutex
+)
+
+// getProjectMutex returns the mutex for a specific project, creating one if needed.
+func getProjectMutex(projectId string) *sync.Mutex {
+	projectMutexesLock.Lock()
+	defer projectMutexesLock.Unlock()
+
+	if mu, exists := projectMutexes[projectId]; exists {
+		return mu
+	}
+
+	mu := &sync.Mutex{}
+	projectMutexes[projectId] = mu
+	return mu
+}
 
 // HandleTaskCreation handles task creation events.
 // It auto-generates task display IDs, ensures defaults, and validates tags.
@@ -63,8 +83,10 @@ func setTaskDisplayID(e *core.RecordEvent) error {
 // Uses task_number field for ordering, which is an integer and avoids string
 // sorting issues (e.g., "ABC-1000" sorting before "ABC-999").
 func getNextTaskNumber(app core.App, projectId string) (int, error) {
-	taskNumberMutex.Lock()
-	defer taskNumberMutex.Unlock()
+	// Use per-project mutex to allow concurrent task creation in different projects
+	mu := getProjectMutex(projectId)
+	mu.Lock()
+	defer mu.Unlock()
 
 	var lastTask struct {
 		TaskNumber int `db:"task_number"`
