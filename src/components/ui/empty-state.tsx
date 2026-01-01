@@ -19,6 +19,7 @@ import {
   organization,
   projects,
   tasks,
+  users,
 } from "@/constants";
 
 type EmptyStateProps = {
@@ -176,6 +177,40 @@ export function EmptyStateNoActivity() {
       icon={<Activity className="h-12 w-12" />}
       title={auditLogs.activityStream.title}
       description={auditLogs.activityStream.empty}
+    />
+  );
+}
+
+export function EmptyStateNoUsers({ onCreate }: { onCreate?: () => void }) {
+  return (
+    <EmptyState
+      icon={<Users className="h-12 w-12" />}
+      title={users.emptyState.title}
+      description={users.emptyState.description}
+      action={
+        onCreate ? (
+          <Button className="gap-2" onClick={onCreate}>
+            {users.create.button}
+          </Button>
+        ) : null
+      }
+    />
+  );
+}
+
+export function EmptyStateNoProjectMembers({ onAdd }: { onAdd?: () => void }) {
+  return (
+    <EmptyState
+      icon={<Users className="h-12 w-12" />}
+      title={projects.users.emptyState.title}
+      description={projects.users.emptyState.description}
+      action={
+        onAdd ? (
+          <Button className="gap-2" onClick={onAdd}>
+            {projects.users.add}
+          </Button>
+        ) : null
+      }
     />
   );
 }
