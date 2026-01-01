@@ -160,9 +160,9 @@ export default function Notifications() {
               size="icon"
               onClick={() => user?.id && markAllAsRead.mutate(user.id)}
               disabled={unreadCount === 0}
-              className="hover:bg-primary/10 hover:text-primary size-10 rounded-lg transition-all disabled:opacity-20"
+              className="hover:bg-primary/10 hover:text-primary size-9 rounded-lg transition-all disabled:opacity-20"
             >
-              <IconCheck className="size-5" />
+              <IconCheck className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent className="border-border bg-card text-foreground rounded-md border text-xs font-bold">
@@ -177,9 +177,9 @@ export default function Notifications() {
               size="icon"
               onClick={() => user?.id && clearRead.mutate(user.id)}
               disabled={readCount === 0}
-              className="size-10 rounded-lg text-amber-500 transition-all hover:bg-amber-500/10 disabled:opacity-20"
+              className="hover:bg-amber-500/10 size-9 rounded-lg text-amber-500 transition-all disabled:opacity-20"
             >
-              <IconTrashX className="size-5" />
+              <IconTrashX className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent className="border-border bg-card text-foreground rounded-md border text-xs font-bold">
@@ -194,9 +194,9 @@ export default function Notifications() {
               size="icon"
               onClick={() => user?.id && clearAll.mutate(user.id)}
               disabled={notificationsData.length === 0}
-              className="size-10 rounded-lg text-rose-500 transition-all hover:bg-rose-500/10 disabled:opacity-20"
+              className="hover:bg-rose-500/10 size-9 rounded-lg text-rose-500 transition-all disabled:opacity-20"
             >
-              <IconTrash className="size-5" />
+              <IconTrash className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent className="border-border bg-card text-foreground rounded-md border text-xs font-bold">
@@ -208,10 +208,10 @@ export default function Notifications() {
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={notificationsText.pageTitle}
-        description={notificationsText.pageDescription}
+        subtitle={notificationsText.pageDescription}
         icon={IconBell}
         actions={headerActions}
       />

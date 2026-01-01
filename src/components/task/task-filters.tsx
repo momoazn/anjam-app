@@ -8,6 +8,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useMemo } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,7 @@ const ActiveFilterBadge = ({
 }) => (
   <Badge
     variant="secondary"
-    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-2 rounded-lg border ps-1 text-[10px] font-bold tracking-tight transition-all"
+    className="border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary cursor-pointer gap-1.5 rounded-lg border ps-1 text-[10px] font-bold tracking-tight transition-all"
     onClick={onClear}
   >
     {label}
@@ -80,16 +81,27 @@ export function TaskFilters({
 }: TaskFiltersProps) {
   const { data: tags, isLoading: isLoadingTags } = useTags();
 
-  const hasActiveFilters = !!(
-    searchTerm ||
-    selectedStatus !== ALL_FILTER_VALUE ||
-    selectedPriority !== ALL_FILTER_VALUE ||
-    selectedAssignee !== ALL_FILTER_VALUE ||
-    selectedDateRange !== "all" ||
-    selectedTag !== "all"
+  const hasActiveFilters = useMemo(
+    () =>
+      !!(
+        searchTerm ||
+        selectedStatus !== ALL_FILTER_VALUE ||
+        selectedPriority !== ALL_FILTER_VALUE ||
+        selectedAssignee !== ALL_FILTER_VALUE ||
+        selectedDateRange !== "all" ||
+        selectedTag !== "all"
+      ),
+    [
+      searchTerm,
+      selectedStatus,
+      selectedPriority,
+      selectedAssignee,
+      selectedDateRange,
+      selectedTag,
+    ],
   );
 
-  const getActiveFilterLabels = () => {
+  const activeFilterLabels = useMemo(() => {
     const labels: { label: string; onClear: () => void }[] = [];
 
     if (searchTerm) {
@@ -151,7 +163,22 @@ export function TaskFilters({
     }
 
     return labels;
-  };
+  }, [
+    searchTerm,
+    selectedStatus,
+    selectedPriority,
+    selectedAssignee,
+    selectedDateRange,
+    selectedTag,
+    users,
+    tags,
+    setSearchTerm,
+    setSelectedStatus,
+    setSelectedPriority,
+    setSelectedAssignee,
+    setSelectedDateRange,
+    setSelectedTag,
+  ]);
 
   const clearAllFilters = () => {
     setSearchTerm("");
@@ -165,8 +192,8 @@ export function TaskFilters({
   return (
     <div className="space-y-3">
       {/* Search & Global Reset Segment */}
-      <div className="bg-card border-border/40 flex items-center gap-2 overflow-hidden rounded-2xl border p-1.5 shadow-sm">
-        <div className="bg-muted/30 flex h-9 shrink-0 items-center gap-2 rounded-xl px-3">
+      <div className="bg-card border-border/40 flex items-center gap-2 overflow-hidden rounded-xl border p-1.5 shadow-sm">
+        <div className="bg-muted/30 flex h-9 shrink-0 items-center gap-2 rounded-lg px-3">
           <Search className="text-muted-foreground/60 size-3.5" />
           <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
             {tasks.filters.labels.search}
@@ -187,7 +214,7 @@ export function TaskFilters({
             variant="ghost"
             size="sm"
             onClick={clearAllFilters}
-            className="h-9 gap-2 rounded-xl px-4 text-[10px] font-bold tracking-tight text-rose-500 transition-all hover:bg-rose-500/10 hover:text-rose-600"
+            className="h-9 gap-2 rounded-lg px-4 text-[10px] font-bold tracking-tight text-rose-500 transition-all hover:bg-rose-500/10 hover:text-rose-600"
           >
             <Eraser className="size-3.5" />
             {tasks.filters.labels.reset}
@@ -198,7 +225,7 @@ export function TaskFilters({
       {/* Filters Grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
         {/* Status Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               {tasks.filters.status}
@@ -213,10 +240,10 @@ export function TaskFilters({
               )
             }
           >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-xl border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
+            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
               <SelectValue placeholder={tasks.filters.status} />
             </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-xl border shadow-lg">
+            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
               <SelectItem
                 value={ALL_FILTER_VALUE}
                 className="text-[11px] font-medium"
@@ -237,7 +264,7 @@ export function TaskFilters({
         </div>
 
         {/* Priority Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               {tasks.filters.priority}
@@ -252,10 +279,10 @@ export function TaskFilters({
               )
             }
           >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-xl border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
+            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
               <SelectValue placeholder={tasks.filters.priority} />
             </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-xl border shadow-lg">
+            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
               <SelectItem
                 value={ALL_FILTER_VALUE}
                 className="text-[11px] font-medium"
@@ -276,7 +303,7 @@ export function TaskFilters({
         </div>
 
         {/* Assignee Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               {tasks.filters.labels.assignee}
@@ -290,10 +317,10 @@ export function TaskFilters({
             }
             disabled={isLoadingUsers}
           >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-xl border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
+            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
               <SelectValue placeholder={tasks.filters.assignee} />
             </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-xl border shadow-lg">
+            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
               <SelectItem
                 value={ALL_FILTER_VALUE}
                 className="text-[11px] font-medium"
@@ -318,7 +345,7 @@ export function TaskFilters({
         </div>
 
         {/* Date Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               {tasks.filters.labels.timeframe}
@@ -329,10 +356,10 @@ export function TaskFilters({
             value={selectedDateRange}
             onValueChange={setSelectedDateRange}
           >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-xl border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
+            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
               <SelectValue placeholder={tasks.filters.date} />
             </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-xl border shadow-lg">
+            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
               <SelectItem value="all" className="text-[11px] font-medium">
                 {tasks.filters.allDates}
               </SelectItem>
@@ -353,7 +380,7 @@ export function TaskFilters({
         </div>
 
         {/* Tag Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-2xl border p-3 shadow-sm">
+        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between opacity-60">
             <span className="text-[9px] font-bold tracking-tight">
               {tasks.filters.labels.tags}
@@ -365,10 +392,10 @@ export function TaskFilters({
             onValueChange={(value) => setSelectedTag(value)}
             disabled={isLoadingTags}
           >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-xl border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
+            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
               <SelectValue placeholder={tasks.filters.tag} />
             </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-xl border shadow-lg">
+            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
               <SelectItem value="all" className="text-[11px] font-medium">
                 {tasks.filters.allTags}
               </SelectItem>
@@ -388,7 +415,7 @@ export function TaskFilters({
 
       {/* Active Filters Display */}
       {hasActiveFilters && (
-        <div className="bg-primary/5 border-primary/10 flex items-center gap-3 overflow-hidden rounded-2xl border p-2.5 shadow-sm">
+        <div className="bg-primary/5 border-primary/10 flex items-center gap-3 overflow-hidden rounded-xl border p-2.5 shadow-sm">
           <div className="flex shrink-0 items-center gap-2 px-1">
             <Filter className="text-primary/60 size-3" />
             <span className="text-primary/60 text-[10px] font-bold tracking-tight">
@@ -397,7 +424,7 @@ export function TaskFilters({
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            {getActiveFilterLabels().map((filter) => (
+            {activeFilterLabels.map((filter) => (
               <ActiveFilterBadge
                 key={filter.label}
                 label={filter.label}

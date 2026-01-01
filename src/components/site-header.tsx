@@ -59,7 +59,7 @@ export function SiteHeader() {
   }, [location.pathname]);
 
   return (
-    <header className="bg-background/80 sticky top-0 z-50 flex h-16 shrink-0 items-center border-b backdrop-blur-md">
+    <header className="bg-background/60 sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border/40 backdrop-blur-md">
       <div className="flex h-full items-center px-4 lg:px-6">
         <SidebarTrigger className="hover:bg-muted/50 size-9 rounded-lg transition-all active:scale-95" />
       </div>
@@ -75,13 +75,13 @@ export function SiteHeader() {
                     <BreadcrumbLink asChild>
                       <Link
                         to={c.to}
-                        className="text-muted-foreground hover:text-primary text-xs font-bold transition-colors"
+                        className="text-muted-foreground hover:text-primary text-xs font-medium transition-colors"
                       >
                         {c.label}
                       </Link>
                     </BreadcrumbLink>
                   ) : (
-                    <BreadcrumbPage className="text-foreground text-xs font-bold">
+                    <BreadcrumbPage className="text-foreground text-xs font-medium">
                       {c.label}
                     </BreadcrumbPage>
                   )}
@@ -97,21 +97,21 @@ export function SiteHeader() {
         <div className="hidden w-[320px] xl:block">
           <Button
             variant="outline"
-            className="bg-muted/50 hover:bg-muted relative h-10 w-full justify-start rounded-lg border px-4 font-medium transition-all"
+            className="bg-muted/30 hover:bg-muted/50 relative h-9 w-full justify-start rounded-lg border-border/40 px-4 font-medium transition-all"
             onClick={() => {
               window.dispatchEvent(new Event("command-menu:open"));
             }}
           >
             <span className="flex items-center gap-3">
-              <Search className="text-muted-foreground size-4" />
-              <span className="text-muted-foreground hidden text-sm lg:inline-flex">
+              <Search className="text-muted-foreground size-3.5" />
+              <span className="text-muted-foreground hidden text-xs lg:inline-flex">
                 {currentOrgMode === "product"
                   ? commandMenu.product.placeholder
                   : commandMenu.operations.placeholder}
               </span>
             </span>
-            <kbd className="bg-background text-muted-foreground absolute end-2 top-2 hidden h-6 items-center gap-1 rounded-md border px-1.5 font-mono text-[10px] font-medium select-none sm:flex">
-              <span className="text-[12px]">⌘</span>K
+            <kbd className="bg-background/50 text-muted-foreground absolute end-2 top-1.5 hidden h-5 items-center gap-1 rounded border border-border/40 px-1.5 font-sans text-[10px] font-medium select-none sm:flex">
+              <span className="text-xs">⌘</span>K
             </kbd>
           </Button>
         </div>

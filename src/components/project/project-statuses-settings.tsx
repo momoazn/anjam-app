@@ -30,6 +30,7 @@ import { projectStatuses } from "@/constants/misc";
 import { useProjectStatuses } from "@/hooks/project-statuses";
 import { queryKeys } from "@/hooks/query-keys";
 import { usePermissions } from "@/hooks/use-permissions";
+import { logError } from "@/lib/logger";
 import { pb } from "@/lib/pocketbase";
 import type { ProjectStatusesResponse } from "@/lib/pocketbase-types";
 
@@ -234,7 +235,7 @@ export function ProjectStatusesSettings({
       });
     } catch (error) {
       toast.error(projectStatuses.toasts.orderSaveFailed);
-      console.error(error);
+      logError("Failed to save status order", error);
     } finally {
       setIsSaving(false);
     }
@@ -268,7 +269,7 @@ export function ProjectStatusesSettings({
       });
     } catch (error) {
       toast.error(projectStatuses.toasts.updateFailed);
-      console.error(error);
+      logError("Failed to update status", error);
     } finally {
       setIsSaving(false);
     }
@@ -291,7 +292,7 @@ export function ProjectStatusesSettings({
       });
     } catch (error) {
       toast.error(projectStatuses.toasts.defaultUpdateFailed);
-      console.error(error);
+      logError("Failed to update default status", error);
     } finally {
       setIsSaving(false);
     }
@@ -309,7 +310,7 @@ export function ProjectStatusesSettings({
       });
     } catch (error) {
       toast.error(projectStatuses.toasts.doneUpdateFailed);
-      console.error(error);
+      logError("Failed to toggle done status", error);
     } finally {
       setIsSaving(false);
     }
@@ -344,7 +345,7 @@ export function ProjectStatusesSettings({
       });
     } catch (error) {
       toast.error(projectStatuses.toasts.deleteFailed);
-      console.error(error);
+      logError("Failed to delete status", error);
     } finally {
       setIsSaving(false);
     }
@@ -391,7 +392,7 @@ export function ProjectStatusesSettings({
       });
     } catch (error) {
       toast.error(projectStatuses.toasts.createFailed);
-      console.error(error);
+      logError("Failed to create status", error);
     } finally {
       setIsSaving(false);
     }

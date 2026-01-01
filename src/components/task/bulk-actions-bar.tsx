@@ -3,17 +3,8 @@ import { Flag, RefreshCw, Terminal, Trash2, Users, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import {
   Select,
   SelectContent,
@@ -251,41 +242,24 @@ export function BulkActionsBar({
         </Button>
       </div>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="border-border rounded-2xl border shadow-lg">
-          <AlertDialogHeader>
-            <div className="mb-2 flex items-center gap-3 text-rose-500">
-              <Trash2 className="size-5" />
-              <AlertDialogTitle className="text-xl font-bold tracking-tight">
-                {tasks.bulkActions.deleteDialogTitle.replace(
-                  "{count}",
-                  digitsEnToFa(selectedCount),
-                )}
-              </AlertDialogTitle>
-            </div>
-            <AlertDialogDescription className="text-sm font-medium opacity-70">
-              {tasks.bulkActions.deleteDialogDescription}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="mt-6 gap-2">
-            <AlertDialogCancel
-              disabled={isLoading}
-              className="border-border rounded-xl border text-[10px] font-bold tracking-tight"
-            >
-              {tasks.bulkActions.cancelButton}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isLoading}
-              className="border-border rounded-xl border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
-            >
-              {isLoading
-                ? tasks.bulkActions.deletingButton
-                : tasks.bulkActions.deleteButton}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title={tasks.bulkActions.deleteDialogTitle.replace(
+          "{count}",
+          digitsEnToFa(selectedCount),
+        )}
+        description={tasks.bulkActions.deleteDialogDescription}
+        onConfirm={handleDelete}
+        isLoading={isLoading}
+        confirmText={
+          isLoading
+            ? tasks.bulkActions.deletingButton
+            : tasks.bulkActions.deleteButton
+        }
+        cancelText={tasks.bulkActions.cancelButton}
+        icon={<Trash2 className="size-5" />}
+      />
     </>
   );
 }

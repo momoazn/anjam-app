@@ -29,6 +29,7 @@ import { BoardColumn } from "@/components/task/board/board-column";
 import { Button } from "@/components/ui/button";
 import { common, tasks as tasksText } from "@/constants";
 import { queryKeys } from "@/hooks/query-keys";
+import { logError } from "@/lib/logger";
 import { TaskWithProject, pb } from "@/lib/pocketbase";
 import {
   ProjectsResponse,
@@ -109,12 +110,51 @@ export function TaskBoardPage() {
       if (order !== undefined) data.order = order;
       return await pb.collection("tasks").update(id, data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+    // Optimistic update for instant UI feedback
+    onMutate: async ({ id, status, order }) => {
+      // Cancel any outgoing refetches
+      const queryKey = projectId
+        ? [...queryKeys.tasks.all, "project", projectId]
+        : queryKeys.tasks.all;
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous value
+      const previousTasks =
+        queryClient.getQueryData<TaskWithProject[]>(queryKey);
+
+      // Optimistically update to the new value
+      if (previousTasks) {
+        queryClient.setQueryData<TaskWithProject[]>(queryKey, (old) => {
+          if (!old) return old;
+          return old.map((task) => {
+            if (task.id === id) {
+              return {
+                ...task,
+                status: status ?? task.status,
+                order: order ?? task.order,
+              };
+            }
+            return task;
+          });
+        });
+      }
+
+      // Return a context object with the snapshotted value
+      return { previousTasks, queryKey };
     },
-    onError: (err) => {
+    onError: (err, _variables, context) => {
+      // Rollback to the previous value on error
+      if (context?.previousTasks) {
+        queryClient.setQueryData(context.queryKey, context.previousTasks);
+      }
       toast.error("Failed to update task position");
-      console.error(err);
+      logError("Failed to update task position", err);
+    },
+    onSettled: (_data, _error, _variables, context) => {
+      // Always refetch after error or success
+      if (context?.queryKey) {
+        queryClient.invalidateQueries({ queryKey: context.queryKey });
+      }
     },
   });
 
@@ -220,16 +260,14 @@ export function TaskBoardPage() {
   return (
     <PageTransition className="flex h-[calc(100vh-4rem)] flex-col">
       <div className="bg-card border-border border-b">
-        <div className="container mx-auto px-6 py-4 md:px-8">
+        <div className="container mx-auto max-w-7xl px-4 py-4 md:px-6">
           <PageHeader
-            variant="minimal"
             title={projectId ? project?.name : tasksText.board.title}
             subtitle={tasksText.header.tasksFound.replace(
               "{count}",
               digitsEnToFa(tasksData.length).toString(),
             )}
             icon={IconLayoutGrid}
-            iconSize="sm"
             eyebrow={
               <div className="text-muted-foreground flex items-center gap-2">
                 <IconHash className="size-4" />
@@ -240,7 +278,7 @@ export function TaskBoardPage() {
               </div>
             }
             actions={headerActions}
-            className="mb-0 border-0 shadow-none"
+            className="mb-0"
           />
         </div>
       </div>

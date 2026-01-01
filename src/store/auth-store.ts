@@ -1,6 +1,8 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { useShallow } from "zustand/react/shallow";
 
+import { logError } from "@/lib/logger";
 import type { OrgFeatures, OrgMode } from "@/lib/mode-features";
 import { getOrgFeatures } from "@/lib/mode-features";
 import { pb } from "@/lib/pocketbase";
@@ -73,172 +75,175 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      // Initial state
-      user: null,
-      isAuthenticated: false,
-      currentOrganization: null,
-      currentOrgRole: null,
-      userOrganizations: [],
-      currentOrgMode: null, // NEW
-      currentOrgFeatures: getOrgFeatures(undefined), // NEW
-      isLoading: false,
-      isLoadingOrgs: false,
+  devtools(
+    persist(
+      (set, get) => ({
+        // Initial state
+        user: null,
+        isAuthenticated: false,
+        currentOrganization: null,
+        currentOrgRole: null,
+        userOrganizations: [],
+        currentOrgMode: null, // NEW
+        currentOrgFeatures: getOrgFeatures(undefined), // NEW
+        isLoading: false,
+        isLoadingOrgs: false,
 
-      login: (user) => {
-        set({
-          user,
-          isAuthenticated: true,
-        });
+        login: (user) => {
+          set({
+            user,
+            isAuthenticated: true,
+          });
 
-        get().fetchUserOrganizations();
-      },
-
-      updateUser: (user) => {
-        set({ user });
-      },
-
-      // Set user after login
-      setUser: (user) => {
-        set({
-          user,
-          isAuthenticated: !!user,
-        });
-
-        if (user) {
           get().fetchUserOrganizations();
-        }
-      },
+        },
 
-      // Set current organization context
-      setCurrentOrganization: (org, role) => {
-        const mode = org?.mode ?? null;
-        // Cast settings to the expected type
-        const settings = org?.settings as OrganizationSettings | undefined;
-        const features = getOrgFeatures(mode, settings);
+        updateUser: (user) => {
+          set({ user });
+        },
 
-        set({
-          currentOrganization: org,
-          currentOrgRole: role,
-          currentOrgMode: mode,
-          currentOrgFeatures: features,
-        });
-      },
+        // Set user after login
+        setUser: (user) => {
+          set({
+            user,
+            isAuthenticated: !!user,
+          });
 
-      // Fetch all organizations the user belongs to
-      fetchUserOrganizations: async () => {
-        const { isAuthenticated } = get();
-        if (!isAuthenticated) return;
+          if (user) {
+            get().fetchUserOrganizations();
+          }
+        },
 
-        set({ isLoadingOrgs: true });
+        // Set current organization context
+        setCurrentOrganization: (org, role) => {
+          const mode = org?.mode ?? null;
+          // Cast settings to the expected type
+          const settings = org?.settings as OrganizationSettings | undefined;
+          const features = getOrgFeatures(mode, settings);
 
-        try {
-          const response = (await pb.send("/api/v1/organizations", {
-            method: "GET",
-          })) as OrganizationsListResponse;
+          set({
+            currentOrganization: org,
+            currentOrgRole: role,
+            currentOrgMode: mode,
+            currentOrgFeatures: features,
+          });
+        },
 
-          const orgs: OrganizationWithRole[] = response.organizations.map(
-            (item) => ({
-              organization: item.organization,
-              role: item.role,
-              joinedAt: item.joined_at,
-              onboardingCompleted: item.onboarding_completed,
-            }),
+        // Fetch all organizations the user belongs to
+        fetchUserOrganizations: async () => {
+          const { isAuthenticated } = get();
+          if (!isAuthenticated) return;
+
+          set({ isLoadingOrgs: true });
+
+          try {
+            const response = (await pb.send("/api/v1/organizations", {
+              method: "GET",
+            })) as OrganizationsListResponse;
+
+            const orgs: OrganizationWithRole[] = response.organizations.map(
+              (item) => ({
+                organization: item.organization,
+                role: item.role,
+                joinedAt: item.joined_at,
+                onboardingCompleted: item.onboarding_completed,
+              }),
+            );
+
+            set({ userOrganizations: orgs });
+
+            const { currentOrganization } = get();
+            if (!currentOrganization && orgs.length > 0) {
+              const firstOrg = orgs[0].organization;
+              const mode = firstOrg.mode ?? null;
+              // Cast settings to the expected type
+              const settings = firstOrg.settings as
+                | OrganizationSettings
+                | undefined;
+              const features = getOrgFeatures(mode, settings);
+
+              set({
+                currentOrganization: firstOrg,
+                currentOrgRole: orgs[0].role,
+                currentOrgMode: mode,
+                currentOrgFeatures: features,
+              });
+            }
+          } catch (error) {
+            logError("Failed to fetch organizations", error);
+            set({ userOrganizations: [] });
+          } finally {
+            set({ isLoadingOrgs: false });
+          }
+        },
+
+        // Switch to a different organization
+        switchOrganization: async (orgId) => {
+          const { userOrganizations } = get();
+
+          const orgWithRole = userOrganizations.find(
+            (o) => o.organization.id === orgId,
           );
 
-          set({ userOrganizations: orgs });
-
-          const { currentOrganization } = get();
-          if (!currentOrganization && orgs.length > 0) {
-            const firstOrg = orgs[0].organization;
-            const mode = firstOrg.mode ?? null;
+          if (orgWithRole) {
+            const mode = orgWithRole.organization.mode ?? null;
             // Cast settings to the expected type
-            const settings = firstOrg.settings as
+            const settings = orgWithRole.organization.settings as
               | OrganizationSettings
               | undefined;
             const features = getOrgFeatures(mode, settings);
 
             set({
-              currentOrganization: firstOrg,
-              currentOrgRole: orgs[0].role,
+              currentOrganization: orgWithRole.organization,
+              currentOrgRole: orgWithRole.role,
               currentOrgMode: mode,
               currentOrgFeatures: features,
             });
           }
-        } catch (error) {
-          console.error("Failed to fetch organizations:", error);
-          set({ userOrganizations: [] });
-        } finally {
-          set({ isLoadingOrgs: false });
-        }
-      },
+        },
 
-      // Switch to a different organization
-      switchOrganization: async (orgId) => {
-        const { userOrganizations } = get();
-
-        const orgWithRole = userOrganizations.find(
-          (o) => o.organization.id === orgId,
-        );
-
-        if (orgWithRole) {
-          const mode = orgWithRole.organization.mode ?? null;
-          // Cast settings to the expected type
-          const settings = orgWithRole.organization.settings as
-            | OrganizationSettings
-            | undefined;
-          const features = getOrgFeatures(mode, settings);
-
+        // Logout
+        logout: () => {
+          pb.authStore.clear();
           set({
-            currentOrganization: orgWithRole.organization,
-            currentOrgRole: orgWithRole.role,
-            currentOrgMode: mode,
-            currentOrgFeatures: features,
+            user: null,
+            isAuthenticated: false,
+            currentOrganization: null,
+            currentOrgRole: null,
+            userOrganizations: [],
+            currentOrgMode: null,
+            currentOrgFeatures: getOrgFeatures(undefined),
           });
-        }
-      },
+        },
 
-      // Logout
-      logout: () => {
-        pb.authStore.clear();
-        set({
-          user: null,
-          isAuthenticated: false,
-          currentOrganization: null,
-          currentOrgRole: null,
-          userOrganizations: [],
-          currentOrgMode: null,
-          currentOrgFeatures: getOrgFeatures(undefined),
-        });
-      },
-
-      // Clear all state
-      clear: () => {
-        set({
-          user: null,
-          isAuthenticated: false,
-          currentOrganization: null,
-          currentOrgRole: null,
-          userOrganizations: [],
-          currentOrgMode: null,
-          currentOrgFeatures: getOrgFeatures(undefined),
-          isLoading: false,
-          isLoadingOrgs: false,
-        });
-      },
-    }),
-    {
-      name: "anjam-auth-storage",
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-        currentOrganization: state.currentOrganization,
-        currentOrgRole: state.currentOrgRole,
-        userOrganizations: state.userOrganizations,
+        // Clear all state
+        clear: () => {
+          set({
+            user: null,
+            isAuthenticated: false,
+            currentOrganization: null,
+            currentOrgRole: null,
+            userOrganizations: [],
+            currentOrgMode: null,
+            currentOrgFeatures: getOrgFeatures(undefined),
+            isLoading: false,
+            isLoadingOrgs: false,
+          });
+        },
       }),
-    },
+      {
+        name: "anjam-auth-storage",
+        storage: createJSONStorage(() => localStorage),
+        partialize: (state) => ({
+          user: state.user,
+          isAuthenticated: state.isAuthenticated,
+          currentOrganization: state.currentOrganization,
+          currentOrgRole: state.currentOrgRole,
+          userOrganizations: state.userOrganizations,
+        }),
+      },
+    ),
+    { name: "auth-store", enabled: import.meta.env.DEV },
   ),
 );
 
@@ -277,13 +282,14 @@ export const useAuthSwitchOrganization = () =>
 export const useAuthLogout = () => useAuthStore((state) => state.logout);
 export const useAuthClear = () => useAuthStore((state) => state.clear);
 
-export const useAuthActions = () => {
-  const login = useAuthLogin();
-  const logout = useAuthLogout();
-  const updateUser = useAuthUpdateUser();
-
-  return { login, logout, updateUser };
-};
+export const useAuthActions = () =>
+  useAuthStore(
+    useShallow((state) => ({
+      login: state.login,
+      logout: state.logout,
+      updateUser: state.updateUser,
+    })),
+  );
 
 export const useCurrentOrgMode = () =>
   useAuthStore((state) => state.currentOrgMode);

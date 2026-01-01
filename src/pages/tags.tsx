@@ -56,17 +56,16 @@ export default function TagsManagement() {
 
   const headerActions = (
     <Button
-      className="h-11 gap-2 rounded-xl px-6 font-semibold shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
-      size="lg"
+      className="h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
       onClick={() => setCreateDialogOpen(true)}
     >
-      <IconPlus className="size-5" />
+      <IconPlus className="size-4.5" />
       <span>{tagsManagement.addTag}</span>
     </Button>
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={tagsManagement.title}
         description={

@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/users";
@@ -36,6 +37,67 @@ const profileSchema = z.object({
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
+
+function ProfileSectionSkeleton() {
+  return (
+    <div className="space-y-8" data-animate-stagger>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <IconUserCircle className="text-primary size-4" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+          <div className="bg-border h-px flex-1" />
+        </div>
+
+        <div className="flex flex-col items-start gap-8 lg:flex-row">
+          <Skeleton className="h-24 w-24 shrink-0 rounded-2xl" />
+
+          <div className="w-full flex-1 space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-1">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-9 w-full rounded-xl" />
+              </div>
+              <div className="space-y-1">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-9 w-full rounded-xl" />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-9 w-full rounded-xl" />
+              <Skeleton className="h-2 w-48" />
+            </div>
+          </div>
+        </div>
+
+        <div className="border-border flex justify-end border-t pt-4">
+          <Skeleton className="h-10 w-28 rounded-xl" />
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <IconFingerprint className="text-primary size-4" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <div className="bg-border h-px flex-1" />
+        </div>
+
+        <div className="bg-muted/30 rounded-2xl border p-4 shadow-sm">
+          <div className="grid gap-2">
+            <Skeleton className="h-3 w-12" />
+            <Skeleton className="h-9 w-full rounded-lg" />
+            <Skeleton className="h-2 w-56" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function ProfileSection() {
   const user = useAuthUser();
@@ -106,8 +168,7 @@ export function ProfileSection() {
     }
   };
 
-  if (!fullUser)
-    return <IconLoader2 className="mx-auto h-8 w-8 animate-spin opacity-20" />;
+  if (!fullUser) return <ProfileSectionSkeleton />;
 
   const currentAvatarUrl = previewUrl
     ? previewUrl

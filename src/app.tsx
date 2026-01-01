@@ -3,6 +3,7 @@ import {
   QueryClientProvider,
   keepPreviousData,
 } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Loader2 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { Suspense } from "react";
@@ -118,10 +119,16 @@ function App() {
               className="font-arad"
               toastOptions={{
                 duration: 3000,
+                className:
+                  "rounded-xl border-border/40 bg-card/80 backdrop-blur-md product-beveled text-foreground shadow-2xl",
               }}
             />
           </NuqsAdapter>
         </Router>
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-left"
+        />
       </QueryClientProvider>
     </ErrorBoundary>
   );

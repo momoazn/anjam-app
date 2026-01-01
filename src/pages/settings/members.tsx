@@ -10,7 +10,6 @@ import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
-import { IconBox } from "@/components/recipes/icon-box";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { IconBox } from "@/components/ui/icon-box";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -170,7 +170,7 @@ export function OrgMembersPage() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-6xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <PageHeader
           title={organization.members.title}

@@ -13,6 +13,7 @@ import {
   UsersRecord,
   UsersResponse,
 } from "../lib/pocketbase-types";
+import { STALE_TIMES } from "../lib/query-config";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
@@ -96,6 +97,7 @@ export function useUsers(options: UsersListOptions = {}) {
     queryFn: () =>
       pb.collection("users").getFullList<UsersResponse>(queryParams),
     enabled,
+    staleTime: STALE_TIMES.reference,
   });
 }
 
@@ -115,6 +117,7 @@ export function useUser({
     queryKey: queryKeys.users.detail(id),
     queryFn: () => pb.collection("users").getOne<UsersResponse>(id),
     enabled: enabled && Boolean(id),
+    staleTime: STALE_TIMES.reference,
   });
 }
 
@@ -169,6 +172,7 @@ export function useProjectUsers({
         }));
     },
     enabled: enabled && Boolean(projectId),
+    staleTime: STALE_TIMES.reference,
   });
 }
 

@@ -169,37 +169,38 @@ export default function MyTasks() {
     }));
 
   const headerActions = (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex items-center gap-2">
       <Button
         variant={selectionMode ? "secondary" : "outline"}
         onClick={toggleSelectionMode}
         className={cn(
-          "h-11 gap-2 px-5 font-bold transition-all",
-          selectionMode && "bg-primary/10 text-primary border-primary/30",
+          "h-10 gap-2 rounded-lg px-4 text-sm font-bold transition-all",
+          selectionMode &&
+            "bg-primary/10 text-primary hover:bg-primary/20 border-primary/30",
         )}
       >
         <IconChecklist className="size-4" />
-        <span className="text-xs">
+        <span>
           {selectionMode
             ? common.buttons.cancelSelection
             : common.buttons.multiSelect}
         </span>
       </Button>
       <Button
-        className="h-11 gap-2 px-6 font-bold shadow-sm"
+        className="h-10 gap-2 rounded-lg px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
         onClick={() => navigate("/tasks/new")}
       >
-        <IconPlus className="size-5" />
+        <IconPlus className="size-4.5" />
         <span>{tasks.addTask.buttons.newTask}</span>
       </Button>
     </div>
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={myTasksText.title}
-        description={myTasksText.description}
+        subtitle={myTasksText.description}
         icon={IconUser}
         actions={headerActions}
       />

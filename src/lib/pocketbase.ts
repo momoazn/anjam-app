@@ -39,9 +39,8 @@ pb.beforeSend = function (_url, options) {
         options.headers["X-Organization-ID"] = orgId;
       }
     }
-  } catch (err) {
+  } catch {
     // Silently fail - not critical if header missing
-    console.warn("Failed to attach org context:", err);
   }
 
   return options;

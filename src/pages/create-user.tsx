@@ -73,7 +73,7 @@ export default function CreateUser() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-4xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={users.create.title}
         description="Add a new user to the system"

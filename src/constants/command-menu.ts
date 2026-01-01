@@ -59,4 +59,12 @@ export const commandMenu = {
     commandK: "⌘K",
     new: "N",
   },
+
+  // Accessibility labels
+  ariaLabels: {
+    searchInput: "جستجوی دستورات و محتوا",
+    commandList: "لیست دستورات",
+    navigationHint:
+      "برای حرکت از کلیدهای بالا/پایین، برای انتخاب از Enter استفاده کنید",
+  },
 } as const;

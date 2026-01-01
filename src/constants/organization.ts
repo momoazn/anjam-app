@@ -113,6 +113,10 @@ export const users = {
   errors: {
     notFound: "کاربر یافت نشد",
   },
+  emptyState: {
+    title: "هیچ کاربری وجود ندارد",
+    description: "هنوز کاربری در سیستم ثبت نشده است",
+  },
 } as const;
 
 // Projects module constants
@@ -147,6 +151,11 @@ export const projects = {
     addError: "نتوانستیم عضو را اضافه کنیم. دوباره تلاش کنید",
     removeSuccess: "عضو از پروژه حذف شد",
     removeError: "نتوانستیم عضو را حذف کنیم. دوباره تلاش کنید",
+    emptyState: {
+      title: "هنوز عضوی در این پروژه نیست",
+      description:
+        "اعضای تیم را به پروژه اضافه کنید تا بتوانند تسک‌ها را ببینند و روی آن‌ها کار کنند",
+    },
   },
   list: {
     noProjects: "هنوز پروژه‌ای نساخته‌اید",

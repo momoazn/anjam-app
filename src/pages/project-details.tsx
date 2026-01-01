@@ -5,14 +5,15 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { ProjectDetailsSections } from "@/components/project/project-details-sections";
 import { ProjectDetailsSkeleton } from "@/components/project/project-details-skeleton";
-import { ProjectHeader } from "@/components/project/project-header";
 import { ProjectSidebar } from "@/components/project/project-sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { errors, projects } from "@/constants";
+import { Input } from "@/components/ui/input";
+import { common, errors, projects } from "@/constants";
 import { queryKeys } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { type ProjectWithSupervisor, pb } from "@/lib/pocketbase";
@@ -200,20 +201,89 @@ export default function ProjectDetails() {
     tasks?.reduce((sum, task) => sum + (task.time_spent_minutes || 0), 0) || 0;
 
   return (
-    <PageTransition className="container mx-auto space-y-6 p-6">
-      <ProjectHeader
-        project={project}
-        canEdit={canEdit}
-        isEditing={isEditing}
-        editedName={editedName}
-        editedCode={editedCode}
-        isUpdating={isUpdating}
-        onNameChange={setEditedName}
-        onCodeChange={setEditedCode}
-        onStartEdit={handleStartEdit}
-        onCancelEdit={handleCancelEdit}
-        onSaveEdit={handleSaveEdit}
-        onBack={() => navigate("/projects")}
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+      <PageHeader
+        title={
+          isEditing ? (
+            <div className="flex flex-col gap-2">
+              <span className="text-primary text-[10px] font-bold tracking-tight">
+                {projects.create.form.name}
+              </span>
+              <Input
+                value={editedName}
+                onChange={(event) => setEditedName(event.target.value)}
+                placeholder={projects.create.form.name}
+                className="h-10 text-lg font-bold"
+              />
+            </div>
+          ) : (
+            project.name
+          )
+        }
+        description={
+          isEditing ? (
+            <div className="mt-2 w-40 space-y-2">
+              <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
+                {projects.create.form.code}
+              </span>
+              <Input
+                value={editedCode}
+                onChange={(event) =>
+                  setEditedCode(event.target.value.slice(0, 3))
+                }
+                placeholder={projects.create.form.code}
+                maxLength={3}
+                className="h-10 font-mono text-base font-bold tracking-widest"
+              />
+            </div>
+          ) : (
+            <span className="font-mono text-xs font-bold tracking-wider opacity-60">
+              {project.code || "PRJ"}
+            </span>
+          )
+        }
+        icon={Folder}
+        eyebrow={
+          <Button
+            variant="link"
+            className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
+            onClick={() => navigate("/projects")}
+          >
+            <ArrowLeft className="mr-1 h-3 w-3" />
+            {projects.details.backToProjects}
+          </Button>
+        }
+        actions={
+          isEditing ? (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                onClick={handleCancelEdit}
+                disabled={isUpdating}
+                className="h-9 px-4 text-xs font-bold"
+              >
+                {common.cancel}
+              </Button>
+              <Button
+                onClick={handleSaveEdit}
+                disabled={isUpdating}
+                className="bg-primary text-primary-foreground h-9 px-6 text-xs font-bold shadow-sm"
+              >
+                {common.save}
+              </Button>
+            </div>
+          ) : (
+            canEdit && (
+              <Button
+                variant="outline"
+                onClick={handleStartEdit}
+                className="h-9 px-4 text-xs font-bold shadow-sm"
+              >
+                {common.edit}
+              </Button>
+            )
+          )
+        }
       />
 
       <div

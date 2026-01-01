@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -264,13 +266,31 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 		return e.BadRequestError("Email and password required", nil)
 	}
 
+	// Validate password confirmation
+	if body.Password != body.PasswordConfirm {
+		return e.BadRequestError("Passwords do not match", nil)
+	}
+
+	// Validate password length
+	if len(body.Password) < 8 {
+		return e.BadRequestError("Password must be at least 8 characters", nil)
+	}
+	if len(body.Password) > 72 {
+		return e.BadRequestError("Password must be at most 72 characters", nil)
+	}
+
+	// Validate email length
+	if len(email) > 254 {
+		return e.BadRequestError("Email address is too long", nil)
+	}
+
 	// Check if email already exists
 	existingUser, err := e.App.FindFirstRecordByFilter(
 		CollectionUsers,
 		"email = {:email}",
 		dbx.Params{"email": email},
 	)
-	if err != nil && err.Error() != "sql: no rows in result set" {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return e.InternalServerError("Failed to check existing user", err)
 	}
 	if existingUser != nil {
@@ -416,13 +436,36 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		return e.BadRequestError(ErrOrgNameRequired, nil)
 	}
 
+	// Validate password confirmation
+	if body.Password != body.PasswordConfirm {
+		return e.BadRequestError("Passwords do not match", nil)
+	}
+
+	// Validate password length
+	if len(body.Password) < 8 {
+		return e.BadRequestError("Password must be at least 8 characters", nil)
+	}
+	if len(body.Password) > 72 {
+		return e.BadRequestError("Password must be at most 72 characters", nil)
+	}
+
+	// Validate email length
+	if len(email) > 254 {
+		return e.BadRequestError("Email address is too long", nil)
+	}
+
+	// Validate organization name length
+	if len(orgName) > 100 {
+		return e.BadRequestError("Organization name must be at most 100 characters", nil)
+	}
+
 	// Check if email already exists
 	existingUser, err := e.App.FindFirstRecordByFilter(
 		CollectionUsers,
 		"email = {:email}",
 		dbx.Params{"email": email},
 	)
-	if err != nil && err.Error() != "sql: no rows in result set" {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return e.InternalServerError("Failed to check existing user", err)
 	}
 	if existingUser != nil {
@@ -485,7 +528,7 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 				"slug = {:slug}",
 				dbx.Params{"slug": slug},
 			)
-			if findErr != nil && findErr.Error() != "sql: no rows in result set" {
+			if findErr != nil && !errors.Is(findErr, sql.ErrNoRows) {
 				return fmt.Errorf("failed to check slug collision: %w", findErr)
 			}
 			if existingOrg == nil {

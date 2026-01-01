@@ -84,6 +84,7 @@ func main() {
 	registerInviteEndpoints(app)
 	registerPermissionsEndpoint(app)
 	registerBatchEndpoints(app)
+	registerHealthEndpoints(app)
 
 	// --- Bind Record Event Handlers ---
 	app.OnRecordCreateExecute("users").BindFunc(hooks.HandleUserCreation)
@@ -99,6 +100,10 @@ func main() {
 	app.OnRecordAfterUpdateSuccess("projects").BindFunc(hooks.HandleProjectUpdateNotification)
 	app.OnRecordAfterCreateSuccess("projects").BindFunc(handleProjectCreatedStatuses)
 	app.OnRecordAfterCreateSuccess("projects").BindFunc(hooks.HandleProjectCreatedMember)
+	app.OnRecordAfterDeleteSuccess("projects").BindFunc(func(e *core.RecordEvent) error {
+		hooks.CleanupProjectMutex(e.Record.Id)
+		return nil
+	})
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(hooks.HandleCommentNotification)
 	app.OnRecordAfterCreateSuccess("comments").BindFunc(handleCommentMentions)
 	app.OnRecordAfterCreateSuccess("project_members").BindFunc(hooks.HandleProjectMembersCreatedNotify)
@@ -131,6 +136,11 @@ func main() {
 	})
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		se.Server.Handler = requestTimingMiddleware(se.Server.Handler)
+		return se.Next()
+	})
+
+	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Server.Handler = trackAuthMiddleware(app, se.Server.Handler)
 		return se.Next()
 	})
@@ -147,11 +157,11 @@ func logDefaultCredentialWarning(app core.App) {
 
 	allowEnv := strings.EqualFold(os.Getenv("TM_ALLOW_DEFAULT_ACCOUNTS"), "true")
 	if allowEnv {
-		log.Println("Default account creation is explicitly enabled (TM_ALLOW_DEFAULT_ACCOUNTS=true).")
+		helpers.LogInfo("Default account creation is explicitly enabled (TM_ALLOW_DEFAULT_ACCOUNTS=true)")
 		return
 	}
 
-	log.Println("Default accounts will be created only when no admins exist. Set TM_ALLOW_DEFAULT_ACCOUNTS=true to permit creating additional defaults after admins exist.")
+	helpers.LogInfo("Default accounts will be created only when no admins exist. Set TM_ALLOW_DEFAULT_ACCOUNTS=true to permit creating additional defaults after admins exist.")
 }
 
 // --- Helper Functions ---
@@ -177,7 +187,7 @@ func staticHandler(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error
 func serveIndexHTML(staticFS fs.FS, w http.ResponseWriter, r *http.Request) error {
 	indexFile, err := staticFS.Open("index.html")
 	if err != nil {
-		log.Printf("Error opening index.html: %v", err)
+		helpers.LogError("Error opening index.html", helpers.WithError(err))
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return err
 	}
@@ -185,7 +195,7 @@ func serveIndexHTML(staticFS fs.FS, w http.ResponseWriter, r *http.Request) erro
 
 	seeker, ok := indexFile.(io.ReadSeeker)
 	if !ok {
-		log.Printf("index.html does not implement io.ReadSeeker")
+		helpers.LogError("index.html does not implement io.ReadSeeker")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return fmt.Errorf("index.html is not seekable")
 	}
@@ -561,6 +571,56 @@ func addRequestMetadataMiddleware(next http.Handler) http.Handler {
 		ctx = context.WithValue(ctx, contextKeyClient, client)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+var staticAssetSuffixes = []string{".js", ".css", ".svg", ".woff2", ".ico"}
+
+func isStaticAsset(path string) bool {
+	if strings.HasPrefix(path, "/_/") {
+		return true
+	}
+	for _, suffix := range staticAssetSuffixes {
+		if strings.HasSuffix(path, suffix) {
+			return true
+		}
+	}
+	return false
+}
+
+// requestTimingMiddleware logs the duration of each HTTP request.
+// Slow requests (>1s) are logged at WARN level, very slow requests (>5s) at ERROR level.
+func requestTimingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		next.ServeHTTP(w, r)
+
+		duration := time.Since(start)
+
+		// Skip logging for static assets
+		if isStaticAsset(r.URL.Path) {
+			return
+		}
+
+		fields := helpers.Fields(
+			"method", r.Method,
+			"path", r.URL.Path,
+			"duration_ms", duration.Milliseconds(),
+		)
+
+		if requestID, ok := r.Context().Value(contextKeyRequestID).(string); ok {
+			fields["request_id"] = requestID
+		}
+
+		switch {
+		case duration >= 5*time.Second:
+			helpers.LogError("Very slow request", fields)
+		case duration >= 1*time.Second:
+			helpers.LogWarn("Slow request", fields)
+		default:
+			helpers.LogDebug("Request completed", fields)
+		}
 	})
 }
 

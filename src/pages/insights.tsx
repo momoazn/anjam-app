@@ -102,76 +102,73 @@ export default function Insights() {
   }
 
   return (
-    <PageTransition>
-      <div className="container mx-auto space-y-6 p-6">
-        <PageHeader
-          variant="minimal"
-          title={reports.insights.title}
-          subtitle={reports.insights.description}
-          icon={IconRocket}
-        />
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+      <PageHeader
+        title={reports.insights.title}
+        subtitle={reports.insights.description}
+        icon={IconRocket}
+      />
 
-        {/* Metrics Grid */}
-        <div className="grid gap-4 md:grid-cols-3">
-          {/* Created This Week */}
-          <Card className="bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {reports.insights.createdThisWeek}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {digitsEnToFa(insights.createdThisWeek)}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                {getPercentageChange(
-                  insights.createdThisWeek,
-                  insights.createdLastWeek,
-                )}{" "}
-                {reports.insights.fromLastWeek}
-              </p>
-            </CardContent>
-          </Card>
+      {/* Metrics Grid */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {/* Created This Week */}
+        <Card className="bg-card/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {reports.insights.createdThisWeek}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {digitsEnToFa(insights.createdThisWeek)}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              {getPercentageChange(
+                insights.createdThisWeek,
+                insights.createdLastWeek,
+              )}{" "}
+              {reports.insights.fromLastWeek}
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* Completed This Week */}
-          <Card className="bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {reports.insights.completedThisWeek}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {digitsEnToFa(insights.completedThisWeek)}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                {getPercentageChange(
-                  insights.completedThisWeek,
-                  insights.completedLastWeek,
-                )}{" "}
-                {reports.insights.fromLastWeek}
-              </p>
-            </CardContent>
-          </Card>
+        {/* Completed This Week */}
+        <Card className="bg-card/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {reports.insights.completedThisWeek}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {digitsEnToFa(insights.completedThisWeek)}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              {getPercentageChange(
+                insights.completedThisWeek,
+                insights.completedLastWeek,
+              )}{" "}
+              {reports.insights.fromLastWeek}
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* In Progress */}
-          <Card className="bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {reports.insights.inProgress}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {digitsEnToFa(insights.inProgress)}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                {reports.insights.currentlyActive}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* In Progress */}
+        <Card className="bg-card/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {reports.insights.inProgress}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {digitsEnToFa(insights.inProgress)}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              {reports.insights.currentlyActive}
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </PageTransition>
   );

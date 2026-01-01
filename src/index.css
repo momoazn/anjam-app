@@ -37,13 +37,28 @@
   }
 
   h2 {
-    @apply text-xl font-semibold tracking-tight;
+    @apply text-xl font-bold tracking-tight;
     line-height: 1.3;
   }
 
   h3 {
-    @apply text-lg font-semibold tracking-tight;
+    @apply text-lg font-bold tracking-tight;
     line-height: 1.4;
+  }
+
+  h4 {
+    @apply text-base font-bold tracking-tight;
+    line-height: 1.5;
+  }
+
+  h5 {
+    @apply text-sm font-bold tracking-tight;
+    line-height: 1.6;
+  }
+
+  h6 {
+    @apply text-xs font-bold tracking-tight;
+    line-height: 1.7;
   }
 
   p,
@@ -146,32 +161,32 @@
   --chart-5: oklch(0.52 0.09 223);
 
   /* Radius */
-  --radius: 0.5rem;
+  --radius: 0.375rem;
 }
 
 /* CSS Custom Properties - Dark Theme */
 .dark {
-  --background: oklch(0.17 0.01 240);
+  --background: oklch(0.12 0.01 240);
   --foreground: oklch(0.95 0.01 240);
-  --card: oklch(0.21 0.01 240);
+  --card: oklch(0.16 0.01 240);
   --card-foreground: oklch(0.95 0.01 240);
-  --popover: oklch(0.21 0.01 240);
+  --popover: oklch(0.16 0.01 240);
   --popover-foreground: oklch(0.95 0.01 240);
   --primary: oklch(0.65 0.15 255);
-  --primary-foreground: oklch(0.17 0.01 240);
-  --secondary: oklch(0.26 0.01 240);
+  --primary-foreground: oklch(0.12 0.01 240);
+  --secondary: oklch(0.2 0.01 240);
   --secondary-foreground: oklch(0.95 0.01 240);
-  --muted: oklch(0.24 0.01 240);
+  --muted: oklch(0.18 0.01 240);
   --muted-foreground: oklch(0.65 0.01 240);
-  --accent: oklch(0.28 0.02 240);
+  --accent: oklch(0.22 0.02 240);
   --accent-foreground: oklch(0.95 0.01 240);
   --destructive: oklch(0.5 0.15 25);
   --destructive-foreground: oklch(0.95 0.01 240);
-  --border: oklch(0.32 0.01 240);
-  --input: oklch(0.32 0.01 240);
+  --border: oklch(0.25 0.01 240);
+  --input: oklch(0.25 0.01 240);
   --ring: oklch(0.65 0.15 255);
 
-  --sidebar: oklch(0.19 0.01 240);
+  --sidebar: oklch(0.14 0.01 240);
   --sidebar-foreground: oklch(0.95 0.01 240);
   --sidebar-primary: oklch(0.65 0.15 255);
   --sidebar-primary-foreground: oklch(0.17 0.01 240);
@@ -198,6 +213,11 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Easing */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring-slow: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring-fast: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Colors */
   --color-background: var(--background);
@@ -308,35 +328,6 @@
     animation-delay: 0.1s;
   }
 
-  /* Spring physics transitions */
-  .spring-transition {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .spring-transition-slow {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .spring-transition-fast {
-    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Interactive element effects */
-  .hover-scale-spring:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .hover-scale-spring:active {
-    transform: scale(0.98);
-    transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .btn-spring:active {
-    transform: translateY(1px);
-    transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
   /* Scrollbar visibility utility */
   .scrollbar-none {
     scrollbar-width: none !important;
@@ -345,32 +336,6 @@
 
   .scrollbar-none::-webkit-scrollbar {
     display: none !important;
-  }
-
-  /* Industrial Utilities */
-  .industrial-grid {
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  .industrial-dots {
-    background-image: radial-gradient(var(--border) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  .text-vertical {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-  }
-
-  .mask-fade-bottom {
-    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-  }
-
-  .mask-fade-top {
-    mask-image: linear-gradient(to top, black 80%, transparent 100%);
   }
 }
 
@@ -419,19 +384,6 @@
   .product-surface {
     background-color: var(--product-surface);
     border: 1px solid var(--product-border);
-  }
-
-  .product-elevated {
-    background-color: var(--product-elevated);
-    border-top: 1px solid var(--product-border-elevated);
-    border-bottom: 1px solid var(--product-border);
-    /* Glassmorphism effect */
-    backdrop-filter: blur(20px);
-  }
-
-  /* Subtle luminance - beveled edges */
-  .product-beveled {
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
   /* Selection ring with glow for active/selected elements */

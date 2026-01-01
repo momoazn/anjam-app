@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { auth, organization, shared } from "@/constants";
+import { logError } from "@/lib/logger";
 import { pb } from "@/lib/pocketbase";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -86,13 +87,13 @@ export function CreateOrganizationPage() {
       toast.success(organization.create.success);
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error creating organization:", error);
+      logError("Error creating organization", error);
       toast.error(organization.create.error);
     }
   };
 
   return (
-    <div className="container mx-auto max-w-2xl py-12">
+    <div className="container mx-auto max-w-7xl py-12">
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold tracking-tight">
           {organization.create.title}

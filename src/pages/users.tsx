@@ -51,20 +51,20 @@ export default function Users() {
 
   const headerActions = canCreateUsers ? (
     <Button
+      className="h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
       onClick={() => navigate("/users/new")}
-      className="h-12 gap-2 px-6 font-bold shadow-sm"
     >
-      <IconPlus className="size-5" />
+      <IconPlus className="size-4.5" />
       <span>{usersText.create.button}</span>
     </Button>
   ) : null;
 
   return (
     <>
-      <PageTransition className="container mx-auto p-4 md:p-6">
+      <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
         <PageHeader
           title={usersText.title}
-          description={usersText.list.count.replace(
+          subtitle={usersText.list.count.replace(
             "{count}",
             digitsEnToFa(usersData?.length ?? 0).toString(),
           )}

@@ -2,10 +2,23 @@ import path from "path";
 
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { visualizer } from "rollup-plugin-visualizer";
+import { type PluginOption, defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    // Bundle analyzer - run with ANALYZE=true bun run build
+    process.env.ANALYZE &&
+      (visualizer({
+        filename: "stats.html",
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+        template: "treemap", // sunburst, treemap, network
+      }) as PluginOption),
+  ].filter(Boolean) as PluginOption[],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

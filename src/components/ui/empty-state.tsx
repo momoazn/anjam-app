@@ -19,6 +19,7 @@ import {
   organization,
   projects,
   tasks,
+  users,
 } from "@/constants";
 
 type EmptyStateProps = {
@@ -31,14 +32,13 @@ type EmptyStateProps = {
 function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
     <Card className="rounded-xl border-dashed shadow-none">
-      <CardContent
-        className="flex flex-col items-center justify-center py-16 text-center"
-        data-animate-stagger
-      >
-        <div className="text-muted-foreground/40 mb-6 h-16 w-16">{icon}</div>
-        <h3 className="mb-2 text-xl font-bold tracking-tight">{title}</h3>
+      <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="bg-muted/50 mb-6 flex h-16 w-16 items-center justify-center rounded-2xl">
+          <div className="text-muted-foreground h-8 w-8">{icon}</div>
+        </div>
+        <h3 className="mb-2 text-sm font-semibold text-foreground">{title}</h3>
         {description && (
-          <p className="text-muted-foreground mb-8 max-w-md text-sm leading-relaxed">
+          <p className="text-muted-foreground mb-8 max-w-sm text-xs leading-relaxed">
             {description}
           </p>
         )}
@@ -176,6 +176,40 @@ export function EmptyStateNoActivity() {
       icon={<Activity className="h-12 w-12" />}
       title={auditLogs.activityStream.title}
       description={auditLogs.activityStream.empty}
+    />
+  );
+}
+
+export function EmptyStateNoUsers({ onCreate }: { onCreate?: () => void }) {
+  return (
+    <EmptyState
+      icon={<Users className="h-12 w-12" />}
+      title={users.emptyState.title}
+      description={users.emptyState.description}
+      action={
+        onCreate ? (
+          <Button className="gap-2" onClick={onCreate}>
+            {users.create.button}
+          </Button>
+        ) : null
+      }
+    />
+  );
+}
+
+export function EmptyStateNoProjectMembers({ onAdd }: { onAdd?: () => void }) {
+  return (
+    <EmptyState
+      icon={<Users className="h-12 w-12" />}
+      title={projects.users.emptyState.title}
+      description={projects.users.emptyState.description}
+      action={
+        onAdd ? (
+          <Button className="gap-2" onClick={onAdd}>
+            {projects.users.add}
+          </Button>
+        ) : null
+      }
     />
   );
 }

@@ -5,9 +5,9 @@ import { PageTransition } from "@/components/page-transition";
 import { PreferencesSection } from "@/components/settings/preferences-section";
 import { settings } from "@/constants";
 
-export function PreferencesPage() {
+export default function PreferencesPage() {
   return (
-    <PageTransition className="container mx-auto max-w-5xl p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={settings.preferences.title}
         description={settings.preferences.description}
@@ -20,5 +20,3 @@ export function PreferencesPage() {
     </PageTransition>
   );
 }
-
-export default PreferencesPage;

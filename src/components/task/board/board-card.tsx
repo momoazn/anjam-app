@@ -4,9 +4,9 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconClock, IconHash, IconTarget } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
+import { TaskAssigneeAvatar } from "@/components/task/task-assignee-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/user-avatar";
 import { dashboard } from "@/constants";
 import { formatDateShort } from "@/lib/date-utils";
 import type { TaskWithProject } from "@/lib/pocketbase";
@@ -94,28 +94,12 @@ export function BoardCard({ task }: BoardCardProps) {
 
       <div className="relative z-10 mt-1 flex w-full items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="relative">
-            <UserAvatar
-              user={
-                assigneeRecord
-                  ? {
-                      first_name: assigneeRecord.first_name,
-                      last_name: assigneeRecord.last_name,
-                      username: assigneeRecord.username,
-                      avatar: assigneeRecord.avatar,
-                      id: assigneeRecord.id,
-                      collectionId: assigneeRecord.collectionId,
-                      collectionName: assigneeRecord.collectionName,
-                    }
-                  : undefined
-              }
-              showUnassigned={!assigneeRecord && !task.assignee}
-              className="border-border/20 size-8 rounded-full border shadow-sm"
-            />
-            {assigneeRecord && (
-              <div className="bg-primary border-card absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2" />
-            )}
-          </div>
+          <TaskAssigneeAvatar
+            assignee={assigneeRecord}
+            hasAssigneeId={!!task.assignee}
+            size="md"
+            indicatorClassName="border-card"
+          />
 
           <div className="flex items-center gap-1 opacity-40">
             <IconTarget className="size-3" />

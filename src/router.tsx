@@ -376,7 +376,12 @@ const Title = ({
     if (title) document.title = `${title} • ${app.name}`;
     else document.title = app.name;
   }, [title]);
-  return <>{children}</>;
+
+  return (
+    <div key={title} data-page-transition>
+      {children}
+    </div>
+  );
 };
 
 // Memoized routes configuration

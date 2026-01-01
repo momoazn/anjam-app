@@ -1,4 +1,4 @@
-import { XIcon } from "@phosphor-icons/react";
+import { X } from "lucide-react";
 import { Dialog as SheetPrimitive } from "radix-ui";
 import * as React from "react";
 
@@ -73,7 +73,7 @@ function SheetContent({
               className="absolute top-3 right-3"
               size="icon-sm"
             >
-              <XIcon />
+              <X className="size-4" />
               <span className="sr-only">Close</span>
             </Button>
           </SheetPrimitive.Close>
