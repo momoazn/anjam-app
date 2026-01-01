@@ -211,7 +211,7 @@ export default function Dashboard() {
   const isLoading = isLoadingTasks || isLoadingProjects;
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto p-4 md:p-4">
       <DashboardHeader stats={stats} isLoading={isLoading} />
       <ProductivityWidget
         stats={stats}

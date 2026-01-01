@@ -141,7 +141,7 @@ export function DashboardHeader({
     <Card className="border-border bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm">
       <CardContent className="relative z-10 flex flex-col p-0 lg:flex-row lg:items-stretch">
         {/* Main Welcome Section */}
-        <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-10">
+        <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-8">
           <div className="relative z-10 flex items-center gap-3">
             <IconBox size="xs" tone="primary">
               <LayoutDashboard className="size-full p-1" />

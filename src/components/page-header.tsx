@@ -98,11 +98,11 @@ function DefaultPageHeader({
   return (
     <Card
       className={cn(
-        "border-border bg-card relative mb-8 overflow-hidden rounded-xl border shadow-sm",
+        "border-border bg-card relative mb-6 overflow-hidden rounded-xl border shadow-sm",
         className,
       )}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-5">
         <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-5 text-right">
             <div className="flex shrink-0">
@@ -148,14 +148,14 @@ function HeroPageHeader({
   return (
     <Card
       className={cn(
-        "border-border/10 relative mb-12 overflow-hidden border shadow-sm",
+        "border-border/10 relative mb-8 overflow-hidden border shadow-sm",
         "rounded-3xl",
         className,
       )}
     >
       {background}
 
-      <CardContent className="relative z-10 flex flex-col gap-8 p-8 md:flex-row md:items-center md:justify-between lg:p-12">
+      <CardContent className="relative z-10 flex flex-col gap-8 p-8 md:flex-row md:items-center md:justify-between lg:p-8">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-6">
             <IconBox size={iconSize} tone={iconTone}>
@@ -200,7 +200,7 @@ function MinimalPageHeader({
   return (
     <div
       className={cn(
-        "border-border/40 mb-8 flex flex-col gap-4 border-b pb-6 lg:flex-row lg:items-center lg:justify-between",
+        "border-border/40 mb-6 flex flex-col gap-4 border-b pb-6 lg:flex-row lg:items-center lg:justify-between",
         className,
       )}
     >
@@ -242,7 +242,7 @@ function ToolbarPageHeader({
   return (
     <div
       className={cn(
-        "relative mb-12 flex flex-col gap-8 border-b pb-12 md:flex-row md:items-end md:justify-between",
+        "relative mb-6 flex flex-col gap-8 border-b pb-6 md:flex-row md:items-end md:justify-between",
         className,
       )}
     >
@@ -292,12 +292,12 @@ function BreadcrumbPageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn("mb-8", className)}>
+    <div className={cn("mb-6", className)}>
       {/* Breadcrumb */}
       {eyebrow && <div className="mb-4">{eyebrow}</div>}
 
       <Card className="relative overflow-hidden">
-        <CardContent className="relative z-10 p-6 md:p-8">
+        <CardContent className="relative z-10 p-5 md:p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-3">
               <div className="flex items-center gap-4">

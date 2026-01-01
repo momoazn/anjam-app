@@ -23,7 +23,7 @@ export function TaskHeader({
   onCreateTask,
 }: TaskHeaderProps) {
   return (
-    <div className="relative mb-12 flex flex-col gap-8 border-b pb-12 md:flex-row md:items-end md:justify-between">
+    <div className="relative mb-6 flex flex-col gap-6 border-b pb-6 md:flex-row md:items-end md:justify-between">
       <div className="relative z-10 flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <IconBox size="lg" tone="primary">

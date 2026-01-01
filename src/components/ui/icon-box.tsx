@@ -17,12 +17,12 @@ const iconBoxVariants = cva(
         custom: "",
       },
       size: {
-        xs: "size-10 rounded-xl [&_svg]:size-5",
-        sm: "size-12 rounded-2xl [&_svg]:size-6",
-        md: "size-14 rounded-2xl [&_svg]:size-7",
-        lg: "size-16 rounded-3xl [&_svg]:size-8",
+        xs: "size-7 rounded-lg [&_svg]:size-3.5",
+        sm: "size-8 rounded-lg [&_svg]:size-4",
+        md: "size-10 rounded-xl [&_svg]:size-5",
+        lg: "size-12 rounded-2xl [&_svg]:size-6",
         // Legacy sizes mapped
-        icon: "size-10",
+        icon: "size-8",
       },
     },
     defaultVariants: {
