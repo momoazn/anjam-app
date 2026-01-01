@@ -104,7 +104,10 @@ export function useProjectMember(
  * Check if current user is a member of a project
  * Returns { isMember, isLoading } for proper loading state handling
  */
-export function useIsProjectMember(projectId: string) {
+export function useIsProjectMember(projectId: string): {
+  isMember: boolean;
+  isLoading: boolean;
+} {
   const { data: members, isLoading } = useProjectMembers(projectId);
   const currentUser = pb.authStore.model;
 

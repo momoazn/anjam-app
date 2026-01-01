@@ -570,6 +570,20 @@ func addRequestMetadataMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+var staticAssetSuffixes = []string{".js", ".css", ".svg", ".woff2", ".ico"}
+
+func isStaticAsset(path string) bool {
+	if strings.HasPrefix(path, "/_/") {
+		return true
+	}
+	for _, suffix := range staticAssetSuffixes {
+		if strings.HasSuffix(path, suffix) {
+			return true
+		}
+	}
+	return false
+}
+
 // requestTimingMiddleware logs the duration of each HTTP request.
 // Slow requests (>1s) are logged at WARN level, very slow requests (>5s) at ERROR level.
 func requestTimingMiddleware(next http.Handler) http.Handler {
@@ -581,12 +595,7 @@ func requestTimingMiddleware(next http.Handler) http.Handler {
 		duration := time.Since(start)
 
 		// Skip logging for static assets
-		if strings.HasPrefix(r.URL.Path, "/_/") ||
-			strings.HasSuffix(r.URL.Path, ".js") ||
-			strings.HasSuffix(r.URL.Path, ".css") ||
-			strings.HasSuffix(r.URL.Path, ".svg") ||
-			strings.HasSuffix(r.URL.Path, ".woff2") ||
-			strings.HasSuffix(r.URL.Path, ".ico") {
+		if isStaticAsset(r.URL.Path) {
 			return
 		}
 

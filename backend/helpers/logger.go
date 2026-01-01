@@ -140,8 +140,7 @@ func formatFields(fields map[string]interface{}) string {
 	return strings.Join(parts, " ")
 }
 
-// Debug logs a debug message
-func (l *Logger) Debug(msg string, fields ...map[string]interface{}) {
+func mergeFields(fields ...map[string]interface{}) map[string]interface{} {
 	mergedFields := make(map[string]interface{})
 	for _, f := range fields {
 		if f != nil {
@@ -150,46 +149,27 @@ func (l *Logger) Debug(msg string, fields ...map[string]interface{}) {
 			}
 		}
 	}
-	l.log(DEBUG, msg, mergedFields)
+	return mergedFields
+}
+
+// Debug logs a debug message
+func (l *Logger) Debug(msg string, fields ...map[string]interface{}) {
+	l.log(DEBUG, msg, mergeFields(fields...))
 }
 
 // Info logs an info message
 func (l *Logger) Info(msg string, fields ...map[string]interface{}) {
-	mergedFields := make(map[string]interface{})
-	for _, f := range fields {
-		if f != nil {
-			for k, v := range f {
-				mergedFields[k] = v
-			}
-		}
-	}
-	l.log(INFO, msg, mergedFields)
+	l.log(INFO, msg, mergeFields(fields...))
 }
 
 // Warn logs a warning message
 func (l *Logger) Warn(msg string, fields ...map[string]interface{}) {
-	mergedFields := make(map[string]interface{})
-	for _, f := range fields {
-		if f != nil {
-			for k, v := range f {
-				mergedFields[k] = v
-			}
-		}
-	}
-	l.log(WARN, msg, mergedFields)
+	l.log(WARN, msg, mergeFields(fields...))
 }
 
 // Error logs an error message
 func (l *Logger) Error(msg string, fields ...map[string]interface{}) {
-	mergedFields := make(map[string]interface{})
-	for _, f := range fields {
-		if f != nil {
-			for k, v := range f {
-				mergedFields[k] = v
-			}
-		}
-	}
-	l.log(ERROR, msg, mergedFields)
+	l.log(ERROR, msg, mergeFields(fields...))
 }
 
 // WithError adds an error to the fields

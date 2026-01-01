@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 	"time"
 
@@ -148,7 +149,7 @@ func checkMemory() CheckResult {
 	if allocMB > memoryWarnThresholdMB {
 		return CheckResult{
 			Status:  "error",
-			Message: "High memory usage",
+			Message: fmt.Sprintf("High memory usage: %dMB allocated", allocMB),
 		}
 	}
 
