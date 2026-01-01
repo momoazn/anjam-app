@@ -16,8 +16,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
-import { TechnicalLabel } from "@/components/ui/technical-label";
 import { commandMenu } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
 import { useTheme } from "@/hooks/use-theme";
@@ -500,20 +500,22 @@ export function CommandMenu() {
                       />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col items-start">
-                      <span className="truncate font-bold tracking-tight">
-                        {item.label}
-                      </span>
+                      <span className="truncate font-medium">{item.label}</span>
                       {"subtitle" in item && item.subtitle && (
-                        <TechnicalLabel className="truncate opacity-70">
+                        <span className="text-muted-foreground truncate text-xs">
                           {item.subtitle}
-                        </TechnicalLabel>
+                        </span>
                       )}
                     </div>
                     {"badge" in item && item.badge && (
-                      <TechnicalLabel className="bg-primary/10 text-primary rounded border border-primary/20 px-1.5 py-0.5 text-[8px] font-black uppercase opacity-100">
+                      <Badge
+                        variant="secondary"
+                        className="rounded px-1.5 py-0.5 text-[10px]"
+                      >
                         {item.badge}
-                      </TechnicalLabel>
+                      </Badge>
                     )}
+
                     {item.type === "command" &&
                       "shortcut" in item &&
                       item.shortcut && (

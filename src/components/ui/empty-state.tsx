@@ -12,7 +12,6 @@ import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TechnicalLabel } from "@/components/ui/technical-label";
 import {
   auditLogs,
   comments,
@@ -32,19 +31,14 @@ type EmptyStateProps = {
 
 function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <Card className="bg-dot-pattern rounded-2xl border-dashed shadow-none">
-      <CardContent
-        className="bg-background/80 flex flex-col items-center justify-center py-16 text-center backdrop-blur-[2px]"
-        data-animate-stagger
-      >
-        <div className="text-primary/20 bg-primary/5 mb-8 flex h-20 w-20 items-center justify-center rounded-3xl border border-primary/10">
-          <div className="h-10 w-10">{icon}</div>
+    <Card className="rounded-xl border-dashed shadow-none">
+      <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="bg-muted/50 mb-6 flex h-16 w-16 items-center justify-center rounded-2xl">
+          <div className="text-muted-foreground h-8 w-8">{icon}</div>
         </div>
-        <TechnicalLabel className="mb-2 text-sm font-black text-foreground opacity-100">
-          {title}
-        </TechnicalLabel>
+        <h3 className="mb-2 text-sm font-semibold text-foreground">{title}</h3>
         {description && (
-          <p className="text-muted-foreground mb-10 max-w-sm text-xs leading-relaxed font-medium">
+          <p className="text-muted-foreground mb-8 max-w-sm text-xs leading-relaxed">
             {description}
           </p>
         )}

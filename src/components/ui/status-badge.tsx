@@ -3,8 +3,6 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-import { TechnicalLabel } from "./technical-label";
-
 const statusBadgeVariants = cva(
   "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-border/40 bg-muted/30 w-fit",
   {
@@ -28,7 +26,7 @@ const dotVariants = cva("size-1.5 rounded-full", {
     status: {
       backlog: "bg-muted-foreground/40",
       todo: "bg-foreground/40",
-      "in-progress": "bg-orange-500 animate-pulse",
+      "in-progress": "bg-orange-500",
       done: "bg-green-500",
       canceled: "bg-muted-foreground/20",
     },
@@ -54,9 +52,9 @@ export function StatusBadge({
   return (
     <div className={cn(statusBadgeVariants({ status, className }))} {...props}>
       <div className={cn(dotVariants({ status }))} />
-      <TechnicalLabel className="text-[9px] font-bold text-inherit opacity-100">
+      <span className="text-[10px] font-medium text-inherit opacity-90">
         {label}
-      </TechnicalLabel>
+      </span>
     </div>
   );
 }

@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { TechnicalLabel } from "@/components/ui/technical-label";
 import {
   Tooltip,
   TooltipContent,
@@ -76,19 +75,19 @@ export function SiteHeader() {
                     <BreadcrumbLink asChild>
                       <Link
                         to={c.to}
-                        className="text-muted-foreground hover:text-primary text-[10px] font-bold uppercase tracking-wider transition-colors"
+                        className="text-muted-foreground hover:text-primary text-xs font-medium transition-colors"
                       >
                         {c.label}
                       </Link>
                     </BreadcrumbLink>
                   ) : (
-                    <BreadcrumbPage className="text-foreground text-[10px] font-bold uppercase tracking-wider">
+                    <BreadcrumbPage className="text-foreground text-xs font-medium">
                       {c.label}
                     </BreadcrumbPage>
                   )}
                 </BreadcrumbItem>
                 {idx < crumbs.length - 1 && (
-                  <BreadcrumbSeparator className="mx-1 opacity-20" />
+                  <BreadcrumbSeparator className="mx-1 opacity-40" />
                 )}
               </Fragment>
             ))}
@@ -111,11 +110,8 @@ export function SiteHeader() {
                   : commandMenu.operations.placeholder}
               </span>
             </span>
-            <kbd className="bg-background/50 text-muted-foreground absolute end-2 top-1.5 hidden h-5 items-center gap-1 rounded border border-border/40 px-1.5 select-none sm:flex">
-              <span className="text-[10px]">⌘</span>
-              <TechnicalLabel className="text-foreground text-[9px]">
-                K
-              </TechnicalLabel>
+            <kbd className="bg-background/50 text-muted-foreground absolute end-2 top-1.5 hidden h-5 items-center gap-1 rounded border border-border/40 px-1.5 font-sans text-[10px] font-medium select-none sm:flex">
+              <span className="text-xs">⌘</span>K
             </kbd>
           </Button>
         </div>
