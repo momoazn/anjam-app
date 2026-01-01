@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
 	"anjam/config"
 	"anjam/handlers"
+	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 // handleGlobalSearch performs a unified search across tasks and projects
@@ -47,16 +47,40 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 	}
 
 	// Transform tasks to lightweight DTO
+	// First, collect all unique project IDs to batch fetch
+	projectIDs := make(map[string]bool)
+	for _, t := range tasks {
+		if projectId := t.GetString("project"); projectId != "" {
+			projectIDs[projectId] = true
+		}
+	}
+
+	// Batch fetch all projects in one query
+	projectMap := make(map[string]*core.Record)
+	if len(projectIDs) > 0 {
+		projectIdList := make([]string, 0, len(projectIDs))
+		for id := range projectIDs {
+			projectIdList = append(projectIdList, id)
+		}
+
+		fetchedProjects, err := e.App.FindRecordsByIds(config.CollectionProjects, projectIdList)
+		if err != nil {
+			log.Printf("Warning: failed to batch fetch projects: %v", err)
+		} else {
+			for _, p := range fetchedProjects {
+				projectMap[p.Id] = p
+			}
+		}
+	}
+
+	// Build task DTOs using the pre-fetched project data
 	taskDTOs := make([]map[string]interface{}, 0)
 	for _, t := range tasks {
 		if canViewRecord(e, t) {
 			projectName := ""
 			projectId := t.GetString("project")
 			if projectId != "" {
-				project, err := e.App.FindRecordById(config.CollectionProjects, projectId)
-				if err != nil {
-					log.Printf("Warning: failed to fetch project %s for task %s: %v", projectId, t.Id, err)
-				} else if project != nil {
+				if project, ok := projectMap[projectId]; ok {
 					projectName = project.GetString("name")
 				}
 			}
