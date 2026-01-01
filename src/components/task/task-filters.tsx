@@ -8,6 +8,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useMemo } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -80,16 +81,27 @@ export function TaskFilters({
 }: TaskFiltersProps) {
   const { data: tags, isLoading: isLoadingTags } = useTags();
 
-  const hasActiveFilters = !!(
-    searchTerm ||
-    selectedStatus !== ALL_FILTER_VALUE ||
-    selectedPriority !== ALL_FILTER_VALUE ||
-    selectedAssignee !== ALL_FILTER_VALUE ||
-    selectedDateRange !== "all" ||
-    selectedTag !== "all"
+  const hasActiveFilters = useMemo(
+    () =>
+      !!(
+        searchTerm ||
+        selectedStatus !== ALL_FILTER_VALUE ||
+        selectedPriority !== ALL_FILTER_VALUE ||
+        selectedAssignee !== ALL_FILTER_VALUE ||
+        selectedDateRange !== "all" ||
+        selectedTag !== "all"
+      ),
+    [
+      searchTerm,
+      selectedStatus,
+      selectedPriority,
+      selectedAssignee,
+      selectedDateRange,
+      selectedTag,
+    ],
   );
 
-  const getActiveFilterLabels = () => {
+  const activeFilterLabels = useMemo(() => {
     const labels: { label: string; onClear: () => void }[] = [];
 
     if (searchTerm) {
@@ -151,7 +163,22 @@ export function TaskFilters({
     }
 
     return labels;
-  };
+  }, [
+    searchTerm,
+    selectedStatus,
+    selectedPriority,
+    selectedAssignee,
+    selectedDateRange,
+    selectedTag,
+    users,
+    tags,
+    setSearchTerm,
+    setSelectedStatus,
+    setSelectedPriority,
+    setSelectedAssignee,
+    setSelectedDateRange,
+    setSelectedTag,
+  ]);
 
   const clearAllFilters = () => {
     setSearchTerm("");
@@ -397,7 +424,7 @@ export function TaskFilters({
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            {getActiveFilterLabels().map((filter) => (
+            {activeFilterLabels.map((filter) => (
               <ActiveFilterBadge
                 key={filter.label}
                 label={filter.label}

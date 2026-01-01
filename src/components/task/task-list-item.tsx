@@ -4,10 +4,10 @@ import { isToday } from "date-fns-jalali";
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { TaskAssigneeAvatar } from "@/components/task/task-assignee-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UserAvatar } from "@/components/user-avatar";
 import { task as taskLabels, tasks } from "@/constants";
 import { useProductClasses } from "@/hooks/use-product-theme";
 import { formatDateShort } from "@/lib/date-utils";
@@ -183,28 +183,12 @@ function TaskListItemInner({
 
         {/* Assignee */}
         <div className="flex flex-col items-center">
-          <div className="relative">
-            <UserAvatar
-              user={
-                assigneeRecord
-                  ? {
-                      first_name: assigneeRecord.first_name,
-                      last_name: assigneeRecord.last_name,
-                      username: assigneeRecord.username,
-                      avatar: assigneeRecord.avatar,
-                      id: assigneeRecord.id,
-                      collectionId: assigneeRecord.collectionId,
-                      collectionName: assigneeRecord.collectionName,
-                    }
-                  : undefined
-              }
-              showUnassigned={!assigneeRecord && !task.assignee}
-              className="size-10 rounded-full border-2 shadow-sm transition-all duration-300 group-hover:scale-110"
-            />
-            {assigneeRecord && (
-              <div className="bg-primary border-background absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2" />
-            )}
-          </div>
+          <TaskAssigneeAvatar
+            assignee={assigneeRecord}
+            hasAssigneeId={!!task.assignee}
+            size="lg"
+            className="transition-all duration-300 group-hover:scale-110"
+          />
         </div>
       </div>
 
