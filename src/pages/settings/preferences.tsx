@@ -9,7 +9,6 @@ export default function PreferencesPage() {
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
-        variant="minimal"
         title={settings.preferences.title}
         description={settings.preferences.description}
         icon={IconSettings}

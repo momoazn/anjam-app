@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { Loader2 } from "lucide-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { ChevronRight, Hash, Loader2, Pencil, Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
+import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { TaskDetailsContent } from "@/components/task/task-details-content";
-import { TaskDetailsHeader } from "@/components/task/task-details-header";
 import { TaskDetailsSidebar } from "@/components/task/task-details-sidebar";
 import { TaskDetailsSkeleton } from "@/components/task/task-details-skeleton";
 import {
@@ -137,13 +138,53 @@ export default function TaskDetails() {
   }
 
   return (
-    <PageTransition className="container mx-auto space-y-6 p-6">
-      <TaskDetailsHeader
-        task={task}
-        onBack={() => navigate("/tasks")}
-        onEdit={() => navigate(`/tasks/${id}/edit`)}
-        onDelete={() => setShowDeleteDialog(true)}
-        isDeleting={deleteTask.isPending}
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+      <PageHeader
+        title={task.title}
+        description={
+          <div className="flex items-center gap-2">
+            <span>{digitsEnToFa(task.display_id || "TASK-ID")}</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span>
+              {tasks.details.createdBy}{" "}
+              {task.expand?.creator?.username || tasks.details.system}
+            </span>
+          </div>
+        }
+        icon={Hash}
+        eyebrow={
+          <Button
+            variant="link"
+            className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
+            onClick={() => navigate("/tasks")}
+          >
+            <ChevronRight className="mr-1 h-3 w-3 rotate-180" />
+            {tasks.details.backToList}
+          </Button>
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(`/tasks/${id}/edit`)}
+              className="h-9 gap-2 px-4 font-bold"
+            >
+              <Pencil className="h-4 w-4" />
+              {tasks.details.editButton}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={deleteTask.isPending}
+              className="text-destructive hover:bg-destructive/10 h-9 gap-2 px-4 font-bold"
+            >
+              <Trash className="h-4 w-4" />
+              {tasks.details.buttons.delete}
+            </Button>
+          </div>
+        }
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

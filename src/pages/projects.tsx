@@ -35,7 +35,6 @@ export default function Projects() {
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
-        variant="hero"
         icon={Target}
         iconTone="primarySolid"
         eyebrow={
