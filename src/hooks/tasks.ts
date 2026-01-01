@@ -8,7 +8,9 @@ import {
   QueryClient,
   UseMutationOptions,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 import { TaskWithProject, pb } from "../lib/pocketbase";
 import {
@@ -19,6 +21,7 @@ import {
   UsersResponse,
   UsersRoleOptions,
 } from "../lib/pocketbase-types";
+import { STALE_TIMES } from "../lib/query-config";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
@@ -221,6 +224,7 @@ export function useTasks(
     queryFn: () =>
       getTasks(projectId, expandFields, mode, page, perPage, filter),
     enabled,
+    staleTime: STALE_TIMES.dynamic,
   });
 }
 
@@ -244,6 +248,7 @@ export function useTask(options: { id: string; enabled?: boolean }) {
       return task;
     },
     enabled: enabled && Boolean(id),
+    staleTime: STALE_TIMES.dynamic,
   });
 }
 
@@ -315,4 +320,45 @@ export function useBulkDeleteTasks(
  */
 export function useReorderTask() {
   return useReorderTaskMutation();
+}
+
+/**
+ * Hook to prefetch a task on hover for better UX
+ * Returns a function that can be called with a task ID to prefetch its data
+ *
+ * @example
+ * const prefetchTask = usePrefetchTask();
+ * <TaskCard onMouseEnter={() => prefetchTask(task.id)} />
+ */
+export function usePrefetchTask() {
+  const queryClient = useQueryClient();
+
+  const prefetch = useCallback(
+    (taskId: string) => {
+      // Only prefetch if we don't already have data for this task
+      const existingData = queryClient.getQueryData(
+        queryKeys.tasks.detail(taskId),
+      );
+      if (existingData) return;
+
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.tasks.detail(taskId),
+        queryFn: async () => {
+          const task = await pb
+            .collection("tasks")
+            .getOne<TaskWithProject>(taskId, {
+              expand: "project,assignee,creator,tags",
+            });
+          if (task.deleted_at) {
+            throw new Error("Task not found");
+          }
+          return task;
+        },
+        staleTime: STALE_TIMES.dynamic,
+      });
+    },
+    [queryClient],
+  );
+
+  return prefetch;
 }

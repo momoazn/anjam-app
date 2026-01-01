@@ -1,6 +1,8 @@
 import type { QueryClient, UseMutationOptions } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { handlePocketBaseError } from "@/lib/error-handler";
+
 type FactoryMutationOptions<
   TData,
   TError,
@@ -19,22 +21,42 @@ type FactoryMutationOptions<
   ) => void;
 };
 
+/**
+ * Configuration for mutation factory
+ */
+export interface MutationFactoryConfig {
+  /** Whether to automatically show error toast on failure (default: true) */
+  showErrorToast?: boolean;
+}
+
+/**
+ * Creates a reusable mutation hook with automatic cache invalidation and error handling
+ *
+ * @param mutationFn - The async function that performs the mutation
+ * @param invalidate - Function to invalidate relevant queries after mutation succeeds
+ * @param config - Optional configuration for the mutation factory
+ * @returns A hook that can be used in components with optional additional options
+ */
 export function createMutation<
   TData,
-  TError,
+  TError extends Error,
   TVariables,
   TOnMutateResult = unknown,
 >(
   mutationFn: (variables: TVariables) => Promise<TData>,
   invalidate: (client: QueryClient, data: TData, variables: TVariables) => void,
+  config: MutationFactoryConfig = {},
 ) {
+  const { showErrorToast = true } = config;
+
   return function useFactoryMutation(
     options?:
       | UseMutationOptions<TData, TError, TVariables, TOnMutateResult>
       | FactoryMutationOptions<TData, TError, TVariables, TOnMutateResult>,
   ) {
     const queryClient = useQueryClient();
-    const { onSuccess, onSettled, ...restOptions } = (options ?? {}) as {
+    const { onSuccess, onSettled, onError, ...restOptions } = (options ??
+      {}) as {
       onSuccess?: (
         data: TData,
         variables: TVariables,
@@ -46,9 +68,14 @@ export function createMutation<
         variables: TVariables,
         context: unknown,
       ) => void;
+      onError?: (
+        error: TError,
+        variables: TVariables,
+        context: unknown,
+      ) => void;
     } & Omit<
       UseMutationOptions<TData, TError, TVariables, TOnMutateResult>,
-      "onSuccess" | "onSettled"
+      "onSuccess" | "onSettled" | "onError"
     >;
 
     return useMutation<TData, TError, TVariables, TOnMutateResult>({
@@ -56,6 +83,15 @@ export function createMutation<
       onSuccess: (data, variables, onMutateResult, context) => {
         void context;
         onSuccess?.(data, variables, onMutateResult);
+      },
+      onError: (error, variables, onMutateResult, context) => {
+        void context;
+        // Show error toast by default unless disabled
+        if (showErrorToast) {
+          handlePocketBaseError(error);
+        }
+        // Call custom onError handler if provided
+        onError?.(error, variables, onMutateResult);
       },
       onSettled: (data, error, variables, onMutateResult, context) => {
         void context;
