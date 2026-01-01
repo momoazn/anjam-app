@@ -410,7 +410,7 @@ export function CommandMenu() {
             }
             aria-label={
               commandMenu.ariaLabels?.searchInput ??
-              "Search commands and content"
+              commandMenu.ariaLabels.searchInput
             }
           />
           <kbd

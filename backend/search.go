@@ -1,10 +1,9 @@
 package main
 
 import (
-	"log"
-
 	"anjam/config"
 	"anjam/handlers"
+	"anjam/helpers"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -42,7 +41,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 		dbx.Params{"q": query},
 	)
 	if err != nil {
-		log.Printf("Search tasks error: %v", err)
+		helpers.LogWarn("Search tasks error", helpers.WithError(err))
 		tasks = []*core.Record{}
 	}
 
@@ -65,7 +64,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 
 		fetchedProjects, err := e.App.FindRecordsByIds(config.CollectionProjects, projectIdList)
 		if err != nil {
-			log.Printf("Warning: failed to batch fetch projects: %v", err)
+			helpers.LogWarn("Failed to batch fetch projects for search", helpers.WithError(err))
 		} else {
 			for _, p := range fetchedProjects {
 				projectMap[p.Id] = p
@@ -107,7 +106,7 @@ func handleGlobalSearch(e *core.RequestEvent) error {
 		dbx.Params{"q": query},
 	)
 	if err != nil {
-		log.Printf("Search projects error: %v", err)
+		helpers.LogWarn("Search projects error", helpers.WithError(err))
 		projects = []*core.Record{}
 	}
 

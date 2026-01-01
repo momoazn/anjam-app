@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/pocketbase/pocketbase/core"
-
-	"anjam/config"
 )
 
 // Version information - can be set at build time via ldflags
@@ -48,7 +46,7 @@ func registerHealthEndpoints(app core.App) {
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		// Health check endpoint - always returns 200 if the server is running
 		// Used by load balancers for basic liveness checks
-		se.Router.GET("/api/health2", func(e *core.RequestEvent) error {
+		se.Router.GET("/api/health", func(e *core.RequestEvent) error {
 			uptime := time.Since(startTime)
 
 			return e.JSON(200, HealthResponse{
@@ -73,7 +71,7 @@ func registerHealthEndpoints(app core.App) {
 				allReady = false
 			}
 
-			// Check memory usage (warn if over 90% of available)
+			// Check memory usage (warn if allocated memory exceeds 500MB)
 			memCheck := checkMemory()
 			checks["memory"] = memCheck
 			if memCheck.Status == "error" {
@@ -127,12 +125,12 @@ func registerHealthEndpoints(app core.App) {
 
 // checkDatabase verifies database connectivity by running a simple query
 func checkDatabase(app core.App) CheckResult {
-	// Try to count a simple query to verify DB is accessible
-	_, err := app.CountRecords(config.CollectionUsers)
+	// Try to execute a simple query to verify DB is accessible
+	_, err := app.DB().NewQuery("SELECT 1").Execute()
 	if err != nil {
 		return CheckResult{
 			Status:  "error",
-			Message: "Database query failed",
+			Message: "Database connection failed",
 		}
 	}
 	return CheckResult{
@@ -149,7 +147,7 @@ func checkMemory() CheckResult {
 	allocMB := memStats.Alloc / 1024 / 1024
 	if allocMB > memoryWarnThresholdMB {
 		return CheckResult{
-			Status:  "warning",
+			Status:  "error",
 			Message: "High memory usage",
 		}
 	}

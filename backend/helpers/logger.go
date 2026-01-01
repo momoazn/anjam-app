@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
 )
@@ -127,47 +128,68 @@ func (l *Logger) log(level LogLevel, msg string, fields map[string]interface{}) 
 }
 
 func formatFields(fields map[string]interface{}) string {
+	keys := make([]string, 0, len(fields))
+	for k := range fields {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 	parts := make([]string, 0, len(fields))
-	for k, v := range fields {
-		parts = append(parts, fmt.Sprintf("%s=%v", k, v))
+	for _, k := range keys {
+		parts = append(parts, fmt.Sprintf("%s=%v", k, fields[k]))
 	}
 	return strings.Join(parts, " ")
 }
 
 // Debug logs a debug message
 func (l *Logger) Debug(msg string, fields ...map[string]interface{}) {
-	var f map[string]interface{}
-	if len(fields) > 0 {
-		f = fields[0]
+	mergedFields := make(map[string]interface{})
+	for _, f := range fields {
+		if f != nil {
+			for k, v := range f {
+				mergedFields[k] = v
+			}
+		}
 	}
-	l.log(DEBUG, msg, f)
+	l.log(DEBUG, msg, mergedFields)
 }
 
 // Info logs an info message
 func (l *Logger) Info(msg string, fields ...map[string]interface{}) {
-	var f map[string]interface{}
-	if len(fields) > 0 {
-		f = fields[0]
+	mergedFields := make(map[string]interface{})
+	for _, f := range fields {
+		if f != nil {
+			for k, v := range f {
+				mergedFields[k] = v
+			}
+		}
 	}
-	l.log(INFO, msg, f)
+	l.log(INFO, msg, mergedFields)
 }
 
 // Warn logs a warning message
 func (l *Logger) Warn(msg string, fields ...map[string]interface{}) {
-	var f map[string]interface{}
-	if len(fields) > 0 {
-		f = fields[0]
+	mergedFields := make(map[string]interface{})
+	for _, f := range fields {
+		if f != nil {
+			for k, v := range f {
+				mergedFields[k] = v
+			}
+		}
 	}
-	l.log(WARN, msg, f)
+	l.log(WARN, msg, mergedFields)
 }
 
 // Error logs an error message
 func (l *Logger) Error(msg string, fields ...map[string]interface{}) {
-	var f map[string]interface{}
-	if len(fields) > 0 {
-		f = fields[0]
+	mergedFields := make(map[string]interface{})
+	for _, f := range fields {
+		if f != nil {
+			for k, v := range f {
+				mergedFields[k] = v
+			}
+		}
 	}
-	l.log(ERROR, msg, f)
+	l.log(ERROR, msg, mergedFields)
 }
 
 // WithError adds an error to the fields
