@@ -102,25 +102,33 @@ export function useProjectMember(
 
 /**
  * Check if current user is a member of a project
+ * Returns { isMember, isLoading } for proper loading state handling
  */
 export function useIsProjectMember(projectId: string) {
-  const { data: members } = useProjectMembers(projectId);
+  const { data: members, isLoading } = useProjectMembers(projectId);
   const currentUser = pb.authStore.model;
 
-  if (!currentUser) return false;
-  return members?.some((m) => m.user === currentUser.id) ?? false;
+  if (!currentUser) return { isMember: false, isLoading: false };
+
+  const isMember = members?.some((m) => m.user === currentUser.id) ?? false;
+  return { isMember, isLoading };
 }
 
 /**
  * Get current user's role in a project
+ * Returns { role, isLoading } for proper loading state handling
  */
-export function useMyProjectRole(projectId: string): ProjectRole | null {
-  const { data: members } = useProjectMembers(projectId);
+export function useMyProjectRole(projectId: string): {
+  role: ProjectRole | null;
+  isLoading: boolean;
+} {
+  const { data: members, isLoading } = useProjectMembers(projectId);
   const currentUser = pb.authStore.model;
 
-  if (!currentUser) return null;
+  if (!currentUser) return { role: null, isLoading: false };
+
   const myMember = members?.find((m) => m.user === currentUser.id);
-  return myMember?.role ?? null;
+  return { role: myMember?.role ?? null, isLoading };
 }
 
 // =============================================================================

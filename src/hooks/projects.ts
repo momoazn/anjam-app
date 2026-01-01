@@ -8,6 +8,7 @@ import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
 import { ProjectWithSupervisor, pb } from "../lib/pocketbase";
 import { ProjectsRecord, ProjectsResponse } from "../lib/pocketbase-types";
+import { STALE_TIMES } from "../lib/query-config";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import { createCrudHooks } from "./factories/use-crud-factory";
 import { queryKeys } from "./query-keys";
@@ -44,6 +45,7 @@ export function useProjects(
         sort,
       }),
     enabled,
+    staleTime: STALE_TIMES.reference,
   });
 }
 
@@ -59,6 +61,7 @@ export function useProject(options: { id: string; enabled?: boolean }) {
     queryKey: queryKeys.projects.detail(id),
     queryFn: () => pb.collection("projects").getOne<ProjectsResponse>(id),
     enabled: enabled && Boolean(id),
+    staleTime: STALE_TIMES.reference,
   });
 }
 
@@ -80,6 +83,7 @@ export function useProjectWithSupervisor(options: {
         expand: "supervisor",
       }),
     enabled: enabled && Boolean(id),
+    staleTime: STALE_TIMES.reference,
   });
 }
 

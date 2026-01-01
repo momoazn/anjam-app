@@ -12,6 +12,7 @@ import {
   CommentsResponse,
   UsersResponse,
 } from "../lib/pocketbase-types";
+import { STALE_TIMES } from "../lib/query-config";
 import { mutationInvalidators } from "../lib/query-invalidators";
 import { queryKeys } from "./query-keys";
 import { createMutation } from "./use-mutation-factory";
@@ -111,6 +112,7 @@ export function useComments(
       });
     },
     enabled: enabled && !!taskId,
+    staleTime: STALE_TIMES.dynamic,
   });
 }
 
