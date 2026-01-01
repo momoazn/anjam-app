@@ -92,82 +92,79 @@ export default function Inbox() {
   }
 
   return (
-    <PageTransition>
-      <div className="container mx-auto space-y-6 p-6">
-        <PageHeader
-          variant="minimal"
-          title={inbox.title}
-          subtitle={inbox.description}
-          icon={IconInbox}
-        />
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+      <PageHeader
+        title={inbox.title}
+        subtitle={inbox.description}
+        icon={IconInbox}
+      />
 
-        <div className="space-y-6">
-          {/* Assigned to me Section */}
+      <div className="space-y-6">
+        {/* Assigned to me Section */}
+        <Card>
+          <CardHeader className="text-right">
+            <CardTitle className="text-lg">
+              {inbox.sections.assigned} ({sections.assigned.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {sections.assigned.length === 0 ? (
+              <EmptyStateNoTasks
+                onCreate={() => {
+                  // Navigate to task creation - this would need useNavigate
+                  window.location.href = "/tasks/new";
+                }}
+              />
+            ) : (
+              <div className="space-y-2">
+                {sections.assigned.map((task) => (
+                  <TaskListItem key={task.id} task={task} />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Mentioned Section (v1: placeholder) */}
+        {sections.mentioned.length > 0 && (
           <Card>
             <CardHeader className="text-right">
               <CardTitle className="text-lg">
-                {inbox.sections.assigned} ({sections.assigned.length})
+                {inbox.sections.mentioned} ({sections.mentioned.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {sections.assigned.length === 0 ? (
-                <EmptyStateNoTasks
-                  onCreate={() => {
-                    // Navigate to task creation - this would need useNavigate
-                    window.location.href = "/tasks/new";
-                  }}
-                />
-              ) : (
-                <div className="space-y-2">
-                  {sections.assigned.map((task) => (
-                    <TaskListItem key={task.id} task={task} />
-                  ))}
-                </div>
-              )}
+              <div className="space-y-2">
+                {sections.mentioned.map((task) => (
+                  <TaskListItem key={task.id} task={task} />
+                ))}
+              </div>
             </CardContent>
           </Card>
+        )}
 
-          {/* Mentioned Section (v1: placeholder) */}
-          {sections.mentioned.length > 0 && (
-            <Card>
-              <CardHeader className="text-right">
-                <CardTitle className="text-lg">
-                  {inbox.sections.mentioned} ({sections.mentioned.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {sections.mentioned.map((task) => (
-                    <TaskListItem key={task.id} task={task} />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Recently Updated Section */}
-          <Card>
-            <CardHeader className="text-right">
-              <CardTitle className="text-lg">
-                {inbox.sections.recentlyUpdated} (
-                {sections.recentlyUpdated.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {sections.recentlyUpdated.length === 0 ? (
-                <p className="text-muted-foreground text-right text-sm">
-                  {inbox.noRecentUpdates}
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {sections.recentlyUpdated.map((task) => (
-                    <TaskListItem key={task.id} task={task} />
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        {/* Recently Updated Section */}
+        <Card>
+          <CardHeader className="text-right">
+            <CardTitle className="text-lg">
+              {inbox.sections.recentlyUpdated} (
+              {sections.recentlyUpdated.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {sections.recentlyUpdated.length === 0 ? (
+              <p className="text-muted-foreground text-right text-sm">
+                {inbox.noRecentUpdates}
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {sections.recentlyUpdated.map((task) => (
+                  <TaskListItem key={task.id} task={task} />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </PageTransition>
   );

@@ -260,16 +260,14 @@ export function TaskBoardPage() {
   return (
     <PageTransition className="flex h-[calc(100vh-4rem)] flex-col">
       <div className="bg-card border-border border-b">
-        <div className="container mx-auto px-6 py-4 md:px-8">
+        <div className="container mx-auto max-w-7xl px-4 py-4 md:px-6">
           <PageHeader
-            variant="minimal"
             title={projectId ? project?.name : tasksText.board.title}
             subtitle={tasksText.header.tasksFound.replace(
               "{count}",
               digitsEnToFa(tasksData.length).toString(),
             )}
             icon={IconLayoutGrid}
-            iconSize="sm"
             eyebrow={
               <div className="text-muted-foreground flex items-center gap-2">
                 <IconHash className="size-4" />
@@ -280,7 +278,7 @@ export function TaskBoardPage() {
               </div>
             }
             actions={headerActions}
-            className="mb-0 border-0 shadow-none"
+            className="mb-0"
           />
         </div>
       </div>

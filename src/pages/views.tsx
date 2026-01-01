@@ -88,129 +88,126 @@ export default function Views() {
   };
 
   return (
-    <PageTransition>
-      <div className="container mx-auto space-y-6 p-6">
-        <PageHeader
-          variant="minimal"
-          title={labels.savedFilters}
-          subtitle={
-            mode === "product"
-              ? savedFiltersConstants.views.description
-              : savedFiltersConstants.views.manageDescription
-          }
-          icon={IconEye}
-        />
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+      <PageHeader
+        title={labels.savedFilters}
+        subtitle={
+          mode === "product"
+            ? savedFiltersConstants.views.description
+            : savedFiltersConstants.views.manageDescription
+        }
+        icon={IconEye}
+      />
 
-        {/* Views List */}
-        {savedFilters.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <IconEye className="text-muted-foreground mb-4 h-12 w-12 opacity-40" />
-              <p className="text-muted-foreground text-center">
-                {mode === "product"
-                  ? savedFiltersConstants.views.noViews
-                  : savedFiltersConstants.views.noFilters}
-              </p>
-              <Button
-                variant="outline"
-                className="mt-4"
-                onClick={() =>
-                  navigate(mode === "product" ? "/issues" : "/tasks")
-                }
+      {/* Views List */}
+      {savedFilters.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <IconEye className="text-muted-foreground mb-4 h-12 w-12 opacity-40" />
+            <p className="text-muted-foreground text-center">
+              {mode === "product"
+                ? savedFiltersConstants.views.noViews
+                : savedFiltersConstants.views.noFilters}
+            </p>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() =>
+                navigate(mode === "product" ? "/issues" : "/tasks")
+              }
+            >
+              {mode === "product"
+                ? savedFiltersConstants.views.goToIssues
+                : savedFiltersConstants.views.goToTasks}
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {savedFilters.map((filter) => {
+            const isDefault = filter.id === defaultFilterId;
+            return (
+              <Card
+                key={filter.id}
+                className="group cursor-pointer transition-all hover:shadow-md"
+                onClick={() => handleNavigateToView(filter.id)}
               >
-                {mode === "product"
-                  ? savedFiltersConstants.views.goToIssues
-                  : savedFiltersConstants.views.goToTasks}
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {savedFilters.map((filter) => {
-              const isDefault = filter.id === defaultFilterId;
-              return (
-                <Card
-                  key={filter.id}
-                  className="group cursor-pointer transition-all hover:shadow-md"
-                  onClick={() => handleNavigateToView(filter.id)}
-                >
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center justify-between text-lg">
-                      <span className="truncate">{filter.name}</span>
-                      {isDefault && (
-                        <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
-                          {savedFiltersConstants.views.default}
-                        </span>
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center justify-between text-lg">
+                    <span className="truncate">{filter.name}</span>
+                    {isDefault && (
+                      <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
+                        {savedFiltersConstants.views.default}
+                      </span>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-muted-foreground mb-4 text-xs">
+                    {savedFiltersConstants.createdAt}{" "}
+                    {new Date(filter.createdAt).toLocaleDateString("fa-IR")}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSetDefault(filter.id);
+                      }}
+                      title={
+                        isDefault
+                          ? savedFiltersConstants.views.clearDefault
+                          : savedFiltersConstants.views.setDefault
+                      }
+                    >
+                      {isDefault ? (
+                        <IconStarFilled className="text-warning h-4 w-4" />
+                      ) : (
+                        <IconStar className="h-4 w-4" />
                       )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-muted-foreground mb-4 text-xs">
-                      {savedFiltersConstants.createdAt}{" "}
-                      {new Date(filter.createdAt).toLocaleDateString("fa-IR")}
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSetDefault(filter.id);
-                        }}
-                        title={
-                          isDefault
-                            ? savedFiltersConstants.views.clearDefault
-                            : savedFiltersConstants.views.setDefault
-                        }
-                      >
-                        {isDefault ? (
-                          <IconStarFilled className="text-warning h-4 w-4" />
-                        ) : (
-                          <IconStar className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDeleteTarget(filter.id);
-                        }}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <IconTrash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTarget(filter.id);
+                      }}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <IconTrash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
 
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog
-          open={!!deleteTarget}
-          onOpenChange={() => setDeleteTarget(null)}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {savedFiltersConstants.views.deleteTitle}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {savedFiltersConstants.views.deleteDescription}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{shared.cancel}</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteConfirm}>
-                {shared.delete}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={() => setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {savedFiltersConstants.views.deleteTitle}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {savedFiltersConstants.views.deleteDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{shared.cancel}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>
+              {shared.delete}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageTransition>
   );
 }
