@@ -359,9 +359,17 @@ export function TaskFields({
                     <Input
                       {...field}
                       type="number"
+                      min={0}
+                      max={999}
                       className="bg-muted/10 h-7 w-12 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
                       placeholder="0"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const value = Math.max(
+                          0,
+                          Math.min(999, Number(e.target.value) || 0),
+                        );
+                        field.onChange(value);
+                      }}
                     />
                   )}
                 />
@@ -375,9 +383,17 @@ export function TaskFields({
                     <Input
                       {...field}
                       type="number"
+                      min={0}
+                      max={59}
                       className="bg-muted/10 h-7 w-12 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
                       placeholder="0"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const value = Math.max(
+                          0,
+                          Math.min(59, Number(e.target.value) || 0),
+                        );
+                        field.onChange(value);
+                      }}
                     />
                   )}
                 />
