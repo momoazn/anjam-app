@@ -384,6 +384,7 @@ export function CommandMenu() {
                 ? "text-[var(--product-text-secondary)]"
                 : "text-muted-foreground",
             )}
+            aria-hidden="true"
           />
           <input
             ref={inputRef}
@@ -400,6 +401,17 @@ export function CommandMenu() {
                 ? commandMenu.product.placeholder
                 : commandMenu.operations.placeholder
             }
+            role="combobox"
+            aria-expanded={open}
+            aria-controls="command-menu-listbox"
+            aria-autocomplete="list"
+            aria-activedescendant={
+              allItems.length > 0 ? allItems[activeIndex]?.id : undefined
+            }
+            aria-label={
+              commandMenu.ariaLabels?.searchInput ??
+              "Search commands and content"
+            }
           />
           <kbd
             className={cn(
@@ -408,6 +420,7 @@ export function CommandMenu() {
                 ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
                 : "border-border bg-muted text-muted-foreground",
             )}
+            aria-hidden="true"
           >
             <span className="text-xs">{commandMenu.shortcuts.commandK}</span>
           </kbd>
@@ -433,13 +446,22 @@ export function CommandMenu() {
             </p>
           )}
           {allItems.length > 0 && (
-            <div className="flex flex-col gap-1" dir="rtl">
+            <div
+              className="flex flex-col gap-1"
+              dir="rtl"
+              role="listbox"
+              id="command-menu-listbox"
+              aria-label={commandMenu.ariaLabels.commandList}
+            >
               {allItems.map((item: MenuItem, idx: number) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
+                    id={item.id}
                     type="button"
+                    role="option"
+                    aria-selected={idx === activeIndex}
                     onClick={item.action}
                     className={cn(
                       "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",

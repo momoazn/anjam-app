@@ -3,6 +3,7 @@ import {
   QueryClientProvider,
   keepPreviousData,
 } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Loader2 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { Suspense } from "react";
@@ -122,6 +123,10 @@ function App() {
             />
           </NuqsAdapter>
         </Router>
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-left"
+        />
       </QueryClientProvider>
     </ErrorBoundary>
   );

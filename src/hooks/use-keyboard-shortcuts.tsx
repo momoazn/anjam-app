@@ -166,16 +166,8 @@ export function useKeyboardShortcuts() {
 
       // "?" for keyboard shortcuts help (future)
       if (normalizedKey === "shift+/" && !e.repeat) {
-        // Could open a keyboard shortcuts modal
-        // For now, just log available shortcuts
-        console.log("Keyboard shortcuts available:");
-        console.log(
-          "g + i/s/p/n/v: Navigate (Inbox/Issues/Projects/iNsights/Views) [product mode]",
-        );
-        console.log(
-          "g + d/t/m/p/r/s: Navigate (Dashboard/Tasks/My-tasks/Projects/Reports/timeSheet) [operations mode]",
-        );
-        console.log("c: Create new task/issue");
+        // Keyboard shortcuts help - in future, this could open a modal
+        // For now, this is a no-op placeholder
         return;
       }
 
