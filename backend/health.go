@@ -44,7 +44,7 @@ func registerHealthEndpoints(app core.App) {
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		// Health check endpoint - always returns 200 if the server is running
 		// Used by load balancers for basic liveness checks
-		se.Router.GET("/api/health", func(e *core.RequestEvent) error {
+		se.Router.GET("/api/health2", func(e *core.RequestEvent) error {
 			uptime := time.Since(startTime)
 
 			return e.JSON(200, HealthResponse{

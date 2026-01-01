@@ -2,64 +2,13 @@ import type { Icon as TablerIcon } from "@tabler/icons-react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
-import type { IconBoxSize, IconBoxTone } from "@/components/recipes/icon-box";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  IconBox,
+  type IconBoxSize,
+  type IconBoxTone,
+} from "@/components/ui/icon-box";
 import { cn } from "@/lib/utils";
-
-// ============================================================================
-// Helper Component
-// ============================================================================
-
-function PageIconBox({
-  icon: Icon,
-  size = "md",
-  tone = "primary",
-}: {
-  icon: IconType;
-  size?: IconBoxSize;
-  tone?: IconBoxTone;
-}) {
-  const sizeClasses: Record<IconBoxSize, string> = {
-    xs: "h-10 w-10",
-    sm: "h-12 w-12",
-    md: "h-14 w-14",
-    lg: "h-16 w-16",
-  };
-
-  const iconSizeClasses: Record<IconBoxSize, string> = {
-    xs: "size-5",
-    sm: "size-6",
-    md: "size-7",
-    lg: "size-8",
-  };
-
-  const toneClasses: Record<IconBoxTone, string> = {
-    primary: "bg-primary/10 text-primary",
-    primarySolid:
-      "bg-primary text-primary-foreground shadow-primary/20 shadow-lg",
-    muted: "bg-muted/50 text-muted-foreground",
-    accent: "bg-accent text-accent-foreground",
-    custom: "",
-  };
-
-  const isTablerIcon = Icon.displayName?.startsWith("Icon");
-
-  return (
-    <div
-      className={cn(
-        "inline-flex items-center justify-center rounded-2xl",
-        "transition-all duration-300 ease-out",
-        sizeClasses[size],
-        toneClasses[tone],
-      )}
-    >
-      <Icon
-        className={cn(iconSizeClasses[size], !isTablerIcon && "stroke-[1.5]")}
-      />
-    </div>
-  );
-}
 
 // ============================================================================
 // Types
@@ -156,7 +105,11 @@ function DefaultPageHeader({
       <CardContent className="p-6">
         <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-5 text-right">
-            <PageIconBox icon={Icon} size={iconSize} tone={iconTone} />
+            <div className="flex shrink-0">
+              <IconBox size={iconSize} tone={iconTone}>
+                <Icon className="size-full p-1" />
+              </IconBox>{" "}
+            </div>
             <div className="flex flex-col justify-center">
               <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
                 {title}
@@ -200,14 +153,14 @@ function HeroPageHeader({
         className,
       )}
     >
-      {background ?? (
-        <BlueprintPattern variant="dots" className="opacity-[0.02]" />
-      )}
+      {background}
 
       <CardContent className="relative z-10 flex flex-col gap-8 p-8 md:flex-row md:items-center md:justify-between lg:p-12">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-6">
-            <PageIconBox icon={Icon} size={iconSize} tone={iconTone} />
+            <IconBox size={iconSize} tone={iconTone}>
+              <Icon className="size-full p-1" />
+            </IconBox>{" "}
             <div className="flex flex-col">
               {eyebrow}
               <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
@@ -252,7 +205,9 @@ function MinimalPageHeader({
       )}
     >
       <div className="flex items-center gap-4">
-        <PageIconBox icon={Icon} size={iconSize} tone={iconTone} />
+        <IconBox size={iconSize} tone={iconTone}>
+          <Icon className="size-full p-1" />
+        </IconBox>{" "}
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
           {(subtitle || description) && (
@@ -291,11 +246,11 @@ function ToolbarPageHeader({
         className,
       )}
     >
-      <BlueprintPattern variant="technical" className="opacity-[0.03]" />
-
       <div className="relative z-10 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <PageIconBox icon={Icon} size={iconSize} tone={iconTone} />
+          <IconBox size={iconSize} tone={iconTone}>
+            <Icon className="size-full p-1" />
+          </IconBox>{" "}
           <div className="flex flex-col">
             {eyebrow}
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
@@ -346,7 +301,9 @@ function BreadcrumbPageHeader({
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-3">
               <div className="flex items-center gap-4">
-                <PageIconBox icon={Icon} size={iconSize} tone={iconTone} />
+                <IconBox size={iconSize} tone={iconTone}>
+                  <Icon className="size-full p-1" />
+                </IconBox>{" "}
                 <h1 className="max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
                   {title}
                 </h1>

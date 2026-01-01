@@ -1,4 +1,4 @@
-import { XIcon } from "@phosphor-icons/react";
+import { X } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import * as React from "react";
 
@@ -72,7 +72,7 @@ function DialogContent({
               className="absolute top-4 right-4 size-8 rounded-full"
               size="icon"
             >
-              <XIcon className="size-4" />
+              <X className="size-4" />
               <span className="sr-only">Close</span>
             </Button>
           </DialogPrimitive.Close>

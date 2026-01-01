@@ -59,7 +59,7 @@ export function UserAvatar({
   className,
 }: UserAvatarProps) {
   const avatarClassName = cn(
-    "ring-sidebar-border/10 ring-2",
+    "ring-background ring-2",
     className || "h-10 w-10",
   );
 
@@ -70,7 +70,7 @@ export function UserAvatar({
     return (
       <Avatar className={avatarClassName}>
         <AvatarImage src={avatarUrl} className="object-cover" />
-        <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground text-sm font-semibold">
+        <AvatarFallback className="bg-muted text-muted-foreground text-sm font-semibold">
           {getUserInitials(user.first_name, user.last_name, user.username)}
         </AvatarFallback>
       </Avatar>
@@ -81,7 +81,7 @@ export function UserAvatar({
   if (username) {
     return (
       <Avatar className={avatarClassName}>
-        <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
+        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
           {getUserInitials(undefined, undefined, username)}
         </AvatarFallback>
       </Avatar>
@@ -102,7 +102,7 @@ export function UserAvatar({
   // Fallback for no data
   return (
     <Avatar className={avatarClassName}>
-      <AvatarFallback className="bg-sidebar/30 text-sidebar-foreground font-semibold">
+      <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
         ?
       </AvatarFallback>
     </Avatar>

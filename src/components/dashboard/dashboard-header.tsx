@@ -15,9 +15,9 @@ import {
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { IconBox } from "@/components/recipes/icon-box";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { IconBox } from "@/components/ui/icon-box";
 import { app, dashboard, users } from "@/constants";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
@@ -143,7 +143,9 @@ export function DashboardHeader({
         {/* Main Welcome Section */}
         <div className="border-border/40 relative flex flex-1 flex-col justify-center border-b p-6 lg:border-b-0 lg:p-10">
           <div className="relative z-10 flex items-center gap-3">
-            <IconBox icon={LayoutDashboard} size="xs" tone="primary" />
+            <IconBox size="xs" tone="primary">
+              <LayoutDashboard className="size-full p-1" />
+            </IconBox>
             <div className="flex flex-col">
               <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
                 {app.name}
@@ -217,15 +219,12 @@ export function DashboardHeader({
                     </div>
                   </div>
                   <IconBox
-                    icon={item.icon}
                     size="sm"
                     tone="custom"
-                    className={cn(
-                      "transition-all duration-300 group-hover:scale-110",
-                      item.bg,
-                    )}
-                    iconClassName={cn(item.color)}
-                  />
+                    className="bg-primary/10 text-primary h-10 w-10 shrink-0"
+                  >
+                    <item.icon className="size-5" />
+                  </IconBox>
                 </div>
               </div>
             ))}

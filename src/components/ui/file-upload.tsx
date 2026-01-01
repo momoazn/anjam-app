@@ -9,7 +9,6 @@ import {
 import { useCallback } from "react";
 import { toast } from "sonner";
 
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { FileWithPreview, useFileUpload } from "@/hooks/use-file-upload";
@@ -142,7 +141,6 @@ export function FileUpload({
             : "border-foreground/20 bg-foreground/[0.02] hover:border-foreground hover:bg-foreground/[0.04] cursor-pointer",
         )}
       >
-        <BlueprintPattern opacity={0.03} />
         <input
           type="file"
           multiple

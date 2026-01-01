@@ -33,7 +33,7 @@
 
   /* Typography defaults */
   h1 {
-    @apply text-2xl font-black tracking-tight;
+    @apply text-2xl font-bold tracking-tight;
     line-height: 1.2;
   }
 
@@ -366,19 +366,6 @@
 
   .scrollbar-none::-webkit-scrollbar {
     display: none !important;
-  }
-
-  /* Industrial Utilities */
-  .industrial-grid {
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  .industrial-dots {
-    background-image: radial-gradient(var(--border) 1px, transparent 1px);
-    background-size: 20px 20px;
   }
 
   .text-vertical {

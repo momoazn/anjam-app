@@ -12,7 +12,6 @@ import {
 } from "@tabler/icons-react";
 
 import { ActivityStream } from "@/components/audit/activity-stream";
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
 import { ProjectAssets } from "@/components/project/project-assets";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
@@ -98,10 +97,6 @@ export function ProjectDetailsSections({
               key={i}
               className="group border-border/40 bg-card hover:border-primary/40 relative overflow-hidden rounded-2xl border p-6 transition-colors"
             >
-              <BlueprintPattern
-                variant="technical"
-                className="opacity-[0.02]"
-              />
               <div className="relative z-10 flex h-full flex-col justify-between gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
@@ -138,10 +133,6 @@ export function ProjectDetailsSections({
         <div className="relative">
           {isEditing ? (
             <div className="border-primary/20 bg-card relative overflow-hidden rounded-2xl border p-8">
-              <BlueprintPattern
-                variant="technical"
-                className="opacity-[0.05]"
-              />
               <div className="relative z-10 space-y-3 text-right">
                 <span className="text-primary text-[10px] font-bold tracking-tight">
                   {projects.edit.description}
@@ -156,7 +147,6 @@ export function ProjectDetailsSections({
             </div>
           ) : project.description ? (
             <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border p-12">
-              <BlueprintPattern variant="cross" className="opacity-[0.03]" />
               <div className="bg-primary text-primary-foreground absolute -top-4 -right-4 z-10 flex size-12 items-center justify-center rounded-2xl">
                 <IconQuote className="size-6" />
               </div>
@@ -188,7 +178,6 @@ export function ProjectDetailsSections({
         </div>
 
         <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border">
-          <BlueprintPattern variant="technical" className="opacity-[0.02]" />
           <div className="relative z-10">
             {isEditing ? (
               <div className="space-y-12 p-8 text-right md:p-12">
@@ -255,7 +244,6 @@ export function ProjectDetailsSections({
         </div>
 
         <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border">
-          <BlueprintPattern variant="technical" className="opacity-[0.02]" />
           <div className="relative z-10">
             <ActivityStream resource="projects" resourceId={project.id} />
           </div>

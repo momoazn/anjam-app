@@ -1,10 +1,9 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
 
-import { BlueprintPattern } from "@/components/design-system/blueprint-pattern";
-import { IconBox } from "@/components/recipes/icon-box";
 import { Toolbar, ToolbarSeparator } from "@/components/recipes/toolbar";
 import { Button } from "@/components/ui/button";
+import { IconBox } from "@/components/ui/icon-box";
 import { common, system, tasks } from "@/constants";
 import { cn } from "@/lib/utils";
 
@@ -25,11 +24,11 @@ export function TaskHeader({
 }: TaskHeaderProps) {
   return (
     <div className="relative mb-12 flex flex-col gap-8 border-b pb-12 md:flex-row md:items-end md:justify-between">
-      <BlueprintPattern variant="technical" className="opacity-[0.03]" />
-
       <div className="relative z-10 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <IconBox icon={ListTodo} size="lg" tone="primary" />
+          <IconBox size="lg" tone="primary">
+            <ListTodo className="size-full p-1" />
+          </IconBox>
           <div className="flex flex-col">
             <div className="flex items-center gap-2 opacity-40">
               <span className="font-mono text-[10px] font-bold tracking-tight">

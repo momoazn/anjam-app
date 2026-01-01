@@ -14,12 +14,15 @@ const iconBoxVariants = cva(
         accent: "bg-accent/10 text-accent border border-accent/20",
         muted: "bg-muted/30 text-muted-foreground/70",
         ghost: "bg-transparent text-muted-foreground hover:bg-muted/50",
+        custom: "",
       },
       size: {
-        xs: "size-6 rounded-md",
-        sm: "size-8 rounded-lg",
-        md: "size-10 rounded-xl",
-        lg: "size-12 rounded-2xl",
+        xs: "size-10 rounded-xl [&_svg]:size-5",
+        sm: "size-12 rounded-2xl [&_svg]:size-6",
+        md: "size-14 rounded-2xl [&_svg]:size-7",
+        lg: "size-16 rounded-3xl [&_svg]:size-8",
+        // Legacy sizes mapped
+        icon: "size-10",
       },
     },
     defaultVariants: {
@@ -29,19 +32,41 @@ const iconBoxVariants = cva(
   },
 );
 
+export type IconBoxSize = "xs" | "sm" | "md" | "lg";
+export type IconBoxTone =
+  | "primary"
+  | "primarySolid"
+  | "muted"
+  | "accent"
+  | "custom";
+
 export interface IconBoxProps
   extends
     React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof iconBoxVariants> {
+    Omit<VariantProps<typeof iconBoxVariants>, "variant" | "size"> {
   asChild?: boolean;
+  variant?: IconBoxTone | "default" | "ghost"; // Allow legacy + new
+  size?: IconBoxSize; // Allow legacy
+  // Support recipe props for compatibility
+  tone?: IconBoxTone;
 }
 
-export function IconBox({ className, variant, size, ...props }: IconBoxProps) {
+export function IconBox({
+  className,
+  variant,
+  tone,
+  size,
+  ...props
+}: IconBoxProps) {
+  // Map 'tone' to 'variant' if provided
+  const activeVariant = (tone || variant) as VariantProps<
+    typeof iconBoxVariants
+  >["variant"];
+
   return (
     <div
       className={cn(
-        iconBoxVariants({ variant, size, className }),
-        "product-beveled",
+        iconBoxVariants({ variant: activeVariant, size, className }),
       )}
       {...props}
     />
