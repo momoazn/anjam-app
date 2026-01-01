@@ -11,6 +11,7 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { organization, shared } from "@/constants";
+import { logError } from "@/lib/logger";
 import { pb } from "@/lib/pocketbase";
 import { useCurrentOrganization } from "@/store/auth-store";
 
@@ -58,7 +59,7 @@ export function OrgSettingsPage() {
 
       toast.success(organization.settings.saveSuccess);
     } catch (error) {
-      console.error("Error updating organization:", error);
+      logError("Error updating organization", error);
       toast.error(organization.settings.saveError);
     }
   };

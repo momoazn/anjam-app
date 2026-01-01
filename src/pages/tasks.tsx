@@ -277,16 +277,6 @@ export default function Tasks() {
     filter: filterExpression || undefined,
   });
 
-  console.log("Task Query Filter:", filterExpression);
-  console.log(
-    "Task Query Result:",
-    taskQuery.data?.items?.length,
-    "tasks found, totalItems:",
-    taskQuery.data?.totalItems,
-    "page:",
-    taskQuery.data?.page,
-  );
-
   const totalTasks = taskQuery.data?.totalItems ?? 0;
   const totalPages = taskQuery.data?.totalPages ?? 1;
   const currentPage = taskQuery.data?.page ?? page;
