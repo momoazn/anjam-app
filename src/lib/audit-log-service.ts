@@ -1,6 +1,3 @@
-/**
- * Audit Log Service - Type-safe functions for fetching audit logs with filtering and pagination
- */
 import { pb } from "./pocketbase";
 import type {
   AuditLogsActionOptions,

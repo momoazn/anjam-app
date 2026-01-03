@@ -41,16 +41,15 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     return;
   }
 
-  const pbError = error as PocketBaseError;
-  const statusCode = pbError?.status ?? pbError?.response?.status;
+  const statusCode = error.status ?? error.response?.status;
 
   if (statusCode === 429) {
     toast.error(auth.errors.rateLimited);
     return;
   }
 
-  if (pbError?.data?.data) {
-    const validationErrors = pbError.data.data;
+  if (error.data?.data) {
+    const validationErrors = error.data.data;
 
     if (validationErrors.password?.code === "validation_min_text_constraint") {
       toast.error(auth.errors.passwordMinLength);
@@ -96,7 +95,7 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
     }
   } else {
     const errorMessage =
-      pbError?.message || pbError?.data?.message || pbError?.response?.message;
+      error.message || error.data?.message || error.response?.message;
 
     logDebug("Extracted error message", errorMessage);
 
@@ -121,7 +120,7 @@ export function handlePocketBaseError(error: Error | PocketBaseError): void {
       } else {
         toast.error(errorMessage);
       }
-    } else if (pbError?.status === 400) {
+    } else if (statusCode === 400) {
       toast.error(auth.errors.invalidCredentials);
     } else {
       toast.error(auth.errors.serverError);

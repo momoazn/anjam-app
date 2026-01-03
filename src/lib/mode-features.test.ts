@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  getDefaultTaskStatus,
+  DEFAULT_TASK_STATUS,
   getHomeRoute,
   getOrgFeatures,
   isFeatureEnabled,
@@ -85,10 +85,9 @@ describe("mode-features", () => {
     });
   });
 
-  describe("getDefaultTaskStatus", () => {
-    it("should return todo regardless of mode", () => {
-      // Function doesn't take mode argument - it always returns "todo"
-      expect(getDefaultTaskStatus()).toBe("todo");
+  describe("DEFAULT_TASK_STATUS", () => {
+    it("should be todo", () => {
+      expect(DEFAULT_TASK_STATUS).toBe("todo");
     });
   });
 });

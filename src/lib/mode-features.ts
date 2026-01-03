@@ -1,7 +1,3 @@
-/**
- * Mode Features Module
- * Determines feature availability based on org mode
- */
 export type OrgMode = "operations" | "product";
 
 export type FeatureKey =
@@ -76,6 +72,4 @@ export function getHomeRoute(mode: OrgMode | undefined | null): string {
   return orgMode === "product" ? "/inbox" : "/dashboard";
 }
 
-export function getDefaultTaskStatus(): string {
-  return "todo";
-}
+export const DEFAULT_TASK_STATUS = "todo" as const;

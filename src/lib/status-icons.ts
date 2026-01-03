@@ -1,8 +1,3 @@
-/**
- * Task status icons mapping
- *
- * Extracted from status-utils.ts as part of Priority 5 refactoring
- */
 import {
   Icon,
   IconAlertCircle,

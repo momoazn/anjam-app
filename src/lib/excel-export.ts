@@ -7,44 +7,12 @@ import { formatDateISO } from "./date-utils";
 import type { TaskWithProject } from "./pocketbase";
 import type { ProjectsResponse, UsersResponse } from "./pocketbase-types";
 
-/**
- * Strips HTML tags from a string securely
- * Uses DOMParser in browser, falls back to regex in SSR/Node environments
- */
 export function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
-
-  // Check if we're in a browser environment
-  if (typeof document === "undefined" || typeof DOMParser === "undefined") {
-    // Server-side fallback: regex-based stripping
-    return html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "") // Remove scripts
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "") // Remove styles
-      .replace(/<[^>]+>/g, "") // Remove all HTML tags
-      .replace(/&nbsp;/g, " ") // Replace &nbsp;
-      .replace(/&[a-z]+;/gi, "") // Remove HTML entities
-      .trim();
-  }
-
-  // Browser environment: use DOMParser (safer than innerHTML)
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    return doc.body.textContent || doc.body.innerText || "";
-  } catch {
-    // Fallback to regex if parsing fails
-    return html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-      .replace(/<[^>]+>/g, "")
-      .replace(/&nbsp;/g, " ")
-      .trim();
-  }
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
 }
 
-/**
- * Gets the full name of a user
- */
 function getUserName(
   user: UsersResponse | undefined,
   fallback: string = "-",
@@ -56,17 +24,11 @@ function getUserName(
   return fullName || user.username || fallback;
 }
 
-/**
- * Gets the status label in Persian
- */
 function getStatusLabel(status: string | undefined): string {
   if (!status) return "-";
   return tasks.status[status as keyof typeof tasks.status] || status || "-";
 }
 
-/**
- * Gets the priority label in Persian
- */
 function getPriorityLabel(priority: string | undefined): string {
   if (!priority) return "-";
   return (
@@ -74,36 +36,26 @@ function getPriorityLabel(priority: string | undefined): string {
   );
 }
 
-/**
- * Configures Excel sheet formatting (column widths, auto-filter, frozen rows)
- */
 function configureSheetFormatting(
   sheet: XLSX.WorkSheet,
   columnWidths: number[],
   hasAutoFilter: boolean = true,
   freezeHeader: boolean = true,
 ): void {
-  // Set column widths
   sheet["!cols"] = columnWidths.map((wch) => ({ wch }));
 
-  // Add auto-filter
   if (hasAutoFilter && sheet["!ref"]) {
     sheet["!autofilter"] = { ref: sheet["!ref"] };
   }
 
-  // Freeze header row
   if (freezeHeader) {
     sheet["!freeze"] = { xSplit: 0, ySplit: 1 };
   }
 
-  // Set header row height
   if (!sheet["!rows"]) sheet["!rows"] = [];
   sheet["!rows"][0] = { hpt: 20 };
 }
 
-/**
- * Generates a unique filename for the Excel export
- */
 function generateFilename(
   project: ProjectsResponse<{ supervisor?: UsersResponse }>,
 ): string {
@@ -116,21 +68,14 @@ function generateFilename(
   return `${projectIdentifier}_${projectName}_${currentDate}_${timestamp}.xlsx`;
 }
 
-/**
- * Exports a project with its tasks to an Excel file
- */
 export async function exportProjectToExcel(
   project: ProjectsResponse<{ supervisor?: UsersResponse }>,
   tasks: TaskWithProject[],
   users: UsersResponse[],
 ): Promise<void> {
-  // Filter tasks for this project
   const projectTasks = tasks.filter((task) => task.project === project.id);
-
-  // Create a new workbook
   const workbook = XLSX.utils.book_new();
 
-  // Add workbook properties
   const currentDate = format(new Date(), "yyyy/MM/dd HH:mm");
   workbook.Props = {
     Title: reports.excel.workbookTitle.replace(
@@ -146,12 +91,10 @@ export async function exportProjectToExcel(
     Comments: reports.excel.workbookComments.replace("{date}", currentDate),
   };
 
-  // Set workbook views (RTL support for Persian)
   workbook.Workbook = {
     Views: [{ RTL: true }],
   };
 
-  // Sheet 1: Project Details
   const projectData = [
     {
       [reports.excel.columns.name]: project.name || "-",
@@ -167,7 +110,6 @@ export async function exportProjectToExcel(
   ];
 
   const projectSheet = XLSX.utils.json_to_sheet(projectData);
-  // Configure column widths
   configureSheetFormatting(projectSheet, [25, 15, 50, 20, 15, 15], false);
   XLSX.utils.book_append_sheet(
     workbook,
@@ -175,7 +117,6 @@ export async function exportProjectToExcel(
     reports.excel.sheetProjectDetails,
   );
 
-  // Sheet 2: Tasks
   const tasksData = projectTasks.map((task) => {
     const assignee = users.find((u) => u.id === task.assignee);
     return {
@@ -192,7 +133,6 @@ export async function exportProjectToExcel(
     };
   });
 
-  // If no tasks, add a single row indicating no tasks
   if (tasksData.length === 0) {
     tasksData.push({
       [reports.excel.columns.taskNumber]: "-",
@@ -209,7 +149,6 @@ export async function exportProjectToExcel(
   }
 
   const tasksSheet = XLSX.utils.json_to_sheet(tasksData);
-  // Configure column widths
   configureSheetFormatting(
     tasksSheet,
     [10, 30, 15, 12, 20, 15, 15, 15, 18, 60],
@@ -220,9 +159,6 @@ export async function exportProjectToExcel(
     reports.excel.sheetProjectTasks,
   );
 
-  // Generate unique filename
   const filename = generateFilename(project);
-
-  // Write the file
   XLSX.writeFile(workbook, filename);
 }
