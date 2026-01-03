@@ -10,6 +10,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +31,9 @@ type TaskListHeaderProps = {
   onSortChange?: (mode: TaskSortMode) => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  enableSelection?: boolean;
+  allSelected?: boolean;
+  onSelectAll?: (selected: boolean) => void;
 };
 
 export function TaskListHeader({
@@ -39,6 +43,9 @@ export function TaskListHeader({
   onSortChange,
   isCollapsed = false,
   onToggleCollapse,
+  enableSelection = false,
+  allSelected = false,
+  onSelectAll,
 }: TaskListHeaderProps) {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
@@ -65,6 +72,16 @@ export function TaskListHeader({
         onClick={onToggleCollapse}
       >
         <div className="flex items-center gap-6">
+          {enableSelection && (
+            <div className="flex items-center">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={(checked) => onSelectAll?.(!!checked)}
+                className="size-5 rounded-md border-2"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
           <div
             className={cn(
               "bg-background flex size-12 items-center justify-center rounded-xl border shadow-sm transition-all duration-300 group-hover:scale-105",
