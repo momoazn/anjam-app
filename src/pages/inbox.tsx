@@ -12,16 +12,6 @@ import { useTasks } from "@/hooks/tasks";
 import { TaskWithProject } from "@/lib/pocketbase";
 import { useAuthUser } from "@/store/auth-store";
 
-/**
- * Inbox Page - Product Mode
- *
- * Multi-section interface for task prioritization:
- * 1. Assigned to me (open tasks)
- * 2. Mentioned (from notifications)
- * 3. Recently updated (last 7 days, user is participant)
- *
- * This is the primary entry point for product mode users.
- */
 export default function Inbox() {
   const user = useAuthUser();
   const userId = user?.id;
@@ -58,9 +48,6 @@ export default function Inbox() {
           t.status !== "canceled",
       ),
 
-      // Section 2: Mentioned (requires mention tracking)
-      // For v1: placeholder, will be populated from notifications table
-      // TODO: Connect to notification system for @mentions
       mentioned: [] as TaskWithProject[],
 
       // Section 3: Recently updated (last 7 days)

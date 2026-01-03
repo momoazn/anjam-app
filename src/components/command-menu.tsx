@@ -20,8 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 import { commandMenu } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
+import type { SearchResponse } from "@/hooks/use-global-search";
 import { useTheme } from "@/hooks/use-theme";
-import type { SearchResponse } from "@/lib/search-service";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 
