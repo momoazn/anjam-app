@@ -1,5 +1,10 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconActivity, IconHash } from "@tabler/icons-react";
+import {
+  IconActivity,
+  IconHash,
+  IconStar,
+  IconStarFilled,
+} from "@tabler/icons-react";
 import { Edit, FileText, Layers, Target, Trash, Users } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +17,14 @@ import {
   projects as projectsText,
 } from "@/constants";
 import { useTasks } from "@/hooks";
+import {
+  type UserPreferences,
+  useToggleProjectFavorite,
+  useUserPreferences,
+} from "@/hooks/user-preferences";
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
+import { cn } from "@/lib/utils";
 
 type ProjectListGroupProps = {
   projects: ProjectsResponse[];
@@ -31,6 +42,13 @@ export function ProjectListGroup({
   const [selectedProject, setSelectedProject] =
     useState<ProjectsResponse | null>(null);
 
+  const { data: preferencesData } = useUserPreferences();
+  const toggleFavorite = useToggleProjectFavorite();
+
+  const favoriteIds =
+    (preferencesData?.preferences as UserPreferences)?.favorites?.projectIds ||
+    [];
+
   const { data: allTasksResult } = useTasks({
     expandFields: "project,assignee",
     mode: "full",
@@ -40,6 +58,11 @@ export function ProjectListGroup({
   const handleDelete = (project: ProjectsResponse) => {
     setSelectedProject(project);
     setIsDeleteOpen(true);
+  };
+
+  const handleToggleFavorite = (e: React.MouseEvent, projectId: string) => {
+    e.stopPropagation();
+    toggleFavorite.mutate(projectId);
   };
 
   const getProjectProgress = (projectId: string) => {
@@ -65,11 +88,31 @@ export function ProjectListGroup({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => {
           const progress = getProjectProgress(project.id);
+          const isFavorite = favoriteIds.includes(project.id);
+
           return (
             <div
               key={project.id}
               className="bg-card group relative flex flex-col overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md"
             >
+              {/* Favorite Button */}
+              <button
+                type="button"
+                onClick={(e) => handleToggleFavorite(e, project.id)}
+                className={cn(
+                  "absolute left-3 top-3 z-10 flex size-8 items-center justify-center rounded-lg transition-all",
+                  isFavorite
+                    ? "bg-amber-500/10 text-amber-500 scale-100"
+                    : "bg-muted/50 text-muted-foreground/40 hover:bg-muted scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100",
+                )}
+              >
+                {isFavorite ? (
+                  <IconStarFilled className="size-4" />
+                ) : (
+                  <IconStar className="size-4" />
+                )}
+              </button>
+
               {/* Card Header */}
               <div className="border-b p-6">
                 <div className="flex items-start justify-between">

@@ -22,6 +22,9 @@ export type UserPreferences = {
       | "America/New_York";
     dateFormat: "locale" | "yyyy/MM/dd" | "dd/MM/yyyy" | "MM/dd/yyyy";
   };
+  favorites: {
+    projectIds: string[];
+  };
 };
 
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
@@ -32,6 +35,9 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
     theme: "system",
     timezone: "auto",
     dateFormat: "locale",
+  },
+  favorites: {
+    projectIds: [],
   },
 };
 
@@ -97,6 +103,39 @@ export function useUpdateUserPreferences() {
       if (!user?.id) return;
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.byUser(user.id),
+      });
+    },
+  });
+}
+
+export function useToggleProjectFavorite() {
+  const { data: preferences } = useUserPreferences();
+  const updatePreferences = useUpdateUserPreferences();
+
+  return useMutation({
+    mutationFn: async (projectId: string) => {
+      if (!preferences) throw new Error("Preferences not loaded");
+
+      const currentFavorites =
+        (preferences.preferences as UserPreferences)?.favorites?.projectIds ||
+        [];
+      const isFavorite = currentFavorites.includes(projectId);
+
+      const nextFavorites = isFavorite
+        ? currentFavorites.filter((id) => id !== projectId)
+        : [...currentFavorites, projectId];
+
+      return updatePreferences.mutateAsync({
+        id: preferences.id,
+        updates: {
+          preferences: {
+            ...(preferences.preferences as UserPreferences),
+            favorites: {
+              ...(preferences.preferences as UserPreferences)?.favorites,
+              projectIds: nextFavorites,
+            },
+          },
+        },
       });
     },
   });

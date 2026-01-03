@@ -39,4 +39,6 @@ export const navigationSectionLabels = {
   projects: "پروژه‌ها",
   management: "مدیریت",
   help: "راهنما و تنظیمات",
+  favorites: "نشان‌شده‌ها",
+  recent: "اخیر",
 } as const;
