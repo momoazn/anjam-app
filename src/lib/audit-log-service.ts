@@ -1,8 +1,5 @@
 /**
- * Audit Log Service
- *
- * Provides type-safe functions for fetching audit logs with filtering and pagination.
- * Includes sensitive field masking for security.
+ * Audit Log Service - Type-safe functions for fetching audit logs with filtering and pagination
  */
 import { pb } from "./pocketbase";
 import type {
@@ -99,37 +96,15 @@ export async function listAuditLogs(
 
   const filters: string[] = [];
 
-  if (resource) {
-    filters.push(`resource="${resource}"`);
-  }
-
-  if (resourceId) {
-    filters.push(`resource_id="${resourceId}"`);
-  }
-
-  if (actor) {
-    filters.push(`actor="${actor}"`);
-  }
-
-  if (action) {
-    filters.push(`action="${action}"`);
-  }
-
-  if (client) {
-    filters.push(`client="${client}"`);
-  }
-
-  if (dateFrom) {
-    filters.push(`created>="${dateFrom}"`);
-  }
-
-  if (dateTo) {
-    filters.push(`created<="${dateTo}"`);
-  }
+  if (resource) filters.push(`resource="${resource}"`);
+  if (resourceId) filters.push(`resource_id="${resourceId}"`);
+  if (actor) filters.push(`actor="${actor}"`);
+  if (action) filters.push(`action="${action}"`);
+  if (client) filters.push(`client="${client}"`);
+  if (dateFrom) filters.push(`created>="${dateFrom}"`);
+  if (dateTo) filters.push(`created<="${dateTo}"`);
 
   if (search) {
-    // Escape quotes and special characters in search term to prevent injection
-    // in the PocketBase filter string.
     const escapedSearch = search
       .replace(/\\/g, "\\\\")
       .replace(/"/g, '\\"')
@@ -158,7 +133,6 @@ export async function listAuditLogs(
     if (item.changes) {
       let changes: Record<string, FieldDiff> | null = null;
 
-      // Handle both string (legacy/direct DB) and object (SDK/API) formats.
       if (typeof item.changes === "string") {
         changes = parseAndMaskChanges(item.changes);
       } else if (typeof item.changes === "object" && item.changes !== null) {
@@ -199,10 +173,5 @@ export async function getAuditLogsForResource(
   page = 1,
   perPage = 50,
 ): Promise<AuditLogsListResult> {
-  return listAuditLogs({
-    resource,
-    resourceId,
-    page,
-    perPage,
-  });
+  return listAuditLogs({ resource, resourceId, page, perPage });
 }

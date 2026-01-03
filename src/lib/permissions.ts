@@ -1,19 +1,3 @@
-/**
- * Permission System
- *
- * This module provides permission checking for the frontend.
- * Permissions are resolved based on:
- * 1. Organization role (owner, admin, member)
- * 2. Project role (owner, admin, member, viewer)
- *
- * Organization admins (owner/admin) have full access to all projects.
- * Project roles only apply to organization members.
- */
-
-// =============================================================================
-// Types
-// =============================================================================
-
 export type OrgRole = "owner" | "admin" | "member";
 export type ProjectRole = "owner" | "admin" | "member" | "viewer";
 
@@ -28,16 +12,7 @@ export interface PermissionContext {
   permissions: Record<string, boolean>;
 }
 
-// =============================================================================
-// Permission Definitions
-// =============================================================================
-
-/**
- * All possible permissions in the system.
- * Used for type safety and documentation.
- */
 export const PERMISSIONS = {
-  // Organization permissions
   "org.view": "View organization details",
   "org.update": "Update organization settings",
   "org.delete": "Delete organization",
@@ -46,14 +21,12 @@ export const PERMISSIONS = {
   "org.invite_members": "Invite new members to organization",
   "org.create_project": "Create new projects",
 
-  // Project permissions
   "project.view": "View project and its contents",
   "project.update": "Update project settings",
   "project.delete": "Delete project",
   "project.manage_members": "Add/remove project members",
   "project.manage_statuses": "Manage custom statuses",
 
-  // Task permissions
   "task.view": "View tasks",
   "task.create": "Create new tasks",
   "task.update": "Update any task",
@@ -61,13 +34,11 @@ export const PERMISSIONS = {
   "task.delete": "Delete tasks",
   "task.assign": "Assign tasks to users",
 
-  // Comment permissions
   "comment.view": "View comments",
   "comment.create": "Create comments",
   "comment.delete_own": "Delete own comments",
   "comment.delete_any": "Delete any comment",
 
-  // Time entry permissions
   "time_entry.create": "Log time",
   "time_entry.delete_own": "Delete own time entries",
   "time_entry.delete_any": "Delete any time entry",
@@ -75,56 +46,30 @@ export const PERMISSIONS = {
 
 export type Permission = keyof typeof PERMISSIONS;
 
-// =============================================================================
-// Role Checks
-// =============================================================================
-
-/**
- * Check if the organization role is owner
- */
 export function isOrgOwner(role: OrgRole | null | undefined): boolean {
   return role === "owner";
 }
 
-/**
- * Check if the organization role has admin-level access (owner or admin)
- */
 export function isOrgAdmin(role: OrgRole | null | undefined): boolean {
   return role === "owner" || role === "admin";
 }
 
-/**
- * Check if user has any organization membership
- */
 export function isOrgMember(role: OrgRole | null | undefined): boolean {
   return role === "owner" || role === "admin" || role === "member";
 }
 
-/**
- * Check if user can manage projects in the organization
- */
 export function canManageProjects(
   orgRole: OrgRole | null | undefined,
 ): boolean {
   return isOrgAdmin(orgRole);
 }
 
-/**
- * Check if user can manage organization members
- */
 export function canManageOrgMembers(
   orgRole: OrgRole | null | undefined,
 ): boolean {
   return isOrgAdmin(orgRole);
 }
 
-// =============================================================================
-// Project Role Checks
-// =============================================================================
-
-/**
- * Check if user can view project content
- */
 export function canViewProject(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -133,9 +78,6 @@ export function canViewProject(
   return !!projectRole;
 }
 
-/**
- * Check if user can manage project settings
- */
 export function canManageProject(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -144,9 +86,6 @@ export function canManageProject(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-/**
- * Check if user can manage project members
- */
 export function canManageProjectMembers(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -155,9 +94,6 @@ export function canManageProjectMembers(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-/**
- * Check if user can create tasks
- */
 export function canCreateTasks(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -170,9 +106,6 @@ export function canCreateTasks(
   );
 }
 
-/**
- * Check if user can edit any task
- */
 export function canEditAnyTask(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -181,10 +114,6 @@ export function canEditAnyTask(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-/**
- * Check if user can edit a specific task
- * Members can only edit tasks assigned to them
- */
 export function canEditTask(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -197,9 +126,6 @@ export function canEditTask(
   return false;
 }
 
-/**
- * Check if user can delete tasks
- */
 export function canDeleteTasks(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -208,9 +134,6 @@ export function canDeleteTasks(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-/**
- * Check if user can comment
- */
 export function canComment(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -223,9 +146,6 @@ export function canComment(
   );
 }
 
-/**
- * Check if user can log time
- */
 export function canLogTime(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -238,14 +158,6 @@ export function canLogTime(
   );
 }
 
-// =============================================================================
-// Computed Permission Object
-// =============================================================================
-
-/**
- * Compute all permissions for a given context
- * This mirrors the backend permission computation
- */
 export function computePermissions(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -254,7 +166,6 @@ export function computePermissions(
   const isOwner = isOrgOwner(orgRole);
 
   return {
-    // Organization permissions
     "org.view": isOrgMember(orgRole),
     "org.update": isOwner,
     "org.delete": isOwner,
@@ -263,14 +174,12 @@ export function computePermissions(
     "org.invite_members": isAdmin,
     "org.create_project": isAdmin,
 
-    // Project permissions
     "project.view": canViewProject(orgRole, projectRole),
     "project.update": canManageProject(orgRole, projectRole),
     "project.delete": isOwner || projectRole === "owner",
     "project.manage_members": canManageProjectMembers(orgRole, projectRole),
     "project.manage_statuses": canManageProject(orgRole, projectRole),
 
-    // Task permissions
     "task.view": canViewProject(orgRole, projectRole),
     "task.create": canCreateTasks(orgRole, projectRole),
     "task.update": canEditAnyTask(orgRole, projectRole),
@@ -278,13 +187,11 @@ export function computePermissions(
     "task.delete": canDeleteTasks(orgRole, projectRole),
     "task.assign": canEditAnyTask(orgRole, projectRole),
 
-    // Comment permissions
     "comment.view": canViewProject(orgRole, projectRole),
     "comment.create": canComment(orgRole, projectRole),
     "comment.delete_own": canComment(orgRole, projectRole),
     "comment.delete_any": canEditAnyTask(orgRole, projectRole),
 
-    // Time entry permissions
     "time_entry.create": canLogTime(orgRole, projectRole),
     "time_entry.delete_own": canLogTime(orgRole, projectRole),
     "time_entry.delete_any": canEditAnyTask(orgRole, projectRole),

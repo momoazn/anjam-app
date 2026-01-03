@@ -1,8 +1,5 @@
 /**
  * User-related React Query hooks
- *
- * Provides hooks for fetching, creating, updating, and deleting users.
- * Includes project-user relationship handling and simplified user data.
  */
 import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
@@ -75,11 +72,6 @@ const useUnblockUserMutation = createMutation<
   },
 );
 
-/**
- * Hook to fetch all users
- * @param options - Configuration options for the query
- * @returns React Query result with users data
- */
 export function useUsers(options: UsersListOptions = {}) {
   const { enabled = true, batch = 100, sort = "-created", filter } = options;
   const queryParams = {
@@ -101,11 +93,6 @@ export function useUsers(options: UsersListOptions = {}) {
   });
 }
 
-/**
- * Hook to fetch a single user by ID
- * @param options - Configuration options for the query
- * @returns React Query result with user data
- */
 export function useUser({
   id,
   enabled = true,
@@ -121,11 +108,6 @@ export function useUser({
   });
 }
 
-/**
- * Hook to fetch users for a specific project
- * @param options - Configuration options for the query
- * @returns React Query result with project users data
- */
 export function useProjectUsers({
   projectId,
   enabled = true,
@@ -149,7 +131,6 @@ export function useProjectUsers({
           expand: "user",
         });
 
-      // Extract user data from the expanded relationships
       return projectMembers
         .map((pm) => ({
           member: pm.expand?.user,
@@ -176,11 +157,6 @@ export function useProjectUsers({
   });
 }
 
-/**
- * Hook to create a new user
- * @param options - Mutation options
- * @returns Mutation function for creating users
- */
 export function useCreateUser(
   options?: UseMutationOptions<
     UsersResponse,
@@ -191,11 +167,6 @@ export function useCreateUser(
   return useCreateUserMutation(options);
 }
 
-/**
- * Hook to update an existing user
- * @param options - Mutation options
- * @returns Mutation function for updating users
- */
 export function useUpdateUser(
   options?: UseMutationOptions<
     UsersResponse,
@@ -206,33 +177,18 @@ export function useUpdateUser(
   return useUpdateUserMutation(options);
 }
 
-/**
- * Hook to delete a user
- * @param options - Mutation options
- * @returns Mutation function for deleting users
- */
 export function useDeleteUser(
   options?: UseMutationOptions<UsersResponse, Error, string>,
 ) {
   return useDeleteUserMutation(options);
 }
 
-/**
- * Hook to toggle user active status
- * @param options - Mutation options
- * @returns Mutation function for toggling user active status
- */
 export function useToggleUserActive(
   options?: UseMutationOptions<ToggleUserActiveResponse, Error, string>,
 ) {
   return useToggleUserActiveMutation(options);
 }
 
-/**
- * Hook to unblock a user
- * @param options - Mutation options
- * @returns Mutation function for unblocking users
- */
 export function useUnblockUser(
   options?: UseMutationOptions<UnblockUserResponse, Error, string>,
 ) {

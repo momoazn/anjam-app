@@ -1,8 +1,5 @@
 /**
  * Task-related React Query hooks
- *
- * Provides hooks for fetching, creating, updating, and deleting tasks.
- * Includes role-based filtering and optimistic updates for better UX.
  */
 import {
   QueryClient,
@@ -39,12 +36,11 @@ const crudHooks = createCrudHooks<
   relatedInvalidators: [
     {
       invalidator: mutationInvalidators.crud.projects.update,
-      args: [], // Will be populated dynamically
+      args: [],
     },
   ],
 });
 
-// Export CRUD hooks
 const {
   useCreate: useCreateTaskMutation,
   useUpdate: useUpdateTaskMutation,
@@ -99,7 +95,6 @@ type ReorderTaskVariables = {
   statusKey: string;
 };
 
-// Task-specific mutation for reordering (kept separate as it's unique to tasks)
 const useReorderTaskMutation = createMutation<
   TasksResponse,
   Error,
@@ -115,9 +110,6 @@ const useReorderTaskMutation = createMutation<
   },
 );
 
-/**
- * Fetches tasks with optional project filtering and field expansion
- */
 export type TasksListResult = {
   items: TaskWithProject[];
   page: number;
@@ -137,12 +129,10 @@ async function getTasks(
   const currentUser = pb.authStore.record as UsersResponse | null;
   const filters: string[] = ['(deleted_at = "" || deleted_at = null)'];
 
-  // Apply role-based filtering
   if (currentUser?.role === UsersRoleOptions.employee) {
     filters.push(`assignee = "${currentUser.id}"`);
   }
 
-  // Apply project filtering
   if (projectId) {
     filters.push(`project = "${projectId}"`);
   }
@@ -168,7 +158,6 @@ async function getTasks(
     };
   }
 
-  // Use paginated list to avoid multiple sequential HTTP requests from getFullList
   const res = await pb
     .collection("tasks")
     .getList<TaskWithProject>(page, perPage, {
@@ -186,11 +175,6 @@ async function getTasks(
   };
 }
 
-/**
- * Hook to fetch tasks with optional project filtering and field expansion
- * @param options - Configuration options for the query
- * @returns React Query result with tasks data
- */
 export function useTasks(
   options: {
     projectId?: string;
@@ -228,11 +212,6 @@ export function useTasks(
   });
 }
 
-/**
- * Hook to fetch a single task by ID
- * @param options - Configuration options for the query
- * @returns React Query result with task data
- */
 export function useTask(options: { id: string; enabled?: boolean }) {
   const { id, enabled = true } = options;
 
@@ -252,11 +231,6 @@ export function useTask(options: { id: string; enabled?: boolean }) {
   });
 }
 
-/**
- * Hook to create a new task
- * @param options - Mutation options
- * @returns Mutation function for creating tasks
- */
 export function useCreateTask(
   options?: UseMutationOptions<
     TasksResponse,
@@ -267,11 +241,6 @@ export function useCreateTask(
   return useCreateTaskMutation(options);
 }
 
-/**
- * Hook to update an existing task
- * @param options - Mutation options
- * @returns Mutation function for updating tasks
- */
 export function useUpdateTask(
   options?: UseMutationOptions<
     TasksResponse,
@@ -282,20 +251,12 @@ export function useUpdateTask(
   return useUpdateTaskMutation(options);
 }
 
-/**
- * Hook to soft delete a task
- * @param options - Mutation options
- * @returns Mutation function for soft deleting tasks
- */
 export function useDeleteTask(
   options?: UseMutationOptions<TasksResponse, Error, string>,
 ) {
   return useDeleteTaskMutation(options);
 }
 
-/**
- * Bulk update multiple tasks at once
- */
 export function useBulkUpdateTasks(
   options?: UseMutationOptions<
     BatchUpdateResponse,
@@ -306,36 +267,21 @@ export function useBulkUpdateTasks(
   return useBulkUpdateTasksMutation(options);
 }
 
-/**
- * Bulk delete multiple tasks at once
- */
 export function useBulkDeleteTasks(
   options?: UseMutationOptions<BatchUpdateResponse, Error, string[]>,
 ) {
   return useBulkDeleteTasksMutation(options);
 }
 
-/**
- * Hook to reorder a task within a status column
- */
 export function useReorderTask() {
   return useReorderTaskMutation();
 }
 
-/**
- * Hook to prefetch a task on hover for better UX
- * Returns a function that can be called with a task ID to prefetch its data
- *
- * @example
- * const prefetchTask = usePrefetchTask();
- * <TaskCard onMouseEnter={() => prefetchTask(task.id)} />
- */
 export function usePrefetchTask() {
   const queryClient = useQueryClient();
 
   const prefetch = useCallback(
     (taskId: string) => {
-      // Only prefetch if we don't already have data for this task
       const existingData = queryClient.getQueryData(
         queryKeys.tasks.detail(taskId),
       );
