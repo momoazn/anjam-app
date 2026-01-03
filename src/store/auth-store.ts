@@ -60,6 +60,9 @@ interface AuthState {
   isLoading: boolean;
   isLoadingOrgs: boolean;
 
+  // Error states
+  orgsError: Error | null;
+
   // Actions
   login: (user: UsersResponse, token?: string) => void;
   updateUser: (user: UsersResponse) => void;
@@ -88,6 +91,7 @@ export const useAuthStore = create<AuthState>()(
         currentOrgFeatures: getOrgFeatures(undefined), // NEW
         isLoading: false,
         isLoadingOrgs: false,
+        orgsError: null,
 
         login: (user) => {
           set({
@@ -134,7 +138,7 @@ export const useAuthStore = create<AuthState>()(
           const { isAuthenticated } = get();
           if (!isAuthenticated) return;
 
-          set({ isLoadingOrgs: true });
+          set({ isLoadingOrgs: true, orgsError: null });
 
           try {
             const response = (await pb.send("/api/v1/organizations", {
@@ -171,7 +175,7 @@ export const useAuthStore = create<AuthState>()(
             }
           } catch (error) {
             logError("Failed to fetch organizations", error);
-            set({ userOrganizations: [] });
+            set({ userOrganizations: [], orgsError: error as Error });
           } finally {
             set({ isLoadingOrgs: false });
           }
@@ -228,6 +232,7 @@ export const useAuthStore = create<AuthState>()(
             currentOrgFeatures: getOrgFeatures(undefined),
             isLoading: false,
             isLoadingOrgs: false,
+            orgsError: null,
           });
         },
       }),
@@ -295,3 +300,4 @@ export const useCurrentOrgMode = () =>
   useAuthStore((state) => state.currentOrgMode);
 export const useCurrentOrgFeatures = () =>
   useAuthStore((state) => state.currentOrgFeatures);
+export const useAuthOrgsError = () => useAuthStore((state) => state.orgsError);
