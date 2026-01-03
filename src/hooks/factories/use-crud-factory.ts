@@ -141,8 +141,40 @@ export function createBulkOperations<TRecord, TResponse, TQueryKeys = unknown>(
         const promises = ids.map((id) =>
           pb.collection(collection).update(id, updates),
         );
-        const results = await Promise.all(promises);
-        return results as TResponse[];
+        const results = await Promise.allSettled(promises);
+
+        // Check for failures and collect successful results
+        const successfulResults: TResponse[] = [];
+        const errors: string[] = [];
+
+        results.forEach((result, index) => {
+          if (result.status === "fulfilled") {
+            successfulResults.push(
+              config.mapToResponse
+                ? config.mapToResponse(result.value)
+                : (result.value as unknown as TResponse),
+            );
+          } else {
+            errors.push(
+              `Failed to update item at index ${index}: ${result.reason}`,
+            );
+          }
+        });
+
+        // If all operations failed, throw an error
+        if (successfulResults.length === 0 && errors.length > 0) {
+          throw new Error(`Bulk update failed: ${errors.join("; ")}`);
+        }
+
+        // Log partial failures but still return successful results
+        if (errors.length > 0) {
+          console.warn(
+            `Bulk update completed with ${errors.length} failures:`,
+            errors,
+          );
+        }
+
+        return successfulResults;
       },
       (client) => {
         invalidators.bulk?.(client);
@@ -157,16 +189,35 @@ export function createBulkOperations<TRecord, TResponse, TQueryKeys = unknown>(
         const timestamp = new Date().toISOString();
         const supportsSoftDelete = ["tasks", "comments"].includes(collection);
 
-        if (supportsSoftDelete) {
-          const promises = ids.map((id) =>
-            pb.collection(collection).update(id, { deleted_at: timestamp }),
+        const operations = ids.map((id) =>
+          supportsSoftDelete
+            ? pb.collection(collection).update(id, { deleted_at: timestamp })
+            : pb.collection(collection).delete(id),
+        );
+
+        const results = await Promise.allSettled(operations);
+
+        // Check for failures
+        const errors: string[] = [];
+        results.forEach((result, index) => {
+          if (result.status === "rejected") {
+            errors.push(
+              `Failed to delete item at index ${index}: ${result.reason}`,
+            );
+          }
+        });
+
+        // If all operations failed, throw an error
+        if (errors.length === ids.length && errors.length > 0) {
+          throw new Error(`Bulk delete failed: ${errors.join("; ")}`);
+        }
+
+        // Log partial failures
+        if (errors.length > 0) {
+          console.warn(
+            `Bulk delete completed with ${errors.length} failures:`,
+            errors,
           );
-          await Promise.all(promises);
-        } else {
-          const promises = ids.map((id) =>
-            pb.collection(collection).delete(id),
-          );
-          await Promise.all(promises);
         }
       },
       (client) => {
