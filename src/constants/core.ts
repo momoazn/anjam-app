@@ -159,6 +159,7 @@ export const common = {
     noData: shared.noData,
     noName: shared.noName,
     quickActions: "عملیات سریع",
+    invalidForm: "لطفاً خطاهای فرم را برطرف کنید",
   },
   pagination: {
     page: "صفحه",

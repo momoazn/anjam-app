@@ -158,6 +158,11 @@ export default function CreateTask() {
                     </div>
 
                     <div className="space-y-6">
+                      {Object.keys(form.formState.errors).length > 0 && (
+                        <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg p-3 text-[10px] font-bold">
+                          {common.messages.invalidForm}
+                        </div>
+                      )}
                       <Button
                         type="submit"
                         disabled={isPending}
