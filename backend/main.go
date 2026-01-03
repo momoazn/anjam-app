@@ -660,14 +660,29 @@ func initializeAuditWorker(e *core.ServeEvent) error {
 	return e.Next()
 }
 
-// enforceTimeEntriesProductMode blocks time entry operations in product mode
+// enforceTimeEntriesProductMode validates time entries before create/update
+//
+// This function:
+// 1. Validates that minutes are non-negative
+// 2. Blocks time entry operations in product mode
 //
 // This is the final enforcement layer. Even if UI/routing checks fail,
 // the API will reject the operation.
-//
-// Pattern: OnRecordCreateExecute/UpdateExecute/DeleteExecute
-// Returns 403 Forbidden for product mode orgs
 func enforceTimeEntriesProductMode(e *core.RecordEvent) error {
+	// Validate that minutes are non-negative
+	minutes := e.Record.GetInt("minutes")
+	if minutes < 0 {
+		return apis.NewApiError(
+			400,
+			"Time entry minutes cannot be negative.",
+			map[string]any{
+				"error":   "INVALID_FIELD",
+				"field":   "minutes",
+				"message": "Time entry minutes must be 0 or greater",
+			},
+		)
+	}
+
 	// Resolve the organization mode from the time entry record
 	mode, err := ResolveOrgModeFromTimeEntry(e.App, e.Record)
 	if err != nil {
