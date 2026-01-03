@@ -232,7 +232,7 @@ export function CommandMenu() {
             label: task.title,
             icon: FileText,
             action: () => navigateToTask(task.id),
-            subtitle: `${task.display_id}`,
+            subtitle: `${task.display_id} • ${task.project_name}`,
             badge: task.status,
             type: "task",
           });
@@ -420,7 +420,6 @@ export function CommandMenu() {
                 ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
                 : "border-border bg-muted text-muted-foreground",
             )}
-            aria-hidden="true"
           >
             <span className="text-xs">{commandMenu.shortcuts.commandK}</span>
           </kbd>
