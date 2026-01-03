@@ -3,7 +3,7 @@
  */
 import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
-import { customApiCall, pb } from "../lib/pocketbase";
+import { pb } from "../lib/pocketbase";
 import {
   ProjectMembersResponse,
   ProjectMembersRoleOptions,
@@ -44,10 +44,9 @@ const useToggleUserActiveMutation = createMutation<
   string
 >(
   (userId) =>
-    customApiCall<ToggleUserActiveResponse>(
-      `/api/v1/users/${userId}/toggle-active`,
-      { method: "PATCH" },
-    ),
+    pb.send<ToggleUserActiveResponse>(`/api/v1/users/${userId}/toggle-active`, {
+      method: "PATCH",
+    }),
   (client, _data, userId) => {
     mutationInvalidators.crud.users.adminAction(client, userId);
   },
@@ -64,7 +63,7 @@ const useUnblockUserMutation = createMutation<
   string
 >(
   (userId) =>
-    customApiCall<UnblockUserResponse>(`/api/v1/users/${userId}/unblock`, {
+    pb.send<UnblockUserResponse>(`/api/v1/users/${userId}/unblock`, {
       method: "PATCH",
     }),
   (client, _data, userId) => {

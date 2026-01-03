@@ -7,7 +7,6 @@ import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationInvitesResponse,
   OrganizationsResponse,
-  UsersResponse,
 } from "@/lib/pocketbase-types";
 import { useAuthStore, useCurrentOrganization } from "@/store/auth-store";
 
@@ -235,11 +234,11 @@ export function useAcceptInvite(token: string) {
       return response.json();
     },
     onSuccess: (data) => {
-      // Auto-login the user
       if (data.token && data.user) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         pb.authStore.save(data.token, data.user as any);
-        login(data.user as UsersResponse, data.token);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        login(data.user as any, data.token);
       }
     },
     onError: (error) => {
@@ -282,11 +281,11 @@ export function useRegisterWithOrg() {
       return response.json();
     },
     onSuccess: (data) => {
-      // Auto-login the user (login also fetches orgs)
       if (data.token && data.user) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         pb.authStore.save(data.token, data.user as any);
-        login(data.user as UsersResponse, data.token);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        login(data.user as any, data.token);
       }
     },
     onError: (error) => {

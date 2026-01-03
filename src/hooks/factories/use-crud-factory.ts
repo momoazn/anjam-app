@@ -120,18 +120,12 @@ export function createCrudHooks<
   };
 }
 
-/**
- * Helper function to create bulk operations
- */
 export function createBulkOperations<TRecord, TResponse, TQueryKeys = unknown>(
   config: CrudConfig<TResponse, TQueryKeys>,
 ) {
   const { collection, invalidators } = config;
 
   return {
-    /**
-     * Bulk update multiple records
-     */
     useBulkUpdate: createMutation<
       TResponse[],
       Error,
@@ -181,9 +175,6 @@ export function createBulkOperations<TRecord, TResponse, TQueryKeys = unknown>(
       },
     ),
 
-    /**
-     * Bulk delete multiple records (soft delete)
-     */
     useBulkDelete: createMutation<void, Error, string[]>(
       async (ids: string[]) => {
         const timestamp = new Date().toISOString();

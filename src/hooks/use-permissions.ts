@@ -7,11 +7,16 @@ import {
   type ProjectRole,
   computePermissions,
 } from "@/lib/permissions";
-import {
-  type PermissionsResponse,
-  getPermissions,
-} from "@/lib/permissions-service";
+import { pb } from "@/lib/pocketbase";
 import { useAuthStore } from "@/store/auth-store";
+
+interface PermissionsResponse {
+  permissions: Record<Permission, boolean>;
+  organization_role: OrgRole | null;
+  project_role: ProjectRole | null;
+  is_org_owner: boolean;
+  is_org_admin: boolean;
+}
 
 interface UsePermissionsResult {
   isLoading: boolean;
@@ -40,7 +45,9 @@ export function usePermissions(projectId?: string): UsePermissionsResult {
         throw new Error("No organization selected");
       }
 
-      return getPermissions(orgId, projectId);
+      const params = new URLSearchParams({ organization_id: orgId });
+      if (projectId) params.set("project_id", projectId);
+      return pb.send<PermissionsResponse>(`/api/v1/permissions?${params}`, {});
     },
     enabled: !!orgId,
     staleTime: 30000,
