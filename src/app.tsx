@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { KeyboardShortcutsDialog } from "@/components/help/keyboard-shortcuts-dialog";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -114,6 +115,7 @@ function App() {
             <ScrollToTop />
             <AppLayout />
             <CommandMenu />
+            <KeyboardShortcutsDialog />
             <Toaster
               position="bottom-right"
               className="font-arad"
