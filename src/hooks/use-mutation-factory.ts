@@ -21,22 +21,11 @@ type FactoryMutationOptions<
   ) => void;
 };
 
-/**
- * Configuration for mutation factory
- */
 export interface MutationFactoryConfig {
   /** Whether to automatically show error toast on failure (default: true) */
   showErrorToast?: boolean;
 }
 
-/**
- * Creates a reusable mutation hook with automatic cache invalidation and error handling
- *
- * @param mutationFn - The async function that performs the mutation
- * @param invalidate - Function to invalidate relevant queries after mutation succeeds
- * @param config - Optional configuration for the mutation factory
- * @returns A hook that can be used in components with optional additional options
- */
 export function createMutation<
   TData,
   TError extends Error,

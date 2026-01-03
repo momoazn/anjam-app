@@ -10,10 +10,6 @@ import type {
 
 import { queryKeys } from "./query-keys";
 
-// =============================================================================
-// Types
-// =============================================================================
-
 type ProjectRole = "owner" | "admin" | "member" | "viewer";
 
 interface ProjectMemberWithUser extends ProjectMembersResponse {
@@ -38,24 +34,10 @@ interface UpdateProjectMemberRoleInput {
   role: ProjectRole;
 }
 
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
 function buildProjectMemberFilter(projectId: string): string {
   return `project = "${projectId}"`;
 }
 
-// =============================================================================
-// Query Hooks
-// =============================================================================
-
-/**
- * Fetch all members of a project
- *
- * @example
- * const { data: members, isLoading } = useProjectMembers("project-id");
- */
 export function useProjectMembers(
   projectId: string,
   options?: UseProjectMembersOptions,
@@ -79,9 +61,6 @@ export function useProjectMembers(
   });
 }
 
-/**
- * Fetch a single project member by ID
- */
 export function useProjectMember(
   memberId: string,
   options?: { enabled?: boolean },
@@ -100,10 +79,6 @@ export function useProjectMember(
   });
 }
 
-/**
- * Check if current user is a member of a project
- * Returns { isMember, isLoading } for proper loading state handling
- */
 export function useIsProjectMember(projectId: string): {
   isMember: boolean;
   isLoading: boolean;
@@ -117,10 +92,6 @@ export function useIsProjectMember(projectId: string): {
   return { isMember, isLoading };
 }
 
-/**
- * Get current user's role in a project
- * Returns { role, isLoading } for proper loading state handling
- */
 export function useMyProjectRole(projectId: string): {
   role: ProjectRole | null;
   isLoading: boolean;
@@ -134,17 +105,6 @@ export function useMyProjectRole(projectId: string): {
   return { role: myMember?.role ?? null, isLoading };
 }
 
-// =============================================================================
-// Mutation Hooks
-// =============================================================================
-
-/**
- * Add a member to a project
- *
- * @example
- * const { mutate: addMember, isPending } = useAddProjectMember();
- * addMember({ projectId: "abc", userId: "def", role: "member" });
- */
 export function useAddProjectMember() {
   const queryClient = useQueryClient();
 
@@ -185,13 +145,6 @@ export function useAddProjectMember() {
   });
 }
 
-/**
- * Update a project member's role
- *
- * @example
- * const { mutate: updateRole } = useUpdateProjectMemberRole();
- * updateRole({ memberId: "abc123", role: "admin" });
- */
 export function useUpdateProjectMemberRole() {
   const queryClient = useQueryClient();
 
@@ -219,13 +172,6 @@ export function useUpdateProjectMemberRole() {
   });
 }
 
-/**
- * Remove a member from a project
- *
- * @example
- * const { mutate: removeMember } = useRemoveProjectMember();
- * removeMember("member-id-123");
- */
 export function useRemoveProjectMember() {
   const queryClient = useQueryClient();
 
@@ -249,36 +195,20 @@ export function useRemoveProjectMember() {
   });
 }
 
-// =============================================================================
-// Selector Hooks (for specific data needs)
-// =============================================================================
-
-/**
- * Get count of members in a project
- */
 export function useProjectMemberCount(projectId: string) {
   const { data: members } = useProjectMembers(projectId);
   return members?.length ?? 0;
 }
 
-/**
- * Get all members with a specific role
- */
 export function useProjectMembersByRole(projectId: string, role: ProjectRole) {
   const { data: members } = useProjectMembers(projectId);
   return members?.filter((m) => m.role === role) ?? [];
 }
 
-/**
- * Get project owners
- */
 export function useProjectOwners(projectId: string) {
   return useProjectMembersByRole(projectId, "owner");
 }
 
-/**
- * Get project admins
- */
 export function useProjectAdmins(projectId: string) {
   return useProjectMembersByRole(projectId, "admin");
 }

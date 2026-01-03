@@ -4,7 +4,6 @@ import { useCallback, useEffect } from "react";
 import {
   deleteMultipleNotifications,
   deleteNotification,
-  fetchAllNotifications,
   fetchReadNotifications,
   fetchUnreadNotifications,
   fetchUserNotifications,
@@ -136,7 +135,7 @@ export function useClearAll() {
 
   const mutation = createMutation<string, Error, string>(
     async (userId) => {
-      const notifications = await fetchAllNotifications(userId);
+      const notifications = await fetchUserNotifications(userId);
       await deleteMultipleNotifications(notifications);
       return userId;
     },

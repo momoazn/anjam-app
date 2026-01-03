@@ -32,10 +32,10 @@ const crudHooks = createCrudHooks<TimeEntriesRecord, TimeEntriesResponse>({
   },
 });
 
-const {
-  useCreate: useCreateTimeEntryMutation,
-  useUpdate: useUpdateTimeEntryMutation,
-  useDelete: useDeleteTimeEntryMutation,
+export const {
+  useCreate: useCreateTimeEntry,
+  useUpdate: useUpdateTimeEntry,
+  useDelete: useDeleteTimeEntry,
 } = crudHooks;
 
 export function useTimeEntries(
@@ -62,16 +62,4 @@ export function useTimeEntries(
       }),
     enabled,
   });
-}
-
-export function useCreateTimeEntry() {
-  return useCreateTimeEntryMutation();
-}
-
-export function useUpdateTimeEntry() {
-  return useUpdateTimeEntryMutation();
-}
-
-export function useDeleteTimeEntry() {
-  return useDeleteTimeEntryMutation();
 }

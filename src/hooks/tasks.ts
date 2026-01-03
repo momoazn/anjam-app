@@ -1,6 +1,3 @@
-/**
- * Task-related React Query hooks
- */
 import {
   QueryClient,
   UseMutationOptions,

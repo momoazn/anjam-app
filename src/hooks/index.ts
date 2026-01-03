@@ -1,10 +1,3 @@
-/**
- * Centralized exports for all React Query hooks
- *
- * This file re-exports all hooks from their respective feature files,
- * providing a single import point for the entire hooks API.
- */
-
 // Query keys
 export { queryKeys } from "./query-keys";
 

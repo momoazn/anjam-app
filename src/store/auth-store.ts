@@ -13,9 +13,6 @@ import type {
 
 type OrgRole = "owner" | "admin" | "member";
 
-/**
- * Organization settings type for mode features
- */
 interface OrganizationSettings {
   modeSettings?: {
     features?: {
@@ -254,8 +251,6 @@ export const useAuthStore = create<AuthState>()(
 
 export const useAuthUser = () => useAuthStore((state) => state.user);
 export const useAuthIsAuthenticated = () =>
-  useAuthStore((state) => state.isAuthenticated);
-export const useAuthIsLoggedIn = () =>
   useAuthStore((state) => state.isAuthenticated);
 export const useCurrentOrganization = () =>
   useAuthStore((state) => state.currentOrganization);

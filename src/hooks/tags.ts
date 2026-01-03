@@ -29,9 +29,6 @@ const useCreateTagMutation = createMutation<
   },
 );
 
-/**
- * Fetch all tags
- */
 export function useTags() {
   return useQuery({
     queryKey: queryKeys.tags.list(),
@@ -43,9 +40,6 @@ export function useTags() {
   });
 }
 
-/**
- * Create a new tag
- */
 export function useCreateTag(
   options?: UseMutationOptions<TagsResponse, Error, CreateTagInput>,
 ) {
@@ -74,9 +68,6 @@ export function useCreateTag(
   });
 }
 
-/**
- * Update an existing tag
- */
 export function useUpdateTag(
   options?: UseMutationOptions<
     TagsResponse,
@@ -87,9 +78,6 @@ export function useUpdateTag(
   return useUpdateTagMutation(options);
 }
 
-/**
- * Delete a tag
- */
 export function useDeleteTag(
   options?: UseMutationOptions<TagsResponse, Error, string>,
 ) {

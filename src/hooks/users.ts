@@ -1,6 +1,3 @@
-/**
- * User-related React Query hooks
- */
 import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
 import { pb } from "../lib/pocketbase";

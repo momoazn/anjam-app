@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AuthRecord } from "pocketbase";
 import { toast } from "sonner";
 
 import { organization as orgStrings } from "@/constants";
@@ -7,14 +8,11 @@ import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationInvitesResponse,
   OrganizationsResponse,
+  UsersResponse,
 } from "@/lib/pocketbase-types";
 import { useAuthStore, useCurrentOrganization } from "@/store/auth-store";
 
 import { queryKeys } from "./query-keys";
-
-// =============================================================================
-// Types
-// =============================================================================
 
 type InviteRole = "admin" | "member";
 
@@ -63,13 +61,6 @@ interface AuthResponse {
   };
 }
 
-// =============================================================================
-// Query Hooks
-// =============================================================================
-
-/**
- * Fetch all invites for the current organization
- */
 export function useOrganizationInvites() {
   const currentOrg = useCurrentOrganization();
   const orgId = currentOrg?.id;
@@ -96,9 +87,6 @@ export function useOrganizationInvites() {
   });
 }
 
-/**
- * Fetch invite info by token (public endpoint)
- */
 export function useInviteByToken(token: string) {
   return useQuery({
     queryKey: queryKeys.orgInvites.listByToken(token),
@@ -117,13 +105,6 @@ export function useInviteByToken(token: string) {
   });
 }
 
-// =============================================================================
-// Mutation Hooks
-// =============================================================================
-
-/**
- * Create a new invite link for the organization
- */
 export function useCreateOrgInvite() {
   const queryClient = useQueryClient();
   const currentOrg = useCurrentOrganization();
@@ -164,9 +145,6 @@ export function useCreateOrgInvite() {
   });
 }
 
-/**
- * Revoke an invite link
- */
 export function useRevokeOrgInvite() {
   const queryClient = useQueryClient();
   const currentOrg = useCurrentOrganization();
@@ -202,9 +180,6 @@ export function useRevokeOrgInvite() {
   });
 }
 
-/**
- * Accept an invite and register a new user
- */
 export function useAcceptInvite(token: string) {
   const login = useAuthStore((s) => s.login);
 
@@ -235,10 +210,8 @@ export function useAcceptInvite(token: string) {
     },
     onSuccess: (data) => {
       if (data.token && data.user) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        pb.authStore.save(data.token, data.user as any);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        login(data.user as any, data.token);
+        pb.authStore.save(data.token, data.user as unknown as AuthRecord);
+        login(data.user as UsersResponse, data.token);
       }
     },
     onError: (error) => {
@@ -247,9 +220,6 @@ export function useAcceptInvite(token: string) {
   });
 }
 
-/**
- * Register with organization (direct registration flow)
- */
 export function useRegisterWithOrg() {
   const login = useAuthStore((s) => s.login);
 
@@ -282,10 +252,8 @@ export function useRegisterWithOrg() {
     },
     onSuccess: (data) => {
       if (data.token && data.user) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        pb.authStore.save(data.token, data.user as any);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        login(data.user as any, data.token);
+        pb.authStore.save(data.token, data.user as unknown as AuthRecord);
+        login(data.user as UsersResponse, data.token);
       }
     },
     onError: (error) => {
@@ -294,13 +262,6 @@ export function useRegisterWithOrg() {
   });
 }
 
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Get the status of an invite
- */
 export function getInviteStatus(
   invite: OrganizationInvitesResponse,
 ): "active" | "expired" | "exhausted" | "revoked" {
@@ -316,9 +277,6 @@ export function getInviteStatus(
   return "active";
 }
 
-/**
- * Generate the full invite URL
- */
 export function getInviteUrl(token: string): string {
   return `${window.location.origin}/invite/${token}`;
 }

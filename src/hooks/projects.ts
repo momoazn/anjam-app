@@ -1,6 +1,3 @@
-/**
- * Project-related React Query hooks
- */
 import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
 import { ProjectWithSupervisor, pb } from "../lib/pocketbase";
