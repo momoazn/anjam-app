@@ -126,22 +126,28 @@ export default function Inbox() {
         </Card>
 
         {/* Mentioned Section (v1: placeholder) */}
-        {sections.mentioned.length > 0 && (
-          <Card>
-            <CardHeader className="text-right">
-              <CardTitle className="text-lg">
-                {inbox.sections.mentioned} ({sections.mentioned.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card>
+          <CardHeader className="text-right">
+            <CardTitle className="text-lg">
+              {inbox.sections.mentioned} ({sections.mentioned.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {sections.mentioned.length === 0 ? (
+              <div className="bg-muted/10 border-border/40 rounded-xl border border-dashed p-6 text-center">
+                <p className="text-muted-foreground text-[10px] font-bold tracking-tight">
+                  {inbox.mentionedComingSoon}
+                </p>
+              </div>
+            ) : (
               <div className="space-y-2">
                 {sections.mentioned.map((task) => (
                   <TaskListItem key={task.id} task={task} />
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
 
         {/* Recently Updated Section */}
         <Card>

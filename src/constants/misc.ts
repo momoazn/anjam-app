@@ -126,6 +126,8 @@ export const inbox = {
     mentioned: "اشاره شده",
     recentlyUpdated: "اخیراً به‌روز شده",
   },
+  mentionedComingSoon:
+    "قابلیت نمایش تسک‌هایی که در آن‌ها به شما اشاره شده به‌زودی اضافه خواهد شد",
 } as const;
 
 // Project Status Settings
