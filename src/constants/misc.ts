@@ -80,6 +80,26 @@ export const task = {
 export const notFound = {
   title: "404",
   message: "صفحه‌ای که دنبالش می‌گردید پیدا نشد",
+  errorCode: "خطای 404",
+  lost: "گمشده",
+} as const;
+
+// Keyboard shortcuts
+export const keyboardShortcuts = {
+  keys: {
+    c: "C",
+    cmd: "Cmd",
+    k: "K",
+    question: "؟",
+    g: "G",
+    d: "D",
+    i: "I",
+    t: "T",
+    m: "M",
+    p: "P",
+    n: "N",
+    s: "S",
+  },
 } as const;
 
 export const myTasks = {

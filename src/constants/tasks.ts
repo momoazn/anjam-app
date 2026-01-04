@@ -217,7 +217,17 @@ export const tasks = {
     estimate: "برآورد زمان",
     hours: "ساعت",
     minutes: "دقیقه",
+    hoursShort: "س",
+    minutesShort: "د",
     createTag: "ایجاد برچسب",
+    sections: {
+      generalInfo: "اطلاعات کلی",
+      taskParameters: "پارامترهای تسک",
+    },
+    placeholders: {
+      taskTitle: "عنوان تسک",
+      detailedDescription: "توضیحات کامل",
+    },
   },
 
   // Task details

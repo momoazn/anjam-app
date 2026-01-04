@@ -3,6 +3,8 @@
 export const app = {
   name: "انجام",
   description: "مدیریت تسک‌ها",
+  logo: "انجام",
+  systemReady: "سیستم آماده",
 } as const;
 
 // Shared constants used across multiple modules

@@ -9,7 +9,12 @@ export const auth = {
     loggingIn: "در حال ورود...",
     registerButton: "ثبت‌نام",
     noAccountPrompt: "حساب ندارید؟",
-    subtitle: "Please provide your credentials",
+    subtitle: "لطفاً اطلاعات ورود خود را وارد کنید",
+    placeholders: {
+      email: "name@company.com",
+      password: "••••••••",
+    },
+    secureAccess: "دسترسی امن",
     errors: {
       credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
       invalidCredentials: "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید",
@@ -60,7 +65,14 @@ export const auth = {
       inviteRevoked: "این لینک دعوت لغو شده است",
       emailAlreadyRegistered: "این ایمیل قبلاً ثبت‌نام شده است",
     },
-    loginPrompt: "قبلا حساب دارید؟",
+    loginPrompt: "قبلاً حساب دارید؟",
+  },
+  pendingActivation: {
+    title: "احراز هویت :: فعال‌سازی",
+    status: "وضعیت حساب :: در انتظار",
+    instruction: "دستورالعمل",
+    securityCheck: "بررسی امنیتی :: موفق",
+    secureAuth: "احراز هویت امن",
   },
   onboarding: {
     title: "خوش آمدید!",
@@ -85,6 +97,9 @@ export const auth = {
     next: "بعدی",
     previous: "قبلی",
     finish: "اتمام",
+    placeholders: {
+      email: "email@example.com",
+    },
   },
   errors: {
     usernameRequired: "نام کاربری را وارد کنید",

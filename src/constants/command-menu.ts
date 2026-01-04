@@ -69,4 +69,13 @@ export const commandMenu = {
     navigationHint:
       "برای حرکت از کلیدهای بالا/پایین، برای انتخاب از Enter استفاده کنید",
   },
+
+  // Keyboard navigation instructions
+  navigationInstructions: {
+    upDown: "↑↓ برای حرکت",
+    enter: "↵ برای انتخاب",
+    escape: "esc برای بستن",
+    result: "نتیجه",
+    results: "نتایج",
+  },
 } as const;
