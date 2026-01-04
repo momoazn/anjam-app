@@ -18,6 +18,9 @@ import (
 	"anjam/helpers"
 )
 
+// usernameRegex is compiled once at package level for better performance
+var usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+
 // registerInviteEndpoints sets up invite-related API routes.
 func registerInviteEndpoints(app *pocketbase.PocketBase) {
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
@@ -438,7 +441,7 @@ func handleRegister(e *core.RequestEvent) error {
 	}
 
 	// Validate username format
-	if !regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString(username) {
+	if !usernameRegex.MatchString(username) {
 		return e.BadRequestError("Username can only contain letters, numbers, and underscores", nil)
 	}
 

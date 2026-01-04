@@ -69,7 +69,8 @@ export function SelectOrganizationPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Create New Organization Card */}
         <button
-          onClick={() => navigate("/organizations/new")}
+          type="button"
+          onClick={() => navigate("/onboarding")}
           className="group border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/5 relative flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed p-8 transition-all"
         >
           <div className="border-muted-foreground/25 group-hover:border-primary/50 flex h-16 w-16 items-center justify-center rounded-full border border-dashed transition-colors">
@@ -87,6 +88,7 @@ export function SelectOrganizationPage() {
           const isSelected = currentOrg?.id === org.id;
           return (
             <button
+              type="button"
               key={org.id}
               onClick={() => handleOrgSelect(org.id)}
               className={cn(

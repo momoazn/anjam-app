@@ -98,7 +98,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
 
   const handleCreateOrg = () => {
     setIsOpen(false);
-    navigate("/organizations/new");
+    navigate("/onboarding");
   };
 
   // ---------------------------------------------------------------------------
