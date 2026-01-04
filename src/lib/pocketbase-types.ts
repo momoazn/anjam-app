@@ -240,18 +240,12 @@ export enum OrganizationsPlanOptions {
 	"pro" = "pro",
 	"enterprise" = "enterprise",
 }
-
-export enum OrganizationsModeOptions {
-	"operations" = "operations",
-	"product" = "product",
-}
 export type OrganizationsRecord<Tsettings = unknown> = {
 	active?: boolean
 	created: IsoAutoDateString
 	description?: HTMLString
 	id: string
 	logo?: FileNameString
-	mode?: OrganizationsModeOptions
 	name: string
 	plan?: OrganizationsPlanOptions
 	settings?: null | Tsettings
