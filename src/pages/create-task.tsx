@@ -57,12 +57,9 @@ export default function CreateTask() {
   });
 
   const { mutate: createTask, isPending } = useCreateTask({
-    onSuccess: () => {
-      if (projectId) {
-        navigate(`/projects/${projectId}/tasks`);
-      } else {
-        navigate("/tasks");
-      }
+    onSuccess: (task) => {
+      // Redirect to the created task so it is visible even if the list view is filtered.
+      navigate(`/tasks/${task.id}`);
     },
   });
 

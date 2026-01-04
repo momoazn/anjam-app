@@ -139,6 +139,10 @@ function ProductCompactPageHeader({
   actions,
   className,
 }: PageHeaderProps) {
+  const subtitleNode = subtitle ?? description;
+  const isInlineSubtitle =
+    typeof subtitleNode === "string" || typeof subtitleNode === "number";
+
   return (
     <div className={cn("mb-4", className)}>
       <div className="flex flex-col gap-2">
@@ -156,11 +160,17 @@ function ProductCompactPageHeader({
                   </div>
                 )}
               </div>
-              {(subtitle || description) && (
-                <p className="text-muted-foreground mt-1 text-xs leading-relaxed font-medium">
-                  {subtitle ?? description}
-                </p>
-              )}
+              {subtitleNode ? (
+                isInlineSubtitle ? (
+                  <p className="text-muted-foreground mt-1 text-xs leading-relaxed font-medium">
+                    {subtitleNode}
+                  </p>
+                ) : (
+                  <div className="text-muted-foreground mt-1 text-xs leading-relaxed font-medium">
+                    {subtitleNode}
+                  </div>
+                )
+              ) : null}
             </div>
           </div>
 
