@@ -233,8 +233,8 @@ export default function ProjectDetails() {
               {isProductMode ? (
                 <Button
                   variant="ghost"
+                  size="xs"
                   onClick={() => navigate("/projects")}
-                  className="h-8 rounded-lg px-3 text-xs font-semibold"
                 >
                   <ArrowLeft className="me-2 h-4 w-4" />
                   {projects.details.backToProjects}
@@ -242,22 +242,16 @@ export default function ProjectDetails() {
               ) : null}
               <Button
                 variant="ghost"
+                size={isProductMode ? "xs" : "sm"}
                 onClick={handleCancelEdit}
                 disabled={isUpdating}
-                className={cn(
-                  "text-xs font-bold",
-                  isProductMode ? "h-8 rounded-lg px-3" : "h-9 px-4",
-                )}
               >
                 {common.cancel}
               </Button>
               <Button
+                size={isProductMode ? "xs" : "sm"}
                 onClick={handleSaveEdit}
                 disabled={isUpdating}
-                className={cn(
-                  "bg-primary text-primary-foreground text-xs font-bold shadow-sm",
-                  isProductMode ? "h-8 rounded-lg px-3" : "h-9 px-6",
-                )}
               >
                 {common.save}
               </Button>
@@ -266,11 +260,8 @@ export default function ProjectDetails() {
             canEdit && (
               <Button
                 variant="outline"
+                size={isProductMode ? "xs" : "sm"}
                 onClick={handleStartEdit}
-                className={cn(
-                  "text-xs font-bold shadow-sm",
-                  isProductMode ? "h-8 rounded-lg px-3" : "h-9 px-4",
-                )}
               >
                 {common.edit}
               </Button>
@@ -290,7 +281,7 @@ export default function ProjectDetails() {
                 value={editedName}
                 onChange={(event) => setEditedName(event.target.value)}
                 placeholder={projects.create.form.name}
-                className="h-9 rounded-lg text-sm font-semibold"
+                className="text-sm font-semibold"
               />
             </div>
             <div className="space-y-1.5">
@@ -304,7 +295,7 @@ export default function ProjectDetails() {
                 }
                 placeholder={projects.create.form.code}
                 maxLength={3}
-                className="h-9 rounded-lg font-mono text-sm font-semibold tracking-widest"
+                className="font-mono text-sm font-semibold tracking-widest"
               />
             </div>
           </div>
