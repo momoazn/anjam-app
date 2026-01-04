@@ -14,6 +14,8 @@ import type {
   ProjectsResponse,
   TasksResponse,
 } from "@/lib/pocketbase-types";
+import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export type MentionWithExpand = MentionsResponse & {
   expand?: {
@@ -30,6 +32,8 @@ type MentionsListProps = {
 
 export function MentionsList({ mentions, isLoading }: MentionsListProps) {
   const queryClient = useQueryClient();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
 
   const handleMarkAsRead = async (mentionId: string) => {
     await pb.collection("mentions").delete(mentionId);
@@ -37,7 +41,14 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
   };
 
   return (
-    <section className="border-border/40 bg-card mt-10 space-y-4 rounded-xl border p-6 text-right shadow-sm">
+    <section
+      className={cn(
+        "mt-8 space-y-4 text-right",
+        isProductMode
+          ? "overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4 shadow-none"
+          : "border-border/40 bg-card rounded-xl border p-6 shadow-sm",
+      )}
+    >
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-foreground text-sm font-bold">

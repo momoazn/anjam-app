@@ -6,8 +6,10 @@ package main
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -77,6 +79,7 @@ func main() {
 	app.OnServe().BindFunc(importSchema)
 	app.OnServe().BindFunc(ensureSuperuserExists)
 	app.OnServe().BindFunc(applyProductionSettings)
+	app.OnServe().BindFunc(backfillProjectMembersForOrgAdmins)
 	app.OnServe().BindFunc(serveStaticFilesAndOpenBrowser)
 	app.OnServe().BindFunc(registerAuditHooksHandler)
 	app.OnServe().BindFunc(initializeAuditWorker)
@@ -87,9 +90,9 @@ func main() {
 	registerHealthEndpoints(app)
 
 	// --- Bind Record Event Handlers ---
-	app.OnRecordCreateExecute("users").BindFunc(hooks.HandleUserCreation)
-	app.OnRecordCreateExecute("projects").BindFunc(hooks.HandleProjectCreation)
-	app.OnRecordCreateExecute("tasks").BindFunc(hooks.HandleTaskCreation)
+	app.OnRecordCreate("users").BindFunc(hooks.HandleUserCreation)
+	app.OnRecordCreate("projects").BindFunc(hooks.HandleProjectCreation)
+	app.OnRecordCreate("tasks").BindFunc(hooks.HandleTaskCreation)
 	app.OnRecordValidate("tasks").BindFunc(validateTaskStatusTransition)
 	app.OnRecordUpdateExecute("tasks").BindFunc(func(e *core.RecordEvent) error {
 		setTaskStatusRef(e)
@@ -258,11 +261,135 @@ func importSchema(e *core.ServeEvent) error {
 		return e.Next()
 	}
 
-	if err := e.App.ImportCollectionsByMarshaledJSON(schemaJSON, false); err != nil {
-		log.Printf("Error importing collections from schema: %v", err)
-		return err
+	isLockedErr := func(err error) bool {
+		if err == nil {
+			return false
+		}
+		msg := strings.ToLower(err.Error())
+		return strings.Contains(msg, "database is locked") ||
+			strings.Contains(msg, "database is busy") ||
+			strings.Contains(msg, "locked (517)") ||
+			strings.Contains(msg, "busy (5)")
 	}
-	log.Println("Successfully imported collections from schema.")
+
+	const maxAttempts = 10
+	var lastErr error
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		if err := e.App.ImportCollectionsByMarshaledJSON(schemaJSON, false); err != nil {
+			lastErr = err
+			if !isLockedErr(err) {
+				log.Printf("Error importing collections from schema: %v", err)
+				return err
+			}
+
+			backoff := time.Duration(attempt*200) * time.Millisecond
+			log.Printf("Schema import blocked by sqlite lock; retrying (%d/%d) in %s: %v", attempt, maxAttempts, backoff, err)
+			time.Sleep(backoff)
+			continue
+		}
+
+		log.Println("Successfully imported collections from schema.")
+		return e.Next()
+	}
+
+	log.Printf("Error importing collections from schema after %d attempts: %v", maxAttempts, lastErr)
+	return lastErr
+}
+
+// backfillProjectMembersForOrgAdmins ensures organization owners/admins can create tasks in existing projects.
+// It creates missing project_members rows for all projects and active organization owners/admins.
+func backfillProjectMembersForOrgAdmins(e *core.ServeEvent) error {
+	projectMembersCollection, err := e.App.FindCollectionByNameOrId(config.CollectionProjectMembers)
+	if err != nil {
+		log.Printf("Warning: failed to find project_members collection: %v", err)
+		return e.Next()
+	}
+
+	createdCount := 0
+	type projectRow struct {
+		ID           string `db:"id"`
+		Organization string `db:"organization"`
+	}
+	var projects []projectRow
+	if err := e.App.RecordQuery(config.CollectionProjects).
+		Select("id", "organization").
+		All(&projects); err != nil {
+		log.Printf("Warning: failed to list projects for backfill: %v", err)
+		return e.Next()
+	}
+	log.Printf("Project members backfill: scanning %d project(s)", len(projects))
+
+	for _, project := range projects {
+		orgID := project.Organization
+		if orgID == "" {
+			continue
+		}
+
+		type orgMemberRow struct {
+			User string `db:"user"`
+			Role string `db:"role"`
+		}
+		var orgAdmins []orgMemberRow
+		if err := e.App.RecordQuery(config.CollectionOrgMembers).
+			Select("user", "role").
+			Where(dbx.NewExp(
+				"organization = {:org} AND status = 'active' AND (role = 'owner' OR role = 'admin')",
+				dbx.Params{"org": orgID},
+			)).
+			All(&orgAdmins); err != nil {
+			log.Printf("Warning: failed to list org members for backfill (org=%s): %v", orgID, err)
+			continue
+		}
+		if len(orgAdmins) == 0 {
+			continue
+		}
+
+		for _, member := range orgAdmins {
+			userID := member.User
+			if userID == "" {
+				continue
+			}
+
+			var existing struct {
+				ID string `db:"id"`
+			}
+			err := e.App.RecordQuery(config.CollectionProjectMembers).
+				Select("id").
+				Where(dbx.HashExp{"project": project.ID, "user": userID}).
+				Limit(1).
+				One(&existing)
+			if err == nil {
+				continue
+			}
+			if err != nil && !errors.Is(err, sql.ErrNoRows) {
+				log.Printf("Warning: failed checking project member backfill (project=%s user=%s): %v", project.ID, userID, err)
+				continue
+			}
+
+			projectRole := config.ProjectRoleAdmin
+			if member.Role == config.OrgRoleOwner {
+				projectRole = config.ProjectRoleOwner
+			}
+
+			record := core.NewRecord(projectMembersCollection)
+			record.Set("project", project.ID)
+			record.Set("user", userID)
+			record.Set("role", projectRole)
+			record.Set("added_at", time.Now().Format(time.RFC3339))
+			if err := e.App.Save(record); err != nil {
+				log.Printf("Warning: failed to backfill project member (project=%s user=%s): %v", project.ID, userID, err)
+			} else {
+				createdCount++
+			}
+		}
+	}
+
+	if createdCount > 0 {
+		log.Printf("Project members backfill: created %d project_members record(s)", createdCount)
+	} else {
+		log.Printf("Project members backfill: no new records created")
+	}
+
 	return e.Next()
 }
 

@@ -53,7 +53,8 @@ import {
 } from "@/hooks/organization-invites";
 import { pb } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
+import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
 
 function getUserInitials(name: string): string {
   return name
@@ -76,6 +77,8 @@ function getUserDisplayName(user: UsersResponse): string {
 
 export function OrgMembersPage() {
   const currentUser = useAuthUser();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isCreateLinkOpen, setIsCreateLinkOpen] = useState(false);
   const [isRevokeConfirmOpen, setIsRevokeConfirmOpen] = useState(false);
@@ -171,19 +174,32 @@ export function OrgMembersPage() {
 
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
-      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <PageHeader
-          title={organization.members.title}
-          description="Manage your organization members and their roles"
-          icon={IconUsers}
-        />
-        <Button onClick={() => setIsInviteOpen(true)} className="h-11 px-6">
-          <IconUserPlus className="me-2 size-5" />
-          {organization.members.invite}
-        </Button>
-      </div>
+      <PageHeader
+        title={organization.members.title}
+        subtitle="Manage your organization members and their roles"
+        icon={IconUsers}
+        actions={
+          <Button
+            onClick={() => setIsInviteOpen(true)}
+            size={isProductMode ? "xs" : "sm"}
+            className="gap-2"
+          >
+            <IconUserPlus
+              className={cn("me-2", isProductMode ? "size-4" : "size-5")}
+            />
+            {organization.members.invite}
+          </Button>
+        }
+      />
 
-      <div className="border-border bg-card relative overflow-hidden rounded-2xl border shadow-sm">
+      <div
+        className={cn(
+          "relative overflow-hidden border border-border/40",
+          isProductMode
+            ? "rounded-xl bg-background/30 shadow-none"
+            : "rounded-2xl bg-card shadow-sm",
+        )}
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -393,7 +409,7 @@ export function OrgMembersPage() {
               <IconBox size="sm" tone="primary" className="mb-4">
                 <IconUserPlus className="size-7" />
               </IconBox>
-              <DialogTitle className="text-2xl font-bold tracking-tight">
+              <DialogTitle className="text-lg font-bold tracking-tight">
                 {organization.members.inviteDialog.title}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground text-sm font-medium">
@@ -412,7 +428,6 @@ export function OrgMembersPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 type="email"
-                className="h-11 rounded-xl"
               />
             </div>
             <div className="space-y-2">
@@ -423,7 +438,7 @@ export function OrgMembersPage() {
                 value={inviteRole}
                 onValueChange={(v) => setInviteRole(v as "admin" | "member")}
               >
-                <SelectTrigger className="h-11 rounded-xl text-right">
+                <SelectTrigger className="text-right">
                   <SelectValue
                     placeholder={
                       organization.members.inviteDialog.rolePlaceholder
@@ -445,7 +460,8 @@ export function OrgMembersPage() {
             <Button
               onClick={handleInvite}
               disabled={isInviting || !inviteEmail}
-              className="h-11 flex-1 rounded-xl"
+              size="sm"
+              className="flex-1"
             >
               {isInviting
                 ? organization.members.sending
@@ -454,7 +470,8 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsInviteOpen(false)}
-              className="h-11 flex-1 rounded-xl"
+              size="sm"
+              className="flex-1"
             >
               {shared.cancel}
             </Button>
@@ -515,11 +532,17 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateLinkOpen(false)}
-              className="h-11 flex-1 rounded-xl"
+              size="sm"
+              className="flex-1"
             >
               {shared.cancel}
             </Button>
-            <Button onClick={handleCreateInviteLink} disabled={isCreatingLink}>
+            <Button
+              onClick={handleCreateInviteLink}
+              disabled={isCreatingLink}
+              size="sm"
+              className="flex-1"
+            >
               {isCreatingLink
                 ? organization.members.loading
                 : organization.inviteLinks.createDialog.submit}

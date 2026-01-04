@@ -1,5 +1,20 @@
 export type OrgMode = "operations" | "product";
 
+// Build-time organization mode configuration
+// Set via VITE_ORG_MODE environment variable (default: "product")
+const buildTimeOrgMode = (import.meta.env.VITE_ORG_MODE ??
+  "product") as OrgMode;
+
+export function normalizeOrgMode(mode: unknown): OrgMode {
+  return mode === "product" ? "product" : "operations";
+}
+
+// Get the configured organization mode (build-time/environment)
+// Returns null if not set (for backwards compatibility with existing data)
+export function getConfiguredOrgMode(): OrgMode | null {
+  return buildTimeOrgMode;
+}
+
 export type FeatureKey =
   | "timeTracking"
   | "timesheet"
@@ -32,7 +47,7 @@ export function getOrgFeatures(
   mode: OrgMode | undefined | null,
   settings?: { modeSettings?: OrgModeSettings },
 ): OrgFeatures {
-  const orgMode = mode ?? "operations";
+  const orgMode = normalizeOrgMode(mode);
 
   if (orgMode === "product") {
     const calendarEnabled = settings?.modeSettings?.features?.calendar ?? false;
@@ -68,7 +83,7 @@ export function isFeatureEnabled(
 }
 
 export function getHomeRoute(mode: OrgMode | undefined | null): string {
-  const orgMode = mode ?? "operations";
+  const orgMode = normalizeOrgMode(mode);
   return orgMode === "product" ? "/inbox" : "/dashboard";
 }
 
@@ -84,7 +99,7 @@ export interface ModeLabels {
 }
 
 export function getModeLabels(mode: OrgMode | undefined | null): ModeLabels {
-  const orgMode = mode ?? "operations";
+  const orgMode = normalizeOrgMode(mode);
 
   if (orgMode === "product") {
     return {

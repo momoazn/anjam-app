@@ -12,7 +12,7 @@ export const taskFormSchema = z.object({
   assignee: z.string().min(1, { message: common.validation.required }),
   priority: z.nativeEnum(TasksPriorityOptions),
   status: z.nativeEnum(TasksStatusOptions),
-  project: z.string().optional(),
+  project: z.string().min(1, { message: common.validation.required }),
   deadline: z.date().optional(),
   estimated_hours: z.number().min(0).max(999).optional(),
   estimated_minutes: z.number().min(0).max(59).optional(),

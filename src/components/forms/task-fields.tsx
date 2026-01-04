@@ -54,14 +54,23 @@ type TaskFieldsProps = {
   control: Control<TaskFormData>;
   isInProject?: boolean;
   projectId?: string;
+  variant?: "default" | "product";
 };
 
 export function TaskFields({
   control,
   isInProject = false,
   projectId,
+  variant = "default",
 }: TaskFieldsProps) {
   const actualIsInProject = isInProject || Boolean(projectId);
+  const isProductVariant = variant === "product";
+  const metaLabelClass = cn(
+    "flex items-center gap-1.5 font-bold tracking-tight",
+    isProductVariant
+      ? "text-muted-foreground/60 text-[8px]"
+      : "text-muted-foreground/40 text-[7px]",
+  );
 
   const { data: projectsData } = useProjects({ enabled: !actualIsInProject });
   const { data: projectUsers } = useProjectUsers({
@@ -112,15 +121,19 @@ export function TaskFields({
   }, [projectStatuses]);
 
   return (
-    <div className="space-y-6 text-right">
+    <div
+      className={cn("text-right", isProductVariant ? "space-y-4" : "space-y-6")}
+    >
       {/* Primary Input Zone */}
-      <section className="space-y-3">
-        <div className="flex items-center gap-3">
-          <span className="text-primary/60 text-[9px] font-bold tracking-tight">
-            General Info
-          </span>
-          <div className="bg-border/20 h-px flex-1" />
-        </div>
+      <section className={isProductVariant ? "space-y-4" : "space-y-3"}>
+        {isProductVariant ? null : (
+          <div className="flex items-center gap-3">
+            <span className="text-primary/60 text-[9px] font-bold tracking-tight">
+              {tasks.form.sections.generalInfo}
+            </span>
+            <div className="bg-border/20 h-px flex-1" />
+          </div>
+        )}
 
         <div className="space-y-4">
           <GenericFormField
@@ -128,7 +141,7 @@ export function TaskFields({
             name="title"
             label={tasks.addTask.issueTitle}
             type="input"
-            placeholder="Task Title"
+            placeholder={tasks.form.placeholders.taskTitle}
             autoFocus
             required
           />
@@ -138,26 +151,40 @@ export function TaskFields({
             name="description"
             label={tasks.addTask.description}
             type="textarea"
-            placeholder="Detailed Description"
+            placeholder={tasks.form.placeholders.detailedDescription}
             className="min-h-25"
           />
         </div>
       </section>
 
       {/* Logic Gates Zone */}
-      <section className="space-y-3">
-        <div className="flex items-center gap-3">
-          <span className="text-primary/60 text-[9px] font-bold tracking-tight">
-            Task Parameters
-          </span>
-          <div className="bg-border/20 h-px flex-1" />
-        </div>
+      <section className={isProductVariant ? "space-y-2" : "space-y-3"}>
+        {isProductVariant ? null : (
+          <div className="flex items-center gap-3">
+            <span className="text-primary/60 text-[9px] font-bold tracking-tight">
+              {tasks.form.sections.taskParameters}
+            </span>
+            <div className="bg-border/20 h-px flex-1" />
+          </div>
+        )}
 
-        <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border shadow-sm sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          className={cn(
+            "bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-2 lg:grid-cols-3",
+            isProductVariant
+              ? "rounded-xl shadow-none"
+              : "rounded-2xl shadow-sm",
+          )}
+        >
           {!actualIsInProject && (
-            <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-              <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
-                <IconStack2 className="size-2" /> Project
+            <div
+              className={cn(
+                "border-border/10 flex flex-col justify-between border-s p-3",
+                isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+              )}
+            >
+              <span className={metaLabelClass}>
+                <IconStack2 className="size-2" /> {tasks.form.project}
               </span>
               <ShadcnFormField
                 control={control}
@@ -182,15 +209,21 @@ export function TaskFields({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage className="text-[9px] font-bold" />
                   </FormItem>
                 )}
               />
             </div>
           )}
 
-          <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
-              <IconUser className="size-2" /> Assignee
+          <div
+            className={cn(
+              "border-border/10 flex flex-col justify-between border-s p-3",
+              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+            )}
+          >
+            <span className={metaLabelClass}>
+              <IconUser className="size-2" /> {tasks.form.assignee}
             </span>
             <ShadcnFormField
               control={control}
@@ -218,8 +251,13 @@ export function TaskFields({
             />
           </div>
 
-          <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
+          <div
+            className={cn(
+              "border-border/10 flex flex-col justify-between border-s p-3",
+              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+            )}
+          >
+            <span className={metaLabelClass}>
               <IconFilter className="size-2" /> Status
             </span>
             <ShadcnFormField
@@ -238,7 +276,7 @@ export function TaskFields({
                           <span>
                             {TASK_STATUS_CONFIG[value]?.name ??
                               value ??
-                              "Status"}
+                              tasks.form.status}
                           </span>
                           <StatusIcon className={cn("size-3", statusColor)} />
                         </div>
@@ -273,9 +311,14 @@ export function TaskFields({
             />
           </div>
 
-          <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
-              <IconHash className="size-2" /> Priority
+          <div
+            className={cn(
+              "border-border/10 flex flex-col justify-between border-s p-3",
+              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+            )}
+          >
+            <span className={metaLabelClass}>
+              <IconHash className="size-2" /> {tasks.form.priority}
             </span>
             <ShadcnFormField
               control={control}
@@ -320,9 +363,14 @@ export function TaskFields({
             />
           </div>
 
-          <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
-              <IconCalendar className="size-2" /> Deadline
+          <div
+            className={cn(
+              "border-border/10 flex flex-col justify-between border-s p-3",
+              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+            )}
+          >
+            <span className={metaLabelClass}>
+              <IconCalendar className="size-2" /> {tasks.form.deadline}
             </span>
             <ShadcnFormField
               control={control}
@@ -345,13 +393,20 @@ export function TaskFields({
             />
           </div>
 
-          <div className="bg-card flex h-16 flex-col justify-between p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
-              <IconClock className="size-2" /> Estimate
+          <div
+            className={cn(
+              "bg-card flex flex-col justify-between p-3",
+              isProductVariant ? "bg-background/20 h-14" : "h-16",
+            )}
+          >
+            <span className={metaLabelClass}>
+              <IconClock className="size-2" /> {tasks.form.estimate}
             </span>
             <div className="flex items-center justify-end gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold opacity-30">H</span>
+                <span className="text-[8px] font-bold opacity-30">
+                  {tasks.form.hoursShort}
+                </span>
                 <ShadcnFormField
                   control={control}
                   name="estimated_hours"
@@ -375,7 +430,9 @@ export function TaskFields({
                 />
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold opacity-30">M</span>
+                <span className="text-[8px] font-bold opacity-30">
+                  {tasks.form.minutesShort}
+                </span>
                 <ShadcnFormField
                   control={control}
                   name="estimated_minutes"
@@ -401,9 +458,14 @@ export function TaskFields({
             </div>
           </div>
 
-          <div className="bg-card border-border/10 flex h-16 flex-col justify-between border-s p-3">
-            <span className="text-muted-foreground/40 flex items-center gap-1.5 text-[7px] font-bold tracking-tight">
-              <IconTag className="size-2" /> Tags
+          <div
+            className={cn(
+              "border-border/10 flex flex-col justify-between border-s p-3",
+              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+            )}
+          >
+            <span className={metaLabelClass}>
+              <IconTag className="size-2" /> {tasks.form.tags}
             </span>
             <ShadcnFormField
               control={control}

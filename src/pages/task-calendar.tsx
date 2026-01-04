@@ -102,7 +102,7 @@ function CalendarTask({ task }: CalendarTaskProps) {
     <Link to={taskUrl}>
       <div
         className={cn(
-          "group hover:bg-muted/50 mb-1 rounded-lg border-e-2 p-1.5 text-right transition-all",
+          "group hover:bg-muted/30 mb-1 rounded-lg border-e-2 p-1.5 text-right transition-all",
           priorityColors[task.priority],
         )}
         style={{ borderRightColor: status.color }}
@@ -204,11 +204,7 @@ export default function TaskCalendar() {
           {digitsEnToFa(monthStats.completed)} {tasksText.calendar.done}
         </Badge>
       </div>
-      <Button
-        className="h-11 gap-2 rounded-xl px-6 font-semibold shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
-        size="lg"
-        onClick={() => navigate("/tasks/new")}
-      >
+      <Button size="sm" onClick={() => navigate("/tasks/new")}>
         <IconPlus className="size-5" />
         <span>{tasksText.addTask.buttons.newTask}</span>
       </Button>
@@ -227,12 +223,7 @@ export default function TaskCalendar() {
       {/* Navigation */}
       <div className="border-border/40 bg-card mb-8 flex items-center justify-between overflow-hidden rounded-2xl border p-4 shadow-sm">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToPreviousMonth}
-            className="border-border/20 hover:bg-muted size-10 rounded-xl border transition-all active:scale-95"
-          >
+          <Button variant="ghost" size="icon" onClick={goToPreviousMonth}>
             <IconChevronRight className="size-5" />
           </Button>
 
@@ -245,23 +236,13 @@ export default function TaskCalendar() {
             </h2>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToNextMonth}
-            className="border-border/20 hover:bg-muted size-10 rounded-xl border transition-all active:scale-95"
-          >
+          <Button variant="ghost" size="icon" onClick={goToNextMonth}>
             <IconChevronLeft className="size-5" />
           </Button>
         </div>
 
         <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={goToToday}
-            className="border-border bg-card hover:bg-muted h-9 rounded-xl border px-4 text-[10px] font-semibold tracking-tight shadow-sm transition-all active:scale-95"
-          >
+          <Button variant="outline" size="xs" onClick={goToToday}>
             {common.today}
           </Button>
         </div>

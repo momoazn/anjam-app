@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
+import { keyboardShortcuts } from "@/constants";
 
 export function KeyboardShortcutsDialog() {
   const [open, setOpen] = useState(false);
@@ -60,17 +61,20 @@ export function KeyboardShortcutsDialog() {
             </h3>
             <div className="space-y-3">
               <ShortcutRow
-                keys={[<Kbd key="c">C</Kbd>]}
+                keys={[<Kbd key="c">{keyboardShortcuts.keys.c}</Kbd>]}
                 label="ایجاد تسک جدید"
                 icon={<IconLetterC className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="mod">Cmd</Kbd>, <Kbd key="k">K</Kbd>]}
+                keys={[
+                  <Kbd key="mod">{keyboardShortcuts.keys.cmd}</Kbd>,
+                  <Kbd key="k">{keyboardShortcuts.keys.k}</Kbd>,
+                ]}
                 label="منوی دستورات / جستجو"
                 icon={<IconCommand className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="?">?</Kbd>]}
+                keys={[<Kbd key="?">{keyboardShortcuts.keys.question}</Kbd>]}
                 label="نمایش این راهنما"
               />
             </div>
@@ -82,37 +86,58 @@ export function KeyboardShortcutsDialog() {
             </h3>
             <div className="space-y-3">
               <ShortcutRow
-                keys={[<Kbd key="g">G</Kbd>, <Kbd key="d">D</Kbd>]}
+                keys={[
+                  <Kbd key="g">{keyboardShortcuts.keys.g}</Kbd>,
+                  <Kbd key="d">{keyboardShortcuts.keys.d}</Kbd>,
+                ]}
                 label="داشبورد"
                 icon={<IconLetterD className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="g">G</Kbd>, <Kbd key="i">I</Kbd>]}
+                keys={[
+                  <Kbd key="g">{keyboardShortcuts.keys.g}</Kbd>,
+                  <Kbd key="i">{keyboardShortcuts.keys.i}</Kbd>,
+                ]}
                 label="صندوق ورودی (Inbox)"
                 icon={<IconLetterI className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="g">G</Kbd>, <Kbd key="t">T</Kbd>]}
+                keys={[
+                  <Kbd key="g">{keyboardShortcuts.keys.g}</Kbd>,
+                  <Kbd key="t">{keyboardShortcuts.keys.t}</Kbd>,
+                ]}
                 label="همه تسک‌ها"
                 icon={<IconLetterT className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="g">G</Kbd>, <Kbd key="m">M</Kbd>]}
+                keys={[
+                  <Kbd key="g">{keyboardShortcuts.keys.g}</Kbd>,
+                  <Kbd key="m">{keyboardShortcuts.keys.m}</Kbd>,
+                ]}
                 label="تسک‌های من"
                 icon={<IconLetterM className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="g">G</Kbd>, <Kbd key="p">P</Kbd>]}
+                keys={[
+                  <Kbd key="g">{keyboardShortcuts.keys.g}</Kbd>,
+                  <Kbd key="p">{keyboardShortcuts.keys.p}</Kbd>,
+                ]}
                 label="پروژه‌ها"
                 icon={<IconLetterP className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="g">G</Kbd>, <Kbd key="n">N</Kbd>]}
+                keys={[
+                  <Kbd key="g">{keyboardShortcuts.keys.g}</Kbd>,
+                  <Kbd key="n">{keyboardShortcuts.keys.n}</Kbd>,
+                ]}
                 label="اعلان‌ها"
                 icon={<IconLetterN className="size-4" />}
               />
               <ShortcutRow
-                keys={[<Kbd key="g">G</Kbd>, <Kbd key="s">S</Kbd>]}
+                keys={[
+                  <Kbd key="g">{keyboardShortcuts.keys.g}</Kbd>,
+                  <Kbd key="s">{keyboardShortcuts.keys.s}</Kbd>,
+                ]}
                 label="تنظیمات"
                 icon={<IconLetterS className="size-4" />}
               />
@@ -141,10 +166,13 @@ function ShortcutRow({
       </div>
       <div className="flex items-center gap-1">
         {keys.map((key, i) => (
-          <span key={i} className="flex items-center gap-1">
+          <span
+            key={`key-${key?.toString()}-${i}`}
+            className="flex items-center gap-1"
+          >
             {key}
             {i < keys.length - 1 && (
-              <span className="text-muted-foreground/40 text-[10px]">ثم</span>
+              <span className="text-muted-foreground/40 text-[10px]"></span>
             )}
           </span>
         ))}

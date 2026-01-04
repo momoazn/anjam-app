@@ -1,12 +1,14 @@
 import {
   IconArrowLeft,
   IconArrowRight,
+  IconBuilding,
   IconCheck,
   IconFileDescription,
+  IconFolderPlus,
   IconPhotoPlus,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,9 +17,8 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/constants";
-import { queryKeys } from "@/hooks/query-keys";
+import { useCreateOrg } from "@/hooks/organization-invites";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { getHomeRoute } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
@@ -38,45 +39,75 @@ const STEPS = [
     id: 2,
     title: auth.onboarding.step2.title,
     description: auth.onboarding.step2.description,
-    icon: IconFileDescription,
+    icon: IconBuilding,
   },
   {
     id: 3,
     title: auth.onboarding.step3.title,
     description: auth.onboarding.step3.description,
+    icon: IconFileDescription,
+  },
+  {
+    id: 4,
+    title: auth.onboarding.step4.title,
+    description: auth.onboarding.step4.description,
     icon: IconUserPlus,
   },
 ];
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const currentOrg = useCurrentOrganization();
   const mode = useCurrentOrgMode();
   const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
+  const createOrgMutation = useCreateOrg();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [description, setDescription] = useState("");
+  const [orgName, setOrgName] = useState(currentOrg?.name || "");
+  const [projectName, setProjectName] = useState("");
   const [inviteEmails, setInviteEmails] = useState<string[]>([""]);
 
   // Mutation to complete onboarding
   const completeOnboarding = useMutation({
     mutationFn: async () => {
-      if (!currentOrg) throw new Error("No organization selected");
+      let orgId = currentOrg?.id;
 
-      // Update organization with logo and description if provided
+      // If no organization exists, create one first
+      if (!orgId) {
+        if (!orgName.trim()) {
+          throw new Error("Organization name is required");
+        }
+        const createResult = await createOrgMutation.mutateAsync(
+          orgName.trim(),
+        );
+        orgId = createResult.organization.id;
+      }
+
+      // Update organization with logo and/or name if provided
       const formData = new FormData();
       if (logoFile) {
         formData.append("logo", logoFile);
       }
-      if (description.trim()) {
-        formData.append("description", description.trim());
+      // Update organization name if changed and org was not just created
+      if (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name) {
+        formData.append("name", orgName.trim());
       }
 
-      if (logoFile || description.trim()) {
-        await pb.collection("organizations").update(currentOrg.id, formData);
+      if (
+        logoFile ||
+        (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name)
+      ) {
+        await pb.collection("organizations").update(orgId!, formData);
+      }
+
+      // Create first project if name provided
+      if (projectName.trim()) {
+        await pb.collection("projects").create({
+          name: projectName.trim(),
+          organization: orgId,
+        });
       }
 
       // Process invite emails - create invite link if any valid emails provided
@@ -85,7 +116,7 @@ export default function Onboarding() {
       );
       if (validEmails.length > 0) {
         // Create an invite link with max uses equal to number of emails
-        await fetch(`/api/v1/organizations/${currentOrg.id}/invites`, {
+        await fetch(`/api/v1/organizations/${orgId}/invites`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -103,7 +134,7 @@ export default function Onboarding() {
       const memberships = await pb
         .collection("organization_members")
         .getFullList({
-          filter: `organization = "${currentOrg.id}" && user = "${pb.authStore.record?.id}"`,
+          filter: `organization = "${orgId}" && user = "${pb.authStore.record?.id}"`,
         });
 
       if (memberships.length > 0) {
@@ -113,7 +144,6 @@ export default function Onboarding() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
       fetchOrgs();
       navigate(getHomeRoute(mode), { replace: true });
     },
@@ -151,7 +181,7 @@ export default function Onboarding() {
   };
 
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -204,15 +234,54 @@ export default function Onboarding() {
       case 2:
         return (
           <div className="w-full space-y-4">
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={auth.onboarding.step2.description}
-              className="min-h-[150px] resize-none"
+            <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/50 bg-muted/20 p-4">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <IconBuilding className="size-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">
+                  {auth.onboarding.step2.organizationName}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {auth.onboarding.step2.organizationDescription}
+                </p>
+              </div>
+            </div>
+            <Input
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
+              placeholder={auth.register.organizationNamePlaceholder}
+              dir="rtl"
+              className="text-right"
             />
           </div>
         );
       case 3:
+        return (
+          <div className="w-full space-y-4">
+            <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/50 bg-muted/20 p-4">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <IconFolderPlus className="size-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">
+                  {auth.onboarding.step3.createProject}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {auth.onboarding.step3.projectDescription}
+                </p>
+              </div>
+            </div>
+            <Input
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder={auth.onboarding.step3.projectPlaceholder}
+              dir="rtl"
+              className="text-right"
+            />
+          </div>
+        );
+      case 4:
         return (
           <div className="w-full space-y-4">
             {inviteEmails.map((email, index) => (
@@ -221,7 +290,7 @@ export default function Onboarding() {
                   type="email"
                   value={email}
                   onChange={(e) => handleEmailChange(index, e.target.value)}
-                  placeholder="email@example.com"
+                  placeholder={auth.onboarding.placeholders.email}
                   dir="ltr"
                   className="flex-1"
                 />

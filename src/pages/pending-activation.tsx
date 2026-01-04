@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { app, users as usersText } from "@/constants";
+import { app, auth, users as usersText } from "@/constants";
 
 export default function PendingActivation() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function PendingActivation() {
           <div className="text-primary flex items-center gap-3">
             <IconLock className="size-4" />
             <span className="text-foreground text-[10px] font-bold tracking-tight">
-              Authentication :: Activation
+              {auth.pendingActivation.title}
             </span>
           </div>
           <IconShieldCheck className="text-primary/40 size-5" />
@@ -49,7 +49,7 @@ export default function PendingActivation() {
                 {usersText.pendingActivation.title}
               </h1>
               <p className="text-muted-foreground text-[10px] font-bold tracking-tight">
-                Account Status :: Pending
+                {auth.pendingActivation.status}
               </p>
             </div>
           </div>
@@ -62,7 +62,7 @@ export default function PendingActivation() {
             <div className="bg-muted/10 border-primary space-y-3 rounded-xl border-e-4 p-6">
               <div className="text-primary flex items-center justify-end gap-3">
                 <span className="text-[10px] font-bold tracking-tight">
-                  Instruction
+                  {auth.pendingActivation.instruction}
                 </span>
                 <IconMail className="size-4" />
               </div>
@@ -75,7 +75,7 @@ export default function PendingActivation() {
           <div className="border-border/20 border-t pt-6">
             <Button
               onClick={() => navigate("/login")}
-              className="h-14 w-full rounded-xl text-base font-bold tracking-tight shadow-sm transition-all active:scale-95"
+              className="w-full"
               size="lg"
             >
               {usersText.pendingActivation.backToLogin}
@@ -86,10 +86,10 @@ export default function PendingActivation() {
         {/* Verification Metadata */}
         <div className="bg-muted/20 border-border/10 flex items-center justify-between border-t px-8 py-2 opacity-30">
           <span className="text-[7px] font-bold tracking-tight">
-            Security Check :: Passed
+            {auth.pendingActivation.securityCheck}
           </span>
           <span className="text-[7px] font-bold tracking-tight">
-            {app.name} Secure Auth
+            {app.name} {auth.pendingActivation.secureAuth}
           </span>
         </div>
       </PageTransition>

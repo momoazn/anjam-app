@@ -163,8 +163,8 @@ export const projects = {
     viewTasks: "مشاهده تسک‌ها",
   },
   create: {
-    button: "پروژه جدید",
-    title: "ساخت پروژه جدید",
+    button: "تعریف پروژه جدید",
+    title: "ایجاد پروژه جدید",
     description: "پروژه جدیدتان را بسازید و کار را شروع کنید",
     form: {
       name: "نام پروژه",
@@ -179,7 +179,7 @@ export const projects = {
       supervisor: "سرپرست",
       selectSupervisor: "سرپرست را انتخاب کنید",
     },
-    submit: "ساخت پروژه",
+    submit: "تعریف پروژه",
     success: "عالی! پروژه جدیدتان آماده است",
     error: "نتوانستیم پروژه را بسازیم: {error}",
   },

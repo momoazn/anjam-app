@@ -296,36 +296,89 @@
   }
 }
 
+/* App-like content transition - no full page fade, just subtle content entrance */
+@keyframes content-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* Custom utilities - Transitions, animations, and special effects */
 @layer utilities {
-  /* Page transitions */
+  /* Page transitions - app-like, no full page fade */
   [data-page-transition] {
-    animation: page-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    /* Remove full page animation for app-like feel */
   }
 
-  /* Stagger animations */
+  /* Stagger animations for content elements */
   [data-animate-stagger] > * {
-    animation: stagger-fade-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: content-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   [data-animate-stagger] > *:nth-child(1) {
-    animation-delay: 0.02s;
+    animation-delay: 0s;
   }
 
   [data-animate-stagger] > *:nth-child(2) {
-    animation-delay: 0.04s;
+    animation-delay: 0.02s;
   }
 
   [data-animate-stagger] > *:nth-child(3) {
-    animation-delay: 0.06s;
+    animation-delay: 0.04s;
   }
 
   [data-animate-stagger] > *:nth-child(4) {
-    animation-delay: 0.08s;
+    animation-delay: 0.06s;
   }
 
   [data-animate-stagger] > *:nth-child(5) {
+    animation-delay: 0.08s;
+  }
+
+  /* Hero section animations */
+  .hero-title {
+    animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
     animation-delay: 0.1s;
+  }
+
+  .hero-description {
+    animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.2s;
+  }
+
+  .hero-buttons {
+    animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.3s;
+  }
+
+  .hero-visual {
+    animation: hero-scale-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.4s;
   }
 
   /* Scrollbar visibility utility */
@@ -417,8 +470,18 @@
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
   [data-page-transition],
-  [data-animate-stagger] > * {
+  [data-animate-stagger] > *,
+  .hero-title,
+  .hero-description,
+  .hero-buttons,
+  .hero-visual {
     animation: none !important;
-    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

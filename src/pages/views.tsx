@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { savedFilters as savedFiltersConstants, shared } from "@/constants";
 import { useSavedFilters } from "@/hooks/use-saved-filters";
 import { getModeLabels } from "@/lib/mode";
+import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 /**
@@ -41,6 +42,7 @@ import { useCurrentOrgMode } from "@/store/auth-store";
 export default function Views() {
   const navigate = useNavigate();
   const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const labels = getModeLabels(mode);
   const { savedFilters, deleteFilter, setAsDefault, defaultFilterId } =
     useSavedFilters();
@@ -122,6 +124,81 @@ export default function Views() {
             </Button>
           </CardContent>
         </Card>
+      ) : isProductMode ? (
+        <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
+          {savedFilters.map((filter) => {
+            const isDefault = filter.id === defaultFilterId;
+            return (
+              <div
+                key={filter.id}
+                className="group border-b border-border/40 last:border-b-0"
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="flex h-auto w-full items-center justify-between gap-3 rounded-none px-3 py-3 text-right hover:bg-muted/30"
+                  onClick={() => handleNavigateToView(filter.id)}
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-sm font-semibold">
+                        {filter.name}
+                      </span>
+                      {isDefault ? (
+                        <span className="bg-primary/10 text-primary rounded-md px-2 py-0.5 text-[10px] font-semibold">
+                          {savedFiltersConstants.views.default}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="text-muted-foreground mt-1 text-[10px] font-semibold tabular-nums">
+                      {savedFiltersConstants.createdAt}{" "}
+                      {new Date(filter.createdAt).toLocaleDateString("fa-IR")}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className={cn(
+                        "size-8 rounded-lg",
+                        isDefault && "text-warning",
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSetDefault(filter.id);
+                      }}
+                      title={
+                        isDefault
+                          ? savedFiltersConstants.views.clearDefault
+                          : savedFiltersConstants.views.setDefault
+                      }
+                    >
+                      {isDefault ? (
+                        <IconStarFilled className="h-4 w-4" />
+                      ) : (
+                        <IconStar className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive size-8 rounded-lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTarget(filter.id);
+                      }}
+                    >
+                      <IconTrash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </Button>
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {savedFilters.map((filter) => {

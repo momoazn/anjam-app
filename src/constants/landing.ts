@@ -85,4 +85,12 @@ export const landing = {
   mockUi: {
     projectManagementSystem: "سامانه مدیریت پروژه",
   },
+
+  // Metrics suffixes
+  metricsSuffixes: {
+    logs: "لاگ",
+    days: "روز",
+    units: "واحد",
+    activeUsers: "کاربر فعال",
+  },
 } as const;

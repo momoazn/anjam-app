@@ -2,18 +2,18 @@
 
 export const navigation = {
   allTasks: "همه تسک‌ها",
-  dashboard: "داشبورد",
-  projects: "پروژه‌ها",
+  dashboard: "میز کار",
+  projects: "پروژه‌های فعال",
   tasks: "تسک‌ها",
   users: "کاربران",
   reports: "گزارش‌ها",
   helps: "راهنما",
   settings: "تنظیمات",
-  notifications: "اعلان‌ها",
+  notifications: "پیام‌ها و اعلانات",
   auditLogs: "لاگ‌های تغییرات",
   tags: "تگ‌ها",
   taskCalendar: "تقویم تسک‌ها",
-  myTasks: "تسک‌های من",
+  myTasks: "مسئولیت‌های من",
   quickCreate: {
     button: "ایجاد سریع",
     tooltip: "ایجاد سریع تسک یا پروژه",

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -15,13 +17,44 @@ const (
 	OrgModeProduct    OrgMode = "product"
 )
 
+// Build-time mode configuration
+// Set via ldflags: go build -ldflags "-X main.organizationMode=product"
+var organizationMode = OrgModeProduct // default to product mode
+
+// SetOrganizationMode allows setting the mode at build time via ldflags
+func SetOrganizationMode(mode string) {
+	mode = strings.TrimSpace(strings.ToLower(mode))
+	switch mode {
+	case "product":
+		organizationMode = OrgModeProduct
+	case "operations":
+		organizationMode = OrgModeOperations
+	default:
+		log.Printf("Warning: unknown organization mode '%s', defaulting to 'operations'", mode)
+		organizationMode = OrgModeOperations
+	}
+}
+
+// init reads TM_ORG_MODE environment variable at startup
+func init() {
+	if mode := os.Getenv("TM_ORG_MODE"); mode != "" {
+		SetOrganizationMode(mode)
+		log.Printf("Organization mode set to: %s", organizationMode)
+	}
+}
+
+// GetOrgMode returns the configured organization mode (build-time/environment)
+func GetOrgMode() OrgMode {
+	return organizationMode
+}
+
 // getModeFromOrg extracts the mode from an organization record,
-// defaulting to operations mode if not set.
+// defaulting to the build-time configured mode if not set.
 func getModeFromOrg(org *core.Record) OrgMode {
 	mode := org.GetString("mode")
 	if mode == "" {
-		log.Printf("Warning: organization %s has no mode set, defaulting to operations", org.Id)
-		return OrgModeOperations
+		// Fall back to build-time configured mode
+		return GetOrgMode()
 	}
 	return OrgMode(mode)
 }

@@ -50,7 +50,7 @@ export function NotificationItem({
       </div>
 
       {/* Main Content Zone */}
-      <div className="flex min-w-0 grow flex-col justify-center px-6 py-4 text-right">
+      <div className="flex min-w-0 grow flex-col justify-center px-4 py-3 text-right">
         <div className="mb-1 flex items-center justify-end gap-3">
           {!notification.read && (
             <div className="bg-primary size-2 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
@@ -88,7 +88,7 @@ export function NotificationItem({
       </div>
 
       {/*  & Actions Zone */}
-      <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-e px-4">
+      <div className="border-border/10 bg-muted/5 flex w-32 shrink-0 flex-col items-center justify-center gap-3 border-e px-4 py-3">
         <div className="flex flex-col items-center">
           <span className="text-muted-foreground/40 mb-1 text-[10px] font-bold">
             {shared.time}

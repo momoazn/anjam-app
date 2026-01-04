@@ -140,7 +140,7 @@ export default function InviteAccept() {
 
         <div className="relative">
           <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-black uppercase select-none">
-            ANJAM
+            {app.logo}
           </div>
           <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
@@ -206,8 +206,8 @@ export default function InviteAccept() {
                     value={email}
                     dir="ltr"
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
-                    placeholder="name@company.com"
+                    className="font-bold"
+                    placeholder={auth.login.placeholders.email}
                     required
                     autoFocus
                     disabled={submitting}
@@ -230,8 +230,8 @@ export default function InviteAccept() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
-                    placeholder="••••••••"
+                    className="font-bold"
+                    placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
                     disabled={submitting}
@@ -254,8 +254,8 @@ export default function InviteAccept() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
-                    placeholder="••••••••"
+                    className="font-bold"
+                    placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
                     disabled={submitting}
@@ -269,7 +269,8 @@ export default function InviteAccept() {
 
                 <Button
                   type="submit"
-                  className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
+                  size="lg"
+                  className="w-full"
                   disabled={submitting}
                 >
                   <span className="flex items-center gap-2">

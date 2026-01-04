@@ -1,9 +1,9 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconBuilding,
   IconFingerprint,
   IconMail,
   IconShieldLock,
+  IconUser,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,23 +16,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
-import { useRegisterWithOrg } from "@/hooks/organization-invites";
+import { useRegister } from "@/hooks/organization-invites";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
 export default function Register() {
   const navigate = useNavigate();
-  const registerMutation = useRegisterWithOrg();
+  const registerMutation = useRegister();
 
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [organizationName, setOrganizationName] = useState("");
   const [errors, setErrors] = useState<{
     email?: string;
+    username?: string;
     password?: string;
     confirmPassword?: string;
-    organizationName?: string;
   }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,11 +41,19 @@ export default function Register() {
 
     const newErrors: typeof errors = {};
     const trimmedEmail = email.trim().toLowerCase();
-    const trimmedOrgName = organizationName.trim();
+    const trimmedUsername = username.trim();
 
     if (!trimmedEmail) newErrors.email = auth.errors.emailRequired;
     else if (!emailRegex.test(trimmedEmail)) {
       newErrors.email = auth.errors.emailInvalid;
+    }
+
+    if (!trimmedUsername) {
+      newErrors.username = auth.register.errors.usernameRequired;
+    } else if (!usernameRegex.test(trimmedUsername)) {
+      newErrors.username = auth.register.errors.usernameInvalid;
+    } else if (trimmedUsername.length < 3) {
+      newErrors.username = auth.register.errors.usernameTooShort;
     }
 
     if (!password) newErrors.password = auth.errors.passwordRequired;
@@ -52,11 +61,6 @@ export default function Register() {
       newErrors.confirmPassword = auth.errors.passwordConfirmRequired;
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = auth.errors.passwordsMismatch;
-    }
-
-    if (!trimmedOrgName) {
-      newErrors.organizationName =
-        auth.register.errors.organizationNameRequired;
     }
 
     setErrors(newErrors);
@@ -68,9 +72,9 @@ export default function Register() {
     registerMutation.mutate(
       {
         email: trimmedEmail,
+        username: trimmedUsername,
         password,
         passwordConfirm: confirmPassword,
-        organizationName: trimmedOrgName,
       },
       {
         onSuccess: () => {
@@ -97,13 +101,13 @@ export default function Register() {
         <div className="text-primary flex items-center gap-3">
           <Logo size={40} showTelemetry />
           <span className="text-muted-foreground/70 text-sm font-bold tracking-tight">
-            {app.name} / Secure Access
+            {app.name}
           </span>
         </div>
 
         <div className="relative">
           <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-bold select-none">
-            ANJAM
+            {app.logo}
           </div>
           <h2 className="relative z-10 text-6xl leading-tight font-bold tracking-tighter lg:text-7xl xl:text-8xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
@@ -156,8 +160,8 @@ export default function Register() {
                     value={email}
                     dir="ltr"
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                    placeholder="name@company.com"
+                    className="font-bold"
+                    placeholder={auth.login.placeholders.email}
                     required
                     autoFocus
                     disabled={submitting}
@@ -172,21 +176,22 @@ export default function Register() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                      {auth.register.organizationName}
+                      {auth.register.username}
                     </Label>
-                    <IconBuilding className="text-muted-foreground/40 size-3" />
+                    <IconUser className="text-muted-foreground/40 size-3" />
                   </div>
                   <Input
                     type="text"
-                    value={organizationName}
-                    onChange={(e) => setOrganizationName(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                    placeholder={auth.register.organizationNamePlaceholder}
+                    value={username}
+                    dir="ltr"
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="font-bold"
+                    placeholder={auth.register.usernamePlaceholder}
                     disabled={submitting}
                   />
-                  {errors.organizationName && (
+                  {errors.username && (
                     <p className="text-destructive text-[10px] font-bold">
-                      {errors.organizationName}
+                      {errors.username}
                     </p>
                   )}
                 </div>
@@ -202,8 +207,8 @@ export default function Register() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                    placeholder="••••••••"
+                    className="font-bold"
+                    placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
                     disabled={submitting}
@@ -226,8 +231,8 @@ export default function Register() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                    placeholder="••••••••"
+                    className="font-bold"
+                    placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
                     disabled={submitting}
@@ -241,7 +246,8 @@ export default function Register() {
 
                 <Button
                   type="submit"
-                  className="group h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all active:scale-95"
+                  size="lg"
+                  className="w-full"
                   disabled={submitting}
                 >
                   <span className="flex items-center gap-2">

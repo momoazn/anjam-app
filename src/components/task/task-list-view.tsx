@@ -3,6 +3,7 @@ import { TaskListGroup } from "@/components/task/task-list-group";
 import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import type { TasksStatusOptions } from "@/lib/pocketbase-types";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export type TaskListViewProps = {
   isLoading: boolean;
@@ -25,6 +26,9 @@ export function TaskListView({
   selectedTasks,
   onSelectionChange,
 }: TaskListViewProps) {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
+
   if (isLoading) {
     return <TaskListSkeleton />;
   }
@@ -35,21 +39,26 @@ export function TaskListView({
 
   return (
     <>
-      {statusOrder.map((status) => {
-        const tasksInGroup = groupedTasks?.[status] ?? [];
-        return (
-          <TaskListGroup
-            key={status}
-            taskCount={tasksInGroup.length}
-            status={status}
-            tasks={tasksInGroup}
-            showProject={true}
-            enableSelection={selectionMode}
-            selectedTasks={selectedTasks}
-            onSelectionChange={onSelectionChange}
-          />
-        );
-      })}
+      {statusOrder
+        .filter((status) => {
+          if (!isProductMode) return true;
+          return (groupedTasks?.[status] ?? []).length > 0;
+        })
+        .map((status) => {
+          const tasksInGroup = groupedTasks?.[status] ?? [];
+          return (
+            <TaskListGroup
+              key={status}
+              taskCount={tasksInGroup.length}
+              status={status}
+              tasks={tasksInGroup}
+              showProject={true}
+              enableSelection={selectionMode}
+              selectedTasks={selectedTasks}
+              onSelectionChange={onSelectionChange}
+            />
+          );
+        })}
     </>
   );
 }

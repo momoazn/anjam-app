@@ -170,18 +170,18 @@ export function NotificationDropdown({
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="xs"
                   onClick={() => user?.id && markAllAsRead.mutate(user.id)}
-                  className="h-8 rounded-md px-3 text-[10px] font-bold"
+                  className="gap-1"
                 >
                   <IconCheck className="me-1.5 size-3" stroke={3} />
                   {notificationsText.markAllAsRead}
                 </Button>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="xs"
                   onClick={() => user?.id && clearAll.mutate(user.id)}
-                  className="hover:bg-destructive/10 hover:text-destructive h-8 rounded-md px-3 text-[10px] font-bold"
+                  className="gap-1 text-destructive hover:bg-destructive/10"
                 >
                   <IconTrash className="me-1.5 size-3" stroke={3} />
                   {notificationsText.clearAll}

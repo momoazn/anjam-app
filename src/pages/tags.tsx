@@ -14,9 +14,12 @@ import { useToast } from "@/hooks/use-toast";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import type { TagsResponse } from "@/lib/pocketbase-types";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthRole } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
+import { useAuthRole, useCurrentOrgMode } from "@/store/auth-store";
 
 export default function TagsManagement() {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -56,7 +59,12 @@ export default function TagsManagement() {
 
   const headerActions = (
     <Button
-      className="h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
+      className={cn(
+        "gap-2 rounded-xl shadow-sm transition-all",
+        isProductMode
+          ? "h-8 rounded-lg px-3 text-xs font-semibold"
+          : "h-10 px-5 text-sm font-bold hover:scale-[1.02]",
+      )}
       onClick={() => setCreateDialogOpen(true)}
     >
       <IconPlus className="size-4.5" />
@@ -80,7 +88,7 @@ export default function TagsManagement() {
         actions={headerActions}
       />
 
-      <div className="space-y-6">
+      <div className={cn("space-y-6", isProductMode && "space-y-4")}>
         <TagsList
           tags={tags}
           isLoading={isLoading}

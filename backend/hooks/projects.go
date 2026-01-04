@@ -13,16 +13,20 @@ import (
 	"anjam/notifications"
 	"anjam/utils"
 
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
-// HandleProjectCreatedMember automatically adds the project supervisor as a project owner.
+// HandleProjectCreatedMember ensures project-level access for organization admins.
+// It automatically adds:
+// - the project supervisor as a project owner (when set)
+// - all active organization owners/admins as project members (owner/admin)
 // This handler runs after successful record creation (OnRecordAfterCreateSuccess).
 func HandleProjectCreatedMember(e *core.RecordEvent) error {
 	projectID := e.Record.Id
-	supervisorID := e.Record.GetString("supervisor")
+	orgID := e.Record.GetString("organization")
 
-	if projectID == "" || supervisorID == "" {
+	if projectID == "" || orgID == "" {
 		return e.Next()
 	}
 
@@ -31,24 +35,56 @@ func HandleProjectCreatedMember(e *core.RecordEvent) error {
 		return err
 	}
 
-	// Check if already exists
-	existing, _ := e.App.FindFirstRecordByFilter(
-		config.CollectionProjectMembers,
-		"project = {:project} && user = {:user}",
-		map[string]any{"project": projectID, "user": supervisorID},
-	)
-	if existing != nil {
-		return e.Next()
+	ensureMember := func(userID, role string) error {
+		if userID == "" {
+			return nil
+		}
+
+		existing, _ := e.App.FindFirstRecordByFilter(
+			config.CollectionProjectMembers,
+			"project = {:project} && user = {:user}",
+			dbx.Params{"project": projectID, "user": userID},
+		)
+		if existing != nil {
+			return nil
+		}
+
+		record := core.NewRecord(collection)
+		record.Set("project", projectID)
+		record.Set("user", userID)
+		record.Set("role", role)
+		record.Set("added_at", time.Now().Format(time.RFC3339))
+		return e.App.Save(record)
 	}
 
-	record := core.NewRecord(collection)
-	record.Set("project", projectID)
-	record.Set("user", supervisorID)
-	record.Set("role", config.ProjectRoleOwner)
-	record.Set("added_at", time.Now().Format(time.RFC3339))
-
-	if err := e.App.Save(record); err != nil {
+	// Add supervisor as project owner when present
+	if err := ensureMember(e.Record.GetString("supervisor"), config.ProjectRoleOwner); err != nil {
 		return err
+	}
+
+	// Add all active org owners/admins as project members
+	orgAdmins, err := e.App.FindRecordsByFilter(
+		config.CollectionOrgMembers,
+		"organization = {:org} && status = 'active' && (role = 'owner' || role = 'admin')",
+		"-created",
+		0,
+		0,
+		dbx.Params{"org": orgID},
+	)
+	if err != nil {
+		return err
+	}
+
+	for _, member := range orgAdmins {
+		userID := member.GetString("user")
+		orgRole := member.GetString("role")
+		projectRole := config.ProjectRoleAdmin
+		if orgRole == config.OrgRoleOwner {
+			projectRole = config.ProjectRoleOwner
+		}
+		if err := ensureMember(userID, projectRole); err != nil {
+			return err
+		}
 	}
 
 	return e.Next()

@@ -144,7 +144,8 @@ export default function TimesheetPage() {
       <Button
         onClick={handleExport}
         variant="outline"
-        className="h-10 gap-2 rounded-xl px-4 text-sm font-bold shadow-sm transition-all"
+        size="sm"
+        className="gap-2"
       >
         <IconDownload className="size-4" />
         {common.buttons.export}

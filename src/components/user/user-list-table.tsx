@@ -178,38 +178,38 @@ export function UserListTable({
               </div>
               <div className="bg-primary/20 mx-2 h-6 w-px" />
               <Button
-                size="sm"
                 variant="ghost"
+                size="xs"
                 onClick={bulkToggleActive}
-                className="hover:bg-primary/10 h-9 rounded-xl text-[10px] font-bold tracking-tight"
+                className="hover:bg-primary/10"
               >
                 <IconPower className="ms-1.5 size-3.5" />
                 {usersText.bulk.toggleActive}
               </Button>
               <Button
-                size="sm"
                 variant="ghost"
+                size="xs"
                 onClick={bulkUnblock}
-                className="hover:bg-primary/10 h-9 rounded-xl text-[10px] font-bold tracking-tight"
+                className="hover:bg-primary/10"
               >
                 <IconLockOpen className="ms-1.5 size-3.5" />
                 {usersText.bulk.unblock}
               </Button>
               <Button
-                size="sm"
                 variant="ghost"
+                size="xs"
                 onClick={() => setBulkDeleteOpen(true)}
-                className="h-9 rounded-xl text-[10px] font-bold tracking-tight text-rose-500 hover:bg-rose-500/10"
+                className="text-rose-500 hover:bg-rose-500/10"
               >
                 <IconTrash className="ms-1.5 size-3.5" />
                 {usersText.bulk.delete}
               </Button>
               <div className="ms-auto">
                 <Button
-                  size="sm"
                   variant="ghost"
+                  size="xs"
                   onClick={() => setSelectedIds([])}
-                  className="h-9 rounded-xl text-[10px] font-bold tracking-tight opacity-60"
+                  className="opacity-60"
                 >
                   <IconX className="ms-1.5 size-3.5" />
                   {notifications.deselectAll}

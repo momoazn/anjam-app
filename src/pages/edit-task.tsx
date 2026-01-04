@@ -27,10 +27,13 @@ import {
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export default function EditTask() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
 
   const { data: task, isLoading } = useTask({
     id: id ?? "",
@@ -115,6 +118,64 @@ export default function EditTask() {
     );
   }
 
+  if (isProductMode) {
+    return (
+      <PageTransition className="mx-auto w-full max-w-3xl p-4 md:p-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0 text-right">
+                <h1 className="truncate text-base font-semibold">
+                  {tasks.edit.title}
+                </h1>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {tasks.details.displayIdLabel}: {task?.display_id || task?.id}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => navigate(-1)}
+                  className="gap-2"
+                >
+                  <IconArrowLeft className="me-2 size-4" />
+                  {common.cancel}
+                </Button>
+                <Button
+                  type="submit"
+                  size="xs"
+                  disabled={isPending}
+                  className="gap-2"
+                >
+                  {isPending ? (
+                    <IconLoader2 className="me-1 size-4 animate-spin" />
+                  ) : (
+                    <IconDeviceFloppy className="me-1 size-4" />
+                  )}
+                  {isPending
+                    ? tasks.edit.buttons.saving
+                    : tasks.edit.buttons.save}
+                </Button>
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4">
+              <TaskFields
+                control={form.control}
+                isInProject={!!task?.project}
+                projectId={task?.project ?? undefined}
+                variant="product"
+              />
+            </div>
+          </form>
+        </Form>
+      </PageTransition>
+    );
+  }
+
   return (
     <PageTransition className="bg-background relative min-h-full p-4 lg:p-8">
       <div className="relative mx-auto max-w-5xl space-y-8">
@@ -125,8 +186,9 @@ export default function EditTask() {
           actions={
             <Button
               variant="ghost"
+              size="sm"
               onClick={() => navigate(-1)}
-              className="h-11 rounded-lg px-6 font-bold"
+              className="gap-2"
             >
               <IconArrowLeft className="me-2" size={18} stroke={2.5} />
               {common.cancel}
@@ -135,10 +197,10 @@ export default function EditTask() {
         />
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
               {/* Main Form Area */}
-              <div className="space-y-10 lg:col-span-8">
+              <div className="space-y-6 lg:col-span-8">
                 <div className="bg-card rounded-xl border p-8 shadow-sm">
                   <div className="mb-8 flex items-center gap-3 border-b pb-6">
                     <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">

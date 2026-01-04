@@ -18,12 +18,15 @@ import { queryKeys } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { type ProjectWithSupervisor, pb } from "@/lib/pocketbase";
 import type { TasksResponse } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
+import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAuthUser();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const queryClient = useQueryClient();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -203,71 +206,52 @@ export default function ProjectDetails() {
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
-        title={
-          isEditing ? (
-            <div className="flex flex-col gap-2">
-              <span className="text-primary text-[10px] font-bold tracking-tight">
-                {projects.create.form.name}
-              </span>
-              <Input
-                value={editedName}
-                onChange={(event) => setEditedName(event.target.value)}
-                placeholder={projects.create.form.name}
-                className="h-10 text-lg font-bold"
-              />
-            </div>
-          ) : (
-            project.name
-          )
-        }
-        description={
-          isEditing ? (
-            <div className="mt-2 w-40 space-y-2">
-              <span className="text-muted-foreground/40 text-[10px] font-bold tracking-tight">
-                {projects.create.form.code}
-              </span>
-              <Input
-                value={editedCode}
-                onChange={(event) =>
-                  setEditedCode(event.target.value.slice(0, 3))
-                }
-                placeholder={projects.create.form.code}
-                maxLength={3}
-                className="h-10 font-mono text-base font-bold tracking-widest"
-              />
-            </div>
-          ) : (
-            <span className="font-mono text-xs font-bold tracking-wider opacity-60">
-              {project.code || "PRJ"}
-            </span>
-          )
+        title={isEditing ? editedName || project.name : project.name}
+        subtitle={
+          <span className="font-mono text-xs font-bold tracking-wider opacity-60">
+            {isEditing
+              ? editedCode || project.code || "PRJ"
+              : project.code || "PRJ"}
+          </span>
         }
         icon={Folder}
         eyebrow={
-          <Button
-            variant="link"
-            className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
-            onClick={() => navigate("/projects")}
-          >
-            <ArrowLeft className="mr-1 h-3 w-3" />
-            {projects.details.backToProjects}
-          </Button>
+          isProductMode ? undefined : (
+            <Button
+              variant="link"
+              className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
+              onClick={() => navigate("/projects")}
+            >
+              <ArrowLeft className="mr-1 h-3 w-3" />
+              {projects.details.backToProjects}
+            </Button>
+          )
         }
         actions={
           isEditing ? (
             <div className="flex items-center gap-2">
+              {isProductMode ? (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => navigate("/projects")}
+                >
+                  <ArrowLeft className="me-2 h-4 w-4" />
+                  {projects.details.backToProjects}
+                </Button>
+              ) : null}
               <Button
                 variant="ghost"
+                size={isProductMode ? "xs" : "sm"}
                 onClick={handleCancelEdit}
                 disabled={isUpdating}
-                className="h-9 px-4 text-xs font-bold"
               >
                 {common.cancel}
               </Button>
               <Button
+                size={isProductMode ? "xs" : "sm"}
                 onClick={handleSaveEdit}
                 disabled={isUpdating}
-                className="bg-primary text-primary-foreground h-9 px-6 text-xs font-bold shadow-sm"
               >
                 {common.save}
               </Button>
@@ -276,8 +260,8 @@ export default function ProjectDetails() {
             canEdit && (
               <Button
                 variant="outline"
+                size={isProductMode ? "xs" : "sm"}
                 onClick={handleStartEdit}
-                className="h-9 px-4 text-xs font-bold shadow-sm"
               >
                 {common.edit}
               </Button>
@@ -286,8 +270,43 @@ export default function ProjectDetails() {
         }
       />
 
+      {isProductMode && isEditing ? (
+        <div className="mb-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <div className="text-muted-foreground text-[10px] font-semibold">
+                {projects.create.form.name}
+              </div>
+              <Input
+                value={editedName}
+                onChange={(event) => setEditedName(event.target.value)}
+                placeholder={projects.create.form.name}
+                className="text-sm font-semibold"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <div className="text-muted-foreground text-[10px] font-semibold">
+                {projects.create.form.code}
+              </div>
+              <Input
+                value={editedCode}
+                onChange={(event) =>
+                  setEditedCode(event.target.value.slice(0, 3))
+                }
+                placeholder={projects.create.form.code}
+                maxLength={3}
+                className="font-mono text-sm font-semibold tracking-widest"
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div
-        className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+        className={cn(
+          "grid grid-cols-1 lg:grid-cols-3",
+          isProductMode ? "gap-4" : "gap-6",
+        )}
         data-animate-stagger
       >
         <ProjectDetailsSections

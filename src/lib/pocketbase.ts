@@ -13,18 +13,22 @@ const baseUrl = import.meta.env.PROD ? "/" : "http://127.0.0.1:8090/";
 export const pb = new PocketBase(baseUrl) as TypedPocketBase;
 
 // Attach org context to all API requests
-pb.beforeSend = function (_url, options) {
+pb.beforeSend = function (url, options) {
   const storage = localStorage.getItem("anjam-auth-storage");
   if (storage) {
-    const parsed = JSON.parse(storage);
-    const orgId = parsed?.state?.currentOrganization?.id;
+    try {
+      const parsed = JSON.parse(storage);
+      const orgId = parsed?.state?.currentOrganization?.id;
 
-    if (orgId && options.headers) {
-      options.headers["X-Organization-ID"] = orgId;
+      if (orgId) {
+        options.headers = { ...options.headers, "X-Organization-ID": orgId };
+      }
+    } catch {
+      // Ignore parse errors
     }
   }
 
-  return options;
+  return { url, options };
 };
 
 export type TaskWithProject = TasksResponse<{

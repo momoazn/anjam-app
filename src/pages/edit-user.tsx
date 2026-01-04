@@ -114,7 +114,7 @@ export default function EditUser() {
           </div>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <UserFields
                 control={userFieldsControl}
                 isEdit
@@ -125,16 +125,17 @@ export default function EditUser() {
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   onClick={handleCancel}
                   disabled={isPending}
-                  className="h-11 rounded-xl px-6 font-medium transition-all"
                 >
                   {common.cancel}
                 </Button>
                 <Button
                   type="submit"
+                  size="sm"
                   disabled={isPending}
-                  className="h-11 gap-2 rounded-xl px-8 font-semibold shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
+                  className="gap-2"
                 >
                   {isPending && (
                     <IconLoader2 className="me-2 h-4 w-4 animate-spin" />

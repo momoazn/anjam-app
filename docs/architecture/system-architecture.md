@@ -74,6 +74,30 @@ When a user attempts an action on a resource (e.g., "Delete Task"):
 - `plan`: Select (free/pro/enterprise)
 - `active`: Bool
 
+#### Organization Mode (Build-Time Configuration)
+
+The organization mode is **not stored per-organization** - it is configured at build time for the entire deployment.
+
+**Configuration Methods:**
+
+| Layer    | Variable                               | Values                    | Default      |
+| -------- | -------------------------------------- | ------------------------- | ------------ |
+| Frontend | `VITE_ORG_MODE`                        | `operations` \| `product` | `operations` |
+| Backend  | `TM_ORG_MODE` env var                  | `operations` \| `product` | `operations` |
+| Backend  | ldflags `-X main.organizationMode=...` | `operations` \| `product` | `operations` |
+
+**Mode Effects:**
+
+| Feature       | Operations Mode | Product Mode |
+| ------------- | --------------- | ------------ |
+| Time Tracking | Enabled         | Disabled     |
+| Timesheet     | Enabled         | Disabled     |
+| Reports       | Enabled         | Disabled     |
+| Audit Logs    | Enabled         | Disabled     |
+| Calendar      | Enabled         | Optional     |
+| Home Route    | `/dashboard`    | `/inbox`     |
+| Task Labels   | "Tasks"         | "Issues"     |
+
 #### `organization_members`
 
 - `organization`: Relation -> organizations

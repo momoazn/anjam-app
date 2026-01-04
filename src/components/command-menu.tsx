@@ -113,6 +113,11 @@ export function CommandMenu() {
     setOpen(false);
   }, [navigate]);
 
+  const navigateToNewProject = useCallback(() => {
+    navigate("/projects/new");
+    setOpen(false);
+  }, [navigate]);
+
   const navigateToInsights = useCallback(() => {
     navigate("/insights");
     setOpen(false);
@@ -173,6 +178,16 @@ export function CommandMenu() {
         type: "command",
       },
       {
+        id: "project-new",
+        label: isProductMode
+          ? commandMenu.product.createProject
+          : commandMenu.operations.createProject,
+        icon: FolderOpen,
+        action: navigateToNewProject,
+        keywords: commandMenu.keywords.new,
+        type: "command",
+      },
+      {
         id: "task-new",
         label: isProductMode
           ? commandMenu.product.createItem
@@ -212,6 +227,7 @@ export function CommandMenu() {
     navigateToInbox,
     navigateToDashboard,
     navigateToProjects,
+    navigateToNewProject,
     navigateToNewTask,
     navigateToInsights,
     navigateToSettings,
@@ -565,14 +581,16 @@ export function CommandMenu() {
             )}
           >
             <div className="flex items-center gap-3">
-              <span>↑↓ to navigate</span>
-              <span>↵ to select</span>
-              <span>esc to close</span>
+              <span>{commandMenu.navigationInstructions.upDown}</span>
+              <span>{commandMenu.navigationInstructions.enter}</span>
+              <span>{commandMenu.navigationInstructions.escape}</span>
             </div>
             {hasSearchResults && (
               <span>
-                {searchResults.length} result
-                {searchResults.length !== 1 ? "s" : ""}
+                {searchResults.length}{" "}
+                {searchResults.length !== 1
+                  ? commandMenu.navigationInstructions.results
+                  : commandMenu.navigationInstructions.result}
               </span>
             )}
           </div>

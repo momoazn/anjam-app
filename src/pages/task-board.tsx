@@ -37,6 +37,8 @@ import {
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
+import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
@@ -53,6 +55,8 @@ export function TaskBoardPage() {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
   const [activeTask, setActiveTask] = useState<TaskWithProject | null>(null);
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
 
   // Fetch project details if in project mode
   const { data: project } = useQuery<ProjectsResponse>({
@@ -94,6 +98,21 @@ export function TaskBoardPage() {
 
     return cols;
   }, [tasksData]);
+
+  const visibleStatusKeys = useMemo(() => {
+    if (!isProductMode) return TASK_STATUS_ORDER;
+
+    const coreStatuses = new Set<TasksStatusOptions>([
+      TasksStatusOptions.todo,
+      TasksStatusOptions.in_progress,
+      TasksStatusOptions.done,
+    ]);
+
+    return TASK_STATUS_ORDER.filter((statusKey) => {
+      if (coreStatuses.has(statusKey as TasksStatusOptions)) return true;
+      return (columns[statusKey]?.length ?? 0) > 0;
+    });
+  }, [columns, isProductMode]);
 
   const updateTaskPosition = useMutation({
     mutationFn: async ({
@@ -237,7 +256,12 @@ export function TaskBoardPage() {
         onClick={() =>
           navigate(projectId ? `/projects/${projectId}/tasks` : "/tasks")
         }
-        className="h-11 px-6 font-bold"
+        className={cn(
+          "font-bold",
+          isProductMode
+            ? "h-8 rounded-lg px-3 text-xs font-semibold"
+            : "h-11 px-6",
+        )}
       >
         <IconList className="ms-2 size-4" />
         {common.buttons.view}
@@ -249,33 +273,58 @@ export function TaskBoardPage() {
             projectId ? `/projects/${projectId}/tasks/new` : "/tasks/new",
           )
         }
-        className="h-11 px-6 font-bold shadow-sm"
+        className={cn(
+          "font-bold shadow-sm",
+          isProductMode
+            ? "h-8 rounded-lg px-3 text-xs font-semibold"
+            : "h-11 px-6",
+        )}
       >
-        <IconPlus className="ms-2 size-5" />
+        <IconPlus className={cn("ms-2 size-5", isProductMode && "size-4")} />
         {tasksText.addTask.buttons.newTask}
       </Button>
     </div>
   );
 
   return (
-    <PageTransition className="flex h-[calc(100vh-4rem)] flex-col">
-      <div className="bg-card border-border border-b">
-        <div className="container mx-auto max-w-7xl px-4 py-4 md:px-6">
+    <PageTransition className="flex min-h-0 flex-1 flex-col">
+      <div
+        className={cn(
+          "border-b",
+          isProductMode
+            ? "border-border/40 bg-transparent"
+            : "bg-card border-border",
+        )}
+      >
+        <div
+          className={cn(
+            isProductMode
+              ? "w-full px-3"
+              : "container mx-auto max-w-7xl px-4 md:px-6",
+            isProductMode ? "py-3" : "py-4",
+          )}
+        >
           <PageHeader
             title={projectId ? project?.name : tasksText.board.title}
-            subtitle={tasksText.header.tasksFound.replace(
-              "{count}",
-              digitsEnToFa(tasksData.length).toString(),
-            )}
+            subtitle={
+              isProductMode
+                ? undefined
+                : tasksText.header.tasksFound.replace(
+                    "{count}",
+                    digitsEnToFa(tasksData.length).toString(),
+                  )
+            }
             icon={IconLayoutGrid}
             eyebrow={
-              <div className="text-muted-foreground flex items-center gap-2">
-                <IconHash className="size-4" />
-                <span className="text-xs font-bold tracking-tight">
-                  {projectId ? project?.code : common.buttons.all} /{" "}
-                  {tasksText.board.title}
-                </span>
-              </div>
+              isProductMode ? undefined : (
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <IconHash className="size-4" />
+                  <span className="text-xs font-bold tracking-tight">
+                    {projectId ? project?.code : common.buttons.all} /{" "}
+                    {tasksText.board.title}
+                  </span>
+                </div>
+              )
             }
             actions={headerActions}
             className="mb-0"
@@ -288,8 +337,15 @@ export function TaskBoardPage() {
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       >
-        <div className="scrollbar-none bg-muted/30 flex flex-1 gap-4 overflow-x-auto overflow-y-hidden p-4">
-          {TASK_STATUS_ORDER.map((statusKey) => (
+        <div
+          className={cn(
+            "scrollbar-none flex min-h-0 flex-1 overflow-x-auto overflow-y-hidden",
+            isProductMode
+              ? "bg-transparent gap-3 p-3"
+              : "bg-muted/30 gap-4 p-4",
+          )}
+        >
+          {visibleStatusKeys.map((statusKey) => (
             <BoardColumn
               key={statusKey}
               status={TASK_STATUS_CONFIG[statusKey]}
@@ -301,7 +357,12 @@ export function TaskBoardPage() {
         {createPortal(
           <DragOverlay dropAnimation={dropAnimation}>
             {activeTask && (
-              <div className="border-primary/20 bg-card w-[320px] overflow-hidden rounded-xl border opacity-90 shadow-2xl">
+              <div
+                className={cn(
+                  "border-primary/20 bg-card overflow-hidden rounded-xl border opacity-90 shadow-2xl",
+                  isProductMode ? "w-[280px]" : "w-[320px]",
+                )}
+              >
                 <BoardCard task={activeTask} />
               </div>
             )}

@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { logError } from "@/lib/logger";
 import type { OrgFeatures, OrgMode } from "@/lib/mode";
-import { getOrgFeatures } from "@/lib/mode";
+import { getConfiguredOrgMode, getOrgFeatures } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationsResponse,
@@ -117,10 +117,11 @@ export const useAuthStore = create<AuthState>()(
 
         // Set current organization context
         setCurrentOrganization: (org, role) => {
-          const mode = org?.mode ?? null;
+          // Use build-time configured mode instead of reading from org record
+          const mode = getConfiguredOrgMode();
           // Cast settings to the expected type
           const settings = org?.settings as OrganizationSettings | undefined;
-          const features = getOrgFeatures(mode, settings);
+          const features = getOrgFeatures(mode ?? "operations", settings);
 
           set({
             currentOrganization: org,
@@ -156,12 +157,13 @@ export const useAuthStore = create<AuthState>()(
             const { currentOrganization } = get();
             if (!currentOrganization && orgs.length > 0) {
               const firstOrg = orgs[0].organization;
-              const mode = firstOrg.mode ?? null;
+              // Use build-time configured mode instead of reading from org record
+              const mode = getConfiguredOrgMode();
               // Cast settings to the expected type
               const settings = firstOrg.settings as
                 | OrganizationSettings
                 | undefined;
-              const features = getOrgFeatures(mode, settings);
+              const features = getOrgFeatures(mode ?? "operations", settings);
 
               set({
                 currentOrganization: firstOrg,
@@ -187,12 +189,13 @@ export const useAuthStore = create<AuthState>()(
           );
 
           if (orgWithRole) {
-            const mode = orgWithRole.organization.mode ?? null;
+            // Use build-time configured mode instead of reading from org record
+            const mode = getConfiguredOrgMode();
             // Cast settings to the expected type
             const settings = orgWithRole.organization.settings as
               | OrganizationSettings
               | undefined;
-            const features = getOrgFeatures(mode, settings);
+            const features = getOrgFeatures(mode ?? "operations", settings);
 
             set({
               currentOrganization: orgWithRole.organization,
@@ -236,12 +239,33 @@ export const useAuthStore = create<AuthState>()(
       {
         name: "anjam-auth-storage",
         storage: createJSONStorage(() => localStorage),
+        merge: (persistedState, currentState) => {
+          const merged = {
+            ...currentState,
+            ...(persistedState as Partial<AuthState>),
+          };
+
+          const currentOrg = merged.currentOrganization ?? null;
+          // Use build-time configured mode instead of reading from org record
+          const mode = getConfiguredOrgMode();
+          const settings = currentOrg?.settings as
+            | OrganizationSettings
+            | undefined;
+
+          return {
+            ...merged,
+            currentOrgMode: mode,
+            currentOrgFeatures: getOrgFeatures(mode ?? "operations", settings),
+          };
+        },
         partialize: (state) => ({
           user: state.user,
           isAuthenticated: state.isAuthenticated,
           currentOrganization: state.currentOrganization,
           currentOrgRole: state.currentOrgRole,
           userOrganizations: state.userOrganizations,
+          currentOrgMode: state.currentOrgMode,
+          currentOrgFeatures: state.currentOrgFeatures,
         }),
       },
     ),

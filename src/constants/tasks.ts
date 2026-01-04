@@ -38,16 +38,16 @@ export const tasks = {
 
   // Task status options
   status: {
-    todo: "برای انجام",
-    in_progress: shared.inProgress,
-    pending: shared.pending,
+    todo: "در صف انجام",
+    in_progress: "در دست اجرا",
+    pending: "در انتظار بررسی",
     review: "در حال بررسی",
     testing: "در حال تست",
     ready: "آماده",
     blocked: "مسدود شده",
     on_hold: "متوقف شده",
-    done: shared.done,
-    canceled: shared.canceled,
+    done: "تکمیل شده",
+    canceled: "لغو شده",
   },
 
   // Task tags
@@ -174,7 +174,7 @@ export const tasks = {
 
   // Add task dialog
   addTask: {
-    title: "ساخت تسک جدید",
+    title: "ایجاد تسک جدید",
     issueTitle: "عنوان تسک",
     description: shared.description,
     descriptionProject: "توضیحات پروژه",
@@ -183,12 +183,12 @@ export const tasks = {
     assignee: shared.assignee,
     unassigned: "بدون مسئول",
     selectProject: "انتخاب پروژه",
-    deadline: "مهلت انجام",
+    deadline: "تاریخ تحویل",
     success: "عالی! تسک جدیدتان آماده است",
     error: "نتوانستیم تسک را بسازیم: {error}",
     buttons: {
-      create: "ساخت تسک",
-      creating: "در حال ساخت...",
+      create: "ایجاد تسک",
+      creating: "در حال ایجاد...",
       more: shared.more,
       newTask: "تسک جدید",
       newTaskForProject: "تسک جدید برای این پروژه",
@@ -214,10 +214,20 @@ export const tasks = {
     selectStatus: "انتخاب وضعیت",
     selectProject: "انتخاب پروژه",
     deadlinePlaceholder: "انتخاب تاریخ",
-    estimate: "برآورد زمان",
+    estimate: "مدت زمان تخمینی",
     hours: "ساعت",
     minutes: "دقیقه",
+    hoursShort: "س",
+    minutesShort: "د",
     createTag: "ایجاد برچسب",
+    sections: {
+      generalInfo: "اطلاعات اصلی",
+      taskParameters: "جزئیات تکمیلی",
+    },
+    placeholders: {
+      taskTitle: "عنوان تسک را وارد کنید",
+      detailedDescription: "شرح وظیفه را بنویسید",
+    },
   },
 
   // Task details

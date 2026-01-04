@@ -32,7 +32,8 @@
       "Bash(git push)",
       "Bash(gh pr view:*)",
       "Bash(gh api:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(bun x --bun prettier --write:*)"
     ],
     "deny": [],
     "ask": []

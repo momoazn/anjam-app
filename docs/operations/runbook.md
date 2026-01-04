@@ -69,6 +69,7 @@ This runbook provides step-by-step procedures for deploying, configuring, and ma
      --name anjam \
      -p 8090:8090 \
      -v anjam-data:/app/data \
+     -e TM_ORG_MODE=operations \
      -e TM_ALLOW_DEFAULT_ACCOUNTS=false \
      -e ANJAM_ENCRYPTION_KEY="<your-32-char-key>" \
      -e GOMEMLIMIT=512MiB \
@@ -146,6 +147,9 @@ ExecStart=/opt/anjam/anjam --http=0.0.0.0:8090 --encryptionEnv=ANJAM_ENCRYPTION_
 Restart=on-failure
 RestartSec=10s
 
+# Organization Mode: "operations" (default) or "product"
+Environment="TM_ORG_MODE=operations"
+
 # Security settings
 Environment="TM_ALLOW_DEFAULT_ACCOUNTS=false"
 
@@ -185,9 +189,27 @@ sudo systemctl status anjam
 Set these before starting the application:
 
 ```bash
+# Organization Mode (build-time configuration)
+# Options: "operations" (default) or "product"
+# Note: This applies to ALL organizations in the deployment
+export TM_ORG_MODE=operations
+
 # Security settings
 export TM_ALLOW_DEFAULT_ACCOUNTS=false
 # Add any PocketBase flags in the service command if needed.
+```
+
+**Building for Different Modes:**
+
+```bash
+# Build for operations mode (default)
+bun run build:server
+
+# Build for product mode (Linear-like experience)
+go build -ldflags "-X main.organizationMode=product" -o anjam-product ./backend
+
+# Or use environment variable at runtime
+TM_ORG_MODE=product ./anjam
 ```
 
 ### 2.2 PocketBase Dashboard Configuration
@@ -567,6 +589,7 @@ Monitor for security updates:
 
 - [ ] `.env` file created from `.env.example`
 - [ ] Encryption key generated (`openssl rand -hex 16`) and added to `.env`
+- [ ] `TM_ORG_MODE` configured (default: `operations`, or `product` for Linear-like experience)
 - [ ] `TM_ALLOW_DEFAULT_ACCOUNTS=false` set (after first admin created)
 
 ### Docker Deployment
@@ -628,6 +651,6 @@ Monitor for security updates:
 
 ---
 
-**Version:** 1.0
-**Last Updated:** 2025-12-26
+**Version:** 1.1
+**Last Updated:** 2026-01-04
 **Maintained By:** DevOps Team

@@ -1,19 +1,26 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { Loader2, Plus, Target } from "lucide-react";
+import { Plus, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { ProjectListGroup } from "@/components/project/project-list-group";
+import { ProjectCardSkeleton } from "@/components/skeletons/project-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { useProjects } from "@/hooks";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
+import {
+  useAuthUser,
+  useCurrentOrgMode,
+  useCurrentOrgRole,
+} from "@/store/auth-store";
 
 export default function Projects() {
   const user = useAuthUser();
   const currentOrgRole = useCurrentOrgRole();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const navigate = useNavigate();
 
   const { data: userProjects, isPending: isLoadingProjects } = useProjects({
@@ -36,14 +43,7 @@ export default function Projects() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         icon={Target}
-        eyebrow={
-          <div className="flex items-center gap-2 opacity-40">
-            <span className="text-[10px] font-bold tracking-tight">
-              {projects.title}
-            </span>
-            <div className="bg-foreground/20 h-px w-8" />
-          </div>
-        }
+        eyebrow={isProductMode ? undefined : projects.title}
         title={projects.title}
         subtitle={projects.list.count.replace(
           "{count}",
@@ -52,7 +52,11 @@ export default function Projects() {
         actions={
           canCreateProject ? (
             <Button
-              className="h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
+              className={
+                isProductMode
+                  ? "h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
+                  : "h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
+              }
               onClick={() => navigate("/projects/new")}
             >
               <Plus className="size-4.5" />
@@ -63,19 +67,13 @@ export default function Projects() {
       />
 
       {isLoadingProjects ? (
-        <div className="flex h-full items-center justify-center py-24">
-          <div className="relative flex flex-col items-center">
-            <Loader2 className="text-primary size-12 animate-spin opacity-20" />
-            <span className="text-muted-foreground/50 mt-4 text-[10px] font-bold tracking-tight">
-              {projects.files.uploading}
-            </span>
-          </div>
-        </div>
+        <ProjectCardSkeleton />
       ) : (
         <ProjectListGroup
           projects={userProjects ?? []}
           onEdit={handleEdit}
           canEditDelete={canEditDelete}
+          canCreate={canCreateProject}
         />
       )}
     </PageTransition>

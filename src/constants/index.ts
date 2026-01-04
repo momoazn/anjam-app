@@ -39,5 +39,6 @@ export {
   projectStatuses,
   projectRoles,
   inbox,
+  keyboardShortcuts,
 } from "./misc";
 export { commandMenu } from "./command-menu";
