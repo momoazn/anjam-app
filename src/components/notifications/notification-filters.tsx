@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notifications as notificationsText } from "@/constants";
+import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export type NotificationFilter = "all" | "unread" | "read";
 export type NotificationSort = "newest" | "oldest";
@@ -42,13 +44,26 @@ export function NotificationFilters({
   onClearSelection,
   isBulkDeletePending,
 }: NotificationFiltersProps) {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
+
   return (
     <div
-      className="border-border mb-8 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between"
+      className={cn(
+        "flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+        isProductMode
+          ? "mb-4 border-b border-border/40 pb-3"
+          : "border-border mb-8 border-b pb-6",
+      )}
       data-animate-stagger
     >
       {selectedIds.length > 0 ? (
-        <div className="bg-primary/5 border-primary/20 flex flex-wrap items-center gap-2 rounded-xl border p-1.5">
+        <div
+          className={cn(
+            "bg-primary/5 border-primary/20 flex flex-wrap items-center gap-2 border",
+            isProductMode ? "rounded-lg p-1" : "rounded-xl p-1.5",
+          )}
+        >
           <div className="bg-primary text-primary-foreground rounded-lg px-3 py-1 text-xs font-bold">
             {digitsEnToFa(selectedIds.length)} {notificationsText.selected}
           </div>
@@ -86,24 +101,41 @@ export function NotificationFilters({
         <Tabs
           value={filter}
           onValueChange={(value) => onFilterChange(value as NotificationFilter)}
-          className="bg-muted/30 border-border rounded-xl border p-1"
+          className={cn(
+            "bg-muted/30 border border-border",
+            isProductMode ? "rounded-lg p-0.5" : "rounded-xl p-1",
+          )}
         >
-          <TabsList className="h-9 gap-1 bg-transparent p-0">
+          <TabsList
+            className={cn(
+              "gap-1 bg-transparent p-0",
+              isProductMode ? "h-8" : "h-9",
+            )}
+          >
             <TabsTrigger
               value="all"
-              className="data-[state=active]:bg-card h-full rounded-lg border border-transparent text-xs font-bold data-[state=active]:shadow-sm"
+              className={cn(
+                "data-[state=active]:bg-card h-full rounded-lg border border-transparent text-xs font-bold data-[state=active]:shadow-sm",
+                isProductMode && "px-3",
+              )}
             >
               {notificationsText.filters.all}
             </TabsTrigger>
             <TabsTrigger
               value="unread"
-              className="data-[state=active]:bg-card h-full rounded-lg border border-transparent text-xs font-bold data-[state=active]:shadow-sm"
+              className={cn(
+                "data-[state=active]:bg-card h-full rounded-lg border border-transparent text-xs font-bold data-[state=active]:shadow-sm",
+                isProductMode && "px-3",
+              )}
             >
               {notificationsText.filters.unread}
             </TabsTrigger>
             <TabsTrigger
               value="read"
-              className="data-[state=active]:bg-card h-full rounded-lg border border-transparent text-xs font-bold data-[state=active]:shadow-sm"
+              className={cn(
+                "data-[state=active]:bg-card h-full rounded-lg border border-transparent text-xs font-bold data-[state=active]:shadow-sm",
+                isProductMode && "px-3",
+              )}
             >
               {notificationsText.filters.read}
             </TabsTrigger>
@@ -116,7 +148,10 @@ export function NotificationFilters({
           <Button
             variant="outline"
             size="sm"
-            className="border-border bg-card h-10 rounded-xl border text-xs font-bold shadow-sm"
+            className={cn(
+              "border-border bg-card border text-xs font-bold shadow-sm",
+              isProductMode ? "h-8 rounded-lg" : "h-10 rounded-xl",
+            )}
           >
             <IconSortAscending className="ms-2 size-4" />
             {notificationsText.sort[sort]}
