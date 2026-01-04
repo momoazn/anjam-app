@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,8 +86,12 @@ export function EmployeeComparisonChart({
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value: any, _name: any, props: any) => {
-                      const metric = props?.payload?.metric;
+                    formatter={(
+                      value: string | number,
+                      _name: string,
+                      item: { payload?: { metric?: string } },
+                    ) => {
+                      const metric = item.payload?.metric;
                       const shouldAddPercent =
                         metric ===
                           reports.charts.employee.overviewCards
@@ -97,7 +100,7 @@ export function EmployeeComparisonChart({
                           reports.charts.employee.overviewCards.onTimeRate;
                       return [
                         `${value}${shouldAddPercent ? "%" : ""}`,
-                        props?.payload?.metric || _name,
+                        item.payload?.metric || _name,
                       ];
                     }}
                   />

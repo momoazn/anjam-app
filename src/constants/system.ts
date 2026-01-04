@@ -269,6 +269,11 @@ export const settings = {
     newPassword: "رمز عبور جدید",
     confirmPassword: "تکرار رمز عبور جدید",
     updatePassword: "بروزرسانی رمز عبور",
+    twoFactorTitle: "احراز هویت دومرحله‌ای",
+    twoFactorDescription: "افزودن یک لایه امنیتی اضافی به حساب کاربری.",
+    twoFactorComingSoon: "به‌زودی اضافه خواهد شد",
+    twoFactorInfo:
+      "احراز هویت دومرحله‌ای (2FA) با اپلیکیشن‌های Authenticator پشتیبانی می‌شود.",
     activeSessionsTitle: "نشست‌های فعال",
     activeSessionsDescription: "تاریخچه ورودهای اخیر به حساب کاربری شما.",
     noLoginHistory: "هیچ سابقه ورودی یافت نشد.",

@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { isFeatureEnabled } from "@/lib/mode-features";
+import { isFeatureEnabled } from "@/lib/mode";
 import { useCurrentOrgFeatures, useCurrentOrgMode } from "@/store/auth-store";
 
 /**

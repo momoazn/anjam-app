@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
+import { AuditLogSkeleton } from "@/components/audit/audit-log-skeleton";
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import {
@@ -265,9 +266,7 @@ export default function AuditLogs() {
           {/* Activity Entries */}
           <ScrollArea className="bg-card h-[70vh]">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-24 opacity-20">
-                <IconHistory className="size-12 animate-spin" />
-              </div>
+              <AuditLogSkeleton />
             ) : error ? (
               <div className="p-12 text-center text-xs font-bold text-rose-500">
                 {auditLogs.errors.loadFailed}

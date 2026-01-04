@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { KeyboardShortcutsDialog } from "@/components/help/keyboard-shortcuts-dialog";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -22,7 +23,7 @@ import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useProductThemeEffect } from "@/hooks/use-product-theme";
 import { useTheme } from "@/hooks/use-theme";
-import { useAuthIsLoggedIn } from "@/store/auth-store";
+import { useAuthIsAuthenticated } from "@/store/auth-store";
 
 import { AppRoutes } from "./router";
 
@@ -74,7 +75,7 @@ function MainContent() {
 
 // Layout component
 function AppLayout() {
-  const isLoggedIn = useAuthIsLoggedIn();
+  const isLoggedIn = useAuthIsAuthenticated();
   const location = useLocation();
   useNotifications(); // Auto-subscribes
   useKeyboardShortcuts(); // Global keyboard shortcuts
@@ -114,6 +115,7 @@ function App() {
             <ScrollToTop />
             <AppLayout />
             <CommandMenu />
+            <KeyboardShortcutsDialog />
             <Toaster
               position="bottom-right"
               className="font-arad"

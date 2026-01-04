@@ -7,23 +7,13 @@ import "./index.css";
 const root = createRoot(document.getElementById("root")!);
 const isDevelopment = import.meta.env.MODE === "development";
 
-console.log("[Anjam] Environment:", {
-  mode: import.meta.env.MODE,
-  isDevelopment,
-  posthogEnabled: !isDevelopment,
-});
-
 if (isDevelopment) {
-  // In development, render without PostHog
-  console.log("[Anjam] PostHog disabled - running in development mode");
   root.render(
     <StrictMode>
       <App />
     </StrictMode>,
   );
 } else {
-  // Only import and initialize PostHog in production
-  console.log("[Anjam] PostHog enabled - running in production mode");
   import("posthog-js/react").then(({ PostHogProvider }) => {
     root.render(
       <StrictMode>

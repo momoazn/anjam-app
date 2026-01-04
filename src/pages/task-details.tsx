@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { ChevronRight, Hash, Loader2, Pencil, Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -66,6 +65,9 @@ export default function TaskDetails() {
   const [hours, setHours] = useState(currentTime.hours);
   const [minutes, setMinutes] = useState(currentTime.minutes);
 
+  // Sync hours/minutes with task data when it changes
+  // This is necessary to handle task data updates from outside
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (task) {
       const time = minutesToHoursAndMinutes(task.time_spent_minutes);
@@ -73,6 +75,7 @@ export default function TaskDetails() {
       setMinutes(time.minutes);
     }
   }, [task]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const canEditTime =
     authUser?.role === "admin" ||

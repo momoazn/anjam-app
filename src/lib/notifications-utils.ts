@@ -26,15 +26,6 @@ export async function fetchUnreadNotifications(
   });
 }
 
-export async function fetchAllNotifications(
-  userId: string,
-): Promise<NotificationsRecord[]> {
-  return await pb.collection("notifications").getFullList<NotificationsRecord>({
-    filter: `user = "${userId}"`,
-    sort: "-created",
-  });
-}
-
 export async function fetchReadNotifications(
   userId: string,
 ): Promise<NotificationsRecord[]> {

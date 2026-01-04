@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Logo } from "@/components/brand/logo";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -115,102 +116,104 @@ export default function Login() {
       {/* Right Side: Login Form */}
       <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
         <PageTransition className="w-full" disableStagger>
-          <div className="mb-10 lg:hidden">
-            <Logo size={48} className="mb-6" />
-            <h2 className="text-4xl font-bold tracking-tight">
-              {auth.login.title}
-            </h2>
-          </div>
-
-          <div className="bg-card border-border relative rounded-2xl border p-8 shadow-xl lg:p-10">
-            <div className="border-border mb-8 flex items-center justify-between border-b pb-6">
-              <div>
-                <h3 className="text-xl font-bold tracking-tight">
-                  {auth.login.title}
-                </h3>
-                <p className="text-muted-foreground mt-1 text-xs font-medium">
-                  Please provide your credentials
-                </p>
-              </div>
-              <IconShieldLock className="text-primary/20 size-8" />
+          <ErrorBoundary>
+            <div className="mb-10 lg:hidden">
+              <Logo size={48} className="mb-6" />
+              <h2 className="text-4xl font-bold tracking-tight">
+                {auth.login.title}
+              </h2>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground text-xs font-bold tracking-tight">
-                    {auth.login.username}
-                  </Label>
-                  <IconUserBolt className="text-muted-foreground/40 size-3.5" />
-                </div>
-                <Input
-                  type="text"
-                  value={identity}
-                  dir="ltr"
-                  onChange={(e) => setIdentity(e.target.value)}
-                  className="h-12 rounded-xl px-4 font-bold"
-                  placeholder="name@company.com"
-                  required
-                  autoFocus
-                  disabled={submitting}
-                />
-                {errors.identity && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.identity}
+            <div className="bg-card border-border relative rounded-2xl border p-8 shadow-xl lg:p-10">
+              <div className="border-border mb-8 flex items-center justify-between border-b pb-6">
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight">
+                    {auth.login.title}
+                  </h3>
+                  <p className="text-muted-foreground mt-1 text-xs font-medium">
+                    Please provide your credentials
                   </p>
-                )}
+                </div>
+                <IconShieldLock className="text-primary/20 size-8" />
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-muted-foreground text-xs font-bold tracking-tight">
-                    {auth.login.password}
-                  </Label>
-                  <IconServer className="text-muted-foreground/40 size-3.5" />
-                </div>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 rounded-xl px-4 font-bold"
-                  placeholder="••••••••"
-                  required
-                  dir="ltr"
-                  disabled={submitting}
-                />
-                {errors.password && (
-                  <p className="text-destructive text-[10px] font-bold">
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="h-14 w-full rounded-xl text-base font-bold shadow-sm"
-                disabled={submitting}
-              >
-                <span className="flex items-center gap-2">
-                  {submitting ? auth.login.loggingIn : auth.login.loginButton}
-                  {!submitting && (
-                    <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground text-xs font-bold tracking-tight">
+                      {auth.login.username}
+                    </Label>
+                    <IconUserBolt className="text-muted-foreground/40 size-3.5" />
+                  </div>
+                  <Input
+                    type="text"
+                    value={identity}
+                    dir="ltr"
+                    onChange={(e) => setIdentity(e.target.value)}
+                    className="h-12 rounded-xl px-4 font-bold"
+                    placeholder="name@company.com"
+                    required
+                    autoFocus
+                    disabled={submitting}
+                  />
+                  {errors.identity && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.identity}
+                    </p>
                   )}
-                </span>
-              </Button>
-            </form>
-            <div className="border-border mt-6 flex items-center justify-between border-t pt-4">
-              <span className="text-muted-foreground text-xs font-semibold">
-                {auth.login.noAccountPrompt}
-              </span>
-              <Button variant="ghost" asChild className="font-bold">
-                <Link to="/register">{auth.login.registerButton}</Link>
-              </Button>
-            </div>
-          </div>
+                </div>
 
-          <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
-            {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}
-          </p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-muted-foreground text-xs font-bold tracking-tight">
+                      {auth.login.password}
+                    </Label>
+                    <IconServer className="text-muted-foreground/40 size-3.5" />
+                  </div>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 rounded-xl px-4 font-bold"
+                    placeholder="••••••••"
+                    required
+                    dir="ltr"
+                    disabled={submitting}
+                  />
+                  {errors.password && (
+                    <p className="text-destructive text-[10px] font-bold">
+                      {errors.password}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="h-14 w-full rounded-xl text-base font-bold shadow-sm"
+                  disabled={submitting}
+                >
+                  <span className="flex items-center gap-2">
+                    {submitting ? auth.login.loggingIn : auth.login.loginButton}
+                    {!submitting && (
+                      <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                    )}
+                  </span>
+                </Button>
+              </form>
+              <div className="border-border mt-6 flex items-center justify-between border-t pt-4">
+                <span className="text-muted-foreground text-xs font-semibold">
+                  {auth.login.noAccountPrompt}
+                </span>
+                <Button variant="ghost" asChild className="font-bold">
+                  <Link to="/register">{auth.login.registerButton}</Link>
+                </Button>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
+              {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}
+            </p>
+          </ErrorBoundary>
         </PageTransition>
       </div>
     </div>

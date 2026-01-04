@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { navigation, navigationSectionLabels } from "@/constants";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import type { ModeLabels } from "@/lib/mode-labels";
+import type { ModeLabels } from "@/lib/mode";
 import { cn } from "@/lib/utils";
 
 const viewItems = [

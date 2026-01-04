@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { DndContext, type DragEndEvent, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -153,6 +152,9 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   const updateSubtask = useUpdateSubtask();
   const deleteSubtask = useDeleteSubtask();
 
+  // Sync ordered list with subtasksData, preserving manual reordering
+  // This is necessary to sync with external data while allowing local drag reordering
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!subtasksData) return;
     const sorted = [...subtasksData].sort((a, b) => {
@@ -163,6 +165,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     });
     setOrdered(sorted);
   }, [subtasksData]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const assigneeOptions = useMemo(() => {
     const options = users?.map((user) => ({

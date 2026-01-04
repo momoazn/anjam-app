@@ -32,10 +32,10 @@ const crudHooks = createCrudHooks<SubtasksRecord, SubtasksResponse>({
   },
 });
 
-const {
-  useCreate: useCreateSubtaskMutation,
-  useUpdate: useUpdateSubtaskMutation,
-  useDelete: useDeleteSubtaskMutation,
+export const {
+  useCreate: useCreateSubtask,
+  useUpdate: useUpdateSubtask,
+  useDelete: useDeleteSubtask,
 } = crudHooks;
 
 export function useSubtasks(taskId: string, options?: { enabled?: boolean }) {
@@ -59,16 +59,4 @@ export function useSubtasks(taskId: string, options?: { enabled?: boolean }) {
       }),
     enabled,
   });
-}
-
-export function useCreateSubtask() {
-  return useCreateSubtaskMutation();
-}
-
-export function useUpdateSubtask() {
-  return useUpdateSubtaskMutation();
-}
-
-export function useDeleteSubtask() {
-  return useDeleteSubtaskMutation();
 }

@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/constants";
 import { queryKeys } from "@/hooks/query-keys";
 import { handlePocketBaseError } from "@/lib/error-handler";
-import { getHomeRoute } from "@/lib/mode-features";
+import { getHomeRoute } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
 import {
   useAuthStore,

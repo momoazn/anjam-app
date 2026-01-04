@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { organization } from "@/constants";
-import { getHomeRoute } from "@/lib/mode-features";
+import { getHomeRoute } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
 import type { OrganizationsResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";

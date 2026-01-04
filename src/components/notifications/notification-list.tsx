@@ -2,13 +2,10 @@ import { IconBell, IconTerminal } from "@tabler/icons-react";
 import { isThisWeek, isToday, isYesterday } from "date-fns-jalali";
 
 import { NotificationItem } from "@/components/notifications/notification-item";
+import { NotificationSkeleton } from "@/components/notifications/notification-skeleton";
 import { EmptyStateNoNotifications } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  loading,
-  notifications as notificationsText,
-  shared,
-} from "@/constants";
+import { notifications as notificationsText, shared } from "@/constants";
 import type { NotificationsRecord } from "@/lib/pocketbase-types";
 
 const getDateGroup = (dateString?: string | null) => {
@@ -71,16 +68,7 @@ export function NotificationList({
   );
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center">
-          <IconBell className="text-primary size-10 animate-pulse opacity-20" />
-        </div>
-        <h3 className="text-muted-foreground text-sm font-bold">
-          {loading.notifications}
-        </h3>
-      </div>
-    );
+    return <NotificationSkeleton />;
   }
 
   if (error) {

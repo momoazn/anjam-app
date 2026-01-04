@@ -32,8 +32,7 @@ import {
 } from "@/components/ui/sidebar";
 import { app, navigation, navigationLabels } from "@/constants";
 import { usePermissions } from "@/hooks/use-permissions";
-import { isFeatureEnabled } from "@/lib/mode-features";
-import { getModeLabels } from "@/lib/mode-labels";
+import { getModeLabels, isFeatureEnabled } from "@/lib/mode";
 import type { Permission } from "@/lib/permissions";
 import { isOrgAdmin } from "@/lib/permissions";
 import {
@@ -71,7 +70,7 @@ interface NavItemSet {
 function getNavItemsForMode(
   preset: NavPreset,
   labels: ReturnType<typeof getModeLabels>,
-  features: ReturnType<typeof import("@/lib/mode-features").getOrgFeatures>,
+  features: ReturnType<typeof import("@/lib/mode").getOrgFeatures>,
   can: (permission: Permission) => boolean,
   showAdminItems: boolean,
 ): NavItemSet {

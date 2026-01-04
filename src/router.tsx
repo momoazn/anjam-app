@@ -21,11 +21,11 @@ import {
 } from "@/constants";
 
 import { usePermissions } from "./hooks/use-permissions";
-import type { FeatureKey } from "./lib/mode-features";
-import { getHomeRoute, isFeatureEnabled } from "./lib/mode-features";
+import type { FeatureKey } from "./lib/mode";
+import { getHomeRoute, isFeatureEnabled } from "./lib/mode";
 import type { Permission } from "./lib/permissions";
 import {
-  useAuthIsLoggedIn,
+  useAuthIsAuthenticated,
   useAuthStore,
   useAuthUser,
   useCurrentOrgFeatures,
@@ -232,7 +232,7 @@ const Onboarding = createLazyPage(
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isLoggedIn = useAuthIsLoggedIn();
+  const isLoggedIn = useAuthIsAuthenticated();
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -241,7 +241,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // RequireOrganization component - ensures user has an organization selected
 const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
-  const isLoggedIn = useAuthIsLoggedIn();
+  const isLoggedIn = useAuthIsAuthenticated();
   const currentOrg = useCurrentOrganization();
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
   const onboardingCompleted = useCurrentOrgOnboardingCompleted();
@@ -282,7 +282,7 @@ const PermissionProtectedRoute = ({
 }) => {
   const user = useAuthUser();
   const { can } = usePermissions();
-  const isLoggedIn = useAuthIsLoggedIn();
+  const isLoggedIn = useAuthIsAuthenticated();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -329,7 +329,7 @@ const FeatureProtectedRoute = ({
 }) => {
   const features = useCurrentOrgFeatures();
   const mode = useCurrentOrgMode();
-  const isLoggedIn = useAuthIsLoggedIn();
+  const isLoggedIn = useAuthIsAuthenticated();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -346,7 +346,7 @@ const FeatureProtectedRoute = ({
 
 // PublicRoute component (redirects authenticated users to appropriate home)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const isLoggedIn = useAuthIsLoggedIn();
+  const isLoggedIn = useAuthIsAuthenticated();
   const mode = useCurrentOrgMode();
 
   if (isLoggedIn) {

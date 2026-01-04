@@ -29,17 +29,14 @@ function TaskListGroupInner({
   selectedTasks = [],
   onSelectionChange,
 }: TaskListGroupProps) {
-  const [localSelectedTasks, setLocalSelectedTasks] =
-    useState<string[]>(selectedTasks);
   const [sortMode, setSortMode] = useState<TaskSortMode>("default");
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleTaskSelection = (taskId: string, selected: boolean) => {
     const newSelected = selected
-      ? [...localSelectedTasks, taskId]
-      : localSelectedTasks.filter((id) => id !== taskId);
+      ? [...selectedTasks, taskId]
+      : selectedTasks.filter((id) => id !== taskId);
 
-    setLocalSelectedTasks(newSelected);
     onSelectionChange?.(newSelected);
   };
 
@@ -69,6 +66,20 @@ function TaskListGroupInner({
     return cloned;
   }, [tasks, sortMode]);
 
+  const handleSelectAll = (selected: boolean) => {
+    const taskIds = tasks.map((t) => t.id);
+    const otherSelected = selectedTasks.filter((id) => !taskIds.includes(id));
+    const newSelected = selected
+      ? [...otherSelected, ...taskIds]
+      : otherSelected;
+    onSelectionChange?.(newSelected);
+  };
+
+  const allSelected = useMemo(() => {
+    if (tasks.length === 0) return false;
+    return tasks.every((t) => selectedTasks.includes(t.id));
+  }, [tasks, selectedTasks]);
+
   return (
     <section className="transition-colors duration-200" data-animate-stagger>
       <TaskListHeader
@@ -78,6 +89,9 @@ function TaskListGroupInner({
         onSortChange={setSortMode}
         isCollapsed={isCollapsed}
         onToggleCollapse={() => setIsCollapsed((prev) => !prev)}
+        enableSelection={enableSelection}
+        allSelected={allSelected}
+        onSelectAll={handleSelectAll}
       />
       {!isCollapsed && (
         <div className="bg-card/50 overflow-hidden rounded-b-xl border border-t-0">
@@ -89,7 +103,7 @@ function TaskListGroupInner({
                     task={task}
                     showProject={showProject}
                     isSelectable={enableSelection}
-                    isSelected={localSelectedTasks.includes(task.id)}
+                    isSelected={selectedTasks.includes(task.id)}
                     onSelectionChange={(selected) =>
                       handleTaskSelection(task.id, selected)
                     }

@@ -11,10 +11,6 @@ import { useAuthStore, useCurrentOrganization } from "@/store/auth-store";
 
 import { queryKeys } from "./query-keys";
 
-// =============================================================================
-// Types
-// =============================================================================
-
 type OrgRole = "owner" | "admin" | "member";
 type MemberStatus = "invited" | "active" | "suspended";
 
@@ -41,10 +37,6 @@ interface UpdateMemberRoleInput {
   role: OrgRole;
 }
 
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
 function buildMemberFilter(
   orgId: string,
   options?: UseOrgMembersOptions,
@@ -62,18 +54,6 @@ function buildMemberFilter(
   return filters.join(" && ");
 }
 
-// =============================================================================
-// Query Hooks
-// =============================================================================
-
-/**
- * Fetch all members of the current organization
- *
- * @example
- * const { data: members, isLoading } = useOrganizationMembers();
- * const { data: admins } = useOrganizationMembers({ role: "admin" });
- * const { data: pending } = useOrganizationMembers({ status: "invited" });
- */
 export function useOrganizationMembers(options?: UseOrgMembersOptions) {
   const currentOrg = useCurrentOrganization();
   const orgId = currentOrg?.id;
@@ -97,9 +77,6 @@ export function useOrganizationMembers(options?: UseOrgMembersOptions) {
   });
 }
 
-/**
- * Fetch a single organization member by ID
- */
 export function useOrganizationMember(
   memberId: string,
   options?: { enabled?: boolean },
@@ -118,17 +95,6 @@ export function useOrganizationMember(
   });
 }
 
-// =============================================================================
-// Mutation Hooks
-// =============================================================================
-
-/**
- * Invite a new member to the organization
- *
- * @example
- * const { mutate: invite, isPending } = useInviteOrgMember();
- * invite({ email: "user@example.com", role: "member" });
- */
 export function useInviteOrgMember() {
   const queryClient = useQueryClient();
   const currentOrg = useCurrentOrganization();
@@ -188,13 +154,6 @@ export function useInviteOrgMember() {
   });
 }
 
-/**
- * Update a member's role
- *
- * @example
- * const { mutate: updateRole } = useUpdateOrgMemberRole();
- * updateRole({ memberId: "abc123", role: "admin" });
- */
 export function useUpdateOrgMemberRole() {
   const queryClient = useQueryClient();
 
@@ -215,13 +174,6 @@ export function useUpdateOrgMemberRole() {
   });
 }
 
-/**
- * Remove a member from the organization
- *
- * @example
- * const { mutate: removeMember } = useRemoveOrgMember();
- * removeMember("member-id-123");
- */
 export function useRemoveOrgMember() {
   const queryClient = useQueryClient();
 
@@ -239,9 +191,6 @@ export function useRemoveOrgMember() {
   });
 }
 
-/**
- * Accept an invitation (for the invited user)
- */
 export function useAcceptOrgInvitation() {
   const queryClient = useQueryClient();
   const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
@@ -268,21 +217,11 @@ export function useAcceptOrgInvitation() {
   });
 }
 
-// =============================================================================
-// Selector Hooks (for specific data needs)
-// =============================================================================
-
-/**
- * Get count of active members in organization
- */
 export function useOrgMemberCount() {
   const { data: members } = useOrganizationMembers({ status: "active" });
   return members?.length ?? 0;
 }
 
-/**
- * Get count of pending invitations
- */
 export function usePendingInvitationsCount() {
   const { data: members } = useOrganizationMembers({ status: "invited" });
   return members?.length ?? 0;

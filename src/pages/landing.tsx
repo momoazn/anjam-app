@@ -16,10 +16,10 @@ import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { landing } from "@/constants";
 import { useTheme } from "@/hooks/use-theme";
-import { useAuthIsLoggedIn } from "@/store/auth-store";
+import { useAuthIsAuthenticated } from "@/store/auth-store";
 
 const LandingPage = () => {
-  const isLoggedIn = useAuthIsLoggedIn();
+  const isLoggedIn = useAuthIsAuthenticated();
   const { resolvedTheme, toggleTheme } = useTheme();
 
   return (

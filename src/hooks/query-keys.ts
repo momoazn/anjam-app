@@ -1,11 +1,5 @@
-/**
- * Centralized query key factory for React Query cache management.
- */
 import type { AuditLogsListParams } from "@/lib/audit-log-service";
 
-/**
- * Factory function to create query keys for a resource
- */
 function createQueryKeys<T extends string>(resource: T) {
   return {
     all: [resource] as const,
@@ -14,9 +8,6 @@ function createQueryKeys<T extends string>(resource: T) {
   };
 }
 
-/**
- * Helper to create list query keys with default options normalization
- */
 function createListQueryKeys<
   T extends string,
   TOptions extends Record<string, unknown>,

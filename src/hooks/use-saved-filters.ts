@@ -19,28 +19,20 @@ export interface SavedFilter {
 const STORAGE_KEY = "anjam_saved_filters";
 const DEFAULT_FILTER_KEY = "anjam_default_filter";
 
-/**
- * Hook for managing saved filters in localStorage
- */
 export function useSavedFilters() {
   const [savedFilters, setSavedFilters] = useState<SavedFilter[]>([]);
   const [defaultFilterId, setDefaultFilterId] = useState<string | null>(null);
 
-  // Load saved filters from localStorage
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const defaultId = localStorage.getItem(DEFAULT_FILTER_KEY);
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const defaultId = localStorage.getItem(DEFAULT_FILTER_KEY);
 
-      if (stored) {
-        const filters = JSON.parse(stored) as SavedFilter[];
-        setSavedFilters(filters);
-      }
-
-      setDefaultFilterId(defaultId);
-    } catch {
-      // Silently fail - filters will just be empty
+    if (stored) {
+      const filters = JSON.parse(stored) as SavedFilter[];
+      setSavedFilters(filters);
     }
+
+    setDefaultFilterId(defaultId);
   }, []);
 
   // Save filters to localStorage

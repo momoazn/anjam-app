@@ -8,7 +8,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { reports } from "@/constants";
 
 const chartConfig = {
@@ -55,7 +54,7 @@ export function TimelinessDonut({ data, onSliceClick }: Props) {
           }}
           fontSize={12}
           fill="var(--foreground)"
-          onClick={(entry: any) => onSliceClick?.(entry.key)}
+          onClick={(entry) => onSliceClick?.(entry.key)}
           style={{ cursor: onSliceClick ? "pointer" : "default" }}
         >
           {data.map((entry) => (
@@ -65,11 +64,17 @@ export function TimelinessDonut({ data, onSliceClick }: Props) {
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(_value: any, name: any, item: any) => {
+              formatter={(
+                _value: string | number,
+                name: string | number,
+                item: { payload?: { value?: number } },
+              ) => {
                 const total = data.reduce((a, b) => a + b.value, 0) || 1;
-                const pct = Math.round(((item?.value as number) / total) * 100);
+                const pct = Math.round(
+                  ((item.payload?.value ?? 0) / total) * 100,
+                );
                 return [
-                  `${digitsEnToFa(item?.value as number)} (${digitsEnToFa(pct)}%)`,
+                  `${digitsEnToFa(item.payload?.value ?? 0)} (${digitsEnToFa(pct)}%)`,
                   name,
                 ];
               }}

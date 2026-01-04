@@ -1,9 +1,3 @@
-/**
- * Project-related React Query hooks
- *
- * Provides hooks for fetching, creating, updating, and deleting projects.
- * Includes supervisor relationship handling and flexible sorting options.
- */
 import { UseMutationOptions, useQuery } from "@tanstack/react-query";
 
 import { ProjectWithSupervisor, pb } from "../lib/pocketbase";
@@ -23,11 +17,6 @@ const {
   invalidators: mutationInvalidators.crud.projects,
 });
 
-/**
- * Hook to fetch all projects
- * @param options - Configuration options for the query
- * @returns React Query result with projects data
- */
 export function useProjects(
   options: {
     enabled?: boolean;
@@ -49,11 +38,6 @@ export function useProjects(
   });
 }
 
-/**
- * Hook to fetch a single project by ID
- * @param options - Configuration options for the query
- * @returns React Query result with project data
- */
 export function useProject(options: { id: string; enabled?: boolean }) {
   const { id, enabled = true } = options;
 
@@ -65,11 +49,6 @@ export function useProject(options: { id: string; enabled?: boolean }) {
   });
 }
 
-/**
- * Hook to fetch a single project by ID with supervisor expanded
- * @param options - Configuration options for the query
- * @returns React Query result with project data including supervisor
- */
 export function useProjectWithSupervisor(options: {
   id: string;
   enabled?: boolean;
@@ -87,11 +66,6 @@ export function useProjectWithSupervisor(options: {
   });
 }
 
-/**
- * Hook to create a new project
- * @param options - Mutation options
- * @returns Mutation function for creating projects
- */
 export function useCreateProject(
   options?: UseMutationOptions<
     ProjectsResponse,
@@ -102,11 +76,6 @@ export function useCreateProject(
   return useCreateProjectMutation(options);
 }
 
-/**
- * Hook to update an existing project
- * @param options - Mutation options
- * @returns Mutation function for updating projects
- */
 export function useUpdateProject(
   options?: UseMutationOptions<
     ProjectsResponse,
@@ -117,11 +86,6 @@ export function useUpdateProject(
   return useUpdateProjectMutation(options);
 }
 
-/**
- * Hook to delete a project
- * @param options - Mutation options
- * @returns Mutation function for deleting projects
- */
 export function useDeleteProject(
   options?: UseMutationOptions<ProjectsResponse, Error, string>,
 ) {

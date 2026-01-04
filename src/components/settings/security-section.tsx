@@ -6,6 +6,7 @@ import {
   IconClock,
   IconLoader2,
   IconServer,
+  IconShield,
   IconShieldLock,
   IconTerminal,
   IconX,
@@ -98,6 +99,35 @@ export function SecuritySection() {
 
   return (
     <div className="space-y-8" data-animate-stagger>
+      {/* 2FA Section (Coming Soon) */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <IconShield className="text-primary size-4" />
+            <h3 className="text-sm font-bold tracking-tight">
+              {settings.security.twoFactorTitle}
+            </h3>
+          </div>
+          <div className="bg-border/20 h-px flex-1" />
+        </div>
+
+        <div className="bg-muted/10 border-border/40 rounded-xl border border-dashed p-6">
+          <div className="flex items-start gap-4">
+            <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+              <IconShieldLock className="size-5" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-sm font-bold tracking-tight">
+                {settings.security.twoFactorComingSoon}
+              </h4>
+              <p className="text-muted-foreground mt-1 text-[10px] font-medium leading-relaxed">
+                {settings.security.twoFactorInfo}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">

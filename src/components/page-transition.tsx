@@ -8,11 +8,6 @@ interface PageTransitionProps {
   disableStagger?: boolean;
 }
 
-/**
- * Provides a consistent entry animation for all pages and optionally staggers
- * direct child sections. The animation is implemented with CSS to avoid adding
- * heavy runtime dependencies while still supporting prefers-reduced-motion.
- */
 export function PageTransition({
   children,
   className,

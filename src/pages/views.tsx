@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { savedFilters as savedFiltersConstants, shared } from "@/constants";
 import { useSavedFilters } from "@/hooks/use-saved-filters";
-import { getModeLabels } from "@/lib/mode-labels";
+import { getModeLabels } from "@/lib/mode";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 /**

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -52,11 +51,14 @@ export function ThroughputChart({ data, onBarClick }: Props) {
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(value: any) => [
+              formatter={(value: string | number) => [
                 digitsEnToFa(value as number),
                 chartConfig.completed.label,
               ]}
-              labelFormatter={(label: any) => `${charts.dateLabel} ${label}`}
+              labelFormatter={(...args: unknown[]) => {
+                const label = args[3] as string;
+                return `${charts.dateLabel} ${label}`;
+              }}
             />
           }
         />
@@ -64,7 +66,10 @@ export function ThroughputChart({ data, onBarClick }: Props) {
           dataKey="count"
           fill={chartConfig.completed.color}
           radius={[4, 4, 0, 0]}
-          onClick={(entry: any) => onBarClick?.(entry.key, entry.label)}
+          onClick={(entry) => {
+            const data = entry as { key?: string; label?: string };
+            onBarClick?.(data.key ?? "", data.label ?? "");
+          }}
           style={{ cursor: onBarClick ? "pointer" : "default" }}
         />
       </BarChart>

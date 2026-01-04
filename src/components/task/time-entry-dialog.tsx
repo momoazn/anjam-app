@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { AlertTriangle } from "lucide-react";
@@ -67,7 +66,7 @@ export function TimeEntryDialog({
     minutesToHoursAndMinutes(currentMinutes);
 
   const form = useForm<TimeEntryForm>({
-    resolver: zodResolver(timeEntrySchema) as any,
+    resolver: zodResolver(timeEntrySchema) as never,
     defaultValues: {
       hours: currentHours,
       minutes: currentMins,

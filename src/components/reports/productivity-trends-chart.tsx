@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
@@ -96,13 +95,19 @@ export function ProductivityTrendsChart({
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value: any, name: any, props: any) => [
-                      value,
-                      props.payload?.isProjected
-                        ? reports.charts.employee.productivityTrends
-                            .projectedNextPeriod
-                        : name,
-                    ]}
+                    formatter={(
+                      value: string | number,
+                      name: string | number,
+                      item: { payload?: { isProjected?: boolean } },
+                    ) => {
+                      return [
+                        value,
+                        item.payload?.isProjected
+                          ? reports.charts.employee.productivityTrends
+                              .projectedNextPeriod
+                          : name,
+                      ];
+                    }}
                   />
                 }
               />

@@ -158,6 +158,11 @@ export default function CreateTask() {
                     </div>
 
                     <div className="space-y-6">
+                      {Object.keys(form.formState.errors).length > 0 && (
+                        <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg p-3 text-[10px] font-bold">
+                          {common.messages.invalidForm}
+                        </div>
+                      )}
                       <Button
                         type="submit"
                         disabled={isPending}
@@ -177,37 +182,6 @@ export default function CreateTask() {
                         <p>• فیلدهای ستاره‌دار الزامی هستند</p>
                         <p>• تسک‌ها برای جستجوی سراسری ایندکس می‌شوند</p>
                         <p>• مسئول تسک اعلان دریافت خواهد کرد</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="bg-muted/30 p-0">
-                  <CardContent className="p-6">
-                    <h3 className="text-muted-foreground mb-4 text-xs font-bold tracking-tight">
-                      System Status
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="border-border/50 flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground text-[11px] font-medium">
-                          Network
-                        </span>
-                        <span className="text-[11px] font-bold text-green-500">
-                          Online
-                        </span>
-                      </div>
-                      <div className="border-border/50 flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground text-[11px] font-medium">
-                          Database
-                        </span>
-                        <span className="text-[11px] font-bold text-green-500">
-                          Connected
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground text-[11px] font-medium">
-                          Latency
-                        </span>
-                        <span className="text-[11px] font-bold">24ms</span>
                       </div>
                     </div>
                   </CardContent>

@@ -1,17 +1,4 @@
-/**
- * Centralized Query Configuration
- *
- * Provides consistent staleTime and other query options across the application.
- * Adjust these values based on data volatility and user experience requirements.
- */
-
-/**
- * Stale time presets for different data types
- * - static: Rarely changing data (organization settings, user profiles)
- * - dynamic: Frequently changing data (tasks, comments)
- * - realtime: Always refetch (notifications)
- * - reference: Reference data that changes occasionally (projects, tags)
- */
+// Cache durations in ms
 export const STALE_TIMES = {
   /** 5 minutes - for rarely changing data like org settings, user preferences */
   static: 5 * 60 * 1000,
@@ -29,10 +16,7 @@ export const STALE_TIMES = {
   realtime: 0,
 } as const;
 
-/**
- * Garbage collection time presets
- * How long to keep unused data in cache
- */
+// Cache gc durations in ms
 export const GC_TIMES = {
   /** 10 minutes - for frequently accessed data */
   short: 10 * 60 * 1000,

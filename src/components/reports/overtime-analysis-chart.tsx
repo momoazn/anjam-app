@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,7 +68,10 @@ export function OvertimeAnalysisChart({ data }: Props) {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value: any, name: any) => [
+                    formatter={(
+                      value: string | number,
+                      name: string | number,
+                    ) => [
                       `${value}${name === reports.charts.employee.overtimeAnalysis.columns.workloadScore ? "%" : "h"}`,
                       name,
                     ]}

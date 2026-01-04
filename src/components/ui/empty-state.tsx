@@ -31,18 +31,23 @@ type EmptyStateProps = {
 
 function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <Card className="rounded-xl border-dashed shadow-none">
-      <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="bg-muted/50 mb-6 flex h-16 w-16 items-center justify-center rounded-2xl">
-          <div className="text-muted-foreground h-8 w-8">{icon}</div>
+    <Card className="border-border/40 bg-muted/5 group relative overflow-hidden rounded-3xl border-2 border-dashed shadow-none transition-all hover:bg-muted/10">
+      <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="bg-primary/10 text-primary relative mb-8 flex h-24 w-24 items-center justify-center rounded-full transition-transform duration-500 group-hover:scale-110">
+          <div className="absolute inset-0 animate-pulse rounded-full bg-primary/5" />
+          <div className="z-10 h-10 w-10">{icon}</div>
         </div>
-        <h3 className="mb-2 text-sm font-semibold text-foreground">{title}</h3>
+        <h3 className="mb-3 text-xl font-bold tracking-tight text-foreground">
+          {title}
+        </h3>
         {description && (
-          <p className="text-muted-foreground mb-8 max-w-sm text-xs leading-relaxed">
+          <p className="text-muted-foreground mb-10 max-w-sm text-sm font-medium leading-relaxed">
             {description}
           </p>
         )}
-        {action}
+        <div className="transition-all duration-300 group-hover:translate-y-[-4px]">
+          {action}
+        </div>
       </CardContent>
     </Card>
   );

@@ -3,8 +3,8 @@ import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
 import { logError } from "@/lib/logger";
-import type { OrgFeatures, OrgMode } from "@/lib/mode-features";
-import { getOrgFeatures } from "@/lib/mode-features";
+import type { OrgFeatures, OrgMode } from "@/lib/mode";
+import { getOrgFeatures } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationsResponse,
@@ -13,9 +13,6 @@ import type {
 
 type OrgRole = "owner" | "admin" | "member";
 
-/**
- * Organization settings type for mode features
- */
 interface OrganizationSettings {
   modeSettings?: {
     features?: {
@@ -60,6 +57,9 @@ interface AuthState {
   isLoading: boolean;
   isLoadingOrgs: boolean;
 
+  // Error states
+  orgsError: Error | null;
+
   // Actions
   login: (user: UsersResponse, token?: string) => void;
   updateUser: (user: UsersResponse) => void;
@@ -88,6 +88,7 @@ export const useAuthStore = create<AuthState>()(
         currentOrgFeatures: getOrgFeatures(undefined), // NEW
         isLoading: false,
         isLoadingOrgs: false,
+        orgsError: null,
 
         login: (user) => {
           set({
@@ -134,7 +135,7 @@ export const useAuthStore = create<AuthState>()(
           const { isAuthenticated } = get();
           if (!isAuthenticated) return;
 
-          set({ isLoadingOrgs: true });
+          set({ isLoadingOrgs: true, orgsError: null });
 
           try {
             const response = (await pb.send("/api/v1/organizations", {
@@ -171,7 +172,7 @@ export const useAuthStore = create<AuthState>()(
             }
           } catch (error) {
             logError("Failed to fetch organizations", error);
-            set({ userOrganizations: [] });
+            set({ userOrganizations: [], orgsError: error as Error });
           } finally {
             set({ isLoadingOrgs: false });
           }
@@ -228,6 +229,7 @@ export const useAuthStore = create<AuthState>()(
             currentOrgFeatures: getOrgFeatures(undefined),
             isLoading: false,
             isLoadingOrgs: false,
+            orgsError: null,
           });
         },
       }),
@@ -249,8 +251,6 @@ export const useAuthStore = create<AuthState>()(
 
 export const useAuthUser = () => useAuthStore((state) => state.user);
 export const useAuthIsAuthenticated = () =>
-  useAuthStore((state) => state.isAuthenticated);
-export const useAuthIsLoggedIn = () =>
   useAuthStore((state) => state.isAuthenticated);
 export const useCurrentOrganization = () =>
   useAuthStore((state) => state.currentOrganization);
@@ -295,3 +295,4 @@ export const useCurrentOrgMode = () =>
   useAuthStore((state) => state.currentOrgMode);
 export const useCurrentOrgFeatures = () =>
   useAuthStore((state) => state.currentOrgFeatures);
+export const useAuthOrgsError = () => useAuthStore((state) => state.orgsError);
