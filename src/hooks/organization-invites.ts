@@ -47,9 +47,9 @@ interface AcceptInviteInput {
 
 interface RegisterWithOrgInput {
   email: string;
+  username: string;
   password: string;
   passwordConfirm: string;
-  organizationName: string;
 }
 
 interface AuthResponse {
@@ -226,9 +226,9 @@ export function useRegisterWithOrg() {
   return useMutation({
     mutationFn: async ({
       email,
+      username,
       password,
       passwordConfirm,
-      organizationName,
     }: RegisterWithOrgInput): Promise<AuthResponse> => {
       const response = await fetch("/api/v1/register-with-org", {
         method: "POST",
@@ -237,9 +237,9 @@ export function useRegisterWithOrg() {
         },
         body: JSON.stringify({
           email,
+          username,
           password,
           passwordConfirm,
-          organizationName,
         }),
       });
 

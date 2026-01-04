@@ -1,6 +1,7 @@
 import {
   IconArrowLeft,
   IconArrowRight,
+  IconBuilding,
   IconCheck,
   IconFileDescription,
   IconFolderPlus,
@@ -38,12 +39,18 @@ const STEPS = [
     id: 2,
     title: auth.onboarding.step2.title,
     description: auth.onboarding.step2.description,
-    icon: IconFileDescription,
+    icon: IconBuilding,
   },
   {
     id: 3,
     title: auth.onboarding.step3.title,
     description: auth.onboarding.step3.description,
+    icon: IconFileDescription,
+  },
+  {
+    id: 4,
+    title: auth.onboarding.step4.title,
+    description: auth.onboarding.step4.description,
     icon: IconUserPlus,
   },
 ];
@@ -58,6 +65,7 @@ export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(1);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [orgName, setOrgName] = useState(currentOrg?.name || "");
   const [projectName, setProjectName] = useState("");
   const [inviteEmails, setInviteEmails] = useState<string[]>([""]);
 
@@ -66,13 +74,17 @@ export default function Onboarding() {
     mutationFn: async () => {
       if (!currentOrg) throw new Error("No organization selected");
 
-      // Update organization with logo if provided
+      // Update organization with logo and/or name if provided
       const formData = new FormData();
       if (logoFile) {
         formData.append("logo", logoFile);
       }
+      // Update organization name if changed
+      if (orgName.trim() && orgName.trim() !== currentOrg.name) {
+        formData.append("name", orgName.trim());
+      }
 
-      if (logoFile) {
+      if (logoFile || (orgName.trim() && orgName.trim() !== currentOrg.name)) {
         await pb.collection("organizations").update(currentOrg.id, formData);
       }
 
@@ -156,7 +168,7 @@ export default function Onboarding() {
   };
 
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -211,27 +223,52 @@ export default function Onboarding() {
           <div className="w-full space-y-4">
             <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/50 bg-muted/20 p-4">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <IconFolderPlus className="size-5 text-primary" />
+                <IconBuilding className="size-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium">
-                  {auth.onboarding.step2.createProject}
+                  {auth.onboarding.step2.organizationName}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {auth.onboarding.step2.projectDescription}
+                  {auth.onboarding.step2.organizationDescription}
                 </p>
               </div>
             </div>
             <Input
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder={auth.onboarding.step2.projectPlaceholder}
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
+              placeholder={auth.register.organizationNamePlaceholder}
               dir="rtl"
               className="text-right"
             />
           </div>
         );
       case 3:
+        return (
+          <div className="w-full space-y-4">
+            <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/50 bg-muted/20 p-4">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <IconFolderPlus className="size-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">
+                  {auth.onboarding.step3.createProject}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {auth.onboarding.step3.projectDescription}
+                </p>
+              </div>
+            </div>
+            <Input
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder={auth.onboarding.step3.projectPlaceholder}
+              dir="rtl"
+              className="text-right"
+            />
+          </div>
+        );
+      case 4:
         return (
           <div className="w-full space-y-4">
             {inviteEmails.map((email, index) => (

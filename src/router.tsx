@@ -13,6 +13,7 @@ import {
   notFound,
   organization,
   projects,
+  savedFilters,
   settings,
   tagsManagement,
   tasks,
@@ -434,7 +435,7 @@ const routes: RouteType[] = [
     element: <SelectOrganization />,
     protected: true,
     requiresOrg: false,
-    title: "Select Organization",
+    title: organization.title,
   },
   {
     path: "/organizations/new",
@@ -482,7 +483,7 @@ const routes: RouteType[] = [
     element: <Inbox />,
     protected: true,
     requiresOrg: true,
-    title: "Inbox",
+    title: "پیام‌ها و اعلانات",
   },
   {
     path: "/members",
@@ -500,14 +501,14 @@ const routes: RouteType[] = [
     element: <Issues />,
     protected: true,
     requiresOrg: true,
-    title: "Issues",
+    title: tasks.title,
   },
   {
     path: "/insights",
     element: <Insights />,
     protected: true,
     requiresOrg: true,
-    title: "Insights",
+    title: "بینش‌ها",
   },
   // Views page and saved-filters alias
   {
@@ -515,14 +516,14 @@ const routes: RouteType[] = [
     element: <Views />,
     protected: true,
     requiresOrg: true,
-    title: "Views",
+    title: savedFilters.views.title,
   },
   {
     path: "/saved-filters",
     element: <Views />,
     protected: true,
     requiresOrg: true,
-    title: "Saved Filters",
+    title: savedFilters.title,
   },
   {
     path: "/projects",

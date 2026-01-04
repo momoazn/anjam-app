@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { logError } from "@/lib/logger";
 import type { OrgFeatures, OrgMode } from "@/lib/mode";
-import { getOrgFeatures, normalizeOrgMode } from "@/lib/mode";
+import { getConfiguredOrgMode, getOrgFeatures } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationsResponse,
@@ -117,10 +117,11 @@ export const useAuthStore = create<AuthState>()(
 
         // Set current organization context
         setCurrentOrganization: (org, role) => {
-          const mode = org?.mode ? normalizeOrgMode(org.mode) : null;
+          // Use build-time configured mode instead of reading from org record
+          const mode = getConfiguredOrgMode();
           // Cast settings to the expected type
           const settings = org?.settings as OrganizationSettings | undefined;
-          const features = getOrgFeatures(mode, settings);
+          const features = getOrgFeatures(mode ?? "operations", settings);
 
           set({
             currentOrganization: org,
@@ -156,14 +157,13 @@ export const useAuthStore = create<AuthState>()(
             const { currentOrganization } = get();
             if (!currentOrganization && orgs.length > 0) {
               const firstOrg = orgs[0].organization;
-              const mode = firstOrg.mode
-                ? normalizeOrgMode(firstOrg.mode)
-                : null;
+              // Use build-time configured mode instead of reading from org record
+              const mode = getConfiguredOrgMode();
               // Cast settings to the expected type
               const settings = firstOrg.settings as
                 | OrganizationSettings
                 | undefined;
-              const features = getOrgFeatures(mode, settings);
+              const features = getOrgFeatures(mode ?? "operations", settings);
 
               set({
                 currentOrganization: firstOrg,
@@ -189,14 +189,13 @@ export const useAuthStore = create<AuthState>()(
           );
 
           if (orgWithRole) {
-            const mode = orgWithRole.organization.mode
-              ? normalizeOrgMode(orgWithRole.organization.mode)
-              : null;
+            // Use build-time configured mode instead of reading from org record
+            const mode = getConfiguredOrgMode();
             // Cast settings to the expected type
             const settings = orgWithRole.organization.settings as
               | OrganizationSettings
               | undefined;
-            const features = getOrgFeatures(mode, settings);
+            const features = getOrgFeatures(mode ?? "operations", settings);
 
             set({
               currentOrganization: orgWithRole.organization,
@@ -247,9 +246,8 @@ export const useAuthStore = create<AuthState>()(
           };
 
           const currentOrg = merged.currentOrganization ?? null;
-          const mode = currentOrg?.mode
-            ? normalizeOrgMode(currentOrg.mode)
-            : null;
+          // Use build-time configured mode instead of reading from org record
+          const mode = getConfiguredOrgMode();
           const settings = currentOrg?.settings as
             | OrganizationSettings
             | undefined;
@@ -257,7 +255,7 @@ export const useAuthStore = create<AuthState>()(
           return {
             ...merged,
             currentOrgMode: mode,
-            currentOrgFeatures: getOrgFeatures(mode, settings),
+            currentOrgFeatures: getOrgFeatures(mode ?? "operations", settings),
           };
         },
         partialize: (state) => ({

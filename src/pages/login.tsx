@@ -90,7 +90,7 @@ export default function Login() {
         <div className="text-primary flex items-center gap-3">
           <Logo size={40} showTelemetry />
           <span className="text-muted-foreground text-sm font-semibold tracking-tight">
-            {app.name} / {auth.login.secureAccess}
+            {app.name}
           </span>
         </div>
 
