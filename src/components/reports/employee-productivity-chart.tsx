@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,10 +93,10 @@ export function EmployeeProductivityChart({
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value: any, name: any) => [
-                      `${value} ${reports.completedTasks}`,
-                      name,
-                    ]}
+                    formatter={(
+                      value: string | number,
+                      name: string | number,
+                    ) => [`${value} ${reports.completedTasks}`, name]}
                   />
                 }
               />
@@ -105,7 +104,10 @@ export function EmployeeProductivityChart({
                 dataKey="count"
                 fill="var(--color-count)"
                 radius={[4, 4, 0, 0]}
-                onClick={(entry: any) => onBarClick?.(entry.key, entry.label)}
+                onClick={(entry) => {
+                  const data = entry as { key?: string; label?: string };
+                  onBarClick?.(data.key ?? "", data.label ?? "");
+                }}
                 style={{ cursor: onBarClick ? "pointer" : "default" }}
               />
             </BarChart>

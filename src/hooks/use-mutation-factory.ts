@@ -22,7 +22,6 @@ type FactoryMutationOptions<
 };
 
 export interface MutationFactoryConfig {
-  /** Whether to automatically show error toast on failure (default: true) */
   showErrorToast?: boolean;
 }
 

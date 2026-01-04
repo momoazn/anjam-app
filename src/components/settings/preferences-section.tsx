@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IconBell, IconPalette, IconSettings } from "@tabler/icons-react";
+import type { Icon as IconType } from "@tabler/icons-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -86,7 +86,7 @@ function SectionHeader({
   title,
   description,
 }: {
-  icon: any;
+  icon: IconType;
   title: string;
   description?: string;
 }) {

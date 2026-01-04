@@ -37,11 +37,6 @@ export interface CrudConfig<
   createDataType?: TCreateData;
 }
 
-/**
- * Creates standardized CRUD mutation hooks
- * @param config - Configuration object with collection, queryKeys, and invalidators
- * @returns Object with create, update, and delete mutation hooks
- */
 export function createCrudHooks<
   TRecord,
   TResponse,

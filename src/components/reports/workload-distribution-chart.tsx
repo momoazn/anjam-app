@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,15 +64,22 @@ export function WorkloadDistributionChart({ data }: Props) {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value: any, name: any, props: any) => {
-                      const workloadLevel = props?.payload?.workloadLevel as
+                    formatter={(
+                      value: string | number,
+                      name: string,
+                      item: {
+                        payload?: { workloadLevel?: string };
+                      },
+                    ) => {
+                      const workloadLevel = item.payload?.workloadLevel as
                         | "low"
                         | "medium"
                         | "high"
-                        | "critical";
+                        | "critical"
+                        | undefined;
                       const levelLabel =
                         reports.charts.employee.overtimeAnalysis.workloadLevels[
-                          workloadLevel
+                          workloadLevel ?? "low"
                         ] || workloadLevel;
                       return [`${value}% (${levelLabel})`, name];
                     }}

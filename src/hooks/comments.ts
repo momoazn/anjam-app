@@ -80,12 +80,6 @@ const useDeleteCommentMutation = createMutation<
   },
 );
 
-/**
- * Hook to fetch comments for a specific task with user expansion
- * @param taskId - The task ID to fetch comments for
- * @param options - Configuration options for the query
- * @returns React Query result with comments data
- */
 export function useComments(
   taskId: string,
   options: {
@@ -110,33 +104,18 @@ export function useComments(
   });
 }
 
-/**
- * Hook to create a new comment
- * @param options - Mutation options
- * @returns Mutation hook for creating comments
- */
 export function useCreateComment(
   options?: UseMutationOptions<CommentsResponse, Error, CreateCommentVariables>,
 ) {
   return useCreateCommentMutation(options);
 }
 
-/**
- * Hook to update a comment's content
- * @param options - Mutation options
- * @returns Mutation hook for updating comments
- */
 export function useUpdateComment(
   options?: UseMutationOptions<CommentsResponse, Error, UpdateCommentVariables>,
 ) {
   return useUpdateCommentMutation(options);
 }
 
-/**
- * Hook to soft delete a comment
- * @param options - Mutation options
- * @returns Mutation hook for soft deleting comments
- */
 export function useDeleteComment(
   options?: UseMutationOptions<CommentsResponse, Error, string>,
 ) {
