@@ -9,6 +9,7 @@ import {
   type IconBoxTone,
 } from "@/components/ui/icon-box";
 import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 // ============================================================================
 // Types
@@ -129,6 +130,47 @@ function StandardPageHeader({
   );
 }
 
+function ProductCompactPageHeader({
+  title,
+  subtitle,
+  description,
+  eyebrow,
+  icon: Icon,
+  actions,
+  className,
+}: PageHeaderProps) {
+  return (
+    <div className={cn("mb-4", className)}>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-2 text-right">
+            <Icon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+            <div className="flex flex-col">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-base font-semibold tracking-tight md:text-lg">
+                  {title}
+                </h1>
+                {eyebrow && (
+                  <div className="text-muted-foreground text-[10px] font-semibold opacity-70">
+                    {eyebrow}
+                  </div>
+                )}
+              </div>
+              {(subtitle || description) && (
+                <p className="text-muted-foreground mt-1 text-xs leading-relaxed font-medium">
+                  {subtitle ?? description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -137,6 +179,12 @@ function StandardPageHeader({
  * PageHeader - Standardized page header component
  */
 export function PageHeader(props: PageHeaderProps) {
+  const mode = useCurrentOrgMode();
+
+  if (mode === "product") {
+    return <ProductCompactPageHeader {...props} />;
+  }
+
   return <StandardPageHeader {...props} />;
 }
 

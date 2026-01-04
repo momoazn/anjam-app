@@ -1,5 +1,6 @@
 import React from "react";
 
+import { app } from "@/constants";
 import { cn } from "@/lib/utils";
 
 interface LogoProps extends React.SVGProps<SVGSVGElement> {
@@ -26,6 +27,7 @@ export const Logo: React.FC<LogoProps> = ({
         xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
+        <title>{app.name}</title>
         {/* Definitions for gradients */}
         <defs>
           <linearGradient
@@ -117,12 +119,12 @@ export const Logo: React.FC<LogoProps> = ({
       </svg>
       {showText && (
         <span className="text-foreground text-xl font-bold tracking-tight">
-          ANJAM
+          {app.name}
         </span>
       )}
       {showTelemetry && (
         <span className="text-muted-foreground font-mono text-xs tracking-wide opacity-60">
-          SYS_READY
+          {app.systemReady}
         </span>
       )}
     </div>

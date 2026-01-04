@@ -21,11 +21,11 @@ export default function NotFound() {
             <div className="flex items-center justify-center gap-3 opacity-40">
               <IconSearch className="size-4" />
               <span className="text-xs font-bold tracking-tight">
-                Error 404
+                {notFound.errorCode}
               </span>
             </div>
             <h1 className="text-5xl font-bold tracking-tight">
-              {app.name} — Lost
+              {app.name} — {notFound.lost}
             </h1>
           </div>
         </div>

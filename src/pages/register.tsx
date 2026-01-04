@@ -97,13 +97,13 @@ export default function Register() {
         <div className="text-primary flex items-center gap-3">
           <Logo size={40} showTelemetry />
           <span className="text-muted-foreground/70 text-sm font-bold tracking-tight">
-            {app.name} / Secure Access
+            {app.name} / {auth.login.secureAccess}
           </span>
         </div>
 
         <div className="relative">
           <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-bold select-none">
-            ANJAM
+            {app.logo}
           </div>
           <h2 className="relative z-10 text-6xl leading-tight font-bold tracking-tighter lg:text-7xl xl:text-8xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
@@ -157,7 +157,7 @@ export default function Register() {
                     dir="ltr"
                     onChange={(e) => setEmail(e.target.value)}
                     className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                    placeholder="name@company.com"
+                    placeholder={auth.login.placeholders.email}
                     required
                     autoFocus
                     disabled={submitting}
@@ -203,7 +203,7 @@ export default function Register() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                    placeholder="••••••••"
+                    placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
                     disabled={submitting}
@@ -227,7 +227,7 @@ export default function Register() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
-                    placeholder="••••••••"
+                    placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
                     disabled={submitting}

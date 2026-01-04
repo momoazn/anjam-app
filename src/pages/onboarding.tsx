@@ -240,7 +240,7 @@ export default function Onboarding() {
                   type="email"
                   value={email}
                   onChange={(e) => handleEmailChange(index, e.target.value)}
-                  placeholder="email@example.com"
+                  placeholder={auth.onboarding.placeholders.email}
                   dir="ltr"
                   className="flex-1"
                 />

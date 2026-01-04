@@ -31,6 +31,7 @@ export function SiteHeader() {
   const currentOrgMode = useCurrentOrgMode();
   const homeRoute = getHomeRoute(currentOrgMode);
   const modeLabels = getModeLabels(currentOrgMode);
+  const isProductMode = currentOrgMode === "product";
 
   const crumbs = useMemo(() => {
     const path = location.pathname;
@@ -59,42 +60,56 @@ export function SiteHeader() {
   }, [location.pathname, homeRoute, modeLabels]);
 
   return (
-    <header className="bg-background/60 sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border/40 backdrop-blur-md">
-      <div className="flex h-full items-center px-4 lg:px-6">
+    <header className="bg-background/60 sticky top-0 z-50 flex shrink-0 items-center border-b border-border/40 backdrop-blur-md">
+      <div
+        className={
+          isProductMode
+            ? "flex h-14 items-center px-3"
+            : "flex h-16 items-center px-4 lg:px-6"
+        }
+      >
         <SidebarTrigger className="hover:bg-muted/50 size-9 rounded-lg transition-all active:scale-95" />
       </div>
 
       {/* Middle Segment: Breadcrumb Console */}
       <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden px-4">
-        <Breadcrumb className="hidden min-w-0 flex-1 md:block">
-          <BreadcrumbList className="flex-nowrap">
-            {crumbs.map((c, idx) => (
-              <Fragment key={`${c.label}-${idx}`}>
-                <BreadcrumbItem className="shrink-0">
-                  {c.to ? (
-                    <BreadcrumbLink asChild>
-                      <Link
-                        to={c.to}
-                        className="text-muted-foreground hover:text-primary text-xs font-medium transition-colors"
-                      >
+        {!isProductMode ? (
+          <Breadcrumb className="hidden min-w-0 flex-1 md:block">
+            <BreadcrumbList className="flex-nowrap">
+              {crumbs.map((c, idx) => (
+                <Fragment key={`${c.label}-${idx}`}>
+                  <BreadcrumbItem className="shrink-0">
+                    {c.to ? (
+                      <BreadcrumbLink asChild>
+                        <Link
+                          to={c.to}
+                          className="text-muted-foreground hover:text-primary text-xs font-medium transition-colors"
+                        >
+                          {c.label}
+                        </Link>
+                      </BreadcrumbLink>
+                    ) : (
+                      <BreadcrumbPage className="text-foreground text-xs font-medium">
                         {c.label}
-                      </Link>
-                    </BreadcrumbLink>
-                  ) : (
-                    <BreadcrumbPage className="text-foreground text-xs font-medium">
-                      {c.label}
-                    </BreadcrumbPage>
+                      </BreadcrumbPage>
+                    )}
+                  </BreadcrumbItem>
+                  {idx < crumbs.length - 1 && (
+                    <BreadcrumbSeparator className="mx-1 opacity-40" />
                   )}
-                </BreadcrumbItem>
-                {idx < crumbs.length - 1 && (
-                  <BreadcrumbSeparator className="mx-1 opacity-40" />
-                )}
-              </Fragment>
-            ))}
-          </BreadcrumbList>
-        </Breadcrumb>
+                </Fragment>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+        ) : (
+          <div className="min-w-0 flex-1" />
+        )}
 
-        <div className="hidden w-[320px] xl:block">
+        <div
+          className={
+            isProductMode ? "w-full max-w-[420px]" : "hidden w-[320px] xl:block"
+          }
+        >
           <Button
             variant="outline"
             className="bg-muted/30 hover:bg-muted/50 relative h-9 w-full justify-start rounded-lg border-border/40 px-4 font-medium transition-all"

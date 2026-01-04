@@ -90,13 +90,13 @@ export default function Login() {
         <div className="text-primary flex items-center gap-3">
           <Logo size={40} showTelemetry />
           <span className="text-muted-foreground text-sm font-semibold tracking-tight">
-            {app.name} / Secure Access
+            {app.name} / {auth.login.secureAccess}
           </span>
         </div>
 
         <div className="relative">
           <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-bold select-none">
-            ANJAM
+            {app.logo}
           </div>
           <h2 className="relative z-10 text-6xl leading-tight font-bold tracking-tight lg:text-7xl xl:text-8xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
@@ -131,7 +131,7 @@ export default function Login() {
                     {auth.login.title}
                   </h3>
                   <p className="text-muted-foreground mt-1 text-xs font-medium">
-                    Please provide your credentials
+                    {auth.login.subtitle}
                   </p>
                 </div>
                 <IconShieldLock className="text-primary/20 size-8" />
@@ -151,7 +151,7 @@ export default function Login() {
                     dir="ltr"
                     onChange={(e) => setIdentity(e.target.value)}
                     className="h-12 rounded-xl px-4 font-bold"
-                    placeholder="name@company.com"
+                    placeholder={auth.login.placeholders.email}
                     required
                     autoFocus
                     disabled={submitting}
@@ -175,7 +175,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="h-12 rounded-xl px-4 font-bold"
-                    placeholder="••••••••"
+                    placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
                     disabled={submitting}
