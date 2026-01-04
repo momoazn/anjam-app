@@ -13,7 +13,7 @@ const baseUrl = import.meta.env.PROD ? "/" : "http://127.0.0.1:8090/";
 export const pb = new PocketBase(baseUrl) as TypedPocketBase;
 
 // Attach org context to all API requests
-pb.beforeSend = function (_url, options) {
+pb.beforeSend = function (url, options) {
   const storage = localStorage.getItem("anjam-auth-storage");
   if (storage) {
     try {
@@ -28,7 +28,7 @@ pb.beforeSend = function (_url, options) {
     }
   }
 
-  return options;
+  return { url, options };
 };
 
 export type TaskWithProject = TasksResponse<{

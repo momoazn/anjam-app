@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { logError } from "@/lib/logger";
 import type { OrgFeatures, OrgMode } from "@/lib/mode";
-import { getOrgFeatures } from "@/lib/mode";
+import { getOrgFeatures, normalizeOrgMode } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationsResponse,
@@ -117,7 +117,7 @@ export const useAuthStore = create<AuthState>()(
 
         // Set current organization context
         setCurrentOrganization: (org, role) => {
-          const mode = org?.mode ?? null;
+          const mode = org?.mode ? normalizeOrgMode(org.mode) : null;
           // Cast settings to the expected type
           const settings = org?.settings as OrganizationSettings | undefined;
           const features = getOrgFeatures(mode, settings);
@@ -156,7 +156,9 @@ export const useAuthStore = create<AuthState>()(
             const { currentOrganization } = get();
             if (!currentOrganization && orgs.length > 0) {
               const firstOrg = orgs[0].organization;
-              const mode = firstOrg.mode ?? null;
+              const mode = firstOrg.mode
+                ? normalizeOrgMode(firstOrg.mode)
+                : null;
               // Cast settings to the expected type
               const settings = firstOrg.settings as
                 | OrganizationSettings
@@ -187,7 +189,9 @@ export const useAuthStore = create<AuthState>()(
           );
 
           if (orgWithRole) {
-            const mode = orgWithRole.organization.mode ?? null;
+            const mode = orgWithRole.organization.mode
+              ? normalizeOrgMode(orgWithRole.organization.mode)
+              : null;
             // Cast settings to the expected type
             const settings = orgWithRole.organization.settings as
               | OrganizationSettings
@@ -236,12 +240,34 @@ export const useAuthStore = create<AuthState>()(
       {
         name: "anjam-auth-storage",
         storage: createJSONStorage(() => localStorage),
+        merge: (persistedState, currentState) => {
+          const merged = {
+            ...currentState,
+            ...(persistedState as Partial<AuthState>),
+          };
+
+          const currentOrg = merged.currentOrganization ?? null;
+          const mode = currentOrg?.mode
+            ? normalizeOrgMode(currentOrg.mode)
+            : null;
+          const settings = currentOrg?.settings as
+            | OrganizationSettings
+            | undefined;
+
+          return {
+            ...merged,
+            currentOrgMode: mode,
+            currentOrgFeatures: getOrgFeatures(mode, settings),
+          };
+        },
         partialize: (state) => ({
           user: state.user,
           isAuthenticated: state.isAuthenticated,
           currentOrganization: state.currentOrganization,
           currentOrgRole: state.currentOrgRole,
           userOrganizations: state.userOrganizations,
+          currentOrgMode: state.currentOrgMode,
+          currentOrgFeatures: state.currentOrgFeatures,
         }),
       },
     ),

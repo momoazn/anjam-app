@@ -134,6 +134,10 @@ const MyTasks = createLazyPage(
   () => import("@/pages/my-tasks"),
   errors.pageLoad.notFound,
 );
+const Inbox = createLazyPage(
+  () => import("@/pages/inbox"),
+  errors.pageLoad.notFound,
+);
 const Timesheet = createLazyPage(
   () => import("@/pages/timesheet"),
   errors.pageLoad.notFound,
@@ -235,6 +239,32 @@ const Onboarding = createLazyPage(
   () => import("@/pages/onboarding"),
   errors.pageLoad.notFound,
 );
+
+/**
+ * ModeProtectedRoute - Route guard that blocks access based on current org mode.
+ *
+ * If mode is not allowed, redirects to home route for the current mode.
+ */
+const ModeProtectedRoute = ({
+  children,
+  allowedModes,
+  redirectTo,
+}: {
+  children: React.ReactNode;
+  allowedModes: Array<"operations" | "product">;
+  redirectTo?: string;
+}) => {
+  const mode = useCurrentOrgMode();
+
+  if (!mode) return <>{children}</>;
+
+  if (!allowedModes.includes(mode)) {
+    const fallback = redirectTo ?? getHomeRoute(mode);
+    return <Navigate to={fallback} replace />;
+  }
+
+  return <>{children}</>;
+};
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -437,7 +467,11 @@ const routes: RouteType[] = [
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: (
+      <ModeProtectedRoute allowedModes={["operations"]}>
+        <Dashboard />
+      </ModeProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
     title: navigation.dashboard,
@@ -445,10 +479,21 @@ const routes: RouteType[] = [
   // Product mode route aliases
   {
     path: "/inbox",
-    element: <MyTasks />,
+    element: <Inbox />,
     protected: true,
     requiresOrg: true,
     title: "Inbox",
+  },
+  {
+    path: "/members",
+    element: (
+      <PermissionProtectedRoute permission="org.manage_members">
+        <OrgMembers />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    requiresOrg: true,
+    title: organization.members.title,
   },
   {
     path: "/issues",
@@ -586,14 +631,23 @@ const routes: RouteType[] = [
   },
   {
     path: "/tasks/calendar",
-    element: <TaskCalendar />,
+    element: (
+      <FeatureProtectedRoute feature="calendar">
+        <TaskCalendar />
+      </FeatureProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
+    feature: "calendar",
     title: tasks.calendar.title,
   },
   {
     path: "/my-tasks",
-    element: <MyTasks />,
+    element: (
+      <ModeProtectedRoute allowedModes={["operations"]}>
+        <MyTasks />
+      </ModeProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
     title: myTasks.title,
@@ -644,7 +698,11 @@ const routes: RouteType[] = [
   },
   {
     path: "/users",
-    element: <Users />,
+    element: (
+      <ModeProtectedRoute allowedModes={["operations"]}>
+        <Users />
+      </ModeProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
     permission: "org.manage_members",
@@ -652,7 +710,11 @@ const routes: RouteType[] = [
   },
   {
     path: "/users/new",
-    element: <CreateUser />,
+    element: (
+      <ModeProtectedRoute allowedModes={["operations"]}>
+        <CreateUser />
+      </ModeProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
     permission: "org.manage_members",
@@ -660,7 +722,11 @@ const routes: RouteType[] = [
   },
   {
     path: "/users/:id/edit",
-    element: <EditUser />,
+    element: (
+      <ModeProtectedRoute allowedModes={["operations"]}>
+        <EditUser />
+      </ModeProtectedRoute>
+    ),
     protected: true,
     requiresOrg: true,
     permission: "org.manage_members",
