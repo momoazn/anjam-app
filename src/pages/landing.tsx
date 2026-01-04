@@ -77,19 +77,19 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <header className="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pt-24 pb-12 text-center">
-        <h1 className="animate-in fade-in slide-in-from-bottom-8 from-foreground via-foreground to-foreground/60 relative mb-6 bg-linear-to-b bg-clip-text text-5xl font-bold tracking-tight text-transparent delay-200 duration-1000 md:text-7xl">
+        <h1 className="hero-title from-foreground via-foreground to-foreground/60 relative mb-6 bg-linear-to-b bg-clip-text text-5xl font-bold tracking-tight text-transparent md:text-7xl">
           {landing.shortBrandName}
         </h1>
 
-        <p className="animate-in fade-in slide-in-from-bottom-8 text-muted-foreground mb-10 max-w-xl px-4 text-base leading-relaxed font-medium delay-300 duration-1000 md:text-lg">
+        <p className="hero-description text-muted-foreground mb-10 max-w-xl px-4 text-base leading-relaxed font-medium md:text-lg">
           {landing.heroDescription}
         </p>
 
-        <div className="animate-in fade-in slide-in-from-bottom-8 flex flex-col justify-center gap-4 delay-500 duration-1000 sm:flex-row">
+        <div className="hero-buttons flex flex-col justify-center gap-4 sm:flex-row">
           <Button
             asChild
             size="lg"
-            className="bg-primary text-primary-foreground h-12 rounded-xl px-8 text-sm font-bold shadow-md transition-all hover:brightness-110 active:scale-95"
+            className="bg-primary text-primary-foreground h-12 rounded-xl px-8 text-sm font-bold shadow-md transition-[transform,filter] duration-200 ease-out hover:brightness-110 active:scale-95"
           >
             <Link to="/login">{landing.ctaButton}</Link>
           </Button>
@@ -97,14 +97,14 @@ const LandingPage = () => {
             asChild
             size="lg"
             variant="outline"
-            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground h-12 rounded-xl px-8 text-sm font-bold transition-all active:scale-95"
+            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground h-12 rounded-xl px-8 text-sm font-bold transition-[background-color,color,transform] duration-200 ease-out active:scale-95"
           >
             <a href="#features">{landing.featuresButton}</a>
           </Button>
         </div>
 
         {/* Hero Visual - Dashboard UI Mock */}
-        <div className="group animate-in fade-in zoom-in-95 relative mt-20 aspect-16/10 w-full max-w-4xl delay-700 duration-1000">
+        <div className="group hero-visual relative mt-20 aspect-16/10 w-full max-w-4xl">
           <div className="bg-card relative flex h-full w-full flex-col overflow-hidden rounded-2xl border shadow-2xl">
             {/* Mock UI Header */}
             <div className="border-border/40 bg-muted/20 flex h-12 shrink-0 items-center justify-between border-b px-6">
@@ -189,14 +189,14 @@ const LandingPage = () => {
             {
               label: landing.metrics.finalTransactions,
               value: digitsEnToFa("۸۵,۴۲۰"),
-              suffix: "LOGS",
+              suffix: landing.metricsSuffixes.logs,
               icon: <BarChart3 className="text-primary h-4 w-4" />,
               id: "metric-1",
             },
             {
               label: landing.metrics.avgTaskDelivery,
               value: digitsEnToFa("۴.۲"),
-              suffix: "DAYS",
+              suffix: landing.metricsSuffixes.days,
               icon: (
                 <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
               ),
@@ -205,7 +205,7 @@ const LandingPage = () => {
             {
               label: landing.metrics.activeProjects,
               value: digitsEnToFa("۱۲۴"),
-              suffix: "UNITS",
+              suffix: landing.metricsSuffixes.units,
               icon: (
                 <Layers className="h-4 w-4 text-orange-600 dark:text-orange-500" />
               ),
@@ -214,7 +214,7 @@ const LandingPage = () => {
             {
               label: landing.metrics.verifiedUsers,
               value: digitsEnToFa("۴۸۲"),
-              suffix: "ACTIVE_USERS",
+              suffix: landing.metricsSuffixes.activeUsers,
               icon: (
                 <Users className="h-4 w-4 text-purple-600 dark:text-purple-500" />
               ),
@@ -223,7 +223,7 @@ const LandingPage = () => {
           ].map((metric) => (
             <div
               key={metric.id}
-              className="group border-border/40 hover:border-primary/50 flex flex-col gap-4 border-e pe-6 text-right transition-colors duration-500 last:border-none"
+              className="group border-border/40 hover:border-primary/50 flex flex-col gap-4 border-e pe-6 text-right transition-colors duration-300 ease-out last:border-none"
             >
               <div className="flex items-center justify-end gap-2">
                 <span className="text-muted-foreground text-xs font-bold">
@@ -232,7 +232,7 @@ const LandingPage = () => {
                 {metric.icon}
               </div>
               <div className="flex flex-row-reverse items-baseline gap-2">
-                <span className="text-foreground group-hover:text-primary text-4xl font-bold transition-all duration-500">
+                <span className="text-foreground group-hover:text-primary text-4xl font-bold transition-colors duration-300 ease-out">
                   {metric.value}
                 </span>
                 <span className="text-muted-foreground font-mono text-[10px] font-bold tracking-tight">
@@ -301,15 +301,15 @@ const LandingPage = () => {
           ].map((feature) => (
             <div
               key={feature.id}
-              className="group bg-card hover:bg-primary/2 relative overflow-hidden rounded-2xl border p-10 text-right transition-all duration-500"
+              className="group bg-card hover:bg-primary/2 relative overflow-hidden rounded-2xl border p-10 text-right transition-[background-color,transform] duration-300 ease-out hover:translate-y-[-2px]"
             >
-              <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-8 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-500">
+              <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-8 flex h-12 w-12 items-center justify-center rounded-xl transition-[background-color,color] duration-300 ease-out">
                 {feature.icon}
               </div>
               <h3 className="text-foreground mb-4 text-xl font-bold tracking-tight">
                 {feature.title}
               </h3>
-              <p className="text-muted-foreground group-hover:text-foreground/80 text-sm leading-relaxed font-medium transition-colors">
+              <p className="text-muted-foreground group-hover:text-foreground/80 text-sm leading-relaxed font-medium transition-colors duration-300 ease-out">
                 {feature.desc}
               </p>
             </div>
