@@ -3,6 +3,7 @@ import {
   IconArrowRight,
   IconCheck,
   IconFileDescription,
+  IconFolderPlus,
   IconPhotoPlus,
   IconUserPlus,
 } from "@tabler/icons-react";
@@ -15,7 +16,6 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/constants";
 import { queryKeys } from "@/hooks/query-keys";
 import { handlePocketBaseError } from "@/lib/error-handler";
@@ -58,7 +58,7 @@ export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(1);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [description, setDescription] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [inviteEmails, setInviteEmails] = useState<string[]>([""]);
 
   // Mutation to complete onboarding
@@ -66,17 +66,22 @@ export default function Onboarding() {
     mutationFn: async () => {
       if (!currentOrg) throw new Error("No organization selected");
 
-      // Update organization with logo and description if provided
+      // Update organization with logo if provided
       const formData = new FormData();
       if (logoFile) {
         formData.append("logo", logoFile);
       }
-      if (description.trim()) {
-        formData.append("description", description.trim());
+
+      if (logoFile) {
+        await pb.collection("organizations").update(currentOrg.id, formData);
       }
 
-      if (logoFile || description.trim()) {
-        await pb.collection("organizations").update(currentOrg.id, formData);
+      // Create first project if name provided
+      if (projectName.trim()) {
+        await pb.collection("projects").create({
+          name: projectName.trim(),
+          organization: currentOrg.id,
+        });
       }
 
       // Process invite emails - create invite link if any valid emails provided
@@ -204,11 +209,25 @@ export default function Onboarding() {
       case 2:
         return (
           <div className="w-full space-y-4">
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={auth.onboarding.step2.description}
-              className="min-h-[150px] resize-none"
+            <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/50 bg-muted/20 p-4">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <IconFolderPlus className="size-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">
+                  {auth.onboarding.step2.createProject}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {auth.onboarding.step2.projectDescription}
+                </p>
+              </div>
+            </div>
+            <Input
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder={auth.onboarding.step2.projectPlaceholder}
+              dir="rtl"
+              className="text-right"
             />
           </div>
         );

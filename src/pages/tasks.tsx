@@ -39,7 +39,11 @@ import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
-export default function Tasks() {
+type TasksProps = {
+  viewMode?: "tasks" | "issues";
+};
+
+export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectionMode, setSelectionMode] = useState(false);
@@ -368,14 +372,16 @@ export default function Tasks() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         icon={ListTodo}
-        title={tasks.allTasks}
+        title={viewMode === "issues" ? "مشکلات گزارش شده" : tasks.allTasks}
         subtitle={
           totalTasks > 0
             ? tasks.header.tasksFound.replace(
                 "{count}",
                 digitsEnToFa(totalTasks).toString(),
               )
-            : tasks.header.manageTasks
+            : viewMode === "issues"
+              ? "مشکلات گزارش شده را مدیریت کنید"
+              : tasks.header.manageTasks
         }
         actions={
           <div className="flex items-center gap-2">

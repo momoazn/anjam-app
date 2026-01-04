@@ -37,7 +37,8 @@ const projectFormSchema = z.object({
       message:
         "Code must contain only letters (no numbers or special characters)",
     })
-    .transform((val) => val.toUpperCase()),
+    .transform((val) => val.toUpperCase())
+    .optional(),
   description: z.string().optional(),
   assets: z.array(z.instanceof(File)).optional(),
   supervisor: z.string().optional(),
@@ -65,7 +66,10 @@ export default function CreateProject() {
     mutationFn: async (data: z.infer<typeof projectFormSchema>) => {
       const formData = new FormData();
       formData.append("name", data.name);
-      formData.append("code", data.code.toUpperCase());
+      // Only append code if provided (backend will auto-generate if empty)
+      if (data.code) {
+        formData.append("code", data.code);
+      }
       formData.append("supervisor", data.supervisor || user?.id || "");
 
       if (currentOrg?.id) {
@@ -130,7 +134,8 @@ export default function CreateProject() {
               </div>
 
               <ProjectFields
-                control={form.control}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                control={form.control as any}
                 showSupervisor={true}
                 isAdmin={isAdmin}
               />

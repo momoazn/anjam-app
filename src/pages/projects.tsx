@@ -1,10 +1,11 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { Loader2, Plus, Target } from "lucide-react";
+import { Plus, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { ProjectListGroup } from "@/components/project/project-list-group";
+import { ProjectCardSkeleton } from "@/components/skeletons/project-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { useProjects } from "@/hooks";
@@ -63,19 +64,13 @@ export default function Projects() {
       />
 
       {isLoadingProjects ? (
-        <div className="flex h-full items-center justify-center py-24">
-          <div className="relative flex flex-col items-center">
-            <Loader2 className="text-primary size-12 animate-spin opacity-20" />
-            <span className="text-muted-foreground/50 mt-4 text-[10px] font-bold tracking-tight">
-              {projects.files.uploading}
-            </span>
-          </div>
-        </div>
+        <ProjectCardSkeleton />
       ) : (
         <ProjectListGroup
           projects={userProjects ?? []}
           onEdit={handleEdit}
           canEditDelete={canEditDelete}
+          canCreate={canCreateProject}
         />
       )}
     </PageTransition>
