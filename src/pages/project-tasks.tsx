@@ -228,8 +228,7 @@ export default function ProjectTasks() {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-8 rounded-lg px-3 text-xs font-semibold"
+            size="xs"
             onClick={() => setFiltersOpen((v) => !v)}
           >
             {filtersOpen ? "بستن فیلترها" : "فیلترها"}

@@ -187,8 +187,9 @@ export default function MyTasks() {
         </span>
       </Button>
       <Button
-        className="h-10 gap-2 rounded-lg px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
+        size="sm"
         onClick={() => navigate("/tasks/new")}
+        className="gap-2"
       >
         <IconPlus className="size-4.5" />
         <span>{tasks.addTask.buttons.newTask}</span>

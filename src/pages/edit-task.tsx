@@ -137,16 +137,18 @@ export default function EditTask() {
                 <Button
                   type="button"
                   variant="ghost"
+                  size="xs"
                   onClick={() => navigate(-1)}
-                  className="h-8 rounded-lg px-3 text-xs font-semibold"
+                  className="gap-2"
                 >
                   <IconArrowLeft className="me-2 size-4" />
                   {common.cancel}
                 </Button>
                 <Button
                   type="submit"
+                  size="xs"
                   disabled={isPending}
-                  className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
+                  className="gap-2"
                 >
                   {isPending ? (
                     <IconLoader2 className="me-1 size-4 animate-spin" />
@@ -184,8 +186,9 @@ export default function EditTask() {
           actions={
             <Button
               variant="ghost"
+              size="sm"
               onClick={() => navigate(-1)}
-              className="h-11 rounded-lg px-6 font-bold"
+              className="gap-2"
             >
               <IconArrowLeft className="me-2" size={18} stroke={2.5} />
               {common.cancel}
@@ -194,10 +197,10 @@ export default function EditTask() {
         />
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
               {/* Main Form Area */}
-              <div className="space-y-10 lg:col-span-8">
+              <div className="space-y-6 lg:col-span-8">
                 <div className="bg-card rounded-xl border p-8 shadow-sm">
                   <div className="mb-8 flex items-center gap-3 border-b pb-6">
                     <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">

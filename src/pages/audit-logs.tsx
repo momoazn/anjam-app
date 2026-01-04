@@ -118,14 +118,13 @@ export default function AuditLogs() {
             {hasFilters && (
               <Button
                 variant="ghost"
-                size="sm"
                 onClick={() => {
                   setResource("");
                   setAction("");
                   setClient("");
                   setSearch("");
                 }}
-                className="border-border/20 h-10 gap-2 rounded-xl border-e px-4 text-[10px] font-bold tracking-tight text-rose-500 transition-all hover:bg-rose-500/10"
+                className="gap-2 text-rose-500 hover:bg-rose-500/10"
               >
                 <IconX className="size-3" />
                 {auditLogs.filters.clear}
@@ -294,7 +293,7 @@ export default function AuditLogs() {
                   return (
                     <div
                       key={log.id}
-                      className="group bg-card hover:bg-muted/20 flex flex-col text-right transition-all"
+                      className="group bg-card hover:bg-muted/30 flex flex-col text-right transition-all"
                     >
                       <div className="relative grid grid-cols-12 overflow-hidden">
                         <div className="border-border/10 col-span-2 flex items-center justify-end border-s p-4 font-mono text-[10px] font-bold tracking-tight opacity-60">
@@ -409,8 +408,7 @@ export default function AuditLogs() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="border-border/40 h-8 rounded-xl px-4 text-[9px] font-bold tracking-tight transition-all active:scale-95 disabled:opacity-20"
+                  size="xs"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
@@ -418,8 +416,7 @@ export default function AuditLogs() {
                 </Button>
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="border-border/40 h-8 rounded-xl px-4 text-[9px] font-bold tracking-tight transition-all active:scale-95 disabled:opacity-20"
+                  size="xs"
                   onClick={() =>
                     setPage((p) => Math.min(data.totalPages, p + 1))
                   }

@@ -75,7 +75,7 @@ export default function PendingActivation() {
           <div className="border-border/20 border-t pt-6">
             <Button
               onClick={() => navigate("/login")}
-              className="h-14 w-full rounded-xl text-base font-bold tracking-tight shadow-sm transition-all active:scale-95"
+              className="w-full"
               size="lg"
             >
               {usersText.pendingActivation.backToLogin}

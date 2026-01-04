@@ -254,9 +254,7 @@ export default function Insights() {
         {/* Created This Week */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {reports.insights.createdThisWeek}
-            </CardTitle>
+            <CardTitle>{reports.insights.createdThisWeek}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -275,9 +273,7 @@ export default function Insights() {
         {/* Completed This Week */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {reports.insights.completedThisWeek}
-            </CardTitle>
+            <CardTitle>{reports.insights.completedThisWeek}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -296,9 +292,7 @@ export default function Insights() {
         {/* In Progress */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {reports.insights.inProgress}
-            </CardTitle>
+            <CardTitle>{reports.insights.inProgress}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -321,9 +315,7 @@ export default function Insights() {
         {/* Cycle Time */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {reports.insights.cycleTime}
-            </CardTitle>
+            <CardTitle>{reports.insights.cycleTime}</CardTitle>
             <IconClock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -342,9 +334,7 @@ export default function Insights() {
         {/* On-Time Rate */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {reports.insights.onTimeRate}
-            </CardTitle>
+            <CardTitle>{reports.insights.onTimeRate}</CardTitle>
             <IconCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -360,9 +350,7 @@ export default function Insights() {
         {/* Total Active */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              کل تسک‌های فعال
-            </CardTitle>
+            <CardTitle>کل تسک‌های فعال</CardTitle>
             <IconTrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -387,7 +375,7 @@ export default function Insights() {
         {/* Cycle Time Trend Chart */}
         <Card className={cardClassName}>
           <CardHeader>
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2">
               <IconTrendingUp className="h-4 w-4" />
               روند زمان چرخه (۸ هفته اخیر)
             </CardTitle>
@@ -445,7 +433,7 @@ export default function Insights() {
         {/* Workload by Assignee */}
         <Card className={cardClassName}>
           <CardHeader>
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2">
               <IconUsers className="h-4 w-4" />
               {reports.insights.workloadByAssignee}
             </CardTitle>

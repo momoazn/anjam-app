@@ -392,7 +392,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
                 variant="ghost"
                 onClick={() => navigate("/tasks/board")}
                 className={cn(
-                  "hover:bg-muted/50 gap-2 rounded-lg transition-all",
+                  "gap-2",
                   isProductMode
                     ? "h-8 px-3 text-xs font-semibold"
                     : "h-10 px-4 text-sm font-bold",
@@ -408,7 +408,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
                 variant="ghost"
                 onClick={toggleSelectionMode}
                 className={cn(
-                  "hover:bg-muted/50 gap-2 rounded-lg transition-all",
+                  "gap-2",
                   isProductMode
                     ? "h-8 px-3 text-xs font-semibold"
                     : "h-10 px-4 text-sm font-bold",

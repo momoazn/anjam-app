@@ -63,11 +63,7 @@ const LandingPage = () => {
           >
             {landing.loginButton}
           </Link>
-          <Button
-            asChild
-            variant="outline"
-            className="border-border hover:bg-accent h-9 rounded-xl px-5 text-xs font-bold shadow-sm transition-all active:scale-95"
-          >
+          <Button asChild variant="outline" size="xs">
             <Link to={isLoggedIn ? "/dashboard" : "/login"}>
               {isLoggedIn ? landing.dashboard : landing.getStarted}
             </Link>
@@ -86,19 +82,10 @@ const LandingPage = () => {
         </p>
 
         <div className="hero-buttons flex flex-col justify-center gap-4 sm:flex-row">
-          <Button
-            asChild
-            size="lg"
-            className="bg-primary text-primary-foreground h-12 rounded-xl px-8 text-sm font-bold shadow-md transition-[transform,filter] duration-200 ease-out hover:brightness-110 active:scale-95"
-          >
+          <Button asChild size="lg">
             <Link to="/login">{landing.ctaButton}</Link>
           </Button>
-          <Button
-            asChild
-            size="lg"
-            variant="outline"
-            className="border-border text-muted-foreground hover:bg-accent hover:text-foreground h-12 rounded-xl px-8 text-sm font-bold transition-[background-color,color,transform] duration-200 ease-out active:scale-95"
-          >
+          <Button asChild size="lg" variant="outline">
             <a href="#features">{landing.featuresButton}</a>
           </Button>
         </div>
@@ -331,18 +318,14 @@ const LandingPage = () => {
               {landing.ctaDescription}
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="text-primary h-14 rounded-xl border-none bg-white px-10 text-base font-bold shadow-lg transition-all hover:bg-zinc-100 active:scale-95"
-              >
+              <Button asChild size="lg" className="bg-white text-primary">
                 <Link to="/login">{landing.quickStart}</Link>
               </Button>
               <Button
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-14 rounded-xl border-white/20 bg-white/10 px-10 text-base font-bold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
+                className="border-white/20 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
               >
                 <a href="mailto:support@anjam.ir">
                   {landing.requestConsultation}

@@ -181,11 +181,8 @@ export function OrgMembersPage() {
         actions={
           <Button
             onClick={() => setIsInviteOpen(true)}
-            className={cn(
-              isProductMode
-                ? "h-8 rounded-lg px-3 text-xs font-semibold"
-                : "h-11 px-6",
-            )}
+            size={isProductMode ? "xs" : "sm"}
+            className="gap-2"
           >
             <IconUserPlus
               className={cn("me-2", isProductMode ? "size-4" : "size-5")}
@@ -412,7 +409,7 @@ export function OrgMembersPage() {
               <IconBox size="sm" tone="primary" className="mb-4">
                 <IconUserPlus className="size-7" />
               </IconBox>
-              <DialogTitle className="text-2xl font-bold tracking-tight">
+              <DialogTitle className="text-lg font-bold tracking-tight">
                 {organization.members.inviteDialog.title}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground text-sm font-medium">
@@ -431,7 +428,6 @@ export function OrgMembersPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 type="email"
-                className="h-11 rounded-xl"
               />
             </div>
             <div className="space-y-2">
@@ -442,7 +438,7 @@ export function OrgMembersPage() {
                 value={inviteRole}
                 onValueChange={(v) => setInviteRole(v as "admin" | "member")}
               >
-                <SelectTrigger className="h-11 rounded-xl text-right">
+                <SelectTrigger className="text-right">
                   <SelectValue
                     placeholder={
                       organization.members.inviteDialog.rolePlaceholder
@@ -464,7 +460,8 @@ export function OrgMembersPage() {
             <Button
               onClick={handleInvite}
               disabled={isInviting || !inviteEmail}
-              className="h-11 flex-1 rounded-xl"
+              size="sm"
+              className="flex-1"
             >
               {isInviting
                 ? organization.members.sending
@@ -473,7 +470,8 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsInviteOpen(false)}
-              className="h-11 flex-1 rounded-xl"
+              size="sm"
+              className="flex-1"
             >
               {shared.cancel}
             </Button>
@@ -534,11 +532,17 @@ export function OrgMembersPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateLinkOpen(false)}
-              className="h-11 flex-1 rounded-xl"
+              size="sm"
+              className="flex-1"
             >
               {shared.cancel}
             </Button>
-            <Button onClick={handleCreateInviteLink} disabled={isCreatingLink}>
+            <Button
+              onClick={handleCreateInviteLink}
+              disabled={isCreatingLink}
+              size="sm"
+              className="flex-1"
+            >
               {isCreatingLink
                 ? organization.members.loading
                 : organization.inviteLinks.createDialog.submit}

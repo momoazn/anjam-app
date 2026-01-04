@@ -208,13 +208,6 @@ const SelectOrganization = createLazyPage(
     })),
   errors.pageLoad.notFound,
 );
-const CreateOrganization = createLazyPage(
-  () =>
-    import("@/pages/organizations/create").then((module) => ({
-      default: module.CreateOrganizationPage,
-    })),
-  errors.pageLoad.notFound,
-);
 const OrgSettings = createLazyPage(
   () =>
     import("@/pages/settings/organization").then((module) => ({
@@ -280,6 +273,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = useAuthIsAuthenticated();
   const currentOrg = useCurrentOrganization();
+  const userOrganizations = useAuthStore((s) => s.userOrganizations);
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
   const onboardingCompleted = useCurrentOrgOnboardingCompleted();
 
@@ -296,8 +290,13 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // Redirect to organization selection if no organization is selected
-  if (!currentOrg) {
+  // If user has no organizations at all, redirect to onboarding to create one
+  if (!currentOrg && userOrganizations.length === 0) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  // Redirect to organization selection if no organization is selected but user has organizations
+  if (!currentOrg && userOrganizations.length > 0) {
     return <Navigate to="/select-organization" replace />;
   }
 
@@ -436,13 +435,6 @@ const routes: RouteType[] = [
     protected: true,
     requiresOrg: false,
     title: organization.title,
-  },
-  {
-    path: "/organizations/new",
-    element: <CreateOrganization />,
-    protected: true,
-    requiresOrg: false,
-    title: organization.create.title,
   },
   {
     path: "/settings/organization",

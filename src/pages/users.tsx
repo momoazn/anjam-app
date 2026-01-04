@@ -50,10 +50,7 @@ export default function Users() {
   }
 
   const headerActions = canCreateUsers ? (
-    <Button
-      className="h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
-      onClick={() => navigate("/users/new")}
-    >
+    <Button size="sm" onClick={() => navigate("/users/new")} className="gap-2">
       <IconPlus className="size-4.5" />
       <span>{usersText.create.button}</span>
     </Button>

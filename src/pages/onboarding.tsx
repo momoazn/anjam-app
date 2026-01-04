@@ -8,7 +8,7 @@ import {
   IconPhotoPlus,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/constants";
-import { queryKeys } from "@/hooks/query-keys";
+import { useCreateOrg } from "@/hooks/organization-invites";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { getHomeRoute } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
@@ -57,10 +57,10 @@ const STEPS = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const currentOrg = useCurrentOrganization();
   const mode = useCurrentOrgMode();
   const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
+  const createOrgMutation = useCreateOrg();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -72,27 +72,41 @@ export default function Onboarding() {
   // Mutation to complete onboarding
   const completeOnboarding = useMutation({
     mutationFn: async () => {
-      if (!currentOrg) throw new Error("No organization selected");
+      let orgId = currentOrg?.id;
+
+      // If no organization exists, create one first
+      if (!orgId) {
+        if (!orgName.trim()) {
+          throw new Error("Organization name is required");
+        }
+        const createResult = await createOrgMutation.mutateAsync(
+          orgName.trim(),
+        );
+        orgId = createResult.organization.id;
+      }
 
       // Update organization with logo and/or name if provided
       const formData = new FormData();
       if (logoFile) {
         formData.append("logo", logoFile);
       }
-      // Update organization name if changed
-      if (orgName.trim() && orgName.trim() !== currentOrg.name) {
+      // Update organization name if changed and org was not just created
+      if (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name) {
         formData.append("name", orgName.trim());
       }
 
-      if (logoFile || (orgName.trim() && orgName.trim() !== currentOrg.name)) {
-        await pb.collection("organizations").update(currentOrg.id, formData);
+      if (
+        logoFile ||
+        (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name)
+      ) {
+        await pb.collection("organizations").update(orgId!, formData);
       }
 
       // Create first project if name provided
       if (projectName.trim()) {
         await pb.collection("projects").create({
           name: projectName.trim(),
-          organization: currentOrg.id,
+          organization: orgId,
         });
       }
 
@@ -102,7 +116,7 @@ export default function Onboarding() {
       );
       if (validEmails.length > 0) {
         // Create an invite link with max uses equal to number of emails
-        await fetch(`/api/v1/organizations/${currentOrg.id}/invites`, {
+        await fetch(`/api/v1/organizations/${orgId}/invites`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -120,7 +134,7 @@ export default function Onboarding() {
       const memberships = await pb
         .collection("organization_members")
         .getFullList({
-          filter: `organization = "${currentOrg.id}" && user = "${pb.authStore.record?.id}"`,
+          filter: `organization = "${orgId}" && user = "${pb.authStore.record?.id}"`,
         });
 
       if (memberships.length > 0) {
@@ -130,7 +144,6 @@ export default function Onboarding() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
       fetchOrgs();
       navigate(getHomeRoute(mode), { replace: true });
     },

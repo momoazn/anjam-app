@@ -150,7 +150,7 @@ export default function Login() {
                     value={identity}
                     dir="ltr"
                     onChange={(e) => setIdentity(e.target.value)}
-                    className="h-12 rounded-xl px-4 font-bold"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.email}
                     required
                     autoFocus
@@ -174,7 +174,7 @@ export default function Login() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-12 rounded-xl px-4 font-bold"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
@@ -189,7 +189,8 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  className="h-14 w-full rounded-xl text-base font-bold shadow-sm"
+                  size="lg"
+                  className="w-full"
                   disabled={submitting}
                 >
                   <span className="flex items-center gap-2">

@@ -16,14 +16,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
-import { useRegisterWithOrg } from "@/hooks/organization-invites";
+import { useRegister } from "@/hooks/organization-invites";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
 export default function Register() {
   const navigate = useNavigate();
-  const registerMutation = useRegisterWithOrg();
+  const registerMutation = useRegister();
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -160,7 +160,7 @@ export default function Register() {
                     value={email}
                     dir="ltr"
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.email}
                     required
                     autoFocus
@@ -185,7 +185,7 @@ export default function Register() {
                     value={username}
                     dir="ltr"
                     onChange={(e) => setUsername(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    className="font-bold"
                     placeholder={auth.register.usernamePlaceholder}
                     disabled={submitting}
                   />
@@ -207,7 +207,7 @@ export default function Register() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
@@ -231,7 +231,7 @@ export default function Register() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-xl px-4 font-bold transition-all"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
@@ -246,7 +246,8 @@ export default function Register() {
 
                 <Button
                   type="submit"
-                  className="group h-14 w-full rounded-xl text-base font-bold shadow-sm transition-all active:scale-95"
+                  size="lg"
+                  className="w-full"
                   disabled={submitting}
                 >
                   <span className="flex items-center gap-2">

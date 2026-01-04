@@ -149,16 +149,17 @@ export default function EditProject() {
                   <Button
                     type="button"
                     variant="ghost"
+                    size="xs"
                     onClick={handleCancel}
                     disabled={isPending}
-                    className="h-8 rounded-lg px-3 text-xs font-semibold"
                   >
                     {common.cancel}
                   </Button>
                   <Button
                     type="submit"
+                    size="xs"
                     disabled={isPending}
-                    className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
+                    className="gap-2"
                   >
                     {isPending && (
                       <IconLoader2 className="me-1 size-4 animate-spin" />
@@ -195,16 +196,17 @@ export default function EditProject() {
                   <Button
                     type="button"
                     variant="outline"
+                    size="sm"
                     onClick={handleCancel}
                     disabled={isPending}
-                    className="h-11 rounded-xl px-6 font-medium transition-all"
                   >
                     {common.cancel}
                   </Button>
                   <Button
                     type="submit"
+                    size="sm"
                     disabled={isPending}
-                    className="h-11 gap-2 rounded-xl px-8 font-semibold shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
+                    className="gap-2"
                   >
                     {isPending && (
                       <IconLoader2 className="me-2 h-4 w-4 animate-spin" />

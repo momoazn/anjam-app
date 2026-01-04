@@ -177,9 +177,8 @@ export default function TaskDetails() {
             {isProductMode ? (
               <Button
                 variant="ghost"
-                size="sm"
+                size="xs"
                 onClick={() => navigate("/tasks")}
-                className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
               >
                 <ChevronRight className="h-4 w-4 rotate-180" />
                 {tasks.details.backToList}
@@ -187,25 +186,19 @@ export default function TaskDetails() {
             ) : null}
             <Button
               variant="outline"
-              size="sm"
+              size={isProductMode ? "xs" : "sm"}
               onClick={() => navigate(`/tasks/${id}/edit`)}
-              className={cn(
-                "gap-2 font-bold",
-                isProductMode ? "h-8 rounded-lg px-3 text-xs" : "h-9 px-4",
-              )}
+              className="gap-2"
             >
               <Pencil className="h-4 w-4" />
               {tasks.details.editButton}
             </Button>
             <Button
               variant="ghost"
-              size="sm"
+              size={isProductMode ? "xs" : "sm"}
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleteTask.isPending}
-              className={cn(
-                "text-destructive hover:bg-destructive/10 gap-2 font-bold",
-                isProductMode ? "h-8 rounded-lg px-3 text-xs" : "h-9 px-4",
-              )}
+              className="text-destructive hover:bg-destructive/10 gap-2"
             >
               <Trash className="h-4 w-4" />
               {tasks.details.buttons.delete}

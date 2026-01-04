@@ -206,7 +206,7 @@ export default function InviteAccept() {
                     value={email}
                     dir="ltr"
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.email}
                     required
                     autoFocus
@@ -230,7 +230,7 @@ export default function InviteAccept() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
@@ -254,7 +254,7 @@ export default function InviteAccept() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="border-border bg-muted/30 focus:border-primary/40 focus:bg-background focus:ring-primary/20 h-12 rounded-none px-4 font-bold transition-all"
+                    className="font-bold"
                     placeholder={auth.login.placeholders.password}
                     required
                     dir="ltr"
@@ -269,7 +269,8 @@ export default function InviteAccept() {
 
                 <Button
                   type="submit"
-                  className="group h-14 w-full rounded-none text-base font-black shadow-sm transition-all active:scale-95"
+                  size="lg"
+                  className="w-full"
                   disabled={submitting}
                 >
                   <span className="flex items-center gap-2">
