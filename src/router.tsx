@@ -104,6 +104,12 @@ const Tasks = createLazyPage(
   () => import("@/pages/tasks"),
   errors.pageLoad.tasks,
 );
+
+// Issues page wrapper - uses Tasks component with issues viewMode
+const Issues = () => {
+  const TasksComponent = Tasks as React.ComponentType<{ viewMode?: string }>;
+  return <TasksComponent viewMode="issues" />;
+};
 const CreateTask = createLazyPage(
   () => import("@/pages/create-task"),
   errors.pageLoad.tasks,
@@ -446,7 +452,7 @@ const routes: RouteType[] = [
   },
   {
     path: "/issues",
-    element: <Tasks />,
+    element: <Issues />,
     protected: true,
     requiresOrg: true,
     title: "Issues",
