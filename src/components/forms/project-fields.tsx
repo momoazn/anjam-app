@@ -27,6 +27,7 @@ type ProjectFieldsProps = {
     assets?: FileWithPreview[];
     supervisor?: string;
   }>;
+  codeMode?: "editable" | "readonly" | "hidden";
   showDescription?: boolean;
   showAssets?: boolean;
   showSupervisor?: boolean;
@@ -35,6 +36,7 @@ type ProjectFieldsProps = {
 
 export function ProjectFields({
   control,
+  codeMode,
   showDescription = true,
   showAssets = true,
   showSupervisor = false,
@@ -42,6 +44,8 @@ export function ProjectFields({
 }: ProjectFieldsProps) {
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
+  const resolvedCodeMode =
+    codeMode ?? (isProductMode ? "readonly" : "editable");
   const { data: allUsers } = useUsers({
     enabled: showSupervisor && isAdmin,
   });
@@ -62,7 +66,13 @@ export function ProjectFields({
 
   return (
     <div className="space-y-6 text-right">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div
+        className={
+          resolvedCodeMode === "hidden"
+            ? "grid grid-cols-1 gap-4"
+            : "grid grid-cols-1 gap-4 md:grid-cols-2"
+        }
+      >
         <GenericFormField
           control={control}
           name="name"
@@ -71,21 +81,25 @@ export function ProjectFields({
           required
         />
 
-        <GenericFormField
-          control={control}
-          name="code"
-          label={
-            isProductMode
-              ? `${projects.create.form.code} (اختیاری)`
-              : projects.create.form.code
-          }
-          type="input"
-          required={!isProductMode}
-          placeholder={
-            isProductMode ? "به صورت خودکار تولید می‌شود" : "e.g. ABC"
-          }
-          disabled={isProductMode}
-        />
+        {resolvedCodeMode === "hidden" ? null : (
+          <GenericFormField
+            control={control}
+            name="code"
+            label={
+              resolvedCodeMode === "readonly" && isProductMode
+                ? `${projects.create.form.code} (اختیاری)`
+                : projects.create.form.code
+            }
+            type="input"
+            required={!isProductMode}
+            placeholder={
+              resolvedCodeMode === "readonly" && isProductMode
+                ? "به صورت خودکار تولید می‌شود"
+                : "e.g. ABC"
+            }
+            disabled={resolvedCodeMode === "readonly"}
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

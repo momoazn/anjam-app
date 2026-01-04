@@ -21,24 +21,22 @@ import { queryKeys } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { pb } from "@/lib/pocketbase";
-import { useAuthUser, useCurrentOrganization } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
+import {
+  useAuthUser,
+  useCurrentOrgMode,
+  useCurrentOrganization,
+} from "@/store/auth-store";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: projects.create.form.nameRequired }),
   code: z
     .string()
-    .min(1, {
-      message: projects.create.form.codeRequired,
-    })
-    .length(3, {
-      message: "Code must be exactly 3 characters",
-    })
-    .regex(/^[A-Za-z]+$/, {
-      message:
-        "Code must contain only letters (no numbers or special characters)",
-    })
-    .transform((val) => val.toUpperCase())
-    .optional(),
+    .trim()
+    .optional()
+    .refine((val) => !val || /^[A-Za-z]{3}$/.test(val), {
+      message: "Code must be exactly 3 letters",
+    }),
   description: z.string().optional(),
   assets: z.array(z.instanceof(File)).optional(),
   supervisor: z.string().optional(),
@@ -48,6 +46,8 @@ export default function CreateProject() {
   const navigate = useNavigate();
   const user = useAuthUser();
   const currentOrg = useCurrentOrganization();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const queryClient = useQueryClient();
   const isAdmin = user?.role === "admin";
 
@@ -55,7 +55,7 @@ export default function CreateProject() {
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
       name: "",
-      code: "",
+      code: undefined,
       description: "",
       assets: [],
       supervisor: undefined,
@@ -68,7 +68,7 @@ export default function CreateProject() {
       formData.append("name", data.name);
       // Only append code if provided (backend will auto-generate if empty)
       if (data.code) {
-        formData.append("code", data.code);
+        formData.append("code", data.code.toUpperCase());
       }
       formData.append("supervisor", data.supervisor || user?.id || "");
 
@@ -107,18 +107,84 @@ export default function CreateProject() {
     navigate("/projects");
   };
 
-  return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
-      <PageHeader
-        title={projects.create.title}
-        description={projects.create.description}
-        icon={IconStack2}
-      />
+  const headerActions = (
+    <div className="flex items-center gap-2">
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={handleCancel}
+        disabled={isPending}
+        className={cn(
+          "rounded-lg",
+          isProductMode
+            ? "h-8 px-3 text-xs font-semibold"
+            : "h-11 px-6 font-bold",
+        )}
+      >
+        <IconX className="me-2 size-4" stroke={2.5} />
+        {common.cancel}
+      </Button>
+      <Button
+        type="submit"
+        disabled={isPending}
+        className={cn(
+          "shadow-primary/20 rounded-lg",
+          isProductMode
+            ? "h-8 px-3 text-xs font-semibold shadow-sm"
+            : "h-11 px-8 font-bold shadow-lg",
+        )}
+      >
+        {isPending ? (
+          <IconLoader2 className="me-2 size-4 animate-spin" stroke={2.5} />
+        ) : (
+          <IconDeviceFloppy className="me-2 size-4" stroke={2.5} />
+        )}
+        {projects.create.submit}
+      </Button>
+    </div>
+  );
 
-      <div className="mt-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="bg-card rounded-xl border p-6 shadow-sm">
+  return (
+    <PageTransition
+      className={cn(
+        "mx-auto w-full p-4 md:p-6",
+        isProductMode ? "max-w-3xl" : "max-w-7xl",
+      )}
+    >
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={cn(isProductMode ? "space-y-4" : "space-y-8")}
+        >
+          {isProductMode ? (
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 text-right">
+                <h1 className="truncate text-base font-semibold">
+                  {projects.create.title}
+                </h1>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {projects.create.description}
+                </p>
+              </div>
+              {headerActions}
+            </div>
+          ) : (
+            <PageHeader
+              title={projects.create.title}
+              description={projects.create.description}
+              icon={IconStack2}
+            />
+          )}
+
+          <div
+            className={cn(
+              "rounded-xl border border-border/40",
+              isProductMode
+                ? "bg-background/30 p-4 shadow-none"
+                : "bg-card p-6 shadow-sm",
+            )}
+          >
+            {!isProductMode ? (
               <div className="mb-8 flex items-center gap-4 border-b pb-6">
                 <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
                   <IconStack2 className="size-6" stroke={2} />
@@ -132,45 +198,24 @@ export default function CreateProject() {
                   </p>
                 </div>
               </div>
+            ) : null}
 
-              <ProjectFields
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                control={form.control as any}
-                showSupervisor={true}
-                isAdmin={isAdmin}
-              />
-            </div>
+            <ProjectFields
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              control={form.control as any}
+              codeMode={isProductMode ? "hidden" : "editable"}
+              showSupervisor={!isProductMode}
+              isAdmin={isAdmin}
+            />
+          </div>
 
+          {isProductMode ? null : (
             <div className="flex items-center justify-end gap-3">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleCancel}
-                disabled={isPending}
-                className="h-11 rounded-lg px-6 font-bold"
-              >
-                <IconX className="me-2 size-4" stroke={2.5} />
-                {common.cancel}
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="shadow-primary/20 h-11 rounded-lg px-8 font-bold shadow-lg"
-              >
-                {isPending ? (
-                  <IconLoader2
-                    className="me-2 size-4 animate-spin"
-                    stroke={2.5}
-                  />
-                ) : (
-                  <IconDeviceFloppy className="me-2 size-4" stroke={2.5} />
-                )}
-                {projects.create.submit}
-              </Button>
+              {headerActions}
             </div>
-          </form>
-        </Form>
-      </div>
+          )}
+        </form>
+      </Form>
     </PageTransition>
   );
 }

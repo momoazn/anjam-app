@@ -5,12 +5,27 @@ import {
   IconStar,
   IconStarFilled,
 } from "@tabler/icons-react";
-import { Edit, FileText, Layers, Target, Trash, Users } from "lucide-react";
+import {
+  Edit,
+  FileText,
+  Layers,
+  MoreHorizontal,
+  Target,
+  Trash,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { EmptyStateNoProjects } from "@/components/ui/empty-state";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -26,6 +41,7 @@ import {
 import type { ProjectsResponse } from "@/lib/pocketbase-types";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 type ProjectListGroupProps = {
   projects: ProjectsResponse[];
@@ -41,6 +57,8 @@ export function ProjectListGroup({
   canCreate = false,
 }: ProjectListGroupProps) {
   const navigate = useNavigate();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedProject, setSelectedProject] =
     useState<ProjectsResponse | null>(null);
@@ -94,6 +112,127 @@ export function ProjectListGroup({
         ) : (
           <EmptyStateNoProjects />
         )
+      ) : isProductMode ? (
+        <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
+          {projects.map((project) => {
+            const progress = getProjectProgress(project.id);
+            const isFavorite = favoriteIds.includes(project.id);
+
+            return (
+              <div
+                key={project.id}
+                className="group border-b border-border/40 last:border-b-0"
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="flex h-auto w-full items-center justify-between gap-3 rounded-none px-3 py-3 text-right hover:bg-muted/30"
+                  onClick={() => navigate(`/projects/${project.id}/tasks`)}
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleFavorite(e, project.id)}
+                      className={cn(
+                        "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                        isFavorite
+                          ? "bg-amber-500/10 text-amber-500"
+                          : "text-muted-foreground/50 hover:bg-muted/40",
+                      )}
+                      aria-label="علاقه‌مندی"
+                    >
+                      {isFavorite ? (
+                        <IconStarFilled className="size-4" />
+                      ) : (
+                        <IconStar className="size-4" />
+                      )}
+                    </button>
+
+                    <div className="min-w-0">
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <IconHash className="size-3" />
+                        <span className="font-mono text-[10px] font-bold tracking-wider">
+                          {project.code}
+                        </span>
+                        <span className="text-[10px] font-semibold opacity-70 tabular-nums">
+                          {digitsEnToFa(progress.progress)}%
+                        </span>
+                      </div>
+                      <div className="truncate text-sm font-semibold">
+                        {project.name}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="text-muted-foreground hidden items-center gap-2 text-xs font-semibold tabular-nums sm:flex">
+                      <span>
+                        {digitsEnToFa(progress.completed)}/
+                        {digitsEnToFa(progress.total)}
+                      </span>
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 rounded-lg"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreHorizontal className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="border-border bg-card rounded-xl border shadow-lg"
+                      >
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigate(`/projects/${project.id}/details`)
+                          }
+                          className="gap-2 rounded-lg p-3 text-xs font-semibold"
+                        >
+                          <FileText className="size-4" />
+                          {projectsText.details.viewDetails}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigate(`/projects/${project.id}/users`)
+                          }
+                          className="gap-2 rounded-lg p-3 text-xs font-semibold"
+                        >
+                          <Users className="size-4" />
+                          {projectLabels.users}
+                        </DropdownMenuItem>
+                        {canEditDelete ? (
+                          <>
+                            <DropdownMenuSeparator className="bg-border/40" />
+                            <DropdownMenuItem
+                              onClick={() => onEdit(project.id)}
+                              className="gap-2 rounded-lg p-3 text-xs font-semibold"
+                            >
+                              <Edit className="size-4" />
+                              {projectsText.edit.title}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(project)}
+                              className="text-destructive gap-2 rounded-lg p-3 text-xs font-semibold hover:bg-destructive/10 hover:text-destructive"
+                            >
+                              <Trash className="size-4" />
+                              {projectsText.delete.title}
+                            </DropdownMenuItem>
+                          </>
+                        ) : null}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </Button>
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => {

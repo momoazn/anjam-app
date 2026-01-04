@@ -23,6 +23,8 @@ import {
 import { usePermissions } from "@/hooks/use-permissions";
 import { pb } from "@/lib/pocketbase";
 import { formatUserName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 const projectRoles = ["owner", "admin", "member", "viewer"] as const;
 
@@ -39,6 +41,8 @@ type MemberToRemove = {
 } | null;
 
 export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const { can } = usePermissions(projectId);
   const canManageMembers = can("project.manage_members");
   const { data: members } = useProjectMembers(projectId);
@@ -93,7 +97,10 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
         {canManageMembers && (
           <Button
             onClick={() => setIsAddOpen(true)}
-            className="h-10 rounded-xl px-6 text-[10px] font-bold tracking-tight"
+            className={cn(
+              "text-[10px] font-bold tracking-tight",
+              isProductMode ? "h-8 rounded-lg px-3" : "h-10 rounded-xl px-6",
+            )}
           >
             {projects.users.add}
           </Button>
@@ -109,7 +116,12 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
           className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border"
           data-animate-stagger
         >
-          <div className="bg-muted/20 border-border/40 grid h-10 grid-cols-12 border-b">
+          <div
+            className={cn(
+              "bg-muted/20 border-border/40 grid grid-cols-12 border-b",
+              isProductMode ? "h-9" : "h-10",
+            )}
+          >
             <div className="border-border/10 col-span-6 flex items-center justify-end border-s px-6">
               <span className="text-[9px] font-bold tracking-tight opacity-60">
                 {projects.users.table.user}
@@ -138,7 +150,12 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                 key={member.id}
                 className="group bg-card hover:bg-muted/30 relative grid grid-cols-12 overflow-hidden text-right transition-all"
               >
-                <div className="border-border/10 col-span-6 flex items-center justify-end gap-3 border-s px-6 py-4">
+                <div
+                  className={cn(
+                    "border-border/10 col-span-6 flex items-center justify-end gap-3 border-s px-6",
+                    isProductMode ? "py-3" : "py-4",
+                  )}
+                >
                   <div className="flex flex-col items-end">
                     <span className="mb-1 text-[11px] leading-none font-bold tracking-tight">
                       {formatUserName(
@@ -160,7 +177,12 @@ export function ProjectMembersSection({ projectId }: ProjectMembersProps) {
                   />
                 </div>
 
-                <div className="border-border/10 col-span-4 flex items-center justify-end border-s px-6 py-4">
+                <div
+                  className={cn(
+                    "border-border/10 col-span-4 flex items-center justify-end border-s px-6",
+                    isProductMode ? "py-3" : "py-4",
+                  )}
+                >
                   {canManageMembers ? (
                     <Select
                       value={member.role}
