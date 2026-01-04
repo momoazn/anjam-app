@@ -27,10 +27,13 @@ import {
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export default function EditTask() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
 
   const { data: task, isLoading } = useTask({
     id: id ?? "",
@@ -112,6 +115,62 @@ export default function EditTask() {
       <div className="flex h-[50vh] items-center justify-center">
         <IconLoader2 className="text-primary size-8 animate-spin" />
       </div>
+    );
+  }
+
+  if (isProductMode) {
+    return (
+      <PageTransition className="mx-auto w-full max-w-3xl p-4 md:p-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0 text-right">
+                <h1 className="truncate text-base font-semibold">
+                  {tasks.edit.title}
+                </h1>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {tasks.details.displayIdLabel}: {task?.display_id || task?.id}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => navigate(-1)}
+                  className="h-8 rounded-lg px-3 text-xs font-semibold"
+                >
+                  <IconArrowLeft className="me-2 size-4" />
+                  {common.cancel}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
+                >
+                  {isPending ? (
+                    <IconLoader2 className="me-1 size-4 animate-spin" />
+                  ) : (
+                    <IconDeviceFloppy className="me-1 size-4" />
+                  )}
+                  {isPending
+                    ? tasks.edit.buttons.saving
+                    : tasks.edit.buttons.save}
+                </Button>
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4">
+              <TaskFields
+                control={form.control}
+                isInProject={!!task?.project}
+                projectId={task?.project ?? undefined}
+                variant="product"
+              />
+            </div>
+          </form>
+        </Form>
+      </PageTransition>
     );
   }
 

@@ -26,12 +26,15 @@ import { useDeleteTask, useTask, useUpdateTask } from "@/hooks";
 import { useComments } from "@/hooks/comments";
 import { handlePocketBaseError } from "@/lib/error-handler";
 import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
-import { useAuthUser } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
+import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
 
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const authUser = useAuthUser();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const pendingDeleteRef = useRef<number | null>(null);
 
@@ -144,9 +147,11 @@ export default function TaskDetails() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={task.title}
-        description={
-          <div className="flex items-center gap-2">
-            <span>{digitsEnToFa(task.display_id || "TASK-ID")}</span>
+        subtitle={
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-muted-foreground">
+            <span className="font-mono">
+              {digitsEnToFa(task.display_id || "TASK-ID")}
+            </span>
             <span className="text-muted-foreground/40">•</span>
             <span>
               {tasks.details.createdBy}{" "}
@@ -156,22 +161,38 @@ export default function TaskDetails() {
         }
         icon={Hash}
         eyebrow={
-          <Button
-            variant="link"
-            className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
-            onClick={() => navigate("/tasks")}
-          >
-            <ChevronRight className="mr-1 h-3 w-3 rotate-180" />
-            {tasks.details.backToList}
-          </Button>
+          isProductMode ? undefined : (
+            <Button
+              variant="link"
+              className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
+              onClick={() => navigate("/tasks")}
+            >
+              <ChevronRight className="mr-1 h-3 w-3 rotate-180" />
+              {tasks.details.backToList}
+            </Button>
+          )
         }
         actions={
           <div className="flex items-center gap-2">
+            {isProductMode ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/tasks")}
+                className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
+              >
+                <ChevronRight className="h-4 w-4 rotate-180" />
+                {tasks.details.backToList}
+              </Button>
+            ) : null}
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigate(`/tasks/${id}/edit`)}
-              className="h-9 gap-2 px-4 font-bold"
+              className={cn(
+                "gap-2 font-bold",
+                isProductMode ? "h-8 rounded-lg px-3 text-xs" : "h-9 px-4",
+              )}
             >
               <Pencil className="h-4 w-4" />
               {tasks.details.editButton}
@@ -181,7 +202,10 @@ export default function TaskDetails() {
               size="sm"
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleteTask.isPending}
-              className="text-destructive hover:bg-destructive/10 h-9 gap-2 px-4 font-bold"
+              className={cn(
+                "text-destructive hover:bg-destructive/10 gap-2 font-bold",
+                isProductMode ? "h-8 rounded-lg px-3 text-xs" : "h-9 px-4",
+              )}
             >
               <Trash className="h-4 w-4" />
               {tasks.details.buttons.delete}
@@ -190,7 +214,12 @@ export default function TaskDetails() {
         }
       />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div
+        className={cn(
+          "grid grid-cols-1 lg:grid-cols-3",
+          isProductMode ? "gap-4" : "gap-6",
+        )}
+      >
         <TaskDetailsContent
           task={task}
           comments={commentsData}

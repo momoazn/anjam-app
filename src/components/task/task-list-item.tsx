@@ -66,12 +66,10 @@ function TaskListItemInner({
     <Button
       variant="ghost"
       className={cn(
-        "group relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b p-0 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0",
-        // Linear theme styling for product mode
-        productClasses.surface,
+        "group relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b border-border/40 bg-transparent p-0 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0",
         productClasses.transition,
         productClasses.kbdFocus,
-        "hover:bg-white/5",
+        "hover:bg-muted/30",
         isSelected && (productClasses.selected || "bg-primary/5"),
         className,
       )}

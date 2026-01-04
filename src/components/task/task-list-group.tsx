@@ -6,6 +6,8 @@ import {
   TasksPriorityOptions,
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
+import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 import { TaskListHeader, type TaskSortMode } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
@@ -29,6 +31,8 @@ function TaskListGroupInner({
   selectedTasks = [],
   onSelectionChange,
 }: TaskListGroupProps) {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const [sortMode, setSortMode] = useState<TaskSortMode>("default");
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -81,7 +85,14 @@ function TaskListGroupInner({
   }, [tasks, selectedTasks]);
 
   return (
-    <section className="transition-colors duration-200" data-animate-stagger>
+    <section
+      className={cn(
+        "transition-colors duration-200",
+        isProductMode &&
+          "overflow-hidden rounded-xl border border-border/40 bg-background/30",
+      )}
+      data-animate-stagger
+    >
       <TaskListHeader
         taskCount={taskCount}
         status={status}
@@ -94,8 +105,19 @@ function TaskListGroupInner({
         onSelectAll={handleSelectAll}
       />
       {!isCollapsed && (
-        <div className="bg-card/50 overflow-hidden rounded-b-xl border border-t-0">
-          <ul className="divide-y" data-animate-stagger>
+        <div
+          className={cn(
+            !isProductMode &&
+              "bg-card/50 overflow-hidden rounded-b-xl border border-t-0",
+          )}
+        >
+          <ul
+            className={cn(
+              "divide-y",
+              isProductMode ? "divide-border/40" : "divide-border",
+            )}
+            data-animate-stagger
+          >
             {sortedTasks?.length > 0 ? (
               sortedTasks.map((task) => (
                 <li key={task.id}>
@@ -111,7 +133,9 @@ function TaskListGroupInner({
                 </li>
               ))
             ) : (
-              <div className="py-16 text-center">
+              <div
+                className={cn("py-16 text-center", isProductMode && "py-10")}
+              >
                 <span className="text-muted-foreground text-xs font-medium">
                   {tasksText.list.noTasks}
                 </span>

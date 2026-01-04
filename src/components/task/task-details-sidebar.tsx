@@ -21,6 +21,7 @@ import {
   taskStatusIcons,
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export type TaskDetailsSidebarProps = {
   task: TaskWithProject;
@@ -35,9 +36,123 @@ export function TaskDetailsSidebar({
   onDelete,
   isDeleting,
 }: TaskDetailsSidebarProps) {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const StatusIcon = taskStatusIcons[task.status];
   const PriorityIcon = priorityIcons[task.priority];
   const tags = task.expand?.tags || [];
+
+  if (isProductMode) {
+    return (
+      <div className="space-y-4">
+        <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
+          <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
+            <span className="text-muted-foreground text-xs font-semibold">
+              {tasks.details.quickInfoCardTitle}
+            </span>
+            <span className="font-mono text-xs font-semibold">
+              {digitsEnToFa(task.display_id)}
+            </span>
+          </div>
+
+          <div className="space-y-3 p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground text-xs font-medium">
+                {tasks.details.statusLabel}
+              </span>
+              <Badge
+                variant="outline"
+                className={cn(
+                  "rounded-md border-transparent px-2.5 py-0.5 text-xs font-bold",
+                  getStatusColorVariant(task.status, "badge"),
+                )}
+              >
+                <StatusIcon className="ms-1.5 h-3.5 w-3.5" />
+                {tasks.status[task.status]}
+              </Badge>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground text-xs font-medium">
+                {tasks.details.priorityLabel}
+              </span>
+              <Badge
+                variant="outline"
+                className={cn(
+                  "rounded-md border-transparent px-2.5 py-0.5 text-xs font-bold",
+                  priorityColors[task.priority],
+                )}
+              >
+                <PriorityIcon className="ms-1.5 h-3.5 w-3.5" />
+                {tasks.priority[task.priority]}
+              </Badge>
+            </div>
+
+            {tags.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 border-t border-border/40 pt-3">
+                {tags.map((tag) => (
+                  <Badge
+                    key={tag.id}
+                    style={{
+                      backgroundColor: tag.color,
+                      color: "#FFFFFF",
+                      border: "none",
+                    }}
+                    className="px-2 py-0 text-[9px] font-bold"
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="space-y-2 border-t border-border/40 pt-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground font-medium">
+                  {tasks.details.createdLabel}
+                </span>
+                <span className="font-semibold">
+                  {digitsEnToFa(formatTaskDate(task.created))}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground font-medium">
+                  {tasks.details.updatedLabel}
+                </span>
+                <span className="font-semibold">
+                  {digitsEnToFa(formatTaskDate(task.updated))}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
+          <div className="grid grid-cols-2 gap-px bg-border/40 p-px">
+            <Button
+              variant="ghost"
+              className="bg-background/20 hover:bg-muted/30 h-9 justify-center gap-2 rounded-lg text-xs font-semibold"
+              onClick={onEdit}
+            >
+              <IconPencil className="size-4" />
+              {tasks.details.editTaskButton}
+            </Button>
+            <Button
+              variant="ghost"
+              className="bg-background/20 hover:bg-destructive/10 text-destructive h-9 justify-center gap-2 rounded-lg text-xs font-semibold"
+              onClick={onDelete}
+              disabled={isDeleting}
+            >
+              <IconTrash className="size-4" />
+              {isDeleting
+                ? tasks.details.buttons.deleting
+                : tasks.details.buttons.delete}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

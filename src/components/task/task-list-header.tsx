@@ -21,6 +21,7 @@ import { task, tasks } from "@/constants";
 import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export type TaskSortMode = "default" | "priority" | "date";
 
@@ -49,6 +50,8 @@ export function TaskListHeader({
 }: TaskListHeaderProps) {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
 
   const IconComponent = taskStatusIcons[status];
   const statusColor = getStatusColorVariant(status, "icon");
@@ -60,6 +63,117 @@ export function TaskListHeader({
       navigate("/tasks/new");
     }
   };
+
+  if (isProductMode) {
+    return (
+      <div className="group flex flex-col">
+        <Button
+          variant="ghost"
+          className={cn(
+            "flex h-auto w-full items-center justify-between rounded-none px-3 py-2 text-right transition-colors focus-visible:ring-0",
+            "hover:bg-muted/30",
+          )}
+          onClick={onToggleCollapse}
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            {enableSelection && (
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={(checked) => onSelectAll?.(!!checked)}
+                className="size-4 rounded-md border-2"
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+
+            <div
+              className={cn(
+                "bg-background flex size-7 items-center justify-center rounded-md border",
+                statusColor,
+              )}
+            >
+              <IconComponent className="size-4" />
+            </div>
+
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="truncate text-sm font-semibold">
+                {tasks.status[status]}
+              </span>
+              <span className="text-muted-foreground text-xs tabular-nums">
+                {digitsEnToFa(taskCount)}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-lg"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCreateTask();
+              }}
+            >
+              <Plus className="size-4" />
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-lg"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreHorizontal className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-xl p-2">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSortChange?.(
+                      sortMode === "priority" ? "default" : "priority",
+                    );
+                  }}
+                  className="gap-3 rounded-lg p-3 font-bold transition-colors"
+                >
+                  {sortMode === "priority" ? (
+                    <Check className="text-primary size-4" />
+                  ) : (
+                    <div className="size-4" />
+                  )}
+                  {task.sortByPriority}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSortChange?.(sortMode === "date" ? "default" : "date");
+                  }}
+                  className="gap-3 rounded-lg p-3 font-bold transition-colors"
+                >
+                  {sortMode === "date" ? (
+                    <Check className="text-primary size-4" />
+                  ) : (
+                    <div className="size-4" />
+                  )}
+                  {task.sortByDate}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <div className="text-muted-foreground flex size-8 items-center justify-center rounded-lg">
+              {isCollapsed ? (
+                <ChevronDown className="size-4 opacity-70" />
+              ) : (
+                <ChevronUp className="size-4 opacity-70" />
+              )}
+            </div>
+          </div>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="group relative mb-2 flex flex-col">

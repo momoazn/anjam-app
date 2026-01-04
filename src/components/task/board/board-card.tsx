@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconClock, IconHash, IconTarget } from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { TaskAssigneeAvatar } from "@/components/task/task-assignee-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ import {
   priorityIcons,
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 interface BoardCardProps {
   task: TaskWithProject;
@@ -24,6 +25,9 @@ interface BoardCardProps {
 
 export function BoardCard({ task }: BoardCardProps) {
   const navigate = useNavigate();
+  const { id: projectId } = useParams<{ id: string }>();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const {
     setNodeRef,
     attributes,
@@ -57,6 +61,7 @@ export function BoardCard({ task }: BoardCardProps) {
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
   const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
+  const showProjectLabel = !projectId;
 
   return (
     <Button
@@ -66,8 +71,10 @@ export function BoardCard({ task }: BoardCardProps) {
       {...attributes}
       {...listeners}
       className={cn(
-        "group border-border/40 bg-card hover:bg-muted/30 relative flex h-auto w-full cursor-grab flex-col gap-3 border-b p-4 text-right transition-all duration-200 hover:z-10 focus-visible:ring-0 active:cursor-grabbing",
-        "hover:border-primary/40",
+        "group relative flex h-auto w-full cursor-grab flex-col text-right transition-all duration-200 hover:z-10 focus-visible:ring-0 active:cursor-grabbing",
+        isProductMode
+          ? "hover:bg-muted/30 gap-2 rounded-none bg-transparent px-3 py-2.5"
+          : "border-border/40 bg-card hover:bg-muted/30 hover:border-primary/40 gap-3 border-b p-4",
       )}
       onClick={() => navigate(`/tasks/${task.id}`)}
     >
@@ -98,15 +105,19 @@ export function BoardCard({ task }: BoardCardProps) {
             assignee={assigneeRecord}
             hasAssigneeId={!!task.assignee}
             size="md"
-            indicatorClassName="border-card"
+            indicatorClassName={
+              isProductMode ? "border-background" : "border-card"
+            }
           />
 
-          <div className="flex items-center gap-1 opacity-40">
-            <IconTarget className="size-3" />
-            <span className="max-w-[100px] truncate text-[10px] font-bold">
-              {task.expand?.project?.name || dashboard.cards.noProject}
-            </span>
-          </div>
+          {showProjectLabel && (
+            <div className="flex items-center gap-1 opacity-40">
+              <IconTarget className="size-3" />
+              <span className="max-w-[100px] truncate text-[10px] font-bold">
+                {task.expand?.project?.name || dashboard.cards.noProject}
+              </span>
+            </div>
+          )}
         </div>
 
         {task.deadline && (
@@ -120,7 +131,7 @@ export function BoardCard({ task }: BoardCardProps) {
       </div>
 
       {/* Tags */}
-      {task.tags && task.tags.length > 0 && (
+      {!isProductMode && task.tags && task.tags.length > 0 && (
         <div className="relative z-10 flex w-full flex-wrap justify-end gap-1">
           {task.tags.map((tag) => (
             <Badge
@@ -137,7 +148,8 @@ export function BoardCard({ task }: BoardCardProps) {
       {/* Visual Status Bar */}
       <div
         className={cn(
-          "absolute inset-y-0 end-0 w-1 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
+          "absolute inset-y-0 end-0 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
+          isProductMode ? "w-0.5" : "w-1",
           getStatusColorVariant(task.status, "icon").replace("text", "bg"),
         )}
       />

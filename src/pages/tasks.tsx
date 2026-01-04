@@ -37,7 +37,7 @@ import {
 } from "@/lib/pocketbase-types";
 import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
 
 type TasksProps = {
   viewMode?: "tasks" | "issues";
@@ -46,6 +46,8 @@ type TasksProps = {
 export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [page, setPage] = useState(1);
@@ -389,7 +391,12 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
               <Button
                 variant="ghost"
                 onClick={() => navigate("/tasks/board")}
-                className="hover:bg-muted/50 h-10 gap-2 rounded-lg px-4 text-sm font-bold transition-all"
+                className={cn(
+                  "hover:bg-muted/50 gap-2 rounded-lg transition-all",
+                  isProductMode
+                    ? "h-8 px-3 text-xs font-semibold"
+                    : "h-10 px-4 text-sm font-bold",
+                )}
               >
                 <LayoutGrid className="size-4" />
                 <span>{tasks.board.title}</span>
@@ -401,7 +408,10 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
                 variant="ghost"
                 onClick={toggleSelectionMode}
                 className={cn(
-                  "hover:bg-muted/50 h-10 gap-2 rounded-lg px-4 text-sm font-bold transition-all",
+                  "hover:bg-muted/50 gap-2 rounded-lg transition-all",
+                  isProductMode
+                    ? "h-8 px-3 text-xs font-semibold"
+                    : "h-10 px-4 text-sm font-bold",
                   selectionMode &&
                     "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30",
                 )}
@@ -416,7 +426,12 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
             </Toolbar>
 
             <Button
-              className="h-10 gap-2 rounded-lg px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
+              className={cn(
+                "gap-2 rounded-lg shadow-sm transition-all",
+                isProductMode
+                  ? "h-8 px-3 text-xs font-semibold"
+                  : "h-10 px-5 text-sm font-bold hover:scale-[1.02]",
+              )}
               onClick={() => navigate("/tasks/new")}
             >
               <Plus className="size-4.5" />
@@ -453,7 +468,10 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
         isLoadingUsers={isLoadingUsers}
       />
 
-      <div className="space-y-10" data-animate-stagger>
+      <div
+        className={cn("space-y-10", isProductMode && "space-y-4")}
+        data-animate-stagger
+      >
         <TaskListView
           isLoading={taskQuery.isPending}
           totalTasks={totalTasks}
@@ -467,7 +485,12 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       </div>
 
       {!taskQuery.isPending && totalTasks > 0 && (
-        <div className="border-border/20 mt-10 border-t pt-10">
+        <div
+          className={cn(
+            "border-border/20 border-t",
+            isProductMode ? "mt-6 pt-6" : "mt-10 pt-10",
+          )}
+        >
           <TaskPagination
             totalTasks={totalTasks}
             pageStart={pageStart}
