@@ -11,6 +11,29 @@ This document consolidates findings from 5 AI-generated cleanup plans (GPT, OPUS
 
 **Estimated impact**: 500-800 lines of code removal, improved type safety, better maintainability.
 
+## Completed Work (2026-01-04)
+
+The following items have been completed in this iteration:
+
+### Mode Files Consolidation ✅
+
+- **Merged**: `mode-features.ts`, `mode-labels.ts`, `mode-theme.ts` → `mode.ts`
+- **Deleted**: `mode-features.test.ts`
+- **Updated**: All imports across 9 files
+
+### Duplicate Code Removal ✅
+
+- **Deleted**: `src/lib/reports-utils.ts` (no longer imported anywhere)
+- **Deleted**: `src/lib/search-service.ts` (was already deleted in earlier iteration)
+- **Deleted**: `src/lib/permissions-service.ts` (was already deleted in earlier iteration)
+
+### ESLint Disable Cleanup ✅
+
+- **Fixed**: `src/pages/task-details.tsx` - Added justified eslint-disable with comments
+- **Fixed**: `src/pages/tasks.tsx` - Removed unnecessary sync useEffects, fixed React Compiler memoization
+- **Fixed**: `src/components/task/subtasks.tsx` - Added justified eslint-disable with comments
+- **Removed**: File-level blanket eslint-disable from `tasks.tsx`, `task-details.tsx`
+
 ---
 
 ## Priority 1: Critical Type Safety Issues (High Risk, High Reward)

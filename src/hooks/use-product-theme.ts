@@ -8,7 +8,7 @@ import {
   applyModeTheme,
   getProductClasses,
   isProductThemeActive,
-} from "@/lib/mode-theme";
+} from "@/lib/mode";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 /**

@@ -3,8 +3,8 @@ import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
 import { logError } from "@/lib/logger";
-import type { OrgFeatures, OrgMode } from "@/lib/mode-features";
-import { getOrgFeatures } from "@/lib/mode-features";
+import type { OrgFeatures, OrgMode } from "@/lib/mode";
+import { getOrgFeatures } from "@/lib/mode";
 import { pb } from "@/lib/pocketbase";
 import type {
   OrganizationsResponse,

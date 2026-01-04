@@ -21,8 +21,8 @@ import {
 } from "@/constants";
 
 import { usePermissions } from "./hooks/use-permissions";
-import type { FeatureKey } from "./lib/mode-features";
-import { getHomeRoute, isFeatureEnabled } from "./lib/mode-features";
+import type { FeatureKey } from "./lib/mode";
+import { getHomeRoute, isFeatureEnabled } from "./lib/mode";
 import type { Permission } from "./lib/permissions";
 import {
   useAuthIsAuthenticated,

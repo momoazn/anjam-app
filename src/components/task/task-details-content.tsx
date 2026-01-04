@@ -40,7 +40,7 @@ import {
 import type { CommentWithUser } from "@/hooks/comments";
 import { formatTaskDate } from "@/lib/date-utils";
 import { handlePocketBaseError } from "@/lib/error-handler";
-import { isFeatureEnabled } from "@/lib/mode-features";
+import { isFeatureEnabled } from "@/lib/mode";
 import type { TaskWithProject } from "@/lib/pocketbase";
 import { formatTimeSpent } from "@/lib/time-utils";
 import { formatUserName } from "@/lib/utils";

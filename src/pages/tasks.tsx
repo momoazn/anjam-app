@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable react-hooks/preserve-manual-memoization */
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   endOfDay,
@@ -244,7 +242,7 @@ export default function Tasks() {
 
     return parts.join(" && ");
   }, [
-    authUser?.id,
+    authUser,
     searchTerm,
     selectedAssignee,
     selectedDateRange,
@@ -253,11 +251,15 @@ export default function Tasks() {
     selectedTag,
   ]);
 
+  // Reset pagination when filters change
+  // This is a legitimate use of setState in effect for UI state synchronization
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (filterExpression) {
       setPage(1);
     }
   }, [filterExpression]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const { data: users, isPending: isLoadingUsers } = useUsers({
     batch: 100,
@@ -274,20 +276,6 @@ export default function Tasks() {
 
   const totalTasks = taskQuery.data?.totalItems ?? 0;
   const totalPages = taskQuery.data?.totalPages ?? 1;
-  const currentPage = taskQuery.data?.page ?? page;
-  const currentPerPage = taskQuery.data?.perPage ?? perPage;
-
-  useEffect(() => {
-    if (currentPage !== page) {
-      setPage(currentPage);
-    }
-  }, [currentPage, page]);
-
-  useEffect(() => {
-    if (currentPerPage !== perPage) {
-      setPerPage(currentPerPage);
-    }
-  }, [currentPerPage, perPage]);
 
   const groupedTasks = useMemo(() => {
     const items = taskQuery.data?.items;
@@ -367,10 +355,8 @@ export default function Tasks() {
     setPage(clamped);
   };
 
-  const pageStart =
-    totalTasks === 0 ? 0 : (currentPage - 1) * currentPerPage + 1;
-  const pageEnd =
-    totalTasks === 0 ? 0 : Math.min(currentPage * currentPerPage, totalTasks);
+  const pageStart = totalTasks === 0 ? 0 : (page - 1) * perPage + 1;
+  const pageEnd = totalTasks === 0 ? 0 : Math.min(page * perPage, totalTasks);
 
   const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
     Object.values(TASK_STATUS_CONFIG).map((config) => ({
@@ -480,9 +466,9 @@ export default function Tasks() {
             totalTasks={totalTasks}
             pageStart={pageStart}
             pageEnd={pageEnd}
-            currentPage={currentPage}
+            currentPage={page}
             totalPages={totalPages}
-            currentPerPage={currentPerPage}
+            currentPerPage={perPage}
             onPerPageChange={handlePerPageChange}
             onPageChange={handlePageChange}
           />
