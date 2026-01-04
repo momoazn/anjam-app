@@ -412,13 +412,13 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 	})
 }
 
-// handleRegisterWithOrg handles direct registration with org creation
+// handleRegisterWithOrg handles direct registration with default org creation
 func handleRegisterWithOrg(e *core.RequestEvent) error {
 	var body struct {
-		Email            string `json:"email"`
-		Password         string `json:"password"`
-		PasswordConfirm  string `json:"passwordConfirm"`
-		OrganizationName string `json:"organizationName"`
+		Email           string `json:"email"`
+		Username        string `json:"username"`
+		Password        string `json:"password"`
+		PasswordConfirm string `json:"passwordConfirm"`
 	}
 
 	if err := e.BindBody(&body); err != nil {
@@ -426,14 +426,26 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 	}
 
 	email := strings.TrimSpace(strings.ToLower(body.Email))
-	orgName := strings.TrimSpace(body.OrganizationName)
+	username := strings.TrimSpace(body.Username)
 
 	if email == "" || body.Password == "" {
 		return e.BadRequestError("Email and password required", nil)
 	}
 
-	if orgName == "" {
-		return e.BadRequestError(ErrOrgNameRequired, nil)
+	if username == "" {
+		return e.BadRequestError("Username is required", nil)
+	}
+
+	// Validate username format
+	if !regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString(username) {
+		return e.BadRequestError("Username can only contain letters, numbers, and underscores", nil)
+	}
+
+	if len(username) < 3 {
+		return e.BadRequestError("Username must be at least 3 characters", nil)
+	}
+	if len(username) > 30 {
+		return e.BadRequestError("Username must be at most 30 characters", nil)
 	}
 
 	// Validate password confirmation
@@ -454,11 +466,6 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		return e.BadRequestError("Email address is too long", nil)
 	}
 
-	// Validate organization name length
-	if len(orgName) > 100 {
-		return e.BadRequestError("Organization name must be at most 100 characters", nil)
-	}
-
 	// Check if email already exists
 	existingUser, err := e.App.FindFirstRecordByFilter(
 		CollectionUsers,
@@ -472,6 +479,19 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		return e.BadRequestError(ErrEmailAlreadyRegistered, nil)
 	}
 
+	// Check if username already exists
+	existingUsername, err := e.App.FindFirstRecordByFilter(
+		CollectionUsers,
+		"username = {:username}",
+		dbx.Params{"username": username},
+	)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return e.InternalServerError("Failed to check existing username", err)
+	}
+	if existingUsername != nil {
+		return e.BadRequestError("Username is already taken", nil)
+	}
+
 	var newUser *core.Record
 	var newOrg *core.Record
 	err = e.App.RunInTransaction(func(txApp core.App) error {
@@ -479,26 +499,6 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		usersCollection, err := txApp.FindCollectionByNameOrId(CollectionUsers)
 		if err != nil {
 			return err
-		}
-
-		// Generate unique username with collision handling
-		baseUsername := helpers.DeriveUsername(email)
-		username := baseUsername
-		usernameFound := false
-		for i := 0; i < 5; i++ {
-			existingUser, _ := txApp.FindFirstRecordByFilter(
-				CollectionUsers,
-				"username = {:username}",
-				dbx.Params{"username": username},
-			)
-			if existingUser == nil {
-				usernameFound = true
-				break
-			}
-			username = fmt.Sprintf("%s_%s", baseUsername, security.RandomString(5))
-		}
-		if !usernameFound {
-			return fmt.Errorf("failed to generate unique username after 5 attempts")
 		}
 
 		newUser = core.NewRecord(usersCollection)
@@ -512,14 +512,15 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 			return fmt.Errorf("failed to create user: %w", err)
 		}
 
-		// Create organization
+		// Create default organization with username-based name
+		defaultOrgName := fmt.Sprintf("%s's Organization", username)
 		orgCollection, err := txApp.FindCollectionByNameOrId(CollectionOrganizations)
 		if err != nil {
 			return err
 		}
 
 		// Generate unique slug with collision handling
-		originalSlug := helpers.Slugify(orgName)
+		originalSlug := helpers.Slugify(username)
 		slug := originalSlug
 		slugFound := false
 		for i := 0; i < 5; i++ {
@@ -542,7 +543,7 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		}
 
 		newOrg = core.NewRecord(orgCollection)
-		newOrg.Set("name", orgName)
+		newOrg.Set("name", defaultOrgName)
 		newOrg.Set("slug", slug)
 		newOrg.Set("active", true)
 		newOrg.Set("plan", "free")

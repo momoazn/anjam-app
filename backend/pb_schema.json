@@ -600,17 +600,6 @@
         "presentable": false,
         "system": false,
         "type": "autodate"
-      },
-      {
-        "hidden": false,
-        "id": "select_mode_001",
-        "maxSelect": 1,
-        "name": "mode",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "select",
-        "values": ["operations", "product"]
       }
     ],
     "indexes": [
