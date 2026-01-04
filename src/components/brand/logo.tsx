@@ -35,8 +35,8 @@ export const Logo: React.FC<LogoProps> = ({
             x2="100%"
             y2="100%"
           >
-            <stop offset="0%" stop-color="oklch(0.65 0.15 255)" />
-            <stop offset="100%" stop-color="oklch(0.55 0.18 255)" />
+            <stop offset="0%" stopColor="oklch(0.65 0.15 255)" />
+            <stop offset="100%" stopColor="oklch(0.55 0.18 255)" />
           </linearGradient>
         </defs>
 
@@ -82,7 +82,7 @@ export const Logo: React.FC<LogoProps> = ({
             x2="0"
             y2="0"
             stroke="white"
-            stroke-width="6"
+            strokeWidth="6"
             opacity="0.6"
           />
           <line
@@ -91,7 +91,7 @@ export const Logo: React.FC<LogoProps> = ({
             x2="0"
             y2="0"
             stroke="white"
-            stroke-width="6"
+            strokeWidth="6"
             opacity="0.6"
           />
           <line
@@ -100,7 +100,7 @@ export const Logo: React.FC<LogoProps> = ({
             x2="0"
             y2="0"
             stroke="white"
-            stroke-width="6"
+            strokeWidth="6"
             opacity="0.6"
           />
 
@@ -108,9 +108,9 @@ export const Logo: React.FC<LogoProps> = ({
           <path
             d="M -28 0 L -8 24 L 28 -16"
             stroke="oklch(0.55 0.18 255)"
-            stroke-width="9"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             fill="none"
           />
         </g>

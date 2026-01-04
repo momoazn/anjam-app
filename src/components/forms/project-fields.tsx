@@ -15,6 +15,7 @@ import { useUsers } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 import { FormField as GenericFormField } from "./form-field";
 
@@ -39,6 +40,8 @@ export function ProjectFields({
   showSupervisor = false,
   isAdmin = false,
 }: ProjectFieldsProps) {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const { data: allUsers } = useUsers({
     enabled: showSupervisor && isAdmin,
   });
@@ -71,10 +74,17 @@ export function ProjectFields({
         <GenericFormField
           control={control}
           name="code"
-          label={projects.create.form.code}
+          label={
+            isProductMode
+              ? `${projects.create.form.code} (اختیاری)`
+              : projects.create.form.code
+          }
           type="input"
-          required
-          placeholder="e.g. ABC"
+          required={!isProductMode}
+          placeholder={
+            isProductMode ? "به صورت خودکار تولید می‌شود" : "e.g. ABC"
+          }
+          disabled={isProductMode}
         />
       </div>
 
