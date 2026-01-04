@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "setup": "bun install && cd backend && go mod tidy && cd .. && bun run build",
     "dev": "concurrently \"bun run dev:server\" \"bun run dev:client\" -n \"SERVER,CLIENT\"",
     "dev:full": "concurrently \"bun run dev:server\" \"bun run dev:client\" -n \"SERVER,CLIENT\"",
     "dev:client": "bun x --bun vite --host",
@@ -32,7 +33,7 @@
     "type:check": "bun x --bun tsc -p tsconfig.app.json --noEmit --incremental && bun x --bun tsc -p tsconfig.node.json --noEmit --incremental",
     "check": "bun run type:check && bun run lint && bun run format",
     "fix": "bun run lint:fix && bun run format:fix",
-    "setup": "bun run scripts/setup.ts",
+    "setup:app": "bun run scripts/setup.ts",
     "data:seed": "bun run scripts/seed-data.ts",
     "data:reset": "bun run setup",
     "types:generate": "pocketbase-typegen --json ./backend/pb_schema.json --out src/lib/pocketbase-types.ts",
