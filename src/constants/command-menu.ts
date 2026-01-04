@@ -7,33 +7,41 @@
 export const commandMenu = {
   // Product mode labels
   product: {
-    inbox: "صندوق ورودی",
-    dashboard: "داشبورد",
-    projects: "پروژه‌ها",
+    inbox: "پیام‌ها و اعلانات",
+    dashboard: "میز کار",
+    projects: "پروژه‌های فعال",
     createItem: "ایجاد مورد جدید",
     createProject: "ایجاد پروژه جدید",
     insights: "بینش‌ها",
     settings: "تنظیمات",
     placeholder: "جستجو یا دستور تایپ کنید...",
-    noResults: "نتیجه‌ای یافت نشد.",
+    noResults: "موردی یافت نشد، لطفاً عبارت دیگری امتحان کنید",
   },
 
   // Operations mode labels
   operations: {
-    myTasks: "تسک‌های من",
-    dashboard: "داشبورد",
-    projects: "پروژه‌ها",
+    myTasks: "مسئولیت‌های من",
+    dashboard: "میز کار",
+    projects: "پروژه‌های فعال",
     createTask: "ایجاد تسک جدید",
     createProject: "ایجاد پروژه جدید",
     settings: "تنظیمات",
     placeholder: "تایپ کنید...",
-    noResults: "نتیجه‌ای یافت نشد.",
+    noResults: "موردی یافت نشد، لطفاً عبارت دیگری امتحان کنید",
   },
 
   // Keywords for search (both modes)
   keywords: {
-    inbox: ["inbox", "tasks", "my tasks", "صندوق", "تسک"] as string[],
-    dashboard: ["dashboard", "home", "داشبورد"] as string[],
+    inbox: [
+      "inbox",
+      "tasks",
+      "my tasks",
+      "صندوق",
+      "تسک",
+      "پیام",
+      "اعلان",
+    ] as string[],
+    dashboard: ["dashboard", "home", "داشبورد", "میز کار"] as string[],
     projects: ["projects", "پروژه"] as string[],
     new: [
       "new",
@@ -72,10 +80,10 @@ export const commandMenu = {
 
   // Keyboard navigation instructions
   navigationInstructions: {
-    upDown: "↑↓ برای حرکت",
+    upDown: "با ↑↓ حرکت کنید",
     enter: "↵ برای انتخاب",
-    escape: "esc برای بستن",
-    result: "نتیجه",
-    results: "نتایج",
+    escape: "esc برای خروج",
+    result: "مورد",
+    results: "مورد",
   },
 } as const;
