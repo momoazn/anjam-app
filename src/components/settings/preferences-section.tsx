@@ -261,7 +261,7 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="h-11 rounded-xl text-right">
+              <SelectTrigger className="text-right">
                 <SelectValue placeholder={settings.appearance.theme} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
@@ -291,7 +291,7 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="h-11 rounded-xl text-right">
+              <SelectTrigger className="text-right">
                 <SelectValue placeholder={settings.appearance.timezone} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
@@ -321,7 +321,7 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="h-11 rounded-xl text-right">
+              <SelectTrigger className="text-right">
                 <SelectValue placeholder={settings.appearance.dateFormat} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">

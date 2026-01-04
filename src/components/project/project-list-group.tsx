@@ -126,7 +126,7 @@ export function ProjectListGroup({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="flex h-auto w-full items-center justify-between gap-3 rounded-none px-3 py-3 text-right hover:bg-muted/30"
+                  className="flex h-auto w-full items-center justify-between gap-3 rounded-none px-4 py-3 text-right hover:bg-muted/30"
                   onClick={() => navigate(`/projects/${project.id}/tasks`)}
                 >
                   <div className="flex min-w-0 items-center gap-3">

@@ -76,7 +76,7 @@ export function AddProjectMemberModal({
         <div className="bg-muted/20 border-border/40 flex items-center justify-between border-b px-6 py-4">
           <div className="flex items-center gap-3">
             <IconTerminal className="text-primary size-4" />
-            <DialogTitle className="text-sm font-bold tracking-tight">
+            <DialogTitle className="text-base font-bold tracking-tight">
               {projects.users.addDialog.title}
             </DialogTitle>
           </div>

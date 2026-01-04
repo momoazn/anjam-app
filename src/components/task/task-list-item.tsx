@@ -77,7 +77,7 @@ function TaskListItemInner({
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
       {/* Selection & Priority Zone */}
-      <div className="flex w-11 shrink-0 flex-col items-center justify-center gap-2 border-e py-2.5">
+      <div className="flex w-11 shrink-0 flex-col items-center justify-center gap-2 border-e px-2 py-3">
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
@@ -102,7 +102,7 @@ function TaskListItemInner({
       </div>
 
       {/* Main Content Zone */}
-      <div className="flex min-w-0 grow flex-col justify-center px-4 py-2.5 text-right">
+      <div className="flex min-w-0 grow flex-col justify-center px-4 py-3 text-right">
         <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-1 opacity-40">
             <IconHash className="size-2.5" />
@@ -155,7 +155,7 @@ function TaskListItemInner({
       </div>
 
       {/* Meta & Assignee Zone */}
-      <div className="flex items-center gap-5 px-5">
+      <div className="flex items-center gap-5 px-4 py-3">
         {/* Deadline Indicator */}
         <div className="hidden flex-col items-end text-right sm:flex">
           <div className="flex items-center gap-1 opacity-40">

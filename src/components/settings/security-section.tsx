@@ -204,15 +204,14 @@ export function SecuritySection() {
             <div className="pt-2">
               <Button
                 type="submit"
+                size="sm"
                 disabled={form.formState.isSubmitting}
-                className="h-10 gap-2 rounded-xl px-6 font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50"
+                className="gap-2"
               >
                 {form.formState.isSubmitting && (
                   <IconLoader2 className="h-3.5 w-3.5 animate-spin" />
                 )}
-                <span className="text-[11px] tracking-tight">
-                  {settings.security.updatePassword}
-                </span>
+                <span>{settings.security.updatePassword}</span>
               </Button>
             </div>
           </form>
