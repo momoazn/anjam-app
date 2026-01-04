@@ -7,6 +7,7 @@ import {
   IconFileText,
   IconHelp,
   IconInbox,
+  IconMessage,
   IconRocket,
   IconSettings,
   IconTag,
@@ -47,6 +48,7 @@ type NavItem = {
   url: string;
   icon?: React.ComponentType<{ className?: string }>;
   permission?: Permission;
+  external?: boolean;
 };
 
 type NavPreset = "operations" | "product";
@@ -127,6 +129,16 @@ function getNavItemsForMode(
           url: "/helps",
           icon: IconHelp,
         },
+        ...(preset === "product"
+          ? [
+              {
+                title: "بازخورد آلفا",
+                url: "https://github.com/mohammadhmn/anjam/issues/new?labels=alpha-feedback",
+                icon: IconMessage,
+                external: true,
+              } as const,
+            ]
+          : []),
       ],
     };
   }
@@ -325,6 +337,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarFooter className="border-border/40 relative z-10 flex flex-col border-t p-0">
         <NavMain items={navItems.navSecondary} title={navigation.helpSection} />
+        <div className="border-border/40 flex items-center justify-between border-t px-4 py-2">
+          <span className="text-muted-foreground text-[10px] font-medium">
+            نسخه ۰.۰.۰
+          </span>
+          <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+            آلفا
+          </span>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

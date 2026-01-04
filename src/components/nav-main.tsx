@@ -17,6 +17,7 @@ export type NavMainItem = {
   icon?: React.ComponentType<{ className?: string }>;
   badge?: React.ReactNode;
   children?: NavMainItem[];
+  external?: boolean;
 };
 
 type NavMainProps = {
@@ -39,51 +40,73 @@ export function NavMain({ items, title }: NavMainProps) {
         <SidebarMenu className="gap-0.5">
           {items.map((item) => {
             const path = location.pathname;
-            const active = path === item.url || path.startsWith(item.url + "/");
+            const active =
+              !item.external &&
+              (path === item.url || path.startsWith(item.url + "/"));
+            const linkContent = (
+              <SidebarMenuButton
+                tooltip={item.title}
+                className={cn(
+                  "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
+                  active
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                )}
+                aria-current={active ? "page" : undefined}
+              >
+                {item.icon && (
+                  <item.icon
+                    className={cn(
+                      "size-4 transition-all duration-200",
+                      active ? "text-primary" : "text-muted-foreground",
+                    )}
+                  />
+                )}
+                <span
+                  className={cn(
+                    "text-sm",
+                    active
+                      ? "text-primary font-semibold"
+                      : "text-foreground/80 font-medium",
+                  )}
+                >
+                  {item.title}
+                </span>
+
+                <div className="ms-auto">{item.badge}</div>
+              </SidebarMenuButton>
+            );
+
             return (
               <SidebarMenuItem key={item.title}>
-                <NavLink
-                  to={item.url}
-                  end={item.url === "/dashboard"}
-                  className="block"
-                  onClick={() => {
-                    if (isMobile) {
-                      setOpenMobile(false);
-                    }
-                  }}
-                >
-                  <SidebarMenuButton
-                    tooltip={item.title}
-                    className={cn(
-                      "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
-                      active
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                    )}
-                    aria-current={active ? "page" : undefined}
+                {item.external ? (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                    onClick={() => {
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
                   >
-                    {item.icon && (
-                      <item.icon
-                        className={cn(
-                          "size-4 transition-all duration-200",
-                          active ? "text-primary" : "text-muted-foreground",
-                        )}
-                      />
-                    )}
-                    <span
-                      className={cn(
-                        "text-sm",
-                        active
-                          ? "text-primary font-semibold"
-                          : "text-foreground/80 font-medium",
-                      )}
-                    >
-                      {item.title}
-                    </span>
-
-                    <div className="ms-auto">{item.badge}</div>
-                  </SidebarMenuButton>
-                </NavLink>
+                    {linkContent}
+                  </a>
+                ) : (
+                  <NavLink
+                    to={item.url}
+                    end={item.url === "/dashboard"}
+                    className="block"
+                    onClick={() => {
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                  >
+                    {linkContent}
+                  </NavLink>
+                )}
               </SidebarMenuItem>
             );
           })}

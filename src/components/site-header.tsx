@@ -22,12 +22,15 @@ import {
 } from "@/components/ui/tooltip";
 import { commandMenu, navigation, themeLabels } from "@/constants";
 import { useTheme } from "@/hooks/use-theme";
+import { getHomeRoute, getModeLabels } from "@/lib/mode";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 export function SiteHeader() {
   const { resolvedTheme, toggleTheme } = useTheme();
   const location = useLocation();
   const currentOrgMode = useCurrentOrgMode();
+  const homeRoute = getHomeRoute(currentOrgMode);
+  const modeLabels = getModeLabels(currentOrgMode);
 
   const crumbs = useMemo(() => {
     const path = location.pathname;
@@ -35,7 +38,7 @@ export function SiteHeader() {
     const parts = normalizedPath.split("/").filter(Boolean);
 
     if (parts.length === 0) {
-      return [{ label: navigation.dashboard, to: "/dashboard" as const }];
+      return [{ label: modeLabels.home, to: homeRoute }];
     }
 
     const first = parts[0];
@@ -45,18 +48,15 @@ export function SiteHeader() {
         : first;
 
     if (parts.length === 1) {
-      return [
-        { label: navigation.dashboard, to: "/dashboard" as const },
-        { label: firstLabel },
-      ];
+      return [{ label: modeLabels.home, to: homeRoute }, { label: firstLabel }];
     }
 
     return [
-      { label: navigation.dashboard, to: "/dashboard" as const },
-      { label: firstLabel, to: `/${first}` as const },
+      { label: modeLabels.home, to: homeRoute },
+      { label: firstLabel, to: `/${first}` },
       { label: parts[parts.length - 1] },
     ];
-  }, [location.pathname]);
+  }, [location.pathname, homeRoute, modeLabels]);
 
   return (
     <header className="bg-background/60 sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border/40 backdrop-blur-md">
