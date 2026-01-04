@@ -35,8 +35,11 @@ func registerInviteEndpoints(app *pocketbase.PocketBase) {
 		// POST /api/v1/invites/{token}/accept - Register via invite
 		se.Router.POST("/api/v1/invites/{token}/accept", handleAcceptInvite)
 
-		// POST /api/v1/register-with-org - Direct registration with org
-		se.Router.POST("/api/v1/register-with-org", handleRegisterWithOrg)
+		// POST /api/v1/register - User registration (without org)
+		se.Router.POST("/api/v1/register", handleRegister)
+
+		// POST /api/v1/organizations - Create organization for authenticated user
+		se.Router.POST("/api/v1/organizations", handleCreateOrg)
 
 		return se.Next()
 	})
@@ -412,8 +415,8 @@ func handleAcceptInvite(e *core.RequestEvent) error {
 	})
 }
 
-// handleRegisterWithOrg handles direct registration with default org creation
-func handleRegisterWithOrg(e *core.RequestEvent) error {
+// handleRegister handles user registration (without organization)
+func handleRegister(e *core.RequestEvent) error {
 	var body struct {
 		Email           string `json:"email"`
 		Username        string `json:"username"`
@@ -492,58 +495,113 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 		return e.BadRequestError("Username is already taken", nil)
 	}
 
-	var newUser *core.Record
+	// Create user
+	usersCollection, err := e.App.FindCollectionByNameOrId(CollectionUsers)
+	if err != nil {
+		return e.InternalServerError("Failed to find users collection", err)
+	}
+
+	newUser := core.NewRecord(usersCollection)
+	newUser.Set("email", email)
+	newUser.Set("username", username)
+	newUser.Set("password", body.Password)
+	newUser.Set("role", RoleEmployee)
+	newUser.Set("active", true)
+
+	if err := e.App.Save(newUser); err != nil {
+		return e.InternalServerError(ErrFailedToCreateUser, err)
+	}
+
+	// Auto-login the user
+	authToken, err := newUser.NewAuthToken()
+	if err != nil {
+		return e.JSON(201, map[string]any{
+			"user": newUser,
+			"meta": map[string]any{
+				"message": MsgRegistrationSuccess,
+			},
+		})
+	}
+
+	return e.JSON(201, map[string]any{
+		"user":  newUser,
+		"token": authToken,
+		"meta": map[string]any{
+			"message": MsgRegistrationSuccess,
+		},
+	})
+}
+
+// handleCreateOrg creates an organization for an authenticated user
+func handleCreateOrg(e *core.RequestEvent) error {
+	user := e.Auth
+	if user == nil {
+		return e.UnauthorizedError("Authentication required", nil)
+	}
+
+	var body struct {
+		OrganizationName string `json:"organizationName"`
+	}
+
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("Invalid request body", err)
+	}
+
+	orgName := strings.TrimSpace(body.OrganizationName)
+	if orgName == "" {
+		return e.BadRequestError(ErrOrgNameRequired, nil)
+	}
+
+	if len(orgName) > 100 {
+		return e.BadRequestError("Organization name must be at most 100 characters", nil)
+	}
+
+	// Check if user already has any organization membership
+	existingMembership, err := e.App.FindFirstRecordByFilter(
+		CollectionOrgMembers,
+		"user = {:userId}",
+		dbx.Params{"userId": user.Id},
+	)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return e.InternalServerError("Failed to check existing membership", err)
+	}
+	if existingMembership != nil {
+		return e.BadRequestError("User already belongs to an organization", nil)
+	}
+
+	// Generate unique slug
+	originalSlug := helpers.Slugify(orgName)
+	slug := originalSlug
+	slugFound := false
+	for i := 0; i < 5; i++ {
+		existingOrg, findErr := e.App.FindFirstRecordByFilter(
+			CollectionOrganizations,
+			"slug = {:slug}",
+			dbx.Params{"slug": slug},
+		)
+		if findErr != nil && !errors.Is(findErr, sql.ErrNoRows) {
+			return e.InternalServerError("Failed to check slug collision", findErr)
+		}
+		if existingOrg == nil {
+			slugFound = true
+			break
+		}
+		slug = fmt.Sprintf("%s-%s", originalSlug, helpers.GenerateShortID())
+	}
+	if !slugFound {
+		return e.InternalServerError("Failed to generate unique slug", nil)
+	}
+
 	var newOrg *core.Record
 	err = e.App.RunInTransaction(func(txApp core.App) error {
-		// Create user
-		usersCollection, err := txApp.FindCollectionByNameOrId(CollectionUsers)
-		if err != nil {
-			return err
-		}
-
-		newUser = core.NewRecord(usersCollection)
-		newUser.Set("email", email)
-		newUser.Set("username", username)
-		newUser.Set("password", body.Password)
-		newUser.Set("role", RoleEmployee)
-		newUser.Set("active", true)
-
-		if err := txApp.Save(newUser); err != nil {
-			return fmt.Errorf("failed to create user: %w", err)
-		}
-
-		// Create default organization with username-based name
-		defaultOrgName := fmt.Sprintf("%s's Organization", username)
+		// Create organization
 		orgCollection, err := txApp.FindCollectionByNameOrId(CollectionOrganizations)
 		if err != nil {
 			return err
 		}
 
-		// Generate unique slug with collision handling
-		originalSlug := helpers.Slugify(username)
-		slug := originalSlug
-		slugFound := false
-		for i := 0; i < 5; i++ {
-			existingOrg, findErr := txApp.FindFirstRecordByFilter(
-				CollectionOrganizations,
-				"slug = {:slug}",
-				dbx.Params{"slug": slug},
-			)
-			if findErr != nil && !errors.Is(findErr, sql.ErrNoRows) {
-				return fmt.Errorf("failed to check slug collision: %w", findErr)
-			}
-			if existingOrg == nil {
-				slugFound = true
-				break
-			}
-			slug = fmt.Sprintf("%s-%s", originalSlug, helpers.GenerateShortID())
-		}
-		if !slugFound {
-			return fmt.Errorf("failed to generate unique slug after 5 attempts")
-		}
-
 		newOrg = core.NewRecord(orgCollection)
-		newOrg.Set("name", defaultOrgName)
+		newOrg.Set("name", orgName)
 		newOrg.Set("slug", slug)
 		newOrg.Set("active", true)
 		newOrg.Set("plan", "free")
@@ -560,11 +618,11 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 
 		member := core.NewRecord(memberCollection)
 		member.Set("organization", newOrg.Id)
-		member.Set("user", newUser.Id)
+		member.Set("user", user.Id)
 		member.Set("role", OrgRoleOwner)
 		member.Set("status", MemberStatusActive)
 		member.Set("joined_at", time.Now().Format(time.RFC3339))
-		member.Set("onboarding_completed", false) // Owner needs to complete onboarding
+		member.Set("onboarding_completed", false)
 
 		if err := txApp.Save(member); err != nil {
 			return fmt.Errorf("failed to create membership: %w", err)
@@ -574,27 +632,13 @@ func handleRegisterWithOrg(e *core.RequestEvent) error {
 	})
 
 	if err != nil {
-		return e.InternalServerError(ErrFailedToCreateUser, err)
-	}
-
-	// Auto-login the user
-	authToken, err := newUser.NewAuthToken()
-	if err != nil {
-		return e.JSON(201, map[string]any{
-			"user":         newUser,
-			"organization": newOrg,
-			"meta": map[string]any{
-				"message": MsgRegistrationSuccess,
-			},
-		})
+		return e.InternalServerError("Failed to create organization", err)
 	}
 
 	return e.JSON(201, map[string]any{
-		"user":         newUser,
 		"organization": newOrg,
-		"token":        authToken,
 		"meta": map[string]any{
-			"message": MsgRegistrationSuccess,
+			"message": "Organization created successfully",
 		},
 	})
 }
