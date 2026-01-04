@@ -143,7 +143,7 @@ export default function ProjectTasks() {
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={project?.name || projects.fallbacks.name}
         description={
