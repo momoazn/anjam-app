@@ -22,8 +22,9 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 			}
 
 			var body struct {
-				Name        string `json:"name"`
-				Description string `json:"description"`
+				Name             string `json:"name"`
+				OrganizationName string `json:"organizationName"`
+				Description      string `json:"description"`
 			}
 
 			if err := e.BindBody(&body); err != nil {
@@ -31,6 +32,9 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 			}
 
 			name := strings.TrimSpace(body.Name)
+			if name == "" {
+				name = strings.TrimSpace(body.OrganizationName)
+			}
 			if name == "" {
 				return e.BadRequestError("Organization name is required", nil)
 			}
@@ -80,6 +84,7 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 				member.Set("role", OrgRoleOwner)
 				member.Set("status", MemberStatusActive)
 				member.Set("joined_at", time.Now().Format(time.RFC3339))
+				member.Set("onboarding_completed", false)
 
 				if err := txApp.Save(member); err != nil {
 					return fmt.Errorf("failed to add owner membership: %w", err)
@@ -94,6 +99,9 @@ func registerOrganizationEndpoints(app *pocketbase.PocketBase) {
 
 			return e.JSON(201, map[string]any{
 				"organization": newOrg,
+				"meta": map[string]any{
+					"message": "Organization created successfully",
+				},
 			})
 		})
 
