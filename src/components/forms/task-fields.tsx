@@ -209,6 +209,7 @@ export function TaskFields({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage className="text-[9px] font-bold" />
                   </FormItem>
                 )}
               />
