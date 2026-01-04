@@ -333,6 +333,12 @@ export const reports = {
     fromLastWeek: "نسبت به هفته گذشته",
     currentlyActive: "تسک‌های فعال فعلی",
     loading: "در حال بارگذاری بینش‌ها...",
+    cycleTime: "میانگین زمان چرخه",
+    cycleTimeUnit: "روز",
+    onTimeRate: "نرخ به‌موقعی",
+    workloadByAssignee: "بار کاری بر اساس مسئول",
+    noData: "داده‌ای برای نمایش وجود ندارد",
+    tasks: "تسک",
   },
   cards: {
     statusDistribution: "توزیع وضعیت تسک‌ها",

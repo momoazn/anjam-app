@@ -70,8 +70,12 @@ export const auth = {
       description: "لوگوی سازمان خود را بارگذاری کنید",
     },
     step2: {
-      title: "توضیحات",
-      description: "درباره سازمان خود بنویسید",
+      title: "پروژه اول",
+      description: "اولین پروژه خود را بسازید",
+      createProject: "ساخت اولین پروژه",
+      projectDescription:
+        "پروژه‌ها به شما کمک می‌کنند تسک‌ها را سازماندهی کنید",
+      projectPlaceholder: "نام پروژه (مثلاً «توسعه محصول»)",
     },
     step3: {
       title: "دعوت اعضا",
