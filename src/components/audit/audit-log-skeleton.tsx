@@ -4,10 +4,7 @@ export function AuditLogSkeleton() {
   return (
     <div className="divide-border/10 divide-y">
       {[...Array(10)].map((_, i) => (
-        <div
-          key={window.crypto.randomUUID?.() || i}
-          className="bg-card flex flex-col text-right"
-        >
+        <div key={i} className="bg-card flex flex-col text-right">
           <div className="relative grid grid-cols-12 overflow-hidden">
             {/* Timestamp */}
             <div className="border-border/10 col-span-2 flex items-center justify-end border-s p-4">

@@ -5,7 +5,7 @@ export function NotificationSkeleton() {
     <div className="space-y-4 px-4 py-6">
       {[...Array(5)].map((_, i) => (
         <div
-          key={window.crypto.randomUUID?.() || i}
+          key={i}
           className="bg-card flex items-start gap-4 rounded-xl border p-4 shadow-sm"
         >
           <Skeleton className="h-10 w-10 shrink-0 rounded-lg" />

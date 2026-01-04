@@ -141,10 +141,7 @@ function ShortcutRow({
       </div>
       <div className="flex items-center gap-1">
         {keys.map((key, i) => (
-          <span
-            key={i === 0 ? "first" : "second"}
-            className="flex items-center gap-1"
-          >
+          <span key={i} className="flex items-center gap-1">
             {key}
             {i < keys.length - 1 && (
               <span className="text-muted-foreground/40 text-[10px]">ثم</span>
