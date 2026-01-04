@@ -220,7 +220,7 @@ export function useAcceptInvite(token: string) {
   });
 }
 
-export function useRegisterWithOrg() {
+export function useRegister() {
   const login = useAuthStore((s) => s.login);
 
   return useMutation({
@@ -230,7 +230,7 @@ export function useRegisterWithOrg() {
       password,
       passwordConfirm,
     }: RegisterWithOrgInput): Promise<AuthResponse> => {
-      const response = await fetch("/api/v1/register-with-org", {
+      const response = await fetch("/api/v1/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -255,6 +255,55 @@ export function useRegisterWithOrg() {
         pb.authStore.save(data.token, data.user as unknown as AuthRecord);
         login(data.user as UsersResponse, data.token);
       }
+    },
+    onError: (error) => {
+      handlePocketBaseError(error);
+    },
+  });
+}
+
+// Hook to create organization for authenticated user
+export function useCreateOrg() {
+  const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
+  const queryClient = useQueryClient();
+  const { setCurrentOrganization } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async (organizationName: string) => {
+      const response = await fetch("/api/v1/organizations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: pb.authStore.token,
+        },
+        body: JSON.stringify({
+          organizationName,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to create organization");
+      }
+
+      return response.json();
+    },
+    onSuccess: async (data) => {
+      await fetchOrgs();
+      // Set the newly created organization as current
+      if (data.organization) {
+        const orgRecord = data.organization;
+        setCurrentOrganization(
+          {
+            id: orgRecord.id,
+            name: orgRecord.name,
+            logo: orgRecord.logo,
+            settings: orgRecord.settings,
+          } as OrganizationsResponse,
+          "owner",
+        );
+      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
     },
     onError: (error) => {
       handlePocketBaseError(error);
