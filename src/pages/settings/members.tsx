@@ -53,7 +53,8 @@ import {
 } from "@/hooks/organization-invites";
 import { pb } from "@/lib/pocketbase";
 import type { UsersResponse } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
+import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
 
 function getUserInitials(name: string): string {
   return name
@@ -76,6 +77,8 @@ function getUserDisplayName(user: UsersResponse): string {
 
 export function OrgMembersPage() {
   const currentUser = useAuthUser();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isCreateLinkOpen, setIsCreateLinkOpen] = useState(false);
   const [isRevokeConfirmOpen, setIsRevokeConfirmOpen] = useState(false);
@@ -171,19 +174,35 @@ export function OrgMembersPage() {
 
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
-      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <PageHeader
-          title={organization.members.title}
-          description="Manage your organization members and their roles"
-          icon={IconUsers}
-        />
-        <Button onClick={() => setIsInviteOpen(true)} className="h-11 px-6">
-          <IconUserPlus className="me-2 size-5" />
-          {organization.members.invite}
-        </Button>
-      </div>
+      <PageHeader
+        title={organization.members.title}
+        subtitle="Manage your organization members and their roles"
+        icon={IconUsers}
+        actions={
+          <Button
+            onClick={() => setIsInviteOpen(true)}
+            className={cn(
+              isProductMode
+                ? "h-8 rounded-lg px-3 text-xs font-semibold"
+                : "h-11 px-6",
+            )}
+          >
+            <IconUserPlus
+              className={cn("me-2", isProductMode ? "size-4" : "size-5")}
+            />
+            {organization.members.invite}
+          </Button>
+        }
+      />
 
-      <div className="border-border bg-card relative overflow-hidden rounded-2xl border shadow-sm">
+      <div
+        className={cn(
+          "relative overflow-hidden border border-border/40",
+          isProductMode
+            ? "rounded-xl bg-background/30 shadow-none"
+            : "rounded-2xl bg-card shadow-sm",
+        )}
+      >
         <Table>
           <TableHeader>
             <TableRow>

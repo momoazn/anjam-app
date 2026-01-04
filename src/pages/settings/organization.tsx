@@ -13,7 +13,8 @@ import { Form } from "@/components/ui/form";
 import { organization, shared } from "@/constants";
 import { logError } from "@/lib/logger";
 import { pb } from "@/lib/pocketbase";
-import { useCurrentOrganization } from "@/store/auth-store";
+import { cn } from "@/lib/utils";
+import { useCurrentOrgMode, useCurrentOrganization } from "@/store/auth-store";
 
 const orgSettingsSchema = z.object({
   name: z.string().min(1).max(200),
@@ -30,6 +31,8 @@ type OrgSettingsForm = z.infer<typeof orgSettingsSchema>;
 export function OrgSettingsPage() {
   const navigate = useNavigate();
   const currentOrg = useCurrentOrganization();
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
 
   const form = useForm<OrgSettingsForm>({
     resolver: zodResolver(orgSettingsSchema),
@@ -80,16 +83,28 @@ export function OrgSettingsPage() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={organization.settings.title}
-        description="Manage your organization settings and metadata"
+        subtitle="Manage your organization settings and metadata"
         icon={IconBuilding}
       />
 
-      <div className="mt-8">
+      <div className={cn(isProductMode ? "mt-4" : "mt-8")}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <section className="border-border bg-card relative overflow-hidden rounded-lg border p-8 shadow-sm">
+            <section
+              className={cn(
+                "relative overflow-hidden border border-border/40",
+                isProductMode
+                  ? "rounded-xl bg-background/30 p-4 shadow-none"
+                  : "rounded-lg bg-card p-8 shadow-sm",
+              )}
+            >
               <div className="relative z-10">
-                <div className="border-border mb-8 flex items-center gap-4 border-b pb-4">
+                <div
+                  className={cn(
+                    "border-border mb-8 flex items-center gap-4 border-b pb-4",
+                    isProductMode && "mb-4",
+                  )}
+                >
                   <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-md">
                     <IconBuilding className="size-6" />
                   </div>
@@ -137,7 +152,11 @@ export function OrgSettingsPage() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="h-11 px-8"
+                className={cn(
+                  isProductMode
+                    ? "h-8 rounded-lg px-3 text-xs font-semibold"
+                    : "h-11 px-8",
+                )}
               >
                 <IconDeviceFloppy className="me-2 size-5" />
                 {form.formState.isSubmitting
@@ -148,7 +167,11 @@ export function OrgSettingsPage() {
                 type="button"
                 variant="outline"
                 onClick={() => navigate(-1)}
-                className="h-11 px-8"
+                className={cn(
+                  isProductMode
+                    ? "h-8 rounded-lg px-3 text-xs font-semibold"
+                    : "h-11 px-8",
+                )}
               >
                 <IconX className="me-2 size-5" />
                 {shared.cancel}
