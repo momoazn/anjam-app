@@ -25,8 +25,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
 import { useTasks } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
-import { formatUserName } from "@/lib/utils";
-import { useCurrentOrganization } from "@/store/auth-store";
+import { cn, formatUserName } from "@/lib/utils";
+import { useCurrentOrgMode, useCurrentOrganization } from "@/store/auth-store";
 
 /**
  * Insights Page - Product Mode
@@ -43,6 +43,12 @@ import { useCurrentOrganization } from "@/store/auth-store";
 export default function Insights() {
   const currentOrg = useCurrentOrganization();
   const orgId = currentOrg?.id;
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
+  const cardClassName = cn(
+    "rounded-xl border border-border/40",
+    isProductMode ? "bg-background/30 shadow-none" : "bg-card/50",
+  );
 
   // Date calculations for this week and last week
   const now = new Date();
@@ -239,9 +245,14 @@ export default function Insights() {
       />
 
       {/* Top Metrics Grid */}
-      <div className="grid gap-4 md:grid-cols-3 mb-6">
+      <div
+        className={cn(
+          "mb-6 grid gap-4 md:grid-cols-3",
+          isProductMode && "mb-4 gap-3",
+        )}
+      >
         {/* Created This Week */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {reports.insights.createdThisWeek}
@@ -262,7 +273,7 @@ export default function Insights() {
         </Card>
 
         {/* Completed This Week */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {reports.insights.completedThisWeek}
@@ -283,7 +294,7 @@ export default function Insights() {
         </Card>
 
         {/* In Progress */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {reports.insights.inProgress}
@@ -301,9 +312,14 @@ export default function Insights() {
       </div>
 
       {/* Advanced Metrics Row */}
-      <div className="grid gap-4 md:grid-cols-3 mb-6">
+      <div
+        className={cn(
+          "mb-6 grid gap-4 md:grid-cols-3",
+          isProductMode && "mb-4 gap-3",
+        )}
+      >
         {/* Cycle Time */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {reports.insights.cycleTime}
@@ -324,7 +340,7 @@ export default function Insights() {
         </Card>
 
         {/* On-Time Rate */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {reports.insights.onTimeRate}
@@ -342,7 +358,7 @@ export default function Insights() {
         </Card>
 
         {/* Total Active */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               کل تسک‌های فعال
@@ -365,9 +381,11 @@ export default function Insights() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div
+        className={cn("grid gap-4 md:grid-cols-2", isProductMode && "gap-3")}
+      >
         {/* Cycle Time Trend Chart */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <IconTrendingUp className="h-4 w-4" />
@@ -425,7 +443,7 @@ export default function Insights() {
         </Card>
 
         {/* Workload by Assignee */}
-        <Card className="bg-card/50">
+        <Card className={cardClassName}>
           <CardHeader>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <IconUsers className="h-4 w-4" />
