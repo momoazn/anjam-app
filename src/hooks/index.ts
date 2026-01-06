@@ -30,8 +30,6 @@ export {
   useCreateUser,
   useUpdateUser,
   useDeleteUser,
-  useToggleUserActive,
-  useUnblockUser,
 } from "./users";
 
 // Comment hooks
@@ -68,12 +66,6 @@ export {
   useDeleteSubtask,
 } from "./subtasks";
 
-export {
-  useCreateTimeEntry,
-  useUpdateTimeEntry,
-  useDeleteTimeEntry,
-} from "./time-entries";
-
 // Utility hooks
 export { useFileUpload, type FileWithPreview } from "./use-file-upload";
 export { useTheme } from "./use-theme";
@@ -100,7 +92,6 @@ export { useInviteByToken } from "./invites";
 // Organization member hooks
 export {
   useOrganizationMembers,
-  useOrganizationMember,
   useOrganizationInvites,
   useCreateOrgInvite,
   useRevokeOrgInvite,

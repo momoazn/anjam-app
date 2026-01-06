@@ -2,20 +2,20 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format } from "date-fns-jalali";
 
 function formatDate(
-  dateStr: string | null | undefined,
+  dateValue: string | number | null | undefined,
   pattern: string,
 ): string {
-  if (!dateStr) return "-";
-  const date = new Date(dateStr);
+  if (!dateValue) return "-";
+  const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) return "-";
   return digitsEnToFa(format(date, pattern));
 }
 
-export const formatTaskDate = (d: string | null | undefined) =>
+export const formatTaskDate = (d: string | number | null | undefined) =>
   formatDate(d, "dd MMMM yyyy");
-export const formatDateShort = (d: string | null | undefined) =>
+export const formatDateShort = (d: string | number | null | undefined) =>
   formatDate(d, "dd MMMM");
-export const formatDateISO = (d: string | null | undefined) =>
+export const formatDateISO = (d: string | number | null | undefined) =>
   formatDate(d, "yyyy/MM/dd");
 
 export function formatDateTime(dateString: string): {

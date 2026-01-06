@@ -48,7 +48,7 @@ export const reports = {
   todo: tasks.status.todo,
   pending: shared.pending,
   blocked: tasks.status.blocked,
-  review: tasks.status.review,
+  review: tasks.status.in_review,
   testing: tasks.status.testing,
   ready: tasks.status.ready,
   on_hold: tasks.status.on_hold,
