@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/incompatible-library */
+ 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -24,11 +24,6 @@ import { api } from "@/lib/convex";
 
 const createOrgSchema = z.object({
   name: z.string().min(1).max(200),
-  slug: z
-    .string()
-    .regex(/^[a-z0-9-]+$/)
-    .min(1)
-    .max(100),
   description: z.string().optional(),
 });
 
@@ -44,24 +39,8 @@ export function CreateOrganizationPage() {
     resolver: zodResolver(createOrgSchema),
     defaultValues: {
       name: "",
-      slug: "",
       description: "",
     },
-  });
-
-  const nameValue = form.watch("name");
-
-  // Auto-generate slug from name
-  form.watch((value, { name }) => {
-    if (name === "name" && value.name) {
-      const slug = value.name
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .trim();
-      form.setValue("slug", slug);
-    }
   });
 
   const onSubmit = async (data: CreateOrgForm) => {
@@ -73,7 +52,6 @@ export function CreateOrganizationPage() {
     try {
       const orgId = await createOrg({
         name: data.name,
-        slug: data.slug,
         description: data.description || "",
       });
       await switchOrganization(orgId);
@@ -112,26 +90,6 @@ export function CreateOrganizationPage() {
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{organization.settings.slug}</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder={organization.settings.slugPlaceholder}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-                <p className="text-muted-foreground mt-1 text-xs">
-                  {organization.settings.slugHelper}: /org/{nameValue || "slug"}
-                </p>
               </FormItem>
             )}
           />

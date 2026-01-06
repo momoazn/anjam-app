@@ -9,17 +9,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { common, tasks } from "@/constants";
-import type {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import type { TaskPriority, TaskStatus } from "@/types/tasks";
 
 type TaskFormData = {
   title: string;
   description: string;
   assignee: string;
-  priority: TasksPriorityOptions;
-  status: TasksStatusOptions;
+  priority: TaskPriority;
+  status: TaskStatus;
   project?: string;
   deadline?: Date;
   estimated_hours?: number;

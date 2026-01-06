@@ -201,7 +201,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       selectedAssignee === "all"
         ? undefined
         : selectedAssignee === "me"
-          ? authUser?.id
+          ? authUser?._id
           : selectedAssignee,
   });
 
@@ -437,7 +437,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
           onBulkAssign={handleBulkAssign}
           onBulkStatus={handleBulkStatus}
           onBulkPriority={handleBulkPriority}
-          users={users || []}
+          users={users?.map(u => ({ ...u, id: u._id })) || []}
           availableStatuses={availableStatuses}
         />
       )}

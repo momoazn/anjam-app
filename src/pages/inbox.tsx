@@ -16,7 +16,7 @@ import { useMentions } from "@/hooks/mentions";
 import { useTasks } from "@/hooks/tasks";
 import { cn } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
-import { Task, TaskWithProject } from "@/types/tasks";
+import { TaskWithDetails } from "@/types/tasks";
 
 type FilterOption = "all" | "active" | "done";
 
@@ -114,9 +114,9 @@ export default function Inbox() {
   const sections = useMemo(() => {
     if (!allTasks?.items || !userId) {
       return {
-        assigned: [] as TaskWithProject[],
-        mentioned: [] as TaskWithProject[],
-        recentlyUpdated: [] as TaskWithProject[],
+        assigned: [] as TaskWithDetails[],
+        mentioned: [] as TaskWithDetails[],
+        recentlyUpdated: [] as TaskWithDetails[],
       };
     }
 
@@ -130,16 +130,16 @@ export default function Inbox() {
     );
     const mentionedTasks = Array.from(mentionedTaskIds)
       .map((taskId) => tasks.find((t) => t.id === taskId))
-      .filter((t): t is TaskWithProject => Boolean(t));
+      .filter((t): t is TaskWithDetails => Boolean(t));
 
     // Filter functions
-    const isActive = (t: TaskWithProject) =>
+    const isActive = (t: TaskWithDetails) =>
       t.status !== "done" && t.status !== "cancelled";
-    const isDone = (t: TaskWithProject) =>
+    const isDone = (t: TaskWithDetails) =>
       t.status === "done" || t.status === "cancelled";
 
     // Apply current filter
-    const filterTasks = (tasks: TaskWithProject[]) => {
+    const filterTasks = (tasks: TaskWithDetails[]) => {
       switch (currentFilter) {
         case "active":
           return tasks.filter(isActive);
@@ -152,7 +152,7 @@ export default function Inbox() {
 
     return {
       // Section 1: Assigned to me
-      assigned: filterTasks(tasks.filter((t) => t.assignee === userId)),
+      assigned: filterTasks(tasks.filter((t) => t.assigneeUserId === userId)),
 
       // Section 2: Mentioned in comments
       mentioned: filterTasks(mentionedTasks),
@@ -165,9 +165,9 @@ export default function Inbox() {
             (t) =>
               t.updated &&
               new Date(t.updated) >= sevenDaysAgo &&
-              (t.assignee === userId || t.creator === userId),
+              (t.assigneeUserId === userId || t.creatorUserId === userId),
           )
-          .slice(0, 10) as TaskWithProject[],
+          .slice(0, 10) as TaskWithDetails[],
       ),
     };
   }, [allTasks, userId, mentions, currentFilter]);

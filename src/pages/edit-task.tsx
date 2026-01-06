@@ -22,9 +22,9 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";
 import { useTask, useUpdateTask } from "@/hooks";
-import { TaskPriority, TaskStatus } from "@/types/tasks";
 import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
+import { TaskPriority, TaskStatus } from "@/types/tasks";
 
 export default function EditTask() {
   const { id } = useParams<{ id: string }>();
@@ -62,7 +62,7 @@ export default function EditTask() {
   useEffect(() => {
     if (task) {
       const { hours, minutes } = minutesToHoursAndMinutes(
-        task.estimatedMinutes || task.estimated_minutes,
+        task.estimatedMinutes,
       );
 
       form.reset({

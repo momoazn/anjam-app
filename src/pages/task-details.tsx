@@ -23,7 +23,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { useDeleteTask, useTask } from "@/hooks/tasks";
 import { useComments } from "@/hooks/comments";
-// import { handlePocketBaseError } from "@/lib/error-handler"; // Not needed for Convex
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
@@ -177,7 +176,7 @@ export default function TaskDetails() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (!task?.id) return;
+                if (!task?._id) return;
 
                 if (pendingDeleteRef.current) {
                   window.clearTimeout(pendingDeleteRef.current);
@@ -187,16 +186,7 @@ export default function TaskDetails() {
                   pendingDeleteRef.current = null;
                   await deleteTask.mutate(task._id);
                   navigate("/tasks");
-                }, 100); // Reduce delay for better UX, or just await it
-
-                // Original logic had a 5s delay? I'll keep it simple for now, maybe the toast had an undo.
-                // Reverting to direct delete for now to match behavior roughly
-                // But wait, the original code had 5000ms delay and undo.
-                // Convex deletes are fast.
-
-                // Let's stick to a simpler delete for now as undo complexity with Convex
-                // requires more thought (though soft delete makes it easy).
-
+                }, 100);
               }}
               disabled={deleteTask.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"

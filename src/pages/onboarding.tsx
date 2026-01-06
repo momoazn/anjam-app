@@ -5,7 +5,6 @@ import {
   IconCheck,
   IconFileDescription,
   IconFolderPlus,
-  IconPhotoPlus,
   IconUserPlus,
 } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
@@ -32,24 +31,18 @@ import {
 const STEPS = [
   {
     id: 1,
-    title: auth.onboarding.step1.title,
-    description: auth.onboarding.step1.description,
-    icon: IconPhotoPlus,
-  },
-  {
-    id: 2,
     title: auth.onboarding.step2.title,
     description: auth.onboarding.step2.description,
     icon: IconBuilding,
   },
   {
-    id: 3,
+    id: 2,
     title: auth.onboarding.step3.title,
     description: auth.onboarding.step3.description,
     icon: IconFileDescription,
   },
   {
-    id: 4,
+    id: 3,
     title: auth.onboarding.step4.title,
     description: auth.onboarding.step4.description,
     icon: IconUserPlus,
@@ -72,7 +65,6 @@ export default function Onboarding() {
   );
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [orgName, setOrgName] = useState(currentOrg?.name || "");
   const [projectName, setProjectName] = useState("");
   const [inviteEmails, setInviteEmails] = useState<string[]>([""]);
@@ -91,15 +83,6 @@ export default function Onboarding() {
           name: orgName.trim(),
         });
       }
-
-      // Update organization with logo and/or name if provided
-      // TODO: Handle logo upload with Convex storage
-      /*
-      const formData = new FormData();
-      if (logoFile) {
-        formData.append("logo", logoFile);
-      }
-      */
 
       // Update organization name if changed and org was not just created
       if (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name) {
@@ -147,18 +130,6 @@ export default function Onboarding() {
     },
   });
 
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleAddEmail = () => {
     setInviteEmails([...inviteEmails, ""]);
   };
@@ -176,7 +147,7 @@ export default function Onboarding() {
   };
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -198,35 +169,6 @@ export default function Onboarding() {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <div className="flex flex-col items-center gap-6">
-            <div
-              className="border-border bg-muted/30 hover:border-primary/50 relative flex size-32 cursor-pointer items-center justify-center overflow-hidden border-2 border-dashed transition-colors"
-              onClick={() => document.getElementById("logo-upload")?.click()}
-            >
-              {logoPreview ? (
-                <img
-                  src={logoPreview}
-                  alt="Logo preview"
-                  className="size-full object-cover"
-                />
-              ) : (
-                <IconPhotoPlus className="text-muted-foreground size-12" />
-              )}
-              <input
-                id="logo-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleLogoChange}
-              />
-            </div>
-            <p className="text-muted-foreground text-sm">
-              {auth.onboarding.step1.description}
-            </p>
-          </div>
-        );
-      case 2:
         return (
           <div className="w-full space-y-4">
             <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/50 bg-muted/20 p-4">
@@ -251,7 +193,7 @@ export default function Onboarding() {
             />
           </div>
         );
-      case 3:
+      case 2:
         return (
           <div className="w-full space-y-4">
             <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/50 bg-muted/20 p-4">
@@ -276,7 +218,7 @@ export default function Onboarding() {
             />
           </div>
         );
-      case 4:
+      case 3:
         return (
           <div className="w-full space-y-4">
             {inviteEmails.map((email, index) => (
