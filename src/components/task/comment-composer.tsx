@@ -46,21 +46,21 @@ export function CommentComposer({
       .filter((user) => {
         if (!normalized) return true;
         const fullName = formatUserName(
-          user.first_name,
-          user.last_name,
+          user.firstName,
+          user.lastName,
           user.username,
         ).toLowerCase();
         return (
-          user.username.toLowerCase().includes(normalized) ||
+          (user.username || "").toLowerCase().includes(normalized) ||
           fullName.includes(normalized)
         );
       })
       .map((user) => ({
         id: user._id,
-        username: user.username,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        avatar: user.avatar,
+        username: user.username || "",
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.image,
       }));
   }, [orgMembers, mentionQuery]);
 

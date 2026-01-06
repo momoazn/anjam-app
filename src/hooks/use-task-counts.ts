@@ -2,14 +2,15 @@ import { useQuery } from "convex/react";
 import { isPast, isToday } from "date-fns";
 import { useMemo } from "react";
 
+import { useAuthUser, useCurrentOrganization } from "@/store/auth-store";
+
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { useAuthUser, useCurrentOrganization } from "@/store/auth-store";
 
 export function useTaskCounts() {
   const user = useAuthUser();
   const currentOrg = useCurrentOrganization();
-  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
   const tasks = useQuery(
     api.tasks.listAll,
@@ -27,7 +28,7 @@ export function useTaskCounts() {
       };
     }
 
-    const userId = user?.id;
+    const userId = user?._id;
 
     // Convex listAll already filters out deleted tasks
 
@@ -78,7 +79,7 @@ export function useTaskCounts() {
       inProgress,
       byProject,
     };
-  }, [tasks, user?.id]);
+  }, [tasks, user?._id]);
 
   return counts;
 }

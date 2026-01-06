@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 
+import { useCurrentOrganization } from "@/store/auth-store";
+
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { useCurrentOrganization } from "@/store/auth-store";
 
 export interface Tag {
   id: string;
@@ -16,7 +17,7 @@ export interface Tag {
 
 export function useTags() {
   const currentOrg = useCurrentOrganization();
-  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
   const tags = useQuery(
     api.tags.listByOrg,
@@ -43,7 +44,7 @@ export function useCreateTag() {
     }
 
     return await createMutation({
-      organizationId: currentOrg.id as Id<"organizations">,
+      organizationId: currentOrg._id as Id<"organizations">,
       name: data.name,
       color: data.color,
     });
