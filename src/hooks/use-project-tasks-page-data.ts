@@ -3,53 +3,39 @@
  *
  * This hook provides exactly the data needed for the project-tasks page:
  * 1. Project data (for the page title)
- * 2. Tasks for the specific project with expanded assignee data
+ * 2. Tasks for the specific project
  * 3. Users for the filter dropdown
- *
- * This eliminates unnecessary requests for all projects and all project-user relationships
- * that aren't needed on the project-tasks page.
  */
-import { useQuery } from "@tanstack/react-query";
-
-import { pb } from "../lib/pocketbase";
-import { ProjectsResponse, UsersResponse } from "../lib/pocketbase-types";
-import { queryKeys } from "./query-keys";
-import { useTasks } from "./tasks";
+import { useProject } from "./projects";
+import { useAllTasks } from "./tasks";
+import { useUsers } from "./users";
 
 /**
  * Hook to get all data needed for the project-tasks page
- * Makes only 3 requests: project + tasks + users
+ * Uses Convex hooks
  */
 export function useProjectTasksPageData(projectId: string) {
-  const projectQuery = useQuery({
-    queryKey: queryKeys.projects.detail(projectId),
-    queryFn: () =>
-      pb.collection("projects").getOne<ProjectsResponse>(projectId),
+  const projectQuery = useProject({
+    id: projectId,
     enabled: Boolean(projectId),
   });
 
-  const tasksQuery = useTasks({
+  const tasksQuery = useAllTasks({
     projectId,
-    expandFields: "project,assignee",
-    mode: "full", // ensure we fetch all tasks in the project so new items always appear
+    enabled: Boolean(projectId),
   });
 
-  const usersQuery = useQuery({
-    queryKey: queryKeys.users.list({ batch: 100, sort: "-created" }),
-    queryFn: () =>
-      pb.collection("users").getFullList<UsersResponse>({
-        batch: 100,
-        sort: "-created",
-      }),
+  const usersQuery = useUsers({
+    enabled: true,
   });
 
   return {
     project: projectQuery.data,
-    tasks: tasksQuery.data?.items || [],
+    tasks: tasksQuery.data || [],
     users: usersQuery.data || [],
-    isLoadingProject: projectQuery.isPending,
-    isLoadingTasks: tasksQuery.isPending,
-    isLoadingUsers: usersQuery.isPending,
+    isLoadingProject: projectQuery.isLoading,
+    isLoadingTasks: tasksQuery.isLoading,
+    isLoadingUsers: usersQuery.isLoading,
     error: projectQuery.error || tasksQuery.error || usersQuery.error,
   };
 }

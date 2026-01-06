@@ -1,181 +1,93 @@
-import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
-
-import {
-  deleteMultipleNotifications,
-  deleteNotification,
-  fetchReadNotifications,
-  fetchUnreadNotifications,
-  fetchUserNotifications,
-  markAsRead,
-  markMultipleAsRead,
-  subscribeToNotifications,
-  unsubscribeFromNotifications,
-} from "@/lib/notifications-utils";
-import { useAuthUser } from "@/store/auth-store";
-
-import { queryKeys } from "./query-keys";
-import { createMutation } from "./use-mutation-factory";
+import { useMutation, useQuery } from "convex/react";
+import { api, Id } from "@/lib/convex";
 
 export function useNotifications() {
-  const user = useAuthUser();
-  const userId = user?.id;
+  const notifications = useQuery(api.notifications.listForMe);
 
-  const { refetch, ...query } = useQuery({
-    queryKey: queryKeys.notifications.byUser(userId),
-    queryFn: async () => {
-      if (!userId) return [];
-      return fetchUserNotifications(userId);
-    },
-    enabled: !!userId,
-  });
-
-  const subscribe = useCallback(async () => {
-    if (!userId) return;
-    await subscribeToNotifications(userId, () => {
-      refetch();
-    });
-  }, [userId, refetch]);
-
-  const unsubscribe = useCallback(() => {
-    unsubscribeFromNotifications();
-  }, []);
-
-  useEffect(() => {
-    subscribe();
-
-    return () => {
-      unsubscribe();
-    };
-  }, [subscribe, unsubscribe]);
-
-  return query;
+  return {
+    data: notifications,
+    isLoading: notifications === undefined,
+    error: null as unknown,
+  };
 }
 
 export function useUnreadCount() {
-  const user = useAuthUser();
-  const userId = user?.id;
+  const notifications = useQuery(api.notifications.listForMe);
 
-  const { data: notifications = [] } = useQuery({
-    queryKey: queryKeys.notifications.unreadList(userId),
-    queryFn: async () => {
-      if (!userId) return [];
-      return fetchUnreadNotifications(userId);
-    },
-    enabled: !!userId,
-  });
-
+  if (!notifications) return 0;
   return notifications.filter((n) => !n.read).length;
 }
 
 export function useMarkAsRead() {
-  const user = useAuthUser();
+  const markRead = useMutation(api.notifications.markRead);
 
-  const mutation = createMutation<void, Error, string>(markAsRead, (client) => {
-    if (user?.id) {
-      client.invalidateQueries({
-        queryKey: queryKeys.notifications.byUser(user.id),
-      });
-      client.invalidateQueries({
-        queryKey: queryKeys.notifications.unreadList(user.id),
-      });
-    }
-  });
+  const mutate = async (id: string) => {
+    return await markRead({
+      notificationId: id as Id<"notifications">,
+    });
+  };
 
-  return mutation();
+  return {
+    mutate,
+    mutateAsync: mutate,
+    isPending: false,
+  };
 }
 
 export function useMarkAllAsRead() {
-  const user = useAuthUser();
+  const markAllRead = useMutation(api.notifications.markAllRead);
 
-  const mutation = createMutation<string, Error, string>(
-    async (userId) => {
-      const notifications = await fetchUnreadNotifications(userId);
-      await markMultipleAsRead(notifications);
-      return userId;
-    },
-    (client, _data, userId) => {
-      const targetUserId = userId || user?.id;
-      if (targetUserId) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(targetUserId),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(targetUserId),
-        });
-      }
-    },
-  );
+  const mutate = async () => {
+    return await markAllRead({});
+  };
 
-  return mutation();
+  return {
+    mutate,
+    mutateAsync: mutate,
+    isPending: false,
+  };
 }
 
 export function useDeleteNotification() {
-  const user = useAuthUser();
+  const deleteMutation = useMutation(api.notifications.deleteNotification);
 
-  const mutation = createMutation<void, Error, string>(
-    deleteNotification,
-    (client) => {
-      if (user?.id) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(user.id),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(user.id),
-        });
-      }
-    },
-  );
+  const mutate = async (id: string) => {
+    return await deleteMutation({
+      notificationId: id as Id<"notifications">,
+    });
+  };
 
-  return mutation();
+  return {
+    mutate,
+    mutateAsync: mutate,
+    isPending: false,
+  };
 }
 
 export function useClearAll() {
-  const user = useAuthUser();
+  const clearAll = useMutation(api.notifications.clearAll);
 
-  const mutation = createMutation<string, Error, string>(
-    async (userId) => {
-      const notifications = await fetchUserNotifications(userId);
-      await deleteMultipleNotifications(notifications);
-      return userId;
-    },
-    (client, _data, userId) => {
-      const targetUserId = userId || user?.id;
-      if (targetUserId) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(targetUserId),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(targetUserId),
-        });
-      }
-    },
-  );
+  const mutate = async () => {
+    return await clearAll({});
+  };
 
-  return mutation();
+  return {
+    mutate,
+    mutateAsync: mutate,
+    isPending: false,
+  };
 }
 
 export function useClearRead() {
-  const user = useAuthUser();
+  const clearRead = useMutation(api.notifications.clearRead);
 
-  const mutation = createMutation<string, Error, string>(
-    async (userId) => {
-      const notifications = await fetchReadNotifications(userId);
-      await deleteMultipleNotifications(notifications);
-      return userId;
-    },
-    (client, _data, userId) => {
-      const targetUserId = userId || user?.id;
-      if (targetUserId) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(targetUserId),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(targetUserId),
-        });
-      }
-    },
-  );
+  const mutate = async () => {
+    return await clearRead({});
+  };
 
-  return mutation();
+  return {
+    mutate,
+    mutateAsync: mutate,
+    isPending: false,
+  };
 }

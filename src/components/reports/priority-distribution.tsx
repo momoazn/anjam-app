@@ -9,7 +9,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { reports, tasks } from "@/constants";
-import type { TasksPriorityOptions } from "@/lib/pocketbase-types";
+import type { ConvexTaskPriority } from "@/lib/reports/types";
 
 const chartConfig = {
   urgent: {
@@ -34,9 +34,9 @@ type Props = {
   data: Array<{
     name: string;
     value: number;
-    key: TasksPriorityOptions;
+    key: ConvexTaskPriority;
   }>;
-  onSliceClick?: (key: TasksPriorityOptions) => void;
+  onSliceClick?: (key: ConvexTaskPriority) => void;
 };
 
 export function PriorityDistribution({ data, onSliceClick }: Props) {
@@ -59,11 +59,11 @@ export function PriorityDistribution({ data, onSliceClick }: Props) {
           }}
           fontSize={12}
           fill="var(--foreground)"
-          onClick={(entry) => onSliceClick?.(entry.key)}
+          onClick={(entry) => onSliceClick?.(entry.key as ConvexTaskPriority)}
           style={{ cursor: onSliceClick ? "pointer" : "default" }}
         >
           {data.map((entry) => (
-            <Cell key={entry.key} fill={chartConfig[entry.key].color} />
+            <Cell key={entry.key} fill={chartConfig[entry.key]?.color || "var(--chart-1)"} />
           ))}
         </Pie>
         <ChartTooltip

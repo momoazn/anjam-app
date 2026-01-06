@@ -3,19 +3,16 @@ import { useMemo, useRef, useState } from "react";
 
 import { MentionAutocomplete } from "@/components/comments/mention-autocomplete";
 import { Button } from "@/components/ui/button";
-import { FileUpload } from "@/components/ui/file-upload";
 import { Textarea } from "@/components/ui/textarea";
 import { comments } from "@/constants";
 import { useCreateComment } from "@/hooks/comments";
 import type { CommentWithUser } from "@/hooks/comments";
-import { useProjectMembers } from "@/hooks/project-members";
-import { FileWithPreview } from "@/hooks/use-file-upload";
+import { useOrganizationMembers } from "@/hooks/organization-members";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/auth-store";
 
 type CommentComposerProps = {
   taskId: string;
-  projectId: string;
   replyTarget?: CommentWithUser | null;
   onCommentAdded?: () => void;
   onCancelReply?: () => void;
@@ -23,31 +20,27 @@ type CommentComposerProps = {
 
 export function CommentComposer({
   taskId,
-  projectId,
   replyTarget = null,
   onCommentAdded,
   onCancelReply,
 }: CommentComposerProps) {
   const [content, setContent] = useState("");
-  const [attachments, setAttachments] = useState<FileWithPreview[]>([]);
   const [mentionQuery, setMentionQuery] = useState("");
   const [mentionStart, setMentionStart] = useState<number | null>(null);
   const [mentionCursor, setMentionCursor] = useState<number>(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const createComment = useCreateComment();
   const currentUser = useAuthUser();
-  const { data: projectMembers } = useProjectMembers(projectId, {
-    enabled: Boolean(projectId),
-  });
+  const { data: orgMembers } = useOrganizationMembers();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const trimmedContent = useMemo(() => content.trim(), [content]);
   const isDisabled = !currentUser || createComment.isPending;
 
   const mentionOptions = useMemo(() => {
-    if (!projectMembers) return [];
+    if (!orgMembers) return [];
     const normalized = mentionQuery.toLowerCase();
-    return projectMembers
+    return orgMembers
       .map((member) => member.expand?.user)
       .filter((user): user is NonNullable<typeof user> => Boolean(user))
       .filter((user) => {
@@ -69,7 +62,7 @@ export function CommentComposer({
         lastName: user.last_name,
         avatar: user.avatar,
       }));
-  }, [projectMembers, mentionQuery]);
+  }, [orgMembers, mentionQuery]);
 
   const isMentionOpen = mentionStart !== null && mentionOptions.length > 0;
 
@@ -109,30 +102,17 @@ export function CommentComposer({
     event.preventDefault();
     if (!currentUser || !trimmedContent) return;
 
-    const formData = new FormData();
-    formData.append("content", trimmedContent);
-    formData.append("task", taskId);
-    formData.append("user", currentUser.id);
-    if (replyTarget) {
-      formData.append("parent", replyTarget.id);
-    }
-    attachments.forEach((file) => {
-      formData.append("attachments+", file);
+    createComment.mutate({
+      taskId,
+      content: trimmedContent,
+      parentCommentId: replyTarget?.id,
     });
 
-    createComment.mutate(
-      { formData, task: taskId },
-      {
-        onSuccess: () => {
-          setContent("");
-          setAttachments([]);
-          onCommentAdded?.();
-          if (replyTarget) {
-            onCancelReply?.();
-          }
-        },
-      },
-    );
+    setContent("");
+    onCommentAdded?.();
+    if (replyTarget) {
+      onCancelReply?.();
+    }
   };
 
   return (
@@ -217,12 +197,7 @@ export function CommentComposer({
           visible={isMentionOpen}
         />
 
-        <FileUpload
-          value={attachments}
-          onChange={setAttachments}
-          disabled={isDisabled}
-          maxFiles={5}
-        />
+        {/* File uploads are out of scope for v1 (Convex migration). */}
       </div>
 
       <div className="flex justify-end">

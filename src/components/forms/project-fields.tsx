@@ -13,7 +13,6 @@ import {
 import { projects } from "@/constants";
 import { useUsers } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { formatUserName } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
@@ -52,16 +51,10 @@ export function ProjectFields({
 
   const supervisors = useMemo(() => {
     if (!allUsers) return [];
-    return allUsers
-      .filter(
-        (u) =>
-          u.role === UsersRoleOptions.admin ||
-          u.role === UsersRoleOptions.supervisor,
-      )
-      .map((u) => ({
-        value: u.id,
-        label: formatUserName(u.first_name, u.last_name, u.username),
-      }));
+    return allUsers.map((u) => ({
+      value: u.id,
+      label: formatUserName(u.first_name, u.last_name, u.username),
+    }));
   }, [allUsers]);
 
   return (

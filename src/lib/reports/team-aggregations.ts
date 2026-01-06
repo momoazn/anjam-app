@@ -1,8 +1,6 @@
 import { isWithinInterval } from "date-fns-jalali";
 
-import type { TaskWithProject } from "../pocketbase";
-import type { UsersRecord } from "../pocketbase-types";
-import { TasksStatusOptions, UsersRoleOptions } from "../pocketbase-types";
+import type { ConvexTask, ConvexUser } from "./types";
 import {
   computeEmployeeSummary,
   computeProductivityTrend,
@@ -13,18 +11,15 @@ import type { EmployeeBucket, LeaderboardEntry } from "./types";
  * Compute team averages
  */
 export function computeTeamAverages(
-  users: UsersRecord[],
-  tasksList: TaskWithProject[],
+  users: ConvexUser[],
+  tasksList: ConvexTask[],
   range: { start: Date; end: Date },
 ): {
   averageCompleted: number;
   averageCompletionRate: number;
   averageOnTimeRate: number;
 } {
-  const employeeUsers = users.filter(
-    (u) => u.role === UsersRoleOptions.employee,
-  );
-  if (employeeUsers.length === 0) {
+  if (users.length === 0) {
     return {
       averageCompleted: 0,
       averageCompletionRate: 0,
@@ -36,17 +31,18 @@ export function computeTeamAverages(
   let totalCompletionRate = 0;
   let totalOnTimeRate = 0;
 
-  employeeUsers.forEach((user) => {
-    const summary = computeEmployeeSummary(user.id, tasksList, range);
+  users.forEach((user) => {
+    const userId = user._id || user.id;
+    const summary = computeEmployeeSummary(userId, tasksList, range);
     totalCompleted += summary.completed;
     totalCompletionRate += summary.efficiencyScore;
     totalOnTimeRate += summary.onTimeRate;
   });
 
   return {
-    averageCompleted: totalCompleted / employeeUsers.length,
-    averageCompletionRate: totalCompletionRate / employeeUsers.length,
-    averageOnTimeRate: totalOnTimeRate / employeeUsers.length,
+    averageCompleted: totalCompleted / users.length,
+    averageCompletionRate: totalCompletionRate / users.length,
+    averageOnTimeRate: totalOnTimeRate / users.length,
   };
 }
 
@@ -54,48 +50,58 @@ export function computeTeamAverages(
  * Build leaderboard for top performers
  */
 export function buildLeaderboard(
-  users: UsersRecord[],
-  tasksList: TaskWithProject[],
+  users: ConvexUser[],
+  tasksList: ConvexTask[],
   range: { start: Date; end: Date },
 ): LeaderboardEntry[] {
   return users
-    .filter((user) => user.role === UsersRoleOptions.employee)
     .map((user) => {
+      const userId = user._id || user.id;
+
       // Assigned: tasks assigned to user with created or updated in range
-      const assigned = tasksList.filter(
-        (task) =>
-          task.assignee === user.id &&
-          ((task.created && isWithinInterval(new Date(task.created), range)) ||
-            (task.updated && isWithinInterval(new Date(task.updated), range))),
-      );
+      const assigned = tasksList.filter((task) => {
+        const assigneeId = task.assigneeUserId ?? task.assignee;
+        if (assigneeId !== userId) return false;
+        const createdInRange = isWithinInterval(
+          new Date(task._creationTime),
+          range,
+        );
+        const updatedAt = task.updatedAt ?? task.updated;
+        const updatedInRange = updatedAt
+          ? isWithinInterval(new Date(updatedAt), range)
+          : false;
+        return createdInRange || updatedInRange;
+      });
 
       // Completed: assigned tasks that are done with updated in range
-      const completedTasks = assigned.filter(
-        (task) =>
-          task.status === TasksStatusOptions.done &&
-          task.updated &&
-          isWithinInterval(new Date(task.updated), range),
-      );
+      const completedTasks = assigned.filter((task) => {
+        if (task.status !== "done") return false;
+        const updatedAt = task.updatedAt ?? task.updated;
+        if (!updatedAt) return false;
+        return isWithinInterval(new Date(updatedAt), range);
+      });
 
       const completed = completedTasks.length;
       const completionRate =
         Math.max(assigned.length, 1) > 0 ? completed / assigned.length : 0;
 
       // On-time: among completed, with deadline and updated <= deadline
-      const onTimeCompleted = completedTasks.filter(
-        (task) =>
-          task.deadline &&
-          task.updated &&
-          new Date(task.updated) <= new Date(task.deadline),
-      ).length;
+      const onTimeCompleted = completedTasks.filter((task) => {
+        if (!task.deadline) return false;
+        const updatedAt = task.updatedAt ?? task.updated;
+        if (!updatedAt) return false;
+        return new Date(updatedAt) <= new Date(task.deadline);
+      }).length;
       const onTimeRate = completed > 0 ? onTimeCompleted / completed : 0;
 
       return {
-        userId: user.id,
+        userId,
         name:
           user.first_name && user.last_name
             ? `${user.first_name} ${user.last_name}`
-            : user.username,
+            : user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : user.username || "Unknown",
         completed,
         completionRate,
         onTimeRate,
@@ -110,7 +116,7 @@ export function buildLeaderboard(
  */
 export function computeProductivityTrends(
   userId: string,
-  tasksList: TaskWithProject[],
+  tasksList: ConvexTask[],
   range: { start: Date; end: Date },
   bucket: "daily" | "weekly" | "monthly",
 ): {

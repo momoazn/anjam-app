@@ -1,6 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Folder } from "lucide-react";
-import { ClientResponseError } from "pocketbase";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -13,117 +11,45 @@ import { ProjectSidebar } from "@/components/project/project-sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { common, errors, projects } from "@/constants";
-import { queryKeys } from "@/hooks";
-import type { FileWithPreview } from "@/hooks/use-file-upload";
-import { type ProjectWithSupervisor, pb } from "@/lib/pocketbase";
-import type { TasksResponse } from "@/lib/pocketbase-types";
+import { common, projects } from "@/constants";
+import { useAllTasks, useProject, useUpdateProject } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
+import {
+  useAuthUser,
+  useCurrentOrgMode,
+  useCurrentOrgRole,
+} from "@/store/auth-store";
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAuthUser();
   const mode = useCurrentOrgMode();
+  const currentOrgRole = useCurrentOrgRole();
   const isProductMode = mode === "product";
-  const queryClient = useQueryClient();
+  const isAdmin = currentOrgRole === "owner";
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editedCode, setEditedCode] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
-  const [newFiles, setNewFiles] = useState<FileWithPreview[]>([]);
-  const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
 
-  const { data: project, isLoading: projectLoading } = useQuery({
-    queryKey: queryKeys.projects.detail(id ?? ""),
-    queryFn: async () => {
-      if (!id) throw new Error(errors.validation.projectIdRequired);
-      return pb.collection("projects").getOne<ProjectWithSupervisor>(id, {
-        expand: "supervisor",
-      });
-    },
+  const { data: project, isLoading: projectLoading } = useProject({
+    id,
     enabled: !!id,
   });
 
-  const { data: tasks, isLoading: tasksLoading } = useQuery({
-    queryKey: ["tasks", "project", id],
-    queryFn: async () => {
-      if (!id) throw new Error(errors.validation.projectIdRequired);
-      return pb
-        .collection("tasks")
-        .getFullList<TasksResponse>({ filter: `project="${id}"` });
-    },
+  const { data: tasks, isLoading: tasksLoading } = useAllTasks({
+    projectId: id,
     enabled: !!id,
   });
 
-  const canEdit =
-    user?.role === "admin" ||
-    (user?.role === "supervisor" && project?.supervisor === user?.id);
+  const canEdit = isAdmin || project?.supervisorUserId === user?._id;
 
-  const { mutate: updateProject, isPending: isUpdating } = useMutation({
-    mutationFn: async (data: {
-      name: string;
-      code: string;
-      description: string;
-      newFiles: FileWithPreview[];
-      filesToDelete: string[];
-    }) => {
-      if (!id) throw new Error(errors.validation.projectIdRequired);
-      if (!project) throw new Error(errors.notFound.projectNotFound);
-
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("code", data.code.toUpperCase());
-      const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
-      formData.append("description", descriptionWithBreaks);
-
-      data.newFiles.forEach((file) => {
-        formData.append("assets+", file);
-      });
-
-      data.filesToDelete.forEach((filename) => {
-        formData.append("assets-", filename);
-      });
-
-      return pb.collection("projects").update(id, formData);
-    },
+  const { mutate: updateProject, isPending: isUpdating } = useUpdateProject({
     onSuccess: () => {
-      if (id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.projects.detail(id),
-        });
-      }
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
       toast.success(projects.edit.success);
       setIsEditing(false);
-      setNewFiles([]);
-      setFilesToDelete([]);
-    },
-    onError: (error: Error) => {
-      let errorMessage = error.message;
-
-      if (error instanceof ClientResponseError && error.data?.data) {
-        const validationErrors = error.data.data as Record<
-          string,
-          { code: string; message: string }
-        >;
-        const errorMessages: string[] = [];
-
-        Object.keys(validationErrors).forEach((field) => {
-          const fieldError = validationErrors[field];
-          if (fieldError.message) {
-            errorMessages.push(fieldError.message);
-          }
-        });
-
-        if (errorMessages.length > 0) {
-          errorMessage = errorMessages.join(" | ");
-        }
-      }
-
-      toast.error(projects.edit.error.replace("{error}", errorMessage));
     },
   });
 
@@ -132,39 +58,28 @@ export default function ProjectDetails() {
       setEditedName(project.name || "");
       setEditedCode(project.code || "");
       setEditedDescription(project.description || "");
-      setNewFiles([]);
-      setFilesToDelete([]);
       setIsEditing(true);
     }
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setNewFiles([]);
-    setFilesToDelete([]);
   };
 
   const handleSaveEdit = () => {
+    if (!id) return;
     if (!editedName.trim()) {
       toast.error(projects.create.form.nameRequired);
       return;
     }
-    if (!editedCode.trim()) {
-      toast.error(projects.create.form.codeRequired);
-      return;
-    }
 
     updateProject({
-      name: editedName,
-      code: editedCode,
-      description: editedDescription,
-      newFiles,
-      filesToDelete,
+      id,
+      updates: {
+        name: editedName,
+        description: editedDescription,
+      },
     });
-  };
-
-  const handleDeleteFile = (filename: string) => {
-    setFilesToDelete((prev) => [...prev, filename]);
   };
 
   if (projectLoading) {
@@ -201,7 +116,7 @@ export default function ProjectDetails() {
   const inProgressTasks =
     tasks?.filter((task) => task.status === "in_progress").length || 0;
   const totalTimeSpent =
-    tasks?.reduce((sum, task) => sum + (task.time_spent_minutes || 0), 0) || 0;
+    tasks?.reduce((sum, task) => sum + (task.timeSpentMinutes || 0), 0) || 0;
 
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
@@ -295,7 +210,8 @@ export default function ProjectDetails() {
                 }
                 placeholder={projects.create.form.code}
                 maxLength={3}
-                className="font-mono text-sm font-semibold tracking-widest"
+                disabled
+                className="font-mono text-sm font-semibold tracking-widest opacity-50"
               />
             </div>
           </div>
@@ -310,14 +226,10 @@ export default function ProjectDetails() {
         data-animate-stagger
       >
         <ProjectDetailsSections
-          project={project}
+          project={project as any}
           isEditing={isEditing}
           editedDescription={editedDescription}
-          filesToDelete={filesToDelete}
-          newFiles={newFiles}
           onDescriptionChange={setEditedDescription}
-          onNewFilesChange={setNewFiles}
-          onDeleteFile={handleDeleteFile}
         />
 
         <ProjectSidebar
@@ -327,7 +239,7 @@ export default function ProjectDetails() {
           inProgressTasks={inProgressTasks}
           totalTimeSpent={totalTimeSpent}
           onViewTasks={() => navigate(`/projects/${id}/tasks`)}
-          onViewUsers={() => navigate(`/projects/${id}/users`)}
+          onViewUsers={() => navigate(`/members`)}
         />
       </div>
     </PageTransition>

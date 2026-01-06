@@ -13,25 +13,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { common, tasks } from "@/constants";
-import {
-  TasksPriorityOptions,
-  type TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { TaskPriority, TaskStatus } from "@/types/tasks";
 
 interface BulkActionsBarProps {
   selectedCount: number;
   onClearSelection: () => void;
   onBulkDelete: () => Promise<void>;
   onBulkAssign: (assigneeId: string) => Promise<void>;
-  onBulkStatus: (status: TasksStatusOptions) => Promise<void>;
-  onBulkPriority: (priority: TasksPriorityOptions) => Promise<void>;
+  onBulkStatus: (status: TaskStatus) => Promise<void>;
+  onBulkPriority: (priority: TaskPriority) => Promise<void>;
   users: Array<{
     id: string;
+    _id: string;
     username: string;
+    firstName?: string;
     first_name?: string;
+    lastName?: string;
     last_name?: string;
   }>;
-  availableStatuses: Array<{ value: TasksStatusOptions; label: string }>;
+  availableStatuses: Array<{ value: TaskStatus; label: string }>;
 }
 
 export function BulkActionsBar({
@@ -64,7 +64,7 @@ export function BulkActionsBar({
     }
   };
 
-  const handleBulkStatus = async (status: TasksStatusOptions) => {
+  const handleBulkStatus = async (status: TaskStatus) => {
     try {
       setIsLoading(true);
       await onBulkStatus(status);
@@ -81,7 +81,7 @@ export function BulkActionsBar({
     }
   };
 
-  const handleBulkPriority = async (priority: TasksPriorityOptions) => {
+  const handleBulkPriority = async (priority: TaskPriority) => {
     try {
       setIsLoading(true);
       await onBulkPriority(priority);
@@ -116,16 +116,16 @@ export function BulkActionsBar({
     }
   };
 
-  const priorityOptions: Array<{ value: TasksPriorityOptions; label: string }> =
+  const priorityOptions: Array<{ value: TaskPriority; label: string }> =
     [
-      { value: TasksPriorityOptions.low, label: tasks.priority.low },
+      { value: "low", label: tasks.priority.low },
       {
-        value: TasksPriorityOptions.medium,
+        value: "medium",
         label: tasks.priority.medium,
       },
-      { value: TasksPriorityOptions.high, label: tasks.priority.high },
+      { value: "high", label: tasks.priority.high },
       {
-        value: TasksPriorityOptions.urgent,
+        value: "urgent",
         label: tasks.priority.urgent,
       },
     ];

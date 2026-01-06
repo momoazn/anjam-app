@@ -13,9 +13,19 @@ import type {
   TaskFilterValues,
   UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
-import type { UsersResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
+
+// User type with compatibility fields
+interface UserWithCompat {
+  id: string;
+  _id: string;
+  username?: string;
+  firstName?: string;
+  first_name?: string;
+  lastName?: string;
+  last_name?: string;
+}
 
 export type TaskFiltersPanelProps = {
   currentFilters: TaskFilterValues;
@@ -37,13 +47,13 @@ export type TaskFiltersPanelProps = {
   selectedAssignee: string;
   selectedDateRange: string;
   selectedTag: string;
-  setSearchTerm: UseTaskFiltersReturn["setSearchTerm"];
-  setSelectedStatus: UseTaskFiltersReturn["setSelectedStatus"];
-  setSelectedPriority: UseTaskFiltersReturn["setSelectedPriority"];
-  setSelectedAssignee: UseTaskFiltersReturn["setSelectedAssignee"];
-  setSelectedDateRange: UseTaskFiltersReturn["setSelectedDateRange"];
-  setSelectedTag: UseTaskFiltersReturn["setSelectedTag"];
-  users: UsersResponse[] | undefined;
+  setSearchTerm: UseTaskFiltersReturn<any>["setSearchTerm"];
+  setSelectedStatus: UseTaskFiltersReturn<any>["setSelectedStatus"];
+  setSelectedPriority: UseTaskFiltersReturn<any>["setSelectedPriority"];
+  setSelectedAssignee: UseTaskFiltersReturn<any>["setSelectedAssignee"];
+  setSelectedDateRange: UseTaskFiltersReturn<any>["setSelectedDateRange"];
+  setSelectedTag: UseTaskFiltersReturn<any>["setSelectedTag"];
+  users: UserWithCompat[] | undefined;
   isLoadingUsers: boolean;
 };
 

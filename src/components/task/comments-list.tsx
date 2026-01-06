@@ -2,14 +2,12 @@ import { useMemo, useState } from "react";
 
 import { comments as commentsText } from "@/constants";
 import { CommentWithUser } from "@/hooks/comments";
-import { useProjectMembers } from "@/hooks/project-members";
 import { cn } from "@/lib/utils";
 
 import { CommentItem } from "./comment-item";
 
 type CommentsListProps = {
   comments: CommentWithUser[];
-  projectId: string;
   className?: string;
   onReply?: (comment: CommentWithUser) => void;
 };
@@ -18,7 +16,6 @@ const toTimestamp = (value?: string) => (value ? new Date(value).getTime() : 0);
 
 export function CommentsList({
   comments,
-  projectId,
   className,
   onReply,
 }: CommentsListProps) {
@@ -28,25 +25,6 @@ export function CommentsList({
   const [collapsedThreads, setCollapsedThreads] = useState<Set<string>>(
     () => new Set(),
   );
-
-  const { data: projectMembers } = useProjectMembers(projectId, {
-    enabled: Boolean(projectId),
-  });
-
-  const memberNameMap = useMemo(() => {
-    const map = new Map<string, string>();
-    projectMembers?.forEach((member) => {
-      const user = member.expand?.user;
-      if (!user) return;
-      const displayName =
-        `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim() ||
-        user.username;
-      map.set(user.id, displayName);
-    });
-    return map;
-  }, [projectMembers]);
-
-  const resolveUserName = (id: string) => memberNameMap.get(id) ?? id;
 
   const visibleComments = useMemo(() => {
     const filtered = comments.filter((c) => !locallyDeleted.has(c.id));
@@ -85,7 +63,6 @@ export function CommentsList({
           depth={depth}
           onDeleted={(id) => setLocallyDeleted((prev) => new Set(prev).add(id))}
           onReply={onReply}
-          resolveUserName={resolveUserName}
           replyCount={replies.length}
           isCollapsed={isCollapsed}
           onToggleThread={() =>

@@ -1,111 +1,81 @@
-import { digitsEnToFa } from "@persian-tools/persian-tools";
-import {
-  IconCheck,
-  IconClock,
-  IconCornerUpLeft,
-  IconDotsVertical,
-  IconDownload,
-  IconFile,
-  IconFileTypePdf,
-  IconLoader2,
-  IconPaperclip,
-  IconPencil,
-  IconPhoto,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
-import { format } from "date-fns-jalali";
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Textarea } from "@/components/ui/textarea";
-import { comments as commentsConst, tasks } from "@/constants";
-import {
-  CommentWithUser,
-  useSoftDeleteComment,
-  useUpdateComment,
-} from "@/hooks/comments";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { pb } from "@/lib/pocketbase";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { formatTaskDate } from "@/lib/date-utils";
+import { tasks, comments as commentsConst } from "@/constants";
+import type { CommentWithUser } from "@/hooks/comments";
 import { useAuthUser } from "@/store/auth-store";
-
+import { useUpdateComment, useSoftDeleteComment } from "@/hooks/comments";
 import { UserAvatar } from "../user-avatar";
+import { useToast } from "@/hooks/use-toast";
 
-const formatCommentDate = (dateString: string) => {
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-  return digitsEnToFa(format(date, "dd MMMM yyyy — HH:mm"));
+import { IconDots, IconEdit, IconTrash, IconX, IconCheck } from "@tabler/icons-react";
+
+type CommentItemProps = {
+  comment: CommentWithUser;
+  onDeleted?: (commentId: string) => void;
+  onToggleThread?: (commentId: string) => void;
+  onReply?: (comment: CommentWithUser) => void;
+  replyCount?: number;
+  isCollapsed?: boolean;
+  depth?: number;
+};
+
+const editFormSchema = z.object({
+  content: z.string().min(1, "Comment cannot be empty"),
+});
+
+type EditFormValues = z.infer<typeof editFormSchema>;
+
+const reactionConfig = {
+  "+1": { emoji: "👍", label: "+1" },
+  "-1": { emoji: "👎", label: "-1" },
+  laugh: { emoji: "😄", label: "Laugh" },
+  heart: { emoji: "❤️", label: "Heart" },
+  rocket: { emoji: "🚀", label: "Rocket" },
+  eyes: { emoji: "👀", label: "Eyes" },
 };
 
 type ReactionMap = Record<string, string[]>;
 
-const reactionOptions = [
-  { key: "thumbs_up", label: "👍" },
-  { key: "thumbs_down", label: "👎" },
-  { key: "heart", label: "❤️" },
-  { key: "party", label: "🎉" },
-  { key: "smile", label: "😄" },
-  { key: "think", label: "🤔" },
-];
-
-const parseReactions = (value: unknown): ReactionMap => {
-  if (!value) return {};
-  if (typeof value === "string") {
+function parseReactions(reactions: any): ReactionMap {
+  if (!reactions) return {};
+  if (typeof reactions === "string") {
     try {
-      return JSON.parse(value) as ReactionMap;
+      reactions = JSON.parse(reactions);
     } catch {
       return {};
     }
   }
-  return value as ReactionMap;
-};
-
-const imageExtensions = new Set([
-  "png",
-  "jpg",
-  "jpeg",
-  "gif",
-  "webp",
-  "bmp",
-  "svg",
-]);
-
-const getFileIcon = (filename: string) => {
-  const ext = filename.split(".").pop()?.toLowerCase();
-  if (!ext) return IconFile;
-  if (ext === "pdf") return IconFileTypePdf;
-  if (imageExtensions.has(ext)) return IconPhoto;
-  return IconFile;
-};
-
-type CommentItemProps = {
-  comment: CommentWithUser;
-  onDeleted?: (id: string) => void;
-  onReply?: (comment: CommentWithUser) => void;
-  onToggleThread?: () => void;
-  replyCount?: number;
-  isCollapsed?: boolean;
-  resolveUserName?: (id: string) => string;
-  depth?: number;
-};
+  if (!reactions || typeof reactions !== "object") return {};
+  const result: ReactionMap = {};
+  for (const [key, value] of Object.entries(reactions)) {
+    if (Array.isArray(value)) {
+      result[key] = value.filter((v) => typeof v === "string");
+    }
+  }
+  return result;
+}
 
 export function CommentItem({
   comment,
   onDeleted,
-  onReply,
   onToggleThread,
+  onReply,
   replyCount = 0,
   isCollapsed = false,
-  resolveUserName,
   depth = 0,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -114,30 +84,38 @@ export function CommentItem({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const currentUser = useAuthUser();
-  const isAuthor = currentUser?.id === comment.expand.user?.id;
+  const isAuthor = currentUser?._id === comment.expand.user?._id;
   const isDeleted = !!comment.deleted_at;
 
   const updateComment = useUpdateComment();
   const softDeleteComment = useSoftDeleteComment();
+  const { toast } = useToast();
+
+  const form = useForm<EditFormValues>({
+    resolver: zodResolver(editFormSchema),
+    defaultValues: { content: comment.content || "" },
+  });
 
   const handleEdit = () => {
     setIsEditing(true);
     setEditContent(comment.content || "");
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editContent.trim() && editContent.trim() !== comment.content) {
-      updateComment.mutate(
-        {
+      try {
+        await updateComment.mutate({
           id: comment.id,
           updates: { content: editContent.trim() },
-        },
-        {
-          onSuccess: () => {
-            setIsEditing(false);
-          },
-        },
-      );
+        });
+        setIsEditing(false);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update comment",
+          variant: "destructive",
+        });
+      }
     } else {
       setIsEditing(false);
     }
@@ -148,13 +126,20 @@ export function CommentItem({
     setEditContent(comment.content || "");
   };
 
-  const handleSoftDelete = () => {
+  const handleSoftDelete = async () => {
     if (softDeleteComment.isPending) return;
     setLocallyDeleted(true);
-    softDeleteComment.mutate(comment.id, {
-      onSuccess: () => onDeleted?.(comment.id),
-      onError: () => setLocallyDeleted(false),
-    });
+    try {
+      await softDeleteComment.mutate(comment.id);
+      onDeleted?.(comment.id);
+    } catch {
+      setLocallyDeleted(false);
+      toast({
+        title: "Error",
+        description: "Failed to delete comment",
+        variant: "destructive",
+      });
+    }
   };
 
   useEffect(() => {
@@ -173,34 +158,35 @@ export function CommentItem({
       : undefined;
 
   const reactionMap = parseReactions(comment.reactions);
-  const attachments = comment.attachments ?? [];
-  const hasAttachments = attachments.length > 0;
 
-  const toggleReaction = (key: string) => {
+  const toggleReaction = async (key: string) => {
     if (!currentUser) return;
 
     const existing = reactionMap[key] ?? [];
-    const hasReacted = existing.includes(currentUser.id);
+    const hasReacted = existing.includes(currentUser._id || "");
     const updated: ReactionMap = { ...reactionMap };
 
     if (hasReacted) {
-      updated[key] = existing.filter((id) => id !== currentUser.id);
+      updated[key] = existing.filter((id) => id !== (currentUser._id || ""));
       if (updated[key].length === 0) {
         delete updated[key];
       }
     } else {
-      updated[key] = [...existing, currentUser.id];
+      updated[key] = [...existing, currentUser._id || ""];
     }
 
-    updateComment.mutate(
-      {
+    try {
+      await updateComment.mutate({
         id: comment.id,
         updates: { reactions: updated },
-      },
-      {
-        onError: (error) => handlePocketBaseError(error as Error),
-      },
-    );
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to update reaction",
+        variant: "destructive",
+      });
+    }
   };
 
   if (deleted) {
@@ -214,8 +200,8 @@ export function CommentItem({
           <div className="flex-1 space-y-1">
             <div className="flex items-center justify-end gap-3">
               <span className="text-[10px] leading-none font-bold tracking-tight">
-                {comment.user
-                  ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
+                {comment.user && comment.expand.user
+                  ? `${comment.expand.user.firstName || comment.expand.user.first_name || ""} ${comment.expand.user.lastName || comment.expand.user.last_name || ""}`.trim() ||
                     comment.expand.user.username
                   : tasks.details.unknownUser}
               </span>
@@ -229,276 +215,163 @@ export function CommentItem({
     );
   }
 
-  const wasEdited = comment.updated && comment.updated !== comment.created;
-
   return (
-    <div style={indentStyle}>
-      <div className="group border-border/10 bg-card hover:bg-muted/30 relative flex items-stretch border-b transition-all duration-200">
-        {/* Visual Identity Strip */}
-        <div className="bg-muted/5 border-border/5 flex w-12 shrink-0 flex-col items-center border-s pt-4">
-          <UserAvatar
-            user={comment.expand.user}
-            className="border-border/20 size-8 rounded-full border shadow-sm"
-          />
-        </div>
+    <div style={indentStyle} className="group">
+      <div className="flex gap-3" data-comment={comment.id}>
+        <UserAvatar
+          user={comment.expand.user}
+          className="border-border/40 mt-2 size-8 rounded-full border"
+        />
 
-        {/* Content Engine */}
-        <div className="flex-1 space-y-3 p-4 pb-6 text-right">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {isAuthor && !deleted && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:border-border/40 hover:bg-muted h-7 w-7 rounded-lg border border-transparent"
-                      disabled={
-                        updateComment.isPending || softDeleteComment.isPending
-                      }
-                    >
-                      <IconDotsVertical className="size-3.5 opacity-40 group-hover:opacity-100" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="border-border bg-background rounded-xl border shadow-lg"
-                  >
-                    <DropdownMenuItem
-                      onSelect={(e) => {
-                        e.preventDefault();
-                        handleEdit();
-                      }}
-                      className="rounded-lg p-3 text-[10px] font-bold tracking-tight"
-                    >
-                      <IconPencil className="ms-2 size-3.5 opacity-40" />
-                      {commentsConst.item.edit}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onSelect={(e) => {
-                        e.preventDefault();
-                        handleSoftDelete();
-                      }}
-                      className="rounded-lg p-3 text-[10px] font-bold tracking-tight text-rose-500 focus:text-rose-500"
-                      disabled={softDeleteComment.isPending}
-                    >
-                      <IconTrash className="ms-2 size-3.5 opacity-40" />
-                      {softDeleteComment.isPending
-                        ? commentsConst.item.deleting
-                        : commentsConst.item.delete}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-              {currentUser && onReply && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="border-border/40 rounded-lg text-[10px] font-bold tracking-tight"
-                  onClick={() => onReply(comment)}
-                >
-                  <IconCornerUpLeft className="ms-2 size-3" />
-                  {commentsConst.item.reply}
-                </Button>
-              )}
-              {replyCount > 0 && onToggleThread && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="border-border/40 rounded-lg text-[10px] font-bold tracking-tight"
-                  onClick={onToggleThread}
-                >
-                  {isCollapsed
-                    ? commentsConst.item.show
-                    : commentsConst.item.hide}{" "}
-                  ({digitsEnToFa(replyCount)})
-                </Button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col items-end">
-                <span className="text-foreground text-[10px] leading-none font-bold tracking-tight">
-                  {comment.user
-                    ? `${comment.expand.user.first_name} ${comment.expand.user.last_name}`.trim() ||
+        <div className="flex-1 space-y-1.5">
+          <div className="bg-muted/30 border-border flex flex-col rounded-2xl border p-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold tracking-tight">
+                  {comment.user && comment.expand.user
+                    ? `${comment.expand.user.firstName || comment.expand.user.first_name || ""} ${comment.expand.user.lastName || comment.expand.user.last_name || ""}`.trim() ||
                       comment.expand.user.username
                     : tasks.details.unknownUser}
                 </span>
-                <div className="mt-1 flex items-center gap-1.5 opacity-40">
-                  <span className="font-mono text-[8px] font-bold tabular-nums">
-                    {formatCommentDate(comment.created)}
-                  </span>
-                  <IconClock className="size-2.5" />
-                </div>
+                <span className="text-muted-foreground text-[9px] font-medium">
+                  {formatTaskDate(comment.created)}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                {isAuthor && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-6 rounded-full"
+                      >
+                        <IconDots className="size-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="flex items-center gap-2"
+                        onClick={handleEdit}
+                      >
+                        <IconEdit className="size-3" />
+                        <span className="text-xs font-bold">
+                          {commentsConst.item.edit}
+                        </span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="flex items-center gap-2 text-rose-500"
+                        onClick={handleSoftDelete}
+                      >
+                        <IconTrash className="size-3" />
+                        <span className="text-xs font-bold">
+                          {commentsConst.item.delete}
+                        </span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             </div>
+
+            {isEditing ? (
+              <div className="space-y-2 pt-2">
+                <Form {...form}>
+                  <FormField
+                    control={form.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <textarea
+                            {...field}
+                            ref={textareaRef}
+                            className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-primary w-full resize-none rounded-xl border px-3 py-2 text-xs font-bold tracking-tight focus:outline-none focus:ring-1"
+                            placeholder={commentsConst.item.editPlaceholder}
+                            rows={3}
+                            value={field.value}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setEditContent(e.target.value);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </Form>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 rounded-lg px-2 text-xs font-bold"
+                    onClick={handleCancelEdit}
+                  >
+                    <IconX className="mr-1.5 size-3" />
+                    {commentsConst.item.cancel}
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="h-7 rounded-lg px-2 text-xs font-bold"
+                    onClick={handleSaveEdit}
+                  >
+                    <IconCheck className="mr-1.5 size-3" />
+                    {commentsConst.item.save}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="whitespace-pre-wrap text-xs font-bold leading-relaxed tracking-tight">
+                {comment.content}
+              </p>
+            )}
           </div>
 
-          {isEditing ? (
-            <div className="animate-in fade-in slide-in-from-top-2 space-y-4">
-              <div className="relative">
-                <Textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  className="border-border/40 bg-muted/5 focus:border-primary/40 min-h-[100px] rounded-xl text-right leading-relaxed font-medium focus:ring-0"
-                  placeholder={commentsConst.item.editPlaceholder}
-                  ref={textareaRef}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                      e.preventDefault();
-                      handleSaveEdit();
-                    }
-                    if (e.key === "Escape") {
-                      e.preventDefault();
-                      handleCancelEdit();
-                    }
-                  }}
-                  disabled={updateComment.isPending}
-                />
-              </div>
-              <div className="flex items-center justify-end gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCancelEdit}
-                  disabled={updateComment.isPending}
-                  className="text-muted-foreground/60 h-9 rounded-xl text-[10px] font-bold tracking-tight"
-                >
-                  <IconX className="ms-2 size-3.5" />
-                  {commentsConst.item.cancel}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSaveEdit}
-                  disabled={!editContent.trim() || updateComment.isPending}
-                  className="h-9 rounded-xl px-6 text-[10px] font-bold tracking-tight shadow-sm transition-all active:scale-95"
-                >
-                  {updateComment.isPending ? (
-                    <IconLoader2 className="me-2 h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <IconCheck className="ms-2 size-3.5" />
-                  )}
-                  {updateComment.isPending
-                    ? commentsConst.item.saving
-                    : commentsConst.item.save}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="group/content relative">
-              <div
-                className="text-sm leading-relaxed font-medium whitespace-pre-wrap opacity-90"
-                dir="auto"
-              >
-                {comment.content?.trim() || "—"}
-              </div>
-              {!deleted && wasEdited && (
-                <div className="mt-2 flex items-center justify-end gap-1 opacity-20 transition-opacity group-hover/content:opacity-40">
-                  <IconPencil className="size-2.5" />
-                  <span className="text-[8px] font-bold tracking-tight">
-                    {commentsConst.item.edited}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
           {!isEditing && (
-            <div className="border-border/10 space-y-3 border-t pt-3 text-right">
-              {hasAttachments && (
-                <div className="space-y-2">
-                  <div className="text-muted-foreground text-[10px] font-bold tracking-tight">
-                    {commentsConst.item.attachments}
-                  </div>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {attachments.map((filename) => {
-                      const fileUrl = pb.files.getUrl(comment, filename);
-                      const FileIcon = getFileIcon(filename);
-                      const isImage = imageExtensions.has(
-                        filename.split(".").pop()?.toLowerCase() ?? "",
-                      );
-                      return (
-                        <div
-                          key={filename}
-                          className="border-border/30 bg-muted/5 flex items-center justify-between gap-3 rounded-xl border p-3"
-                        >
-                          <div className="flex items-center gap-3">
-                            {isImage ? (
-                              <img
-                                src={fileUrl}
-                                alt={filename}
-                                className="border-border/30 h-10 w-10 rounded-lg border object-cover"
-                              />
-                            ) : (
-                              <div className="border-border/30 bg-card flex h-10 w-10 items-center justify-center rounded-lg border">
-                                <FileIcon className="size-5" />
-                              </div>
-                            )}
-                            <div className="text-xs font-bold tracking-tight">
-                              {filename}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <a
-                              href={fileUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              download
-                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
-                            >
-                              <IconDownload className="size-3" />
-                              {commentsConst.item.download}
-                            </a>
-                            <a
-                              href={fileUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="border-border/30 hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-bold tracking-tight transition-colors"
-                            >
-                              <IconPaperclip className="size-3" />
-                              {commentsConst.item.view}
-                            </a>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-              <div className="flex flex-wrap gap-2">
-                {reactionOptions.map((reaction) => {
-                  const count = reactionMap[reaction.key]?.length ?? 0;
-                  const hasReacted =
-                    currentUser &&
-                    reactionMap[reaction.key]?.includes(currentUser.id);
-                  const reactionNames =
-                    reactionMap[reaction.key]
-                      ?.map((id) => resolveUserName?.(id) ?? id)
-                      .join("، ") ?? "";
+            <div className="flex items-center gap-3 px-1">
+              <div className="flex items-center gap-0.5">
+                {Object.entries(reactionConfig).map(([key, config]) => {
+                  const users = reactionMap[key] || [];
+                  const hasReacted = users.includes(currentUser?._id || "");
                   return (
-                    <Button
-                      key={reaction.key}
-                      variant="ghost"
-                      size="sm"
+                    <button
+                      key={key}
+                      type="button"
                       className={cn(
-                        "border-border/30 rounded-xl border px-3 py-1 text-[11px] font-bold tracking-tight transition-colors",
+                        "inline-flex items-center justify-center rounded-lg px-1.5 py-0.5 text-[10px] font-bold transition-colors",
                         hasReacted
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "text-muted-foreground/80 hover:bg-muted/20",
+                          ? "bg-primary/10 text-primary"
+                          : "hover:bg-muted text-muted-foreground",
                       )}
-                      onClick={() => toggleReaction(reaction.key)}
-                      disabled={!currentUser || updateComment.isPending}
-                      title={reactionNames}
+                      onClick={() => toggleReaction(key)}
                     >
-                      <span className="text-lg">{reaction.label}</span>
-                      {count > 0 && (
-                        <span className="ms-1 text-[10px] font-bold tabular-nums">
-                          {digitsEnToFa(String(count))}
-                        </span>
-                      )}
-                    </Button>
+                      {config.emoji} {users.length > 0 && users.length}
+                    </button>
                   );
                 })}
               </div>
+
+              {replyCount > 0 && (
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-primary text-[10px] font-bold transition-colors"
+                  onClick={() => onToggleThread?.(comment.id)}
+                >
+                  {isCollapsed ? commentsConst.item.show : commentsConst.item.hide} (
+                  {replyCount})
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-primary text-[10px] font-bold transition-colors"
+                onClick={() => onReply?.(comment)}
+              >
+                {commentsConst.item.reply}
+              </button>
             </div>
           )}
         </div>

@@ -8,8 +8,15 @@ import {
 } from "@/components/reports/filters-bar";
 import { ProjectExportButton } from "@/components/reports/project-export-button";
 import { reports } from "@/constants";
-import type { ProjectWithSupervisor, TaskWithProject } from "@/lib/pocketbase";
-import type { ProjectsResponse, UsersResponse } from "@/lib/pocketbase-types";
+import type { ConvexTask, ConvexUser } from "@/lib/reports/types";
+
+// Convex project type (minimal)
+type ConvexProject = {
+  _id: string;
+  id: string; // Compatibility alias
+  name: string;
+  code: string;
+};
 
 export type FiltersSectionState = {
   timeRange: TimeRange;
@@ -20,10 +27,9 @@ type FiltersSectionProps = {
   value: FiltersSectionState;
   onChange: (next: FiltersSectionState) => void;
   rangeLabel: string;
-  projects: ProjectsResponse[];
-  users: UsersResponse[];
-  projectsWithSupervisor?: ProjectWithSupervisor[];
-  tasks: TaskWithProject[];
+  projects: ConvexProject[];
+  users: ConvexUser[];
+  tasks: ConvexTask[];
 };
 
 export function FiltersSection({
@@ -31,7 +37,6 @@ export function FiltersSection({
   onChange,
   projects,
   users,
-  projectsWithSupervisor,
   tasks,
 }: FiltersSectionProps) {
   return (
@@ -68,14 +73,21 @@ export function FiltersSection({
 
           <div className="bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden rounded-xl border md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => {
-              const pWithSupervisor = projectsWithSupervisor?.find(
-                (p) => p.id === project.id,
-              ) || {
-                ...project,
-                expand: { supervisor: undefined },
+              // Get project with _creationTime for export
+              const exportProject = {
+                _id: project._id || project.id,
+                id: project.id || project._id,
+                name: project.name,
+                code: project.code,
+                description: undefined,
+                _creationTime: 0,
               };
               const projectTasks = tasks.filter(
-                (task) => task.project === project.id,
+                (task) =>
+                  task.projectId === project._id ||
+                  task.projectId === project.id ||
+                  task.project === project._id ||
+                  task.project === project.id,
               );
               const taskCount = projectTasks.length;
 
@@ -106,7 +118,7 @@ export function FiltersSection({
 
                   <div className="mt-6 flex justify-end">
                     <ProjectExportButton
-                      project={pWithSupervisor}
+                      project={exportProject}
                       tasks={tasks}
                       users={users}
                       taskCount={taskCount}

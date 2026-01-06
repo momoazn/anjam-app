@@ -2,10 +2,9 @@ import { format } from "date-fns-jalali";
 import * as XLSX from "xlsx";
 
 import { reports, tasks } from "@/constants";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 import { formatDateISO } from "./date-utils";
-import type { TaskWithProject } from "./pocketbase";
-import type { ProjectsResponse, UsersResponse } from "./pocketbase-types";
 
 export function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
@@ -14,12 +13,12 @@ export function stripHtml(html: string | null | undefined): string {
 }
 
 function getUserName(
-  user: UsersResponse | undefined,
+  user: (Doc<"users"> & { first_name?: string; last_name?: string }) | undefined,
   fallback: string = "-",
 ): string {
   if (!user) return fallback;
-  const firstName = user.first_name || "";
-  const lastName = user.last_name || "";
+  const firstName = user.firstName || user.first_name || "";
+  const lastName = user.lastName || user.last_name || "";
   const fullName = `${firstName} ${lastName}`.trim();
   return fullName || user.username || fallback;
 }
@@ -56,10 +55,8 @@ function configureSheetFormatting(
   sheet["!rows"][0] = { hpt: 20 };
 }
 
-function generateFilename(
-  project: ProjectsResponse<{ supervisor?: UsersResponse }>,
-): string {
-  const projectIdentifier = project.code || project.id.substring(0, 8);
+function generateFilename(project: Doc<"projects">): string {
+  const projectIdentifier = project.code || project._id.substring(0, 8);
   const projectName = (project.name || "project")
     .replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, "_")
     .substring(0, 40);
@@ -69,11 +66,12 @@ function generateFilename(
 }
 
 export async function exportProjectToExcel(
-  project: ProjectsResponse<{ supervisor?: UsersResponse }>,
-  tasks: TaskWithProject[],
-  users: UsersResponse[],
+  project: Doc<"projects"> & {
+    expand?: { supervisor?: Doc<"users"> & { first_name?: string; last_name?: string } };
+  },
+  projectTasks: any[],
+  users: (Doc<"users"> & { id?: string; first_name?: string; last_name?: string })[],
 ): Promise<void> {
-  const projectTasks = tasks.filter((task) => task.project === project.id);
   const workbook = XLSX.utils.book_new();
 
   const currentDate = format(new Date(), "yyyy/MM/dd HH:mm");
@@ -104,8 +102,10 @@ export async function exportProjectToExcel(
         project.expand?.supervisor,
         "-",
       ),
-      [reports.excel.columns.createdAt]: formatDateISO(project.created),
-      [reports.excel.columns.updatedAt]: formatDateISO(project.updated),
+      [reports.excel.columns.createdAt]: formatDateISO(project._creationTime),
+      [reports.excel.columns.updatedAt]: formatDateISO(
+        project.updatedAt || project._creationTime,
+      ),
     },
   ];
 
@@ -118,17 +118,21 @@ export async function exportProjectToExcel(
   );
 
   const tasksData = projectTasks.map((task) => {
-    const assignee = users.find((u) => u.id === task.assignee);
+    const assignee = users.find(
+      (u) => u._id === task.assigneeUserId || u.id === task.assigneeUserId,
+    );
     return {
-      [reports.excel.columns.taskNumber]: task.display_id || "-",
+      [reports.excel.columns.taskNumber]: task.displayId || "-",
       [reports.excel.columns.taskTitle]: task.title || "-",
       [reports.excel.columns.taskStatus]: getStatusLabel(task.status),
       [reports.excel.columns.taskPriority]: getPriorityLabel(task.priority),
       [reports.excel.columns.taskAssignee]: getUserName(assignee, "-"),
       [reports.excel.columns.taskDeadline]: formatDateISO(task.deadline),
-      [reports.excel.columns.createdAt]: formatDateISO(task.created),
-      [reports.excel.columns.updatedAt]: formatDateISO(task.updated),
-      [reports.excel.columns.taskTimeSpent]: task.time_spent_minutes || 0,
+      [reports.excel.columns.createdAt]: formatDateISO(task._creationTime),
+      [reports.excel.columns.updatedAt]: formatDateISO(
+        task.updatedAt || task._creationTime,
+      ),
+      [reports.excel.columns.taskTimeSpent]: task.timeSpentMinutes || 0,
       [reports.excel.columns.taskDescription]: stripHtml(task.description),
     };
   });
@@ -162,3 +166,4 @@ export async function exportProjectToExcel(
   const filename = generateFilename(project);
   XLSX.writeFile(workbook, filename);
 }
+

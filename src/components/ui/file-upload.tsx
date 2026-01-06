@@ -28,7 +28,7 @@ export function FileUpload({
   onChange,
   maxSize = 52428800,
   maxFiles,
-  disabled = false,
+  disabled = true, // File uploads disabled for Convex migration
   className,
 }: FileUploadProps) {
   const { validateFile, formatFileSize } = useFileUpload({
@@ -154,20 +154,33 @@ export function FileUpload({
           htmlFor="file-upload-input"
           className={cn(
             "relative z-10 flex flex-col items-center gap-4",
-            disabled ? "cursor-not-allowed" : "cursor-pointer",
+            disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
           )}
         >
           <div className="bg-foreground text-background flex h-16 w-16 items-center justify-center rounded-xl">
             <IconUpload className="size-8" stroke={2} />
           </div>
           <div className="space-y-1">
-            <p className="text-foreground text-lg font-bold tracking-tight">
-              {projects.files.dropzone}
-            </p>
-            <div className="text-muted-foreground flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-bold tracking-widest">
-              <span>MAX_SIZE: {formatFileSize(maxSize)}</span>
-              <span>ALLOWED: PDF, DOC, IMG, ZIP</span>
-            </div>
+            {disabled ? (
+              <>
+                <p className="text-foreground text-lg font-bold tracking-tight">
+                  آپلود فایل غیرفعال است
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  در نسخه بعدی فعال خواهد شد
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-foreground text-lg font-bold tracking-tight">
+                  {projects.files.dropzone}
+                </p>
+                <div className="text-muted-foreground flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-bold tracking-widest">
+                  <span>MAX_SIZE: {formatFileSize(maxSize)}</span>
+                  <span>ALLOWED: PDF, DOC, IMG, ZIP</span>
+                </div>
+              </>
+            )}
           </div>
         </label>
       </div>

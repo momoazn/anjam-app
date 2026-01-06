@@ -14,11 +14,26 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { inbox } from "@/constants";
 import { useMentions } from "@/hooks/mentions";
 import { useTasks } from "@/hooks/tasks";
-import type { TaskWithProject } from "@/lib/pocketbase";
 import { cn } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
+import { Task } from "@/types/tasks";
 
 type FilterOption = "all" | "active" | "done";
+
+// Convex-compatible TaskWithProject interface
+interface TaskWithProject extends Task {
+  id: string;
+  project?: any;
+  assignee?: any;
+  creator?: any;
+  updated?: string;
+  created?: string;
+  expand?: {
+    project?: any;
+    assignee?: any;
+    creator?: any;
+  };
+}
 
 function SectionHeader({
   title,
@@ -80,7 +95,7 @@ function InlineEmptyState({
 export default function Inbox() {
   const navigate = useNavigate();
   const user = useAuthUser();
-  const userId = user?.id;
+  const userId = user?._id;
   const currentOrgMode = useCurrentOrgMode();
   const isProductMode = currentOrgMode === "product";
   const [searchParams, setSearchParams] = useSearchParams();
@@ -89,13 +104,10 @@ export default function Inbox() {
   // Filter state from URL or default to 'all'
   const currentFilter = (searchParams.get("filter") as FilterOption) || "all";
 
-  // Fetch all tasks where user is assignee or creator
+  // Fetch all tasks for the organization
   const { data: allTasks, isLoading } = useTasks({
-    filter: userId
-      ? `assignee = "${userId}" || creator = "${userId}"`
-      : undefined,
-    expandFields: "project,assignee,creator,project.organization,status_ref",
-    mode: "full",
+    enabled: !!userId,
+    perPage: 100, // Fetch more for local filtering in inbox
   });
 
   // Fetch mentions for the current user
@@ -137,9 +149,9 @@ export default function Inbox() {
 
     // Filter functions
     const isActive = (t: TaskWithProject) =>
-      t.status !== "done" && t.status !== "canceled";
+      t.status !== "done" && t.status !== "cancelled";
     const isDone = (t: TaskWithProject) =>
-      t.status === "done" || t.status === "canceled";
+      t.status === "done" || t.status === "cancelled";
 
     // Apply current filter
     const filterTasks = (tasks: TaskWithProject[]) => {

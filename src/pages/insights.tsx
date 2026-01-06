@@ -42,7 +42,7 @@ import { useCurrentOrgMode, useCurrentOrganization } from "@/store/auth-store";
  */
 export default function Insights() {
   const currentOrg = useCurrentOrganization();
-  const orgId = currentOrg?.id;
+  const orgId = currentOrg?._id;
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
   const cardClassName = cn(
@@ -58,17 +58,10 @@ export default function Insights() {
   const lastWeekEnd = endOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
 
   // Fetch all tasks for current organization
-  const { data: allTasks, isLoading } = useTasks({
-    filter: orgId ? `project.organization = "${orgId}"` : undefined,
-    expandFields: "project,assignee,project.organization",
-    mode: "full",
-  });
+  const { data: allTasks, isLoading } = useTasks();
 
   // Fetch users for workload by assignee
-  const { data: users } = useUsers({
-    batch: 100,
-    sort: "-created",
-  });
+  const { data: users } = useUsers({ enabled: true });
 
   // Compute insights from task data
   const insights = useMemo(() => {
@@ -88,44 +81,56 @@ export default function Insights() {
 
     const tasks = allTasks.items;
 
+    // Helper to get created date from task (Convex uses _creationTime)
+    const getCreatedDate = (t: typeof tasks[0]): Date => {
+      // The hook maps _creationTime to created as ISO string
+      return new Date(t.created);
+    };
+
+    // Helper to get updated date from task (Convex uses updatedAt)
+    const getUpdatedDate = (t: typeof tasks[0]): Date | null => {
+      if (t.updated) {
+        return new Date(t.updated);
+      }
+      return null;
+    };
+
     // Basic metrics
     const createdThisWeek = tasks.filter(
       (t) =>
-        new Date(t.created) >= thisWeekStart &&
-        new Date(t.created) <= thisWeekEnd,
+        getCreatedDate(t) >= thisWeekStart &&
+        getCreatedDate(t) <= thisWeekEnd,
     ).length;
-    const completedThisWeek = tasks.filter(
-      (t) =>
-        t.status === "done" &&
-        t.updated &&
-        new Date(t.updated) >= thisWeekStart &&
-        new Date(t.updated) <= thisWeekEnd,
-    ).length;
+    const completedThisWeek = tasks.filter((t) => {
+      if (t.status !== "done") return false;
+      const updated = getUpdatedDate(t);
+      return updated && updated >= thisWeekStart && updated <= thisWeekEnd;
+    }).length;
     const createdLastWeek = tasks.filter(
       (t) =>
-        new Date(t.created) >= lastWeekStart &&
-        new Date(t.created) <= lastWeekEnd,
+        getCreatedDate(t) >= lastWeekStart &&
+        getCreatedDate(t) <= lastWeekEnd,
     ).length;
-    const completedLastWeek = tasks.filter(
-      (t) =>
-        t.status === "done" &&
-        t.updated &&
-        new Date(t.updated) >= lastWeekStart &&
-        new Date(t.updated) <= lastWeekEnd,
-    ).length;
+    const completedLastWeek = tasks.filter((t) => {
+      if (t.status !== "done") return false;
+      const updated = getUpdatedDate(t);
+      return updated && updated >= lastWeekStart && updated <= lastWeekEnd;
+    }).length;
     const inProgress = tasks.filter((t) => t.status === "in_progress").length;
 
     // Cycle time (average days from created to done for completed tasks)
     const completedTasks = tasks.filter(
-      (t) => t.status === "done" && t.updated,
+      (t) => t.status === "done" && getUpdatedDate(t) !== null,
     );
     let totalCycleTime = 0;
     let completedWithDeadline = 0;
     let onTimeCount = 0;
 
     completedTasks.forEach((t) => {
-      const created = new Date(t.created);
-      const updated = new Date(t.updated);
+      const created = getCreatedDate(t);
+      const updated = getUpdatedDate(t);
+      if (!updated) return;
+
       const cycleDays =
         (updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
       totalCycleTime += cycleDays;
@@ -150,8 +155,9 @@ export default function Insights() {
     // Workload by assignee
     const workloadMap = new Map<string, number>();
     tasks.forEach((t) => {
-      if (t.assignee) {
-        workloadMap.set(t.assignee, (workloadMap.get(t.assignee) || 0) + 1);
+      const assigneeId = t.assignee || (t as any).assigneeUserId;
+      if (assigneeId) {
+        workloadMap.set(assigneeId, (workloadMap.get(assigneeId) || 0) + 1);
       }
     });
 
@@ -176,20 +182,22 @@ export default function Insights() {
       const weekEnd = endOfWeek(subWeeks(now, i), { weekStartsOn: 1 });
 
       const weekTasks = tasks.filter((t) => {
-        const created = new Date(t.created);
+        const created = getCreatedDate(t);
         return created >= weekStart && created <= weekEnd;
       });
 
       const weekCompleted = weekTasks.filter(
-        (t) => t.status === "done" && t.updated,
+        (t) => t.status === "done" && getUpdatedDate(t) !== null,
       );
 
       let weekTotal = 0;
       weekCompleted.forEach((t) => {
-        const created = new Date(t.created);
-        const updated = new Date(t.updated);
-        weekTotal +=
-          (updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+        const created = getCreatedDate(t);
+        const updated = getUpdatedDate(t);
+        if (updated) {
+          weekTotal +=
+            (updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+        }
       });
 
       const weekAvg =

@@ -5,8 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { organization } from "@/constants";
 import { getHomeRoute } from "@/lib/mode";
-import { pb } from "@/lib/pocketbase";
-import type { OrganizationsResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import {
   useAuthStore,
@@ -14,6 +12,7 @@ import {
   useCurrentOrganization,
   useUserOrganizations,
 } from "@/store/auth-store";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 function getOrgInitials(name: string): string {
   return name
@@ -24,10 +23,11 @@ function getOrgInitials(name: string): string {
     .slice(0, 2);
 }
 
-function getOrgLogoUrl(org: OrganizationsResponse | null): string | undefined {
-  if (!org?.logo) return undefined;
-  const url = pb.files.getURL(org, org.logo, { thumb: "100x100" });
-  return url ?? undefined;
+function getOrgLogoUrl(org: Doc<"organizations"> | null): string | undefined {
+  if (!org) return undefined;
+  // In Convex v1, logo is not stored on the organization document
+  // TODO: Add logo support to Convex schema
+  return undefined;
 }
 
 function getRoleBadgeVariant(
@@ -36,8 +36,6 @@ function getRoleBadgeVariant(
   switch (role) {
     case "owner":
       return "default";
-    case "admin":
-      return "secondary";
     default:
       return "outline";
   }
@@ -47,12 +45,12 @@ export function SelectOrganizationPage() {
   const navigate = useNavigate();
   const userOrganizations = useUserOrganizations();
   const currentOrg = useCurrentOrganization();
-  const mode = useCurrentOrgMode();
+  useCurrentOrgMode(); // Initialize product mode
 
   const handleOrgSelect = (orgId: string) => {
     // Switch to this organization
     useAuthStore.getState().switchOrganization(orgId);
-    navigate(getHomeRoute(mode));
+    navigate(getHomeRoute());
   };
 
   return (
@@ -85,12 +83,12 @@ export function SelectOrganizationPage() {
 
         {/* Organization Cards */}
         {userOrganizations.map(({ organization: org, role }) => {
-          const isSelected = currentOrg?.id === org.id;
+          const isSelected = currentOrg?._id === org._id;
           return (
             <button
               type="button"
-              key={org.id}
-              onClick={() => handleOrgSelect(org.id)}
+              key={org._id}
+              onClick={() => handleOrgSelect(org._id)}
               className={cn(
                 "group relative flex flex-col items-center gap-4 rounded-2xl border p-6 text-left transition-all",
                 isSelected

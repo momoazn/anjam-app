@@ -17,8 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { tagsManagement, tasks } from "@/constants";
-import { useTags } from "@/hooks/tags";
-import type { TagsResponse } from "@/lib/pocketbase-types";
+import { Tag, useTags } from "@/hooks/tags";
 import { cn } from "@/lib/utils";
 
 interface TagPickerProps {
@@ -38,7 +37,7 @@ export function TagPicker({
   const selectedTags =
     tags?.filter((tag) => selectedTagIds.includes(tag.id)) || [];
 
-  const handleSelect = (tag: TagsResponse) => {
+  const handleSelect = (tag: Tag) => {
     const isSelected = selectedTagIds.includes(tag.id);
     if (isSelected) {
       onChange(selectedTagIds.filter((id) => id !== tag.id));

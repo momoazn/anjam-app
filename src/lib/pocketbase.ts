@@ -1,43 +1,38 @@
-import PocketBase from "pocketbase";
+// PocketBase client stub for Convex migration
+// All PocketBase functionality has been migrated to Convex
+// This stub provides minimal functionality for files not yet migrated
 
-import type {
-  ProjectsResponse,
-  TagsResponse,
-  TasksResponse,
-  TypedPocketBase,
-  UsersResponse,
-} from "./pocketbase-types";
-
-const baseUrl = import.meta.env.PROD ? "/" : "http://127.0.0.1:8090/";
-
-export const pb = new PocketBase(baseUrl) as TypedPocketBase;
-
-// Attach org context to all API requests
-pb.beforeSend = function (url, options) {
-  const storage = localStorage.getItem("anjam-auth-storage");
-  if (storage) {
-    try {
-      const parsed = JSON.parse(storage);
-      const orgId = parsed?.state?.currentOrganization?.id;
-
-      if (orgId) {
-        options.headers = { ...options.headers, "X-Organization-ID": orgId };
-      }
-    } catch {
-      // Ignore parse errors
-    }
-  }
-
-  return { url, options };
+// Stub auth store
+export const pb = {
+  authStore: {
+    record: null,
+    isValid: false,
+    token: null,
+    save: () => {},
+    loadFromCookie: () => {},
+    exportToCookie: () => {},
+    clear: () => {},
+  },
+  collection: () => ({
+    getFullList: async () => [],
+    getFirstListItem: async () => ({}),
+    create: async () => ({}),
+    update: async () => ({}),
+    delete: async () => {},
+    findFirst: async () => null,
+    findById: async () => null,
+  }),
+  send: async () => ({}),
+  files: {
+    getUrl: () => "",
+  },
 };
 
-export type TaskWithProject = TasksResponse<{
-  project: ProjectsResponse;
-  assignee?: UsersResponse;
-  creator: UsersResponse;
-  tags?: TagsResponse[];
-  status_ref: Record<string, unknown>;
-}>;
-export type ProjectWithSupervisor = ProjectsResponse<{
-  supervisor: UsersResponse;
-}>;
+// Stub for files that use pb.collection(...)
+export const createPocketBaseCollection = () => ({
+  getFullList: async () => [],
+  getFirstListItem: async () => ({}),
+  create: async () => ({}),
+  update: async () => ({}),
+  delete: async () => {},
+});

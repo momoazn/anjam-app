@@ -8,34 +8,19 @@
  * This eliminates unnecessary requests for projects and project-user relationships
  * that aren't needed on the tasks page.
  */
-import { useQuery } from "@tanstack/react-query";
-
-import { pb } from "../lib/pocketbase";
-import { UsersResponse } from "../lib/pocketbase-types";
-import { queryKeys } from "./query-keys";
-import { useTasks } from "./tasks";
+import { useAllTasks } from "./tasks";
+import { useUsers } from "./users";
 
 /**
  * Hook to get all data needed for the tasks page
  * Makes only 2 requests: tasks + users
  */
 export function useTasksPageData() {
-  const tasksQuery = useTasks({
-    expandFields: "project,assignee",
-    mode: "full",
-  });
-
-  const usersQuery = useQuery({
-    queryKey: queryKeys.users.list({ batch: 100, sort: "-created" }),
-    queryFn: () =>
-      pb.collection("users").getFullList<UsersResponse>({
-        batch: 100,
-        sort: "-created",
-      }),
-  });
+  const tasksQuery = useAllTasks();
+  const usersQuery = useUsers();
 
   return {
-    tasks: tasksQuery.data?.items || [],
+    tasks: tasksQuery.data || [],
     users: usersQuery.data || [],
     isLoadingTasks: tasksQuery.isPending,
     isLoadingUsers: usersQuery.isPending,

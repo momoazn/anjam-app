@@ -18,9 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
 import {
-  useAcceptInvite,
+  useAcceptOrgInvitation,
   useInviteByToken,
-} from "@/hooks/organization-invites";
+} from "@/hooks";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -28,8 +28,8 @@ export default function InviteAccept() {
   const navigate = useNavigate();
   const { token } = useParams<{ token: string }>();
 
-  const { data: inviteInfo, isLoading, error } = useInviteByToken(token ?? "");
-  const acceptInviteMutation = useAcceptInvite(token ?? "");
+  const { data: inviteData, isLoading, error } = useInviteByToken(token ?? "");
+  const acceptInviteMutation = useAcceptOrgInvitation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,19 +64,13 @@ export default function InviteAccept() {
       return;
     }
 
-    acceptInviteMutation.mutate(
-      {
-        email: trimmedEmail,
-        password,
-        passwordConfirm: confirmPassword,
-      },
-      {
-        onSuccess: () => {
-          toast.success(auth.invite.success);
-          navigate("/dashboard", { replace: true });
-        },
-      },
-    );
+    try {
+      await acceptInviteMutation.mutate(token ?? "");
+      toast.success(auth.invite.success);
+      navigate("/dashboard", { replace: true });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to accept invite");
+    }
   };
 
   const submitting = acceptInviteMutation.isPending;
@@ -91,17 +85,15 @@ export default function InviteAccept() {
   }
 
   // Error state
-  if (error || !inviteInfo) {
+  if (error || !inviteData || inviteData.status !== "valid") {
     // Match error messages (supports both Persian backend messages and English fallbacks)
-    const msg = error?.message ?? "";
+    const status = inviteData?.status;
     const errorMessage =
-      msg.includes("منقضی") || msg.includes("expired")
+      status === "expired"
         ? auth.invite.errors.inviteExpired
-        : msg.includes("ظرفیت") || msg.includes("exhausted")
+        : status === "exhausted"
           ? auth.invite.errors.inviteExhausted
-          : msg.includes("لغو") || msg.includes("revoked")
-            ? auth.invite.errors.inviteRevoked
-            : auth.invite.errors.inviteNotFound;
+          : auth.invite.errors.inviteNotFound;
 
     return (
       <div className="bg-background flex min-h-screen items-center justify-center p-4">
@@ -119,6 +111,8 @@ export default function InviteAccept() {
       </div>
     );
   }
+
+  const { orgName } = inviteData;
 
   return (
     <div className="bg-background relative flex h-svh items-stretch overflow-hidden">
@@ -173,24 +167,16 @@ export default function InviteAccept() {
                   <h3 className="text-xl font-black tracking-tight">
                     {auth.invite.joining.replace(
                       "{orgName}",
-                      inviteInfo.organization.name,
+                      orgName || "Organization",
                     )}
                   </h3>
                   <p className="text-muted-foreground mt-1 text-xs font-medium">
                     {auth.invite.welcomeMessage}
                   </p>
                 </div>
-                {inviteInfo.organization.logo ? (
-                  <img
-                    src={`/api/files/organizations/${inviteInfo.organization.id}/${inviteInfo.organization.logo}`}
-                    alt={inviteInfo.organization.name}
-                    className="size-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full text-lg font-bold">
-                    {inviteInfo.organization.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full text-lg font-bold">
+                  {(orgName || "?").charAt(0).toUpperCase()}
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>

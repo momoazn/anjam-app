@@ -22,10 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";
 import { useTask, useUpdateTask } from "@/hooks";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { TaskPriority, TaskStatus } from "@/types/tasks";
 import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
@@ -52,8 +49,8 @@ export default function EditTask() {
       title: "",
       description: "",
       assignee: tasks.addTask.unassigned,
-      priority: TasksPriorityOptions.medium,
-      status: TasksStatusOptions.todo,
+      priority: "medium" as TaskPriority,
+      status: "todo" as TaskStatus,
       project: "",
       deadline: undefined,
       estimated_hours: 0,
@@ -65,7 +62,7 @@ export default function EditTask() {
   useEffect(() => {
     if (task) {
       const { hours, minutes } = minutesToHoursAndMinutes(
-        task.estimated_minutes,
+        task.estimatedMinutes || task.estimated_minutes,
       );
 
       form.reset({
@@ -105,7 +102,7 @@ export default function EditTask() {
           values.assignee !== tasks.addTask.unassigned
             ? values.assignee
             : undefined,
-        deadline: values.deadline?.toISOString(),
+        deadline: values.deadline?.getTime(),
       },
     });
   }
@@ -129,7 +126,7 @@ export default function EditTask() {
                   {tasks.edit.title}
                 </h1>
                 <p className="text-muted-foreground mt-1 text-xs">
-                  {tasks.details.displayIdLabel}: {task?.display_id || task?.id}
+                  {tasks.details.displayIdLabel}: {task?.displayId || task?.id}
                 </p>
               </div>
 
@@ -181,7 +178,7 @@ export default function EditTask() {
       <div className="relative mx-auto max-w-5xl space-y-8">
         <PageHeader
           title={tasks.edit.title}
-          description={`ویرایش جزئیات تسک ${task?.display_id || task?.id}`}
+          description={`ویرایش جزئیات تسک ${task?.displayId || task?.id}`}
           icon={IconTerminal2}
           actions={
             <Button

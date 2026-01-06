@@ -1,19 +1,4 @@
-export type OrgMode = "operations" | "product";
-
-// Build-time organization mode configuration
-// Set via VITE_ORG_MODE environment variable (default: "product")
-const buildTimeOrgMode = (import.meta.env.VITE_ORG_MODE ??
-  "product") as OrgMode;
-
-export function normalizeOrgMode(mode: unknown): OrgMode {
-  return mode === "product" ? "product" : "operations";
-}
-
-// Get the configured organization mode (build-time/environment)
-// Returns null if not set (for backwards compatibility with existing data)
-export function getConfiguredOrgMode(): OrgMode | null {
-  return buildTimeOrgMode;
-}
+export type OrgMode = "product";
 
 export type FeatureKey =
   | "timeTracking"
@@ -43,35 +28,21 @@ interface OrgModeSettings {
   };
 }
 
+// Product mode features (always product mode now)
 export function getOrgFeatures(
-  mode: OrgMode | undefined | null,
+  _mode: OrgMode | undefined | null,
   settings?: { modeSettings?: OrgModeSettings },
 ): OrgFeatures {
-  const orgMode = normalizeOrgMode(mode);
-
-  if (orgMode === "product") {
-    const calendarEnabled = settings?.modeSettings?.features?.calendar ?? false;
-    return {
-      timeTracking: false,
-      timesheet: false,
-      reports: false,
-      auditLogs: false,
-      loginLogs: false,
-      calendar: calendarEnabled,
-      taskBoard: true,
-      activityFeed: false,
-    };
-  }
-
+  const calendarEnabled = settings?.modeSettings?.features?.calendar ?? false;
   return {
-    timeTracking: true,
-    timesheet: true,
-    reports: true,
-    auditLogs: true,
-    loginLogs: true,
-    calendar: true,
+    timeTracking: false,
+    timesheet: false,
+    reports: false,
+    auditLogs: false,
+    loginLogs: false,
+    calendar: calendarEnabled,
     taskBoard: true,
-    activityFeed: true,
+    activityFeed: false,
   };
 }
 
@@ -82,9 +53,29 @@ export function isFeatureEnabled(
   return features[key] ?? false;
 }
 
-export function getHomeRoute(mode: OrgMode | undefined | null): string {
-  const orgMode = normalizeOrgMode(mode);
-  return orgMode === "product" ? "/inbox" : "/dashboard";
+export function applyModeTheme(): void {
+  if (typeof document === "undefined") return;
+
+  const body = document.body;
+  body.classList.add("product-theme");
+}
+
+export function getProductClasses() {
+  return {
+    canvas: "product-canvas",
+    surface: "product-surface",
+    elevated: "product-elevated",
+    beveled: "product-beveled",
+    selected: "product-selected",
+    transition: "product-transition",
+    kbdFocus: "product-kbd-focus",
+    glass: "product-glass",
+  };
+}
+
+// Deprecated exports for backward compatibility (always return product mode values)
+export function getHomeRoute(): string {
+  return "/inbox";
 }
 
 export const DEFAULT_TASK_STATUS = "todo" as const;
@@ -98,66 +89,29 @@ export interface ModeLabels {
   savedFilters: string;
 }
 
-export function getModeLabels(mode: OrgMode | undefined | null): ModeLabels {
-  const orgMode = normalizeOrgMode(mode);
-
-  if (orgMode === "product") {
-    return {
-      home: "صندوق ورودی",
-      tasks: "موردها",
-      myTasks: "صندوق ورودی",
-      reports: "بینش‌ها",
-      members: "اعضا",
-      savedFilters: "نماها",
-    };
-  }
-
+export function getModeLabels(): ModeLabels {
   return {
-    home: "داشبورد",
-    tasks: "تسک‌ها",
-    myTasks: "تسک‌های من",
-    reports: "گزارش‌ها",
-    members: "کاربران",
-    savedFilters: "فیلترهای ذخیره شده",
+    home: "صندوق ورودی",
+    tasks: "موردها",
+    myTasks: "صندوق ورودی",
+    reports: "بینش‌ها",
+    members: "اعضا",
+    savedFilters: "نماها",
   };
 }
 
-export function getModeLabel(
-  mode: OrgMode | undefined | null,
-  key: keyof ModeLabels,
-): string {
-  return getModeLabels(mode)[key];
+export function getModeLabel(key: keyof ModeLabels): string {
+  return getModeLabels()[key];
 }
 
-export function applyModeTheme(mode: OrgMode | null | undefined): void {
-  if (typeof document === "undefined") return;
-
-  const body = document.body;
-
-  if (mode === "product") {
-    body.classList.add("product-theme");
-  } else {
-    body.classList.remove("product-theme");
-  }
+export function isProductThemeActive(): boolean {
+  return true;
 }
 
-export function isProductThemeActive(
-  mode: OrgMode | null | undefined,
-): boolean {
-  return mode === "product";
+export function normalizeOrgMode(): OrgMode {
+  return "product";
 }
 
-export function getProductClasses(mode: OrgMode | null | undefined) {
-  const isProduct = isProductThemeActive(mode);
-
-  return {
-    canvas: isProduct ? "product-canvas" : "",
-    surface: isProduct ? "product-surface" : "",
-    elevated: isProduct ? "product-elevated" : "",
-    beveled: isProduct ? "product-beveled" : "",
-    selected: isProduct ? "product-selected" : "",
-    transition: isProduct ? "product-transition" : "",
-    kbdFocus: isProduct ? "product-kbd-focus" : "",
-    glass: isProduct ? "product-glass" : "",
-  };
+export function getConfiguredOrgMode(): OrgMode | null {
+  return "product";
 }

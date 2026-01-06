@@ -20,11 +20,10 @@ import { Button } from "@/components/ui/button";
 import { projects, reports, tasks as tasksText } from "@/constants";
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { TaskStatus } from "@/types/tasks";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 export default function ProjectTasks() {
@@ -56,23 +55,23 @@ export default function ProjectTasks() {
     setSelectedDateRange,
     setSelectedTag,
     filteredTasks,
-  } = useTaskFilters(tasksData);
+  } = useTaskFilters(tasksData as any);
 
   const groupedTasks = useMemo(() => {
     const items = filteredTasks;
     if (isLoadingTasks || !items) {
-      return {} as Record<TasksStatusOptions, TaskWithProject[]>;
+      return {} as Record<string, any[]>;
     }
     return items.reduce(
       (acc, task) => {
-        const status = task.status as TasksStatusOptions;
+        const status = task.status as string;
         if (!acc[status]) {
           acc[status] = [];
         }
         acc[status].push(task);
         return acc;
       },
-      {} as Record<TasksStatusOptions, TaskWithProject[]>,
+      {} as Record<string, any[]>,
     );
   }, [filteredTasks, isLoadingTasks]);
 
@@ -88,16 +87,16 @@ export default function ProjectTasks() {
     let completed = 0;
     let overdue = 0;
 
-    filteredTasks.forEach((task) => {
-      if (isTaskCompleted(task)) {
+    filteredTasks.forEach((task: any) => {
+      if (isTaskCompleted(task as any)) {
         completed += 1;
       } else {
-        if (!isTaskCanceled(task)) {
+        if (!isTaskCanceled(task as any)) {
           active += 1;
         }
         if (task.deadline) {
           const deadlineDate = new Date(task.deadline);
-          if (deadlineDate < now && !isTaskCanceled(task)) {
+          if (deadlineDate < now && !isTaskCanceled(task as any)) {
             overdue += 1;
           }
         }
@@ -291,7 +290,7 @@ export default function ProjectTasks() {
               <TaskListGroup
                 key={status}
                 taskCount={tasks.length}
-                status={status as TasksStatusOptions}
+                status={status as TaskStatus}
                 tasks={tasks}
                 showProject={false}
               />

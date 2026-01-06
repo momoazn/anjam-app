@@ -11,17 +11,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { navigation, user as userLabels, users } from "@/constants";
-import type { UsersRecord } from "@/lib/pocketbase-types";
-import { useAuthActions, useAuthUser } from "@/store/auth-store";
+import { navigation, user as userLabels } from "@/constants";
+import type { Doc } from "@/lib/convex";
+import { useAuthActions, useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
 
 import { UserAvatar } from "./user-avatar";
 
 type UserInfoProps = {
-  user: UsersRecord;
+  user: Doc<"users">;
+  role: string | null;
 };
 
-function UserInfo({ user }: UserInfoProps) {
+function UserInfo({ user, role }: UserInfoProps) {
+  const roleLabel = role === "owner" ? "مالک" : "عضو";
   return (
     <>
       <div className="relative">
@@ -32,12 +34,12 @@ function UserInfo({ user }: UserInfoProps) {
       <div className="flex flex-1 flex-col gap-0.5 text-right">
         <div className="flex items-center justify-end gap-2">
           <span className="text-foreground truncate text-sm font-bold">
-            {user.first_name} {user.last_name}
+            {user.firstName} {user.lastName}
           </span>
         </div>
         <div className="flex items-center justify-end gap-1.5">
           <span className="text-muted-foreground truncate text-[10px] font-bold">
-            {users.table.roles[user.role as keyof typeof users.table.roles]}
+            {roleLabel}
           </span>
         </div>
       </div>
@@ -48,6 +50,7 @@ function UserInfo({ user }: UserInfoProps) {
 export function HeaderUserMenu() {
   const navigate = useNavigate();
   const user = useAuthUser();
+  const currentOrgRole = useCurrentOrgRole();
   const logout = useAuthActions().logout;
 
   const handleLogout = () => {
@@ -68,7 +71,7 @@ export function HeaderUserMenu() {
           variant="ghost"
           size="icon"
           className="hover:bg-muted/50 flex h-9 w-9 items-center justify-center rounded-full p-0 transition-all"
-          title={`${user.first_name} ${user.last_name}`}
+          title={`${user.firstName} ${user.lastName}`}
         >
           <UserAvatar user={user} className="h-9 w-9 rounded-full" />
         </Button>
@@ -79,7 +82,7 @@ export function HeaderUserMenu() {
       >
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-3 p-3 text-right">
-            <UserInfo user={user} />
+            <UserInfo user={user} role={currentOrgRole} />
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="mx-1" />

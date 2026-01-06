@@ -5,13 +5,13 @@ import {
   DragOverlay,
   DragStartEvent,
   DropAnimation,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
   closestCorners,
   defaultDropAnimationSideEffects,
   useSensor,
   useSensors,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import {
@@ -20,11 +20,9 @@ import {
   IconList,
   IconPlus,
 } from "@tabler/icons-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
@@ -32,14 +30,7 @@ import { BoardCard } from "@/components/task/board/board-card";
 import { BoardColumn } from "@/components/task/board/board-column";
 import { Button } from "@/components/ui/button";
 import { common, tasks as tasksText } from "@/constants";
-import { queryKeys } from "@/hooks/query-keys";
-import { logError } from "@/lib/logger";
-import { TaskWithProject, pb } from "@/lib/pocketbase";
-import {
-  ProjectsResponse,
-  TasksRecord,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { useProject, useAllTasks, useReorderTask } from "@/hooks";
 import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
 
 const dropAnimation: DropAnimation = {
@@ -57,16 +48,16 @@ const orderStep = 10000;
 const statusKeys = TASK_STATUS_ORDER;
 const statusKeySet = new Set(statusKeys as string[]);
 
-const buildTaskIdsByStatus = (tasks: TaskWithProject[]) => {
-  const buckets: Record<string, TaskWithProject[]> = {};
+const buildTaskIdsByStatus = (tasks: any[]) => {
+  const buckets: Record<string, any[]> = {};
   statusKeys.forEach((status) => {
     buckets[status] = [];
   });
 
   tasks.forEach((task) => {
     const status = statusKeySet.has(task.status || "")
-      ? (task.status as TasksStatusOptions)
-      : TasksStatusOptions.todo;
+      ? task.status
+      : "todo";
     buckets[status].push(task);
   });
 
@@ -90,7 +81,6 @@ const insertAt = <T,>(items: T[], index: number, item: T) => {
 };
 
 export function TaskBoardPage() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -99,34 +89,24 @@ export function TaskBoardPage() {
   >(() => buildTaskIdsByStatus([]));
   const lastOverIdRef = useRef<string | null>(null);
 
-  const taskQueryKey = useMemo(
-    () =>
-      projectId
-        ? [...queryKeys.tasks.all, "project", projectId]
-        : queryKeys.tasks.all,
-    [projectId],
-  );
-
-  const { data: project } = useQuery<ProjectsResponse>({
-    queryKey: queryKeys.projects.detail(projectId || ""),
-    queryFn: () => pb.collection("projects").getOne(projectId || ""),
+  const { data: project } = useProject({
+    id: projectId,
     enabled: !!projectId,
   });
 
-  const { data: tasksData = [], isLoading } = useQuery<TaskWithProject[]>({
-    queryKey: taskQueryKey,
-    queryFn: async () => {
-      const filter = projectId ? `project = "${projectId}"` : "";
-      return await pb.collection("tasks").getFullList({
-        sort: "+order,-updated",
-        expand: "project,assignee",
-        filter,
-      });
-    },
+  const { data: tasksData = [], isLoading } = useAllTasks({
+    projectId,
+    enabled: true,
   });
 
+  useEffect(() => {
+    if (tasksData.length > 0) {
+      setTaskIdsByStatus(buildTaskIdsByStatus(tasksData));
+    }
+  }, [tasksData]);
+
   const tasksById = useMemo(() => {
-    const map: Record<string, TaskWithProject> = {};
+    const map: Record<string, any> = {};
     tasksData.forEach((task) => {
       map[task.id] = task;
     });
@@ -173,55 +153,7 @@ export function TaskBoardPage() {
     return orderStep;
   };
 
-  const updateTaskPosition = useMutation({
-    mutationFn: async ({
-      id,
-      status,
-      order,
-    }: {
-      id: string;
-      status?: TasksStatusOptions;
-      order?: number;
-    }) => {
-      const data: Partial<TasksRecord> = {};
-      if (status) data.status = status;
-      if (order !== undefined) data.order = order;
-      return await pb.collection("tasks").update(id, data);
-    },
-    onMutate: async ({ id, status, order }) => {
-      await queryClient.cancelQueries({ queryKey: taskQueryKey });
-      const previousTasks =
-        queryClient.getQueryData<TaskWithProject[]>(taskQueryKey);
-
-      if (previousTasks) {
-        queryClient.setQueryData<TaskWithProject[]>(taskQueryKey, (old) => {
-          if (!old) return old;
-          return old.map((task) => {
-            if (task.id === id) {
-              return {
-                ...task,
-                status: status ?? task.status,
-                order: order ?? task.order,
-              };
-            }
-            return task;
-          });
-        });
-      }
-
-      return { previousTasks };
-    },
-    onError: (err, _variables, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueryData(taskQueryKey, context.previousTasks);
-      }
-      toast.error("Failed to update task position");
-      logError("Failed to update task position", err);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: taskQueryKey });
-    },
-  });
+  const { mutate: updateTaskPosition } = useReorderTask();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -324,9 +256,9 @@ export function TaskBoardPage() {
       Math.abs(newOrder - (originalTask.order || 0)) > 0.0001;
 
     if (needsUpdate) {
-      updateTaskPosition.mutate({
-        id: originalTask.id,
-        status: currentStatus as TasksStatusOptions,
+      updateTaskPosition({
+        taskId: originalTask.id,
+        status: currentStatus as any,
         order: newOrder,
       });
     }
@@ -439,3 +371,5 @@ export function TaskBoardPage() {
     </PageTransition>
   );
 }
+
+export default TaskBoardPage;

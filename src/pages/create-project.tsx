@@ -5,7 +5,7 @@ import {
   IconStack2,
   IconX,
 } from "@tabler/icons-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -17,14 +17,12 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, projects } from "@/constants";
-import { queryKeys } from "@/hooks";
-import type { FileWithPreview } from "@/hooks/use-file-upload";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { pb } from "@/lib/pocketbase";
+import { useCreateProject } from "@/hooks";
 import { cn } from "@/lib/utils";
 import {
   useAuthUser,
   useCurrentOrgMode,
+  useCurrentOrgRole,
   useCurrentOrganization,
 } from "@/store/auth-store";
 
@@ -46,10 +44,11 @@ export default function CreateProject() {
   const navigate = useNavigate();
   const user = useAuthUser();
   const currentOrg = useCurrentOrganization();
+  const currentOrgRole = useCurrentOrgRole();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const queryClient = useQueryClient();
-  const isAdmin = user?.role === "admin";
+  const isAdmin = currentOrgRole === "owner" || currentOrgRole === "admin";
+  const [isPending, setIsPending] = useState(false);
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
@@ -62,45 +61,31 @@ export default function CreateProject() {
     },
   });
 
-  const { mutate: createProject, isPending } = useMutation({
-    mutationFn: async (data: z.infer<typeof projectFormSchema>) => {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      // Only append code if provided (backend will auto-generate if empty)
-      if (data.code) {
-        formData.append("code", data.code.toUpperCase());
-      }
-      formData.append("supervisor", data.supervisor || user?.id || "");
+  const { mutate: createProject } = useCreateProject();
 
-      if (currentOrg?.id) {
-        formData.append("organization", currentOrg.id);
-      }
+  async function onSubmit(values: z.infer<typeof projectFormSchema>) {
+    if (!currentOrg?.id) {
+      toast.error("No organization selected");
+      return;
+    }
 
-      if (data.description) {
-        const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
-        formData.append("description", descriptionWithBreaks);
-      }
+    setIsPending(true);
+    try {
+      await createProject({
+        name: values.name,
+        description: values.description,
+        supervisorUserId: values.supervisor || user?.id,
+        organizationId: currentOrg.id,
+      });
 
-      if (data.assets && data.assets.length > 0) {
-        data.assets.forEach((file: FileWithPreview) => {
-          formData.append("assets", file);
-        });
-      }
-
-      return pb.collection("projects").create(formData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
       toast.success(projects.create.success);
       navigate("/projects");
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof projectFormSchema>) {
-    createProject(values);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create project");
+    } finally {
+      setIsPending(false);
+    }
   }
 
   const handleCancel = () => {

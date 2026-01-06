@@ -29,8 +29,8 @@ export function SiteHeader() {
   const { resolvedTheme, toggleTheme } = useTheme();
   const location = useLocation();
   const currentOrgMode = useCurrentOrgMode();
-  const homeRoute = getHomeRoute(currentOrgMode);
-  const modeLabels = getModeLabels(currentOrgMode);
+  const homeRoute = getHomeRoute();
+  const modeLabels = getModeLabels();
   const isProductMode = currentOrgMode === "product";
 
   const crumbs = useMemo(() => {

@@ -1,4 +1,6 @@
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -30,23 +32,12 @@ export function DeleteDialog({
   description,
   collection,
 }: DeleteDialogProps) {
-  const deleteTaskMutation = useDeleteTask({
-    onSuccess: () => {
-      onOpenChange(false);
-    },
-  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteProjectMutation = useDeleteProject({
-    onSuccess: () => {
-      onOpenChange(false);
-    },
-  });
-
-  const deleteUserMutation = useDeleteUser({
-    onSuccess: () => {
-      onOpenChange(false);
-    },
-  });
+  // Initialize hooks without options to ensure compatibility with all hooks
+  const deleteTaskMutation = useDeleteTask();
+  const deleteProjectMutation = useDeleteProject();
+  const deleteUserMutation = useDeleteUser();
 
   const getMutationForCollection = () => {
     switch (collection) {
@@ -61,11 +52,21 @@ export function DeleteDialog({
     }
   };
 
-  const { mutate: deleteEntity, isPending } = getMutationForCollection();
+  const { mutate: deleteEntity } = getMutationForCollection();
 
-  const handleDelete = () => {
-    if (entityId) {
-      deleteEntity(entityId);
+  const handleDelete = async () => {
+    if (!entityId) return;
+
+    setIsDeleting(true);
+    try {
+      // Handle potential async nature of mutations
+      await deleteEntity(entityId);
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to delete:", error);
+      toast.error("خطایی رخ داد");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -86,10 +87,10 @@ export function DeleteDialog({
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
-            disabled={isPending}
+            disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90 order-1"
           >
-            {isPending ? (
+            {isDeleting ? (
               <Loader2 className="text-muted-foreground ms-2 size-4 animate-spin" />
             ) : null}
             {common.delete}

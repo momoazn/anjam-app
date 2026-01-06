@@ -1,307 +1,277 @@
-import {
-  QueryClient,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery } from "convex/react";
 import { useCallback } from "react";
 
-import { TaskWithProject, pb } from "../lib/pocketbase";
-import {
-  Collections,
-  Create,
-  TasksRecord,
-  TasksResponse,
-  UsersResponse,
-  UsersRoleOptions,
-} from "../lib/pocketbase-types";
-import { STALE_TIMES } from "../lib/query-config";
-import { mutationInvalidators } from "../lib/query-invalidators";
-import { createCrudHooks } from "./factories/use-crud-factory";
-import { queryKeys } from "./query-keys";
-import { createMutation } from "./use-mutation-factory";
+import { api, Id } from "@/lib/convex";
+import { useCurrentOrganization } from "@/store/auth-store";
 
-const crudHooks = createCrudHooks<
-  TasksRecord,
-  TasksResponse,
-  typeof queryKeys.tasks,
-  Omit<Create<Collections.Tasks>, "task_number">
->({
-  collection: "tasks",
-  queryKeys: queryKeys.tasks,
-  invalidators: mutationInvalidators.crud.tasks,
-  relatedInvalidators: [
-    {
-      invalidator: mutationInvalidators.crud.projects.update,
-      args: [],
-    },
-  ],
-});
+/**
+ * Hook to list tasks with optional filtering.
+ * Note: Convex version uses pagination by default.
+ */
+export function useTasks(options: {
+  projectId?: string;
+  assigneeUserId?: string;
+  status?: string;
+  priority?: string;
+  searchTerm?: string;
+  page?: number;
+  perPage?: number;
+  enabled?: boolean;
+} = {}) {
+  const currentOrg = useCurrentOrganization();
+  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const {
+    enabled = true,
+    projectId,
+    assigneeUserId,
+    status,
+    priority,
+    searchTerm,
+    page = 1,
+    perPage = 50,
+  } = options;
 
-const {
-  useCreate: useCreateTaskMutation,
-  useUpdate: useUpdateTaskMutation,
-  useDelete: useDeleteTaskMutation,
-} = crudHooks;
-
-type BatchUpdateResponse = {
-  updated: number;
-};
-
-const useBulkUpdateTasksMutation = createMutation<
-  BatchUpdateResponse,
-  Error,
-  { ids: string[]; updates: Partial<TasksRecord> }
->(
-  ({ ids, updates }) =>
-    pb.send("/api/v1/tasks/batch-update", {
-      method: "POST",
-      body: {
-        task_ids: ids,
-        updates,
-      },
-    }),
-  (client) => {
-    mutationInvalidators.crud.tasks.bulk(client);
-  },
-);
-
-const useBulkDeleteTasksMutation = createMutation<
-  BatchUpdateResponse,
-  Error,
-  string[]
->(
-  (ids) =>
-    pb.send("/api/v1/tasks/batch-update", {
-      method: "POST",
-      body: {
-        task_ids: ids,
-        updates: {
-          deleted_at: new Date().toISOString(),
-        },
-      },
-    }),
-  (client) => {
-    mutationInvalidators.crud.tasks.bulk(client);
-  },
-);
-
-type ReorderTaskVariables = {
-  taskId: string;
-  newOrder: number;
-  statusKey: string;
-};
-
-const useReorderTaskMutation = createMutation<
-  TasksResponse,
-  Error,
-  ReorderTaskVariables
->(
-  ({ taskId, newOrder, statusKey }: ReorderTaskVariables) =>
-    pb.collection("tasks").update<TasksResponse>(taskId, {
-      order: newOrder,
-      status: statusKey as TasksRecord["status"],
-    }),
-  (client: QueryClient) => {
-    mutationInvalidators.crud.tasks.reorder(client);
-  },
-);
-
-export type TasksListResult = {
-  items: TaskWithProject[];
-  page: number;
-  perPage: number;
-  totalItems: number;
-  totalPages: number;
-};
-
-async function getTasks(
-  projectId?: string,
-  expandFields?: string,
-  mode: "paged" | "full" = "paged",
-  page = 1,
-  perPage = 50,
-  filter?: string,
-): Promise<TasksListResult> {
-  const currentUser = pb.authStore.record as UsersResponse | null;
-  const filters: string[] = ['(deleted_at = "" || deleted_at = null)'];
-
-  if (currentUser?.role === UsersRoleOptions.employee) {
-    filters.push(`assignee = "${currentUser.id}"`);
-  }
-
-  if (projectId) {
-    filters.push(`project = "${projectId}"`);
-  }
-
-  if (filter) {
-    filters.push(`(${filter})`);
-  }
-
-  if (mode === "full") {
-    const batchSize = 500;
-    const items = await pb.collection("tasks").getFullList<TaskWithProject>({
-      filter: filters.length > 0 ? filters.join(" && ") : undefined,
-      sort: "order",
-      expand: expandFields,
-      batch: batchSize,
-    });
-    return {
-      items,
-      page: 1,
-      perPage: items.length || batchSize,
-      totalItems: items.length,
-      totalPages: 1,
-    };
-  }
-
-  const res = await pb
-    .collection("tasks")
-    .getList<TaskWithProject>(page, perPage, {
-      filter: filters.length > 0 ? filters.join(" && ") : undefined,
-      sort: "order",
-      expand: expandFields,
-    });
+  const result = useQuery(
+    api.tasks.list,
+    enabled && organizationId
+      ? {
+          organizationId,
+          projectId: projectId as Id<"projects"> | undefined,
+          assigneeUserId: assigneeUserId as Id<"users"> | undefined,
+          status,
+          priority,
+          searchTerm,
+          paginationOpts: { numItems: perPage, cursor: null }, // Simplified pagination for now
+        }
+      : "skip",
+  );
 
   return {
-    items: res.items,
-    page: res.page,
-    perPage: res.perPage,
-    totalItems: res.totalItems,
-    totalPages: res.totalPages,
+    data: result
+      ? {
+          items: result.page.map((t: any) => ({
+            ...t,
+            id: t._id, // Compatibility
+            display_id: t.displayId, // Compatibility
+            project: t.project || t.projectId, // Use object if available, fallback to ID
+            assignee: t.assignee || t.assigneeUserId, // Use object if available, fallback to ID
+            updated: t.updatedAt ? new Date(t.updatedAt).toISOString() : new Date(t._creationTime).toISOString(),
+            created: new Date(t._creationTime).toISOString(),
+            expand: {
+              project: t.project,
+              assignee: t.assignee,
+              creator: t.creator,
+            }
+          })),
+          totalItems: result.page.length, // Rough estimate
+          totalPages: result.isDone ? page : page + 1, // Simplified
+        }
+      : undefined,
+    isPending: result === undefined,
+    isLoading: result === undefined,
+    error: null,
   };
 }
 
-export function useTasks(
-  options: {
-    projectId?: string;
-    expandFields?: string;
-    mode?: "paged" | "full";
-    page?: number;
-    perPage?: number;
-    enabled?: boolean;
-    filter?: string;
-  } = {},
-) {
-  const {
-    projectId,
-    expandFields = "project,assignee,tags",
-    mode = "paged",
-    page = 1,
-    perPage = 50,
-    enabled = true,
-    filter,
-  } = options;
+/**
+ * Hook to list all tasks (non-paginated).
+ */
+export function useAllTasks(options: {
+  projectId?: string;
+  enabled?: boolean;
+} = {}) {
+  const currentOrg = useCurrentOrganization();
+  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const { enabled = true, projectId } = options;
 
-  return useQuery({
-    queryKey: queryKeys.tasks.list({
-      projectId,
-      expandFields,
-      mode,
-      page,
-      perPage,
-      filter,
-    }),
-    queryFn: () =>
-      getTasks(projectId, expandFields, mode, page, perPage, filter),
-    enabled,
-    staleTime: STALE_TIMES.dynamic,
-  });
-}
-
-export function useTask(options: { id: string; enabled?: boolean }) {
-  const { id, enabled = true } = options;
-
-  return useQuery({
-    queryKey: queryKeys.tasks.detail(id),
-    queryFn: async () => {
-      const task = await pb.collection("tasks").getOne<TaskWithProject>(id, {
-        expand: "project,assignee,creator,tags",
-      });
-      if (task.deleted_at) {
-        throw new Error("Task not found");
-      }
-      return task;
-    },
-    enabled: enabled && Boolean(id),
-    staleTime: STALE_TIMES.dynamic,
-  });
-}
-
-export function useCreateTask(
-  options?: UseMutationOptions<
-    TasksResponse,
-    Error,
-    Omit<Create<Collections.Tasks>, "task_number">
-  >,
-) {
-  return useCreateTaskMutation(options);
-}
-
-export function useUpdateTask(
-  options?: UseMutationOptions<
-    TasksResponse,
-    Error,
-    { id: string; updates: Partial<TasksRecord> }
-  >,
-) {
-  return useUpdateTaskMutation(options);
-}
-
-export function useDeleteTask(
-  options?: UseMutationOptions<TasksResponse, Error, string>,
-) {
-  return useDeleteTaskMutation(options);
-}
-
-export function useBulkUpdateTasks(
-  options?: UseMutationOptions<
-    BatchUpdateResponse,
-    Error,
-    { ids: string[]; updates: Partial<TasksRecord> }
-  >,
-) {
-  return useBulkUpdateTasksMutation(options);
-}
-
-export function useBulkDeleteTasks(
-  options?: UseMutationOptions<BatchUpdateResponse, Error, string[]>,
-) {
-  return useBulkDeleteTasksMutation(options);
-}
-
-export function useReorderTask() {
-  return useReorderTaskMutation();
-}
-
-export function usePrefetchTask() {
-  const queryClient = useQueryClient();
-
-  const prefetch = useCallback(
-    (taskId: string) => {
-      const existingData = queryClient.getQueryData(
-        queryKeys.tasks.detail(taskId),
-      );
-      if (existingData) return;
-
-      queryClient.prefetchQuery({
-        queryKey: queryKeys.tasks.detail(taskId),
-        queryFn: async () => {
-          const task = await pb
-            .collection("tasks")
-            .getOne<TaskWithProject>(taskId, {
-              expand: "project,assignee,creator,tags",
-            });
-          if (task.deleted_at) {
-            throw new Error("Task not found");
-          }
-          return task;
-        },
-        staleTime: STALE_TIMES.dynamic,
-      });
-    },
-    [queryClient],
+  const tasks = useQuery(
+    api.tasks.listAll,
+    enabled && organizationId
+      ? {
+          organizationId,
+          projectId: projectId as Id<"projects"> | undefined,
+        }
+      : "skip",
   );
 
-  return prefetch;
+  return {
+    data: tasks?.map((t: any) => ({
+      ...t,
+      id: t._id,
+      display_id: t.displayId,
+      project: t.project || t.projectId,
+      assignee: t.assignee || t.assigneeUserId,
+      expand: {
+        project: t.project,
+        assignee: t.assignee,
+      },
+    })),
+    isPending: tasks === undefined,
+    isLoading: tasks === undefined,
+    error: null,
+  };
+}
+
+/**
+ * Hook to get a single task by ID.
+ */
+export function useTask(options: { id: string | undefined; enabled?: boolean }) {
+  const { id, enabled = true } = options;
+
+  const task = useQuery(
+    api.tasks.get,
+    enabled && id ? { taskId: id as Id<"tasks"> } : "skip",
+  );
+
+  return {
+    data: task ? {
+      ...task,
+      id: task._id,
+      project: task.projectId,
+      assignee: task.assigneeUserId,
+      expand: {
+        project: (task as any).project,
+        assignee: (task as any).assignee,
+        creator: (task as any).creator,
+      }
+    } : undefined,
+    isLoading: task === undefined,
+    isPending: task === undefined,
+    error: null,
+  };
+}
+
+/**
+ * Hook to create a task.
+ */
+export function useCreateTask() {
+  const createTaskMutation = useMutation(api.tasks.create);
+
+  return {
+    mutate: async (data: any) => {
+      return await createTaskMutation({
+        projectId: data.projectId || data.project,
+        title: data.title,
+        description: data.description,
+        assigneeUserId: data.assigneeUserId || data.assignee,
+        priority: data.priority,
+        status: data.status,
+        deadline: data.deadline,
+        tags: data.tags,
+        estimatedMinutes: data.estimatedMinutes || data.estimated_minutes,
+        taskType: data.taskType || data.task_type,
+        storyPoints: data.storyPoints || data.story_points,
+      });
+    },
+    isPending: false,
+  };
+}
+
+/**
+ * Hook to update a task.
+ */
+export function useUpdateTask() {
+  const updateTaskMutation = useMutation(api.tasks.update);
+
+  return {
+    mutate: async ({ id, updates }: { id: string; updates: any }) => {
+      return await updateTaskMutation({
+        taskId: id as Id<"tasks">,
+        updates: {
+          title: updates.title,
+          description: updates.description,
+          status: updates.status,
+          priority: updates.priority,
+          assigneeUserId: updates.assigneeUserId || updates.assignee,
+          deadline: updates.deadline,
+          tags: updates.tags,
+          estimatedMinutes: updates.estimatedMinutes || updates.estimated_minutes,
+          timeSpentMinutes: updates.timeSpentMinutes || updates.time_spent_minutes,
+          taskType: updates.taskType || updates.task_type,
+          storyPoints: updates.storyPoints || updates.story_points,
+        },
+      });
+    },
+    isPending: false,
+  };
+}
+
+/**
+ * Hook to soft-delete a task.
+ */
+export function useDeleteTask() {
+  const softDeleteMutation = useMutation(api.tasks.softDelete);
+
+  return {
+    mutate: async (id: string) => {
+      return await softDeleteMutation({
+        taskId: id as Id<"tasks">,
+      });
+    },
+    isPending: false,
+  };
+}
+
+/**
+ * Hook to update task board position.
+ */
+export function useReorderTask() {
+  const updateBoardPositionMutation = useMutation(api.tasks.updateBoardPosition);
+
+  return {
+    mutate: async ({ taskId, status, order }: { taskId: string; status: any; order: number }) => {
+      return await updateBoardPositionMutation({
+        taskId: taskId as Id<"tasks">,
+        status,
+        order,
+      });
+    },
+    isPending: false,
+  };
+}
+
+/**
+ * Hook to bulk update tasks.
+ */
+export function useBulkUpdateTasks() {
+  const bulkUpdateMutation = useMutation(api.tasks.bulkUpdate);
+
+  return {
+    mutateAsync: async ({ ids, updates }: { ids: string[]; updates: any }) => {
+      return await bulkUpdateMutation({
+        ids: ids as Id<"tasks">[],
+        updates: {
+          status: updates.status,
+          priority: updates.priority,
+          assigneeUserId: updates.assigneeUserId || updates.assignee,
+        },
+      });
+    },
+    isPending: false,
+  };
+}
+
+/**
+ * Hook to bulk delete tasks.
+ */
+export function useBulkDeleteTasks() {
+  const bulkDeleteMutation = useMutation(api.tasks.bulkDelete);
+
+  return {
+    mutateAsync: async (ids: string[]) => {
+      return await bulkDeleteMutation({
+        ids: ids as Id<"tasks">[],
+      });
+    },
+    isPending: false,
+  };
+}
+
+/**
+ * Prefetch task (No-op in Convex as it doesn't use TanStack Query cache)
+ */
+export function usePrefetchTask() {
+  return useCallback(() => {
+    // No-op
+  }, []);
 }

@@ -1,20 +1,44 @@
 import { memo, useMemo, useState } from "react";
 
 import { tasks as tasksText } from "@/constants";
-import { TaskWithProject } from "@/lib/pocketbase";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
+import { Task, TaskPriority, TaskStatus } from "@/types/tasks";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 import { TaskListHeader, type TaskSortMode } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
 
+// Convex-compatible TaskWithProject interface
+interface TaskWithProject extends Omit<Task, "id"> {
+  id?: string;
+  assignee?: {
+    id: string;
+    _id: string;
+    username: string;
+    firstName?: string;
+    first_name?: string;
+    lastName?: string;
+    last_name?: string;
+  } | null;
+  project?: { name: string };
+  display_id?: string;
+  expand?: {
+    project?: { name: string };
+    assignee?: {
+      id: string;
+      _id: string;
+      username: string;
+      firstName?: string;
+      first_name?: string;
+      lastName?: string;
+      last_name?: string;
+    };
+  };
+}
+
 type TaskListGroupProps = {
   taskCount: number;
-  status: TasksStatusOptions;
+  status: TaskStatus;
   tasks: TaskWithProject[];
   showProject?: boolean;
   enableSelection?: boolean;
@@ -50,7 +74,7 @@ function TaskListGroupInner({
     const cloned = [...tasks];
 
     if (sortMode === "priority") {
-      const priorityRank: Record<TasksPriorityOptions, number> = {
+      const priorityRank: Record<TaskPriority, number> = {
         low: 0,
         medium: 1,
         high: 2,

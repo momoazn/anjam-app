@@ -1,62 +1,87 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
-import { queryKeys } from "@/hooks/query-keys";
-import { pb } from "@/lib/pocketbase";
-import type {
-  SubtasksRecord,
-  SubtasksResponse,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
+export function useSubtasks(taskId: string | undefined, options?: { enabled?: boolean }) {
+  const enabled = taskId !== undefined && taskId !== "" && (options?.enabled ?? true);
 
-import { createCrudHooks } from "./factories/use-crud-factory";
+  const subtasks = useQuery(
+    api.subtasks.listByTask,
+    enabled ? { taskId: taskId as Id<"tasks"> } : "skip"
+  );
 
-const crudHooks = createCrudHooks<SubtasksRecord, SubtasksResponse>({
-  collection: "subtasks",
-  queryKeys: queryKeys.subtasks,
-  invalidators: {
-    create: (client) =>
-      client.invalidateQueries({
-        predicate: (query) =>
-          Array.isArray(query.queryKey) && query.queryKey[0] === "subtasks",
-      }),
-    update: (client) =>
-      client.invalidateQueries({
-        predicate: (query) =>
-          Array.isArray(query.queryKey) && query.queryKey[0] === "subtasks",
-      }),
-    delete: (client) =>
-      client.invalidateQueries({
-        predicate: (query) =>
-          Array.isArray(query.queryKey) && query.queryKey[0] === "subtasks",
-      }),
-  },
-});
+  return {
+    data: subtasks?.map((s: any) => ({
+      ...s,
+      id: s._id, // Compatibility with existing components
+      created: new Date(s._creationTime).toISOString(),
+      expand: {
+        assignee: s.assignee
+          ? {
+              id: s.assignee._id,
+              username: s.assignee.username || "",
+              first_name: s.assignee.firstName,
+              last_name: s.assignee.lastName,
+              avatar: s.assignee.image,
+            }
+          : undefined,
+      },
+    })),
+    isLoading: subtasks === undefined,
+    isPending: subtasks === undefined,
+    error: null,
+  };
+}
 
-export const {
-  useCreate: useCreateSubtask,
-  useUpdate: useUpdateSubtask,
-  useDelete: useDeleteSubtask,
-} = crudHooks;
+export function useCreateSubtask() {
+  const createMutation = useMutation(api.subtasks.create);
 
-export function useSubtasks(taskId: string, options?: { enabled?: boolean }) {
-  const enabled = taskId !== "" && (options?.enabled ?? true);
+  return {
+    mutate: async (data: {
+      taskId: string;
+      title: string;
+      assigneeUserId?: string;
+      order: number;
+    }) => {
+      return await createMutation({
+        taskId: data.taskId as Id<"tasks">,
+        title: data.title,
+        assigneeUserId: data.assigneeUserId as Id<"users"> | undefined,
+        order: data.order,
+      });
+    },
+    isPending: false,
+  };
+}
 
-  return useQuery<
-    SubtasksResponse<{
-      assignee?: UsersResponse;
-    }>[]
-  >({
-    queryKey: queryKeys.subtasks.listByTask(taskId),
-    queryFn: () =>
-      pb.collection("subtasks").getFullList<
-        SubtasksResponse<{
-          assignee?: UsersResponse;
-        }>
-      >({
-        filter: `task = "${taskId}"`,
-        sort: "order",
-        expand: "assignee",
-      }),
-    enabled,
-  });
+export function useUpdateSubtask() {
+  const updateMutation = useMutation(api.subtasks.update);
+
+  return {
+    mutate: async ({ id, updates }: { id: string; updates: any }) => {
+      return await updateMutation({
+        subtaskId: id as Id<"subtasks">,
+        updates: {
+          title: updates.title,
+          assigneeUserId: (updates.assigneeUserId || updates.assignee) as Id<"users"> | undefined,
+          isDone: updates.isDone ?? updates.is_done,
+          order: updates.order,
+        },
+      });
+    },
+    isPending: false,
+  };
+}
+
+export function useDeleteSubtask() {
+  const deleteMutation = useMutation(api.subtasks.remove);
+
+  return {
+    mutate: async (id: string) => {
+      return await deleteMutation({
+        subtaskId: id as Id<"subtasks">,
+      });
+    },
+    isPending: false,
+  };
 }

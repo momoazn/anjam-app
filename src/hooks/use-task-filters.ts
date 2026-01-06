@@ -4,17 +4,17 @@ import { useMemo } from "react";
 import {
   ALL_FILTER_VALUE,
   DEFAULT_TASK_FILTERS,
+  FilterableTask,
   filterTasks,
   isValidPriority,
   isValidStatus,
 } from "@/lib/filter-utils";
 import type { TaskFilterValues } from "@/lib/filter-utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
 
 export { ALL_FILTER_VALUE, DEFAULT_TASK_FILTERS };
 export type { TaskFilterValues };
 
-export type UseTaskFiltersReturn = {
+export type UseTaskFiltersReturn<T extends FilterableTask> = {
   searchTerm: string;
   selectedStatus: string;
   selectedPriority: string;
@@ -39,17 +39,17 @@ export type UseTaskFiltersReturn = {
   setSelectedTag: (
     value: string | ((old: string) => string | null) | null,
   ) => Promise<URLSearchParams>;
-  filteredTasks: TaskWithProject[];
+  filteredTasks: T[];
 };
 
 const useFilterState = (key: string, defaultValue: string) => {
   return useQueryState(key, parseAsString.withDefault(defaultValue));
 };
 
-export function useTaskFilters(
-  tasks: TaskWithProject[] | undefined,
+export function useTaskFilters<T extends FilterableTask>(
+  tasks: T[] | undefined,
   options?: { skipFiltering?: boolean },
-): UseTaskFiltersReturn {
+): UseTaskFiltersReturn<T> {
   const [searchTerm, setSearchTerm] = useFilterState(
     "search",
     DEFAULT_TASK_FILTERS.searchTerm,
@@ -87,7 +87,7 @@ export function useTaskFilters(
       selectedAssignee,
       selectedDateRange,
       selectedTag,
-    });
+    }) as T[];
   }, [
     tasks,
     searchTerm,

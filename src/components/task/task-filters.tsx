@@ -26,23 +26,30 @@ import {
   ALL_FILTER_VALUE,
   type UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-  type UsersResponse,
-} from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
+import { TaskPriority, TaskStatus } from "@/types/tasks";
 
-const priorityOrder: TasksPriorityOptions[] = [
-  TasksPriorityOptions.low,
-  TasksPriorityOptions.medium,
-  TasksPriorityOptions.high,
-  TasksPriorityOptions.urgent,
+// User type with compatibility fields
+interface UserWithCompat {
+  id: string;
+  _id: string;
+  username?: string;
+  firstName?: string;
+  first_name?: string;
+  lastName?: string;
+  last_name?: string;
+}
+
+const priorityOrder: TaskPriority[] = [
+  "low",
+  "medium",
+  "high",
+  "urgent",
 ];
 
-type TaskFiltersProps = Omit<UseTaskFiltersReturn, "filteredTasks"> & {
-  users: UsersResponse[] | undefined;
+type TaskFiltersProps = Omit<UseTaskFiltersReturn<any>, "filteredTasks"> & {
+  users: UserWithCompat[] | undefined;
   isLoadingUsers: boolean;
 };
 
@@ -114,15 +121,15 @@ export function TaskFilters({
     if (selectedStatus !== ALL_FILTER_VALUE) {
       let statusLabel = selectedStatus;
       if (selectedStatus.includes(",")) {
-        const statusArray = selectedStatus.split(",");
+        const statusArray: string[] = selectedStatus.split(",");
         const statusLabels = statusArray
-          .map((status) => tasks.status[status as TasksStatusOptions])
+          .map((status: string) => tasks.status[status as TaskStatus])
           .filter(Boolean)
           .join(", ");
         statusLabel = statusLabels || selectedStatus;
       } else {
         statusLabel =
-          tasks.status[selectedStatus as TasksStatusOptions] || selectedStatus;
+          tasks.status[selectedStatus as TaskStatus] || selectedStatus;
       }
 
       labels.push({
@@ -133,7 +140,7 @@ export function TaskFilters({
 
     if (selectedPriority !== ALL_FILTER_VALUE) {
       labels.push({
-        label: `${tasks.filters.labels.priority}: ${tasks.priority[selectedPriority as TasksPriorityOptions]}`,
+        label: `${tasks.filters.labels.priority}: ${tasks.priority[selectedPriority as TaskPriority]}`,
         onClear: () => setSelectedPriority(ALL_FILTER_VALUE),
       });
     }
@@ -236,7 +243,7 @@ export function TaskFilters({
             value={selectedStatus}
             onValueChange={(value) =>
               setSelectedStatus(
-                value as TasksStatusOptions | typeof ALL_FILTER_VALUE,
+                value as TaskStatus | typeof ALL_FILTER_VALUE,
               )
             }
           >
@@ -275,7 +282,7 @@ export function TaskFilters({
             value={selectedPriority}
             onValueChange={(value) =>
               setSelectedPriority(
-                value as TasksPriorityOptions | typeof ALL_FILTER_VALUE,
+                value as TaskPriority | typeof ALL_FILTER_VALUE,
               )
             }
           >

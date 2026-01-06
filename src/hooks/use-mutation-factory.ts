@@ -1,7 +1,7 @@
 import type { QueryClient, UseMutationOptions } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { handlePocketBaseError } from "@/lib/error-handler";
+import { handleError } from "@/lib/error-handler";
 
 type FactoryMutationOptions<
   TData,
@@ -76,7 +76,7 @@ export function createMutation<
         void context;
         // Show error toast by default unless disabled
         if (showErrorToast) {
-          handlePocketBaseError(error);
+          handleError(error);
         }
         // Call custom onError handler if provided
         onError?.(error, variables, onMutateResult);

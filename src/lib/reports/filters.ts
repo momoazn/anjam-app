@@ -1,26 +1,26 @@
 import { isWithinInterval } from "date-fns-jalali";
 
-import type { TaskWithProject } from "../pocketbase";
-import type { TasksPriorityOptions } from "../pocketbase-types";
-import { TasksStatusOptions } from "../pocketbase-types";
+import type { ConvexTask } from "./types";
+import type { ConvexTaskPriority, ConvexTaskStatus } from "./types";
 import type { FilterControls } from "./types";
 
 /**
  * Filter tasks by non-time criteria
  */
 export function filterTasksNonTime(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   controls: FilterControls,
-): TaskWithProject[] {
+): ConvexTask[] {
   return tasks.filter((task) => {
     if (
       controls.projectIds?.length &&
-      !controls.projectIds.includes(task.project ?? "")
+      !controls.projectIds.includes(task.project ?? task.projectId)
     )
       return false;
+    const assigneeId = task.assigneeUserId ?? task.assignee;
     if (
       controls.assigneeIds?.length &&
-      !controls.assigneeIds.includes(task.assignee ?? "")
+      !controls.assigneeIds.includes(assigneeId ?? "")
     )
       return false;
     if (controls.statuses?.length && !controls.statuses.includes(task.status))
@@ -38,27 +38,29 @@ export function filterTasksNonTime(
  * Filter tasks by full controls including time range
  */
 export function filterTasksByControls(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   controls: {
     start: Date;
     end: Date;
     projectIds?: string[];
     assigneeIds?: string[];
-    statuses?: TasksStatusOptions[];
-    priorities?: TasksPriorityOptions[];
+    statuses?: ConvexTaskStatus[];
+    priorities?: ConvexTaskPriority[];
   },
-): TaskWithProject[] {
+): ConvexTask[] {
   return tasks.filter((task) => {
     // Project filter
     if (controls.projectIds && controls.projectIds.length > 0) {
-      if (!task.project || !controls.projectIds.includes(task.project)) {
+      const projectId = task.project ?? task.projectId;
+      if (!projectId || !controls.projectIds.includes(projectId)) {
         return false;
       }
     }
 
     // Assignee filter
+    const assigneeId = task.assigneeUserId ?? task.assignee;
     if (controls.assigneeIds && controls.assigneeIds.length > 0) {
-      if (!task.assignee || !controls.assigneeIds.includes(task.assignee)) {
+      if (!assigneeId || !controls.assigneeIds.includes(assigneeId)) {
         return false;
       }
     }
@@ -78,18 +80,20 @@ export function filterTasksByControls(
     }
 
     // Time window rule: include if created OR updated falls in range
-    const createdInRange =
-      task.created &&
-      isWithinInterval(new Date(task.created), {
+    const createdInRange = isWithinInterval(
+      new Date(task._creationTime),
+      {
         start: controls.start,
         end: controls.end,
-      });
-    const updatedInRange =
-      task.updated &&
-      isWithinInterval(new Date(task.updated), {
-        start: controls.start,
-        end: controls.end,
-      });
+      },
+    );
+    const updatedAt = task.updatedAt ?? task.updated;
+    const updatedInRange = updatedAt
+      ? isWithinInterval(new Date(updatedAt), {
+          start: controls.start,
+          end: controls.end,
+        })
+      : false;
 
     return createdInRange || updatedInRange;
   });
@@ -99,12 +103,13 @@ export function filterTasksByControls(
  * Filter tasks by project IDs
  */
 export function filterTasksByProjects(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   projectIds: string[],
-): TaskWithProject[] {
+): ConvexTask[] {
   if (!projectIds.length) return tasks;
   return tasks.filter(
-    (task) => task.project && projectIds.includes(task.project),
+    (task) =>
+      (task.project || task.projectId) && projectIds.includes(task.projectId),
   );
 }
 
@@ -112,22 +117,23 @@ export function filterTasksByProjects(
  * Filter tasks by assignee IDs
  */
 export function filterTasksByAssignees(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   assigneeIds: string[],
-): TaskWithProject[] {
+): ConvexTask[] {
   if (!assigneeIds.length) return tasks;
-  return tasks.filter(
-    (task) => task.assignee && assigneeIds.includes(task.assignee),
-  );
+  return tasks.filter((task) => {
+    const assigneeId = task.assigneeUserId ?? task.assignee;
+    return assigneeId && assigneeIds.includes(assigneeId);
+  });
 }
 
 /**
  * Filter tasks by status
  */
 export function filterTasksByStatus(
-  tasks: TaskWithProject[],
-  statuses: TasksStatusOptions[],
-): TaskWithProject[] {
+  tasks: ConvexTask[],
+  statuses: ConvexTaskStatus[],
+): ConvexTask[] {
   if (!statuses.length) return tasks;
   return tasks.filter((task) => statuses.includes(task.status));
 }
@@ -136,9 +142,9 @@ export function filterTasksByStatus(
  * Filter tasks by priority
  */
 export function filterTasksByPriority(
-  tasks: TaskWithProject[],
-  priorities: TasksPriorityOptions[],
-): TaskWithProject[] {
+  tasks: ConvexTask[],
+  priorities: ConvexTaskPriority[],
+): ConvexTask[] {
   if (!priorities.length) return tasks;
   return tasks.filter((task) => priorities.includes(task.priority));
 }
@@ -147,14 +153,18 @@ export function filterTasksByPriority(
  * Filter tasks by time range
  */
 export function filterTasksByTimeRange(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   range: { start: Date; end: Date },
-): TaskWithProject[] {
+): ConvexTask[] {
   return tasks.filter((task) => {
-    const createdInRange =
-      task.created && isWithinInterval(new Date(task.created), range);
-    const updatedInRange =
-      task.updated && isWithinInterval(new Date(task.updated), range);
+    const createdInRange = isWithinInterval(
+      new Date(task._creationTime),
+      range,
+    );
+    const updatedAt = task.updatedAt ?? task.updated;
+    const updatedInRange = updatedAt
+      ? isWithinInterval(new Date(updatedAt), range)
+      : false;
     return createdInRange || updatedInRange;
   });
 }
@@ -163,38 +173,40 @@ export function filterTasksByTimeRange(
  * Filter completed tasks in range
  */
 export function filterCompletedTasksInRange(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   range: { start: Date; end: Date },
-): TaskWithProject[] {
-  return tasks.filter(
-    (task) =>
-      task.status === TasksStatusOptions.done &&
-      task.updated &&
-      isWithinInterval(new Date(task.updated), range),
-  );
+): ConvexTask[] {
+  return tasks.filter((task) => {
+    if (task.status !== "done") return false;
+    const updatedAt = task.updatedAt ?? task.updated;
+    if (!updatedAt) return false;
+    return isWithinInterval(new Date(updatedAt), range);
+  });
 }
 
 /**
  * Filter overdue tasks
  */
 export function filterOverdueTasks(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   now: Date = new Date(),
-): TaskWithProject[] {
-  return tasks.filter(
-    (task) =>
-      task.status !== TasksStatusOptions.done &&
-      task.deadline &&
-      new Date(task.deadline) < now,
-  );
+): ConvexTask[] {
+  return tasks.filter((task) => {
+    if (task.status === "done") return false;
+    if (!task.deadline) return false;
+    return new Date(task.deadline) < now;
+  });
 }
 
 /**
  * Filter tasks assigned to user
  */
 export function filterTasksByUser(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   userId: string,
-): TaskWithProject[] {
-  return tasks.filter((task) => task.assignee === userId);
+): ConvexTask[] {
+  return tasks.filter((task) => {
+    const assigneeId = task.assigneeUserId ?? task.assignee;
+    return assigneeId === userId;
+  });
 }

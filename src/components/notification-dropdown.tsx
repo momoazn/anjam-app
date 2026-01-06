@@ -26,19 +26,17 @@ import {
   useMarkAsRead,
   useNotifications,
 } from "@/hooks/notifications";
-import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
-import { useAuthUser } from "@/store/auth-store";
 
 type NotificationDropdownProps = {
   align?: "start" | "center" | "end";
 };
 
-const formatNotificationTime = (dateString?: string | null) => {
-  if (!dateString) {
+const formatNotificationTime = (timestamp?: number | null) => {
+  if (!timestamp) {
     return "-";
   }
-  const date = new Date(dateString);
+  const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) {
     return "-";
   }
@@ -48,13 +46,13 @@ const formatNotificationTime = (dateString?: string | null) => {
 function NotificationItem({
   notification,
 }: {
-  notification: NotificationsRecord;
+  notification: any;
 }) {
   const markAsReadMutation = useMarkAsRead();
 
   const handleMarkAsRead = (e: React.MouseEvent) => {
     e.stopPropagation();
-    markAsReadMutation.mutate(notification.id);
+    markAsReadMutation.mutate(notification._id);
   };
 
   return (
@@ -92,22 +90,22 @@ function NotificationItem({
               "text-right text-sm font-bold",
               !notification.read ? "text-foreground" : "text-muted-foreground",
             )}
-            id={`notification-title-${notification.id}`}
+            id={`notification-title-${notification._id}`}
             dir="auto"
           >
             {notification.title}
           </h4>
           <time
-            dateTime={notification.created || ""}
+            dateTime={new Date(notification.createdAt).toISOString()}
             className="text-muted-foreground shrink-0 text-[10px] font-medium"
           >
-            {formatNotificationTime(notification.created)}
+            {formatNotificationTime(notification.createdAt)}
           </time>
         </div>
 
         <p
           className="text-muted-foreground mt-1 line-clamp-2 text-right text-xs leading-relaxed"
-          aria-describedby={`notification-title-${notification.id}`}
+          aria-describedby={`notification-title-${notification._id}`}
           dir="auto"
         >
           {notification.message}
@@ -135,7 +133,6 @@ export function NotificationDropdown({
   align = "end",
 }: NotificationDropdownProps) {
   const navigate = useNavigate();
-  const user = useAuthUser();
   const { data: notificationsData = [] } = useNotifications();
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
@@ -171,7 +168,7 @@ export function NotificationDropdown({
                 <Button
                   variant="ghost"
                   size="xs"
-                  onClick={() => user?.id && markAllAsRead.mutate(user.id)}
+                  onClick={() => markAllAsRead.mutate()}
                   className="gap-1"
                 >
                   <IconCheck className="me-1.5 size-3" stroke={3} />
@@ -180,7 +177,7 @@ export function NotificationDropdown({
                 <Button
                   variant="ghost"
                   size="xs"
-                  onClick={() => user?.id && clearAll.mutate(user.id)}
+                  onClick={() => clearAll.mutate()}
                   className="gap-1 text-destructive hover:bg-destructive/10"
                 >
                   <IconTrash className="me-1.5 size-3" stroke={3} />
@@ -222,9 +219,9 @@ export function NotificationDropdown({
             aria-live="polite"
             dir="rtl"
           >
-            {recentNotifications.map((notification: NotificationsRecord) => (
+            {recentNotifications.map((notification: any) => (
               <NotificationItem
-                key={notification.id}
+                key={notification._id}
                 notification={notification}
               />
             ))}

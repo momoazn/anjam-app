@@ -2,16 +2,11 @@ import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
-import { logError } from "@/lib/logger";
-import type { OrgFeatures, OrgMode } from "@/lib/mode";
-import { getConfiguredOrgMode, getOrgFeatures } from "@/lib/mode";
-import { pb } from "@/lib/pocketbase";
-import type {
-  OrganizationsResponse,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
+import type { Doc } from "@/lib/convex";
+import type { OrgFeatures } from "@/lib/mode";
+import { getOrgFeatures } from "@/lib/mode";
 
-type OrgRole = "owner" | "admin" | "member";
+type OrgRole = "owner" | "member";
 
 interface OrganizationSettings {
   modeSettings?: {
@@ -22,35 +17,23 @@ interface OrganizationSettings {
 }
 
 interface OrganizationWithRole {
-  organization: OrganizationsResponse;
+  organization: Doc<"organizations">;
   role: OrgRole;
-  joinedAt: string;
+  joinedAt: number;
   onboardingCompleted: boolean;
-}
-
-interface OrganizationsListItem {
-  organization: OrganizationsResponse;
-  role: OrgRole;
-  joined_at: string;
-  onboarding_completed: boolean;
-}
-
-interface OrganizationsListResponse {
-  organizations: OrganizationsListItem[];
 }
 
 interface AuthState {
   // User authentication
-  user: UsersResponse | null;
+  user: Doc<"users"> | null;
   isAuthenticated: boolean;
 
   // Organization context
-  currentOrganization: OrganizationsResponse | null;
+  currentOrganization: Doc<"organizations"> | null;
   currentOrgRole: OrgRole | null;
   userOrganizations: OrganizationWithRole[];
 
-  // Mode context (NEW)
-  currentOrgMode: OrgMode | null;
+  // Features context (product mode features)
   currentOrgFeatures: OrgFeatures;
 
   // Loading states
@@ -61,11 +44,13 @@ interface AuthState {
   orgsError: Error | null;
 
   // Actions
-  login: (user: UsersResponse, token?: string) => void;
-  updateUser: (user: UsersResponse) => void;
-  setUser: (user: UsersResponse | null) => void;
+  login: (user: Doc<"users">, token?: string) => void;
+  updateUser: (user: Doc<"users">) => void;
+  setUser: (user: Doc<"users"> | null) => void;
+  setAuthLoading: (loading: boolean) => void;
+  setOrganizations: (orgs: OrganizationWithRole[]) => void;
   setCurrentOrganization: (
-    org: OrganizationsResponse | null,
+    org: Doc<"organizations"> | null,
     role: OrgRole | null,
   ) => void;
   fetchUserOrganizations: () => Promise<void>;
@@ -84,8 +69,7 @@ export const useAuthStore = create<AuthState>()(
         currentOrganization: null,
         currentOrgRole: null,
         userOrganizations: [],
-        currentOrgMode: null, // NEW
-        currentOrgFeatures: getOrgFeatures(undefined), // NEW
+        currentOrgFeatures: getOrgFeatures("product"),
         isLoading: false,
         isLoadingOrgs: false,
         orgsError: null,
@@ -95,8 +79,7 @@ export const useAuthStore = create<AuthState>()(
             user,
             isAuthenticated: true,
           });
-
-          get().fetchUserOrganizations();
+          // Organization fetching is now handled by ConvexAuthStateSync
         },
 
         updateUser: (user) => {
@@ -109,75 +92,49 @@ export const useAuthStore = create<AuthState>()(
             user,
             isAuthenticated: !!user,
           });
+        },
 
-          if (user) {
-            get().fetchUserOrganizations();
+        setAuthLoading: (loading) => {
+          set({ isLoading: loading });
+        },
+
+        setOrganizations: (orgs) => {
+          set({ userOrganizations: orgs, isLoadingOrgs: false });
+
+          // Auto-select first organization if none selected
+          const { currentOrganization } = get();
+          if (!currentOrganization && orgs.length > 0) {
+            const firstOrg = orgs[0].organization;
+            const settings = firstOrg.settings as
+              | OrganizationSettings
+              | undefined;
+            const features = getOrgFeatures("product", settings);
+
+            set({
+              currentOrganization: firstOrg,
+              currentOrgRole: orgs[0].role,
+              currentOrgFeatures: features,
+            });
           }
         },
 
         // Set current organization context
         setCurrentOrganization: (org, role) => {
-          // Use build-time configured mode instead of reading from org record
-          const mode = getConfiguredOrgMode();
           // Cast settings to the expected type
           const settings = org?.settings as OrganizationSettings | undefined;
-          const features = getOrgFeatures(mode ?? "operations", settings);
+          const features = getOrgFeatures("product", settings);
 
           set({
             currentOrganization: org,
             currentOrgRole: role,
-            currentOrgMode: mode,
             currentOrgFeatures: features,
           });
         },
 
-        // Fetch all organizations the user belongs to
+        // Deprecated: Now handled by ConvexAuthStateSync
         fetchUserOrganizations: async () => {
-          const { isAuthenticated } = get();
-          if (!isAuthenticated) return;
-
-          set({ isLoadingOrgs: true, orgsError: null });
-
-          try {
-            const response = (await pb.send("/api/v1/organizations", {
-              method: "GET",
-            })) as OrganizationsListResponse;
-
-            const orgs: OrganizationWithRole[] = response.organizations.map(
-              (item) => ({
-                organization: item.organization,
-                role: item.role,
-                joinedAt: item.joined_at,
-                onboardingCompleted: item.onboarding_completed,
-              }),
-            );
-
-            set({ userOrganizations: orgs });
-
-            const { currentOrganization } = get();
-            if (!currentOrganization && orgs.length > 0) {
-              const firstOrg = orgs[0].organization;
-              // Use build-time configured mode instead of reading from org record
-              const mode = getConfiguredOrgMode();
-              // Cast settings to the expected type
-              const settings = firstOrg.settings as
-                | OrganizationSettings
-                | undefined;
-              const features = getOrgFeatures(mode ?? "operations", settings);
-
-              set({
-                currentOrganization: firstOrg,
-                currentOrgRole: orgs[0].role,
-                currentOrgMode: mode,
-                currentOrgFeatures: features,
-              });
-            }
-          } catch (error) {
-            logError("Failed to fetch organizations", error);
-            set({ userOrganizations: [], orgsError: error as Error });
-          } finally {
-            set({ isLoadingOrgs: false });
-          }
+          // No-op
+          return Promise.resolve();
         },
 
         // Switch to a different organization
@@ -185,22 +142,19 @@ export const useAuthStore = create<AuthState>()(
           const { userOrganizations } = get();
 
           const orgWithRole = userOrganizations.find(
-            (o) => o.organization.id === orgId,
+            (o) => o.organization._id === orgId,
           );
 
           if (orgWithRole) {
-            // Use build-time configured mode instead of reading from org record
-            const mode = getConfiguredOrgMode();
             // Cast settings to the expected type
             const settings = orgWithRole.organization.settings as
               | OrganizationSettings
               | undefined;
-            const features = getOrgFeatures(mode ?? "operations", settings);
+            const features = getOrgFeatures("product", settings);
 
             set({
               currentOrganization: orgWithRole.organization,
               currentOrgRole: orgWithRole.role,
-              currentOrgMode: mode,
               currentOrgFeatures: features,
             });
           }
@@ -208,15 +162,13 @@ export const useAuthStore = create<AuthState>()(
 
         // Logout
         logout: () => {
-          pb.authStore.clear();
           set({
             user: null,
             isAuthenticated: false,
             currentOrganization: null,
             currentOrgRole: null,
             userOrganizations: [],
-            currentOrgMode: null,
-            currentOrgFeatures: getOrgFeatures(undefined),
+            currentOrgFeatures: getOrgFeatures("product"),
           });
         },
 
@@ -228,8 +180,7 @@ export const useAuthStore = create<AuthState>()(
             currentOrganization: null,
             currentOrgRole: null,
             userOrganizations: [],
-            currentOrgMode: null,
-            currentOrgFeatures: getOrgFeatures(undefined),
+            currentOrgFeatures: getOrgFeatures("product"),
             isLoading: false,
             isLoadingOrgs: false,
             orgsError: null,
@@ -246,16 +197,13 @@ export const useAuthStore = create<AuthState>()(
           };
 
           const currentOrg = merged.currentOrganization ?? null;
-          // Use build-time configured mode instead of reading from org record
-          const mode = getConfiguredOrgMode();
           const settings = currentOrg?.settings as
             | OrganizationSettings
             | undefined;
 
           return {
             ...merged,
-            currentOrgMode: mode,
-            currentOrgFeatures: getOrgFeatures(mode ?? "operations", settings),
+            currentOrgFeatures: getOrgFeatures("product", settings),
           };
         },
         partialize: (state) => ({
@@ -264,7 +212,6 @@ export const useAuthStore = create<AuthState>()(
           currentOrganization: state.currentOrganization,
           currentOrgRole: state.currentOrgRole,
           userOrganizations: state.userOrganizations,
-          currentOrgMode: state.currentOrgMode,
           currentOrgFeatures: state.currentOrgFeatures,
         }),
       },
@@ -285,12 +232,12 @@ export const useCurrentOrgOnboardingCompleted = () =>
     const currentOrg = state.currentOrganization;
     if (!currentOrg) return true; // No org, consider onboarding as complete
     const orgWithRole = state.userOrganizations.find(
-      (o) => o.organization.id === currentOrg.id,
+      (o) => o.organization._id === currentOrg._id,
     );
     return orgWithRole?.onboardingCompleted ?? true;
   });
 export const useAuthRole = () =>
-  useAuthStore((state) => state.user?.role ?? null);
+  useAuthStore((state) => (state.user ? "admin" : null)); // Default role for now
 export const useUserOrganizations = () =>
   useAuthStore((state) => state.userOrganizations);
 export const useAuthLogin = () => useAuthStore((state) => state.login);
@@ -315,8 +262,9 @@ export const useAuthActions = () =>
     })),
   );
 
-export const useCurrentOrgMode = () =>
-  useAuthStore((state) => state.currentOrgMode);
 export const useCurrentOrgFeatures = () =>
   useAuthStore((state) => state.currentOrgFeatures);
 export const useAuthOrgsError = () => useAuthStore((state) => state.orgsError);
+
+// Deprecated: Always returns "product" since we only support product mode now
+export const useCurrentOrgMode = () => "product" as const;

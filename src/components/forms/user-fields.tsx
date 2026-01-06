@@ -2,17 +2,25 @@ import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
 import { auth, users } from "@/constants";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
 
 import { FormField as GenericFormField } from "./form-field";
+
+// Convex-compatible role type (organization-level roles)
+type UserRole = "owner" | "member";
+
+// Map Convex user to role (using org role or default)
+function getUserRole(orgRole: string | null): UserRole {
+  if (orgRole === "owner") return "owner";
+  return "member";
+}
 
 export type UserFieldsFormValues = {
   username: string;
   password?: string;
   first_name: string;
   last_name: string;
-  role: UsersRoleOptions;
+  role: string;
 };
 
 type UserFieldsProps = {
@@ -27,47 +35,25 @@ export function UserFields({
   editingUserId,
 }: UserFieldsProps) {
   const user = useAuthUser();
-  const isEditingSelf = editingUserId === user?.id;
+  const currentOrgRole = useCurrentOrgRole();
+  const isEditingSelf = editingUserId === user?._id;
+
+  const userRole = getUserRole(currentOrgRole);
 
   const availableRoles = useMemo(() => {
     if (!user) return [];
 
-    if (user.role === UsersRoleOptions.admin) {
+    // In Convex v1, roles are org-level (owner/member)
+    // Only owners can manage members
+    if (userRole === "owner") {
       return [
-        { value: UsersRoleOptions.admin, label: users.table.roles.admin },
-        { value: UsersRoleOptions.manager, label: users.table.roles.manager },
-        {
-          value: UsersRoleOptions.supervisor,
-          label: users.table.roles.supervisor,
-        },
-        { value: UsersRoleOptions.employee, label: users.table.roles.employee },
+        { value: "member", label: users.table.roles.employee },
       ];
     }
 
-    if (user.role === UsersRoleOptions.manager) {
-      return [
-        {
-          value: UsersRoleOptions.supervisor,
-          label: users.table.roles.supervisor,
-        },
-        { value: UsersRoleOptions.employee, label: users.table.roles.employee },
-      ];
-    }
-
-    if (user.role === UsersRoleOptions.supervisor) {
-      return [
-        {
-          value: UsersRoleOptions.supervisor,
-          label: users.table.roles.supervisor,
-        },
-        { value: UsersRoleOptions.employee, label: users.table.roles.employee },
-      ];
-    }
-
-    return [
-      { value: UsersRoleOptions.employee, label: users.table.roles.employee },
-    ];
-  }, [user]);
+    // Members can't change roles
+    return [];
+  }, [user, userRole, users.table.roles.employee]);
 
   return (
     <div className="space-y-6">
@@ -109,7 +95,7 @@ export function UserFields({
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {(!isEditingSelf || user?.role === UsersRoleOptions.admin) && (
+        {(!isEditingSelf || userRole === "owner") && availableRoles.length > 0 && (
           <GenericFormField
             control={control}
             name="role"

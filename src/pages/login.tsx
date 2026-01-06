@@ -1,3 +1,4 @@
+import { useAuthActions } from "@convex-dev/auth/react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconFingerprint,
@@ -16,24 +17,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { pb } from "@/lib/pocketbase";
-import type { UsersResponse } from "@/lib/pocketbase-types";
-import { useAuthStore } from "@/store/auth-store";
-
-function isUsersRecord(record: object | null): record is UsersResponse {
-  return (
-    record !== null &&
-    typeof record === "object" &&
-    "id" in record &&
-    "username" in record &&
-    "role" in record
-  );
-}
 
 export default function Login() {
   const navigate = useNavigate();
-  const login = useAuthStore().login;
+  const { signIn } = useAuthActions();
 
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
@@ -54,21 +41,22 @@ export default function Login() {
       return;
     }
 
+    setSubmitting(true);
     try {
-      setSubmitting(true);
-      await pb
-        .collection("users")
-        .authWithPassword(identity.trim().toLowerCase(), password.trim());
-      if (
-        pb.authStore.record &&
-        pb.authStore.token &&
-        isUsersRecord(pb.authStore.record)
-      ) {
-        login(pb.authStore.record, pb.authStore.token);
-        navigate("/", { replace: true });
-      }
+      await signIn("password", {
+        email: identity.trim().toLowerCase(),
+        password: password.trim(),
+        flow: "signIn"
+      });
+      // Redirect is handled by the auth state change usually, or we can force it?
+      // Convex Auth usually handles session establishment.
+      // We will rely on the root component to detect auth state change or we can navigate.
+      // However, signIn with password might not throw if successful?
+      // Actually, signIn returns a promise.
+      navigate("/", { replace: true });
     } catch (error) {
-      handlePocketBaseError(error as Error);
+      console.error(error);
+      toast.error("Invalid credentials or error logging in");
     } finally {
       setSubmitting(false);
     }

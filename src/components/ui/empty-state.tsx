@@ -1,5 +1,4 @@
 import {
-  Activity,
   BellOff,
   Building2,
   FolderOpen,
@@ -13,7 +12,6 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  auditLogs,
   comments,
   notifications,
   organization,
@@ -171,16 +169,6 @@ export function EmptyStateNoComments() {
       icon={<MessageCircle className="h-12 w-12" />}
       title={comments.empty.noComments}
       description={comments.empty.beFirst}
-    />
-  );
-}
-
-export function EmptyStateNoActivity() {
-  return (
-    <EmptyState
-      icon={<Activity className="h-12 w-12" />}
-      title={auditLogs.activityStream.title}
-      description={auditLogs.activityStream.empty}
     />
   );
 }

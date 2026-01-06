@@ -1,5 +1,3 @@
-import type { AuditLogsListParams } from "@/lib/audit-log-service";
-
 function createQueryKeys<T extends string>(resource: T) {
   return {
     all: [resource] as const,
@@ -75,45 +73,6 @@ export const queryKeys = {
       ["notifications", "unread-count", userId] as const,
   },
 
-  auditLogs: {
-    lists: () => ["audit_logs", "list"] as const,
-    list: (params?: AuditLogsListParams) => {
-      const defaults = {
-        page: 1,
-        perPage: 50,
-        resource: "",
-        resourceId: "",
-        actor: "",
-        action: "",
-        client: "",
-        dateFrom: "",
-        dateTo: "",
-        search: "",
-      };
-      const merged = { ...defaults, ...(params ?? {}) };
-      (Object.keys(defaults) as Array<keyof typeof defaults>).forEach((key) => {
-        if (params?.[key] === undefined) {
-          (merged as Record<string, unknown>)[key as string] = defaults[key];
-        }
-      });
-      return ["audit_logs", "list", merged] as const;
-    },
-    resource: (resource: string, resourceId: string, page = 1, perPage = 50) =>
-      [
-        "audit_logs",
-        "list",
-        "resource",
-        resource,
-        resourceId,
-        page,
-        perPage,
-      ] as const,
-  },
-  projectStatuses: {
-    all: ["project_statuses"] as const,
-    byProject: (projectId: string) =>
-      ["project_statuses", "project", projectId] as const,
-  },
   subtasks: {
     listByTask: (taskId: string) => ["subtasks", "task", taskId] as const,
     all: ["subtasks"] as const,

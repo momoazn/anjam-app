@@ -1,3 +1,4 @@
+import { useAuthActions } from "@convex-dev/auth/react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconFingerprint,
@@ -16,19 +17,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
-import { useRegister } from "@/hooks/organization-invites";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
 export default function Register() {
   const navigate = useNavigate();
-  const registerMutation = useRegister();
+  const { signIn } = useAuthActions();
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
     username?: string;
@@ -69,23 +70,23 @@ export default function Register() {
       return;
     }
 
-    registerMutation.mutate(
-      {
+    setSubmitting(true);
+    try {
+      await signIn("password", {
         email: trimmedEmail,
-        username: trimmedUsername,
         password,
-        passwordConfirm: confirmPassword,
-      },
-      {
-        onSuccess: () => {
-          toast.success(auth.register.success);
-          navigate("/onboarding", { replace: true });
-        },
-      },
-    );
+        username: trimmedUsername, // Pass username, might need server config to save it
+        flow: "signUp",
+      });
+      toast.success(auth.register.success);
+      navigate("/onboarding", { replace: true });
+    } catch (error) {
+      console.error(error);
+      toast.error("Error creating account");
+    } finally {
+      setSubmitting(false);
+    }
   };
-
-  const submitting = registerMutation.isPending;
 
   return (
     <div className="bg-background relative flex h-svh items-stretch overflow-hidden">

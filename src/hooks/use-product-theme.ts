@@ -1,28 +1,19 @@
 /**
  * React hook for applying mode-specific theme
- * based on current organization mode.
+ * Always applies product theme since we're in product-only mode.
  */
 import { useEffect } from "react";
 
-import {
-  applyModeTheme,
-  getProductClasses,
-  isProductThemeActive,
-} from "@/lib/mode";
-import { useCurrentOrgMode } from "@/store/auth-store";
+import { applyModeTheme, getProductClasses } from "@/lib/mode";
 
 /**
- * Hook to automatically apply product theme to document body
- * when organization mode changes.
- *
+ * Hook to automatically apply product theme to document body.
  * Should be called once in the root App component.
  */
 export function useProductThemeEffect() {
-  const mode = useCurrentOrgMode();
-
   useEffect(() => {
-    applyModeTheme(mode);
-  }, [mode]);
+    applyModeTheme();
+  }, []);
 }
 
 /**
@@ -33,18 +24,13 @@ export function useProductThemeEffect() {
  * <div className={cn("bg-card", classes.surface)}>
  */
 export function useProductClasses() {
-  const mode = useCurrentOrgMode();
-  return getProductClasses(mode);
+  return getProductClasses();
 }
 
 /**
  * Hook to check if product theme is currently active.
- *
- * @example
- * const isProduct = useIsProductTheme();
- * {isProduct && <ProductSpecificComponent />}
+ * Always returns true since we're in product-only mode.
  */
 export function useIsProductTheme() {
-  const mode = useCurrentOrgMode();
-  return isProductThemeActive(mode);
+  return true;
 }

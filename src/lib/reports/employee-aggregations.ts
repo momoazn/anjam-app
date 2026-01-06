@@ -2,9 +2,7 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format, isWithinInterval, startOfQuarter } from "date-fns-jalali";
 import { faIR } from "date-fns/locale";
 
-import type { TaskWithProject } from "../pocketbase";
-import type { IsoAutoDateString, UsersRecord } from "../pocketbase-types";
-import { TasksStatusOptions, UsersRoleOptions } from "../pocketbase-types";
+import type { ConvexTask, ConvexUser } from "./types";
 import type {
   EmployeeBucket,
   EmployeeBucketsResult,
@@ -31,38 +29,41 @@ function formatBucketLabel(
   return key;
 }
 
-function getUserName(user: UsersRecord): string {
-  return user.first_name && user.last_name
-    ? `${user.first_name} ${user.last_name}`
-    : user.username;
+function getUserName(user: ConvexUser): string {
+  if (user.first_name && user.last_name) {
+    return `${user.first_name} ${user.last_name}`;
+  }
+  if (user.firstName && user.lastName) {
+    return `${user.firstName} ${user.lastName}`;
+  }
+  return user.username || "Unknown";
 }
 
 /**
  * Compute employee buckets for productivity tracking
  */
 export function computeEmployeeBuckets(
-  tasksList: TaskWithProject[],
-  users: UsersRecord[],
+  tasksList: ConvexTask[],
+  users: ConvexUser[],
   range: { start: Date; end: Date },
   bucket: "daily" | "weekly" | "monthly" | "quarterly" | "annual",
 ): EmployeeBucketsResult[] {
   const countsByUser = new Map<string, Map<string, number>>();
 
   for (const task of tasksList) {
-    if (
-      task.status !== TasksStatusOptions.done ||
-      !task.updated ||
-      !task.assignee
-    )
-      continue;
-    const updated = new Date(task.updated);
+    if (task.status !== "done") continue;
+    const updatedAt = task.updatedAt ?? task.updated;
+    if (!updatedAt) continue;
+    const assigneeId = task.assigneeUserId ?? task.assignee;
+    if (!assigneeId) continue;
+
+    const updated = new Date(updatedAt);
     if (!isWithinInterval(updated, range)) continue;
 
     const { key } = getBucketKeyAndLabel(updated, bucket);
-    const userMap =
-      countsByUser.get(task.assignee) || new Map<string, number>();
+    const userMap = countsByUser.get(assigneeId) || new Map<string, number>();
     userMap.set(key, (userMap.get(key) || 0) + 1);
-    countsByUser.set(task.assignee, userMap);
+    countsByUser.set(assigneeId, userMap);
   }
 
   const allKeysSet = new Set<string>();
@@ -71,23 +72,22 @@ export function computeEmployeeBuckets(
   }
   const allKeys = Array.from(allKeysSet).sort((a, b) => a.localeCompare(b));
 
-  return users
-    .filter((u) => u.role === UsersRoleOptions.employee)
-    .map((user) => {
-      const userMap = countsByUser.get(user.id) || new Map<string, number>();
-      const buckets = allKeys.map((k) => ({
-        key: k,
-        label: formatBucketLabel(k, bucket),
-        count: userMap.get(k) || 0,
-      }));
-      const totalCompleted = buckets.reduce((s, b) => s + b.count, 0);
-      return {
-        userId: user.id,
-        name: getUserName(user),
-        buckets,
-        totalCompleted,
-      };
-    });
+  return users.map((user) => {
+    const userId = user._id || user.id;
+    const userMap = countsByUser.get(userId) || new Map<string, number>();
+    const buckets = allKeys.map((k) => ({
+      key: k,
+      label: formatBucketLabel(k, bucket),
+      count: userMap.get(k) || 0,
+    }));
+    const totalCompleted = buckets.reduce((s, b) => s + b.count, 0);
+    return {
+      userId,
+      name: getUserName(user),
+      buckets,
+      totalCompleted,
+    };
+  });
 }
 
 /**
@@ -95,24 +95,17 @@ export function computeEmployeeBuckets(
  */
 export function computeProductivityTrend(
   userId: string,
-  tasksList: TaskWithProject[],
+  tasksList: ConvexTask[],
   range: { start: Date; end: Date },
   bucket: "daily" | "weekly" | "monthly" | "quarterly" | "annual",
 ): EmployeeBucket[] {
-  const userTasks = tasksList.filter((t) => t.assignee === userId);
+  const userTasks = tasksList.filter(
+    (t) =>
+      t.assigneeUserId === userId || t.assignee === userId,
+  );
   const bucketsResult = computeEmployeeBuckets(
     userTasks,
-    [
-      {
-        id: userId,
-        username: "",
-        role: UsersRoleOptions.employee,
-        password: "",
-        tokenKey: "",
-        created: "" as unknown as IsoAutoDateString,
-        updated: "" as unknown as IsoAutoDateString,
-      },
-    ],
+    [{ _id: userId, id: userId, username: "" }],
     range,
     bucket,
   );
@@ -124,46 +117,56 @@ export function computeProductivityTrend(
  */
 export function computeEmployeeSummary(
   userId: string,
-  tasksList: TaskWithProject[],
+  tasksList: ConvexTask[],
   range: { start: Date; end: Date },
-  users?: UsersRecord[],
+  users?: ConvexUser[],
 ): EmployeeSummary {
   const now = new Date();
 
   const assigned = tasksList.filter((task) => {
-    if (task.assignee !== userId) return false;
-    const createdInRange =
-      task.created && isWithinInterval(new Date(task.created), range);
-    const updatedInRange =
-      task.updated && isWithinInterval(new Date(task.updated), range);
-    return !!(createdInRange || updatedInRange);
+    const assigneeId = task.assigneeUserId ?? task.assignee;
+    if (assigneeId !== userId) return false;
+    const createdInRange = isWithinInterval(
+      new Date(task._creationTime),
+      range,
+    );
+    const updatedAt = task.updatedAt ?? task.updated;
+    const updatedInRange = updatedAt
+      ? isWithinInterval(new Date(updatedAt), range)
+      : false;
+    return createdInRange || updatedInRange;
   });
 
-  const completedTasks = assigned.filter(
-    (task) => task.status === TasksStatusOptions.done && task.updated,
-  );
+  const completedTasks = assigned.filter((task) => {
+    if (task.status !== "done") return false;
+    const updatedAt = task.updatedAt ?? task.updated;
+    return !!updatedAt;
+  });
 
   const completed = completedTasks.length;
   const inProgress = tasksList.filter(
     (task) =>
-      task.assignee === userId &&
-      task.status === TasksStatusOptions.in_progress,
+      (task.assigneeUserId === userId || task.assignee === userId) &&
+      task.status === "in_progress",
   ).length;
   const overdue = tasksList.filter(
-    (task) =>
-      task.assignee === userId &&
-      task.status !== TasksStatusOptions.done &&
-      task.deadline &&
-      new Date(task.deadline) < now,
+    (task) => {
+      const assigneeId = task.assigneeUserId ?? task.assignee;
+      if (assigneeId !== userId) return false;
+      if (task.status === "done") return false;
+      if (!task.deadline) return false;
+      return new Date(task.deadline) < now;
+    },
   ).length;
 
   // Calculate avg time-to-complete in days
   const MS_PER_DAY = 1000 * 60 * 60 * 24;
   const avgTimeToCompleteDays =
     completedTasks.reduce((sum, task) => {
-      if (!task.created || !task.updated) return sum;
-      const created = new Date(task.created).getTime();
-      const updated = new Date(task.updated).getTime();
+      const created = new Date(task._creationTime).getTime();
+      const updatedAt = task.updatedAt ?? task.updated;
+      if (!updatedAt) return sum;
+      const updated = new Date(updatedAt).getTime();
       if (updated >= created) {
         return sum + (updated - created) / MS_PER_DAY;
       }
@@ -173,15 +176,15 @@ export function computeEmployeeSummary(
   const efficiencyScore = assigned.length ? completed / assigned.length : 0;
 
   // Calculate on-time rate
-  const onTimeCompleted = completedTasks.filter(
-    (task) =>
-      task.deadline &&
-      task.updated &&
-      new Date(task.updated) <= new Date(task.deadline),
-  ).length;
+  const onTimeCompleted = completedTasks.filter((task) => {
+    if (!task.deadline) return false;
+    const updatedAt = task.updatedAt ?? task.updated;
+    if (!updatedAt) return false;
+    return new Date(updatedAt) <= new Date(task.deadline);
+  }).length;
   const onTimeRate = completed > 0 ? onTimeCompleted / completed : 0;
 
-  const user = users?.find((u) => u.id === userId);
+  const user = users?.find((u) => (u._id || u.id) === userId);
 
   return {
     userId,

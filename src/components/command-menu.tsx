@@ -23,7 +23,7 @@ import { useGlobalSearch } from "@/hooks/use-global-search";
 import type { SearchResponse } from "@/hooks/use-global-search";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth-store";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 interface CommandItem {
   id: string;
@@ -70,7 +70,7 @@ export function CommandMenu() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [debouncedQuery] = useDebounce(search, 300);
   const navigate = useNavigate();
-  const currentOrgMode = useAuthStore((state) => state.currentOrgMode);
+  const currentOrgMode = useCurrentOrgMode();
   const isProductMode = currentOrgMode === "product";
   const { resolvedTheme } = useTheme();
   const isProductVisualTheme = isProductMode && resolvedTheme === "dark";

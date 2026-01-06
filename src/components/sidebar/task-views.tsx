@@ -1,12 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import {
-  IconAlertTriangle,
-  IconChecklist,
-  IconChevronUp,
-  IconClock,
-  IconList,
-  IconLoader,
-} from "@tabler/icons-react";
+import { IconChevronUp } from "@tabler/icons-react";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -22,45 +15,44 @@ import {
 } from "@/components/ui/sidebar";
 import { navigation, navigationSectionLabels } from "@/constants";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import type { ModeLabels } from "@/lib/mode";
 import { cn } from "@/lib/utils";
+
+interface TaskViewsProps {
+  labels?: { savedFilters?: string };
+}
 
 const viewItems = [
   {
     title: navigation.allTasks,
     url: "/tasks",
-    icon: IconList,
+    icon: "list",
     getCount: () => 0,
   },
   {
-    title: navigation.myTasks,
+    title: "تسک‌های من",
     url: "/tasks?assigned=me&status=todo,in_progress,pending",
-    icon: IconChecklist,
+    icon: "checklist",
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
   },
   {
     title: navigation.dueToday,
     url: "/tasks?due=today",
-    icon: IconClock,
+    icon: "clock",
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.dueToday,
   },
   {
     title: navigation.overdue,
     url: "/tasks?due=overdue",
-    icon: IconAlertTriangle,
+    icon: "alert",
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.overdue,
   },
   {
     title: navigation.inProgress,
     url: "/tasks?status=in_progress",
-    icon: IconLoader,
+    icon: "loader",
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.inProgress,
   },
-] as const;
-
-interface TaskViewsProps {
-  labels?: ModeLabels; // Optional mode labels for product mode
-}
+];
 
 export function TaskViews({ labels }: TaskViewsProps) {
   const counts = useTaskCounts();
@@ -112,14 +104,9 @@ export function TaskViews({ labels }: TaskViewsProps) {
                         : "text-muted-foreground/90 hover:bg-accent hover:text-accent-foreground",
                     )}
                   >
-                    <view.icon
-                      className={cn(
-                        "size-4 transition-transform duration-200",
-                        isActive
-                          ? "text-foreground"
-                          : "text-muted-foreground/70",
-                      )}
-                    />
+                    <span className="size-4 text-muted-foreground/70">
+                      {view.icon}
+                    </span>
                     <span
                       className={cn(
                         "text-sm font-medium truncate",

@@ -9,8 +9,12 @@ import {
   IconUserPlus,
 } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
+import { useMutation as useConvexMutation } from "convex/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 import { Logo } from "@/components/brand/logo";
 import { PageTransition } from "@/components/page-transition";
@@ -18,10 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/constants";
-import { useCreateOrg } from "@/hooks/organization-invites";
-import { handlePocketBaseError } from "@/lib/error-handler";
 import { getHomeRoute } from "@/lib/mode";
-import { pb } from "@/lib/pocketbase";
 import {
   useAuthStore,
   useCurrentOrgMode,
@@ -58,12 +59,19 @@ const STEPS = [
 export default function Onboarding() {
   const navigate = useNavigate();
   const currentOrg = useCurrentOrganization();
-  const mode = useCurrentOrgMode();
+  useCurrentOrgMode(); // Initialize product mode
   const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
-  const createOrgMutation = useCreateOrg();
+
+  // Convex mutations
+  const createOrg = useConvexMutation(api.organizations.create);
+  const updateOrg = useConvexMutation(api.organizations.update);
+  const createProject = useConvexMutation(api.projects.create);
+  const createInvite = useConvexMutation(api.invites.createLink);
+  const setOnboardingCompleted = useConvexMutation(
+    api.organizations.setOnboardingCompleted,
+  );
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [orgName, setOrgName] = useState(currentOrg?.name || "");
   const [projectName, setProjectName] = useState("");
@@ -72,41 +80,42 @@ export default function Onboarding() {
   // Mutation to complete onboarding
   const completeOnboarding = useMutation({
     mutationFn: async () => {
-      let orgId = currentOrg?.id;
+      let orgId = currentOrg?._id as Id<"organizations"> | undefined;
 
       // If no organization exists, create one first
       if (!orgId) {
         if (!orgName.trim()) {
           throw new Error("Organization name is required");
         }
-        const createResult = await createOrgMutation.mutateAsync(
-          orgName.trim(),
-        );
-        orgId = createResult.organization.id;
+        orgId = await createOrg({
+          name: orgName.trim(),
+        });
       }
 
       // Update organization with logo and/or name if provided
+      // TODO: Handle logo upload with Convex storage
+      /*
       const formData = new FormData();
       if (logoFile) {
         formData.append("logo", logoFile);
       }
+      */
+
       // Update organization name if changed and org was not just created
       if (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name) {
-        formData.append("name", orgName.trim());
-      }
-
-      if (
-        logoFile ||
-        (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name)
-      ) {
-        await pb.collection("organizations").update(orgId!, formData);
+        await updateOrg({
+          organizationId: orgId!,
+          updates: {
+            name: orgName.trim(),
+          },
+        });
       }
 
       // Create first project if name provided
       if (projectName.trim()) {
-        await pb.collection("projects").create({
+        await createProject({
           name: projectName.trim(),
-          organization: orgId,
+          organizationId: orgId!,
         });
       }
 
@@ -116,39 +125,25 @@ export default function Onboarding() {
       );
       if (validEmails.length > 0) {
         // Create an invite link with max uses equal to number of emails
-        await fetch(`/api/v1/organizations/${orgId}/invites`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: pb.authStore.token,
-          },
-          body: JSON.stringify({
-            role: "member",
-            max_uses: validEmails.length,
-          }),
+        await createInvite({
+          organizationId: orgId!,
+          maxUses: validEmails.length,
         });
         // Note: In a production app, you'd send emails with the invite link here
       }
 
       // Mark onboarding as completed for current user's membership
-      const memberships = await pb
-        .collection("organization_members")
-        .getFullList({
-          filter: `organization = "${orgId}" && user = "${pb.authStore.record?.id}"`,
-        });
-
-      if (memberships.length > 0) {
-        await pb.collection("organization_members").update(memberships[0].id, {
-          onboarding_completed: true,
-        });
-      }
+      await setOnboardingCompleted({
+        organizationId: orgId!,
+      });
     },
     onSuccess: () => {
-      fetchOrgs();
-      navigate(getHomeRoute(mode), { replace: true });
+      fetchOrgs(); // This is likely a no-op now as sync handles it, but keeping for safety
+      navigate(getHomeRoute(), { replace: true });
     },
     onError: (error) => {
-      handlePocketBaseError(error);
+      console.error(error);
+      // toast.error("Failed to complete onboarding");
     },
   });
 

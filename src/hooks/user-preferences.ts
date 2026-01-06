@@ -1,12 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { pb } from "@/lib/pocketbase";
-import type {
-  UserPreferencesRecord,
-  UserPreferencesResponse,
-} from "@/lib/pocketbase-types";
-
-import { queryKeys } from "./query-keys";
+import { useCallback, useEffect, useState } from "react";
 
 export type UserPreferences = {
   ui: {
@@ -46,97 +38,87 @@ export const DEFAULT_NOTIFICATION_PREFERENCES = {
   projectUpdated: true,
 } as const;
 
+const STORAGE_KEY = "anjam_user_preferences";
+
+function getStoredPreferences(): UserPreferences {
+  if (typeof window === "undefined") {
+    return DEFAULT_USER_PREFERENCES;
+  }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return { ...DEFAULT_USER_PREFERENCES, ...JSON.parse(stored) };
+    }
+  } catch {
+    console.warn("Failed to parse user preferences from localStorage");
+  }
+  return DEFAULT_USER_PREFERENCES;
+}
+
+function storePreferences(preferences: UserPreferences): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
+}
+
 export function useUserPreferences() {
-  const user = pb.authStore.record;
+  const [preferences, setPreferences] = useState<UserPreferences>(
+    DEFAULT_USER_PREFERENCES,
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
-  return useQuery({
-    queryKey: queryKeys.userPreferences.byUser(user?.id),
-    queryFn: async (): Promise<UserPreferencesResponse> => {
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
+  useEffect(() => {
+    setPreferences(getStoredPreferences());
+    setIsLoading(false);
+  }, []);
 
-      try {
-        return await pb
-          .collection("user_preferences")
-          .getFirstListItem<UserPreferencesResponse>(`user = "${user.id}"`);
-      } catch (error: unknown) {
-        const isNotFound =
-          typeof error === "object" &&
-          error !== null &&
-          "status" in error &&
-          (error as { status?: number }).status === 404;
-        if (!isNotFound) {
-          throw error;
-        }
-
-        return await pb
-          .collection("user_preferences")
-          .create<UserPreferencesResponse>({
-            user: user.id,
-            preferences: DEFAULT_USER_PREFERENCES,
-            notifications: DEFAULT_NOTIFICATION_PREFERENCES,
-          });
-      }
+  const updatePreferences = useCallback(
+    (updates: Partial<UserPreferences>) => {
+      const newPreferences = { ...preferences, ...updates };
+      setPreferences(newPreferences);
+      storePreferences(newPreferences);
     },
-    enabled: Boolean(user?.id),
-    staleTime: 60_000,
-  });
+    [preferences],
+  );
+
+  return {
+    data: preferences,
+    isLoading,
+    updatePreferences,
+  };
 }
 
 export function useUpdateUserPreferences() {
-  const queryClient = useQueryClient();
-  const user = pb.authStore.record;
+  const { updatePreferences } = useUserPreferences();
 
-  return useMutation({
-    mutationFn: async (payload: {
-      id: string;
-      updates: Partial<
-        Pick<UserPreferencesRecord, "preferences" | "notifications">
-      >;
-    }) => {
-      return pb
-        .collection("user_preferences")
-        .update<UserPreferencesResponse>(payload.id, payload.updates);
+  return {
+    mutate: async (payload: { updates: Partial<UserPreferences> }) => {
+      updatePreferences(payload.updates);
     },
-    onSuccess: () => {
-      if (!user?.id) return;
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.userPreferences.byUser(user.id),
-      });
-    },
-  });
+    isPending: false,
+  };
 }
 
 export function useToggleProjectFavorite() {
-  const { data: preferences } = useUserPreferences();
-  const updatePreferences = useUpdateUserPreferences();
+  const { data: preferences, updatePreferences } = useUserPreferences();
 
-  return useMutation({
-    mutationFn: async (projectId: string) => {
+  return {
+    mutate: async (projectId: string) => {
       if (!preferences) throw new Error("Preferences not loaded");
 
-      const currentFavorites =
-        (preferences.preferences as UserPreferences)?.favorites?.projectIds ||
-        [];
+      const currentFavorites = preferences.favorites?.projectIds || [];
       const isFavorite = currentFavorites.includes(projectId);
 
       const nextFavorites = isFavorite
         ? currentFavorites.filter((id) => id !== projectId)
         : [...currentFavorites, projectId];
 
-      return updatePreferences.mutateAsync({
-        id: preferences.id,
-        updates: {
-          preferences: {
-            ...(preferences.preferences as UserPreferences),
-            favorites: {
-              ...(preferences.preferences as UserPreferences)?.favorites,
-              projectIds: nextFavorites,
-            },
-          },
+      updatePreferences({
+        favorites: {
+          ...preferences.favorites,
+          projectIds: nextFavorites,
         },
       });
     },
-  });
+    isPending: false,
+  };
 }

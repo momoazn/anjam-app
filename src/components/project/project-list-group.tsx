@@ -34,17 +34,20 @@ import {
 } from "@/constants";
 import { useTasks } from "@/hooks";
 import {
-  type UserPreferences,
   useToggleProjectFavorite,
   useUserPreferences,
 } from "@/hooks/user-preferences";
-import type { ProjectsResponse } from "@/lib/pocketbase-types";
-import { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
+type Project = {
+  id: string;
+  name: string;
+  code: string;
+};
+
 type ProjectListGroupProps = {
-  projects: ProjectsResponse[];
+  projects: Project[];
   onEdit: (projectId: string) => void;
   canEditDelete: boolean;
   canCreate?: boolean;
@@ -61,22 +64,17 @@ export function ProjectListGroup({
   const isProductMode = mode === "product";
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedProject, setSelectedProject] =
-    useState<ProjectsResponse | null>(null);
+    useState<Project | null>(null);
 
   const { data: preferencesData } = useUserPreferences();
   const toggleFavorite = useToggleProjectFavorite();
 
-  const favoriteIds =
-    (preferencesData?.preferences as UserPreferences)?.favorites?.projectIds ||
-    [];
+  const favoriteIds = preferencesData?.favorites?.projectIds || [];
 
-  const { data: allTasksResult } = useTasks({
-    expandFields: "project,assignee",
-    mode: "full",
-  });
+  const { data: allTasksResult } = useTasks();
   const allTasks = allTasksResult?.items ?? [];
 
-  const handleDelete = (project: ProjectsResponse) => {
+  const handleDelete = (project: Project) => {
     setSelectedProject(project);
     setIsDeleteOpen(true);
   };
@@ -89,9 +87,9 @@ export function ProjectListGroup({
   const getProjectProgress = (projectId: string) => {
     if (!allTasks) return { total: 0, completed: 0, progress: 0 };
 
-    const projectTasks = allTasks.filter((task) => task.project === projectId);
+    const projectTasks = allTasks.filter((task) => task.projectId === projectId);
     const completedTasks = projectTasks.filter(
-      (task) => task.status === TasksStatusOptions.done,
+      (task) => task.status === "done",
     );
 
     return {

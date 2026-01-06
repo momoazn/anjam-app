@@ -9,10 +9,37 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { myTasks as myTasksText, tasks } from "@/constants";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { Task, TaskStatus } from "@/types/tasks";
+
+// Convex-compatible TaskWithProject interface
+interface TaskWithProject extends Omit<Task, "id"> {
+  id?: string;
+  assignee?: {
+    id: string;
+    _id: string;
+    username: string;
+    firstName?: string;
+    first_name?: string;
+    lastName?: string;
+    last_name?: string;
+  } | null;
+  project?: { name: string };
+  display_id?: string;
+  expand?: {
+    project?: { name: string };
+    assignee?: {
+      id: string;
+      _id: string;
+      username: string;
+      firstName?: string;
+      first_name?: string;
+      lastName?: string;
+      last_name?: string;
+    };
+  };
+}
 
 export type MyTasksTabsProps = {
   activeTab: string;
@@ -22,8 +49,8 @@ export type MyTasksTabsProps = {
     active: number;
     completed: number;
   };
-  activeGrouped: Record<TasksStatusOptions, TaskWithProject[]>;
-  completedGrouped: Record<TasksStatusOptions, TaskWithProject[]>;
+  activeGrouped: Record<TaskStatus, TaskWithProject[]>;
+  completedGrouped: Record<TaskStatus, TaskWithProject[]>;
   categorizedActive: TaskWithProject[];
   categorizedCompleted: TaskWithProject[];
   tasksByProject: Array<{
@@ -201,15 +228,15 @@ export function MyTasksTabs({
                   </div>
                 </div>
                 <div className="divide-border/40 divide-y">
-                  {project.tasks.map((task) => (
-                    <Button
-                      key={task.id}
-                      variant="ghost"
-                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
-                      onClick={() =>
-                        onProjectTaskClick(project.projectId, task.id)
-                      }
-                    >
+	                  {project.tasks.map((task) => (
+	                    <Button
+	                      key={task.id ?? task._id}
+	                      variant="ghost"
+	                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
+	                      onClick={() =>
+	                        onProjectTaskClick(project.projectId, task.id ?? task._id)
+	                      }
+	                    >
                       <div className="flex-1 text-right">
                         <h4 className="group-hover:text-primary text-base font-bold tracking-tight transition-colors">
                           {task.title}

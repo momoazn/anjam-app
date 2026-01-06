@@ -1,10 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconBuilding, IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import { useMutation } from "convex/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { api, Id } from "@/lib/convex";
 import { FormField } from "@/components/forms/form-field";
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
@@ -12,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { organization, shared } from "@/constants";
 import { logError } from "@/lib/logger";
-import { pb } from "@/lib/pocketbase";
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode, useCurrentOrganization } from "@/store/auth-store";
 
@@ -33,6 +34,7 @@ export function OrgSettingsPage() {
   const currentOrg = useCurrentOrganization();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
+  const updateOrg = useMutation(api.organizations.update);
 
   const form = useForm<OrgSettingsForm>({
     resolver: zodResolver(orgSettingsSchema),
@@ -54,10 +56,13 @@ export function OrgSettingsPage() {
     }
 
     try {
-      await pb.collection("organizations").update(currentOrg.id, {
-        name: data.name,
-        slug: data.slug,
-        description: data.description || "",
+      await updateOrg({
+        organizationId: currentOrg._id as Id<"organizations">,
+        updates: {
+          name: data.name,
+          slug: data.slug,
+          description: data.description || "",
+        },
       });
 
       toast.success(organization.settings.saveSuccess);

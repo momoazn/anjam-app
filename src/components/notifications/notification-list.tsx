@@ -6,11 +6,10 @@ import { NotificationSkeleton } from "@/components/notifications/notification-sk
 import { EmptyStateNoNotifications } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { notifications as notificationsText, shared } from "@/constants";
-import type { NotificationsRecord } from "@/lib/pocketbase-types";
 
-const getDateGroup = (dateString?: string | null) => {
-  if (!dateString) return "older";
-  const date = new Date(dateString);
+const getDateGroup = (timestamp?: number | null) => {
+  if (!timestamp) return "older";
+  const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "older";
 
   if (isToday(date)) return "today";
@@ -35,7 +34,7 @@ const getGroupTitle = (group: string) => {
 };
 
 type NotificationListProps = {
-  notifications: NotificationsRecord[];
+  notifications: any[];
   isLoading: boolean;
   error: unknown;
   selectedIds: string[];
@@ -53,10 +52,17 @@ export function NotificationList({
   onMarkAsRead,
   onDelete,
 }: NotificationListProps) {
-  const groupedNotifications = notifications.reduce(
-    (groups, notification) => {
-      const group = getDateGroup(notification.created);
-      groups[group].push(notification);
+  const groupedNotifications: Record<
+    "today" | "yesterday" | "thisWeek" | "older",
+    any[]
+  > = notifications.reduce(
+    (groups: Record<"today" | "yesterday" | "thisWeek" | "older", any[]>, notification: any) => {
+      const group = getDateGroup(notification.createdAt);
+      if (group === "today" || group === "yesterday" || group === "thisWeek" || group === "older") {
+        groups[group].push(notification);
+      } else {
+        groups.older.push(notification);
+      }
       return groups;
     },
     {
@@ -64,7 +70,7 @@ export function NotificationList({
       yesterday: [],
       thisWeek: [],
       older: [],
-    } as Record<string, NotificationsRecord[]>,
+    },
   );
 
   if (isLoading) {
@@ -94,7 +100,7 @@ export function NotificationList({
   return (
     <ScrollArea className="h-[calc(100vh-24rem)]">
       <div className="space-y-10" data-animate-stagger>
-        {Object.entries(groupedNotifications).map(
+        {(Object.entries(groupedNotifications) as Array<[string, any[]]>).map(
           ([group, groupNotifications]) => {
             if (groupNotifications.length === 0) return null;
 
@@ -112,13 +118,13 @@ export function NotificationList({
                   className="border-border/20 overflow-hidden rounded-xl border shadow-sm"
                   data-animate-stagger
                 >
-                  {groupNotifications.map((notification) => (
+                  {groupNotifications.map((notification: any) => (
                     <NotificationItem
-                      key={notification.id}
+                      key={notification._id}
                       notification={notification}
                       onMarkAsRead={onMarkAsRead}
                       onDelete={onDelete}
-                      selected={selectedIds.includes(notification.id)}
+                      selected={selectedIds.includes(notification._id)}
                       onToggleSelect={onToggleSelect}
                     />
                   ))}

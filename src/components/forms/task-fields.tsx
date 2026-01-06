@@ -21,15 +21,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { tasks } from "@/constants";
 import {
-  useProjectStatuses,
   useProjectUsers,
   useProjects,
   useUsers,
 } from "@/hooks";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
 import {
   TASK_STATUS_CONFIG,
   getStatusColorVariant,
@@ -39,6 +34,20 @@ import {
 } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+
+// Convex task status types
+const TASK_STATUSES = [
+  "todo",
+  "in_progress",
+  "in_review",
+  "done",
+  "cancelled",
+] as const;
+
+type TaskStatus = typeof TASK_STATUSES[number];
+
+// Convex task priority types (values)
+const TASK_PRIORITY_VALUES = ["low", "medium", "high", "urgent"] as const;
 
 import { TagPicker } from "../task/tag-picker";
 import {
@@ -77,10 +86,6 @@ export function TaskFields({
     projectId: projectId || "",
   });
   const { data: users } = useUsers({ enabled: !projectId });
-  const { data: projectStatuses } = useProjectStatuses({
-    projectId: projectId || "",
-    enabled: Boolean(projectId),
-  });
 
   const assignees = projectId ? projectUsers : users;
 
@@ -93,10 +98,12 @@ export function TaskFields({
     const unassignedLabel = String(tasks.addTask.unassigned);
     const opts = [{ value: unassignedLabel, label: unassignedLabel }];
     if (assignees) {
-      assignees.forEach((u) => {
+      assignees.forEach((u: any) => {
+        const firstName = u.firstName ?? u.first_name;
+        const lastName = u.lastName ?? u.last_name;
         opts.push({
-          value: u.id,
-          label: formatUserName(u.first_name, u.last_name, u.username),
+          value: u.id || u._id,
+          label: formatUserName(firstName, lastName, u.username),
         });
       });
     }
@@ -104,21 +111,11 @@ export function TaskFields({
   }, [assignees]);
 
   const statusOptions = useMemo(() => {
-    if (projectStatuses && projectStatuses.length > 0) {
-      const validStatuses = new Set(Object.values(TasksStatusOptions));
-      return projectStatuses
-        .filter((status) => validStatuses.has(status.key as TasksStatusOptions))
-        .map((status) => ({
-          value: status.key as TasksStatusOptions,
-          label: status.name || status.key,
-        }));
-    }
-
-    return Object.values(TasksStatusOptions).map((status) => ({
+    return TASK_STATUSES.map((status) => ({
       value: status,
-      label: TASK_STATUS_CONFIG[status].name,
+      label: TASK_STATUS_CONFIG[status as TaskStatus]?.name || status,
     }));
-  }, [projectStatuses]);
+  }, []);
 
   return (
     <div
@@ -263,8 +260,8 @@ export function TaskFields({
               name="status"
               render={({ field }) => {
                 const value =
-                  (field.value as TasksStatusOptions) ||
-                  TasksStatusOptions.todo;
+                  (field.value as TaskStatus) ||
+                  "todo";
                 const StatusIcon =
                   taskStatusIcons[value] || taskStatusIcons.todo;
                 const statusColor = getStatusColorVariant(value, "icon");
@@ -274,7 +271,7 @@ export function TaskFields({
                       <SelectTrigger className="bg-muted/5 w-56 rounded-lg border-none px-3 py-2 text-right text-xs font-bold tracking-tight focus:ring-0">
                         <div className="flex items-center justify-end gap-2">
                           <span>
-                            {TASK_STATUS_CONFIG[value]?.name ??
+                            {TASK_STATUS_CONFIG[value as TaskStatus]?.name ??
                               value ??
                               tasks.form.status}
                           </span>
@@ -283,11 +280,12 @@ export function TaskFields({
                       </SelectTrigger>
                       <SelectContent className="border-border bg-card rounded-lg border">
                         {statusOptions.map((option) => {
+                          const itemStatus = option.value as TaskStatus;
                           const ItemIcon =
-                            taskStatusIcons[option.value] ||
+                            taskStatusIcons[itemStatus] ||
                             taskStatusIcons.todo;
                           const itemColor = getStatusColorVariant(
-                            option.value,
+                            itemStatus,
                             "icon",
                           );
                           return (
@@ -325,8 +323,8 @@ export function TaskFields({
               name="priority"
               render={({ field }) => {
                 const value =
-                  (field.value as TasksPriorityOptions) ||
-                  TasksPriorityOptions.medium;
+                  (field.value as typeof TASK_PRIORITY_VALUES[number]) ||
+                  "medium";
                 const PriorityIcon = priorityIcons[value];
                 const priorityColor = priorityColors[value];
                 return (
@@ -341,7 +339,7 @@ export function TaskFields({
                         </div>
                       </SelectTrigger>
                       <SelectContent className="border-border bg-card rounded-lg border">
-                        {Object.values(TasksPriorityOptions).map((p) => {
+                        {TASK_PRIORITY_VALUES.map((p) => {
                           const ItemIcon = priorityIcons[p];
                           const itemColor = priorityColors[p];
                           return (

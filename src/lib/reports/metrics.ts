@@ -2,10 +2,11 @@ import { isWithinInterval } from "date-fns-jalali";
 
 import { tasks } from "@/constants";
 
-import type { TaskWithProject } from "../pocketbase";
-import type { TasksPriorityOptions, UsersRecord } from "../pocketbase-types";
-import { TasksStatusOptions } from "../pocketbase-types";
-import { TASK_STATUS_CONFIG } from "../status-utils";
+import type {
+  ConvexTask,
+  ConvexTaskPriority,
+  ConvexUser,
+} from "./types";
 import type {
   OverviewMetrics,
   PriorityCount,
@@ -15,6 +16,15 @@ import type {
   TimelinessClassification,
   UserPerformanceData,
 } from "./types";
+
+// Convex task status values
+const CONVEX_TASK_STATUSES = [
+  "todo",
+  "in_progress",
+  "in_review",
+  "done",
+  "cancelled",
+] as const;
 
 // Priority labels mapping
 const PRIORITY_LABELS = {
@@ -27,14 +37,23 @@ const PRIORITY_LABELS = {
 // Priority options in order
 const PRIORITY_OPTIONS = ["urgent", "high", "medium", "low"] as const;
 
+// Status labels mapping for Convex
+const STATUS_LABELS: Record<string, string> = {
+  todo: "To Do",
+  in_progress: "In Progress",
+  in_review: "In Review",
+  done: "Done",
+  cancelled: "Cancelled",
+};
+
 /**
  * Calculate status distribution for tasks
  */
 export function calculateStatusDistribution(
-  tasksList: TaskWithProject[],
+  tasksList: ConvexTask[],
 ): StatusDistributionData[] {
-  return Object.values(TasksStatusOptions).map((status) => ({
-    name: TASK_STATUS_CONFIG[status].name,
+  return CONVEX_TASK_STATUSES.map((status) => ({
+    name: STATUS_LABELS[status] || status,
     value: tasksList.filter((task) => task.status === status).length,
     status,
   }));
@@ -44,7 +63,7 @@ export function calculateStatusDistribution(
  * Calculate priority distribution for tasks
  */
 export function calculatePriorityDistribution(
-  tasksList: TaskWithProject[],
+  tasksList: ConvexTask[],
 ): PriorityDistributionData[] {
   return PRIORITY_OPTIONS.map((priority) => ({
     name: PRIORITY_LABELS[priority],
@@ -57,22 +76,27 @@ export function calculatePriorityDistribution(
  * Calculate user performance statistics
  */
 export function calculateUserPerformance(
-  users: UsersRecord[],
-  tasksList: TaskWithProject[],
+  users: ConvexUser[],
+  tasksList: ConvexTask[],
 ): UserPerformanceData[] {
   return users
-    .filter((user) => user.role && user.role === "employee")
     .map((user) => {
-      const userTasks = tasksList.filter((task) => task.assignee === user.id);
+      const userId = user._id || user.id;
+      const userTasks = tasksList.filter(
+        (task) =>
+          task.assigneeUserId === userId || task.assignee === userId,
+      );
       const completedTasks = userTasks.filter(
-        (task) => task.status === TasksStatusOptions.done,
+        (task) => task.status === "done",
       );
 
       return {
         name:
           user.first_name && user.last_name
             ? `${user.first_name} ${user.last_name}`
-            : user.username,
+            : user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : user.username || "Unknown",
         totalTasks: userTasks.length,
         completedTasks: completedTasks.length,
         completionRate: userTasks.length
@@ -87,24 +111,18 @@ export function calculateUserPerformance(
 /**
  * Calculate all task statistics
  */
-export function calculateTaskStats(
-  tasksList: TaskWithProject[],
-): TaskStatsData {
+export function calculateTaskStats(tasksList: ConvexTask[]): TaskStatsData {
   return {
     statusDistribution: calculateStatusDistribution(tasksList),
     completionTrend: [], // Handled by chart-data module
     priorityDistribution: calculatePriorityDistribution(tasksList),
     totalTasks: tasksList.length,
-    completedTasks: tasksList.filter(
-      (task) => task.status === TasksStatusOptions.done,
-    ).length,
+    completedTasks: tasksList.filter((task) => task.status === "done").length,
     inProgressTasks: tasksList.filter(
-      (task) => task.status === TasksStatusOptions.in_progress,
+      (task) => task.status === "in_progress",
     ).length,
-    pendingTasks: tasksList.filter((task) =>
-      [TasksStatusOptions.todo, TasksStatusOptions.pending].includes(
-        task.status as TasksStatusOptions,
-      ),
+    pendingTasks: tasksList.filter(
+      (task) => task.status === "todo" || task.status === "in_review",
     ).length,
   };
 }
@@ -113,7 +131,7 @@ export function calculateTaskStats(
  * Compute overview metrics for a given time range
  */
 export function computeOverviewMetrics(params: {
-  tasks: TaskWithProject[];
+  tasks: ConvexTask[];
   now: Date;
   range: { start: Date; end: Date };
 }): OverviewMetrics {
@@ -121,38 +139,43 @@ export function computeOverviewMetrics(params: {
 
   // Total: tasks with created OR updated in range
   const total = tasksList.filter((task) => {
-    const createdInRange =
-      task.created && isWithinInterval(new Date(task.created), range);
-    const updatedInRange =
-      task.updated && isWithinInterval(new Date(task.updated), range);
+    const createdInRange = isWithinInterval(
+      new Date(task._creationTime),
+      range,
+    );
+    const updatedAt = task.updatedAt ?? task.updated;
+    const updatedInRange = updatedAt
+      ? isWithinInterval(new Date(updatedAt), range)
+      : false;
     return createdInRange || updatedInRange;
   }).length;
 
   // Completed: done tasks with updated in range
-  const completedTasks = tasksList.filter(
-    (task) =>
-      task.status === "done" &&
-      task.updated &&
-      isWithinInterval(new Date(task.updated), range),
-  );
+  const completedTasks = tasksList.filter((task) => {
+    if (task.status !== "done") return false;
+    const updatedAt = task.updatedAt ?? task.updated;
+    if (!updatedAt) return false;
+    return isWithinInterval(new Date(updatedAt), range);
+  });
   const completed = completedTasks.length;
 
   // WIP: in_progress at now (ignore range)
   const wip = tasksList.filter((task) => task.status === "in_progress").length;
 
   // Overdue: not done and deadline < now
-  const overdue = tasksList.filter(
-    (task) =>
-      task.status !== "done" && task.deadline && new Date(task.deadline) < now,
-  ).length;
+  const overdue = tasksList.filter((task) => {
+    if (task.status === "done") return false;
+    if (!task.deadline) return false;
+    return new Date(task.deadline) < now;
+  }).length;
 
   // On-time rate: among completed, fraction with deadline && updated <= deadline
-  const onTimeCompleted = completedTasks.filter(
-    (task) =>
-      task.deadline &&
-      task.updated &&
-      new Date(task.updated) <= new Date(task.deadline),
-  ).length;
+  const onTimeCompleted = completedTasks.filter((task) => {
+    if (!task.deadline) return false;
+    const updatedAt = task.updatedAt ?? task.updated;
+    if (!updatedAt) return false;
+    return new Date(updatedAt) <= new Date(task.deadline);
+  }).length;
   const onTimeRate = completed > 0 ? onTimeCompleted / completed : 0;
 
   return { total, completed, wip, overdue, onTimeRate };
@@ -162,24 +185,25 @@ export function computeOverviewMetrics(params: {
  * Classify tasks by timeliness (on-time, overdue, no deadline)
  */
 export function classifyTimeliness(
-  tasksList: TaskWithProject[],
+  tasksList: ConvexTask[],
   range: { start: Date; end: Date },
 ): TimelinessClassification {
   const counts = { on_time: 0, overdue: 0, no_deadline: 0 };
 
   tasksList.forEach((task) => {
-    if (
-      task.status === "done" &&
-      task.updated &&
-      isWithinInterval(new Date(task.updated), range)
-    ) {
-      if (!task.deadline) {
-        counts.no_deadline++;
-      } else if (new Date(task.updated) <= new Date(task.deadline)) {
-        counts.on_time++;
-      } else {
-        counts.overdue++;
-      }
+    if (task.status !== "done") return;
+    const updatedAt = task.updatedAt ?? task.updated;
+    if (!updatedAt) return;
+
+    const updatedDate = new Date(updatedAt);
+    if (!isWithinInterval(updatedDate, range)) return;
+
+    if (!task.deadline) {
+      counts.no_deadline++;
+    } else if (updatedDate <= new Date(task.deadline)) {
+      counts.on_time++;
+    } else {
+      counts.overdue++;
     }
   });
 
@@ -190,10 +214,10 @@ export function classifyTimeliness(
  * Count tasks by priority
  */
 export function countByPriority(
-  tasksList: TaskWithProject[],
+  tasksList: ConvexTask[],
   options?: { onlyOpen?: boolean },
 ): PriorityCount[] {
-  const counts = new Map<TasksPriorityOptions, number>();
+  const counts = new Map<string, number>();
 
   tasksList.forEach((task) => {
     if (options?.onlyOpen && task.status === "done") {
@@ -203,8 +227,8 @@ export function countByPriority(
   });
 
   return Array.from(counts.entries()).map(([key, value]) => ({
-    key,
-    name: PRIORITY_LABELS[key],
+    key: key as ConvexTaskPriority,
+    name: PRIORITY_LABELS[key as ConvexTaskPriority],
     value,
   }));
 }

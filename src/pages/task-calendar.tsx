@@ -28,10 +28,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { common, tasks as tasksText } from "@/constants";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
-import type { TaskWithProject } from "@/lib/pocketbase";
 import { getTaskStatus, isTaskCompleted } from "@/lib/status-utils";
-import { formatUserName } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { cn, formatUserName } from "@/lib/utils";
 
 const priorityColors = {
   low: "bg-emerald-500/20 text-emerald-600",
@@ -44,44 +42,8 @@ const CalendarSkeleton = () => (
   <div className="space-y-6">
     <div className="bg-muted/20 border-border/40 h-16 w-full animate-pulse rounded-xl border" />
     <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px overflow-hidden rounded-2xl border shadow-sm">
-      {[
-        "sk1",
-        "sk2",
-        "sk3",
-        "sk4",
-        "sk5",
-        "sk6",
-        "sk7",
-        "sk8",
-        "sk9",
-        "sk10",
-        "sk11",
-        "sk12",
-        "sk13",
-        "sk14",
-        "sk15",
-        "sk16",
-        "sk17",
-        "sk18",
-        "sk19",
-        "sk20",
-        "sk21",
-        "sk22",
-        "sk23",
-        "sk24",
-        "sk25",
-        "sk26",
-        "sk27",
-        "sk28",
-        "sk29",
-        "sk30",
-        "sk31",
-        "sk32",
-        "sk33",
-        "sk34",
-        "sk35",
-      ].map((key) => (
-        <div key={key} className="bg-card h-32 p-4">
+      {Array.from({ length: 35 }).map((_, i) => (
+        <div key={i} className="bg-card h-32 p-4">
           <Skeleton className="mb-4 h-4 w-6 rounded-md" />
           <Skeleton className="h-3 w-full rounded-md" />
         </div>
@@ -91,19 +53,20 @@ const CalendarSkeleton = () => (
 );
 
 interface CalendarTaskProps {
-  task: TaskWithProject;
+  task: any;
 }
 
 function CalendarTask({ task }: CalendarTaskProps) {
   const status = getTaskStatus(task);
-  const taskUrl = `/projects/${task.project}/tasks/${task.id}`;
+  const projectId = typeof task.project === "object" ? task.project._id : task.project;
+  const taskUrl = `/projects/${projectId}/tasks/${task.id}`;
 
   return (
     <Link to={taskUrl}>
       <div
         className={cn(
           "group hover:bg-muted/30 mb-1 rounded-lg border-e-2 p-1.5 text-right transition-all",
-          priorityColors[task.priority],
+          priorityColors[task.priority as keyof typeof priorityColors],
         )}
         style={{ borderRightColor: status.color }}
       >
@@ -113,12 +76,12 @@ function CalendarTask({ task }: CalendarTaskProps) {
           </span>
           <div className="size-1 rounded-full bg-current" />
         </div>
-        {task.expand?.assignee && (
+        {task.assignee && (
           <p className="truncate text-[8px] font-medium tracking-tight opacity-60">
             {formatUserName(
-              task.expand.assignee.first_name,
-              task.expand.assignee.last_name,
-              task.expand.assignee.username,
+              task.assignee.firstName || task.assignee.first_name,
+              task.assignee.lastName || task.assignee.last_name,
+              task.assignee.username,
             )}
           </p>
         )}
@@ -133,13 +96,13 @@ export default function TaskCalendar() {
   const navigate = useNavigate();
 
   const tasksWithDeadlines = useMemo(() => {
-    return allTasks?.filter((task) => task.deadline && !task.deleted_at) || [];
+    return allTasks?.filter((task: any) => task.deadline && !task.deletedAt) || [];
   }, [allTasks]);
 
   const tasksByDate = useMemo(() => {
-    const grouped = new Map<string, TaskWithProject[]>();
+    const grouped = new Map<string, any[]>();
 
-    tasksWithDeadlines.forEach((task) => {
+    tasksWithDeadlines.forEach((task: any) => {
       if (task.deadline) {
         const dateKey = format(new Date(task.deadline), "yyyy-MM-dd");
         if (!grouped.has(dateKey)) {
@@ -163,7 +126,7 @@ export default function TaskCalendar() {
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToToday = () => setCurrentMonth(new Date());
 
-  const getTasksForDay = (day: Date): TaskWithProject[] => {
+  const getTasksForDay = (day: Date): any[] => {
     const dateKey = format(day, "yyyy-MM-dd");
     return tasksByDate.get(dateKey) || [];
   };

@@ -1,13 +1,13 @@
 import { tasks } from "@/constants";
 
-import { TasksResponse, TasksStatusOptions } from "./pocketbase-types";
+import { TaskStatus } from "@/types/tasks";
 import { TASK_STATUS_ORDER } from "./status-icons";
 
 export { taskStatusIcons, TASK_STATUS_ORDER } from "./status-icons";
 export { priorityColors, priorityIcons } from "./status-priority";
 
 export interface TaskStatusConfig {
-  key: TasksStatusOptions;
+  key: TaskStatus;
   name: string;
   color: string;
   icon: string;
@@ -17,133 +17,97 @@ export interface TaskStatusConfig {
   description?: string;
 }
 
-export const TASK_STATUS_CONFIG: Record<TasksStatusOptions, TaskStatusConfig> =
-  {
-    todo: {
-      key: TasksStatusOptions.todo,
-      name: tasks.status.todo,
-      color: "blue",
-      icon: "circle",
-      isCompleted: false,
-      isCanceled: false,
-      order: 1,
-      description: "Task is created but not yet started",
-    },
-    in_progress: {
-      key: TasksStatusOptions.in_progress,
-      name: tasks.status.in_progress,
-      color: "amber",
-      icon: "circle-half-2",
-      isCompleted: false,
-      isCanceled: false,
-      order: 2,
-      description: "Work is actively being done on this task",
-    },
-    review: {
-      key: TasksStatusOptions.review,
-      name: tasks.status.review,
-      color: "indigo",
-      icon: "eye",
-      isCompleted: false,
-      isCanceled: false,
-      order: 3,
-      description: "Task is under review or waiting for approval",
-    },
-    testing: {
-      key: TasksStatusOptions.testing,
-      name: tasks.status.testing,
-      color: "cyan",
-      icon: "flask",
-      isCompleted: false,
-      isCanceled: false,
-      order: 4,
-      description: "Task is being tested or validated",
-    },
-    pending: {
-      key: TasksStatusOptions.pending,
-      name: tasks.status.pending,
-      color: "purple",
-      icon: "clock",
-      isCompleted: false,
-      isCanceled: false,
-      order: 5,
-      description: "Task is waiting for something before proceeding",
-    },
-    blocked: {
-      key: TasksStatusOptions.blocked,
-      name: tasks.status.blocked,
-      color: "rose",
-      icon: "alert-circle",
-      isCompleted: false,
-      isCanceled: false,
-      order: 6,
-      description: "Task cannot proceed due to an obstacle",
-    },
-    on_hold: {
-      key: TasksStatusOptions.on_hold,
-      name: tasks.status.on_hold,
-      color: "slate",
-      icon: "pause",
-      isCompleted: false,
-      isCanceled: false,
-      order: 7,
-      description: "Task is temporarily paused",
-    },
-    done: {
-      key: TasksStatusOptions.done,
-      name: tasks.status.done,
-      color: "emerald",
-      icon: "check-circle-2",
-      isCompleted: true,
-      isCanceled: false,
-      order: 8,
-      description: "Task has been completed successfully",
-    },
-    canceled: {
-      key: TasksStatusOptions.canceled,
-      name: tasks.status.canceled,
-      color: "gray",
-      icon: "x-circle",
-      isCompleted: false,
-      isCanceled: true,
-      order: 9,
-      description: "Task has been canceled",
-    },
-  };
+export const TASK_STATUS_CONFIG: Record<TaskStatus, TaskStatusConfig> = {
+  todo: {
+    key: "todo",
+    name: tasks.status.todo,
+    color: "blue",
+    icon: "circle",
+    isCompleted: false,
+    isCanceled: false,
+    order: 1,
+    description: "Task is created but not yet started",
+  },
+  in_progress: {
+    key: "in_progress",
+    name: tasks.status.in_progress,
+    color: "amber",
+    icon: "circle-half-2",
+    isCompleted: false,
+    isCanceled: false,
+    order: 2,
+    description: "Work is actively being done on this task",
+  },
+  in_review: {
+    key: "in_review",
+    name: tasks.status.in_review,
+    color: "indigo",
+    icon: "eye",
+    isCompleted: false,
+    isCanceled: false,
+    order: 3,
+    description: "Task is under review or waiting for approval",
+  },
+  done: {
+    key: "done",
+    name: tasks.status.done,
+    color: "emerald",
+    icon: "check-circle-2",
+    isCompleted: true,
+    isCanceled: false,
+    order: 8,
+    description: "Task has been completed successfully",
+  },
+  cancelled: {
+    key: "cancelled",
+    name: tasks.status.cancelled,
+    color: "gray",
+    icon: "x-circle",
+    isCompleted: false,
+    isCanceled: true,
+    order: 9,
+    description: "Task has been canceled",
+  },
+};
 
-export function getTaskStatus(task: TasksResponse): TaskStatusConfig {
-  const status = task.status;
+export function getTaskStatus(task: { status?: string }): TaskStatusConfig {
+  const status = task.status as TaskStatus;
   if (status && status in TASK_STATUS_CONFIG) {
     return TASK_STATUS_CONFIG[status];
   }
-  return TASK_STATUS_CONFIG[TasksStatusOptions.todo];
+  return TASK_STATUS_CONFIG["todo"];
 }
 
-export function isTaskCompleted(task: TasksResponse): boolean {
+export function isTaskCompleted(task: { status?: string }): boolean {
   return getTaskStatus(task).isCompleted;
 }
 
-export function isTaskCanceled(task: TasksResponse): boolean {
+export function isTaskCanceled(task: { status?: string }): boolean {
   return getTaskStatus(task).isCanceled;
 }
 
-export function getStatusColorClass(task: TasksResponse): string {
+export function getStatusColorClass(task: { status?: string }): string {
   return getStatusColorVariant(getTaskStatus(task).key, "background");
 }
 
 export function getAllTaskStatuses(): TaskStatusConfig[] {
-  return TASK_STATUS_ORDER.map((status) => TASK_STATUS_CONFIG[status]);
+  // Filter out any statuses that might be in ORDER but not in CONFIG (if any)
+  return TASK_STATUS_ORDER.filter((s) => s in TASK_STATUS_CONFIG).map(
+    (status) => TASK_STATUS_CONFIG[status as TaskStatus],
+  );
 }
 
-export function getStatusByKey(key: TasksStatusOptions): TaskStatusConfig {
+export function getStatusByKey(key: TaskStatus): TaskStatusConfig {
   return TASK_STATUS_CONFIG[key];
 }
 
 export function getStatusColorVariant(
-  status: TasksStatusOptions,
+  status: TaskStatus,
   variant: "icon" | "background" | "badge" | "border" | "fill",
 ): string {
   const config = TASK_STATUS_CONFIG[status];
+  if (!config) return "text-gray-500"; // Fallback
+
   const colorName = config.color;
 
   switch (variant) {
@@ -174,12 +138,12 @@ export function getStatusColorVariant(
   }
 }
 
-export function isActiveStatus(status: TasksStatusOptions): boolean {
+export function isActiveStatus(status: TaskStatus): boolean {
   const config = TASK_STATUS_CONFIG[status];
-  return !config.isCompleted && !config.isCanceled && status !== "on_hold";
+  return !config.isCompleted && !config.isCanceled;
 }
 
-export function isTerminalStatus(status: TasksStatusOptions): boolean {
+export function isTerminalStatus(status: TaskStatus): boolean {
   return (
     TASK_STATUS_CONFIG[status].isCompleted ||
     TASK_STATUS_CONFIG[status].isCanceled
@@ -188,6 +152,6 @@ export function isTerminalStatus(status: TasksStatusOptions): boolean {
 
 export const statusOrder = TASK_STATUS_ORDER;
 
-export function getStatusConfig(status: TasksStatusOptions) {
+export function getStatusConfig(status: TaskStatus) {
   return TASK_STATUS_CONFIG[status];
 }

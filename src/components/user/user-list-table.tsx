@@ -1,11 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconHash,
-  IconHistory,
-  IconLockOpen,
   IconPencil,
-  IconPower,
-  IconShield,
   IconTerminal,
   IconTrash,
   IconX,
@@ -17,26 +13,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { EmptyStateNoUsers } from "@/components/ui/empty-state";
 import { notifications, users as usersText } from "@/constants";
-import { useDeleteUser, useToggleUserActive, useUnblockUser } from "@/hooks";
-import { UsersResponse } from "@/lib/pocketbase-types";
+import { useDeleteUser } from "@/hooks";
+import type { UserWithCompatibility } from "@/types/user";
 import { cn } from "@/lib/utils";
 
 import { UserAvatar } from "../user-avatar";
-import { UserLoginLogsDialog } from "./user-login-logs-dialog";
 
 type UserListTableProps = {
-  users: UsersResponse[];
-  onEdit: (user: UsersResponse) => void;
-  onDelete: (user: UsersResponse) => void;
+  users: UserWithCompatibility[];
+  onEdit: (user: UserWithCompatibility) => void;
+  onDelete: (user: UserWithCompatibility) => void;
   isAdmin: boolean;
   onUpdate?: () => void;
 };
@@ -48,36 +36,8 @@ export function UserListTable({
   isAdmin,
   onUpdate,
 }: UserListTableProps) {
-  const [selectedUserForLogs, setSelectedUserForLogs] =
-    useState<UsersResponse | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
-
-  const toggleActiveMutation = useToggleUserActive({
-    onSuccess: (data) => {
-      toast.success(data.meta.message);
-      onUpdate?.();
-    },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : usersText.actions.toggleStatusError,
-      );
-    },
-  });
-
-  const unblockUserMutation = useUnblockUser({
-    onSuccess: (data) => {
-      toast.success(data.meta.message);
-      onUpdate?.();
-    },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : usersText.actions.unblockError,
-      );
-    },
-  });
 
   const deleteUserMutation = useDeleteUser({
     onSuccess: () => {
@@ -92,7 +52,8 @@ export function UserListTable({
 
   const selectableUsers = useMemo(() => {
     if (!isAdmin) return [];
-    return users.filter((u) => u.role !== "admin");
+    // In Convex v1, only "owner" role cannot be modified, "member" can
+    return users.filter((u) => u.role !== "owner");
   }, [users, isAdmin]);
 
   const allSelected =
@@ -114,32 +75,6 @@ export function UserListTable({
     setSelectedIds(selectableUsers.map((u) => u.id));
   };
 
-  const bulkToggleActive = async () => {
-    if (!isAdmin || selectedIds.length === 0) return;
-    try {
-      await Promise.all(
-        selectedIds.map((id) => toggleActiveMutation.mutateAsync(id)),
-      );
-      toast.success(usersText.bulk.updated);
-      setSelectedIds([]);
-    } catch {
-      toast.error(usersText.bulk.error);
-    }
-  };
-
-  const bulkUnblock = async () => {
-    if (!isAdmin || selectedIds.length === 0) return;
-    try {
-      await Promise.all(
-        selectedIds.map((id) => unblockUserMutation.mutateAsync(id)),
-      );
-      toast.success(usersText.bulk.updated);
-      setSelectedIds([]);
-    } catch {
-      toast.error(usersText.bulk.error);
-    }
-  };
-
   const confirmBulkDelete = async () => {
     if (!isAdmin || selectedIds.length === 0) return;
     try {
@@ -152,16 +87,6 @@ export function UserListTable({
     } catch {
       toast.error(usersText.bulk.error);
     }
-  };
-
-  const handleToggleActive = (user: UsersResponse) => {
-    if (!isAdmin) return;
-    toggleActiveMutation.mutate(user.id);
-  };
-
-  const handleUnblock = (user: UsersResponse) => {
-    if (!isAdmin) return;
-    unblockUserMutation.mutate(user.id);
   };
 
   return (
@@ -177,24 +102,6 @@ export function UserListTable({
                 {digitsEnToFa(selectedIds.length)} {notifications.selected}
               </div>
               <div className="bg-primary/20 mx-2 h-6 w-px" />
-              <Button
-                variant="ghost"
-                size="xs"
-                onClick={bulkToggleActive}
-                className="hover:bg-primary/10"
-              >
-                <IconPower className="ms-1.5 size-3.5" />
-                {usersText.bulk.toggleActive}
-              </Button>
-              <Button
-                variant="ghost"
-                size="xs"
-                onClick={bulkUnblock}
-                className="hover:bg-primary/10"
-              >
-                <IconLockOpen className="ms-1.5 size-3.5" />
-                {usersText.bulk.unblock}
-              </Button>
               <Button
                 variant="ghost"
                 size="xs"
@@ -285,7 +192,7 @@ export function UserListTable({
                       checked={selectedIds.includes(u.id)}
                       onCheckedChange={() => toggleSelect(u.id)}
                       aria-label={notifications.selected}
-                      disabled={u.role === "admin"}
+                      disabled={u.role === "owner"}
                       className="rounded-md"
                     />
                   </div>
@@ -316,7 +223,7 @@ export function UserListTable({
                     <div
                       className={cn(
                         "border-background absolute -end-0.5 -bottom-0.5 h-2 w-2 rounded-full border shadow-[0_0_4px_rgba(0,0,0,0.2)]",
-                        u.active ? "bg-emerald-500" : "bg-rose-500",
+                        (u as any).active !== false ? "bg-emerald-500" : "bg-rose-500",
                       )}
                     />
                   </div>
@@ -341,24 +248,14 @@ export function UserListTable({
                     variant="outline"
                     className="border-primary/20 bg-primary/5 text-primary rounded-lg text-[10px] font-bold tracking-tight"
                   >
-                    {usersText.table.roles[u.role]}
+                    {usersText.table.roles[u.role as keyof typeof usersText.table.roles] ||
+                      u.role}
                   </Badge>
                 </div>
 
                 {isAdmin && (
                   <div className="col-span-2 flex items-center justify-center gap-1 px-4 py-3">
                     <div className="flex translate-y-1 items-center gap-1 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                      {u.blocked && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-8 rounded-lg text-rose-500 hover:bg-rose-500/10"
-                          onClick={() => handleUnblock(u)}
-                          title={usersText.actions.unblock}
-                        >
-                          <IconLockOpen className="size-4" />
-                        </Button>
-                      )}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -368,43 +265,6 @@ export function UserListTable({
                       >
                         <IconPencil className="size-4" />
                       </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="hover:bg-muted size-8 rounded-lg"
-                          >
-                            <IconShield className="size-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="border-border bg-background rounded-xl border shadow-lg"
-                        >
-                          <DropdownMenuItem
-                            onClick={() => handleToggleActive(u)}
-                            disabled={
-                              toggleActiveMutation.isPending ||
-                              u.role === "admin"
-                            }
-                            className="rounded-lg p-3 text-[10px] font-bold tracking-tight"
-                          >
-                            <IconPower className="ms-2 size-4 opacity-40" />
-                            {u.active
-                              ? usersText.actions.deactivate
-                              : usersText.actions.activate}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-border/15" />
-                          <DropdownMenuItem
-                            onClick={() => setSelectedUserForLogs(u)}
-                            className="rounded-lg p-3 text-[10px] font-bold tracking-tight"
-                          >
-                            <IconHistory className="ms-2 size-4 opacity-40" />
-                            {usersText.actions.viewLogs}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -420,14 +280,6 @@ export function UserListTable({
               </div>
             ))}
           </div>
-
-          {selectedUserForLogs && (
-            <UserLoginLogsDialog
-              user={selectedUserForLogs}
-              open={!!selectedUserForLogs}
-              onOpenChange={(open) => !open && setSelectedUserForLogs(null)}
-            />
-          )}
 
           <DeleteConfirmationDialog
             open={bulkDeleteOpen}

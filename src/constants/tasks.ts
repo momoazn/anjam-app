@@ -40,14 +40,14 @@ export const tasks = {
   status: {
     todo: "در صف انجام",
     in_progress: "در دست اجرا",
-    pending: "در انتظار بررسی",
-    review: "در حال بررسی",
+    in_review: "در حال بررسی",
     testing: "در حال تست",
     ready: "آماده",
     blocked: "مسدود شده",
     on_hold: "متوقف شده",
     done: "تکمیل شده",
-    canceled: "لغو شده",
+    cancelled: "لغو شده",
+    cancelled_legacy: "لغو شده",
   },
 
   // Task tags

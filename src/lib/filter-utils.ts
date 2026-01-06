@@ -1,10 +1,11 @@
 import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
 
-import type { TaskWithProject } from "@/lib/pocketbase";
 import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+  TASK_PRIORITIES,
+  TASK_STATUSES,
+  TaskPriority,
+  TaskStatus,
+} from "@/types/tasks";
 
 export const ALL_FILTER_VALUE = "all";
 
@@ -17,6 +18,17 @@ export type TaskFilterValues = {
   selectedTag: string;
 };
 
+export interface FilterableTask {
+  title: string;
+  status: string;
+  priority: string;
+  assigneeUserId?: string;
+  assignee?: { username?: string } | null; // Expanded user
+  deadline?: number;
+  tags?: string[];
+  deletedAt?: number;
+}
+
 export const DEFAULT_TASK_FILTERS: TaskFilterValues = {
   searchTerm: "",
   selectedStatus: ALL_FILTER_VALUE,
@@ -26,29 +38,25 @@ export const DEFAULT_TASK_FILTERS: TaskFilterValues = {
   selectedTag: "all",
 };
 
-export function isValidStatus(value: string): value is TasksStatusOptions {
-  return Object.values(TasksStatusOptions).includes(
-    value as TasksStatusOptions,
-  );
+export function isValidStatus(value: string): value is TaskStatus {
+  return TASK_STATUSES.includes(value as TaskStatus);
 }
 
-export function isValidPriority(value: string): value is TasksPriorityOptions {
-  return Object.values(TasksPriorityOptions).includes(
-    value as TasksPriorityOptions,
-  );
+export function isValidPriority(value: string): value is TaskPriority {
+  return TASK_PRIORITIES.includes(value as TaskPriority);
 }
 
 export function matchesStatusFilter(
-  task: TaskWithProject,
+  task: FilterableTask,
   selectedStatus: string,
   selectedAssignee: string,
 ): boolean {
   if (selectedStatus === ALL_FILTER_VALUE) {
     if (selectedAssignee === "me") {
       return (
-        task.status === TasksStatusOptions.todo ||
-        task.status === TasksStatusOptions.in_progress ||
-        task.status === TasksStatusOptions.pending
+        task.status === "todo" ||
+        task.status === "in_progress" ||
+        task.status === "in_review"
       );
     }
     return true;
@@ -57,8 +65,8 @@ export function matchesStatusFilter(
   if (selectedStatus.includes(",")) {
     const statusArray = selectedStatus
       .split(",")
-      .filter((status): status is TasksStatusOptions => isValidStatus(status));
-    return statusArray.length > 0 && statusArray.includes(task.status);
+      .filter((status): status is TaskStatus => isValidStatus(status));
+    return statusArray.length > 0 && statusArray.includes(task.status as TaskStatus);
   }
 
   if (isValidStatus(selectedStatus)) {
@@ -69,7 +77,7 @@ export function matchesStatusFilter(
 }
 
 export function matchesPriorityFilter(
-  task: TaskWithProject,
+  task: FilterableTask,
   selectedPriority: string,
 ): boolean {
   if (selectedPriority === ALL_FILTER_VALUE) return true;
@@ -78,16 +86,16 @@ export function matchesPriorityFilter(
 }
 
 export function matchesAssigneeFilter(
-  task: TaskWithProject,
+  task: FilterableTask,
   selectedAssignee: string,
 ): boolean {
   if (selectedAssignee === ALL_FILTER_VALUE) return true;
-  if (selectedAssignee === "me") return true;
-  return task.assignee === selectedAssignee;
+  if (selectedAssignee === "me") return true; // Handled by calling component or special logic?
+  return task.assigneeUserId === selectedAssignee;
 }
 
 export function matchesDateRangeFilter(
-  task: TaskWithProject,
+  task: FilterableTask,
   selectedDateRange: string,
 ): boolean {
   if (selectedDateRange === "all") return true;
@@ -103,14 +111,14 @@ export function matchesDateRangeFilter(
     case "month":
       return isThisMonth(deadline);
     case "overdue":
-      return isPast(deadline) && task.status !== TasksStatusOptions.done;
+      return isPast(deadline) && task.status !== "done";
     default:
       return true;
   }
 }
 
 export function matchesTagFilter(
-  task: TaskWithProject,
+  task: FilterableTask,
   selectedTag: string,
 ): boolean {
   if (selectedTag === "all") return true;
@@ -119,12 +127,12 @@ export function matchesTagFilter(
 }
 
 export function matchesSearchFilter(
-  task: TaskWithProject,
+  task: FilterableTask,
   searchTerm: string,
 ): boolean {
   if (!searchTerm) return true;
   const lowerSearch = searchTerm.toLowerCase();
-  const assigneeName = task.expand?.assignee?.username?.toLowerCase();
+  const assigneeName = task.assignee?.username?.toLowerCase();
   return (
     task.title.toLowerCase().includes(lowerSearch) ||
     (assigneeName != null && assigneeName.includes(lowerSearch))
@@ -132,12 +140,12 @@ export function matchesSearchFilter(
 }
 
 export function filterTasks(
-  tasks: TaskWithProject[],
+  tasks: FilterableTask[],
   filters: TaskFilterValues,
   options?: { skipDeleted?: boolean },
-): TaskWithProject[] {
+): FilterableTask[] {
   return tasks.filter((task) => {
-    if (options?.skipDeleted && task.deleted_at) {
+    if (options?.skipDeleted && task.deletedAt) {
       return false;
     }
 
@@ -155,3 +163,4 @@ export function filterTasks(
     );
   });
 }
+

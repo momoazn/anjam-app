@@ -1,85 +1,45 @@
-import { UseMutationOptions, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "convex/react";
+import { useCallback } from "react";
 
-import { pb } from "../lib/pocketbase";
-import {
-  CommentsRecord,
-  CommentsResponse,
-  UsersResponse,
-} from "../lib/pocketbase-types";
-import { STALE_TIMES } from "../lib/query-config";
-import { mutationInvalidators } from "../lib/query-invalidators";
-import { queryKeys } from "./query-keys";
-import { createMutation } from "./use-mutation-factory";
+import { api, Id } from "@/lib/convex";
 
-export type CommentWithUser = CommentsResponse<
-  unknown,
-  {
-    user: UsersResponse;
-  }
->;
-
-type CreateCommentPayload = Omit<CommentsRecord, "id" | "created" | "updated">;
-
-type CreateCommentFormPayload = {
-  formData: FormData;
-  task: string;
+export type CommentWithUser = {
+  id: string;
+  _id: Id<"comments">;
+  _creationTime: number;
+  created: string;
+  updated?: string;
+  taskId: Id<"tasks">;
+  userId: Id<"users">;
+  content: string;
+  parent?: string;
+  parentCommentId?: Id<"comments">;
+  reactions?: any;
+  deleted_at?: string;
+  deletedAt?: number;
+  updatedAt?: number;
+  user: string;
+  // Attachments support for Convex
+  attachments?: string[];
+  // Expand fields with compatibility
+  expand: {
+    user?: {
+      id: string;
+      _id: Id<"users">;
+      username: string;
+      firstName?: string;
+      first_name?: string;
+      lastName?: string;
+      last_name?: string;
+      avatar?: string;
+      image?: string;
+    };
+  };
 };
 
-type CreateCommentVariables = CreateCommentPayload | CreateCommentFormPayload;
-type UpdateCommentVariables = { id: string; updates: Partial<CommentsRecord> };
-
-const isFormPayload = (
-  variables: CreateCommentVariables,
-): variables is CreateCommentFormPayload => {
-  return (
-    typeof variables === "object" &&
-    variables !== null &&
-    "formData" in variables &&
-    variables.formData instanceof FormData
-  );
-};
-
-const useCreateCommentMutation = createMutation<
-  CommentsResponse,
-  Error,
-  CreateCommentVariables
->(
-  (commentData) => {
-    if (isFormPayload(commentData)) {
-      return pb.collection("comments").create(commentData.formData);
-    }
-    return pb.collection("comments").create(commentData);
-  },
-  (client, data) => {
-    mutationInvalidators.crud.comments.create(client, data);
-  },
-);
-
-const useUpdateCommentMutation = createMutation<
-  CommentsResponse,
-  Error,
-  UpdateCommentVariables
->(
-  ({ id, updates }) => pb.collection("comments").update(id, updates),
-  (client, data) => {
-    mutationInvalidators.crud.comments.update(client, data);
-  },
-);
-
-const useDeleteCommentMutation = createMutation<
-  CommentsResponse,
-  Error,
-  string
->(
-  (id) =>
-    pb.collection("comments").update<CommentsResponse>(id, {
-      deleted_at: new Date().toISOString(),
-    }),
-  (client, data) => {
-    mutationInvalidators.crud.comments.delete(client, data);
-  },
-);
-
+/**
+ * Hook to list comments for a task.
+ */
 export function useComments(
   taskId: string,
   options: {
@@ -88,38 +48,96 @@ export function useComments(
 ) {
   const { enabled = true } = options;
 
-  return useQuery({
-    queryKey: queryKeys.comments.byTask(taskId),
-    queryFn: async (): Promise<CommentWithUser[]> => {
-      // Exclude soft-deleted comments (only include non-deleted)
-      return await pb.collection("comments").getFullList<CommentWithUser>({
-        filter: `task = "${taskId}" && deleted_at = ""`,
-        sort: "-created",
-        expand: "user",
-        batch: 100,
+  const comments = useQuery(
+    api.comments.listByTask,
+    enabled && taskId ? { taskId: taskId as Id<"tasks"> } : "skip",
+  );
+
+  return {
+    data: comments?.map((c: any) => ({
+      ...c,
+      id: c._id,
+      _id: c._id,
+      created: new Date(c._creationTime).toISOString(),
+      updated: c.updatedAt ? new Date(c.updatedAt).toISOString() : undefined,
+      parent: c.parentCommentId,
+      deleted_at: c.deletedAt ? new Date(c.deletedAt).toISOString() : undefined,
+      user: c.userId,
+      attachments: c.attachments || [],
+      expand: {
+        user: c.user
+          ? {
+              id: c.user._id,
+              _id: c.user._id,
+              username: c.user.username || "",
+              firstName: c.user.firstName,
+              first_name: c.user.firstName,
+              lastName: c.user.lastName,
+              last_name: c.user.lastName,
+              avatar: c.user.image,
+              image: c.user.image,
+            }
+          : undefined,
+      },
+    })) as CommentWithUser[] | undefined,
+    isLoading: comments === undefined,
+    isPending: comments === undefined,
+    error: null,
+  };
+}
+
+/**
+ * Hook to create a comment.
+ */
+export function useCreateComment() {
+  const createCommentMutation = useMutation(api.comments.create);
+
+  return {
+    mutate: async (data: { taskId: string; content: string; parentCommentId?: string }) => {
+      return await createCommentMutation({
+        taskId: data.taskId as Id<"tasks">,
+        content: data.content,
+        parentCommentId: data.parentCommentId as Id<"comments"> | undefined,
       });
     },
-    enabled: enabled && !!taskId,
-    staleTime: STALE_TIMES.dynamic,
-  });
+    isPending: false,
+  };
 }
 
-export function useCreateComment(
-  options?: UseMutationOptions<CommentsResponse, Error, CreateCommentVariables>,
-) {
-  return useCreateCommentMutation(options);
+/**
+ * Hook to update a comment.
+ * Note: Convex backend currently doesn't have an update mutation for comments,
+ * but we'll define the hook for future use or add it if needed.
+ */
+export function useUpdateComment() {
+  // const updateCommentMutation = useMutation(api.comments.update);
+
+  return {
+    mutate: async ({ id, updates }: { id: string; updates: any }) => {
+      // return await updateCommentMutation({
+      //   commentId: id as Id<"comments">,
+      //   updates,
+      // });
+      console.warn("Update comment not implemented in Convex yet");
+    },
+    isPending: false,
+  };
 }
 
-export function useUpdateComment(
-  options?: UseMutationOptions<CommentsResponse, Error, UpdateCommentVariables>,
-) {
-  return useUpdateCommentMutation(options);
-}
+/**
+ * Hook to soft-delete a comment.
+ */
+export function useDeleteComment() {
+  const softDeleteMutation = useMutation(api.comments.softDelete);
 
-export function useDeleteComment(
-  options?: UseMutationOptions<CommentsResponse, Error, string>,
-) {
-  return useDeleteCommentMutation(options);
+  return {
+    mutate: async (id: string) => {
+      return await softDeleteMutation({
+        commentId: id as Id<"comments">,
+      });
+    },
+    isPending: false,
+  };
 }
 
 export const useSoftDeleteComment = useDeleteComment;

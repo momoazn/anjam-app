@@ -24,13 +24,30 @@ import {
 } from "@/components/ui/select";
 import { common, reports, tasks } from "@/constants";
 import type {
-  ProjectsRecord,
-  TasksPriorityOptions,
-  TasksStatusOptions,
-  UsersRecord,
-} from "@/lib/pocketbase-types";
-import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
+  ConvexTaskPriority,
+  ConvexTaskStatus,
+} from "@/lib/reports/types";
 import { formatUserName } from "@/lib/utils";
+
+// Convex project type (minimal)
+type ConvexProject = {
+  _id: string;
+  id: string; // Compatibility alias
+  name: string;
+  code: string;
+};
+
+// Convex user type (minimal)
+type ConvexUser = {
+  _id: string;
+  id: string; // Compatibility alias
+  firstName?: string;
+  lastName?: string;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  name?: string;
+};
 
 export type TimeRange = {
   preset: "TODAY" | "7D" | "30D" | "QTD" | "YTD" | "CUSTOM";
@@ -41,15 +58,15 @@ export type TimeRange = {
 export type Filters = {
   projectIds: string[];
   assigneeIds: string[];
-  statuses: TasksStatusOptions[];
-  priorities: TasksPriorityOptions[];
+  statuses: ConvexTaskStatus[];
+  priorities: ConvexTaskPriority[];
 };
 
 type Props = {
   value: { timeRange: TimeRange; filters: Filters };
   onChange: (value: { timeRange: TimeRange; filters: Filters }) => void;
-  projects: ProjectsRecord[];
-  users: UsersRecord[];
+  projects: ConvexProject[];
+  users: ConvexUser[];
 };
 
 const TIME_PRESETS = {
@@ -61,17 +78,20 @@ const TIME_PRESETS = {
   CUSTOM: { label: reports.timePresets.custom, value: "CUSTOM" as const },
 } as const;
 
-const STATUS_OPTIONS: { label: string; value: TasksStatusOptions }[] =
-  Object.values(TASK_STATUS_CONFIG).map((config) => ({
-    label: config.name,
-    value: config.key,
-  }));
+// Convex task status options
+const STATUS_OPTIONS: { label: string; value: ConvexTaskStatus }[] = [
+  { label: "To Do", value: "todo" },
+  { label: "In Progress", value: "in_progress" },
+  { label: "In Review", value: "in_review" },
+  { label: "Done", value: "done" },
+  { label: "Cancelled", value: "cancelled" },
+];
 
-const PRIORITY_OPTIONS: { label: string; value: TasksPriorityOptions }[] = [
-  { label: tasks.priority.urgent, value: "urgent" as TasksPriorityOptions },
-  { label: reports.high, value: "high" as TasksPriorityOptions },
-  { label: reports.medium, value: "medium" as TasksPriorityOptions },
-  { label: reports.low, value: "low" as TasksPriorityOptions },
+const PRIORITY_OPTIONS: { label: string; value: ConvexTaskPriority }[] = [
+  { label: tasks.priority.urgent, value: "urgent" },
+  { label: reports.high, value: "high" },
+  { label: reports.medium, value: "medium" },
+  { label: reports.low, value: "low" },
 ];
 
 export function FiltersBar({ value, onChange, projects, users }: Props) {
@@ -112,7 +132,7 @@ export function FiltersBar({ value, onChange, projects, users }: Props) {
 
   const handleToggle = (
     key: keyof Filters,
-    id: string | TasksStatusOptions | TasksPriorityOptions,
+    id: string | ConvexTaskStatus | ConvexTaskPriority,
     checked: boolean,
   ) => {
     const current = value.filters[key] as string[];

@@ -11,11 +11,8 @@ import { Button } from "@/components/ui/button";
 import { tagsManagement } from "@/constants";
 import { useDeleteTag, useTags } from "@/hooks/tags";
 import { useToast } from "@/hooks/use-toast";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import type { TagsResponse } from "@/lib/pocketbase-types";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
-import { useAuthRole, useCurrentOrgMode } from "@/store/auth-store";
+import { useCurrentOrgMode, useCurrentOrgRole } from "@/store/auth-store";
 
 export default function TagsManagement() {
   const mode = useCurrentOrgMode();
@@ -23,37 +20,38 @@ export default function TagsManagement() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedTag, setSelectedTag] = useState<TagsResponse | null>(null);
+  const [selectedTag, setSelectedTag] = useState<any>(null);
 
   const { data: tags, isLoading } = useTags();
   const { toast } = useToast();
-  const userRole = useAuthRole();
-  const canDeleteTag = userRole !== UsersRoleOptions.employee;
+  const userRole = useCurrentOrgRole();
+  const canDeleteTag = userRole === "owner";
 
-  const deleteTag = useDeleteTag({
-    onSuccess: () => {
-      toast({ title: tagsManagement.toast.deleted });
-      setDeleteDialogOpen(false);
-      setSelectedTag(null);
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
+  const deleteTag = useDeleteTag();
 
-  const handleEdit = (tag: TagsResponse) => {
+  const handleEdit = (tag: any) => {
     setSelectedTag(tag);
     setEditDialogOpen(true);
   };
 
-  const handleDelete = (tag: TagsResponse) => {
+  const handleDelete = (tag: any) => {
     setSelectedTag(tag);
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedTag) {
-      deleteTag.mutate(selectedTag.id);
+      try {
+        await deleteTag.mutate(selectedTag._id);
+        toast({ title: tagsManagement.toast.deleted });
+        setDeleteDialogOpen(false);
+        setSelectedTag(null);
+      } catch (error) {
+        toast({
+          title: tagsManagement.toast.deleteError,
+          variant: "destructive",
+        });
+      }
     }
   };
 

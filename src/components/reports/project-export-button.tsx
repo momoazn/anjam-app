@@ -2,17 +2,27 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import type { Doc } from "@/lib/convex";
 
 import { Button } from "@/components/ui/button";
 import { projects, reports } from "@/constants";
 import { exportProjectToExcel } from "@/lib/excel-export";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { ProjectsResponse, UsersResponse } from "@/lib/pocketbase-types";
+import type { ConvexTask, ConvexUser } from "@/lib/reports/types";
+
+// Convex project type (minimal)
+type ConvexProject = {
+  _id: string;
+  id: string; // Compatibility alias
+  name: string;
+  code: string;
+  description?: string;
+  _creationTime: number;
+};
 
 type ProjectExportButtonProps = {
-  project: ProjectsResponse<{ supervisor?: UsersResponse }>;
-  tasks: TaskWithProject[];
-  users: UsersResponse[];
+  project: ConvexProject;
+  tasks: ConvexTask[];
+  users: ConvexUser[];
   taskCount: number;
 };
 
@@ -41,7 +51,37 @@ export function ProjectExportButton({
 
     setIsExporting(true);
     try {
-      await exportProjectToExcel(project, tasks, users);
+      // Create a compatible project object for the export function
+      const exportProject: Doc<"projects"> & {
+        expand?: { supervisor?: Doc<"users"> & { first_name?: string; last_name?: string } };
+      } = {
+        _id: project._id as Doc<"projects">["_id"],
+        _creationTime: project._creationTime,
+        name: project.name,
+        code: project.code,
+        description: project.description,
+        organizationId: "" as Doc<"projects">["organizationId"],
+        updatedAt: undefined,
+        supervisorUserId: undefined,
+      };
+
+      // Convert users to the expected format
+      const exportUsers = users.map((u) => ({
+        _id: u._id as Doc<"users">["_id"],
+        _creationTime: 0,
+        name: u.name,
+        image: undefined,
+        email: u.username ? `${u.username}@example.com` : undefined,
+        emailVerified: undefined,
+        username: u.username,
+        firstName: u.firstName,
+        lastName: u.lastName,
+        first_name: u.first_name,
+        last_name: u.last_name,
+        updatedAt: undefined,
+      }));
+
+      await exportProjectToExcel(exportProject, tasks, exportUsers);
 
       // Show success message with task count if available
       const successMessage =

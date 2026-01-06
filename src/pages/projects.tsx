@@ -9,7 +9,6 @@ import { ProjectCardSkeleton } from "@/components/skeletons/project-card-skeleto
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { useProjects } from "@/hooks";
-import { UsersRoleOptions } from "@/lib/pocketbase-types";
 import {
   useAuthUser,
   useCurrentOrgMode,
@@ -23,21 +22,16 @@ export default function Projects() {
   const isProductMode = mode === "product";
   const navigate = useNavigate();
 
-  const { data: userProjects, isPending: isLoadingProjects } = useProjects({
-    batch: 100,
-    sort: "-created",
-  });
+  const { data: userProjects, isPending: isLoadingProjects } = useProjects();
 
   const handleEdit = (projectId: string) => {
     navigate(`/projects/${projectId}/edit`);
   };
 
-  const isAdmin = user?.role === UsersRoleOptions.admin;
-  const isSupervisor = user?.role === UsersRoleOptions.supervisor;
   const isOrgOwner = currentOrgRole === "owner";
-  const isOrgAdmin = currentOrgRole === "admin";
-  const canCreateProject = isAdmin || isSupervisor || isOrgOwner || isOrgAdmin;
-  const canEditDelete = isAdmin || isSupervisor || isOrgOwner || isOrgAdmin;
+  const isOrgAdmin = currentOrgRole === "owner";
+  const canCreateProject = isOrgOwner || isOrgAdmin;
+  const canEditDelete = isOrgOwner || isOrgAdmin;
 
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">

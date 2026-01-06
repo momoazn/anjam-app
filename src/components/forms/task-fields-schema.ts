@@ -1,17 +1,14 @@
 import { z } from "zod";
 
 import { common, errors } from "@/constants";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { TASK_PRIORITIES, TASK_STATUSES } from "@/types/tasks";
 
 export const taskFormSchema = z.object({
   title: z.string().min(1, { message: errors.validation.titleRequired }),
   description: z.string().min(1, { message: common.validation.required }),
   assignee: z.string().min(1, { message: common.validation.required }),
-  priority: z.nativeEnum(TasksPriorityOptions),
-  status: z.nativeEnum(TasksStatusOptions),
+  priority: z.enum(TASK_PRIORITIES),
+  status: z.enum(TASK_STATUSES),
   project: z.string().min(1, { message: common.validation.required }),
   deadline: z.date().optional(),
   estimated_hours: z.number().min(0).max(999).optional(),

@@ -43,7 +43,7 @@ export default function Views() {
   const navigate = useNavigate();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const labels = getModeLabels(mode);
+  const labels = getModeLabels();
   const { savedFilters, deleteFilter, setAsDefault, defaultFilterId } =
     useSavedFilters();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);

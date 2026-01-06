@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconLoader2, IconPencil } from "@tabler/icons-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -10,17 +9,16 @@ import { z } from "zod";
 import { ProjectFields } from "@/components/forms/project-fields";
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
-import { ProjectStatusesSettings } from "@/components/project/project-statuses-settings";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { common, errors, projects } from "@/constants";
-import { queryKeys } from "@/hooks";
-import { FileWithPreview } from "@/hooks/use-file-upload";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { pb } from "@/lib/pocketbase";
-import { ProjectsResponse } from "@/lib/pocketbase-types";
+import { common, projects } from "@/constants";
+import { useProject, useUpdateProject } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
+import {
+  useAuthUser,
+  useCurrentOrgMode,
+  useCurrentOrgRole,
+} from "@/store/auth-store";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: projects.create.form.nameRequired }),
@@ -35,18 +33,15 @@ const projectFormSchema = z.object({
 export default function EditProject() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const user = useAuthUser();
+  const currentOrgRole = useCurrentOrgRole();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const isAdmin = user?.role === "admin";
+  const isAdmin = currentOrgRole === "owner" || currentOrgRole === "admin";
+  const [isMutationPending, setIsMutationPending] = useState(false);
 
-  const { data: project, isLoading } = useQuery({
-    queryKey: queryKeys.projects.detail(id ?? ""),
-    queryFn: async () => {
-      if (!id) throw new Error(errors.validation.projectIdRequired);
-      return pb.collection("projects").getOne<ProjectsResponse>(id);
-    },
+  const { data: project, isLoading } = useProject({
+    id: id,
     enabled: !!id,
   });
 
@@ -68,58 +63,42 @@ export default function EditProject() {
         code: project.code,
         description: (project.description || "").replace(/<br>/g, "\n"),
         assets: [],
-        supervisor: project.supervisor || "",
+        supervisor: project.supervisorUserId || "",
       });
     }
   }, [form, project]);
 
-  const { mutate: updateProject, isPending } = useMutation({
-    mutationFn: async (data: z.infer<typeof projectFormSchema>) => {
-      if (!project) throw new Error(errors.notFound.projectNotFound);
+  const { mutate: updateProject } = useUpdateProject();
 
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("code", data.code.toUpperCase());
+  async function onSubmit(values: z.infer<typeof projectFormSchema>) {
+    if (!id) return;
 
-      if (data.supervisor) {
-        formData.append("supervisor", data.supervisor);
-      }
+    setIsMutationPending(true);
+    try {
+      await updateProject({
+        id,
+        updates: {
+          name: values.name,
+          description: values.description,
+          supervisorUserId: values.supervisor,
+        },
+      });
 
-      if (data.description !== undefined) {
-        const descriptionWithBreaks = data.description.replace(/\n/g, "<br>");
-        formData.append("description", descriptionWithBreaks);
-      }
-
-      if (data.assets && data.assets.length > 0) {
-        data.assets.forEach((file: FileWithPreview) => {
-          formData.append("assets", file);
-        });
-      }
-
-      return pb.collection("projects").update(project.id, formData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.lists() });
-      if (project) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.projects.detail(project.id),
-        });
-      }
       toast.success(projects.edit.success);
       navigate("/projects");
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof projectFormSchema>) {
-    updateProject(values);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update project");
+    } finally {
+      setIsMutationPending(false);
+    }
   }
 
   const handleCancel = () => {
     navigate("/projects");
   };
+
+  const isPending = isMutationPending;
 
   return (
     <PageTransition
@@ -219,12 +198,6 @@ export default function EditProject() {
           </form>
         </Form>
       )}
-
-      {!isProductMode && project ? (
-        <div className="mt-10">
-          <ProjectStatusesSettings projectId={project.id} />
-        </div>
-      ) : null}
     </PageTransition>
   );
 }

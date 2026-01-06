@@ -1,10 +1,21 @@
 import { UserAvatar } from "@/components/user-avatar";
-import type { UsersResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
+
+type AssigneeUser = {
+  id?: string;
+  _id?: string;
+  username?: string;
+  firstName?: string;
+  first_name?: string;
+  lastName?: string;
+  last_name?: string;
+  image?: string;
+  avatar?: string;
+};
 
 type TaskAssigneeAvatarProps = {
   /** The expanded assignee record from the task */
-  assignee?: UsersResponse | null;
+  assignee?: AssigneeUser | null;
   /** Whether the task has an assignee ID but no expanded record */
   hasAssigneeId?: boolean;
   /** Avatar size className (defaults to size-8) */
@@ -53,13 +64,11 @@ export function TaskAssigneeAvatar({
   // Convert assignee to the format expected by UserAvatar
   const userProps = assignee
     ? {
-        first_name: assignee.first_name,
-        last_name: assignee.last_name,
-        username: assignee.username,
-        avatar: assignee.avatar,
-        id: assignee.id,
-        collectionId: assignee.collectionId,
-        collectionName: assignee.collectionName,
+        first_name: assignee.first_name || assignee.firstName,
+        last_name: assignee.last_name || assignee.lastName,
+        username: assignee.username ?? "",
+        avatar: assignee.avatar || assignee.image,
+        id: assignee.id || assignee._id || "",
       }
     : undefined;
 

@@ -21,10 +21,7 @@ import {
 import { navigation, navigationSectionLabels } from "@/constants";
 import { useProjects } from "@/hooks/projects";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import {
-  type UserPreferences,
-  useUserPreferences,
-} from "@/hooks/user-preferences";
+import { useUserPreferences } from "@/hooks/user-preferences";
 import { cn } from "@/lib/utils";
 
 export function ProjectsSubmenu() {
@@ -35,10 +32,8 @@ export function ProjectsSubmenu() {
 
   const { data: preferencesData } = useUserPreferences();
   const favoriteIds = useMemo(
-    () =>
-      (preferencesData?.preferences as UserPreferences)?.favorites
-        ?.projectIds || [],
-    [preferencesData?.preferences],
+    () => preferencesData?.favorites?.projectIds || [],
+    [preferencesData?.favorites?.projectIds],
   );
 
   const favoriteProjects = useMemo(() => {

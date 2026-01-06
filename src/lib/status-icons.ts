@@ -1,38 +1,26 @@
 import {
   Icon,
-  IconAlertCircle,
   IconCircle,
   IconCircleCheckFilled,
   IconCircleHalf2,
   IconCircleX,
-  IconClock,
   IconEye,
-  IconFlask,
-  IconPlayerPause,
 } from "@tabler/icons-react";
 
-import { TasksStatusOptions } from "./pocketbase-types";
+import { TaskStatus } from "@/types/tasks";
 
-export const taskStatusIcons: Record<TasksStatusOptions, Icon> = {
-  [TasksStatusOptions.todo]: IconCircle,
-  [TasksStatusOptions.in_progress]: IconCircleHalf2,
-  [TasksStatusOptions.review]: IconEye,
-  [TasksStatusOptions.testing]: IconFlask,
-  [TasksStatusOptions.pending]: IconClock,
-  [TasksStatusOptions.blocked]: IconAlertCircle,
-  [TasksStatusOptions.on_hold]: IconPlayerPause,
-  [TasksStatusOptions.done]: IconCircleCheckFilled,
-  [TasksStatusOptions.canceled]: IconCircleX,
+export const taskStatusIcons: Record<TaskStatus, Icon> = {
+  todo: IconCircle,
+  in_progress: IconCircleHalf2,
+  in_review: IconEye,
+  done: IconCircleCheckFilled,
+  cancelled: IconCircleX,
 };
 
-export const TASK_STATUS_ORDER: TasksStatusOptions[] = [
-  TasksStatusOptions.todo,
-  TasksStatusOptions.in_progress,
-  TasksStatusOptions.pending,
-  TasksStatusOptions.review,
-  TasksStatusOptions.testing,
-  TasksStatusOptions.done,
-  TasksStatusOptions.blocked,
-  TasksStatusOptions.on_hold,
-  TasksStatusOptions.canceled,
+export const TASK_STATUS_ORDER: TaskStatus[] = [
+  "todo",
+  "in_progress",
+  "in_review",
+  "done",
+  "cancelled",
 ];

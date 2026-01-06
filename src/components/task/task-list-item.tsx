@@ -26,9 +26,6 @@ import { useUpdateTask } from "@/hooks/tasks";
 import { useProductClasses } from "@/hooks/use-product-theme";
 import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { UsersResponse } from "@/lib/pocketbase-types";
-import { TasksPriorityOptions } from "@/lib/pocketbase-types";
 import {
   getStatusColorVariant,
   priorityColors,
@@ -37,6 +34,41 @@ import {
 } from "@/lib/status-utils";
 import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { Task } from "@/types/tasks";
+
+// Convex-compatible TaskWithProject interface
+// Uses both _id (Convex) and id (compatibility), and both naming conventions
+interface TaskWithProject extends Omit<Task, "id"> {
+  id?: string;
+  project?: {
+    name: string;
+  };
+  assignee?: {
+    id: string;
+    _id: string;
+    username: string;
+    firstName?: string;
+    first_name?: string;
+    lastName?: string;
+    last_name?: string;
+  } | null;
+  display_id?: string; // Compatibility field mapped from displayId
+  // Additional expand fields
+  expand?: {
+    project?: {
+      name: string;
+    };
+    assignee?: {
+      id: string;
+      _id: string;
+      username: string;
+      firstName?: string;
+      first_name?: string;
+      lastName?: string;
+      last_name?: string;
+    };
+  };
+}
 
 type TaskListItemProps = {
   task: TaskWithProject;
@@ -57,13 +89,14 @@ function TaskListItemInner({
 }: TaskListItemProps) {
   const navigate = useNavigate();
   const productClasses = useProductClasses();
+  const taskId = task.id ?? task._id;
 
   const StatusIcon = taskStatusIcons[task.status];
   const statusIconColor = getStatusColorVariant(task.status, "icon");
 
   const PriorityIcon = priorityIcons[task.priority];
   const priorityIconColor = priorityColors[task.priority];
-  const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
+  const assigneeRecord = task.assignee;
 
   const deadlineDate = task.deadline ? new Date(task.deadline) : null;
   const isDeadlineToday = deadlineDate ? isToday(deadlineDate) : false;
@@ -74,34 +107,33 @@ function TaskListItemInner({
     !isTaskCompleted(task) &&
     !isTaskCanceled(task);
 
-  const updateTask = useUpdateTask({
-    onSuccess: () => {
-      toast.success(tasks.edit.success);
-    },
-  });
+  const updateTask = useUpdateTask();
 
-  const { data: users } = useUsers({ batch: 100, sort: "-created" });
+  const { data: users } = useUsers({ enabled: true }); // Removed batch/sort options not supported yet
 
   const handleClick = () => {
-    navigate(`/tasks/${task.id}`);
+    navigate(`/tasks/${taskId}`);
   };
 
-  const handlePriorityChange = (value: TasksPriorityOptions) => {
-    updateTask.mutate({ id: task.id, updates: { priority: value } });
+  const handlePriorityChange = (value: string) => {
+    updateTask.mutate({ id: taskId, updates: { priority: value } });
+    toast.success(tasks.edit.success);
   };
 
   const handleAssigneeChange = (value: string) => {
     updateTask.mutate({
-      id: task.id,
-      updates: { assignee: value === "__unassigned" ? "" : value },
+      id: taskId,
+      updates: { assigneeUserId: value === "__unassigned" ? undefined : value },
     });
+    toast.success(tasks.edit.success);
   };
 
   const handleDueDateChange = (date: Date | undefined) => {
     updateTask.mutate({
-      id: task.id,
-      updates: { deadline: date ? date.toISOString() : undefined },
+      id: taskId,
+      updates: { deadline: date ? date.getTime() : undefined },
     });
+    toast.success(tasks.edit.success);
   };
 
   const handleCardKeyDown = (e: React.KeyboardEvent) => {
@@ -109,6 +141,11 @@ function TaskListItemInner({
       handleClick();
     }
   };
+
+  // Convex uses displayId, PB used display_id (sometimes computed)
+  // In our hook mapping we might need to ensure one is standard.
+  // The Task type has displayId.
+  const displayId = task.displayId || task.display_id || "";
 
   return (
     <button
@@ -163,25 +200,25 @@ function TaskListItemInner({
                 </SelectTrigger>
                 <SelectContent className="border-border rounded-lg border">
                   <SelectItem
-                    value={TasksPriorityOptions.low}
+                    value="low"
                     className="text-xs font-bold"
                   >
                     {tasks.priority.low}
                   </SelectItem>
                   <SelectItem
-                    value={TasksPriorityOptions.medium}
+                    value="medium"
                     className="text-xs font-bold"
                   >
                     {tasks.priority.medium}
                   </SelectItem>
                   <SelectItem
-                    value={TasksPriorityOptions.high}
+                    value="high"
                     className="text-xs font-bold"
                   >
                     {tasks.priority.high}
                   </SelectItem>
                   <SelectItem
-                    value={TasksPriorityOptions.urgent}
+                    value="urgent"
                     className="text-xs font-bold"
                   >
                     {tasks.priority.urgent}
@@ -199,15 +236,15 @@ function TaskListItemInner({
           <div className="flex items-center gap-1 opacity-40">
             <IconHash className="size-2.5" />
             <span className="font-mono text-[10px] font-bold">
-              {digitsEnToFa(task.display_id)}
+              {digitsEnToFa(displayId)}
             </span>
           </div>
 
-          {showProject && task.expand?.project?.name && (
+          {showProject && task.project?.name && (
             <div className="text-primary/60 flex items-center gap-1">
               <IconTarget className="size-2.5" />
               <span className="text-[10px] font-bold">
-                {task.expand.project.name}
+                {task.project.name}
               </span>
             </div>
           )}
@@ -239,6 +276,9 @@ function TaskListItemInner({
                   productClasses.beveled,
                 )}
               >
+                {/* Convex tags might be IDs if not expanded. Assuming expanded name or just ID for now. */}
+                {/* If tags are just IDs, this will show ID. We need tag expansion if we want names. */}
+                {/* For now, assuming task.tags is array of strings (names or IDs) */}
                 {tag}
               </Badge>
             ))}
@@ -300,7 +340,7 @@ function TaskListItemInner({
             >
               <TaskAssigneeAvatar
                 assignee={assigneeRecord}
-                hasAssigneeId={!!task.assignee}
+                hasAssigneeId={!!task.assigneeUserId}
                 size="md"
                 className="transition-all duration-300"
               />
@@ -308,7 +348,7 @@ function TaskListItemInner({
           </PopoverTrigger>
           <PopoverContent className="w-[180px] p-1.5" align="start">
             <Select
-              value={task.assignee || "__unassigned"}
+              value={task.assigneeUserId || "__unassigned"}
               onValueChange={handleAssigneeChange}
             >
               <SelectTrigger className="border-transparent bg-transparent h-8 text-right text-xs focus:ring-0">

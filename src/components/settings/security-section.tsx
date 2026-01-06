@@ -27,8 +27,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
-import { pb } from "@/lib/pocketbase";
-import type { UserLoginLogsResponse } from "@/lib/pocketbase-types";
 import { useAuthUser } from "@/store/auth-store";
 
 const passwordSchema = z
@@ -59,42 +57,31 @@ export function SecuritySection() {
     },
   });
 
-  const { data: loginLogs, isLoading: loadingLogs } = useQuery({
-    queryKey: ["login-logs", user?.id],
+  const { data: loginLogs = [], isLoading: loadingLogs } = useQuery({
+    queryKey: ["login-logs", user?._id],
     queryFn: async () => {
-      if (!user?.id) return [];
-      try {
-        const res = await pb.send<{
-          data: { items: UserLoginLogsResponse[] };
-        }>(`/api/v1/users/${user.id}/login-logs`, { method: "GET" });
-        return res.data.items;
-      } catch {
-        return [];
-      }
+      if (!user?._id) return [];
+      // Login logs feature not yet implemented in Convex
+      return [] as Array<{
+        id: string;
+        ipAddress: string;
+        userAgent: string;
+        success: boolean;
+        failureReason: string;
+        createdAt: number;
+      }>;
     },
-    enabled: !!user?.id,
+    enabled: !!user?._id,
   });
 
-  const onChangePassword = async (values: PasswordFormValues) => {
-    if (!user?.id) return;
-    try {
-      await pb.collection("users").update(user.id, {
-        oldPassword: values.oldPassword,
-        password: values.password,
-        passwordConfirm: values.passwordConfirm,
-      });
-      toast({
-        title: settings.security.toast.passwordChanged,
-        description: settings.security.toast.passwordChangedDescription,
-      });
-      form.reset();
-    } catch {
-      toast({
-        title: settings.security.toast.passwordError,
-        description: settings.security.toast.passwordErrorDescription,
-        variant: "destructive",
-      });
-    }
+  const onChangePassword = async (_values: PasswordFormValues) => {
+    if (!user?._id) return;
+    // Password change via old PB API - not yet implemented in Convex
+    toast({
+      title: settings.security.toast.passwordError,
+      description: "Password change is not yet implemented in Convex",
+      variant: "destructive",
+    });
   };
 
   return (
@@ -262,10 +249,10 @@ export function SecuritySection() {
                         <IconServer className="size-2.5 opacity-20" />
                       </div>
                       <p className="text-[11px] font-bold tabular-nums">
-                        {log.ip_address || settings.security.unknownIp}
+                        {log.ipAddress || settings.security.unknownIp}
                       </p>
                       <p className="text-muted-foreground/40 max-w-60 truncate text-[9px] font-bold">
-                        {log.user_agent || settings.security.unknownDevice}
+                        {log.userAgent || settings.security.unknownDevice}
                       </p>
                     </div>
 
@@ -276,7 +263,7 @@ export function SecuritySection() {
                       <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-bold tabular-nums">
                         <IconClock className="size-2.5 opacity-40" />
                         {digitsEnToFa(
-                          new Date(log.created || "").toLocaleString("fa-IR", {
+                          new Date(log.createdAt || "").toLocaleString("fa-IR", {
                             hour: "2-digit",
                             minute: "2-digit",
                           }),

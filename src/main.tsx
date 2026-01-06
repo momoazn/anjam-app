@@ -1,8 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ConvexReactClient } from "convex/react";
+import { ConvexAuthStateSync } from "./components/auth/convex-auth-sync";
 
 import App from "./app";
 import "./index.css";
+
+const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
 const root = createRoot(document.getElementById("root")!);
 const isDevelopment = import.meta.env.MODE === "development";
@@ -10,7 +15,10 @@ const isDevelopment = import.meta.env.MODE === "development";
 if (isDevelopment) {
   root.render(
     <StrictMode>
-      <App />
+      <ConvexAuthProvider client={convex}>
+        <ConvexAuthStateSync />
+        <App />
+      </ConvexAuthProvider>
     </StrictMode>,
   );
 } else {
@@ -26,7 +34,9 @@ if (isDevelopment) {
             debug: false,
           }}
         >
-          <App />
+          <ConvexAuthProvider client={convex}>
+            <App />
+          </ConvexAuthProvider>
         </PostHogProvider>
       </StrictMode>,
     );

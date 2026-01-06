@@ -40,39 +40,27 @@ import {
 } from "@/components/ui/table";
 import { organization, shared } from "@/constants";
 import {
-  useInviteOrgMember,
-  useOrganizationMembers,
-  useRemoveOrgMember,
-} from "@/hooks";
-import {
   getInviteStatus,
   getInviteUrl,
   useCreateOrgInvite,
+  useInviteOrgMember,
   useOrganizationInvites,
+  useOrganizationMembers,
+  useRemoveOrgMember,
   useRevokeOrgInvite,
-} from "@/hooks/organization-invites";
-import { pb } from "@/lib/pocketbase";
-import type { UsersResponse } from "@/lib/pocketbase-types";
-import { cn } from "@/lib/utils";
+} from "@/hooks";
+import type { Doc } from "../../../convex/_generated/dataModel";
+import { cn, getUserInitials } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
 
-function getUserInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-function getUserDisplayName(user: UsersResponse): string {
-  if (user.first_name && user.last_name) {
-    return `${user.first_name} ${user.last_name}`;
+function getUserDisplayName(user: Doc<"users">): string {
+  if (user.firstName && user.lastName) {
+    return `${user.firstName} ${user.lastName}`;
   }
-  if (user.first_name) {
-    return user.first_name;
+  if (user.firstName) {
+    return user.firstName;
   }
-  return user.username;
+  return user.username || user.name || "Unknown User";
 }
 
 export function OrgMembersPage() {
@@ -84,8 +72,8 @@ export function OrgMembersPage() {
   const [isRevokeConfirmOpen, setIsRevokeConfirmOpen] = useState(false);
   const [inviteToRevoke, setInviteToRevoke] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"admin" | "member">("member");
-  const [linkRole, setLinkRole] = useState<"admin" | "member">("member");
+  const [inviteRole, setInviteRole] = useState<"owner" | "member">("member");
+  const [linkRole, setLinkRole] = useState<"owner" | "member">("member");
   const [linkMaxUses, setLinkMaxUses] = useState(50);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
@@ -101,34 +89,38 @@ export function OrgMembersPage() {
     useCreateOrgInvite();
   const { mutate: revokeInvite, isPending: isRevoking } = useRevokeOrgInvite();
 
-  const handleInvite = () => {
-    inviteMember(
-      { email: inviteEmail, role: inviteRole },
-      {
-        onSuccess: () => {
-          setIsInviteOpen(false);
-          setInviteEmail("");
-          setInviteRole("member");
-        },
-      },
-    );
+  const handleInvite = async () => {
+    try {
+      await inviteMember({ email: inviteEmail, role: inviteRole });
+      setIsInviteOpen(false);
+      setInviteEmail("");
+      setInviteRole("member");
+    } catch (error) {
+      toast.error("Failed to invite member");
+    }
   };
 
-  const handleRemoveMember = (memberId: string) => {
-    removeMember(memberId);
+  const handleRemoveMember = async (userId: string) => {
+    try {
+      await removeMember(userId);
+    } catch (error) {
+      toast.error("Failed to remove member");
+    }
   };
 
-  const handleCreateInviteLink = () => {
-    createInviteLink(
-      { role: linkRole, maxUses: linkMaxUses },
-      {
-        onSuccess: () => {
-          setIsCreateLinkOpen(false);
-          setLinkRole("member");
-          setLinkMaxUses(50);
-        },
-      },
-    );
+  const handleCreateInviteLink = async () => {
+    try {
+      await createInviteLink({
+        role: linkRole,
+        maxUses: linkMaxUses,
+      });
+      setIsCreateLinkOpen(false);
+      setLinkRole("member");
+      setLinkMaxUses(50);
+      toast.success(organization.inviteLinks.createDialog.success);
+    } catch (error) {
+      toast.error("Failed to create invite link");
+    }
   };
 
   const handleCopyLink = async (token: string) => {
@@ -147,14 +139,15 @@ export function OrgMembersPage() {
     setIsRevokeConfirmOpen(true);
   };
 
-  const handleConfirmRevoke = () => {
+  const handleConfirmRevoke = async () => {
     if (inviteToRevoke) {
-      revokeInvite(inviteToRevoke, {
-        onSuccess: () => {
-          setIsRevokeConfirmOpen(false);
-          setInviteToRevoke(null);
-        },
-      });
+      try {
+        await revokeInvite(inviteToRevoke as any);
+        setIsRevokeConfirmOpen(false);
+        setInviteToRevoke(null);
+      } catch (error) {
+        toast.error("Failed to revoke invite");
+      }
     }
   };
 
@@ -228,23 +221,19 @@ export function OrgMembersPage() {
               </TableRow>
             ) : (
               members.map((member) => {
-                const user = member.expand?.user;
+                const user = member.user;
                 return (
-                  <TableRow key={member.id}>
+                  <TableRow key={member._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage
-                            src={
-                              user?.avatar
-                                ? pb.files.getURL(user, user.avatar)
-                                : undefined
-                            }
+                            src={user?.image || undefined}
                           />
                           <AvatarFallback>
                             {getUserInitials(
                               getUserDisplayName(
-                                user ?? ({ username: "?" } as UsersResponse),
+                                user ?? ({ username: "?" } as any),
                               ),
                             )}
                           </AvatarFallback>
@@ -254,7 +243,7 @@ export function OrgMembersPage() {
                             user ??
                               ({
                                 username: organization.members.unknownUser,
-                              } as UsersResponse),
+                              } as any),
                           )}
                         </span>
                       </div>
@@ -275,16 +264,16 @@ export function OrgMembersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {member.joined_at
-                        ? new Date(member.joined_at).toLocaleDateString("fa-IR")
+                      {member.joinedAt
+                        ? new Date(member.joinedAt).toLocaleDateString("fa-IR")
                         : "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {member.user !== currentUser?.id && (
+                      {member.userId !== currentUser?._id && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleRemoveMember(member.id)}
+                          onClick={() => handleRemoveMember(member.userId)}
                           disabled={isRemoving}
                         >
                           {shared.delete}
@@ -340,26 +329,25 @@ export function OrgMembersPage() {
                 </TableRow>
               ) : (
                 inviteLinks.map((invite) => {
-                  const status = getInviteStatus(invite);
+                  const status = getInviteStatus(invite as any);
                   return (
-                    <TableRow key={invite.id}>
+                    <TableRow key={invite._id}>
                       <TableCell className="font-mono text-sm">
                         {invite.token.slice(0, 12)}...
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {invite.role === "admin"
-                            ? organization.members.roles.admin
-                            : organization.members.roles.member}
+                          {organization.members.roles[invite.role as keyof typeof organization.members.roles] ||
+                            organization.members.roles.member}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {invite.uses_count}/{invite.max_uses || "∞"}
+                        {invite.uses}/{invite.maxUses || "∞"}
                       </TableCell>
                       <TableCell>
-                        {new Date(invite.expires_at).toLocaleDateString(
+                        {invite.expiresAt ? new Date(invite.expiresAt).toLocaleDateString(
                           "fa-IR",
-                        )}
+                        ) : "-"}
                       </TableCell>
                       <TableCell>
                         <Badge variant={getStatusBadgeVariant(status)}>
@@ -384,7 +372,7 @@ export function OrgMembersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleRevokeClick(invite.id)}
+                              onClick={() => handleRevokeClick(invite._id)}
                               disabled={isRevoking}
                             >
                               {organization.inviteLinks.revoke}
@@ -436,7 +424,7 @@ export function OrgMembersPage() {
               </label>
               <Select
                 value={inviteRole}
-                onValueChange={(v) => setInviteRole(v as "admin" | "member")}
+                onValueChange={(v) => setInviteRole(v as "owner" | "member")}
               >
                 <SelectTrigger className="text-right">
                   <SelectValue
@@ -446,8 +434,8 @@ export function OrgMembersPage() {
                   />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="admin" className="text-right">
-                    {organization.members.roles.admin}
+                  <SelectItem value="owner" className="text-right">
+                    {organization.members.roles.owner}
                   </SelectItem>
                   <SelectItem value="member" className="text-right">
                     {organization.members.roles.member}
@@ -494,7 +482,7 @@ export function OrgMembersPage() {
               </label>
               <Select
                 value={linkRole}
-                onValueChange={(v) => setLinkRole(v as "admin" | "member")}
+                onValueChange={(v) => setLinkRole(v as "owner" | "member")}
               >
                 <SelectTrigger>
                   <SelectValue
@@ -504,8 +492,8 @@ export function OrgMembersPage() {
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">
-                    {organization.members.roles.admin}
+                  <SelectItem value="owner">
+                    {organization.members.roles.owner}
                   </SelectItem>
                   <SelectItem value="member">
                     {organization.members.roles.member}

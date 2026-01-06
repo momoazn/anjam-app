@@ -4,12 +4,12 @@ import { Suspense } from "react";
 import { EmployeePerformanceTable } from "@/components/reports/employee-performance-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { reports } from "@/constants";
-import type { UsersResponse } from "@/lib/pocketbase-types";
+import type { ConvexUser } from "@/lib/reports/types";
 import type { EmployeeSummary } from "@/lib/reports";
 
 type TableSectionProps = {
   summaries: EmployeeSummary[];
-  users: UsersResponse[] | undefined;
+  users: ConvexUser[] | undefined;
   onSelectEmployee: (userId: string) => void;
   onDrilldown: (
     title: string,
@@ -41,14 +41,21 @@ export function TableSection({
           summaries={summaries}
           onRowClick={(userId) => {
             onSelectEmployee(userId);
-            const user = users?.find((u) => u.id === userId);
+            const user = users?.find((u) => (u._id || u.id) === userId);
             if (user) {
+              const userName =
+                (user.first_name && user.last_name
+                  ? `${user.first_name} ${user.last_name}`
+                  : null) ||
+                (user.firstName && user.lastName
+                  ? `${user.firstName} ${user.lastName}`
+                  : null) ||
+                user.username ||
+                "";
               onDrilldown(
                 reports.charts.employee.performanceTable.drilldownTitle.replace(
                   "{name}",
-                  user.first_name && user.last_name
-                    ? `${user.first_name} ${user.last_name}`
-                    : user.username,
+                  userName,
                 ),
                 (task) => task.assignee === userId,
               );

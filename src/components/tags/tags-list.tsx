@@ -9,16 +9,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { tagsManagement } from "@/constants";
-import type { TagsResponse } from "@/lib/pocketbase-types";
 import { useCurrentOrgMode } from "@/store/auth-store";
-
 type TagsListProps = {
-  tags: TagsResponse[] | undefined;
+  tags: any[] | undefined;
   isLoading: boolean;
   canDeleteTag: boolean;
   onCreateClick: () => void;
-  onEdit: (tag: TagsResponse) => void;
-  onDelete: (tag: TagsResponse) => void;
+  onEdit: (tag: any) => void;
+  onDelete: (tag: any) => void;
 };
 
 const TagsListSkeleton = () => (
@@ -83,7 +81,7 @@ export function TagsList({
       <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
         {tags.map((tag) => (
           <div
-            key={tag.id}
+            key={tag._id}
             className="border-b border-border/40 last:border-b-0"
           >
             <div className="flex items-center justify-between gap-3 px-3 py-3">
@@ -98,7 +96,7 @@ export function TagsList({
                   </div>
                   <div className="text-muted-foreground mt-0.5 flex items-center gap-1 font-mono text-[10px] font-semibold opacity-70">
                     <IconHash className="size-3 opacity-50" />
-                    {tag.id.slice(0, 6)}
+                    {tag._id.slice(0, 6)}
                   </div>
                 </div>
               </div>
@@ -139,14 +137,14 @@ export function TagsList({
     >
       {tags.map((tag) => (
         <div
-          key={tag.id}
+          key={tag._id}
           className="group bg-card border-border/40 hover:border-primary/20 relative overflow-hidden rounded-2xl border p-4 transition-all hover:shadow-md"
         >
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2 opacity-40">
               <IconHash className="size-3" />
               <span className="font-mono text-[9px] font-bold tracking-tight">
-                {tag.id.slice(0, 6)}
+                {tag._id.slice(0, 6)}
               </span>
             </div>
             <div

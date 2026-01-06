@@ -2,30 +2,30 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { format, isWithinInterval } from "date-fns-jalali";
 import { faIR } from "date-fns/locale";
 
-import type { TaskWithProject } from "../pocketbase";
-import { TasksStatusOptions } from "../pocketbase-types";
+import type { ConvexTask } from "./types";
 import type { CompletionTrendData, ThroughputDataPoint } from "./types";
 
 /**
  * Calculate completion trend over the last 30 days
  */
 export function calculateCompletionTrend(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
 ): CompletionTrendData[] {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   const completedOverTime = tasks
-    .filter(
-      (task) =>
-        task.status === TasksStatusOptions.done &&
-        task.updated &&
-        new Date(task.updated) >= thirtyDaysAgo,
-    )
+    .filter((task) => {
+      if (task.status !== "done") return false;
+      const updatedAt = task.updatedAt ?? task.updated;
+      if (!updatedAt) return false;
+      return new Date(updatedAt) >= thirtyDaysAgo;
+    })
     .reduce(
       (acc, task) => {
-        if (task.updated) {
-          const taskDate = new Date(task.updated);
+        const updatedAt = task.updatedAt ?? task.updated;
+        if (updatedAt) {
+          const taskDate = new Date(updatedAt);
           const date = format(taskDate, "MMM dd", {
             locale: undefined,
           });
@@ -46,30 +46,32 @@ export function calculateCompletionTrend(
  * Group throughput by time bucket
  */
 export function groupThroughput(
-  tasks: TaskWithProject[],
+  tasks: ConvexTask[],
   bucket: "daily" | "weekly",
   range: { start: Date; end: Date },
 ): ThroughputDataPoint[] {
   const map = new Map<string, number>();
 
   tasks.forEach((task) => {
-    if (task.status === "done" && task.updated) {
-      const taskDate = new Date(task.updated);
-      if (isWithinInterval(taskDate, range)) {
-        let key: string;
-        if (bucket === "daily") {
-          key = format(taskDate, "yyyy-MM-dd");
-        } else {
-          // Weekly: ISO week start Monday
-          const weekStart = new Date(taskDate);
-          const day = taskDate.getDay();
-          const diff = taskDate.getDate() - day + (day === 0 ? -6 : 1);
-          weekStart.setDate(diff);
-          key = format(weekStart, "yyyy-MM-dd");
-        }
-        map.set(key, (map.get(key) || 0) + 1);
-      }
+    if (task.status !== "done") return;
+    const updatedAt = task.updatedAt ?? task.updated;
+    if (!updatedAt) return;
+
+    const taskDate = new Date(updatedAt);
+    if (!isWithinInterval(taskDate, range)) return;
+
+    let key: string;
+    if (bucket === "daily") {
+      key = format(taskDate, "yyyy-MM-dd");
+    } else {
+      // Weekly: ISO week start Monday
+      const weekStart = new Date(taskDate);
+      const day = taskDate.getDay();
+      const diff = taskDate.getDate() - day + (day === 0 ? -6 : 1);
+      weekStart.setDate(diff);
+      key = format(weekStart, "yyyy-MM-dd");
     }
+    map.set(key, (map.get(key) || 0) + 1);
   });
 
   // Convert to sorted array with Jalali display labels

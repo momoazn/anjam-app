@@ -30,14 +30,22 @@ import { useSavedFilters } from "@/hooks/use-saved-filters";
 import { ALL_FILTER_VALUE, useTaskFilters } from "@/hooks/use-task-filters";
 import { useToast } from "@/hooks/use-toast";
 import { useUsers } from "@/hooks/users";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import {
-  type TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
 import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
+import { Task, TaskPriority, TaskStatus } from "@/types/tasks";
+
+// Define a local interface for tasks with expanded properties
+interface TaskWithProject extends Task {
+  project?: { name: string };
+  assignee?: {
+    id: string;
+    username: string;
+    first_name?: string;
+    last_name?: string;
+  } | null;
+  display_id?: string;
+}
 
 type TasksProps = {
   viewMode?: "tasks" | "issues";
@@ -167,117 +175,34 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     }
   };
 
-  const filterExpression = useMemo(() => {
-    const parts: string[] = [];
-
-    if (searchTerm) {
-      const term = searchTerm.replace(/"/g, '\\"').toLowerCase();
-      parts.push(
-        `(lower(title)~"${term}" || lower(assignee.username)~"${term}")`,
-      );
-    }
-
-    if (selectedStatus !== "all") {
-      if (selectedStatus.includes(",")) {
-        const statuses = selectedStatus
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
-        if (statuses.length > 0) {
-          const orExpression = statuses
-            .map((status) => `status = "${status}"`)
-            .join(" || ");
-          parts.push(`(${orExpression})`);
-        }
-      } else {
-        parts.push(`status = "${selectedStatus}"`);
-      }
-    }
-
-    if (selectedPriority !== "all") {
-      parts.push(`priority = "${selectedPriority}"`);
-    }
-
-    if (selectedAssignee !== "all") {
-      if (selectedAssignee === "me" && authUser?.id) {
-        parts.push(`assignee = "${authUser.id}"`);
-      } else if (selectedAssignee !== "me") {
-        parts.push(`assignee = "${selectedAssignee}"`);
-      }
-    }
-
-    if (selectedDateRange !== "all") {
-      const now = new Date();
-      if (selectedDateRange === "overdue") {
-        parts.push(
-          `(deadline != null && deadline < "${formatISO(
-            now,
-          )}" && status != "${TasksStatusOptions.done}")`,
-        );
-      } else {
-        let start: Date;
-        let end: Date;
-        switch (selectedDateRange) {
-          case "today":
-            start = startOfDay(now);
-            end = endOfDay(now);
-            break;
-          case "week":
-            start = startOfWeek(now, { weekStartsOn: 6 });
-            end = endOfWeek(now, { weekStartsOn: 6 });
-            break;
-          case "month":
-            start = startOfMonth(now);
-            end = endOfMonth(now);
-            break;
-          default:
-            start = startOfDay(now);
-            end = endOfDay(now);
-        }
-        parts.push(
-          `(deadline >= "${formatISO(start)}" && deadline <= "${formatISO(
-            end,
-          )}")`,
-        );
-      }
-    }
-
-    if (selectedTag !== "all") {
-      parts.push(`tags.id ?= "${selectedTag}"`);
-    }
-
-    return parts.join(" && ");
+  // Reset pagination when filters change
+  useEffect(() => {
+    setPage(1);
   }, [
-    authUser,
     searchTerm,
+    selectedStatus,
+    selectedPriority,
     selectedAssignee,
     selectedDateRange,
-    selectedPriority,
-    selectedStatus,
     selectedTag,
   ]);
 
-  // Reset pagination when filters change
-  // This is a legitimate use of setState in effect for UI state synchronization
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (filterExpression) {
-      setPage(1);
-    }
-  }, [filterExpression]);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
   const { data: users, isPending: isLoadingUsers } = useUsers({
-    batch: 100,
-    sort: "-created",
+    enabled: true,
   });
 
   const taskQuery = useTasks({
-    expandFields: "project,assignee,tags",
-    mode: "paged",
     page,
     perPage,
-    filter: filterExpression || undefined,
+    searchTerm: searchTerm || undefined,
+    status: selectedStatus === "all" ? undefined : selectedStatus,
+    priority: selectedPriority === "all" ? undefined : selectedPriority,
+    assigneeUserId:
+      selectedAssignee === "all"
+        ? undefined
+        : selectedAssignee === "me"
+          ? authUser?.id
+          : selectedAssignee,
   });
 
   const totalTasks = taskQuery.data?.totalItems ?? 0;
@@ -286,17 +211,17 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   const groupedTasks = useMemo(() => {
     const items = taskQuery.data?.items;
     if (taskQuery.isPending || !items) {
-      return {} as Record<TasksStatusOptions, TaskWithProject[]>;
+      return {} as Record<TaskStatus, TaskWithProject[]>;
     }
     return items.reduce(
-      (acc, task) => {
+      (acc: any, task: any) => {
         if (!acc[task.status]) {
           acc[task.status] = [];
         }
         acc[task.status].push(task);
         return acc;
       },
-      {} as Record<TasksStatusOptions, TaskWithProject[]>,
+      {} as Record<TaskStatus, TaskWithProject[]>,
     );
   }, [taskQuery.data?.items, taskQuery.isPending]);
 
@@ -323,7 +248,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     setSelectedTasks([]);
   };
 
-  const handleBulkStatus = async (status: TasksStatusOptions) => {
+  const handleBulkStatus = async (status: TaskStatus) => {
     await bulkUpdate.mutateAsync({
       ids: selectedTasks,
       updates: { status },
@@ -331,7 +256,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     setSelectedTasks([]);
   };
 
-  const handleBulkPriority = async (priority: TasksPriorityOptions) => {
+  const handleBulkPriority = async (priority: TaskPriority) => {
     await bulkUpdate.mutateAsync({
       ids: selectedTasks,
       updates: { priority },
@@ -364,7 +289,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   const pageStart = totalTasks === 0 ? 0 : (page - 1) * perPage + 1;
   const pageEnd = totalTasks === 0 ? 0 : Math.min(page * perPage, totalTasks);
 
-  const availableStatuses: Array<{ value: TasksStatusOptions; label: string }> =
+  const availableStatuses: Array<{ value: TaskStatus; label: string }> =
     Object.values(TASK_STATUS_CONFIG).map((config) => ({
       value: config.key,
       label: config.name,

@@ -1,0 +1,56 @@
+import { useConvexAuth, useQuery } from "convex/react";
+import { useEffect } from "react";
+import { api } from "../../../convex/_generated/api";
+import { useAuthStore } from "@/store/auth-store";
+
+export function ConvexAuthStateSync() {
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
+  const { setUser, setAuthLoading, setOrganizations } = useAuthStore((state) => ({
+    setUser: state.setUser,
+    setAuthLoading: state.setAuthLoading,
+    setOrganizations: state.setOrganizations,
+  }));
+
+  // Fetch user data if authenticated
+  const userData = useQuery(api.users.getMe, isAuthenticated ? {} : "skip");
+
+  // Fetch organizations if authenticated
+  const userOrgs = useQuery(api.organizations.listMine, isAuthenticated ? {} : "skip");
+
+  // Sync auth loading state
+  useEffect(() => {
+    // We are loading if Convex Auth is loading, or if we are authenticated but data hasn't loaded yet
+    const isDataLoading = isAuthenticated && (userData === undefined || userOrgs === undefined);
+    setAuthLoading(isAuthLoading || isDataLoading);
+  }, [isAuthLoading, isAuthenticated, userData, userOrgs, setAuthLoading]);
+
+  // Sync user data
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setUser(null);
+      return;
+    }
+
+    if (userData) {
+      setUser(userData);
+    }
+  }, [isAuthenticated, userData, setUser]);
+
+  // Sync organizations
+  useEffect(() => {
+    if (userOrgs) {
+      const mappedOrgs = userOrgs.map((org: any) => ({
+        organization: org,
+        role: org.membership.role,
+        joinedAt: org.membership.joinedAt || Date.now(),
+        onboardingCompleted: org.membership.onboardingCompleted,
+      }));
+
+      setOrganizations(mappedOrgs);
+    } else if (!isAuthenticated) {
+      setOrganizations([]);
+    }
+  }, [userOrgs, isAuthenticated, setOrganizations]);
+
+  return null;
+}

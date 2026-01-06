@@ -39,12 +39,10 @@ import {
   useMarkAsRead,
   useNotifications,
 } from "@/hooks/notifications";
-import type { MentionsResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
-import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 export default function Notifications() {
-  const user = useAuthUser();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
   const { data: notificationsData = [], isLoading, error } = useNotifications();
@@ -90,13 +88,13 @@ export default function Notifications() {
     return [...filtered].sort((a, b) => {
       if (sort === "oldest") {
         return (
-          new Date(a.created || "").getTime() -
-          new Date(b.created || "").getTime()
+          new Date(a.createdAt || 0).getTime() -
+          new Date(b.createdAt || 0).getTime()
         );
       }
       return (
-        new Date(b.created || "").getTime() -
-        new Date(a.created || "").getTime()
+        new Date(b.createdAt || 0).getTime() -
+        new Date(a.createdAt || 0).getTime()
       );
     });
   }, [notificationsData, filter, sort]);
@@ -160,7 +158,7 @@ export default function Notifications() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => user?.id && markAllAsRead.mutate(user.id)}
+              onClick={() => markAllAsRead.mutate()}
               disabled={unreadCount === 0}
               className="hover:bg-primary/10 hover:text-primary size-9 rounded-lg transition-all disabled:opacity-20"
             >
@@ -177,7 +175,7 @@ export default function Notifications() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => user?.id && clearRead.mutate(user.id)}
+              onClick={() => clearRead.mutate()}
               disabled={readCount === 0}
               className="hover:bg-amber-500/10 size-9 rounded-lg text-amber-500 transition-all disabled:opacity-20"
             >
@@ -194,7 +192,7 @@ export default function Notifications() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => user?.id && clearAll.mutate(user.id)}
+              onClick={() => clearAll.mutate()}
               disabled={notificationsData.length === 0}
               className="hover:bg-rose-500/10 size-9 rounded-lg text-rose-500 transition-all disabled:opacity-20"
             >
@@ -343,7 +341,7 @@ export default function Notifications() {
       )}
 
       <MentionsList
-        mentions={mentionsData as MentionsResponse[]}
+        mentions={mentionsData}
         isLoading={mentionsLoading}
       />
     </PageTransition>

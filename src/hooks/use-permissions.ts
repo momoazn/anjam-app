@@ -1,22 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-
-import { queryKeys } from "@/hooks/query-keys";
 import {
   type OrgRole,
   type Permission,
   type ProjectRole,
   computePermissions,
 } from "@/lib/permissions";
-import { pb } from "@/lib/pocketbase";
-import { useAuthStore } from "@/store/auth-store";
-
-interface PermissionsResponse {
-  permissions: Record<Permission, boolean>;
-  organization_role: OrgRole | null;
-  project_role: ProjectRole | null;
-  is_org_owner: boolean;
-  is_org_admin: boolean;
-}
+import { useCurrentOrgRole } from "@/store/auth-store";
 
 interface UsePermissionsResult {
   isLoading: boolean;
@@ -35,75 +23,52 @@ interface UsePermissionsResult {
 }
 
 export function usePermissions(projectId?: string): UsePermissionsResult {
-  const { currentOrganization, currentOrgRole } = useAuthStore();
-  const orgId = currentOrganization?.id;
+  const currentOrgRole = useCurrentOrgRole();
 
-  const query = useQuery({
-    queryKey: queryKeys.permissions.byOrg(orgId, projectId),
-    queryFn: async (): Promise<PermissionsResponse> => {
-      if (!orgId) {
-        throw new Error("No organization selected");
-      }
+  // In v1, we simplified project roles to match org roles for now,
+  // or default to "member" if they are in the org.
+  // For proper project-level overrides, we'd need to fetch the project member record.
+  // For now, we assume if you are an org owner/admin, you are project owner/admin.
+  const projectRole: ProjectRole =
+    currentOrgRole === "owner" ? "owner" : "member";
 
-      const params = new URLSearchParams({ organization_id: orgId });
-      if (projectId) params.set("project_id", projectId);
-      return pb.send<PermissionsResponse>(`/api/v1/permissions?${params}`, {});
-    },
-    enabled: !!orgId,
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
-  });
-
-  const localPermissions = computePermissions(
+  const permissions = computePermissions(
     currentOrgRole ?? undefined,
-    query.data?.project_role ?? undefined,
+    projectRole
   );
-
-  const permissions = (query.data?.permissions ?? localPermissions) as Record<
-    Permission,
-    boolean
-  >;
 
   const can = (permission: Permission): boolean => {
     return permissions[permission] ?? false;
   };
 
   return {
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
+    isLoading: false,
+    isError: false,
+    error: null,
 
-    orgRole: query.data?.organization_role ?? currentOrgRole,
-    projectRole: query.data?.project_role ?? null,
-    isOrgOwner: query.data?.is_org_owner ?? currentOrgRole === "owner",
-    isOrgAdmin:
-      query.data?.is_org_admin ??
-      (currentOrgRole === "owner" || currentOrgRole === "admin"),
+    orgRole: currentOrgRole,
+    projectRole: projectRole,
+    isOrgOwner: currentOrgRole === "owner",
+    isOrgAdmin: currentOrgRole === "owner",
 
     can,
     permissions,
 
-    refetch: query.refetch,
+    refetch: () => {},
   };
 }
 
 export function useCanDo(permission: Permission, projectId?: string): boolean {
-  const { can, isLoading } = usePermissions(projectId);
-
-  if (isLoading) return false;
+  const { can } = usePermissions(projectId);
   return can(permission);
 }
 
 export function useIsOrgAdmin(): boolean {
-  const { isOrgAdmin, isLoading } = usePermissions();
-
-  if (isLoading) return false;
+  const { isOrgAdmin } = usePermissions();
   return isOrgAdmin;
 }
 
 export function useCanManageProject(projectId: string): boolean {
-  const { can, isLoading } = usePermissions(projectId);
-
-  if (isLoading) return false;
+  const { can } = usePermissions(projectId);
   return can("project.update");
 }

@@ -1,4 +1,44 @@
-import type { TasksPriorityOptions } from "../pocketbase-types";
+// Convex task priority type
+export type ConvexTaskPriority = "low" | "medium" | "high" | "urgent";
+
+// Convex task status type
+export type ConvexTaskStatus =
+  | "todo"
+  | "in_progress"
+  | "in_review"
+  | "done"
+  | "cancelled";
+
+// Convex user type (minimal for reports)
+export type ConvexUser = {
+  _id: string;
+  id: string; // Compatibility alias
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  first_name?: string; // Compatibility alias
+  last_name?: string; // Compatibility alias
+  name?: string;
+};
+
+// Convex task type (minimal for reports)
+export type ConvexTask = {
+  _id: string;
+  id: string; // Compatibility alias
+  projectId: string;
+  assigneeUserId?: string;
+  assignee?: string; // Compatibility alias
+  project?: string; // Compatibility alias
+  title: string;
+  description?: string;
+  priority: ConvexTaskPriority;
+  status: ConvexTaskStatus;
+  deadline?: number;
+  created: number | string;
+  updated?: number | string;
+  updatedAt?: number;
+  _creationTime: number;
+};
 
 // Types for chart data
 export type StatusDistributionData = {
@@ -108,7 +148,7 @@ export type FilterControls = {
   projectIds?: string[];
   assigneeIds?: string[];
   statuses?: string[];
-  priorities?: TasksPriorityOptions[];
+  priorities?: ConvexTaskPriority[];
 };
 
 // Timeliness classification result
@@ -136,7 +176,7 @@ export type ThroughputDataPoint = {
 
 // Priority count result
 export type PriorityCount = {
-  key: TasksPriorityOptions;
+  key: ConvexTaskPriority;
   name: string;
   value: number;
 };

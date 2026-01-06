@@ -1,93 +1,156 @@
-import { UseMutationOptions, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "convex/react";
 
-import { ProjectWithSupervisor, pb } from "../lib/pocketbase";
-import { ProjectsRecord, ProjectsResponse } from "../lib/pocketbase-types";
-import { STALE_TIMES } from "../lib/query-config";
-import { mutationInvalidators } from "../lib/query-invalidators";
-import { createCrudHooks } from "./factories/use-crud-factory";
-import { queryKeys } from "./query-keys";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
+import { useCurrentOrganization } from "@/store/auth-store";
 
-const {
-  useCreate: useCreateProjectMutation,
-  useUpdate: useUpdateProjectMutation,
-  useDelete: useDeleteProjectMutation,
-} = createCrudHooks<ProjectsRecord, ProjectsResponse>({
-  collection: "projects",
-  queryKeys: queryKeys.projects,
-  invalidators: mutationInvalidators.crud.projects,
-});
+/**
+ * Hook to list all projects in the current organization.
+ */
+export function useProjects(options: { enabled?: boolean } = {}) {
+  const { enabled = true } = options;
+  const currentOrg = useCurrentOrganization();
+  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
 
-export function useProjects(
-  options: {
-    enabled?: boolean;
-    batch?: number;
-    sort?: string;
-  } = {},
-) {
-  const { enabled = true, batch = 100, sort = "-created" } = options;
+  const projects = useQuery(
+    api.projects.listByOrg,
+    enabled && organizationId ? { organizationId } : "skip",
+  );
 
-  return useQuery({
-    queryKey: queryKeys.projects.list({ batch, sort }),
-    queryFn: () =>
-      pb.collection("projects").getFullList<ProjectsResponse>({
-        batch,
-        sort,
-      }),
-    enabled,
-    staleTime: STALE_TIMES.reference,
-  });
+  return {
+    data: projects?.map((p: any) => ({
+      ...p,
+      id: p._id,
+      expand: {
+        supervisor: p.supervisor ? {
+          ...p.supervisor,
+          id: p.supervisor._id,
+          first_name: p.supervisor.firstName,
+          last_name: p.supervisor.lastName,
+        } : undefined,
+      }
+    })),
+    isPending: projects === undefined,
+    error: null,
+  };
 }
 
-export function useProject(options: { id: string; enabled?: boolean }) {
+/**
+ * Hook to get a single project by ID.
+ */
+export function useProject(options: { id: string | undefined; enabled?: boolean }) {
   const { id, enabled = true } = options;
 
-  return useQuery({
-    queryKey: queryKeys.projects.detail(id),
-    queryFn: () => pb.collection("projects").getOne<ProjectsResponse>(id),
-    enabled: enabled && Boolean(id),
-    staleTime: STALE_TIMES.reference,
-  });
+  const project = useQuery(
+    api.projects.get,
+    enabled && id ? { projectId: id as Id<"projects"> } : "skip",
+  );
+
+  return {
+    data: project
+      ? {
+          ...project,
+          id: (project as any)._id,
+          expand: {
+            supervisor: (project as any).supervisor ? {
+              ...(project as any).supervisor,
+              id: (project as any).supervisor._id,
+              first_name: (project as any).supervisor.firstName,
+              last_name: (project as any).supervisor.lastName,
+            } : undefined,
+          }
+        }
+      : undefined,
+    isLoading: project === undefined,
+    isPending: project === undefined,
+    error: null,
+  };
 }
 
+/**
+ * Hook to get a project with supervisor details.
+ * In Convex v1, supervisor is just a field on the project.
+ */
 export function useProjectWithSupervisor(options: {
-  id: string;
+  id: string | undefined;
   enabled?: boolean;
 }) {
-  const { id, enabled = true } = options;
-
-  return useQuery({
-    queryKey: [...queryKeys.projects.detail(id), "supervisor"],
-    queryFn: () =>
-      pb.collection("projects").getOne<ProjectWithSupervisor>(id, {
-        expand: "supervisor",
-      }),
-    enabled: enabled && Boolean(id),
-    staleTime: STALE_TIMES.reference,
-  });
+  // For now, this is same as useProject as we don't have complex expands in Convex yet
+  // User details can be fetched separately or joined in the query if needed.
+  return useProject(options);
 }
 
-export function useCreateProject(
-  options?: UseMutationOptions<
-    ProjectsResponse,
-    Error,
-    Omit<ProjectsRecord, "id" | "created" | "updated">
-  >,
-) {
-  return useCreateProjectMutation(options);
+/**
+ * Hook to create a project.
+ */
+export function useCreateProject(options?: { onSuccess?: (id: string) => void }) {
+  const createProjectMutation = useMutation(api.projects.create);
+
+  return {
+    mutate: async (data: {
+      name: string;
+      description?: string;
+      supervisorUserId?: string;
+      organizationId: string;
+    }) => {
+      const id = await createProjectMutation({
+        name: data.name,
+        description: data.description,
+        supervisorUserId: data.supervisorUserId as Id<"users"> | undefined,
+        organizationId: data.organizationId as Id<"organizations">,
+      });
+      options?.onSuccess?.(id);
+      return id;
+    },
+    isPending: false,
+  };
 }
 
-export function useUpdateProject(
-  options?: UseMutationOptions<
-    ProjectsResponse,
-    Error,
-    { id: string; updates: Partial<ProjectsRecord> }
-  >,
-) {
-  return useUpdateProjectMutation(options);
+/**
+ * Hook to update a project.
+ */
+export function useUpdateProject(options?: { onSuccess?: () => void }) {
+  const updateProjectMutation = useMutation(api.projects.update);
+
+  return {
+    mutate: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: {
+        name?: string;
+        description?: string;
+        supervisorUserId?: string;
+      };
+    }) => {
+      await updateProjectMutation({
+        projectId: id as Id<"projects">,
+        updates: {
+          name: updates.name,
+          description: updates.description,
+          supervisorUserId: updates.supervisorUserId as Id<"users"> | undefined,
+        },
+      });
+      options?.onSuccess?.();
+    },
+    isPending: false,
+  };
 }
 
-export function useDeleteProject(
-  options?: UseMutationOptions<ProjectsResponse, Error, string>,
-) {
-  return useDeleteProjectMutation(options);
+/**
+ * Hook to delete a project.
+ */
+export function useDeleteProject(options?: { onSuccess?: () => void }) {
+  const deleteProjectMutation = useMutation(api.projects.deleteProject);
+
+  return {
+    mutate: async (id: string) => {
+      await deleteProjectMutation({
+        projectId: id as Id<"projects">,
+      });
+      options?.onSuccess?.();
+    },
+    isPending: false,
+  };
 }

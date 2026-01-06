@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { formatTaskDate } from "@/lib/date-utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
 import {
   getStatusColorVariant,
   priorityColors,
@@ -24,7 +23,7 @@ import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 export type TaskDetailsSidebarProps = {
-  task: TaskWithProject;
+  task: any;
   onEdit: () => void;
   onDelete: () => void;
   isDeleting: boolean;
@@ -38,9 +37,9 @@ export function TaskDetailsSidebar({
 }: TaskDetailsSidebarProps) {
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const StatusIcon = taskStatusIcons[task.status];
-  const PriorityIcon = priorityIcons[task.priority];
-  const tags = task.expand?.tags || [];
+  const StatusIcon = taskStatusIcons[task.status as keyof typeof taskStatusIcons] || taskStatusIcons.todo;
+  const PriorityIcon = priorityIcons[task.priority as keyof typeof priorityIcons] || priorityIcons.medium;
+  const tags = task.tagsData || [];
 
   if (isProductMode) {
     return (
@@ -51,7 +50,7 @@ export function TaskDetailsSidebar({
               {tasks.details.quickInfoCardTitle}
             </span>
             <span className="font-mono text-xs font-semibold">
-              {digitsEnToFa(task.display_id)}
+              {digitsEnToFa(task.displayId)}
             </span>
           </div>
 
@@ -68,7 +67,7 @@ export function TaskDetailsSidebar({
                 )}
               >
                 <StatusIcon className="ms-1.5 h-3.5 w-3.5" />
-                {tasks.status[task.status]}
+                {tasks.status[task.status as keyof typeof tasks.status]}
               </Badge>
             </div>
 
@@ -80,19 +79,19 @@ export function TaskDetailsSidebar({
                 variant="outline"
                 className={cn(
                   "rounded-md border-transparent px-2.5 py-0.5 text-xs font-bold",
-                  priorityColors[task.priority],
+                  priorityColors[task.priority as keyof typeof priorityColors],
                 )}
               >
                 <PriorityIcon className="ms-1.5 h-3.5 w-3.5" />
-                {tasks.priority[task.priority]}
+                {tasks.priority[task.priority as keyof typeof tasks.priority]}
               </Badge>
             </div>
 
             {tags.length > 0 ? (
               <div className="flex flex-wrap gap-1.5 border-t border-border/40 pt-3">
-                {tags.map((tag) => (
+                {tags.map((tag: any) => (
                   <Badge
-                    key={tag.id}
+                    key={tag._id}
                     style={{
                       backgroundColor: tag.color,
                       color: "#FFFFFF",
@@ -112,7 +111,7 @@ export function TaskDetailsSidebar({
                   {tasks.details.createdLabel}
                 </span>
                 <span className="font-semibold">
-                  {digitsEnToFa(formatTaskDate(task.created))}
+                  {digitsEnToFa(formatTaskDate(task._creationTime))}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
@@ -120,7 +119,7 @@ export function TaskDetailsSidebar({
                   {tasks.details.updatedLabel}
                 </span>
                 <span className="font-semibold">
-                  {digitsEnToFa(formatTaskDate(task.updated))}
+                  {digitsEnToFa(formatTaskDate(task.updatedAt || task._creationTime))}
                 </span>
               </div>
             </div>
@@ -181,7 +180,7 @@ export function TaskDetailsSidebar({
                 )}
               >
                 <StatusIcon className="ms-1.5 h-3.5 w-3.5" />
-                {tasks.status[task.status]}
+                {tasks.status[task.status as keyof typeof tasks.status]}
               </Badge>
             </div>
 
@@ -193,11 +192,11 @@ export function TaskDetailsSidebar({
                 variant="outline"
                 className={cn(
                   "rounded-md border-transparent px-2.5 py-0.5 text-xs font-bold",
-                  priorityColors[task.priority],
+                  priorityColors[task.priority as keyof typeof priorityColors],
                 )}
               >
                 <PriorityIcon className="ms-1.5 h-3.5 w-3.5" />
-                {tasks.priority[task.priority]}
+                {tasks.priority[task.priority as keyof typeof tasks.priority]}
               </Badge>
             </div>
 
@@ -207,9 +206,9 @@ export function TaskDetailsSidebar({
                   <IconTag className="size-3" /> {tasks.details.tags}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
-                  {tags.map((tag) => (
+                  {tags.map((tag: any) => (
                     <Badge
-                      key={tag.id}
+                      key={tag._id}
                       style={{
                         backgroundColor: tag.color,
                         color: "#FFFFFF",
@@ -230,7 +229,7 @@ export function TaskDetailsSidebar({
                   {tasks.details.createdLabel}
                 </span>
                 <span className="font-bold">
-                  {digitsEnToFa(formatTaskDate(task.created))}
+                  {digitsEnToFa(formatTaskDate(task._creationTime))}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
@@ -238,7 +237,7 @@ export function TaskDetailsSidebar({
                   {tasks.details.updatedLabel}
                 </span>
                 <span className="text-primary font-bold">
-                  {digitsEnToFa(formatTaskDate(task.updated))}
+                  {digitsEnToFa(formatTaskDate(task.updatedAt || task._creationTime))}
                 </span>
               </div>
             </div>
@@ -291,7 +290,7 @@ export function TaskDetailsSidebar({
               {tasks.details.displayIdLabel}
             </p>
             <p className="font-mono text-xs font-bold">
-              {digitsEnToFa(task.display_id)}
+              {digitsEnToFa(task.displayId)}
             </p>
           </div>
         </CardContent>

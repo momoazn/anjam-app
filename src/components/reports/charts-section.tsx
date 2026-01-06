@@ -19,11 +19,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { reports } from "@/constants";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type {
-  TasksPriorityOptions,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
+import type { ConvexTask, ConvexTaskPriority } from "@/lib/reports/types";
 import type {
   EmployeeBucket,
   buildLeaderboard,
@@ -33,6 +29,7 @@ import type {
   computeTeamAverages,
   computeWorkloadDistribution,
 } from "@/lib/reports";
+import type { ConvexUser } from "@/lib/reports/types";
 
 const Leaderboard = lazy(() =>
   import("@/components/reports/leaderboard").then((m) => ({
@@ -92,18 +89,18 @@ const EmptyState = ({ message }: { message: string }) => (
 type ChartsSectionProps = {
   timelinessData: Array<{ key: TimelinessKey; name: string; value: number }>;
   priorityData: Array<{
-    key: TasksPriorityOptions;
+    key: ConvexTaskPriority;
     name: string;
     value: number;
   }>;
   hasTimeliness: boolean;
   hasPriority: boolean;
   leaderboardData: ReturnType<typeof buildLeaderboard>;
-  users: UsersResponse[] | undefined;
+  users: ConvexUser[] | undefined;
   timeRange: { start: Date; end: Date };
   onDrilldown: (
     title: string,
-    predicate: (task: TaskWithProject) => boolean,
+    predicate: (task: ConvexTask) => boolean,
   ) => void;
   overtimeAnalysis: ReturnType<typeof computeOvertimeAnalysis>;
   workloadDistribution: ReturnType<typeof computeWorkloadDistribution>;

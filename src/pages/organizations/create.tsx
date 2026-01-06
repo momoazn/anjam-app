@@ -18,8 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { auth, organization, shared } from "@/constants";
 import { logError } from "@/lib/logger";
-import { pb } from "@/lib/pocketbase";
 import { useAuthStore } from "@/store/auth-store";
+import { useMutation as useConvexMutation } from "convex/react";
+import { api } from "@/lib/convex";
 
 const createOrgSchema = z.object({
   name: z.string().min(1).max(200),
@@ -37,7 +38,7 @@ export function CreateOrganizationPage() {
   const navigate = useNavigate();
   const currentUser = useAuthStore((s) => s.user);
   const switchOrganization = useAuthStore((s) => s.switchOrganization);
-  const fetchUserOrganizations = useAuthStore((s) => s.fetchUserOrganizations);
+  const createOrg = useConvexMutation(api.organizations.create);
 
   const form = useForm<CreateOrgForm>({
     resolver: zodResolver(createOrgSchema),
@@ -70,22 +71,15 @@ export function CreateOrganizationPage() {
     }
 
     try {
-      const response = (await pb.send("/api/v1/organizations", {
-        method: "POST",
-        body: {
-          name: data.name,
-          description: data.description || "",
-        },
-      })) as { organization: { id: string } };
-
-      // Refresh user's organizations
-      await fetchUserOrganizations();
-
-      // Switch to the new organization
-      await switchOrganization(response.organization.id);
+      const orgId = await createOrg({
+        name: data.name,
+        slug: data.slug,
+        description: data.description || "",
+      });
+      await switchOrganization(orgId);
 
       toast.success(organization.create.success);
-      navigate("/dashboard");
+      navigate("/projects");
     } catch (error) {
       logError("Error creating organization", error);
       toast.error(organization.create.error);

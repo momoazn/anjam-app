@@ -22,10 +22,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";
 import { useCreateTask } from "@/hooks";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { TaskPriority, TaskStatus } from "@/types/tasks";
 import { parseTimeInput } from "@/lib/time-utils";
 import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
 
@@ -46,8 +43,8 @@ export default function CreateTask() {
       title: "",
       description: "",
       assignee: tasks.addTask.unassigned,
-      priority: TasksPriorityOptions.medium,
-      status: TasksStatusOptions.todo,
+      priority: "medium" as TaskPriority,
+      status: "todo" as TaskStatus,
       project: initialProject,
       deadline: undefined,
       estimated_hours: 0,
@@ -79,13 +76,12 @@ export default function CreateTask() {
     createTask({
       ...rest,
       estimated_minutes,
-      creator: user.id,
       project: values.project || initialProject,
       assignee:
         values.assignee !== tasks.addTask.unassigned
           ? values.assignee
           : undefined,
-      deadline: values.deadline?.toISOString(),
+      deadline: values.deadline?.getTime(),
     });
   }
 

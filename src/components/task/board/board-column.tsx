@@ -8,17 +8,41 @@ import { IconHash, IconTerminal } from "@tabler/icons-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { common, tasks as tasksText } from "@/constants";
-import { TaskWithProject } from "@/lib/pocketbase";
-import { TasksStatusOptions } from "@/lib/pocketbase-types";
-import {
-  TaskStatusConfig,
-  getStatusColorVariant,
-  taskStatusIcons,
-} from "@/lib/status-utils";
+import { TaskStatusConfig, getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
+import { TaskStatus } from "@/types/tasks";
 
 import { BoardCard } from "./board-card";
+import { Task } from "@/types/tasks";
+
+// Convex-compatible TaskWithProject interface
+interface TaskWithProject extends Omit<Task, "id"> {
+  id?: string;
+  assignee?: {
+    id: string;
+    _id: string;
+    username: string;
+    firstName?: string;
+    first_name?: string;
+    lastName?: string;
+    last_name?: string;
+  } | null;
+  project?: { name: string };
+  display_id?: string;
+  expand?: {
+    project?: { name: string };
+    assignee?: {
+      id: string;
+      _id: string;
+      username: string;
+      firstName?: string;
+      first_name?: string;
+      lastName?: string;
+      last_name?: string;
+    };
+  };
+}
 
 interface BoardColumnProps {
   status: TaskStatusConfig;
@@ -57,13 +81,13 @@ export function BoardColumn({
     },
   });
 
-  const Icon = taskStatusIcons[status.key as TasksStatusOptions];
+  const Icon = taskStatusIcons[status.key as TaskStatus];
   const iconColor = getStatusColorVariant(
-    status.key as TasksStatusOptions,
+    status.key as TaskStatus,
     "icon",
   );
   const borderColor = getStatusColorVariant(
-    status.key as TasksStatusOptions,
+    status.key as TaskStatus,
     "border",
   )
     .replace("border-", "border-t-")
@@ -132,12 +156,14 @@ export function BoardColumn({
             )}
           >
             <SortableContext
-              items={tasks.map((t) => t.id)}
+              items={tasks
+                .map((t) => t.id ?? t._id)
+                .filter((id): id is string => Boolean(id))}
               strategy={verticalListSortingStrategy}
             >
               {showPlaceholder && <BoardPlaceholder />}
               {tasks.map((task) => (
-                <BoardCard key={task.id} task={task} />
+                <BoardCard key={task.id ?? task._id} task={task} />
               ))}
             </SortableContext>
 

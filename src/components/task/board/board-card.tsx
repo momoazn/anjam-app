@@ -24,11 +24,38 @@ import { dashboard, shared, tasks } from "@/constants";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { UsersResponse } from "@/lib/pocketbase-types";
 import { getStatusColorVariant } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
+import { Task } from "@/types/tasks";
+
+// Convex-compatible TaskWithProject interface for board card
+interface TaskWithProject extends Omit<Task, "id"> {
+  id?: string; // Override to make optional for compatibility
+  project?: { name: string };
+  assignee?: {
+    id: string;
+    _id: string;
+    username: string;
+    firstName?: string;
+    first_name?: string;
+    lastName?: string;
+    last_name?: string;
+  } | null;
+  display_id?: string; // Compatibility field mapped from displayId
+  expand?: {
+    project?: { name: string };
+    assignee?: {
+      id: string;
+      _id: string;
+      username: string;
+      firstName?: string;
+      first_name?: string;
+      lastName?: string;
+      last_name?: string;
+    };
+  };
+}
 
 interface BoardCardProps {
   task: TaskWithProject;
@@ -39,27 +66,24 @@ export function BoardCard({ task }: BoardCardProps) {
   const { id: projectId } = useParams<{ id: string }>();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
+  const taskId = task.id ?? task._id;
   const { setNodeRef, attributes, listeners, transform, isDragging } =
     useSortable({
-      id: task.id,
+      id: taskId,
       data: {
         type: "Task",
         task,
       },
     });
 
-  const updateTask = useUpdateTask({
-    onSuccess: () => {
-      toast.success(tasks.edit.success);
-    },
-  });
+  const updateTask = useUpdateTask();
 
-  const { data: users } = useUsers({ batch: 100, sort: "-created" });
+  const { data: users } = useUsers({ enabled: true });
 
   const style = {
     ...(isDragging ? {} : { transition: "all 150ms ease-out" }),
     transform: CSS.Transform.toString(transform),
-    viewTransitionName: `task-${task.id}`,
+    viewTransitionName: `task-${taskId}`,
   };
 
   if (isDragging) {
@@ -72,25 +96,28 @@ export function BoardCard({ task }: BoardCardProps) {
     );
   }
 
-  const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
+  const assigneeRecord = task.assignee;
   const showProjectLabel = !projectId;
+  const displayId = task.displayId || task.display_id || "";
 
   const handleAssigneeChange = (value: string) => {
     updateTask.mutate({
-      id: task.id,
-      updates: { assignee: value === "__unassigned" ? "" : value },
+      id: taskId,
+      updates: { assigneeUserId: value === "__unassigned" ? undefined : value },
     });
+    toast.success(tasks.edit.success);
   };
 
   const handleDueDateChange = (date: Date | undefined) => {
     updateTask.mutate({
-      id: task.id,
-      updates: { deadline: date ? date.toISOString() : undefined },
+      id: taskId,
+      updates: { deadline: date ? date.getTime() : undefined },
     });
+    toast.success(tasks.edit.success);
   };
 
   const handleCardClick = () => {
-    navigate(`/tasks/${task.id}`);
+    navigate(`/tasks/${taskId}`);
   };
 
   const handleCardKeyDown = (e: React.KeyboardEvent) => {
@@ -121,7 +148,7 @@ export function BoardCard({ task }: BoardCardProps) {
         <div className="flex items-center gap-1.5 opacity-40">
           <IconHash className="size-3" />
           <span className="text-[10px] font-bold">
-            {digitsEnToFa(task.display_id)}
+            {digitsEnToFa(displayId)}
           </span>
         </div>
       </div>
@@ -143,7 +170,7 @@ export function BoardCard({ task }: BoardCardProps) {
               >
                 <TaskAssigneeAvatar
                   assignee={assigneeRecord}
-                  hasAssigneeId={!!task.assignee}
+                  hasAssigneeId={!!task.assigneeUserId}
                   size="md"
                   indicatorClassName={
                     isProductMode ? "border-background" : "border-card"
@@ -153,7 +180,7 @@ export function BoardCard({ task }: BoardCardProps) {
             </PopoverTrigger>
             <PopoverContent className="w-[180px] p-1.5" align="start">
               <Select
-                value={task.assignee || "__unassigned"}
+                value={task.assigneeUserId || "__unassigned"}
                 onValueChange={handleAssigneeChange}
               >
                 <SelectTrigger className="border-transparent bg-transparent h-8 text-right text-xs focus:ring-0">
@@ -192,7 +219,7 @@ export function BoardCard({ task }: BoardCardProps) {
             <div className="flex items-center gap-1 opacity-40">
               <IconTarget className="size-3" />
               <span className="max-w-[100px] truncate text-[10px] font-bold">
-                {task.expand?.project?.name || dashboard.cards.noProject}
+                {task.project?.name || dashboard.cards.noProject}
               </span>
             </div>
           )}
@@ -209,8 +236,10 @@ export function BoardCard({ task }: BoardCardProps) {
                 }}
               >
                 <IconClock className="size-3" />
-                <span className="text-[10px] font-bold tabular-nums">
-                  {digitsEnToFa(formatDateShort(task.deadline))}
+	                <span className="text-[10px] font-bold tabular-nums">
+                  {digitsEnToFa(
+                    formatDateShort(new Date(task.deadline).toISOString()),
+                  )}
                 </span>
               </button>
             </PopoverTrigger>

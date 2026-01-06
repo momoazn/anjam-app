@@ -1,53 +1,48 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconActivity,
   IconCalendar,
   IconFileText,
   IconHistory,
   IconQuote,
   IconTerminal,
-  IconTrash,
-  IconUpload,
   IconUser,
 } from "@tabler/icons-react";
 
-import { ActivityStream } from "@/components/audit/activity-stream";
-import { ProjectAssets } from "@/components/project/project-assets";
-import { Button } from "@/components/ui/button";
-import { FileUpload } from "@/components/ui/file-upload";
 import { Textarea } from "@/components/ui/textarea";
-import { auditLogs, projects } from "@/constants";
-import type { FileWithPreview } from "@/hooks/use-file-upload";
+import { projects } from "@/constants";
 import { formatDateLocale } from "@/lib/date-utils";
 import { stripHtml } from "@/lib/excel-export";
-import type { ProjectWithSupervisor } from "@/lib/pocketbase";
 import { cn, formatUserName } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 type ProjectDetailsSectionsProps = {
-  project: ProjectWithSupervisor;
+  project: {
+    _id: string;
+    _creationTime: number;
+    name: string;
+    code: string;
+    description?: string;
+    updatedAt?: number;
+    supervisor?: {
+      firstName?: string;
+      lastName?: string;
+      username?: string;
+    } | null;
+  };
   isEditing: boolean;
   editedDescription: string;
-  filesToDelete: string[];
-  newFiles: FileWithPreview[];
   onDescriptionChange: (value: string) => void;
-  onNewFilesChange: (files: FileWithPreview[]) => void;
-  onDeleteFile: (filename: string) => void;
 };
 
 export function ProjectDetailsSections({
   project,
   isEditing,
   editedDescription,
-  filesToDelete,
-  newFiles,
   onDescriptionChange,
-  onNewFilesChange,
-  onDeleteFile,
 }: ProjectDetailsSectionsProps) {
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const supervisor = project.expand?.supervisor;
+  const supervisor = project.supervisor;
 
   return (
     <div
@@ -72,8 +67,8 @@ export function ProjectDetailsSections({
                 label: projects.details.supervisor,
                 value: supervisor
                   ? formatUserName(
-                      supervisor.first_name,
-                      supervisor.last_name,
+                      supervisor.firstName,
+                      supervisor.lastName,
                       supervisor.username,
                     )
                   : "—",
@@ -82,17 +77,23 @@ export function ProjectDetailsSections({
               },
               {
                 label: projects.details.createdAt,
-                value: digitsEnToFa(formatDateLocale(project.created)),
+                value: project._creationTime
+                  ? digitsEnToFa(formatDateLocale(project._creationTime))
+                  : "—",
                 icon: IconCalendar,
               },
               {
                 label: projects.details.updatedAt,
-                value: digitsEnToFa(formatDateLocale(project.updated)),
+                value: project.updatedAt
+                  ? digitsEnToFa(formatDateLocale(project.updatedAt))
+                  : project._creationTime
+                    ? digitsEnToFa(formatDateLocale(project._creationTime))
+                    : "—",
                 icon: IconHistory,
               },
               {
                 label: "شناسه",
-                value: project.id,
+                value: project._id,
                 icon: IconTerminal,
                 mono: true,
               },
@@ -124,8 +125,8 @@ export function ProjectDetailsSections({
                 label: projects.details.supervisor,
                 value: supervisor ? (
                   formatUserName(
-                    supervisor.first_name,
-                    supervisor.last_name,
+                    supervisor.firstName,
+                    supervisor.lastName,
                     supervisor.username,
                   )
                 ) : (
@@ -135,18 +136,24 @@ export function ProjectDetailsSections({
               },
               {
                 label: projects.details.createdAt,
-                value: digitsEnToFa(formatDateLocale(project.created)),
+                value: project._creationTime
+                  ? digitsEnToFa(formatDateLocale(project._creationTime))
+                  : "—",
                 icon: IconCalendar,
               },
               {
                 label: "شناسه_سیستمی",
-                value: project.id,
+                value: project._id,
                 icon: IconTerminal,
                 mono: true,
               },
               {
                 label: projects.details.updatedAt,
-                value: digitsEnToFa(formatDateLocale(project.updated)),
+                value: project.updatedAt
+                  ? digitsEnToFa(formatDateLocale(project.updatedAt))
+                  : project._creationTime
+                    ? digitsEnToFa(formatDateLocale(project._creationTime))
+                    : "—",
                 icon: IconHistory,
               },
             ].map((item, i) => (
@@ -198,7 +205,7 @@ export function ProjectDetailsSections({
                   {projects.edit.description}
                 </span>
                 <Textarea
-                  value={editedDescription.replace(/<br>/g, "\n")}
+                  value={editedDescription}
                   onChange={(event) => onDescriptionChange(event.target.value)}
                   placeholder={projects.create.form.descriptionPlaceholder}
                   className={cn(
@@ -248,99 +255,7 @@ export function ProjectDetailsSections({
         </div>
       </section>
 
-      {/* Asset Section */}
-      <section className="space-y-6">
-        <div className="text-muted-foreground flex items-center gap-2 text-xs font-semibold">
-          <IconUpload className="size-4 opacity-70" />
-          <span>{projects.details.files}</span>
-        </div>
-
-        <div
-          className={cn(
-            "border-border/40 relative overflow-hidden border",
-            isProductMode
-              ? "rounded-xl bg-background/30"
-              : "bg-card rounded-2xl",
-          )}
-        >
-          <div className="relative z-10">
-            {isEditing ? (
-              <div
-                className={cn(
-                  "space-y-10 text-right",
-                  isProductMode ? "p-4" : "space-y-12 p-8 md:p-12",
-                )}
-              >
-                {project.assets && project.assets.length > 0 && (
-                  <div className="space-y-6">
-                    <h4 className="text-muted-foreground/40 border-border/10 border-b pb-3 text-[10px] font-bold tracking-tight">
-                      {projects.files.existingFiles}
-                    </h4>
-                    <div className="grid grid-cols-1 gap-3">
-                      {project.assets
-                        .filter((filename) => !filesToDelete.includes(filename))
-                        .map((filename) => (
-                          <div
-                            key={filename}
-                            className="group border-border/20 bg-background/50 flex items-center justify-between rounded-xl border p-4 transition-all hover:border-rose-500/40"
-                          >
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => onDeleteFile(filename)}
-                              className="h-10 w-10 shrink-0 rounded-lg text-rose-500 hover:bg-rose-500 hover:text-white"
-                            >
-                              <IconTrash className="size-5" />
-                            </Button>
-                            <span className="flex-1 truncate pe-6 text-right font-mono text-xs font-bold tracking-tight opacity-60">
-                              {filename}
-                            </span>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-6">
-                  <h4 className="text-primary border-primary/20 flex items-center justify-end gap-3 border-b pb-3 text-[10px] font-bold tracking-tight">
-                    {projects.files.addNewFiles}
-                    <IconUpload className="size-4" />
-                  </h4>
-                  <FileUpload
-                    value={newFiles}
-                    onChange={onNewFilesChange}
-                    maxSize={52428800}
-                  />
-                </div>
-              </div>
-            ) : (
-              <ProjectAssets project={project} />
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Operation Log Section */}
-      {isProductMode ? null : (
-        <section className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-lg">
-              <IconActivity className="size-4" />
-            </div>
-            <span className="text-primary text-[10px] font-bold tracking-tight">
-              {auditLogs.activityStream.title}
-            </span>
-            <div className="bg-border/20 h-px flex-1" />
-          </div>
-
-          <div className="border-border/40 bg-card relative overflow-hidden rounded-2xl border">
-            <div className="relative z-10">
-              <ActivityStream resource="projects" resourceId={project.id} />
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Assets and Activity Stream are disabled/hidden during migration as per plan */}
     </div>
   );
 }
