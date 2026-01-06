@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { myTasks as myTasksText, tasks } from "@/constants";
 import { statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { Task, TaskStatus, TaskWithProject } from "@/types/tasks";
+import { TaskStatus, TaskWithProject } from "@/types/tasks";
 
 export type MyTasksTabsProps = {
   activeTab: string;

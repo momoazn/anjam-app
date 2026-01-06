@@ -10,13 +10,11 @@ import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { useProjects } from "@/hooks";
 import {
-  useAuthUser,
   useCurrentOrgMode,
   useCurrentOrgRole,
 } from "@/store/auth-store";
 
 export default function Projects() {
-  const user = useAuthUser();
   const currentOrgRole = useCurrentOrgRole();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";

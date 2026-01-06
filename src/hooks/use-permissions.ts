@@ -22,7 +22,8 @@ interface UsePermissionsResult {
   refetch: () => void;
 }
 
-export function usePermissions(projectId?: string): UsePermissionsResult {
+export function usePermissions(_projectId?: string): UsePermissionsResult {
+  void _projectId;
   const currentOrgRole = useCurrentOrgRole();
 
   // In v1, we simplified project roles to match org roles for now,

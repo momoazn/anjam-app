@@ -26,7 +26,7 @@ import { reports } from "@/constants";
 import { useTasks } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { cn, formatUserName } from "@/lib/utils";
-import { useCurrentOrgMode, useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrgMode } from "@/store/auth-store";
 
 /**
  * Insights Page - Product Mode
@@ -41,8 +41,6 @@ import { useCurrentOrgMode, useCurrentOrganization } from "@/store/auth-store";
  * - Workload by assignee
  */
 export default function Insights() {
-  const currentOrg = useCurrentOrganization();
-  const orgId = currentOrg?._id;
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
   const cardClassName = cn(
@@ -84,7 +82,7 @@ export default function Insights() {
     // Helper to get created date from task (Convex uses _creationTime)
     const getCreatedDate = (t: typeof tasks[0]): Date => {
       // The hook maps _creationTime to created as ISO string
-      return new Date(t.created);
+      return new Date(t.created || 0);
     };
 
     // Helper to get updated date from task (Convex uses updatedAt)
@@ -163,11 +161,13 @@ export default function Insights() {
 
     const workloadByAssignee = Array.from(workloadMap.entries())
       .map(([userId, count]) => {
-        const user = users?.find((u) => u.id === userId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const user = users?.find((u) => (u as any).id === userId || (u as any)._id === userId);
         return {
           userId,
           name: user
-            ? formatUserName(user.first_name, user.last_name, user.username)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ? formatUserName((user as any).firstName || (user as any).first_name, (user as any).lastName || (user as any).last_name, user.username)
             : "ناشناس",
           count,
         };
