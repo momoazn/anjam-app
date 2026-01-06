@@ -2,9 +2,9 @@
 package hooks
 
 import (
+	"anjam/config"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"anjam/config"
 )
 
 // HandleAuthRequest handles authentication requests and validates user status.
@@ -27,6 +27,11 @@ func HandleAuthRequest(e *core.RecordAuthWithPasswordRequestEvent) error {
 			blockedReason = config.ErrUserBlocked
 		}
 		return apis.NewBadRequestError(blockedReason, nil)
+	}
+
+	// Check if user has verified their email
+	if !user.GetBool("verified") {
+		return apis.NewBadRequestError("Please verify your email first. Check your inbox for the verification email.", nil)
 	}
 
 	return e.Next()

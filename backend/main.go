@@ -148,6 +148,54 @@ func main() {
 		return se.Next()
 	})
 
+	// Customize verification email template
+	app.OnMailerRecordVerificationSend(CollectionUsers).BindFunc(func(e *core.MailerRecordEvent) error {
+		// Access token and user data
+		token := e.Meta["token"].(string)
+		userEmail := e.Record.Email()
+		appName := e.App.Settings().Meta.AppName
+		if appName == "" {
+			appName = "Anjam"
+		}
+
+		// Build custom magic link URL pointing to frontend
+		appUrl := e.App.Settings().Meta.AppURL
+		if appUrl == "" {
+			appUrl = "http://localhost:5173"
+		}
+		magicLink := fmt.Sprintf("%s/verify-email?token=%s&email=%s", appUrl, token, userEmail)
+
+		// Customize email content - keeping it simple as requested
+		e.Message.Subject = fmt.Sprintf("Welcome to %s - Verify Your Email", appName)
+		e.Message.HTML = fmt.Sprintf(`
+			<html>
+			<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+				<div style="text-align: center; margin-bottom: 30px;">
+					<h2 style="color: #333;">Welcome to %s!</h2>
+				</div>
+				<p>Thank you for registering. Please verify your email address by clicking the button below:</p>
+				<div style="text-align: center; margin: 30px 0;">
+					<a href="%s" style="background: #007bff; color: white; padding: 12px 24px; 
+					   text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
+						Verify Email Address
+					</a>
+				</div>
+				<p style="color: #666; font-size: 14px;">If the button doesn't work, copy and paste this link:</p>
+				<p style="word-break: break-all; color: #007bff; font-size: 12px;">%s</p>
+				<p style="color: #666; font-size: 12px; margin-top: 20px;">
+					This verification link will expire in 24 hours for security reasons.
+				</p>
+				<hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+				<p style="color: #999; font-size: 12px; text-align: center;">
+					This email was sent by %s. If you didn't create an account, you can safely ignore this email.
+				</p>
+			</body>
+			</html>
+		`, appName, magicLink, magicLink, appName)
+
+		return e.Next()
+	})
+
 	// --- Start Application ---
 	startApp(app)
 }

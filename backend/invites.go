@@ -13,6 +13,8 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/mails"
+	"github.com/pocketbase/pocketbase/tools/routine"
 	"github.com/pocketbase/pocketbase/tools/security"
 
 	"anjam/helpers"
@@ -41,6 +43,12 @@ func registerInviteEndpoints(app *pocketbase.PocketBase) {
 
 		// POST /api/v1/register - User registration (without org)
 		se.Router.POST("/api/v1/register", handleRegister)
+
+		// GET /api/v1/verification-status - Check email verification status
+		se.Router.GET("/api/v1/verification-status", handleVerificationStatus)
+
+		// POST /api/v1/resend-verification - Resend verification email
+		se.Router.POST("/api/v1/resend-verification", handleResendVerification)
 
 		return se.Next()
 	})
@@ -513,22 +521,20 @@ func handleRegister(e *core.RequestEvent) error {
 		return e.InternalServerError(ErrFailedToCreateUser, err)
 	}
 
-	// Auto-login the user
-	authToken, err := newUser.NewAuthToken()
-	if err != nil {
-		return e.JSON(201, map[string]any{
-			"user": newUser,
-			"meta": map[string]any{
-				"message": MsgRegistrationSuccess,
-			},
-		})
-	}
+	// Send verification email using PocketBase's built-in mail system
+	// Use FireAndForget to avoid blocking the registration response
+	routine.FireAndForget(func() {
+		if err := mails.SendRecordVerification(e.App, newUser); err != nil {
+			e.App.Logger().Error("Failed to send verification email", "error", err, "email", email)
+		}
+	})
 
+	// Return success without auth token - user needs to verify email first
 	return e.JSON(201, map[string]any{
-		"user":  newUser,
-		"token": authToken,
+		"user": newUser,
 		"meta": map[string]any{
-			"message": MsgRegistrationSuccess,
+			"message":          "Registration successful. Please check your email to verify your account.",
+			"verificationSent": true,
 		},
 	})
 }
@@ -573,4 +579,67 @@ func isOrgAdmin(app core.App, userId, orgId string) bool {
 		dbx.Params{"userId": userId, "orgId": orgId},
 	)
 	return err == nil && membership != nil
+}
+
+// handleVerificationStatus checks if a user's email is verified
+func handleVerificationStatus(e *core.RequestEvent) error {
+	email := e.Request.URL.Query().Get("email")
+	if email == "" {
+		return e.BadRequestError("Email parameter required", nil)
+	}
+
+	user, err := e.App.FindFirstRecordByFilter(
+		CollectionUsers,
+		"email = {:email}",
+		dbx.Params{"email": email},
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return e.JSON(200, map[string]bool{"verified": false})
+		}
+		return e.InternalServerError("Failed to check user", err)
+	}
+
+	return e.JSON(200, map[string]bool{"verified": user.GetBool("verified")})
+}
+
+// handleResendVerification resends verification email to user
+func handleResendVerification(e *core.RequestEvent) error {
+	var body struct {
+		Email string `json:"email"`
+	}
+
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("Invalid request body", err)
+	}
+
+	if body.Email == "" {
+		return e.BadRequestError("Email is required", nil)
+	}
+
+	user, err := e.App.FindFirstRecordByFilter(
+		CollectionUsers,
+		"email = {:email}",
+		dbx.Params{"email": body.Email},
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return e.BadRequestError("User not found", nil)
+		}
+		return e.InternalServerError("Failed to find user", err)
+	}
+
+	if user.GetBool("verified") {
+		return e.BadRequestError("Email already verified", nil)
+	}
+
+	// Send verification email using PocketBase's built-in mail system
+	// Use FireAndForget to avoid blocking the response
+	routine.FireAndForget(func() {
+		if err := mails.SendRecordVerification(e.App, user); err != nil {
+			e.App.Logger().Error("Failed to resend verification email", "error", err, "email", body.Email)
+		}
+	})
+
+	return e.JSON(200, map[string]any{"success": true})
 }
