@@ -1,38 +1,30 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Definitions for gradients -->
   <defs>
-    <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="oklch(0.65 0.15 255)"/>
-      <stop offset="100%" stop-color="oklch(0.55 0.18 255)"/>
-    </linearGradient>
+    <pattern id="grid-heavy" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M 64 0 L 0 0 0 64" fill="none" stroke="oklch(0.12 0.01 240)" stroke-width="1" stroke-opacity="0.08"/>
+    </pattern>
   </defs>
   
-  <!-- Main geometric shape - Hexagon-inspired container (fills most of canvas) -->
-  <path d="M 256 24 L 472 148 L 472 364 L 256 488 L 40 364 L 40 148 Z" 
-        fill="url(#logo-gradient)" 
-        opacity="0.95"/>
+  <!-- Background: Technical Silver/Grey -->
+  <rect width="512" height="512" rx="128" fill="oklch(0.96 0.01 240)"/>
+  <rect width="512" height="512" rx="128" fill="url(#grid-heavy)"/>
   
-  <!-- Inner geometric pattern - Connected task nodes (larger) -->
-  <g transform="translate(256, 256)">
-    <!-- Center node - Main hub (larger) -->
-    <circle cx="0" cy="0" r="72" fill="white" opacity="0.95"/>
-    
-    <!-- Connected nodes - Tasks (larger) -->
-    <circle cx="-110" cy="-80" r="42" fill="oklch(0.75 0.12 255)" opacity="0.8"/>
-    <circle cx="110" cy="-80" r="42" fill="oklch(0.75 0.12 255)" opacity="0.8"/>
-    <circle cx="0" cy="130" r="42" fill="oklch(0.75 0.12 255)" opacity="0.8"/>
-    
-    <!-- Connection lines (thicker) -->
-    <line x1="-110" y1="-80" x2="0" y2="0" stroke="white" stroke-width="6" opacity="0.6"/>
-    <line x1="110" y1="-80" x2="0" y2="0" stroke="white" stroke-width="6" opacity="0.6"/>
-    <line x1="0" y1="130" x2="0" y2="0" stroke="white" stroke-width="6" opacity="0.6"/>
-    
-    <!-- Checkmark in center - Task completion (larger) -->
-    <path d="M -28 0 L -8 24 L 28 -16" 
-          stroke="oklch(0.55 0.18 255)" 
-          stroke-width="9" 
-          stroke-linecap="round" 
-          stroke-linejoin="round" 
-          fill="none"/>
-  </g>
+  <!-- Strong Outer Frame -->
+  <rect x="12" y="12" width="488" height="488" rx="116" stroke="oklch(0.12 0.01 240)" stroke-width="8" stroke-opacity="0.1"/>
+  
+  <!-- Blueprint technical frame: High Visibility -->
+  <rect x="80" y="80" width="352" height="352" rx="48" stroke="oklch(0.55 0.18 255)" stroke-width="3" stroke-dasharray="12 8"/>
+  
+  <!-- Monolith A: Deep Industrial Neutral (High Contrast) -->
+  <path d="M140 380L256 132L372 380" stroke="oklch(0.12 0.01 240)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Cross-bar: Primary "Signal" Blue -->
+  <path d="M190 295H322" stroke="oklch(0.55 0.18 255)" stroke-width="40" stroke-linecap="round"/>
+  
+  <!-- Industrial Nodes: Primary Blue -->
+  <circle cx="256" cy="132" r="22" fill="oklch(0.55 0.18 255)"/>
+  <rect x="70" y="70" width="28" height="28" rx="6" fill="oklch(0.12 0.01 240)"/>
+  <rect x="414" y="70" width="28" height="28" rx="6" fill="oklch(0.12 0.01 240)"/>
+  <rect x="70" y="414" width="28" height="28" rx="6" fill="oklch(0.12 0.01 240)"/>
+  <rect x="414" y="414" width="28" height="28" rx="6" fill="oklch(0.12 0.01 240)"/>
 </svg>
