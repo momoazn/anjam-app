@@ -16,24 +16,9 @@ import { useMentions } from "@/hooks/mentions";
 import { useTasks } from "@/hooks/tasks";
 import { cn } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
-import { Task } from "@/types/tasks";
+import { Task, TaskWithProject } from "@/types/tasks";
 
 type FilterOption = "all" | "active" | "done";
-
-// Convex-compatible TaskWithProject interface
-interface TaskWithProject extends Task {
-  id: string;
-  project?: any;
-  assignee?: any;
-  creator?: any;
-  updated?: string;
-  created?: string;
-  expand?: {
-    project?: any;
-    assignee?: any;
-    creator?: any;
-  };
-}
 
 function SectionHeader({
   title,

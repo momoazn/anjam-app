@@ -223,7 +223,7 @@ export function UserListTable({
                     <div
                       className={cn(
                         "border-background absolute -end-0.5 -bottom-0.5 h-2 w-2 rounded-full border shadow-[0_0_4px_rgba(0,0,0,0.2)]",
-                        (u as any).active !== false ? "bg-emerald-500" : "bg-rose-500",
+                        u.active !== false ? "bg-emerald-500" : "bg-rose-500",
                       )}
                     />
                   </div>

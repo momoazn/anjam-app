@@ -10,7 +10,7 @@ import { useCurrentOrganization } from "@/store/auth-store";
 export function useUsers(options: { enabled?: boolean } = {}) {
   const { enabled = true } = options;
   const currentOrg = useCurrentOrganization();
-  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const organizationId = currentOrg?._id;
 
   const users = useQuery(
     api.users.list,
@@ -66,7 +66,7 @@ export function useUser({
  * In Convex v1, we currently use organization-level membership.
  */
 export function useProjectUsers({
-  projectId,
+  projectId: _projectId,
   enabled = true,
 }: {
   projectId: string | undefined;
@@ -75,7 +75,7 @@ export function useProjectUsers({
   // For now, return all organization users since projects don't have separate membership in the current Convex schema
   // We can refine this later if we add project_members table to Convex
   const currentOrg = useCurrentOrganization();
-  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const organizationId = currentOrg?._id;
 
   const users = useQuery(
     api.users.list,
@@ -102,7 +102,8 @@ export function useProjectUsers({
 export function useCreateUser() {
    // Stub for create user if needed, though usually handled via auth
    return {
-     mutate: async (data: any) => {
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     mutate: async (_data: any) => {
        console.warn("useCreateUser not implemented");
        return null;
      },
@@ -114,7 +115,8 @@ export function useUpdateUser() {
   const setUsername = useMutation(api.users.setUsername);
 
   return {
-    mutate: async ({ id, updates }: { id: string; updates: any }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutate: async ({ id: _id, updates }: { id: string; updates: any }) => {
       if (updates.username) {
         return await setUsername({ username: updates.username });
       }
@@ -149,6 +151,7 @@ export function useUnblockUser() {
  */
 export function useDeleteUser(options?: {
   onSuccess?: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onError?: (error: any) => void;
 }) {
   const removeMutation = useMutation(api.orgMembers.remove);
@@ -159,7 +162,7 @@ export function useDeleteUser(options?: {
       if (!currentOrg) return;
       try {
         await removeMutation({
-          organizationId: currentOrg.id as Id<"organizations">,
+          organizationId: currentOrg._id,
           userId: userId as Id<"users">,
         });
         options?.onSuccess?.();
@@ -172,7 +175,7 @@ export function useDeleteUser(options?: {
       if (!currentOrg) return;
       try {
         const result = await removeMutation({
-          organizationId: currentOrg.id as Id<"organizations">,
+          organizationId: currentOrg._id,
           userId: userId as Id<"users">,
         });
         options?.onSuccess?.();
