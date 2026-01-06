@@ -23,9 +23,30 @@ import { BoardCard } from "./board-card";
 interface BoardColumnProps {
   status: TaskStatusConfig;
   tasks: TaskWithProject[];
+  showPlaceholder?: boolean;
 }
 
-export function BoardColumn({ status, tasks }: BoardColumnProps) {
+function BoardPlaceholder() {
+  const mode = useCurrentOrgMode();
+  const isProductMode = mode === "product";
+
+  return (
+    <div
+      className={cn(
+        "border-primary/30 bg-primary/5 animate-pulse rounded-xl border-2 border-dashed",
+        isProductMode
+          ? "h-[4.5rem] min-h-[4.5rem] mx-3 my-2"
+          : "h-40 mx-4 my-3",
+      )}
+    />
+  );
+}
+
+export function BoardColumn({
+  status,
+  tasks,
+  showPlaceholder,
+}: BoardColumnProps) {
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
   const { setNodeRef } = useDroppable({
@@ -100,7 +121,7 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
 
       {/* Droppable Area */}
       <div className="flex-1 overflow-hidden">
-        <ScrollArea className="scrollbar-none h-full">
+        <ScrollArea className="scrollbar-none h-full [&>div]:overflow-auto [&>div]:!overflow-visible">
           <div
             ref={setNodeRef}
             className={cn(
@@ -114,6 +135,7 @@ export function BoardColumn({ status, tasks }: BoardColumnProps) {
               items={tasks.map((t) => t.id)}
               strategy={verticalListSortingStrategy}
             >
+              {showPlaceholder && <BoardPlaceholder />}
               {tasks.map((task) => (
                 <BoardCard key={task.id} task={task} />
               ))}

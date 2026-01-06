@@ -68,8 +68,8 @@ export function TaskFields({
   const metaLabelClass = cn(
     "flex items-center gap-1.5 font-bold tracking-tight",
     isProductVariant
-      ? "text-muted-foreground/60 text-[8px]"
-      : "text-muted-foreground/40 text-[7px]",
+      ? "text-muted-foreground/60 text-xs"
+      : "text-muted-foreground/40 text-[10px]",
   );
 
   const { data: projectsData } = useProjects({ enabled: !actualIsInProject });
@@ -122,7 +122,7 @@ export function TaskFields({
 
   return (
     <div
-      className={cn("text-right", isProductVariant ? "space-y-4" : "space-y-6")}
+      className={cn("text-right", isProductVariant ? "space-y-5" : "space-y-6")}
     >
       {/* Primary Input Zone */}
       <section className={isProductVariant ? "space-y-4" : "space-y-3"}>
@@ -157,8 +157,8 @@ export function TaskFields({
         </div>
       </section>
 
-      {/* Logic Gates Zone */}
-      <section className={isProductVariant ? "space-y-2" : "space-y-3"}>
+      {/* Task Parameters Zone - Linear Layout */}
+      <section className={isProductVariant ? "space-y-3" : "space-y-4"}>
         {isProductVariant ? null : (
           <div className="flex items-center gap-3">
             <span className="text-primary/60 text-[9px] font-bold tracking-tight">
@@ -170,21 +170,19 @@ export function TaskFields({
 
         <div
           className={cn(
-            "bg-border/40 border-border/40 grid grid-cols-1 gap-px overflow-hidden border sm:grid-cols-2 lg:grid-cols-3",
-            isProductVariant
-              ? "rounded-xl shadow-none"
-              : "rounded-2xl shadow-sm",
+            "border-border/40 space-y-2 overflow-hidden rounded-xl border",
+            isProductVariant ? "bg-background/20 p-3" : "bg-card p-4",
           )}
         >
           {!actualIsInProject && (
             <div
               className={cn(
-                "border-border/10 flex flex-col justify-between border-s p-3",
-                isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+                "border-border/10 flex items-center justify-between border-s px-3 py-3",
+                isProductVariant ? "rounded-lg" : "",
               )}
             >
               <span className={metaLabelClass}>
-                <IconStack2 className="size-2" /> {tasks.form.project}
+                <IconStack2 className="size-3" /> {tasks.form.project}
               </span>
               <ShadcnFormField
                 control={control}
@@ -192,7 +190,7 @@ export function TaskFields({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
+                      <SelectTrigger className="bg-muted/5 w-56 rounded-lg border-none px-3 py-2 text-right text-xs font-bold tracking-tight focus:ring-0">
                         <SelectValue
                           placeholder={tasks.addTask.selectProject}
                         />
@@ -202,14 +200,14 @@ export function TaskFields({
                           <SelectItem
                             key={option.value}
                             value={option.value}
-                            className="text-[9px] font-bold"
+                            className="text-xs font-bold"
                           >
                             {option.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage className="text-[9px] font-bold" />
+                    <FormMessage className="text-xs font-bold" />
                   </FormItem>
                 )}
               />
@@ -218,12 +216,12 @@ export function TaskFields({
 
           <div
             className={cn(
-              "border-border/10 flex flex-col justify-between border-s p-3",
-              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+              "border-border/10 flex items-center justify-between border-s px-3 py-3",
+              isProductVariant ? "rounded-lg" : "",
             )}
           >
             <span className={metaLabelClass}>
-              <IconUser className="size-2" /> {tasks.form.assignee}
+              <IconUser className="size-3" /> {tasks.form.assignee}
             </span>
             <ShadcnFormField
               control={control}
@@ -231,7 +229,7 @@ export function TaskFields({
               render={({ field }) => (
                 <FormItem className="space-y-0">
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
+                    <SelectTrigger className="bg-muted/5 w-56 rounded-lg border-none px-3 py-2 text-right text-xs font-bold tracking-tight focus:ring-0">
                       <SelectValue placeholder={tasks.addTask.unassigned} />
                     </SelectTrigger>
                     <SelectContent className="border-border bg-card rounded-lg border">
@@ -239,7 +237,7 @@ export function TaskFields({
                         <SelectItem
                           key={option.value}
                           value={option.value}
-                          className="text-[9px] font-bold"
+                          className="text-xs font-bold"
                         >
                           {option.label}
                         </SelectItem>
@@ -253,32 +251,34 @@ export function TaskFields({
 
           <div
             className={cn(
-              "border-border/10 flex flex-col justify-between border-s p-3",
-              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+              "border-border/10 flex items-center justify-between border-s px-3 py-3",
+              isProductVariant ? "rounded-lg" : "",
             )}
           >
             <span className={metaLabelClass}>
-              <IconFilter className="size-2" /> Status
+              <IconFilter className="size-3" /> Status
             </span>
             <ShadcnFormField
               control={control}
               name="status"
               render={({ field }) => {
-                const value = field.value as TasksStatusOptions;
+                const value =
+                  (field.value as TasksStatusOptions) ||
+                  TasksStatusOptions.todo;
                 const StatusIcon =
                   taskStatusIcons[value] || taskStatusIcons.todo;
                 const statusColor = getStatusColorVariant(value, "icon");
                 return (
                   <FormItem className="space-y-0">
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <SelectTrigger className="bg-muted/5 w-56 rounded-lg border-none px-3 py-2 text-right text-xs font-bold tracking-tight focus:ring-0">
+                        <div className="flex items-center justify-end gap-2">
                           <span>
                             {TASK_STATUS_CONFIG[value]?.name ??
                               value ??
                               tasks.form.status}
                           </span>
-                          <StatusIcon className={cn("size-3", statusColor)} />
+                          <StatusIcon className={cn("size-4", statusColor)} />
                         </div>
                       </SelectTrigger>
                       <SelectContent className="border-border bg-card rounded-lg border">
@@ -294,10 +294,10 @@ export function TaskFields({
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              className="text-[9px] font-bold"
+                              className="text-xs font-bold"
                             >
-                              <div className="flex items-center gap-1.5">
-                                <ItemIcon className={cn("size-3", itemColor)} />
+                              <div className="flex items-center gap-2">
+                                <ItemIcon className={cn("size-4", itemColor)} />
                                 <span>{option.label}</span>
                               </div>
                             </SelectItem>
@@ -313,28 +313,30 @@ export function TaskFields({
 
           <div
             className={cn(
-              "border-border/10 flex flex-col justify-between border-s p-3",
-              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+              "border-border/10 flex items-center justify-between border-s px-3 py-3",
+              isProductVariant ? "rounded-lg" : "",
             )}
           >
             <span className={metaLabelClass}>
-              <IconHash className="size-2" /> {tasks.form.priority}
+              <IconHash className="size-3" /> {tasks.form.priority}
             </span>
             <ShadcnFormField
               control={control}
               name="priority"
               render={({ field }) => {
-                const value = field.value as TasksPriorityOptions;
+                const value =
+                  (field.value as TasksPriorityOptions) ||
+                  TasksPriorityOptions.medium;
                 const PriorityIcon = priorityIcons[value];
                 const priorityColor = priorityColors[value];
                 return (
                   <FormItem className="space-y-0">
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="bg-muted/5 h-7 rounded-lg border-none px-2 text-right text-[10px] font-bold tracking-tight focus:ring-0">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <SelectTrigger className="bg-muted/5 w-56 rounded-lg border-none px-3 py-2 text-right text-xs font-bold tracking-tight focus:ring-0">
+                        <div className="flex items-center justify-end gap-2">
                           <span>{tasks.priority[value]}</span>
                           <PriorityIcon
-                            className={cn("size-3", priorityColor)}
+                            className={cn("size-4", priorityColor)}
                           />
                         </div>
                       </SelectTrigger>
@@ -346,10 +348,10 @@ export function TaskFields({
                             <SelectItem
                               key={p}
                               value={p}
-                              className="text-[9px] font-bold"
+                              className="text-xs font-bold"
                             >
-                              <div className="flex items-center gap-1.5">
-                                <ItemIcon className={cn("size-3", itemColor)} />
+                              <div className="flex items-center gap-2">
+                                <ItemIcon className={cn("size-4", itemColor)} />
                                 <span>{tasks.priority[p]}</span>
                               </div>
                             </SelectItem>
@@ -365,12 +367,12 @@ export function TaskFields({
 
           <div
             className={cn(
-              "border-border/10 flex flex-col justify-between border-s p-3",
-              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+              "border-border/10 flex items-center justify-between border-s px-3 py-3",
+              isProductVariant ? "rounded-lg" : "",
             )}
           >
             <span className={metaLabelClass}>
-              <IconCalendar className="size-2" /> {tasks.form.deadline}
+              <IconCalendar className="size-3" /> {tasks.form.deadline}
             </span>
             <ShadcnFormField
               control={control}
@@ -383,89 +385,91 @@ export function TaskFields({
                       setDate={field.onChange}
                       buttonProps={{
                         className:
-                          "h-7 rounded-lg border-none bg-muted/5 shadow-none px-2 font-bold text-[10px] tracking-tight focus:ring-0 text-right",
+                          "w-56 h-10 rounded-lg border-none bg-muted/5 shadow-none px-3 py-2 font-bold text-xs tracking-tight focus:ring-0 text-right",
                       }}
                     />
                   </FormControl>
-                  <FormMessage className="text-[9px] font-bold" />
+                  <FormMessage className="text-xs font-bold" />
                 </FormItem>
               )}
             />
           </div>
 
-          <div
-            className={cn(
-              "bg-card flex flex-col justify-between p-3",
-              isProductVariant ? "bg-background/20 h-14" : "h-16",
-            )}
-          >
-            <span className={metaLabelClass}>
-              <IconClock className="size-2" /> {tasks.form.estimate}
-            </span>
-            <div className="flex items-center justify-end gap-4">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold opacity-30">
-                  {tasks.form.hoursShort}
-                </span>
-                <ShadcnFormField
-                  control={control}
-                  name="estimated_hours"
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="number"
-                      min={0}
-                      max={999}
-                      className="bg-muted/10 h-7 w-12 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
-                      placeholder="0"
-                      onChange={(e) => {
-                        const value = Math.max(
-                          0,
-                          Math.min(999, Number(e.target.value) || 0),
-                        );
-                        field.onChange(value);
-                      }}
-                    />
-                  )}
-                />
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold opacity-30">
-                  {tasks.form.minutesShort}
-                </span>
-                <ShadcnFormField
-                  control={control}
-                  name="estimated_minutes"
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="number"
-                      min={0}
-                      max={59}
-                      className="bg-muted/10 h-7 w-12 rounded-lg border-none p-1 text-center text-[10px] font-bold tabular-nums focus:ring-0"
-                      placeholder="0"
-                      onChange={(e) => {
-                        const value = Math.max(
-                          0,
-                          Math.min(59, Number(e.target.value) || 0),
-                        );
-                        field.onChange(value);
-                      }}
-                    />
-                  )}
-                />
+          {!isProductVariant && (
+            <div
+              className={cn(
+                "border-border/10 flex items-center justify-between border-s px-3 py-3",
+                isProductVariant ? "rounded-lg" : "",
+              )}
+            >
+              <span className={metaLabelClass}>
+                <IconClock className="size-3" /> {tasks.form.estimate}
+              </span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold opacity-50">
+                    {tasks.form.hoursShort}
+                  </span>
+                  <ShadcnFormField
+                    control={control}
+                    name="estimated_hours"
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        type="number"
+                        min={0}
+                        max={999}
+                        className="bg-muted/10 h-10 w-16 rounded-lg border-none p-2 text-center text-xs font-bold tabular-nums focus:ring-0"
+                        placeholder="0"
+                        onChange={(e) => {
+                          const value = Math.max(
+                            0,
+                            Math.min(999, Number(e.target.value) || 0),
+                          );
+                          field.onChange(value);
+                        }}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold opacity-50">
+                    {tasks.form.minutesShort}
+                  </span>
+                  <ShadcnFormField
+                    control={control}
+                    name="estimated_minutes"
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        type="number"
+                        min={0}
+                        max={59}
+                        className="bg-muted/10 h-10 w-16 rounded-lg border-none p-2 text-center text-xs font-bold tabular-nums focus:ring-0"
+                        placeholder="0"
+                        onChange={(e) => {
+                          const value = Math.max(
+                            0,
+                            Math.min(59, Number(e.target.value) || 0),
+                          );
+                          field.onChange(value);
+                        }}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div
             className={cn(
-              "border-border/10 flex flex-col justify-between border-s p-3",
-              isProductVariant ? "bg-background/20 h-14" : "bg-card h-16",
+              "border-border/10 flex items-center justify-between border-s px-3 py-3",
+              isProductVariant ? "rounded-lg" : "",
             )}
           >
             <span className={metaLabelClass}>
-              <IconTag className="size-2" /> {tasks.form.tags}
+              <IconTag className="size-3" /> {tasks.form.tags}
             </span>
             <ShadcnFormField
               control={control}
@@ -478,7 +482,7 @@ export function TaskFields({
                       onChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage className="text-[9px] font-bold" />
+                  <FormMessage className="text-xs font-bold" />
                 </FormItem>
               )}
             />
