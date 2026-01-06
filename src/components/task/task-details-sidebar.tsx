@@ -21,9 +21,18 @@ import {
 } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
+import { Task } from "@/types/tasks";
+
+interface TaskWithDetails extends Task {
+  tagsData?: Array<{
+    _id: string;
+    name: string;
+    color?: string;
+  }>;
+}
 
 export type TaskDetailsSidebarProps = {
-  task: any;
+  task: TaskWithDetails;
   onEdit: () => void;
   onDelete: () => void;
   isDeleting: boolean;

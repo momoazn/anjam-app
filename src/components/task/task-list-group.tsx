@@ -2,39 +2,11 @@ import { memo, useMemo, useState } from "react";
 
 import { tasks as tasksText } from "@/constants";
 import { cn } from "@/lib/utils";
-import { Task, TaskPriority, TaskStatus } from "@/types/tasks";
+import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 import { useCurrentOrgMode } from "@/store/auth-store";
 
 import { TaskListHeader, type TaskSortMode } from "./task-list-header";
 import { TaskListItem } from "./task-list-item";
-
-// Convex-compatible TaskWithProject interface
-interface TaskWithProject extends Omit<Task, "id"> {
-  id?: string;
-  assignee?: {
-    id: string;
-    _id: string;
-    username: string;
-    firstName?: string;
-    first_name?: string;
-    lastName?: string;
-    last_name?: string;
-  } | null;
-  project?: { name: string };
-  display_id?: string;
-  expand?: {
-    project?: { name: string };
-    assignee?: {
-      id: string;
-      _id: string;
-      username: string;
-      firstName?: string;
-      first_name?: string;
-      lastName?: string;
-      last_name?: string;
-    };
-  };
-}
 
 type TaskListGroupProps = {
   taskCount: number;
@@ -80,9 +52,11 @@ function TaskListGroupInner({
         high: 2,
         urgent: 3,
       };
-      cloned.sort(
-        (a, b) => priorityRank[b.priority] - priorityRank[a.priority],
-      );
+      cloned.sort((a, b) => {
+        const aRank = priorityRank[a.priority as TaskPriority] ?? 0;
+        const bRank = priorityRank[b.priority as TaskPriority] ?? 0;
+        return bRank - aRank;
+      });
     } else if (sortMode === "date") {
       cloned.sort((a, b) => {
         const aTime = a.deadline ? new Date(a.deadline).getTime() : Infinity;
@@ -95,7 +69,9 @@ function TaskListGroupInner({
   }, [tasks, sortMode]);
 
   const handleSelectAll = (selected: boolean) => {
-    const taskIds = tasks.map((t) => t.id);
+    const taskIds = tasks
+      .map((t) => (t.id ?? t._id) as string)
+      .filter((id): id is string => Boolean(id));
     const otherSelected = selectedTasks.filter((id) => !taskIds.includes(id));
     const newSelected = selected
       ? [...otherSelected, ...taskIds]
@@ -105,7 +81,10 @@ function TaskListGroupInner({
 
   const allSelected = useMemo(() => {
     if (tasks.length === 0) return false;
-    return tasks.every((t) => selectedTasks.includes(t.id));
+    return tasks.every((t) => {
+      const taskId = (t.id ?? t._id) as string;
+      return selectedTasks.includes(taskId);
+    });
   }, [tasks, selectedTasks]);
 
   return (
@@ -143,19 +122,22 @@ function TaskListGroupInner({
             data-animate-stagger
           >
             {sortedTasks?.length > 0 ? (
-              sortedTasks.map((task) => (
-                <li key={task.id}>
-                  <TaskListItem
-                    task={task}
-                    showProject={showProject}
-                    isSelectable={enableSelection}
-                    isSelected={selectedTasks.includes(task.id)}
-                    onSelectionChange={(selected) =>
-                      handleTaskSelection(task.id, selected)
-                    }
-                  />
-                </li>
-              ))
+              sortedTasks.map((task) => {
+                const taskId = (task.id ?? task._id) as string;
+                return (
+                  <li key={taskId}>
+                    <TaskListItem
+                      task={task}
+                      showProject={showProject}
+                      isSelectable={enableSelection}
+                      isSelected={selectedTasks.includes(taskId)}
+                      onSelectionChange={(selected) =>
+                        handleTaskSelection(taskId, selected)
+                      }
+                    />
+                  </li>
+                );
+              })
             ) : (
               <div
                 className={cn("py-16 text-center", isProductMode && "py-10")}

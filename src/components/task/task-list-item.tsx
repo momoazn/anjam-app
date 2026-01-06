@@ -34,41 +34,7 @@ import {
 } from "@/lib/status-utils";
 import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { Task } from "@/types/tasks";
-
-// Convex-compatible TaskWithProject interface
-// Uses both _id (Convex) and id (compatibility), and both naming conventions
-interface TaskWithProject extends Omit<Task, "id"> {
-  id?: string;
-  project?: {
-    name: string;
-  };
-  assignee?: {
-    id: string;
-    _id: string;
-    username: string;
-    firstName?: string;
-    first_name?: string;
-    lastName?: string;
-    last_name?: string;
-  } | null;
-  display_id?: string; // Compatibility field mapped from displayId
-  // Additional expand fields
-  expand?: {
-    project?: {
-      name: string;
-    };
-    assignee?: {
-      id: string;
-      _id: string;
-      username: string;
-      firstName?: string;
-      first_name?: string;
-      lastName?: string;
-      last_name?: string;
-    };
-  };
-}
+import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 
 type TaskListItemProps = {
   task: TaskWithProject;
@@ -89,13 +55,13 @@ function TaskListItemInner({
 }: TaskListItemProps) {
   const navigate = useNavigate();
   const productClasses = useProductClasses();
-  const taskId = task.id ?? task._id;
+  const taskId = (task.id ?? task._id) as string;
 
-  const StatusIcon = taskStatusIcons[task.status];
-  const statusIconColor = getStatusColorVariant(task.status, "icon");
+  const StatusIcon = taskStatusIcons[task.status as TaskStatus];
+  const statusIconColor = getStatusColorVariant(task.status as TaskStatus, "icon");
 
-  const PriorityIcon = priorityIcons[task.priority];
-  const priorityIconColor = priorityColors[task.priority];
+  const PriorityIcon = priorityIcons[task.priority as TaskPriority];
+  const priorityIconColor = priorityColors[task.priority as TaskPriority];
   const assigneeRecord = task.assignee;
 
   const deadlineDate = task.deadline ? new Date(task.deadline) : null;
@@ -116,7 +82,7 @@ function TaskListItemInner({
   };
 
   const handlePriorityChange = (value: string) => {
-    updateTask.mutate({ id: taskId, updates: { priority: value } });
+    updateTask.mutate({ id: taskId, updates: { priority: value as TaskPriority } });
     toast.success(tasks.edit.success);
   };
 
@@ -167,11 +133,11 @@ function TaskListItemInner({
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
-            onCheckedChange={(checked) =>
-              onSelectionChange?.(checked as boolean)
+            onCheckedChange={(checked: boolean) =>
+              onSelectionChange?.(checked)
             }
             className="size-4 rounded-md transition-transform hover:scale-110"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           />
         ) : (
           <Popover>
@@ -183,7 +149,7 @@ function TaskListItemInner({
                   priorityIconColor,
                   productClasses.beveled,
                 )}
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                 }}
               >
@@ -267,7 +233,7 @@ function TaskListItemInner({
 
         {task.tags && task.tags.length > 0 && (
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {task.tags.map((tag) => (
+            {task.tags.map((tag: string) => (
               <Badge
                 key={tag}
                 variant="outline"
@@ -295,7 +261,7 @@ function TaskListItemInner({
               <button
                 type="button"
                 className="hidden flex-col items-end text-right sm:flex cursor-pointer hover:bg-muted/50 rounded p-1"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                 }}
               >
@@ -334,7 +300,7 @@ function TaskListItemInner({
             <button
               type="button"
               className="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform"
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
               }}
             >
@@ -359,17 +325,20 @@ function TaskListItemInner({
                   {tasks.addTask.unassigned}
                 </SelectItem>
                 {users && users.length > 0 ? (
-                  users.map((user) => (
-                    <SelectItem
-                      key={user.id}
-                      value={user.id}
-                      className="text-xs font-bold"
-                    >
-                      {user.first_name || user.last_name
-                        ? `${user.first_name} ${user.last_name}`
-                        : user.username}
-                    </SelectItem>
-                  ))
+                  users.map((user: any) => {
+                    const userId = (user.id ?? user._id) as string;
+                    return (
+                      <SelectItem
+                        key={userId}
+                        value={userId}
+                        className="text-xs font-bold"
+                      >
+                        {user.first_name || user.last_name
+                          ? `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim()
+                          : user.username}
+                      </SelectItem>
+                    );
+                  })
                 ) : (
                   <SelectItem value="__empty" disabled>
                     {shared.noData}

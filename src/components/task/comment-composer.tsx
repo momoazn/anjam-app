@@ -56,7 +56,7 @@ export function CommentComposer({
         );
       })
       .map((user) => ({
-        id: user.id,
+        id: user._id,
         username: user.username,
         firstName: user.first_name,
         lastName: user.last_name,
@@ -105,7 +105,7 @@ export function CommentComposer({
     createComment.mutate({
       taskId,
       content: trimmedContent,
-      parentCommentId: replyTarget?.id,
+      parentCommentId: replyTarget?._id,
     });
 
     setContent("");

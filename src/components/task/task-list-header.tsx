@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { task, tasks } from "@/constants";
-import { TasksStatusOptions } from "@/lib/pocketbase-types";
+import type { TaskStatus } from "@/types/tasks";
 import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useCurrentOrgMode } from "@/store/auth-store";
@@ -27,7 +27,7 @@ export type TaskSortMode = "default" | "priority" | "date";
 
 type TaskListHeaderProps = {
   taskCount: number;
-  status: TasksStatusOptions;
+  status: TaskStatus;
   sortMode?: TaskSortMode;
   onSortChange?: (mode: TaskSortMode) => void;
   isCollapsed?: boolean;
@@ -53,7 +53,7 @@ export function TaskListHeader({
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
 
-  const IconComponent = taskStatusIcons[status];
+  const IconComponent = taskStatusIcons[status as TaskStatus];
   const statusColor = getStatusColorVariant(status, "icon");
 
   const handleCreateTask = () => {
@@ -79,9 +79,9 @@ export function TaskListHeader({
             {enableSelection && (
               <Checkbox
                 checked={allSelected}
-                onCheckedChange={(checked) => onSelectAll?.(!!checked)}
+                onCheckedChange={(checked: boolean) => onSelectAll?.(!!checked)}
                 className="size-4 rounded-md border-2"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
               />
             )}
 
@@ -96,7 +96,7 @@ export function TaskListHeader({
 
             <div className="flex min-w-0 items-center gap-2">
               <span className="truncate text-sm font-semibold">
-                {tasks.status[status]}
+                {tasks.status[status as keyof typeof tasks.status]}
               </span>
               <span className="text-muted-foreground text-xs tabular-nums">
                 {digitsEnToFa(taskCount)}
@@ -109,7 +109,7 @@ export function TaskListHeader({
               variant="ghost"
               size="icon"
               className="size-8 rounded-lg"
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
                 handleCreateTask();
               }}
@@ -123,14 +123,14 @@ export function TaskListHeader({
                   variant="ghost"
                   size="icon"
                   className="size-8 rounded-lg"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
                 >
                   <MoreHorizontal className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-xl p-2">
                 <DropdownMenuItem
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onSortChange?.(
                       sortMode === "priority" ? "default" : "priority",
@@ -146,7 +146,7 @@ export function TaskListHeader({
                   {task.sortByPriority}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onSortChange?.(sortMode === "date" ? "default" : "date");
                   }}
@@ -190,9 +190,9 @@ export function TaskListHeader({
             <div className="flex items-center">
               <Checkbox
                 checked={allSelected}
-                onCheckedChange={(checked) => onSelectAll?.(!!checked)}
+                onCheckedChange={(checked: boolean) => onSelectAll?.(!!checked)}
                 className="size-5 rounded-md border-2"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
               />
             </div>
           )}
@@ -213,7 +213,7 @@ export function TaskListHeader({
               </span>
             </div>
             <h2 className="text-xl font-bold tracking-tight">
-              {tasks.status[status]}
+              {tasks.status[status as keyof typeof tasks.status]}
             </h2>
           </div>
         </div>
@@ -235,7 +235,7 @@ export function TaskListHeader({
               variant="outline"
               size="icon"
               className="bg-background size-10 rounded-lg transition-all active:scale-95"
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
                 handleCreateTask();
               }}
@@ -249,14 +249,14 @@ export function TaskListHeader({
                   variant="outline"
                   size="icon"
                   className="bg-background size-10 rounded-lg transition-all active:scale-95"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
                 >
                   <MoreHorizontal className="size-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-xl p-2">
                 <DropdownMenuItem
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onSortChange?.(
                       sortMode === "priority" ? "default" : "priority",
@@ -272,7 +272,7 @@ export function TaskListHeader({
                   {task.sortByPriority}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onSortChange?.(sortMode === "date" ? "default" : "date");
                   }}

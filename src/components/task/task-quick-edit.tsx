@@ -14,35 +14,7 @@ import { shared, tasks } from "@/constants";
 import { useUpdateTask } from "@/hooks/tasks";
 import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { Task, TaskPriority, TaskStatus } from "@/types/tasks";
-
-// Convex-compatible TaskWithProject interface
-interface TaskWithProject extends Omit<Task, "id"> {
-  id?: string;
-  assignee?: {
-    id: string;
-    _id: string;
-    username: string;
-    firstName?: string;
-    first_name?: string;
-    lastName?: string;
-    last_name?: string;
-  } | null;
-  project?: { name: string };
-  display_id?: string;
-  expand?: {
-    project?: { name: string };
-    assignee?: {
-      id: string;
-      _id: string;
-      username: string;
-      firstName?: string;
-      first_name?: string;
-      lastName?: string;
-      last_name?: string;
-    };
-  };
-}
+import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 
 interface TaskQuickEditProps {
   task: TaskWithProject;

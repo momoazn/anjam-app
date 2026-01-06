@@ -1,23 +1,16 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconCalendar,
-  IconClock,
-  IconDeviceFloppy,
   IconLoader2,
   IconMessages,
-  IconPencil,
   IconQuote,
   IconTarget,
   IconUser,
-  IconX,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   comments as commentsText,
@@ -31,31 +24,12 @@ import {
   useCurrentOrgFeatures,
   useCurrentOrgMode,
 } from "@/store/auth-store";
-import { Task } from "@/types/tasks";
-
-interface TaskWithDetails extends Task {
-  project?: { name: string };
-  assignee?: {
-    firstName?: string;
-    lastName?: string;
-    username: string;
-  } | null;
-}
+import { TaskWithDetails } from "@/types/tasks";
 
 export type TaskDetailsContentProps = {
   task: TaskWithDetails;
   comments: CommentWithUser[];
   commentsLoading: boolean;
-  isEditingTime: boolean;
-  canEditTime: boolean;
-  hours: number;
-  minutes: number;
-  isUpdatingTime: boolean;
-  onStartTimeEdit: () => void;
-  onHoursChange: (value: number) => void;
-  onMinutesChange: (value: number) => void;
-  onSaveTime: () => void;
-  onCancelTimeEdit: () => void;
   onTaskRefresh?: () => void;
 };
 
@@ -63,16 +37,6 @@ export function TaskDetailsContent({
   task,
   comments,
   commentsLoading,
-  isEditingTime,
-  canEditTime,
-  hours,
-  minutes,
-  isUpdatingTime,
-  onStartTimeEdit,
-  onHoursChange,
-  onMinutesChange,
-  onSaveTime,
-  onCancelTimeEdit,
   onTaskRefresh,
 }: TaskDetailsContentProps) {
   const features = useCurrentOrgFeatures();
@@ -82,15 +46,20 @@ export function TaskDetailsContent({
 
   const [replyTarget, setReplyTarget] = useState<CommentWithUser | null>(null);
 
+  // Computed ID for compatibility
+  const taskId = task.id ?? task._id;
+
   const handleCommentAdded = () => {
     onTaskRefresh?.();
     setReplyTarget(null);
   };
 
-  const handleTimeEntrySave = async () => {
-    // Note: Time entries might need Convex migration too
-    toast.error("Time entries migration in progress");
-  };
+  const project =
+    typeof task.project === "object" ? task.project : task.expand?.project;
+  const assignee =
+    typeof task.assignee === "object" && task.assignee
+      ? task.assignee
+      : task.expand?.assignee;
 
   return (
     <div
@@ -105,25 +74,27 @@ export function TaskDetailsContent({
           {[
             {
               label: tasks.details.assignee,
-              value: task.assignee
+              value: assignee
                 ? formatUserName(
-                    task.assignee.firstName,
-                    task.assignee.lastName,
-                    task.assignee.username,
+                    assignee.firstName,
+                    assignee.lastName,
+                    assignee.username,
                   )
                 : tasks.addTask.unassigned,
               icon: IconUser,
-              muted: !task.assignee,
+              muted: !assignee,
             },
             {
               label: shared.project,
-              value: task.project?.name || tasks.details.unknownProject,
+              value: project?.name || tasks.details.unknownProject,
               icon: IconTarget,
             },
             {
               label: tasks.details.deadline,
               value: task.deadline
-                ? digitsEnToFa(formatTaskDate(task.deadline))
+                ? digitsEnToFa(
+                    formatTaskDate(new Date(task.deadline).toISOString()),
+                  )
                 : "—",
               icon: IconCalendar,
               muted: !task.deadline,
@@ -153,11 +124,11 @@ export function TaskDetailsContent({
           {[
             {
               label: tasks.details.assignee,
-              value: task.assignee ? (
+              value: assignee ? (
                 formatUserName(
-                  task.assignee.firstName,
-                  task.assignee.lastName,
-                  task.assignee.username,
+                  assignee.firstName,
+                  assignee.lastName,
+                  assignee.username,
                 )
               ) : (
                 <span className="text-muted-foreground/40">
@@ -168,13 +139,15 @@ export function TaskDetailsContent({
             },
             {
               label: shared.project,
-              value: task.project?.name || tasks.details.unknownProject,
+              value: project?.name || tasks.details.unknownProject,
               icon: IconTarget,
             },
             {
               label: tasks.details.deadline,
               value: task.deadline ? (
-                digitsEnToFa(formatTaskDate(task.deadline))
+                digitsEnToFa(
+                  formatTaskDate(new Date(task.deadline).toISOString()),
+                )
               ) : (
                 <span className="opacity-20">—</span>
               ),
@@ -227,8 +200,6 @@ export function TaskDetailsContent({
         </section>
       )}
 
-      {/* Time tracking, time entries, and subtasks are out of scope for v1 */}
-
       {/* Tabs Section */}
       <Tabs defaultValue="comments" className="w-full" dir="rtl">
         <TabsList
@@ -279,7 +250,7 @@ export function TaskDetailsContent({
                       className={cn("border-t pt-8", isProductMode && "pt-5")}
                     >
                       <CommentComposer
-                        taskId={task.id}
+                        taskId={taskId}
                         replyTarget={replyTarget}
                         onCancelReply={() => setReplyTarget(null)}
                         onCommentAdded={handleCommentAdded}
@@ -292,8 +263,6 @@ export function TaskDetailsContent({
           </div>
         </div>
       </Tabs>
-
-      {/* Time tracking is out of scope for v1 */}
     </div>
   );
 }

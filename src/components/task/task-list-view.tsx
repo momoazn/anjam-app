@@ -1,37 +1,8 @@
 import { TaskEmptyState } from "@/components/task/task-empty-state";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
-import { cn } from "@/lib/utils";
-import { Task, TaskStatus } from "@/types/tasks";
+import { TaskStatus, TaskWithProject } from "@/types/tasks";
 import { useCurrentOrgMode } from "@/store/auth-store";
-
-// Convex-compatible TaskWithProject interface
-interface TaskWithProject extends Omit<Task, "id"> {
-  id?: string;
-  assignee?: {
-    id: string;
-    _id: string;
-    username: string;
-    firstName?: string;
-    first_name?: string;
-    lastName?: string;
-    last_name?: string;
-  } | null;
-  project?: { name: string };
-  display_id?: string;
-  expand?: {
-    project?: { name: string };
-    assignee?: {
-      id: string;
-      _id: string;
-      username: string;
-      firstName?: string;
-      first_name?: string;
-      lastName?: string;
-      last_name?: string;
-    };
-  };
-}
 
 export type TaskListViewProps = {
   isLoading: boolean;
