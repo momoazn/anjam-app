@@ -10,7 +10,7 @@ import { useCurrentOrganization } from "@/store/auth-store";
 export function useProjects(options: { enabled?: boolean } = {}) {
   const { enabled = true } = options;
   const currentOrg = useCurrentOrganization();
-  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
   const projects = useQuery(
     api.projects.listByOrg,
