@@ -1,10 +1,16 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconHash, IconLayoutGrid, IconStarFilled } from "@tabler/icons-react";
-import { useMemo } from "react";
+import {
+  IconChevronUp,
+  IconHash,
+  IconLayoutGrid,
+  IconStarFilled,
+} from "@tabler/icons-react";
+import { useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import {
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
@@ -28,9 +34,12 @@ export function ProjectsSubmenu() {
   const location = useLocation();
 
   const { data: preferencesData } = useUserPreferences();
-  const favoriteIds =
-    (preferencesData?.preferences as UserPreferences)?.favorites?.projectIds ||
-    [];
+  const favoriteIds = useMemo(
+    () =>
+      (preferencesData?.preferences as UserPreferences)?.favorites
+        ?.projectIds || [],
+    [preferencesData?.preferences],
+  );
 
   const favoriteProjects = useMemo(() => {
     return projects.filter((p) => favoriteIds.includes(p.id));
@@ -42,16 +51,22 @@ export function ProjectsSubmenu() {
 
   const isProjectsActive = location.pathname === "/projects";
 
+  const [favoritesExpanded, setFavoritesExpanded] = useState(true);
+  const [recentsExpanded, setRecentsExpanded] = useState(true);
+
+  const toggleFavorites = () => setFavoritesExpanded((prev) => !prev);
+  const toggleRecents = () => setRecentsExpanded((prev) => !prev);
+
   return (
     <SidebarGroup className="py-2">
       {state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-tight">
+        <SidebarGroupLabel className="text-muted-foreground/50 mb-1 px-4 text-[10px] font-semibold tracking-widest uppercase">
           {navigationSectionLabels.projects}
         </SidebarGroupLabel>
       )}
       <SidebarGroupContent>
         <SidebarMenu className="gap-0.5">
-          {/* All Projects Module */}
+          {/* All Projects Module - Always Visible */}
           <SidebarMenuItem>
             <NavLink
               to="/projects"
@@ -63,21 +78,23 @@ export function ProjectsSubmenu() {
                 className={cn(
                   "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                   isProjectsActive
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                    ? "bg-accent text-foreground shadow-sm"
+                    : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
                 )}
               >
                 <IconLayoutGrid
                   className={cn(
                     "size-4 transition-transform duration-200",
-                    isProjectsActive ? "text-primary" : "text-muted-foreground",
+                    isProjectsActive
+                      ? "text-foreground"
+                      : "text-muted-foreground",
                   )}
                 />
                 <span
                   className={cn(
                     "text-sm",
                     isProjectsActive
-                      ? "text-primary font-semibold"
+                      ? "text-foreground font-semibold"
                       : "text-foreground/80 font-medium",
                   )}
                 >
@@ -87,126 +104,150 @@ export function ProjectsSubmenu() {
             </NavLink>
           </SidebarMenuItem>
 
-          {/* Favorite Projects */}
-          {state === "expanded" && favoriteProjects.length > 0 && (
-            <>
-              <div className="text-muted-foreground/40 mt-4 mb-1 px-4 text-[9px] font-bold uppercase tracking-widest">
-                {navigationSectionLabels.favorites}
+          {/* Favorite Projects - Collapsible Section */}
+          {favoriteProjects.length > 0 && (
+            <SidebarMenuItem>
+              <div className="flex items-center justify-between px-2">
+                <div className="text-muted-foreground/40 text-[9px] font-bold uppercase tracking-widest">
+                  {navigationSectionLabels.favorites}
+                </div>
+                <SidebarGroupAction onClick={toggleFavorites}>
+                  <IconChevronUp
+                    className={cn(
+                      "size-4 transition-transform duration-200",
+                      favoritesExpanded ? "rotate-180" : "",
+                    )}
+                  />
+                </SidebarGroupAction>
               </div>
-              {favoriteProjects.map((project) => {
-                const isActive =
-                  location.pathname === `/projects/${project.id}/tasks`;
-                const count = byProject.get(project.id) || 0;
+              <SidebarMenu className="gap-0.5">
+                {favoritesExpanded &&
+                  favoriteProjects.map((project) => {
+                    const isActive =
+                      location.pathname === `/projects/${project.id}/tasks`;
+                    const count = byProject.get(project.id) || 0;
 
-                return (
-                  <SidebarMenuItem key={project.id}>
-                    <NavLink
-                      to={`/projects/${project.id}/tasks`}
-                      onClick={() => isMobile && setOpenMobile(false)}
-                      className="block"
-                    >
-                      <SidebarMenuButton
-                        className={cn(
-                          "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
-                          isActive
-                            ? "bg-accent text-accent-foreground"
-                            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-                        )}
-                      >
-                        <div className="flex size-4 items-center justify-center">
-                          <IconStarFilled
+                    return (
+                      <SidebarMenuItem key={project.id}>
+                        <NavLink
+                          to={`/projects/${project.id}/tasks`}
+                          onClick={() => isMobile && setOpenMobile(false)}
+                          className="block"
+                        >
+                          <SidebarMenuButton
                             className={cn(
-                              "size-3.5 text-amber-500",
-                              !isActive && "opacity-80",
-                            )}
-                          />
-                        </div>
-                        <div className="flex min-w-0 flex-1 items-center justify-between">
-                          <span
-                            className={cn(
-                              "truncate text-xs font-medium",
+                              "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                               isActive
-                                ? "text-foreground"
-                                : "text-foreground/80",
+                                ? "bg-accent text-foreground"
+                                : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
                             )}
                           >
-                            {project.name}
-                          </span>
+                            <div className="flex size-4 items-center justify-center">
+                              <IconStarFilled
+                                className={cn(
+                                  "size-3.5 text-amber-500",
+                                  !isActive && "opacity-80",
+                                )}
+                              />
+                            </div>
+                            <div className="flex min-w-0 flex-1 items-center justify-between">
+                              <span
+                                className={cn(
+                                  "truncate text-xs font-medium",
+                                  isActive
+                                    ? "text-foreground"
+                                    : "text-foreground/80",
+                                )}
+                              >
+                                {project.name}
+                              </span>
 
-                          {count > 0 && (
-                            <span className="text-[10px] font-medium tabular-nums opacity-60">
-                              {digitsEnToFa(count)}
-                            </span>
-                          )}
-                        </div>
-                      </SidebarMenuButton>
-                    </NavLink>
-                  </SidebarMenuItem>
-                );
-              })}
-            </>
+                              {count > 0 && (
+                                <span className="text-[10px] font-medium tabular-nums opacity-60">
+                                  {digitsEnToFa(count)}
+                                </span>
+                              )}
+                            </div>
+                          </SidebarMenuButton>
+                        </NavLink>
+                      </SidebarMenuItem>
+                    );
+                  })}
+              </SidebarMenu>
+            </SidebarMenuItem>
           )}
 
-          {/* Individual Projects - Recent */}
-          {state === "expanded" && recentProjects.length > 0 && (
-            <>
-              <div className="text-muted-foreground/40 mt-4 mb-1 px-4 text-[9px] font-bold uppercase tracking-widest">
-                {navigationSectionLabels.recent}
+          {/* Recent Projects - Collapsible Section */}
+          {recentProjects.length > 0 && (
+            <SidebarMenuItem>
+              <div className="flex items-center justify-between px-2">
+                <div className="text-muted-foreground/40 text-[9px] font-bold uppercase tracking-widest">
+                  {navigationSectionLabels.recent}
+                </div>
+                <SidebarGroupAction onClick={toggleRecents}>
+                  <IconChevronUp
+                    className={cn(
+                      "size-4 transition-transform duration-200",
+                      recentsExpanded ? "rotate-180" : "",
+                    )}
+                  />
+                </SidebarGroupAction>
               </div>
-              {recentProjects.map((project) => {
-                const isActive =
-                  location.pathname === `/projects/${project.id}/tasks`;
-                const count = byProject.get(project.id) || 0;
+              <SidebarMenu className="gap-0.5">
+                {recentsExpanded &&
+                  recentProjects.map((project) => {
+                    const isActive =
+                      location.pathname === `/projects/${project.id}/tasks`;
+                    const count = byProject.get(project.id) || 0;
 
-                return (
-                  <SidebarMenuItem key={project.id}>
-                    <NavLink
-                      to={`/projects/${project.id}/tasks`}
-                      onClick={() => isMobile && setOpenMobile(false)}
-                      className="block"
-                    >
-                      <SidebarMenuButton
-                        className={cn(
-                          "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
-                          isActive
-                            ? "bg-accent text-accent-foreground"
-                            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-                        )}
-                      >
-                        <div className="flex size-4 items-center justify-center">
-                          <IconHash
+                    return (
+                      <SidebarMenuItem key={project.id}>
+                        <NavLink
+                          to={`/projects/${project.id}/tasks`}
+                          onClick={() => isMobile && setOpenMobile(false)}
+                          className="block"
+                        >
+                          <SidebarMenuButton
                             className={cn(
-                              "size-3.5",
+                              "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                               isActive
-                                ? "text-primary"
-                                : "text-muted-foreground/60",
-                            )}
-                          />
-                        </div>
-                        <div className="flex min-w-0 flex-1 items-center justify-between">
-                          <span
-                            className={cn(
-                              "truncate text-xs font-medium",
-                              isActive
-                                ? "text-foreground"
-                                : "text-foreground/80",
+                                ? "bg-accent text-foreground"
+                                : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
                             )}
                           >
-                            {project.name}
-                          </span>
+                            <IconHash
+                              className={cn(
+                                "size-3.5",
+                                isActive
+                                  ? "text-foreground"
+                                  : "text-muted-foreground/60",
+                              )}
+                            />
+                            <div className="flex min-w-0 flex-1 items-center justify-between">
+                              <span
+                                className={cn(
+                                  "truncate text-xs font-medium",
+                                  isActive
+                                    ? "text-foreground"
+                                    : "text-foreground/80",
+                                )}
+                              >
+                                {project.name}
+                              </span>
 
-                          {count > 0 && (
-                            <span className="text-[10px] font-medium tabular-nums opacity-60">
-                              {digitsEnToFa(count)}
-                            </span>
-                          )}
-                        </div>
-                      </SidebarMenuButton>
-                    </NavLink>
-                  </SidebarMenuItem>
-                );
-              })}
-            </>
+                              {count > 0 && (
+                                <span className="text-[10px] font-medium tabular-nums opacity-60">
+                                  {digitsEnToFa(count)}
+                                </span>
+                              )}
+                            </div>
+                          </SidebarMenuButton>
+                        </NavLink>
+                      </SidebarMenuItem>
+                    );
+                  })}
+              </SidebarMenu>
+            </SidebarMenuItem>
           )}
         </SidebarMenu>
       </SidebarGroupContent>

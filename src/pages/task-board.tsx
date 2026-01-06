@@ -1,15 +1,19 @@
 import {
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
   DropAnimation,
+  KeyboardSensor,
   PointerSensor,
+  TouchSensor,
+  closestCorners,
   defaultDropAnimationSideEffects,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import {
   IconHash,
   IconLayoutGrid,
@@ -17,7 +21,7 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -37,8 +41,6 @@ import {
   TasksStatusOptions,
 } from "@/lib/pocketbase-types";
 import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
-import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
@@ -48,28 +50,71 @@ const dropAnimation: DropAnimation = {
       },
     },
   }),
+  duration: 200,
+};
+
+const orderStep = 10000;
+const statusKeys = TASK_STATUS_ORDER;
+const statusKeySet = new Set(statusKeys as string[]);
+
+const buildTaskIdsByStatus = (tasks: TaskWithProject[]) => {
+  const buckets: Record<string, TaskWithProject[]> = {};
+  statusKeys.forEach((status) => {
+    buckets[status] = [];
+  });
+
+  tasks.forEach((task) => {
+    const status = statusKeySet.has(task.status || "")
+      ? (task.status as TasksStatusOptions)
+      : TasksStatusOptions.todo;
+    buckets[status].push(task);
+  });
+
+  const result: Record<string, string[]> = {};
+  statusKeys.forEach((status) => {
+    const sorted = [...buckets[status]].sort((a, b) => {
+      const orderA = a.order ?? 0;
+      const orderB = b.order ?? 0;
+      return orderA - orderB;
+    });
+    result[status] = sorted.map((task) => task.id);
+  });
+
+  return result;
+};
+
+const insertAt = <T,>(items: T[], index: number, item: T) => {
+  const next = [...items];
+  next.splice(index, 0, item);
+  return next;
 };
 
 export function TaskBoardPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
-  const [activeTask, setActiveTask] = useState<TaskWithProject | null>(null);
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [taskIdsByStatus, setTaskIdsByStatus] = useState<
+    Record<string, string[]>
+  >(() => buildTaskIdsByStatus([]));
+  const lastOverIdRef = useRef<string | null>(null);
 
-  // Fetch project details if in project mode
+  const taskQueryKey = useMemo(
+    () =>
+      projectId
+        ? [...queryKeys.tasks.all, "project", projectId]
+        : queryKeys.tasks.all,
+    [projectId],
+  );
+
   const { data: project } = useQuery<ProjectsResponse>({
     queryKey: queryKeys.projects.detail(projectId || ""),
     queryFn: () => pb.collection("projects").getOne(projectId || ""),
     enabled: !!projectId,
   });
 
-  // Fetch tasks
   const { data: tasksData = [], isLoading } = useQuery<TaskWithProject[]>({
-    queryKey: projectId
-      ? [...queryKeys.tasks.all, "project", projectId]
-      : queryKeys.tasks.all,
+    queryKey: taskQueryKey,
     queryFn: async () => {
       const filter = projectId ? `project = "${projectId}"` : "";
       return await pb.collection("tasks").getFullList({
@@ -80,39 +125,53 @@ export function TaskBoardPage() {
     },
   });
 
-  const columns = useMemo(() => {
-    const cols: Record<string, TaskWithProject[]> = {};
-    TASK_STATUS_ORDER.forEach((status) => {
-      cols[status] = [];
-    });
-
+  const tasksById = useMemo(() => {
+    const map: Record<string, TaskWithProject> = {};
     tasksData.forEach((task) => {
-      const status = task.status || TasksStatusOptions.todo;
-      if (cols[status]) {
-        cols[status].push(task);
-      } else {
-        if (!cols[TasksStatusOptions.todo]) cols[TasksStatusOptions.todo] = [];
-        cols[TasksStatusOptions.todo].push(task);
-      }
+      map[task.id] = task;
     });
-
-    return cols;
+    return map;
   }, [tasksData]);
 
-  const visibleStatusKeys = useMemo(() => {
-    if (!isProductMode) return TASK_STATUS_ORDER;
+  const initialTaskIdsByStatus = useMemo(
+    () => buildTaskIdsByStatus(tasksData),
+    [tasksData],
+  );
 
-    const coreStatuses = new Set<TasksStatusOptions>([
-      TasksStatusOptions.todo,
-      TasksStatusOptions.in_progress,
-      TasksStatusOptions.done,
-    ]);
-
-    return TASK_STATUS_ORDER.filter((statusKey) => {
-      if (coreStatuses.has(statusKey as TasksStatusOptions)) return true;
-      return (columns[statusKey]?.length ?? 0) > 0;
+  const taskIdToStatus = useMemo(() => {
+    const map: Record<string, string> = {};
+    Object.entries(taskIdsByStatus).forEach(([status, ids]) => {
+      ids.forEach((id) => {
+        map[id] = status;
+      });
     });
-  }, [columns, isProductMode]);
+    return map;
+  }, [taskIdsByStatus]);
+
+  const activeTask = activeId ? tasksById[activeId] : null;
+
+  const getStatusForId = (id: string | null) => {
+    if (!id) return null;
+    if (statusKeySet.has(id)) return id;
+    return taskIdToStatus[id] ?? null;
+  };
+
+  const getOrderForIndex = (ids: string[], index: number) => {
+    const prevId = ids[index - 1];
+    const nextId = ids[index + 1];
+    const prevOrder = prevId ? tasksById[prevId]?.order : null;
+    const nextOrder = nextId ? tasksById[nextId]?.order : null;
+
+    if (prevOrder !== null && nextOrder !== null) {
+      if (prevOrder === nextOrder) {
+        return prevOrder + orderStep;
+      }
+      return (prevOrder + nextOrder) / 2;
+    }
+    if (prevOrder !== null) return prevOrder + orderStep;
+    if (nextOrder !== null) return nextOrder - orderStep;
+    return orderStep;
+  };
 
   const updateTaskPosition = useMutation({
     mutationFn: async ({
@@ -129,21 +188,13 @@ export function TaskBoardPage() {
       if (order !== undefined) data.order = order;
       return await pb.collection("tasks").update(id, data);
     },
-    // Optimistic update for instant UI feedback
     onMutate: async ({ id, status, order }) => {
-      // Cancel any outgoing refetches
-      const queryKey = projectId
-        ? [...queryKeys.tasks.all, "project", projectId]
-        : queryKeys.tasks.all;
-      await queryClient.cancelQueries({ queryKey });
-
-      // Snapshot the previous value
+      await queryClient.cancelQueries({ queryKey: taskQueryKey });
       const previousTasks =
-        queryClient.getQueryData<TaskWithProject[]>(queryKey);
+        queryClient.getQueryData<TaskWithProject[]>(taskQueryKey);
 
-      // Optimistically update to the new value
       if (previousTasks) {
-        queryClient.setQueryData<TaskWithProject[]>(queryKey, (old) => {
+        queryClient.setQueryData<TaskWithProject[]>(taskQueryKey, (old) => {
           if (!old) return old;
           return old.map((task) => {
             if (task.id === id) {
@@ -158,87 +209,133 @@ export function TaskBoardPage() {
         });
       }
 
-      // Return a context object with the snapshotted value
-      return { previousTasks, queryKey };
+      return { previousTasks };
     },
     onError: (err, _variables, context) => {
-      // Rollback to the previous value on error
       if (context?.previousTasks) {
-        queryClient.setQueryData(context.queryKey, context.previousTasks);
+        queryClient.setQueryData(taskQueryKey, context.previousTasks);
       }
       toast.error("Failed to update task position");
       logError("Failed to update task position", err);
     },
-    onSettled: (_data, _error, _variables, context) => {
-      // Always refetch after error or success
-      if (context?.queryKey) {
-        queryClient.invalidateQueries({ queryKey: context.queryKey });
-      }
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: taskQueryKey });
     },
   });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5,
+        distance: 8,
       },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
 
   const onDragStart = (event: DragStartEvent) => {
-    if (event.active.data.current?.type === "Task") {
-      setActiveTask(event.active.data.current.task);
+    setActiveId(String(event.active.id));
+  };
+
+  const onDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    const overId = over?.id ? String(over.id) : null;
+    if (!overId) return;
+
+    lastOverIdRef.current = overId;
+
+    const activeIdValue = String(active.id);
+    if (activeIdValue === overId) return;
+
+    const activeStatus = getStatusForId(activeIdValue);
+    const overStatus = getStatusForId(overId);
+    if (!activeStatus || !overStatus) return;
+
+    if (activeStatus === overStatus) {
+      if (statusKeySet.has(overId)) return;
+      setTaskIdsByStatus((prev) => {
+        const columnIds = prev[activeStatus];
+        const oldIndex = columnIds.indexOf(activeIdValue);
+        const newIndex = columnIds.indexOf(overId);
+        if (oldIndex === -1 || newIndex === -1) return prev;
+        return {
+          ...prev,
+          [activeStatus]: arrayMove(columnIds, oldIndex, newIndex),
+        };
+      });
+      return;
     }
+
+    setTaskIdsByStatus((prev) => {
+      const activeItems = prev[activeStatus] ?? [];
+      const overItems = prev[overStatus] ?? [];
+      const activeIndex = activeItems.indexOf(activeIdValue);
+      if (activeIndex === -1) return prev;
+
+      const nextActiveItems = activeItems.filter((id) => id !== activeIdValue);
+      const cleanedOverItems = overItems.filter((id) => id !== activeIdValue);
+      const overIndex = cleanedOverItems.indexOf(overId);
+      const newIndex =
+        statusKeySet.has(overId) || overIndex === -1
+          ? cleanedOverItems.length
+          : overIndex;
+
+      return {
+        ...prev,
+        [activeStatus]: nextActiveItems,
+        [overStatus]: insertAt(cleanedOverItems, newIndex, activeIdValue),
+      };
+    });
   };
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    setActiveTask(null);
+    const activeIdValue = String(active.id);
+    const overId = over?.id ? String(over.id) : lastOverIdRef.current;
 
-    if (!over) return;
-    if (active.id === over.id) return;
+    setActiveId(null);
+    lastOverIdRef.current = null;
 
-    const activeTaskData = active.data.current?.task as TaskWithProject;
-    const overData = over.data.current;
-
-    let newStatus = activeTaskData.status;
-    let newOrder = activeTaskData.order || 0;
-
-    if (overData?.type === "Column") {
-      const targetStatus = overData.status as TasksStatusOptions;
-      newStatus = targetStatus;
-      const targetTasks = columns[targetStatus] || [];
-      if (targetTasks.length > 0) {
-        const lastTask = targetTasks[targetTasks.length - 1];
-        newOrder = (lastTask.order || 0) + 10000;
-      } else {
-        newOrder = 10000;
-      }
-    } else if (overData?.type === "Task") {
-      const targetTask = overData.task as TaskWithProject;
-      newStatus = targetTask.status;
-      const targetTasks = columns[newStatus] || [];
-      const overIndex = targetTasks.findIndex((t) => t.id === targetTask.id);
-      if (overIndex === -1) return;
-      const prevTask = overIndex > 0 ? targetTasks[overIndex - 1] : null;
-      const nextTask = targetTask;
-      const prevOrder = prevTask
-        ? prevTask.order || 0
-        : (nextTask.order || 0) - 10000;
-      const nextOrder = nextTask.order || 0;
-      newOrder = (prevOrder + nextOrder) / 2;
+    if (!overId) {
+      setTaskIdsByStatus(initialTaskIdsByStatus);
+      return;
     }
 
-    if (
-      newStatus !== activeTaskData.status ||
-      Math.abs(newOrder - (activeTaskData.order || 0)) > 0.0001
-    ) {
+    const currentStatus = getStatusForId(activeIdValue);
+    if (!currentStatus) return;
+
+    const currentIds = taskIdsByStatus[currentStatus] || [];
+    const newIndex = currentIds.indexOf(activeIdValue);
+    if (newIndex === -1) return;
+
+    const originalTask = tasksById[activeIdValue];
+    if (!originalTask) return;
+
+    const newOrder = getOrderForIndex(currentIds, newIndex);
+    const needsUpdate =
+      currentStatus !== originalTask.status ||
+      Math.abs(newOrder - (originalTask.order || 0)) > 0.0001;
+
+    if (needsUpdate) {
       updateTaskPosition.mutate({
-        id: activeTaskData.id,
-        status: newStatus,
+        id: originalTask.id,
+        status: currentStatus as TasksStatusOptions,
         order: newOrder,
       });
     }
+  };
+
+  const onDragCancel = () => {
+    setActiveId(null);
+    lastOverIdRef.current = null;
+    setTaskIdsByStatus(initialTaskIdsByStatus);
   };
 
   if (isLoading) {
@@ -256,12 +353,7 @@ export function TaskBoardPage() {
         onClick={() =>
           navigate(projectId ? `/projects/${projectId}/tasks` : "/tasks")
         }
-        className={cn(
-          "font-bold",
-          isProductMode
-            ? "h-8 rounded-lg px-3 text-xs font-semibold"
-            : "h-11 px-6",
-        )}
+        className="h-8 rounded-lg px-3 text-xs font-semibold"
       >
         <IconList className="ms-2 size-4" />
         {common.buttons.view}
@@ -273,14 +365,9 @@ export function TaskBoardPage() {
             projectId ? `/projects/${projectId}/tasks/new` : "/tasks/new",
           )
         }
-        className={cn(
-          "font-bold shadow-sm",
-          isProductMode
-            ? "h-8 rounded-lg px-3 text-xs font-semibold"
-            : "h-11 px-6",
-        )}
+        className="h-8 rounded-lg px-3 text-xs font-semibold shadow-sm"
       >
-        <IconPlus className={cn("ms-2 size-5", isProductMode && "size-4")} />
+        <IconPlus className="ms-2 size-4" />
         {tasksText.addTask.buttons.newTask}
       </Button>
     </div>
@@ -288,43 +375,20 @@ export function TaskBoardPage() {
 
   return (
     <PageTransition className="flex min-h-0 flex-1 flex-col">
-      <div
-        className={cn(
-          "border-b",
-          isProductMode
-            ? "border-border/40 bg-transparent"
-            : "bg-card border-border",
-        )}
-      >
-        <div
-          className={cn(
-            isProductMode
-              ? "w-full px-3"
-              : "container mx-auto max-w-7xl px-4 md:px-6",
-            isProductMode ? "py-3" : "py-4",
-          )}
-        >
+      <div className="border-b border-border/40 bg-transparent">
+        <div className="w-full px-3 py-3">
           <PageHeader
             title={projectId ? project?.name : tasksText.board.title}
-            subtitle={
-              isProductMode
-                ? undefined
-                : tasksText.header.tasksFound.replace(
-                    "{count}",
-                    digitsEnToFa(tasksData.length).toString(),
-                  )
-            }
+            subtitle={undefined}
             icon={IconLayoutGrid}
             eyebrow={
-              isProductMode ? undefined : (
-                <div className="text-muted-foreground flex items-center gap-2">
-                  <IconHash className="size-4" />
-                  <span className="text-xs font-bold tracking-tight">
-                    {projectId ? project?.code : common.buttons.all} /{" "}
-                    {tasksText.board.title}
-                  </span>
-                </div>
-              )
+              <div className="text-muted-foreground flex items-center gap-2">
+                <IconHash className="size-4" />
+                <span className="text-xs font-bold tracking-tight">
+                  {projectId ? project?.code : common.buttons.all} /{" "}
+                  {tasksText.board.title}
+                </span>
+              </div>
             }
             actions={headerActions}
             className="mb-0"
@@ -334,38 +398,40 @@ export function TaskBoardPage() {
 
       <DndContext
         sensors={sensors}
+        collisionDetection={closestCorners}
         onDragStart={onDragStart}
+        onDragOver={onDragOver}
         onDragEnd={onDragEnd}
+        onDragCancel={onDragCancel}
       >
-        <div
-          className={cn(
-            "scrollbar-none flex min-h-0 flex-1 overflow-x-auto overflow-y-hidden",
-            isProductMode
-              ? "bg-transparent gap-3 p-3"
-              : "bg-muted/30 gap-4 p-4",
-          )}
-        >
-          {visibleStatusKeys.map((statusKey) => (
-            <BoardColumn
-              key={statusKey}
-              status={TASK_STATUS_CONFIG[statusKey]}
-              tasks={columns[statusKey] || []}
-            />
-          ))}
+        <div className="scrollbar-none flex min-h-0 flex-1 gap-3 overflow-x-auto overflow-y-hidden bg-transparent p-3">
+          {statusKeys.map((statusKey) => {
+            const taskIds = taskIdsByStatus[statusKey] || [];
+            const tasks = taskIds.map((id) => tasksById[id]).filter(Boolean);
+
+            return (
+              <BoardColumn
+                key={statusKey}
+                status={TASK_STATUS_CONFIG[statusKey]}
+                tasks={tasks}
+              />
+            );
+          })}
         </div>
 
         {createPortal(
           <DragOverlay dropAnimation={dropAnimation}>
-            {activeTask && (
+            {activeTask ? (
               <div
-                className={cn(
-                  "border-primary/20 bg-card overflow-hidden rounded-xl border opacity-90 shadow-2xl",
-                  isProductMode ? "w-[280px]" : "w-[320px]",
-                )}
+                className="border-primary/20 bg-card w-[280px] overflow-hidden rounded-xl border shadow-2xl"
+                style={{
+                  opacity: 0.95,
+                  viewTransitionName: `task-${activeTask.id}`,
+                }}
               >
                 <BoardCard task={activeTask} />
               </div>
-            )}
+            ) : null}
           </DragOverlay>,
           document.body,
         )}

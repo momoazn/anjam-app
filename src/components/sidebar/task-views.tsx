@@ -2,14 +2,17 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconAlertTriangle,
   IconChecklist,
+  IconChevronUp,
   IconClock,
   IconList,
   IconLoader,
 } from "@tabler/icons-react";
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import {
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
@@ -64,18 +67,31 @@ export function TaskViews({ labels }: TaskViewsProps) {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
 
-  // Get the label for saved filters (Views in product mode)
+  const [expanded, setExpanded] = useState(true);
+
+  const toggleExpanded = () => setExpanded((prev) => !prev);
+
   const sectionTitle = labels?.savedFilters ?? navigationSectionLabels.tasks;
 
   return (
     <SidebarGroup className="py-2">
-      {state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-tight">
-          {sectionTitle}
-        </SidebarGroupLabel>
-      )}
+      <div className="flex items-center justify-between px-4">
+        {state === "expanded" && (
+          <SidebarGroupLabel className="text-muted-foreground/50 font-semibold tracking-tight">
+            {sectionTitle}
+          </SidebarGroupLabel>
+        )}
+        <SidebarGroupAction onClick={toggleExpanded}>
+          <IconChevronUp
+            className={cn(
+              "size-4 transition-transform duration-200",
+              expanded ? "rotate-180" : "",
+            )}
+          />
+        </SidebarGroupAction>
+      </div>
       <SidebarGroupContent>
-        <SidebarMenu className="gap-0.5">
+        <SidebarMenu className={cn("gap-0.5", !expanded && "hidden")}>
           {viewItems.map((view) => {
             const isActive = location.pathname + location.search === view.url;
             const count = view.getCount(counts);
@@ -92,21 +108,23 @@ export function TaskViews({ labels }: TaskViewsProps) {
                     className={cn(
                       "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                       isActive
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                        ? "text-foreground font-semibold"
+                        : "text-muted-foreground/90 hover:bg-accent hover:text-accent-foreground",
                     )}
                   >
                     <view.icon
                       className={cn(
                         "size-4 transition-transform duration-200",
-                        isActive ? "text-primary" : "text-muted-foreground",
+                        isActive
+                          ? "text-foreground"
+                          : "text-muted-foreground/70",
                       )}
                     />
                     <span
                       className={cn(
-                        "text-sm",
+                        "text-sm font-medium truncate",
                         isActive
-                          ? "text-primary font-semibold"
+                          ? "text-foreground font-semibold"
                           : "text-foreground/80 font-medium",
                       )}
                     >

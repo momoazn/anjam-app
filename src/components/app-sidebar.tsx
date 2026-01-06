@@ -229,16 +229,16 @@ function AppSidebarHeader() {
   const homeRoute = mode === "product" ? "/inbox" : "/dashboard";
 
   return (
-    <SidebarHeader className="border-border/40 h-16 border-b p-0">
+    <SidebarHeader className="border-border/40 h-20 border-b p-2">
       <SidebarMenu className="h-full">
         <SidebarMenuItem className="h-full">
           <SidebarMenuButton
             asChild
-            className="hover:bg-accent active:bg-accent/80 h-full rounded-lg transition-all duration-200"
+            className="hover:bg-accent active:bg-accent/80 h-full rounded-xl transition-all duration-200"
           >
             <NavLink
               to={homeRoute}
-              className="flex h-full w-full items-center gap-3 px-4"
+              className="flex h-full w-full items-center gap-4 px-4"
               onClick={() => {
                 if (isMobile) {
                   setOpenMobile(false);
@@ -247,16 +247,16 @@ function AppSidebarHeader() {
             >
               <div className="relative">
                 <Logo
-                  size={40}
+                  size={60}
                   className="shrink-0 transition-transform duration-300"
                 />
               </div>
               {state === "expanded" && (
-                <div className="flex flex-col items-start">
-                  <span className="text-sm font-bold tracking-tight">
+                <div className="flex flex-col items-start gap-0.5">
+                  <span className="text-xl font-bold tracking-tight">
                     {app.name}
                   </span>
-                  <span className="text-muted-foreground text-[10px] font-medium">
+                  <span className="text-muted-foreground text-xs font-medium opacity-80">
                     {app.description}
                   </span>
                 </div>
@@ -295,14 +295,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" className="border-border/40" {...props}>
       <AppSidebarHeader />
 
-      <SidebarContent className="scrollbar-none relative z-10 p-0">
+      <SidebarContent className="scrollbar-thin relative z-10 flex flex-col flex-1 overflow-y-auto p-0">
         {/* Organization Switcher */}
-        <div className="border-border/40 border-b py-2">
+        <div className="border-border/40 border-b bg-muted/20 py-2">
           <OrgSwitcher />
         </div>
 
         {/* Quick Create */}
-        <div className="border-border/40 border-b p-4">
+        <div className="border-border/40 border-b p-3">
           <QuickCreate />
         </div>
 
@@ -313,7 +313,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
 
         {/* Projects Section */}
-        <ProjectsSubmenu />
+        <div className="border-border/40 border-b">
+          <ProjectsSubmenu />
+        </div>
 
         {/* Task Views Section */}
         <TaskViews labels={labels} />
@@ -337,11 +339,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarFooter className="border-border/40 relative z-10 flex flex-col border-t p-0">
         <NavMain items={navItems.navSecondary} title={navigation.helpSection} />
-        <div className="border-border/40 flex items-center justify-between border-t px-4 py-2">
-          <span className="text-muted-foreground text-[10px] font-medium">
-            نسخه ۰.۰.۰
-          </span>
-          <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+        <div className="bg-muted/40 flex items-center justify-between border-t px-4 py-3">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground/60 font-mono text-[10px] font-bold uppercase tracking-widest">
+              نسخه ۰.۰.۰
+            </span>
+            <span className="text-muted-foreground/40 text-[9px] font-mono">
+              v0.8.2-alpha
+            </span>
+          </div>
+          <span className="rounded bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 border border-amber-500/20">
             آلفا
           </span>
         </div>

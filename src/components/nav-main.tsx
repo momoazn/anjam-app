@@ -32,7 +32,7 @@ export function NavMain({ items, title }: NavMainProps) {
   return (
     <SidebarGroup className="py-2">
       {title && state === "expanded" && (
-        <SidebarGroupLabel className="text-muted-foreground/60 mb-1 px-4 text-[10px] font-semibold tracking-tight">
+        <SidebarGroupLabel className="text-muted-foreground/50 mb-1 px-4 text-[10px] font-bold tracking-widest uppercase">
           {title}
         </SidebarGroupLabel>
       )}
@@ -47,26 +47,28 @@ export function NavMain({ items, title }: NavMainProps) {
               <SidebarMenuButton
                 tooltip={item.title}
                 className={cn(
-                  "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
+                  "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
                   active
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                    ? "bg-accent text-foreground shadow-sm"
+                    : "text-muted-foreground/90 hover:bg-accent hover:text-foreground hover:scale-[1.01]",
                 )}
                 aria-current={active ? "page" : undefined}
               >
                 {item.icon && (
                   <item.icon
                     className={cn(
-                      "size-4 transition-all duration-200",
-                      active ? "text-primary" : "text-muted-foreground",
+                      "size-4 shrink-0 transition-all duration-200",
+                      active
+                        ? "text-foreground scale-105"
+                        : "text-muted-foreground/70 group-hover:text-foreground",
                     )}
                   />
                 )}
                 <span
                   className={cn(
-                    "text-sm",
+                    "text-sm font-medium truncate",
                     active
-                      ? "text-primary font-semibold"
+                      ? "text-foreground font-semibold"
                       : "text-foreground/80 font-medium",
                   )}
                 >
