@@ -46,8 +46,12 @@ export function TaskDetailsSidebar({
 }: TaskDetailsSidebarProps) {
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const StatusIcon = taskStatusIcons[task.status as keyof typeof taskStatusIcons] || taskStatusIcons.todo;
-  const PriorityIcon = priorityIcons[task.priority as keyof typeof priorityIcons] || priorityIcons.medium;
+  const StatusIcon =
+    taskStatusIcons[task.status as keyof typeof taskStatusIcons] ||
+    taskStatusIcons.todo;
+  const PriorityIcon =
+    priorityIcons[task.priority as keyof typeof priorityIcons] ||
+    priorityIcons.medium;
   const tags = task.tagsData || [];
 
   if (isProductMode) {
@@ -98,7 +102,7 @@ export function TaskDetailsSidebar({
 
             {tags.length > 0 ? (
               <div className="flex flex-wrap gap-1.5 border-t border-border/40 pt-3">
-                {tags.map((tag: any) => (
+                {tags.map((tag) => (
                   <Badge
                     key={tag._id}
                     style={{
@@ -128,7 +132,9 @@ export function TaskDetailsSidebar({
                   {tasks.details.updatedLabel}
                 </span>
                 <span className="font-semibold">
-                  {digitsEnToFa(formatTaskDate(task.updatedAt || task._creationTime))}
+                  {digitsEnToFa(
+                    formatTaskDate(task.updatedAt || task._creationTime),
+                  )}
                 </span>
               </div>
             </div>
@@ -215,7 +221,7 @@ export function TaskDetailsSidebar({
                   <IconTag className="size-3" /> {tasks.details.tags}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
-                  {tags.map((tag: any) => (
+                  {tags.map((tag) => (
                     <Badge
                       key={tag._id}
                       style={{
@@ -246,7 +252,9 @@ export function TaskDetailsSidebar({
                   {tasks.details.updatedLabel}
                 </span>
                 <span className="text-primary font-bold">
-                  {digitsEnToFa(formatTaskDate(task.updatedAt || task._creationTime))}
+                  {digitsEnToFa(
+                    formatTaskDate(task.updatedAt || task._creationTime),
+                  )}
                 </span>
               </div>
             </div>
