@@ -88,7 +88,7 @@ export default function Login() {
       {/* Left Side: Visual Content (Desktop Only) */}
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
-          <Logo size={40} showTelemetry />
+          <Logo size={48} showTelemetry />
           <span className="text-muted-foreground text-sm font-semibold tracking-tight">
             {app.name}
           </span>
@@ -118,7 +118,7 @@ export default function Login() {
         <PageTransition className="w-full" disableStagger>
           <ErrorBoundary>
             <div className="mb-10 lg:hidden">
-              <Logo size={48} className="mb-6" />
+              <Logo size={64} className="mb-6" />
               <h2 className="text-4xl font-bold tracking-tight">
                 {auth.login.title}
               </h2>

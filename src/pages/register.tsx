@@ -99,7 +99,7 @@ export default function Register() {
 
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
-          <Logo size={40} showTelemetry />
+          <Logo size={48} showTelemetry />
           <span className="text-muted-foreground/70 text-sm font-bold tracking-tight">
             {app.name}
           </span>
