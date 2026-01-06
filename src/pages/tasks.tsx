@@ -1,13 +1,4 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import {
-  endOfDay,
-  endOfMonth,
-  endOfWeek,
-  formatISO,
-  startOfDay,
-  startOfMonth,
-  startOfWeek,
-} from "date-fns";
 import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -177,6 +168,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
 
   // Reset pagination when filters change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [
     searchTerm,
@@ -214,6 +206,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       return {} as Record<TaskStatus, TaskWithProject[]>;
     }
     return items.reduce(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (acc: any, task: any) => {
         if (!acc[task.status]) {
           acc[task.status] = [];
@@ -437,7 +430,13 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
           onBulkAssign={handleBulkAssign}
           onBulkStatus={handleBulkStatus}
           onBulkPriority={handleBulkPriority}
-          users={users?.map(u => ({ ...u, id: u._id })) || []}
+          users={
+            users?.map((u) => ({
+              ...u,
+              id: u._id,
+              username: u.username || u.email || "",
+            })) || []
+          }
           availableStatuses={availableStatuses}
         />
       )}
