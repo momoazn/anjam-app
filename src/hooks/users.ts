@@ -127,24 +127,9 @@ export function useUpdateUser() {
   };
 }
 
-// Admin mutations like toggle-active/unblock are not yet in Convex
-export function useToggleUserActive() {
-  return {
-    mutate: async () => {
-      console.warn("useToggleUserActive not implemented for Convex yet");
-    },
-    isPending: false,
-  };
-}
+// Mutations - these would need backend implementation if we want to support them
+// For now, providing stubs or mapping to existing ones if available
 
-export function useUnblockUser() {
-  return {
-    mutate: async () => {
-      console.warn("useUnblockUser not implemented for Convex yet");
-    },
-    isPending: false,
-  };
-}
 
 /**
  * Hook to remove a user from the organization.

@@ -141,15 +141,34 @@ export function useUpdateProject(options?: { onSuccess?: () => void }) {
 /**
  * Hook to delete a project.
  */
-export function useDeleteProject(options?: { onSuccess?: () => void }) {
+export function useDeleteProject(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
   const deleteProjectMutation = useMutation(api.projects.deleteProject);
 
   return {
     mutate: async (id: string) => {
-      await deleteProjectMutation({
-        projectId: id as Id<"projects">,
-      });
-      options?.onSuccess?.();
+      try {
+        await deleteProjectMutation({
+          projectId: id as Id<"projects">,
+        });
+        options?.onSuccess?.();
+      } catch (error) {
+        options?.onError?.(error);
+        throw error;
+      }
+    },
+    mutateAsync: async (id: string) => {
+      try {
+        await deleteProjectMutation({
+          projectId: id as Id<"projects">,
+        });
+        options?.onSuccess?.();
+      } catch (error) {
+        options?.onError?.(error);
+        throw error;
+      }
     },
     isPending: false,
   };

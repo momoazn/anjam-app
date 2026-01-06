@@ -3,10 +3,10 @@ import { useCallback } from "react";
 
 import { api, Id } from "@/lib/convex";
 import { useCurrentOrganization } from "@/store/auth-store";
+import { TaskWithDetails, TaskWithProject } from "@/types/tasks";
 
 /**
  * Hook to list tasks with optional filtering.
- * Note: Convex version uses pagination by default.
  */
 export function useTasks(options: {
   projectId?: string;
@@ -19,7 +19,7 @@ export function useTasks(options: {
   enabled?: boolean;
 } = {}) {
   const currentOrg = useCurrentOrganization();
-  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
   const {
     enabled = true,
     projectId,
@@ -53,8 +53,8 @@ export function useTasks(options: {
             ...t,
             id: t._id, // Compatibility
             display_id: t.displayId, // Compatibility
-            project: t.project || t.projectId, // Use object if available, fallback to ID
-            assignee: t.assignee || t.assigneeUserId, // Use object if available, fallback to ID
+            project: t.project || { _id: t.projectId, id: t.projectId, name: "Loading...", code: "" },
+            assignee: t.assignee || (t.assigneeUserId ? { _id: t.assigneeUserId, id: t.assigneeUserId } : null),
             updated: t.updatedAt ? new Date(t.updatedAt).toISOString() : new Date(t._creationTime).toISOString(),
             created: new Date(t._creationTime).toISOString(),
             expand: {
@@ -62,7 +62,7 @@ export function useTasks(options: {
               assignee: t.assignee,
               creator: t.creator,
             }
-          })),
+          } as TaskWithProject)),
           totalItems: result.page.length, // Rough estimate
           totalPages: result.isDone ? page : page + 1, // Simplified
         }
@@ -81,7 +81,7 @@ export function useAllTasks(options: {
   enabled?: boolean;
 } = {}) {
   const currentOrg = useCurrentOrganization();
-  const organizationId = currentOrg?.id as Id<"organizations"> | undefined;
+  const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
   const { enabled = true, projectId } = options;
 
   const tasks = useQuery(
@@ -99,13 +99,13 @@ export function useAllTasks(options: {
       ...t,
       id: t._id,
       display_id: t.displayId,
-      project: t.project || t.projectId,
-      assignee: t.assignee || t.assigneeUserId,
+      project: t.project || { _id: t.projectId, id: t.projectId, name: "Loading...", code: "" },
+      assignee: t.assignee || (t.assigneeUserId ? { _id: t.assigneeUserId, id: t.assigneeUserId } : null),
       expand: {
         project: t.project,
         assignee: t.assignee,
       },
-    })),
+    } as TaskWithProject)),
     isPending: tasks === undefined,
     isLoading: tasks === undefined,
     error: null,
@@ -124,17 +124,18 @@ export function useTask(options: { id: string | undefined; enabled?: boolean }) 
   );
 
   return {
-    data: task ? {
+    data: task ? ({
       ...task,
       id: task._id,
-      project: task.projectId,
-      assignee: task.assigneeUserId,
+      display_id: task.displayId,
+      project: (task as any).project || { _id: task.projectId, id: task.projectId, name: "Loading...", code: "" },
+      assignee: (task as any).assignee || (task.assigneeUserId ? { _id: task.assigneeUserId, id: task.assigneeUserId } : null),
       expand: {
         project: (task as any).project,
         assignee: (task as any).assignee,
         creator: (task as any).creator,
       }
-    } : undefined,
+    } as TaskWithDetails) : undefined,
     isLoading: task === undefined,
     isPending: task === undefined,
     error: null,
@@ -144,24 +145,34 @@ export function useTask(options: { id: string | undefined; enabled?: boolean }) 
 /**
  * Hook to create a task.
  */
-export function useCreateTask() {
+export function useCreateTask(options?: {
+  onSuccess?: (id: string) => void;
+  onError?: (error: any) => void;
+}) {
   const createTaskMutation = useMutation(api.tasks.create);
 
   return {
     mutate: async (data: any) => {
-      return await createTaskMutation({
-        projectId: data.projectId || data.project,
-        title: data.title,
-        description: data.description,
-        assigneeUserId: data.assigneeUserId || data.assignee,
-        priority: data.priority,
-        status: data.status,
-        deadline: data.deadline,
-        tags: data.tags,
-        estimatedMinutes: data.estimatedMinutes || data.estimated_minutes,
-        taskType: data.taskType || data.task_type,
-        storyPoints: data.storyPoints || data.story_points,
-      });
+      try {
+        const id = await createTaskMutation({
+          projectId: data.projectId || data.project,
+          title: data.title,
+          description: data.description,
+          assigneeUserId: data.assigneeUserId || data.assignee,
+          priority: data.priority,
+          status: data.status,
+          deadline: data.deadline,
+          tags: data.tags,
+          estimatedMinutes: data.estimatedMinutes || data.estimated_minutes,
+          taskType: data.taskType || data.task_type,
+          storyPoints: data.storyPoints || data.story_points,
+        });
+        options?.onSuccess?.(id);
+        return id;
+      } catch (error) {
+        options?.onError?.(error);
+        throw error;
+      }
     },
     isPending: false,
   };
@@ -170,27 +181,37 @@ export function useCreateTask() {
 /**
  * Hook to update a task.
  */
-export function useUpdateTask() {
+export function useUpdateTask(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
   const updateTaskMutation = useMutation(api.tasks.update);
 
   return {
     mutate: async ({ id, updates }: { id: string; updates: any }) => {
-      return await updateTaskMutation({
-        taskId: id as Id<"tasks">,
-        updates: {
-          title: updates.title,
-          description: updates.description,
-          status: updates.status,
-          priority: updates.priority,
-          assigneeUserId: updates.assigneeUserId || updates.assignee,
-          deadline: updates.deadline,
-          tags: updates.tags,
-          estimatedMinutes: updates.estimatedMinutes || updates.estimated_minutes,
-          timeSpentMinutes: updates.timeSpentMinutes || updates.time_spent_minutes,
-          taskType: updates.taskType || updates.task_type,
-          storyPoints: updates.storyPoints || updates.story_points,
-        },
-      });
+      try {
+        const result = await updateTaskMutation({
+          taskId: id as Id<"tasks">,
+          updates: {
+            title: updates.title,
+            description: updates.description,
+            status: updates.status,
+            priority: updates.priority,
+            assigneeUserId: updates.assigneeUserId || updates.assignee,
+            deadline: updates.deadline,
+            tags: updates.tags,
+            estimatedMinutes: updates.estimatedMinutes || updates.estimated_minutes,
+            timeSpentMinutes: updates.timeSpentMinutes || updates.time_spent_minutes,
+            taskType: updates.taskType || updates.task_type,
+            storyPoints: updates.storyPoints || updates.story_points,
+          },
+        });
+        options?.onSuccess?.();
+        return result;
+      } catch (error) {
+        options?.onError?.(error);
+        throw error;
+      }
     },
     isPending: false,
   };
@@ -199,14 +220,24 @@ export function useUpdateTask() {
 /**
  * Hook to soft-delete a task.
  */
-export function useDeleteTask() {
+export function useDeleteTask(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
   const softDeleteMutation = useMutation(api.tasks.softDelete);
 
   return {
     mutate: async (id: string) => {
-      return await softDeleteMutation({
-        taskId: id as Id<"tasks">,
-      });
+      try {
+        const result = await softDeleteMutation({
+          taskId: id as Id<"tasks">,
+        });
+        options?.onSuccess?.();
+        return result;
+      } catch (error) {
+        options?.onError?.(error);
+        throw error;
+      }
     },
     isPending: false,
   };
