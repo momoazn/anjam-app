@@ -40,3 +40,82 @@ export interface Task {
   deletedAt?: number;
   updatedAt?: number;
 }
+
+export interface TaskWithProject extends Task {
+  project?: {
+    _id: string;
+    id?: string;
+    name: string;
+    code: string;
+  } | null;
+  assignee?: {
+    _id: string;
+    id?: string;
+    username?: string;
+    firstName?: string;
+    first_name?: string;
+    lastName?: string;
+    last_name?: string;
+    image?: string;
+    avatar?: string;
+  } | null;
+  creator?: {
+    _id: string;
+    id?: string;
+    username?: string;
+    firstName?: string;
+    first_name?: string;
+    lastName?: string;
+    last_name?: string;
+    image?: string;
+    avatar?: string;
+  } | null;
+  display_id?: string;
+  updated?: string;
+  created?: string;
+  expand?: {
+    project?: any;
+    assignee?: any;
+    creator?: any;
+    tags?: any[];
+  };
+}
+
+export interface TaskWithDetails extends Task {
+  project?: {
+    _id: string;
+    id?: string;
+    name: string;
+    code: string;
+  } | null;
+  assignee?: {
+    _id: string;
+    id?: string;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    first_name?: string;
+    last_name?: string;
+    avatar?: string;
+  } | null;
+  creator?: {
+    _id: string;
+    id?: string;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    first_name?: string;
+    last_name?: string;
+  } | null;
+  // Compatibility fields for transition from PocketBase
+  display_id?: string;
+  created?: string;
+  updated?: string;
+  expand?: {
+    project?: any;
+    assignee?: any;
+    creator?: any;
+    task?: any;
+    comment?: any;
+  };
+}

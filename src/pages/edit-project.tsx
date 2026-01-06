@@ -14,11 +14,7 @@ import { Form } from "@/components/ui/form";
 import { common, projects } from "@/constants";
 import { useProject, useUpdateProject } from "@/hooks";
 import { cn } from "@/lib/utils";
-import {
-  useAuthUser,
-  useCurrentOrgMode,
-  useCurrentOrgRole,
-} from "@/store/auth-store";
+import { useCurrentOrgMode, useCurrentOrgRole } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: projects.create.form.nameRequired }),
@@ -33,11 +29,10 @@ const projectFormSchema = z.object({
 export default function EditProject() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const user = useAuthUser();
   const currentOrgRole = useCurrentOrgRole();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const isAdmin = currentOrgRole === "owner" || currentOrgRole === "admin";
+  const isAdmin = currentOrgRole === "owner";
   const [isMutationPending, setIsMutationPending] = useState(false);
 
   const { data: project, isLoading } = useProject({

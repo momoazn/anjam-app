@@ -1,13 +1,16 @@
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 
-import { api, Doc, Id } from "@/lib/convex";
+import { Doc, Id, api } from "@/lib/convex";
 import { useCurrentOrganization } from "@/store/auth-store";
 
 export type OrgRole = "owner" | "member";
 export type MemberStatus = "invited" | "active" | "suspended";
 
-export interface OrgMemberWithUser extends Omit<Doc<"organizationMembers">, "role" | "status"> {
+export interface OrgMemberWithUser extends Omit<
+  Doc<"organizationMembers">,
+  "role" | "status"
+> {
   role: OrgRole;
   status: MemberStatus;
   user: Doc<"users"> | null;
@@ -25,34 +28,43 @@ export function useOrganizationMembers(options?: UseOrgMembersOptions) {
 
   const members = useQuery(
     api.orgMembers.listByOrg,
-    (options?.enabled ?? true) && orgId ? { organizationId: orgId } : "skip"
+    (options?.enabled ?? true) && orgId ? { organizationId: orgId } : "skip",
   );
 
   // Apply frontend filtering for status/role if needed
-  const filteredMembers = members?.map(m => {
-    const user = m.user ? {
-      ...m.user,
-      id: m.user._id,
-      first_name: m.user.firstName,
-      last_name: m.user.lastName,
-    } : null;
+  const filteredMembers = members
+    ?.map((m) => {
+      const user = m.user
+        ? {
+            ...m.user,
+            id: m.user._id,
+            first_name: m.user.firstName,
+            last_name: m.user.lastName,
+          }
+        : null;
 
-    return {
-      ...m,
-      id: m._id,
-      user,
-      expand: {
-        user: user
-      }
-    };
-  }).filter(m => {
-    if (options?.status && m.status !== options.status) return false;
-    if (options?.role && m.role !== (options.role as any)) return false;
-    return true;
-  });
+      return {
+        ...m,
+        id: m._id,
+        user,
+        expand: {
+          user,
+        },
+      };
+    })
+    .filter((m) => {
+      if (options?.status && m.status !== options.status) return false;
+      if (options?.role && m.role !== options.role) return false;
+      return true;
+    });
 
   return {
-    data: filteredMembers as (OrgMemberWithUser & { id: string; expand: { user: any } })[] | undefined,
+    data: filteredMembers as
+      | (OrgMemberWithUser & {
+          id: string;
+          expand: { user: Doc<"users"> | null };
+        })[]
+      | undefined,
     isLoading: members === undefined,
     isPending: members === undefined,
   };
@@ -64,7 +76,7 @@ export function useOrganizationInvites() {
 
   const invites = useQuery(
     api.invites.list,
-    orgId ? { organizationId: orgId } : "skip"
+    orgId ? { organizationId: orgId } : "skip",
   );
 
   return {
@@ -78,7 +90,7 @@ export function useCreateOrgInvite() {
   const currentOrg = useCurrentOrganization();
 
   return {
-    mutate: async ({ role, maxUses }: { role: OrgRole; maxUses?: number }) => {
+    mutate: async ({ maxUses }: { role: OrgRole; maxUses?: number }) => {
       if (!currentOrg) throw new Error("No organization selected");
 
       const token = await createInviteLink({
@@ -110,7 +122,7 @@ export function useInviteOrgMember() {
   const currentOrg = useCurrentOrganization();
 
   return {
-    mutate: async ({ email, role }: { email: string; role: OrgRole }) => {
+    mutate: async ({ email }: { email: string; role: OrgRole }) => {
       if (!currentOrg) throw new Error("No organization selected");
 
       // For now, we still use invite links but maybe we'll send an email in the future
@@ -135,7 +147,8 @@ export function useInviteOrgMember() {
 export function useUpdateOrgMemberRole() {
   // Not implemented in Convex yet, adding placeholder
   return {
-    mutate: async ({ memberId, role }: { memberId: string; role: OrgRole }) => {
+    mutate: async (_args: { memberId: string; role: OrgRole }) => {
+      void _args;
       toast.error("Role updates not yet implemented in Convex");
     },
     isPending: false,
@@ -150,7 +163,7 @@ export function useRemoveOrgMember() {
     mutate: async (userId: string) => {
       if (!currentOrg) return;
       await removeMutation({
-        organizationId: currentOrg.id as Id<"organizations">,
+        organizationId: currentOrg._id as Id<"organizations">,
         userId: userId as Id<"users">,
       });
       toast.success("Member removed");
@@ -171,10 +184,7 @@ export function useAcceptOrgInvitation() {
 }
 
 export function useInviteByToken(token: string) {
-  const invite = useQuery(
-    api.invites.getByToken,
-    token ? { token } : "skip"
-  );
+  const invite = useQuery(api.invites.getByToken, token ? { token } : "skip");
 
   return {
     data: invite,

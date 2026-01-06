@@ -47,7 +47,7 @@ export default function CreateProject() {
   const currentOrgRole = useCurrentOrgRole();
   const mode = useCurrentOrgMode();
   const isProductMode = mode === "product";
-  const isAdmin = currentOrgRole === "owner" || currentOrgRole === "admin";
+  const isAdmin = currentOrgRole === "owner";
   const [isPending, setIsPending] = useState(false);
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
@@ -64,7 +64,7 @@ export default function CreateProject() {
   const { mutate: createProject } = useCreateProject();
 
   async function onSubmit(values: z.infer<typeof projectFormSchema>) {
-    if (!currentOrg?.id) {
+    if (!currentOrg?._id) {
       toast.error("No organization selected");
       return;
     }
@@ -74,8 +74,8 @@ export default function CreateProject() {
       await createProject({
         name: values.name,
         description: values.description,
-        supervisorUserId: values.supervisor || user?.id,
-        organizationId: currentOrg.id,
+        supervisorUserId: values.supervisor || user?._id,
+        organizationId: currentOrg._id,
       });
 
       toast.success(projects.create.success);
