@@ -3,6 +3,7 @@
 ## Status: Completed
 
 ## Changes Implemented
+
 1.  **`src/pages/inbox.tsx`**
     - Removed `TaskWithProject` import from PocketBase.
     - Added local `TaskWithProject` interface using Convex-compatible types (`Task` from `@/types/tasks`, `UserWithCompatibility` from `@/types/user`).
@@ -25,5 +26,6 @@
     - Added `useDeleteUser` hook (stub/implementation) to support `DeleteDialog` and `UserListTable`.
 
 ## Verification
+
 - `bun run check` passes for the modified files (no PB-related errors).
 - Logic adapted to use Convex patterns.
