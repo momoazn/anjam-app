@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { notifications as notificationsText } from "@/constants";
 import { useDeleteNotification } from "@/hooks/notifications";
-import { stripHtml } from "@/lib/excel-export";
-import { cn } from "@/lib/utils";
+import { cn, stripHtml } from "@/lib/utils";
 
 type MentionsListProps = {
   mentions: Array<{

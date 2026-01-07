@@ -10,8 +10,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { projects } from "@/constants";
 import { formatDateLocale } from "@/lib/date-utils";
-import { stripHtml } from "@/lib/excel-export";
-import { cn, formatUserName } from "@/lib/utils";
+import { cn, formatUserName, stripHtml } from "@/lib/utils";
 
 type ProjectDetailsSectionsProps = {
   project: {

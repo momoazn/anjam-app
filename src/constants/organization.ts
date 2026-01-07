@@ -209,15 +209,12 @@ export const projects = {
     updatedAt: shared.updatedAt,
     description: shared.description,
     noDescription: "هنوز توضیحاتی برای این پروژه نوشته نشده",
-    files: "فایل‌های پیوست",
-    filesCount: "{count} فایل",
-    noFiles: "هنوز فایلی بارگذاری نشده",
+    noProject: "بدون پروژه",
+    backToProjects: "بازگشت به پروژه‌ها",
     statistics: "آمار",
     totalTasks: "تعداد تسک‌ها",
     completedTasks: shared.completed,
     inProgressTasks: shared.inProgress,
-    totalTimeSpent: "کل زمان صرف شده",
-    backToProjects: "بازگشت به پروژه‌ها",
   },
   files: {
     upload: "بارگذاری فایل",
@@ -240,6 +237,7 @@ export const projects = {
     fileType: "نوع فایل",
     existingFiles: "فایل‌های موجود",
     addNewFiles: "افزودن فایل جدید",
+    noFiles: "هنوز فایلی بارگذاری نشده",
     validation: {
       tooLarge: "فایل خیلی بزرگ است. حداکثر حجم: {max}",
       invalidType:
