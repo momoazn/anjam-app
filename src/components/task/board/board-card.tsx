@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { dashboard, shared, tasks } from "@/constants";
+import { projects, shared, tasks } from "@/constants";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
@@ -183,7 +183,7 @@ export function BoardCard({ task }: BoardCardProps) {
             <div className="flex items-center gap-1 opacity-40">
               <IconTarget className="size-3" />
               <span className="max-w-[100px] truncate text-[10px] font-bold">
-                {task.project?.name || dashboard.cards.noProject}
+                {task.project?.name || projects.details.noProject}
               </span>
             </div>
           )}

@@ -78,11 +78,6 @@ export const queryKeys = {
     all: ["subtasks"] as const,
   },
 
-  timeEntries: {
-    listByTask: (taskId: string) => ["time_entries", "task", taskId] as const,
-    all: ["time_entries"] as const,
-  },
-
   orgMembers: {
     all: ["organization_members"] as const,
     lists: () => ["organization_members", "list"] as const,

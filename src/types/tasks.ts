@@ -30,8 +30,6 @@ export interface Task {
   tags: string[]; // Id<"tags">[]
   displayId: string;
   taskNumber: number;
-  estimatedMinutes?: number;
-  timeSpentMinutes?: number;
   taskType?: string;
   storyPoints?: number;
   watchers?: string[]; // Id<"users">[]

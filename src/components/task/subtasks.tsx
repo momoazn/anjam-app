@@ -24,7 +24,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { tasks } from "@/constants";
+import { common, tasks } from "@/constants";
 import {
   useCreateSubtask,
   useDeleteSubtask,
@@ -352,9 +352,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
 
         <div className="mt-6 space-y-3">
           {isLoadingSubtasks ? (
-            <p className="text-muted-foreground">
-              {tasks.details.timeTracking.loading}
-            </p>
+            <p className="text-muted-foreground">{common.loading}</p>
           ) : ordered.length > 0 ? (
             <DndContext
               collisionDetection={closestCenter}

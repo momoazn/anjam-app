@@ -249,8 +249,6 @@ export const tasks = {
     createdAt: shared.createdAt,
     updatedAt: shared.updatedAt,
     tags: "برچسب‌ها",
-    timeSpent: "زمان صرف شده",
-    estimated: "زمان برآورد",
     minutes: "دقیقه",
     hours: "ساعت",
     descriptionCardTitle: shared.description,
@@ -266,28 +264,6 @@ export const tasks = {
     editTaskButton: "ویرایش تسک",
     deleteTaskButton: "حذف تسک",
     editButton: shared.edit,
-    timeTracking: {
-      title: "زمان صرف شده",
-      metrics: "شاخص‌های تخصیص منابع",
-      totalTimeSpent: "کل زمان صرف شده",
-      efficiencyIndex: "شاخص کارایی",
-      hours: "ساعت",
-      minutes: "دقیقه",
-      editTime: "ویرایش زمان",
-      saveTime: shared.save,
-      cancelEdit: shared.cancel,
-      noTimeTracked: "هنوز زمانی ثبت نشده",
-      updateSuccess: "ورودی زمانی به‌روزرسانی شد",
-      updateError: "نتوانستیم زمان را به‌روزرسانی کنیم",
-      deleteSuccess: "ورودی زمانی حذف شد",
-      deleteError: "خطا در حذف ورودی زمانی",
-      loading: "در حال بارگذاری ورودی‌های زمانی...",
-      invalidInput: "لطفاً ساعت و دقیقه را به درستی وارد کنید",
-      exceedsEstimate:
-        "زمان وارد شده از برآورد زمانی ({hours}h {minutes}m) بیشتر است",
-      saveSuccess: "زمان با موفقیت ثبت شد",
-      authRequired: "برای ثبت زمان باید وارد شوید",
-    },
     subtasks: {
       title: "چک‌لیست",
       addPlaceholder: "عنوان مورد جدید",
@@ -302,14 +278,6 @@ export const tasks = {
       addSuccess: "مورد جدید اضافه شد",
       deleteSuccess: "مورد حذف شد",
       orderUpdateError: "به‌روزرسانی ترتیب ناموفق بود",
-    },
-    timeEntries: {
-      title: "ورودی‌های زمانی",
-      logButton: "ثبت زمان",
-      empty: "ورودی زمانی ثبت نشده",
-      entriesLabel: "آخرین ثبت‌ها",
-      noteLabel: "یادداشت اختیاری",
-      notePlaceholder: "یادداشت کوتاه درباره این ثبت",
     },
     buttons: {
       save: shared.save,
@@ -398,14 +366,6 @@ export const tasks = {
       due: "موعد",
       status: shared.status,
     },
-    timeTracking: {
-      title: "ثبت زمان",
-      timeSpent: "زمان صرف شده",
-      estimate: "برآورد",
-      logTime: "ثبت زمان",
-      saveTime: shared.save,
-      cancelEdit: shared.cancel,
-    },
     comments: {
       title: "نظرات",
       placeholder: "نظر خود را بنویسید...",
@@ -434,7 +394,6 @@ export const tasks = {
   showCompletedTasks: "نمایش تسک‌های انجام شده",
   editTask: "ویرایش '{title}'",
   timeSpent: "زمان صرف شده",
-  timeEstimate: "برآورد زمان",
 } as const;
 
 // Comments module constants
@@ -469,6 +428,23 @@ export const comments = {
     view: "مشاهده",
     mention: "نام بردن",
   },
+} as const;
+
+// Insights module constants
+export const insights = {
+  title: "بینش‌ها",
+  description: "معیارها و آمار عملکرد تیم",
+  createdThisWeek: "ایجاد شده این هفته",
+  completedThisWeek: "تکمیل شده این هفته",
+  inProgress: "در حال انجام",
+  fromLastWeek: "از هفته گذشته",
+  currentlyActive: "هم‌اکنون فعال",
+  cycleTime: "زمان چرخه",
+  cycleTimeUnit: "روز",
+  onTimeRate: "نرخ به‌موقعی",
+  noData: "داده‌ای وجود ندارد",
+  workloadByAssignee: "بار کاری بر اساس مسئول",
+  tasks: "تسک",
 } as const;
 
 // Tags Management module constants

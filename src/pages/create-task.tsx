@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";
 import { useCreateTask } from "@/hooks";
-import { parseTimeInput } from "@/lib/time-utils";
 import { useAuthUser } from "@/store/auth-store";
 import type { TaskPriority, TaskStatus } from "@/types/tasks";
 
@@ -36,8 +35,6 @@ export default function CreateTask() {
       status: "todo" as TaskStatus,
       project: initialProject,
       deadline: undefined,
-      estimated_hours: 0,
-      estimated_minutes: 0,
       tags: [],
     },
   });
@@ -51,19 +48,8 @@ export default function CreateTask() {
   function onSubmit(values: TaskFormData) {
     if (!user) return;
 
-    const {
-      estimated_hours,
-      estimated_minutes: estimatedMinutesPart,
-      ...rest
-    } = values;
-    const hasEstimate = estimated_hours != null || estimatedMinutesPart != null;
-    const estimated_minutes = hasEstimate
-      ? parseTimeInput(estimated_hours ?? 0, estimatedMinutesPart ?? 0)
-      : undefined;
-
     createTask({
-      ...rest,
-      estimated_minutes,
+      ...values,
       project: values.project || initialProject,
       assignee:
         values.assignee !== tasks.addTask.unassigned

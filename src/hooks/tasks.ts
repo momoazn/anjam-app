@@ -223,8 +223,6 @@ export function useCreateTask(options?: {
       status: string;
       deadline?: number;
       tags?: string[];
-      estimatedMinutes?: number;
-      estimated_minutes?: number;
       taskType?: string;
       task_type?: string;
       storyPoints?: number;
@@ -249,7 +247,6 @@ export function useCreateTask(options?: {
             | "cancelled",
           deadline: data.deadline,
           tags: data.tags as Id<"tags">[] | undefined,
-          estimatedMinutes: data.estimatedMinutes || data.estimated_minutes,
           taskType: data.taskType || data.task_type,
           storyPoints: data.storyPoints || data.story_points,
         });
@@ -288,10 +285,6 @@ export function useUpdateTask(options?: {
         assignee?: string;
         deadline?: number;
         tags?: string[];
-        estimatedMinutes?: number;
-        estimated_minutes?: number;
-        timeSpentMinutes?: number;
-        time_spent_minutes?: number;
         taskType?: string;
         task_type?: string;
         storyPoints?: number;
@@ -311,10 +304,6 @@ export function useUpdateTask(options?: {
               | undefined,
             deadline: updates.deadline,
             tags: updates.tags as Id<"tags">[] | undefined,
-            estimatedMinutes:
-              updates.estimatedMinutes || updates.estimated_minutes,
-            timeSpentMinutes:
-              updates.timeSpentMinutes || updates.time_spent_minutes,
             taskType: updates.taskType || updates.task_type,
             storyPoints: updates.storyPoints || updates.story_points,
           },

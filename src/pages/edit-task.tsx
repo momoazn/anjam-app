@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";
 import { useTask, useUpdateTask } from "@/hooks";
-import { minutesToHoursAndMinutes, parseTimeInput } from "@/lib/time-utils";
 import { TaskPriority, TaskStatus } from "@/types/tasks";
 
 export default function EditTask() {
@@ -46,8 +45,6 @@ export default function EditTask() {
       status: "todo" as TaskStatus,
       project: "",
       deadline: undefined,
-      estimated_hours: 0,
-      estimated_minutes: 0,
       tags: [],
     },
   });
@@ -60,10 +57,6 @@ export default function EditTask() {
       if (lastResetKeyRef.current === resetKey) return;
       lastResetKeyRef.current = resetKey;
 
-      const { hours, minutes } = minutesToHoursAndMinutes(
-        task.estimatedMinutes || 0,
-      );
-
       form.reset({
         title: task.title,
         description: task.description || "",
@@ -72,8 +65,6 @@ export default function EditTask() {
         status: task.status,
         project: task.projectId,
         deadline: task.deadline ? new Date(task.deadline) : undefined,
-        estimated_hours: hours || 0,
-        estimated_minutes: minutes || 0,
         tags: task.tags || [],
       });
     }
@@ -82,22 +73,12 @@ export default function EditTask() {
   function onSubmit(values: TaskFormData) {
     if (!id) return;
 
-    const {
-      estimated_hours,
-      estimated_minutes: estimatedMinutesPart,
-      assignee,
-      ...rest
-    } = values;
-    const hasEstimate = estimated_hours != null || estimatedMinutesPart != null;
-    const estimated_minutes = hasEstimate
-      ? parseTimeInput(estimated_hours ?? 0, estimatedMinutesPart ?? 0)
-      : undefined;
+    const { assignee, ...rest } = values;
 
     updateTask({
       id,
       updates: {
         ...rest,
-        estimatedMinutes: estimated_minutes,
         assigneeUserId:
           assignee !== tasks.addTask.unassigned ? assignee : undefined,
         deadline: values.deadline?.getTime(),
