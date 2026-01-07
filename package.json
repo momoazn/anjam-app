@@ -9,6 +9,7 @@
     "dev:convex": "bunx convex dev",
     "build": "bun x --bun vite build",
     "build:analyze": "ANALYZE=true bun x --bun vite build",
+    "build:deploy": "bunx convex deploy --cmd \"bun run build\" --cmd-url-env-var-name VITE_CONVEX_URL",
     "start": "bun x --bun vite preview",
     "test": "vitest",
     "test:run": "vitest run",

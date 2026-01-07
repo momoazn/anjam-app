@@ -19,7 +19,7 @@ bun install
 # Initialize Convex development deployment
 bunx convex dev
 
-# Start development server
+# Start development server (runs Convex + Vite)
 bun run dev
 ```
 
@@ -31,6 +31,9 @@ The application will be available at `http://localhost:5173`
 # Build the frontend for production
 bun run build
 
+# Deploy Convex + build frontend in one step (CI recommended)
+CONVEX_DEPLOY_KEY=... bun run build:deploy
+
 # Preview production build
 bun run start
 ```
@@ -39,12 +42,13 @@ bun run start
 
 ### Development
 
-- `bun run dev` - Start frontend dev server with hot reload (requires Convex dev server running separately)
+- `bun run dev` - Start Convex + Vite dev servers (hot reload)
 
 ### Building
 
 - `bun run build` - Build frontend for production
 - `bun run build:analyze` - Build with bundle analysis
+- `bun run build:deploy` - Deploy Convex + build frontend (CI-friendly)
 - `bun run start` - Preview production build locally
 
 ### Quality Checks
@@ -143,8 +147,8 @@ bunx convex deploy
 For production builds:
 
 ```bash
-# Build frontend
-bun run build
+# Deploy Convex + build frontend with deployment URL injected
+CONVEX_DEPLOY_KEY=... bun run build:deploy
 
 # The dist/ directory contains production-ready static assets
 ```

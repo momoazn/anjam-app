@@ -1,0 +1,11 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Provide your Convex deployment URL, e.g. https://robust-viper-987.convex.cloud
+        VITE_CONVEX_URL: ${VITE_CONVEX_URL}
+    ports:
+      - "5173:80"
+    restart: unless-stopped
