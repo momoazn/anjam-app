@@ -29,19 +29,19 @@ This is a comprehensive **task and project management application** designed for
 
 ### Backend
 
-- **PocketBase**: Embedded SQLite database with REST API
-- **Go Server**: Custom Go service wrapping PocketBase with:
-  - Custom API endpoints (`/api/tm/*`)
-  - Event handlers for auto-generating project codes and task display IDs
-  - Authentication tracking and login log management
-  - Notification system
+- **Convex**: Fully-managed backend platform providing:
+  - Automatic schema generation and type safety
+  - Real-time data synchronization
+  - Built-in authentication via `@convex-dev/auth`
+  - Serverless functions (queries, mutations, actions)
+  - Automatic scaling and infrastructure management
 
 ### Frontend
 
 - **React 19**: Modern React with hooks and functional components
-- **TypeScript**: Full type safety with auto-generated PocketBase types
+- **TypeScript**: Full type safety with auto-generated Convex types
 - **Vite**: Fast build tooling and development server
-- **TanStack Query**: Efficient data fetching and caching
+- **TanStack Query**: Efficient data fetching and caching with Convex
 - **React Router**: Client-side routing
 - **Zustand**: Lightweight state management with persistence
 - **Radix UI**: Accessible component primitives
@@ -55,10 +55,11 @@ This is a comprehensive **task and project management application** designed for
 
 ## Key Benefits
 
-- **Self-Hosted**: Full control over data and infrastructure
-- **Single Binary Deployment**: Easy deployment with embedded frontend
-- **Extensible**: Customizable through PocketBase schema and Go backend
-- **Type-Safe**: End-to-end TypeScript type safety
+- **Cloud-Hosted Backend**: Convex Cloud provides automatic scaling and infrastructure management
+- **Easy Deployment**: Simple deployment with Convex CLI
+- **Extensible**: Customizable through Convex schema and serverless functions
+- **Type-Safe**: End-to-end TypeScript type safety with auto-generated types
+- **Real-Time**: Automatic real-time data synchronization
 - **Modern UX**: Fast, responsive interface with dark mode support
 
 ## Getting Started

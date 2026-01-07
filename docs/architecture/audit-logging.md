@@ -2,77 +2,77 @@
 
 This plan details the implementation of a comprehensive audit logging system for the Anjam application. The goal is to track all significant data changes (create, update, delete) to core entities (Tasks, Projects, Users) to ensure accountability, recoverability, and compliance.
 
-## 1. Architecture Choice: SQLite Collection (`audit_logs`)
+## 1. Architecture Choice: Convex Table (`audit_logs`)
 
-We will store audit logs directly in a new PocketBase collection named `audit_logs`.
+We will store audit logs directly in a new Convex table named `audit_logs`.
 
 - **Reasoning**:
-  - **Simplicity**: Keeps the "Single Binary" architecture intact. No external logging service required.
-  - **Queryability**: Allows the Admin UI (and future user-facing activity logs) to easily filter and search history using standard PocketBase APIs.
-  - **Performance**: SQLite WAL mode in PocketBase handles append-heavy workloads efficiently.
-  - **Durability controls**: Collection-level rule blocking user writes plus a `BeforeUpdate` guard in Go ensures immutability even for DAO access.
+  - **Simplicity**: Keeps to a unified backend architecture. No external logging service required.
+  - **Queryability**: Allows the Admin UI (and future user-facing activity logs) to easily filter and search history using standard Convex queries.
+  - **Performance**: Convex's optimized backend handles append-heavy workloads efficiently.
+  - **Durability controls**: Access controls enforced at the function level ensures immutability.
 
-## 2. Technical Implementation (Go Backend)
+## 2. Technical Implementation (Convex)
 
 ### 2.1 Database Schema (`audit_logs`)
 
-New collection `audit_logs` (system-managed, history-only):
+New table `audit_logs` (system-managed, history-only):
 
-- `id` (text, PK)
-- `created` (date)
-- `actor` (relation -> `users`): Who performed the action (nullable for system actions).
-- `actor_role` (text): Cached role at action time.
-- `actor_type` (text enum: `user`, `system`, `api_token`).
-- `request_id` (text): Correlates to incoming HTTP request (UUID generated per request; reused when multiple hooks fire).
-- `ip_address` (text): IP address of the actor when available; `null` if not request-bound.
-- `client` (text enum: `web`, `cli`, `automation`, etc.) for additional provenance.
-- `resource` (text): Collection name (e.g., "tasks", "projects").
-- `resource_id` (text): ID of the affected record.
-- `action` (text enum): `create`, `update`, `delete`.
-- `result` (text enum): `success`, `failure` (future-proof if we log denied writes).
-- `message` (text): Optional free-form summary (e.g., "Status changed").
-- `changes` (json): Detailed diff `{ "field_name": { "old": any, "new": any } }` storing typed values only for modified fields.
+- `created`: Number (Unix timestamp)
+- `actor`: Id (Reference to `users`): Who performed the action (optional for system actions).
+- `actor_role`: Text: Cached role at action time.
+- `actor_type`: Text enum: `user`, `system`, `api_token`.
+- `request_id`: Text: Correlates to incoming HTTP request (UUID generated per request; reused when multiple functions execute).
+- `ip_address`: Text: IP address of the actor when available; `null` if not request-bound.
+- `client`: Text enum: `web`, `cli`, `automation`, etc. for additional provenance.
+- `resource`: Text: Table name (e.g., "tasks", "projects").
+- `resource_id`: Id: ID of the affected record.
+- `action`: Text enum: `create`, `update`, `delete`.
+- `result`: Text enum: `success`, `failure` (future-proof if we log denied writes).
+- `message`: Text: Optional free-form summary (e.g., "Status changed").
+- `changes`: Object: Detailed diff `{ "field_name": { "old": any, "new": any } }` storing typed values only for modified fields.
 
-_ACL & Immutability Rules_:
+_Access Control_:
 
-- **List/View**: Admin-only rule now; future scopes can loosen per requirement.
-- **Create**: Blocked at rule level; only trusted Go service account uses DAO to insert.
-- **Update/Delete**: Deny at rule level **and** register `OnRecordBeforeUpdateRequest("audit_logs")` and `OnRecordBeforeDeleteRequest("audit_logs")` handlers to abort with `apis.NewForbiddenError` to catch DAO misuse.
+- **List/View**: Admin-only for now; future scopes can loosen per requirement.
+- **Create**: Only trusted Convex functions can insert audit logs.
+- **Update/Delete**: Not allowed; functions will return error if attempted.
 
-### 2.2 Go Hook Logic
+### 2.2 Convex Function Logic
 
-We will implement a reusable helper `registerAuditHooks(app *pocketbase.PocketBase, collectionName string)` that binds to exact PocketBase events:
+We will implement audit logging as part of mutation functions in Convex:
 
-1. **`OnRecordAfterCreateSuccess(collection)`**: Capture the persisted record and write a log entry.
-2. **`OnRecordBeforeUpdateRequest(collection)` / `OnRecordAfterUpdateSuccess(collection)`**:
-   - _Before_: Clone `e.Record.Original()` so we have a snapshot even if multiple hooks mutate state.
-   - _After_: Compare original vs new; skip log when diff is empty.
-3. **`OnRecordBeforeDeleteRequest(collection)` / `OnRecordAfterDeleteSuccess(collection)`**:
-   - _Before_: Copy the record for final-state logging since PocketBase empties record data after delete.
-   - _After_: Persist the captured state with action `delete`.
+1. **Create Mutations**: After successfully creating a record, write an audit log entry.
+2. **Update Mutations**:
+   - Fetch the existing record before updating.
+   - Compare original vs new; skip log when diff is empty.
+   - After update, write audit log if there were changes.
+3. **Delete Mutations**:
+   - Fetch the record before deleting.
+   - After delete, write audit log with captured state.
 
-`registerAuditHooks` will enrich each log entry with:
+Audit log entries will be enriched with:
 
-- `actor` and `actor_role` extracted from `apis.RequestContext(e.HttpContext)` if available; otherwise fall back to `e.Record.GetString("updated_by")` or a `system` actor id.
-- `ip_address` from `e.HttpContext.RealIP()` when non-empty; `null` otherwise.
-- `request_id` from context value set by middleware (`contextKeyRequestID`), generating one per HTTP request and defaulting to a synthetic UUID when hooks fire outside HTTP.
-- `client` derived from `User-Agent` heuristics.
+- `actor` and `actor_role` extracted from auth context if available.
+- `ip_address` from request metadata when available (for actions called from frontend).
+- `request_id` generated per request to correlate multiple audit entries.
+- `client` derived from user agent or context.
 
-All audit inserts go through a dedicated helper `logAudit(ctx, app, entry)` that catches write errors, logs them, and never blocks the main mutation (fail-open) while emitting structured warnings for observability. A future enhancement may enqueue entries to a buffered channel so writes cannot slow user requests; helper is designed with that swap in mind.
+All audit inserts go through a dedicated helper `logAudit(ctx, entry)` that catches write errors, logs them, and never blocks the main mutation (fail-open) while emitting structured warnings for observability.
 
-**Diff Calculation** (`calculateChanges(oldRec, newRec core.Record) map[string]FieldDiff`):
+**Diff Calculation**:
 
-- Iterate only over whitelisted, typed field definitions from PocketBase schema metadata to avoid logging transient or internal columns.
-- Maintain a denylist for sensitive fields (`password`, `token`, `accessKey`, `oauth_secret`, attachments flagged `sensitive` in schema).
-- Detect equality using type-aware comparisons for numbers, booleans, relations (serialize as IDs), and arrays (use deep-equal with ordering preserved).
+- Iterate only over whitelisted field definitions to avoid logging transient or internal columns.
+- Maintain a denylist for sensitive fields (`password`, `token`, `accessKey`, `oauth_secret`).
+- Detect equality using type-aware comparisons for numbers, booleans, IDs, and arrays.
 - Truncate large strings (>2 KB) and file names to avoid bloating records.
 
 ### 2.3 Integration Points
 
-- **Tracked Collections (Phase 1)**: `tasks`, `projects`.
-- **Phase 2 Additions**: `users`, `groups`, `comments`, `users_projects` once performance validated.
-- **Location & Wiring**: `backend/audit.go` defines helpers; `main.go` calls `registerAuditHooks` during `OnServe()` after schema import so collection names exist.
-- **Context Middleware**: In `main.go`, add `app.OnServe().BindFunc(addRequestMetadataMiddleware)` that injects request ID, actor info, and client data into context for downstream hooks.
+- **Tracked Tables (Phase 1)**: `tasks`, `projects`.
+- **Phase 2 Additions**: `users`, `groups`, `comments`, `organization_members`, `project_members` once performance validated.
+- **Location & Wiring**: `convex/audit.ts` defines helpers; audit logging functions are called from relevant mutation functions.
+- **Context Management**: Each mutation function extracts request metadata (request ID, actor info, client) from Convex auth context.
 
 ## 3. Frontend Implementation (React Admin UI)
 
@@ -100,11 +100,10 @@ All audit inserts go through a dedicated helper `logAudit(ctx, app, entry)` that
 
 ### Phase 1: Backend Foundation
 
-- [ ] Add `audit_logs` collection to `pb_schema.json` with new fields/ACL described above.
-- [ ] Add immutability guards (`BeforeUpdate`/`BeforeDelete`) for `audit_logs` in Go.
-- [ ] Create `backend/audit.go` housing diff helpers, request-metadata structs, and `logAudit`.
-- [ ] Add middleware for request IDs + context metadata.
-- [ ] Register hooks for `tasks` and `projects` inside `main.go` after schema import.
+- [ ] Add `audit_logs` table to Convex schema with new fields described above.
+- [ ] Create `convex/audit.ts` housing diff helpers and `logAudit` function.
+- [ ] Add helper functions to extract request metadata from auth context.
+- [ ] Integrate audit logging into mutation functions for `tasks` and `projects`.
 
 ### Phase 2: Frontend Visualization
 
@@ -121,8 +120,8 @@ All audit inserts go through a dedicated helper `logAudit(ctx, app, entry)` that
 
 ## 5. Security, Retention & Privacy
 
-- **Retention & Archival**: Introduce `audit_retention_days` setting (default 365). Nightly scheduled job (Go cron) dumps logs older than retention to compressed NDJSON in `data/audit_archive/{year}/{month}.ndjson` and then deletes them. Deletions run via DAO with service account credentials to bypass UI rules but still respect immutability hooks (temporarily disable guards inside the job by flag).
-- **Tamper Detection**: Because logs live next to mutable data, enable SQLite `auto_vacuum` and ship weekly signed exports to object storage (future). Document manual verification steps.
-- **Sensitive Field Policy**: Maintain central denylist plus per-collection overrides (e.g., task `private_notes`). Unit tests in `backend/audit_test.go` ensure diffs never include banned keys.
-- **Error Handling**: `logAudit` errors are logged with `request_id` correlation. Prometheus counter `audit_log_failures_total` exposes health signal.
-- **Performance**: WAL mode already enabled; monitor `audit_logs` table size and add indexes on `(resource, resource_id, created)` and `(actor, created)`.
+- **Retention & Archival**: Introduce `audit_retention_days` setting (default 365). Scheduled Convex action dumps logs older than retention to storage and then deletes them.
+- **Tamper Detection**: Because logs live in the same database, consider periodic signed exports to object storage (future). Document manual verification steps.
+- **Sensitive Field Policy**: Maintain central denylist plus per-table overrides (e.g., task `private_notes`). Unit tests ensure diffs never include banned keys.
+- **Error Handling**: `logAudit` errors are logged with `request_id` correlation. Monitor audit log failures for health signals.
+- **Performance**: Monitor `audit_logs` table size and ensure proper indexes on `(resource, resource_id, created)` and `(actor, created)`.

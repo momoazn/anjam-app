@@ -5,7 +5,7 @@ This guide provides technical guidance for developers working on the Anjam appli
 ## Prerequisites
 
 - [Bun](https://bun.sh) 1.x
-- [Go](https://go.dev) 1.24+
+- [Convex CLI](https://docs.convex.dev/production/hosting/deployments) - `npm install -g convex` or `bunx convex`
 - Node.js tooling (installed via Bun)
 
 ## Development Workflow
@@ -16,20 +16,19 @@ This guide provides technical guidance for developers working on the Anjam appli
 # Install dependencies
 bun install
 
-# Start both backend and frontend in development mode
-bun run dev
+# Start Convex development server
+bunx convex dev
 
-# Or run separately:
-bun run dev:client  # Frontend only (Vite on port 5173)
-bun run dev:server  # Backend only (Air with live reload)
+# Start frontend development server (in another terminal)
+bun run dev
 ```
+
+The application will be available at `http://localhost:5173`
 
 ### Development Commands
 
-- `bun run dev` - Start backend + frontend dev server
-- `bun run dev:full` - Backend (Air) + frontend dev server
-- `bun run dev:client` - Frontend only (Vite dev server with HMR)
-- `bun run dev:server` - Backend only (Air live-reload)
+- `bun run dev` - Start frontend dev server with hot reload
+- `bunx convex dev` - Start Convex dev server (run in parallel)
 
 ## Code Quality
 
@@ -96,109 +95,83 @@ bun run test:all         # Run unit (once) + E2E tests
 ### Production Builds
 
 ```bash
-# Build everything (frontend + all platform backends + packaging)
+# Build frontend for production
 bun run build
 
-# Individual builds
-bun run build:client     # Frontend only
-bun run build:server     # Linux backend only
-bun run build:windows    # Windows backend + ZIP package
-bun run build:mac        # macOS backend only
+# Preview production build
+bun run start
 ```
 
-Build outputs are in `release/` directory:
-
-- `release/linux/anjam` - Linux binary
-- `release/windows/anjam.exe` + `anjam-windows.zip`
-- `release/macos/anjam-macos` - macOS binary
+Build outputs are in `dist/` directory.
 
 ## Database & Schema
 
 ### Schema Management
 
-When modifying `backend/pb_schema.json`:
+The schema is defined in `convex/schema.ts`. When modifying the schema:
 
 1. Edit the schema file
-2. Run `bun run types:generate` to regenerate TypeScript types
-3. This updates `src/lib/pocketbase-types.ts` used across the app
-4. **Never manually edit** `src/lib/pocketbase-types.ts` - it's auto-generated
+2. Convex automatically regenerates types in `convex/_generated/` on save
+3. Import types from `convex/_generated/dataModel.d.ts` for data models
+4. Import types from `convex/_generated/server.d.ts` for backend functions
 
-### Data Management
+### Convex Functions
 
-```bash
-bun run setup            # Clear and seed database with initial data
-bun run data:seed        # Seed database (alias for setup)
-bun run data:reset       # Reset database (alias for setup)
-```
+Convex functions are organized in `convex/`:
+
+- **Queries**: Read-only data fetching
+- **Mutations**: Data modifications
+- **Actions**: Complex operations that can call external APIs
 
 ## Project Structure
 
-### Backend
+### Backend (Convex)
 
-- `backend/main.go` - Entry point, custom handlers, event handlers
-- `backend/backend_constants.go` - Backend constants
-- `backend/pb_schema.json` - PocketBase collection schema
-- `backend/dist/` - Vite build output (embedded by Go)
+- `convex/schema.ts` - Database schema definition
+- `convex/*.ts` - Query, mutation, and action functions
+- `convex/_generated/` - Auto-generated types (don't edit)
 
 ### Frontend
 
 - `src/components/` - Reusable UI components
 - `src/pages/` - Route-level page components
-- `src/lib/` - Business logic, utilities, PocketBase client
+- `src/lib/` - Business logic, utilities, Convex client
 - `src/store/` - Zustand stores (auth, sidebar) with persistence
-- `src/hooks/` - Custom React hooks
+- `src/hooks/` - Custom React hooks and TanStack Query hooks
 - `src/constants/` - Application constants
 
 ### Key Patterns
 
-- **PocketBase Client**: `src/lib/pocketbase.ts` exports singleton `pb`
-- **Data Fetching**: Use TanStack Query hooks with PocketBase SDK
-- **Authentication**: Zustand store (`src/store/auth-store.ts`) syncs with `pb.authStore`
-- **Type Safety**: Auto-generated types from schema via `pocketbase-typegen`
+- **Convex Client**: `src/lib/convex.ts` exports Convex client instance
+- **Data Fetching**: Use TanStack Query hooks with Convex functions
+- **Authentication**: Zustand store (`src/store/auth-store.ts`) manages auth state
+- **Type Safety**: Auto-generated types from Convex schema
 
-## Custom API Endpoints
+## Real-time Updates
 
-The backend exposes custom endpoints at `/api/tm/*`:
+Convex provides automatic real-time synchronization:
 
-- `PATCH /api/tm/users/{id}/toggle-active` - Activate/deactivate user (admin only)
-- `PATCH /api/tm/users/{id}/unblock` - Unblock user after failed logins (admin only)
-- `GET /api/tm/users/{id}/login-logs` - Retrieve user's login history
-
-See `backend/main.go` for implementation details.
-
-## Event Handlers
-
-Backend event handlers in `backend/main.go`:
-
-- `OnRecordCreateExecute`: Runs before record creation (can modify record)
-- `OnRecordAfterCreateSuccess`: Runs after successful creation (notifications, etc.)
-- `OnRecordAfterUpdateSuccess`: Runs after updates (status change notifications, etc.)
-
-Used for:
-
-- Auto-generating project codes (3-letter uppercase)
-- Auto-generating task display IDs (format: `{PROJECT_CODE}-{NUMBER}`)
-- Creating notifications for task assignments and updates
+- Query results update automatically when data changes
+- No manual SSE subscriptions needed
+- Convex handles all connection management
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Type errors after schema changes**: Run `bun run types:generate`
+1. **Type errors after schema changes**: Wait for Convex to regenerate types or run `bunx convex dev`
 2. **Build failures**: Run `bun run clean` and rebuild
-3. **Database issues**: Reset with `bun run data:reset`
-4. **Port conflicts**: Backend uses 8090, frontend dev uses 5173
+3. **Convex connection issues**: Ensure `bunx convex dev` is running
+4. **Port conflicts**: Frontend dev uses 5173
 
 ### Debug Mode
 
 - Frontend: Use React DevTools and browser devtools
-- Backend: Check Go logs in terminal, PocketBase admin UI at `/_/`
+- Convex: Check Convex dashboard at local URL shown in terminal
 - E2E: Use `bun run test:e2e:debug` for Playwright debugging
 
 ## Related Documentation
 
-- [Project Overview](./PROJECT_OVERVIEW.md) - High-level introduction
-- [Development Roadmap](./DEVELOPMENT_ROADMAP.md) - Strategic planning
-- [Implementation Status](./IMPLEMENTATION_STATUS.md) - Current state
-- [QA Testing Guide](./QA_TESTING_GUIDE_SLIM.md) - Testing procedures
-- [Improvements Plan](./IMPROVEMENTS_PLAN.md) - Refactoring and improvement roadmap
+- [System Architecture](../architecture/system-architecture.md) - High-level architecture
+- [Frontend Architecture](./frontend-architecture.md) - Frontend structure
+- [Product Design](../product/design.md) - Product design documentation
