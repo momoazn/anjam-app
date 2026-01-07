@@ -321,7 +321,7 @@ export const settings = {
     manifest: "مشخصات نرم‌افزار",
     buildVersion: "نسخه ساخت",
     architecture: "معماری",
-    framework: "فریم‌ورک PocketBase",
+    framework: "فریم‌ورک Convex",
     uiEngine: "موتور رابط کاربری",
     uiStack: "React + Tailwind CSS",
   },

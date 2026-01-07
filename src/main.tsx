@@ -1,13 +1,14 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
-import { ConvexAuthStateSync } from "./components/auth/convex-auth-sync";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
 import App from "./app";
+import { ConvexAuthStateSync } from "./components/auth/convex-auth-sync";
 import "./index.css";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+const storageNamespace = import.meta.env.VITE_CONVEX_URL as string;
 
 const root = createRoot(document.getElementById("root")!);
 const isDevelopment = import.meta.env.MODE === "development";
@@ -15,7 +16,7 @@ const isDevelopment = import.meta.env.MODE === "development";
 if (isDevelopment) {
   root.render(
     <StrictMode>
-      <ConvexAuthProvider client={convex}>
+      <ConvexAuthProvider client={convex} storageNamespace={storageNamespace}>
         <ConvexAuthStateSync />
         <App />
       </ConvexAuthProvider>
@@ -34,7 +35,11 @@ if (isDevelopment) {
             debug: false,
           }}
         >
-          <ConvexAuthProvider client={convex}>
+          <ConvexAuthProvider
+            client={convex}
+            storageNamespace={storageNamespace}
+          >
+            <ConvexAuthStateSync />
             <App />
           </ConvexAuthProvider>
         </PostHogProvider>

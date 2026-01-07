@@ -1,3 +1,4 @@
+import { useConvexAuth } from "convex/react";
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
@@ -193,7 +194,15 @@ const Onboarding = createLazyPage(
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading: isAuthLoading } = useConvexAuth();
   const isLoggedIn = useAuthIsAuthenticated();
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -202,12 +211,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // RequireOrganization component - ensures user has an organization selected
 const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading: isAuthLoading } = useConvexAuth();
   const isLoggedIn = useAuthIsAuthenticated();
   const currentOrg = useCurrentOrganization();
   const userOrganizations = useAuthStore((s) => s.userOrganizations);
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
   const onboardingCompleted = useCurrentOrgOnboardingCompleted();
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -247,10 +264,18 @@ const PermissionProtectedRoute = ({
   children: React.ReactNode;
   permission: Permission;
 }) => {
+  const { isLoading: isAuthLoading } = useConvexAuth();
   const user = useAuthUser();
   const { can } = usePermissions();
   const isLoggedIn = useAuthIsAuthenticated();
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -276,8 +301,16 @@ const PermissionProtectedRoute = ({
 
 // PublicRoute component (redirects authenticated users to inbox)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading: isAuthLoading } = useConvexAuth();
   const isLoggedIn = useAuthIsAuthenticated();
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (isLoggedIn) {
     return <Navigate to="/inbox" replace />;
   }

@@ -18,19 +18,7 @@ export const commandMenu = {
     noResults: "موردی یافت نشد، لطفاً عبارت دیگری امتحان کنید",
   },
 
-  // Operations mode labels
-  operations: {
-    myTasks: "مسئولیت‌های من",
-    dashboard: "میز کار",
-    projects: "پروژه‌های فعال",
-    createTask: "ایجاد تسک جدید",
-    createProject: "ایجاد پروژه جدید",
-    settings: "تنظیمات",
-    placeholder: "تایپ کنید...",
-    noResults: "موردی یافت نشد، لطفاً عبارت دیگری امتحان کنید",
-  },
-
-  // Keywords for search (both modes)
+  // Keywords for search
   keywords: {
     inbox: [
       "inbox",

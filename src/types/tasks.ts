@@ -14,9 +14,7 @@ export const TASK_TYPES = ["task", "bug", "feature", "chore"] as const;
 export type TaskType = (typeof TASK_TYPES)[number];
 
 export interface Task {
-  // Convex primary key
   _id: string;
-  // Compatibility alias for PocketBase-style code
   id?: string;
   _creationTime: number;
   projectId: string;
@@ -40,6 +38,15 @@ export interface Task {
   deletedAt?: number;
   updatedAt?: number;
 }
+
+export type TaskExpand = {
+  project?: unknown;
+  assignee?: unknown;
+  creator?: unknown;
+  tags?: unknown[];
+  task?: unknown;
+  comment?: unknown;
+};
 
 export interface TaskWithProject extends Task {
   project?: {
@@ -73,12 +80,7 @@ export interface TaskWithProject extends Task {
   display_id?: string;
   updated?: string;
   created?: string;
-  expand?: {
-    project?: any;
-    assignee?: any;
-    creator?: any;
-    tags?: any[];
-  };
+  expand?: TaskExpand;
 }
 
 export interface TaskWithDetails extends Task {
@@ -107,15 +109,8 @@ export interface TaskWithDetails extends Task {
     first_name?: string;
     last_name?: string;
   } | null;
-  // Compatibility fields for transition from PocketBase
   display_id?: string;
   created?: string;
   updated?: string;
-  expand?: {
-    project?: any;
-    assignee?: any;
-    creator?: any;
-    task?: any;
-    comment?: any;
-  };
+  expand?: TaskExpand;
 }
