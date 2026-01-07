@@ -245,7 +245,7 @@ export default function Onboarding() {
               className="w-full"
             >
               <IconUserPlus className="mr-2 size-4" />
-              افزودن ایمیل دیگر
+              {auth.onboarding.addEmail}
             </Button>
           </div>
         );

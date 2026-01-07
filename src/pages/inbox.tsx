@@ -47,7 +47,7 @@ function SectionHeader({
           className="h-7 px-2 text-xs"
           onClick={onToggle}
         >
-          {isOpen ? "بستن" : "باز کردن"}
+          {isOpen ? inbox.buttons.close : inbox.buttons.open}
         </Button>
       ) : null}
     </div>
@@ -195,13 +195,13 @@ export default function Inbox() {
                 className="justify-start"
               >
                 <ToggleGroupItem value="all" className="h-8 px-3 text-xs">
-                  همه
+                  {inbox.buttons.all}
                 </ToggleGroupItem>
                 <ToggleGroupItem value="active" className="h-8 px-3 text-xs">
-                  فعال
+                  {inbox.buttons.active}
                 </ToggleGroupItem>
                 <ToggleGroupItem value="done" className="h-8 px-3 text-xs">
-                  انجام‌شده
+                  {inbox.buttons.done}
                 </ToggleGroupItem>
               </ToggleGroup>
               <Button
@@ -209,7 +209,7 @@ export default function Inbox() {
                 className="h-8 px-3"
                 onClick={() => navigate("/tasks/new")}
               >
-                ساخت تسک
+                {inbox.createTask}
               </Button>
             </div>
             <div className="mt-4">
@@ -241,13 +241,13 @@ export default function Inbox() {
             className="justify-start"
           >
             <ToggleGroupItem value="all" className="h-8 px-3 text-xs">
-              همه
+              {inbox.buttons.all}
             </ToggleGroupItem>
             <ToggleGroupItem value="active" className="h-8 px-3 text-xs">
-              فعال
+              {inbox.buttons.active}
             </ToggleGroupItem>
             <ToggleGroupItem value="done" className="h-8 px-3 text-xs">
-              انجام‌شده
+              {inbox.buttons.done}
             </ToggleGroupItem>
           </ToggleGroup>
 
@@ -256,7 +256,7 @@ export default function Inbox() {
             className="h-8 px-3"
             onClick={() => navigate("/tasks/new")}
           >
-            ساخت تسک
+            {inbox.createTask}
           </Button>
         </div>
 
@@ -274,8 +274,8 @@ export default function Inbox() {
           />
           {sections.assigned.length === 0 ? (
             <InlineEmptyState
-              title="چیزی برای انجام ندارید"
-              actionLabel="ساخت تسک"
+              title={inbox.noTodos}
+              actionLabel={inbox.createTask}
               onAction={() => navigate("/tasks/new")}
             />
           ) : (
@@ -290,7 +290,7 @@ export default function Inbox() {
             count={sections.mentioned.length}
           />
           {sections.mentioned.length === 0 ? (
-            <InlineEmptyState title="هنوز اشاره‌ای ندارید" />
+            <InlineEmptyState title={inbox.noMentions} />
           ) : (
             sections.mentioned.map((task) => (
               <TaskListItem key={task.id} task={task} showProject />
@@ -315,7 +315,7 @@ export default function Inbox() {
             )
           ) : (
             <div className="text-muted-foreground border-b border-border/40 px-3 py-3 text-xs">
-              برای دیدن به‌روزرسانی‌های اخیر باز کنید
+              {inbox.openRecent}
             </div>
           )}
         </div>

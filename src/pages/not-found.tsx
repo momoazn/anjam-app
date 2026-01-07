@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { app, navigation, notFound } from "@/constants";
+import { app, inbox, navigation, notFound } from "@/constants";
 
 export default function NotFound() {
   return (
@@ -36,7 +36,7 @@ export default function NotFound() {
 
         <div className="flex items-center gap-4 pt-8" data-animate-stagger>
           <Button asChild className="h-12 px-8 font-bold shadow-sm">
-            <Link to="/inbox">صندوق ورودی</Link>
+            <Link to="/inbox">{inbox.title}</Link>
           </Button>
           <Button asChild variant="outline" className="h-12 px-8 font-bold">
             <Link to="/projects">{navigation.projects}</Link>
