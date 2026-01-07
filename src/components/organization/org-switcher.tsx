@@ -93,8 +93,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
   const handleOrgSelect = async (orgId: string) => {
     await switchOrganization(orgId);
     setIsOpen(false);
-    // Optionally navigate to dashboard after switch
-    navigate("/dashboard");
+    navigate("/inbox");
   };
 
   const handleCreateOrg = () => {

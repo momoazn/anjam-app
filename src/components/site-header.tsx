@@ -36,7 +36,7 @@ export function SiteHeader() {
             <span className="flex items-center gap-3">
               <Search className="text-muted-foreground size-3.5" />
               <span className="text-muted-foreground hidden text-xs lg:inline-flex">
-                {commandMenu.product.placeholder}
+                {commandMenu.labels.placeholder}
               </span>
             </span>
             <kbd className="bg-background/50 text-muted-foreground absolute end-2 top-1.5 hidden h-5 items-center gap-1 rounded border border-border/40 px-1.5 font-sans text-[10px] font-medium select-none sm:flex">

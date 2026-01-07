@@ -11,7 +11,7 @@ import {
   IconTarget,
 } from "@tabler/icons-react";
 import Fuse from "fuse.js";
-import { FileText, FolderOpen, LayoutGrid, Plus, Settings } from "lucide-react";
+import { FileText, FolderOpen, Plus, Settings } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
@@ -95,11 +95,6 @@ export function CommandMenu() {
     setOpen(false);
   }, [navigate]);
 
-  const navigateToDashboard = useCallback(() => {
-    navigate("/dashboard");
-    setOpen(false);
-  }, [navigate]);
-
   const navigateToProjects = useCallback(() => {
     navigate("/projects");
     setOpen(false);
@@ -146,23 +141,15 @@ export function CommandMenu() {
     const items: CommandItem[] = [
       {
         id: "nav-inbox",
-        label: commandMenu.product.inbox,
+        label: commandMenu.labels.inbox,
         icon: IconSearch,
         action: navigateToInbox,
         keywords: commandMenu.keywords.inbox,
         type: "command",
       },
       {
-        id: "nav-dashboard",
-        label: commandMenu.product.dashboard,
-        icon: LayoutGrid,
-        action: navigateToDashboard,
-        keywords: commandMenu.keywords.dashboard,
-        type: "command",
-      },
-      {
         id: "nav-projects",
-        label: commandMenu.product.projects,
+        label: commandMenu.labels.projects,
         icon: FolderOpen,
         action: navigateToProjects,
         keywords: commandMenu.keywords.projects,
@@ -170,7 +157,7 @@ export function CommandMenu() {
       },
       {
         id: "project-new",
-        label: commandMenu.product.createProject,
+        label: commandMenu.labels.createProject,
         icon: FolderOpen,
         action: navigateToNewProject,
         keywords: commandMenu.keywords.new,
@@ -178,7 +165,7 @@ export function CommandMenu() {
       },
       {
         id: "task-new",
-        label: commandMenu.product.createItem,
+        label: commandMenu.labels.createItem,
         icon: Plus,
         action: navigateToNewTask,
         keywords: commandMenu.keywords.new,
@@ -186,7 +173,7 @@ export function CommandMenu() {
       },
       {
         id: "nav-insights",
-        label: commandMenu.product.insights,
+        label: commandMenu.labels.insights,
         icon: IconActivity,
         action: navigateToInsights,
         keywords: commandMenu.keywords.insights,
@@ -194,7 +181,7 @@ export function CommandMenu() {
       },
       {
         id: "nav-settings",
-        label: commandMenu.product.settings,
+        label: commandMenu.labels.settings,
         icon: Settings,
         action: navigateToSettings,
         keywords: commandMenu.keywords.settings,
@@ -205,7 +192,6 @@ export function CommandMenu() {
     return items;
   }, [
     navigateToInbox,
-    navigateToDashboard,
     navigateToProjects,
     navigateToNewProject,
     navigateToNewTask,
@@ -392,7 +378,7 @@ export function CommandMenu() {
                 ? "text-[var(--product-text-primary)] placeholder:text-[var(--product-text-tertiary)]"
                 : "",
             )}
-            placeholder={commandMenu.product.placeholder}
+            placeholder={commandMenu.labels.placeholder}
             role="combobox"
             aria-expanded={open}
             aria-controls="command-menu-listbox"
@@ -431,7 +417,7 @@ export function CommandMenu() {
                   : "text-muted-foreground",
               )}
             >
-              {commandMenu.product.noResults}
+              {commandMenu.labels.noResults}
             </p>
           )}
           {allItems.length > 0 && (

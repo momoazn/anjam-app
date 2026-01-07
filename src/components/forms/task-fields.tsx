@@ -1,6 +1,5 @@
 import {
   IconCalendar,
-  IconClock,
   IconFilter,
   IconHash,
   IconStack2,
@@ -18,7 +17,6 @@ import {
   FormMessage,
   FormField as ShadcnFormField,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { tasks } from "@/constants";
 import { useProjectUsers, useProjects, useUsers } from "@/hooks";
 import {
@@ -41,7 +39,6 @@ import {
 } from "../ui/select";
 import { FormField as GenericFormField } from "./form-field";
 
-// Convex task status types
 const TASK_STATUSES = [
   "todo",
   "in_progress",
@@ -52,30 +49,22 @@ const TASK_STATUSES = [
 
 type TaskStatus = (typeof TASK_STATUSES)[number];
 
-// Convex task priority types (values)
 const TASK_PRIORITY_VALUES = ["low", "medium", "high", "urgent"] as const;
 
 type TaskFieldsProps = {
   control: Control<TaskFormData>;
   isInProject?: boolean;
   projectId?: string;
-  variant?: "default" | "product";
 };
 
 export function TaskFields({
   control,
   isInProject = false,
   projectId,
-  variant = "default",
 }: TaskFieldsProps) {
   const actualIsInProject = isInProject || Boolean(projectId);
-  const isProductVariant = variant === "product";
-  const metaLabelClass = cn(
-    "flex items-center gap-1.5 font-bold tracking-tight",
-    isProductVariant
-      ? "text-muted-foreground/60 text-xs"
-      : "text-muted-foreground/40 text-[10px]",
-  );
+  const metaLabelClass =
+    "flex items-center gap-1.5 font-bold tracking-tight text-muted-foreground/60 text-xs";
 
   const { data: projectsData } = useProjects({ enabled: !actualIsInProject });
   const { data: projectUsers } = useProjectUsers({
@@ -125,20 +114,8 @@ export function TaskFields({
   }, []);
 
   return (
-    <div
-      className={cn("text-right", isProductVariant ? "space-y-5" : "space-y-6")}
-    >
-      {/* Primary Input Zone */}
-      <section className={isProductVariant ? "space-y-4" : "space-y-3"}>
-        {isProductVariant ? null : (
-          <div className="flex items-center gap-3">
-            <span className="text-primary/60 text-[9px] font-bold tracking-tight">
-              {tasks.form.sections.generalInfo}
-            </span>
-            <div className="bg-border/20 h-px flex-1" />
-          </div>
-        )}
-
+    <div className="text-right space-y-5">
+      <section className="space-y-4">
         <div className="space-y-4">
           <GenericFormField
             control={control}
@@ -161,28 +138,18 @@ export function TaskFields({
         </div>
       </section>
 
-      {/* Task Parameters Zone - Linear Layout */}
-      <section className={isProductVariant ? "space-y-3" : "space-y-4"}>
-        {isProductVariant ? null : (
-          <div className="flex items-center gap-3">
-            <span className="text-primary/60 text-[9px] font-bold tracking-tight">
-              {tasks.form.sections.taskParameters}
-            </span>
-            <div className="bg-border/20 h-px flex-1" />
-          </div>
-        )}
-
+      <section className="space-y-3">
         <div
           className={cn(
             "border-border/40 space-y-2 overflow-hidden rounded-xl border",
-            isProductVariant ? "bg-background/20 p-3" : "bg-card p-4",
+            "bg-background/20 p-3",
           )}
         >
           {!actualIsInProject && (
             <div
               className={cn(
                 "border-border/10 flex items-center justify-between border-s px-3 py-3",
-                isProductVariant ? "rounded-lg" : "",
+                "rounded-lg",
               )}
             >
               <span className={metaLabelClass}>
@@ -221,7 +188,7 @@ export function TaskFields({
           <div
             className={cn(
               "border-border/10 flex items-center justify-between border-s px-3 py-3",
-              isProductVariant ? "rounded-lg" : "",
+              "rounded-lg",
             )}
           >
             <span className={metaLabelClass}>
@@ -256,7 +223,7 @@ export function TaskFields({
           <div
             className={cn(
               "border-border/10 flex items-center justify-between border-s px-3 py-3",
-              isProductVariant ? "rounded-lg" : "",
+              "rounded-lg",
             )}
           >
             <span className={metaLabelClass}>
@@ -316,7 +283,7 @@ export function TaskFields({
           <div
             className={cn(
               "border-border/10 flex items-center justify-between border-s px-3 py-3",
-              isProductVariant ? "rounded-lg" : "",
+              "rounded-lg",
             )}
           >
             <span className={metaLabelClass}>
@@ -370,7 +337,7 @@ export function TaskFields({
           <div
             className={cn(
               "border-border/10 flex items-center justify-between border-s px-3 py-3",
-              isProductVariant ? "rounded-lg" : "",
+              "rounded-lg",
             )}
           >
             <span className={metaLabelClass}>
@@ -397,77 +364,10 @@ export function TaskFields({
             />
           </div>
 
-          {!isProductVariant && (
-            <div
-              className={cn(
-                "border-border/10 flex items-center justify-between border-s px-3 py-3",
-                isProductVariant ? "rounded-lg" : "",
-              )}
-            >
-              <span className={metaLabelClass}>
-                <IconClock className="size-3" /> {tasks.form.estimate}
-              </span>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-bold opacity-50">
-                    {tasks.form.hoursShort}
-                  </span>
-                  <ShadcnFormField
-                    control={control}
-                    name="estimated_hours"
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        type="number"
-                        min={0}
-                        max={999}
-                        className="bg-muted/10 h-10 w-16 rounded-lg border-none p-2 text-center text-xs font-bold tabular-nums focus:ring-0"
-                        placeholder="0"
-                        onChange={(e) => {
-                          const value = Math.max(
-                            0,
-                            Math.min(999, Number(e.target.value) || 0),
-                          );
-                          field.onChange(value);
-                        }}
-                      />
-                    )}
-                  />
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-bold opacity-50">
-                    {tasks.form.minutesShort}
-                  </span>
-                  <ShadcnFormField
-                    control={control}
-                    name="estimated_minutes"
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        type="number"
-                        min={0}
-                        max={59}
-                        className="bg-muted/10 h-10 w-16 rounded-lg border-none p-2 text-center text-xs font-bold tabular-nums focus:ring-0"
-                        placeholder="0"
-                        onChange={(e) => {
-                          const value = Math.max(
-                            0,
-                            Math.min(59, Number(e.target.value) || 0),
-                          );
-                          field.onChange(value);
-                        }}
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
           <div
             className={cn(
               "border-border/10 flex items-center justify-between border-s px-3 py-3",
-              isProductVariant ? "rounded-lg" : "",
+              "rounded-lg",
             )}
           >
             <span className={metaLabelClass}>

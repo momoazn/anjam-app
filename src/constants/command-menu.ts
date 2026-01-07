@@ -5,10 +5,8 @@
  */
 
 export const commandMenu = {
-  // Product mode labels
-  product: {
+  labels: {
     inbox: "پیام‌ها و اعلانات",
-    dashboard: "میز کار",
     projects: "پروژه‌های فعال",
     createItem: "ایجاد مورد جدید",
     createProject: "ایجاد پروژه جدید",
@@ -18,7 +16,6 @@ export const commandMenu = {
     noResults: "موردی یافت نشد، لطفاً عبارت دیگری امتحان کنید",
   },
 
-  // Keywords for search
   keywords: {
     inbox: [
       "inbox",
@@ -29,7 +26,6 @@ export const commandMenu = {
       "پیام",
       "اعلان",
     ] as string[],
-    dashboard: ["dashboard", "home", "داشبورد", "میز کار"] as string[],
     projects: ["projects", "پروژه"] as string[],
     new: ["new", "create", "task", "ایجاد", "تسک", "مورد", "جدید"] as string[],
     insights: [
@@ -43,13 +39,11 @@ export const commandMenu = {
     settings: ["settings", "preferences", "تنظیمات"] as string[],
   },
 
-  // Keyboard shortcuts
   shortcuts: {
     commandK: "⌘K",
     new: "N",
   },
 
-  // Accessibility labels
   ariaLabels: {
     searchInput: "جستجوی دستورات و محتوا",
     commandList: "لیست دستورات",
@@ -57,7 +51,6 @@ export const commandMenu = {
       "برای حرکت از کلیدهای بالا/پایین، برای انتخاب از Enter استفاده کنید",
   },
 
-  // Keyboard navigation instructions
   navigationInstructions: {
     upDown: "با ↑↓ حرکت کنید",
     enter: "↵ برای انتخاب",
