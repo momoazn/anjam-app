@@ -36,8 +36,6 @@ export const getForOrg = query({
     let createdThisWeek = 0;
     let completedThisWeek = 0;
     let inProgress = 0;
-    let totalTimeSpent = 0;
-    let completedWithTime = 0;
 
     const byAssignee: Record<string, { name: string; count: number }> = {};
 
@@ -49,18 +47,8 @@ export const getForOrg = query({
       }
 
       if (task.status === "done") {
-        // We don't have completedAt in schema, relying on updatedAt or _creationTime?
-        // If status is done, updatedAt is roughly when it was done if not updated since.
-        // This is an approximation.
-        // For "completed this week", we check updatedAt.
         if (task.updatedAt && task.updatedAt >= startOfWeek) {
           completedThisWeek++;
-        }
-
-        // Cycle time approximation: updatedAt - _creationTime
-        if (task.updatedAt) {
-          totalTimeSpent += task.updatedAt - task._creationTime;
-          completedWithTime++;
         }
       }
 
@@ -69,9 +57,6 @@ export const getForOrg = query({
       }
 
       if (task.assigneeUserId) {
-        // We need assignee names.
-        // We can fetch them later or here.
-        // For now just count by ID.
         const aid = task.assigneeUserId;
         if (!byAssignee[aid]) {
           byAssignee[aid] = { name: "Loading...", count: 0 };
@@ -91,16 +76,10 @@ export const getForOrg = query({
       }),
     );
 
-    const cycleTime =
-      completedWithTime > 0 ? totalTimeSpent / completedWithTime : 0;
-    // on-time rate needs deadline.
-    // ...
-
     return {
       createdThisWeek,
       completedThisWeek,
       inProgress,
-      cycleTime, // in ms
       workload: Object.values(byAssignee),
       totalTasks: tasks.length,
     };

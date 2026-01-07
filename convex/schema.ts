@@ -96,8 +96,6 @@ export default defineSchema({
     tags: v.array(v.id("tags")),
     displayId: v.string(), // {PROJECT_CODE}-{000001}
     taskNumber: v.number(),
-    estimatedMinutes: v.optional(v.number()),
-    timeSpentMinutes: v.optional(v.number()),
     taskType: v.optional(v.string()),
     storyPoints: v.optional(v.number()),
     watchers: v.optional(v.array(v.id("users"))),
@@ -191,15 +189,4 @@ export default defineSchema({
   })
     .index("by_taskId", ["taskId"])
     .index("by_assignee", ["assigneeUserId"]),
-
-  timeEntries: defineTable({
-    taskId: v.id("tasks"),
-    userId: v.id("users"),
-    minutes: v.number(),
-    startedAt: v.optional(v.number()),
-    note: v.optional(v.string()),
-    updatedAt: v.optional(v.number()),
-  })
-    .index("by_taskId", ["taskId"])
-    .index("by_user", ["userId"]),
 });
