@@ -20,7 +20,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { tasks } from "@/constants";
 import { useCreateTask } from "@/hooks";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser } from "@/store/app-context-store";
 import {
   useCloseModal,
   useModalData,

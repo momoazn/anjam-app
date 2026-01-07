@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 
 import { type Doc, Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrganization } from "@/store/app-context-store";
 
 /**
  * Hook to list all projects in the current organization.

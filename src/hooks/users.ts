@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 
-import { useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrganization } from "@/store/app-context-store";
 
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";

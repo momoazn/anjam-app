@@ -18,7 +18,7 @@ import {
   useAuthActions,
   useAuthUser,
   useCurrentOrgRole,
-} from "@/store/auth-store";
+} from "@/store/app-context-store";
 
 import { UserAvatar } from "./user-avatar";
 

@@ -23,7 +23,7 @@ import {
   useAuthUser,
   useCurrentOrgRole,
   useCurrentOrganization,
-} from "@/store/auth-store";
+} from "@/store/app-context-store";
 import { useCloseModal, useModalIsOpen } from "@/store/modal-store";
 
 const projectFormSchema = z.object({

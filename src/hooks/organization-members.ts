@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 
 import { Doc, Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrganization } from "@/store/app-context-store";
 
 export type OrgRole = "owner" | "member";
 export type MemberStatus = "invited" | "active" | "suspended";

@@ -28,7 +28,7 @@ import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/users";
 import { api } from "@/lib/convex";
-import { useAuthActions, useAuthUser } from "@/store/auth-store";
+import { useAuthActions, useAuthUser } from "@/store/app-context-store";
 
 const profileSchema = z.object({
   username: z.string().min(3, auth.errors.usernameMinLength),

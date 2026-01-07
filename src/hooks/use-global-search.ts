@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
 
 import { type Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrganization } from "@/store/app-context-store";
 
 interface SearchTaskResult {
   id: string;

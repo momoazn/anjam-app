@@ -18,7 +18,7 @@ import {
   useUserPreferences,
 } from "@/hooks";
 import { useTheme } from "@/hooks/use-theme";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser } from "@/store/app-context-store";
 
 type PreferencesPayload = typeof DEFAULT_USER_PREFERENCES;
 type DisplayPayload = PreferencesPayload["display"];

@@ -2,7 +2,7 @@ import { useQuery } from "convex/react";
 import { isPast, isToday } from "date-fns";
 import { useMemo } from "react";
 
-import { useAuthUser, useCurrentOrganization } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrganization } from "@/store/app-context-store";
 
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";

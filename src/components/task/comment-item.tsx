@@ -30,7 +30,7 @@ import { useSoftDeleteComment, useUpdateComment } from "@/hooks/comments";
 import { useToast } from "@/hooks/use-toast";
 import { formatTaskDate } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser } from "@/store/app-context-store";
 
 import { UserAvatar } from "../user-avatar";
 

@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser } from "@/store/app-context-store";
 
 const passwordSchema = z
   .object({

@@ -4,7 +4,7 @@ import {
   type ProjectRole,
   computePermissions,
 } from "@/lib/permissions";
-import { useCurrentOrgRole } from "@/store/auth-store";
+import { useCurrentOrgRole } from "@/store/app-context-store";
 
 interface UsePermissionsResult {
   isLoading: boolean;

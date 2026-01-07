@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 import type { Doc } from "@/lib/convex";
 import { Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrganization } from "@/store/app-context-store";
 import { TaskWithDetails, TaskWithProject } from "@/types/tasks";
 
 type ListedTask = Doc<"tasks"> & {

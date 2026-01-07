@@ -9,7 +9,7 @@ import { useCreateComment } from "@/hooks/comments";
 import type { CommentWithUser } from "@/hooks/comments";
 import { useOrganizationMembers } from "@/hooks/organization-members";
 import { formatUserName } from "@/lib/utils";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser } from "@/store/app-context-store";
 
 type CommentComposerProps = {
   taskId: string;

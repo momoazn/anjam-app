@@ -30,7 +30,7 @@ import { app, inbox, navigation } from "@/constants";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Permission } from "@/lib/permissions";
 import { isOrgAdmin } from "@/lib/permissions";
-import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 
 type NavItem = {
   title: string;

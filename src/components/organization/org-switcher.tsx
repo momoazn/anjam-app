@@ -22,7 +22,7 @@ import {
   useCurrentOrgRole,
   useCurrentOrganization,
   useUserOrganizations,
-} from "@/store/auth-store";
+} from "@/store/app-context-store";
 
 import type { Doc } from "../../../convex/_generated/dataModel";
 

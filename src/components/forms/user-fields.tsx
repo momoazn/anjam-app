@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
 import { auth, users } from "@/constants";
-import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 
 import { FormField as GenericFormField } from "./form-field";
 
