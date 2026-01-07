@@ -387,7 +387,7 @@ export function TaskBoardPage() {
           <DragOverlay dropAnimation={dropAnimation}>
             {activeTask ? (
               <div
-                className="border-primary/20 bg-card w-[280px] overflow-hidden rounded-xl border shadow-2xl"
+                className="border-primary/20 bg-card w-70 overflow-hidden rounded-xl border shadow-2xl"
                 style={{
                   opacity: 0.95,
                   viewTransitionName: `task-${activeTask.id}`,
