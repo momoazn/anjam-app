@@ -1,4 +1,4 @@
-import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import { type GenericCtx, createClient } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
 

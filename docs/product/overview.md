@@ -32,7 +32,7 @@ This is a comprehensive **task and project management application** designed for
 - **Convex**: Fully-managed backend platform providing:
   - Automatic schema generation and type safety
   - Real-time data synchronization
-  - Built-in authentication via `@convex-dev/auth`
+  - Built-in authentication via Better Auth (`better-auth`, `@convex-dev/better-auth`)
   - Serverless functions (queries, mutations, actions)
   - Automatic scaling and infrastructure management
 

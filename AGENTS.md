@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Functions: queries, mutations, actions in `convex/*.ts`
   - Auto-generated types in `convex/_generated/` (don't edit manually)
   - Real-time data synchronization
-  - Authentication via `@convex-dev/auth`
+  - Authentication via Better Auth (`better-auth`, `@convex-dev/better-auth`)
 
 - **Frontend**: React 19 + TypeScript SPA with Vite bundler
   - `src/components/`: UI components (Radix UI + Tailwind CSS)
@@ -97,7 +97,7 @@ bunx vitest run src/lib/utils.test.ts
 - Schema: Define in `convex/schema.ts` - this is the source of truth
 - Functions: Queries, mutations, actions in `convex/*.ts`
 - Types: Import from `convex/_generated/*` (auto-generated)
-- Auth: `@convex-dev/auth` handles authentication
+- Auth: Better Auth (`better-auth`, `@convex-dev/better-auth`) handles authentication
 
 ### Auto-Generated Types
 
@@ -167,7 +167,7 @@ Before committing: run `bun run check`
 - Use environment variables for sensitive data
 - Never commit `.env` files
 - Convex handles authentication and authorization
-- Frontend uses `@convex-dev/auth` for secure auth flows
+- Frontend uses Better Auth (`better-auth`, `@convex-dev/better-auth`) for secure auth flows
 
 ## Bundle Optimization
 
