@@ -120,8 +120,9 @@ function TaskListItemInner({
   const displayId = task.displayId || task.display_id || "";
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       className={cn(
         "group relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b border-border/40 bg-transparent p-0 text-right transition-colors hover:z-10 focus-visible:ring-0",
         productClasses.transition,
@@ -347,7 +348,7 @@ function TaskListItemInner({
           statusIconColor.replace("text", "bg"),
         )}
       />
-    </button>
+    </div>
   );
 }
 

@@ -16,7 +16,6 @@ import { comments as commentsText, shared, tasks } from "@/constants";
 import type { CommentWithUser } from "@/hooks/comments";
 import { formatTaskDate } from "@/lib/date-utils";
 import { cn, formatUserName } from "@/lib/utils";
-import { useCurrentOrgFeatures } from "@/store/auth-store";
 import { TaskWithDetails } from "@/types/tasks";
 
 export type TaskDetailsContentProps = {
@@ -32,9 +31,6 @@ export function TaskDetailsContent({
   commentsLoading,
   onTaskRefresh,
 }: TaskDetailsContentProps) {
-  const features = useCurrentOrgFeatures();
-  void features;
-
   const [replyTarget, setReplyTarget] = useState<CommentWithUser | null>(null);
 
   // Computed ID for compatibility

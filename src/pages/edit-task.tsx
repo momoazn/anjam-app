@@ -4,7 +4,7 @@ import {
   IconDeviceFloppy,
   IconLoader2,
 } from "@tabler/icons-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -52,8 +52,14 @@ export default function EditTask() {
     },
   });
 
+  const lastResetKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (task) {
+      const resetKey = `${task._id}:${task.updatedAt ?? ""}`;
+      if (lastResetKeyRef.current === resetKey) return;
+      lastResetKeyRef.current = resetKey;
+
       const { hours, minutes } = minutesToHoursAndMinutes(
         task.estimatedMinutes || 0,
       );
@@ -79,6 +85,7 @@ export default function EditTask() {
     const {
       estimated_hours,
       estimated_minutes: estimatedMinutesPart,
+      assignee,
       ...rest
     } = values;
     const hasEstimate = estimated_hours != null || estimatedMinutesPart != null;
@@ -92,9 +99,7 @@ export default function EditTask() {
         ...rest,
         estimatedMinutes: estimated_minutes,
         assigneeUserId:
-          values.assignee !== tasks.addTask.unassigned
-            ? values.assignee
-            : undefined,
+          assignee !== tasks.addTask.unassigned ? assignee : undefined,
         deadline: values.deadline?.getTime(),
       },
     });

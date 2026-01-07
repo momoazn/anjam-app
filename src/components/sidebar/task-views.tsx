@@ -1,5 +1,12 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconChevronUp } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconChevronUp,
+  IconClock,
+  IconList,
+  IconLoader2,
+  IconUser,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -25,31 +32,31 @@ const viewItems = [
   {
     title: navigation.allTasks,
     url: "/tasks",
-    icon: "list",
+    icon: IconList,
     getCount: () => 0,
   },
   {
     title: "تسک‌های من",
     url: "/tasks?assigned=me&status=todo,in_progress,pending",
-    icon: "checklist",
+    icon: IconUser,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
   },
   {
     title: navigation.dueToday,
     url: "/tasks?due=today",
-    icon: "clock",
+    icon: IconClock,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.dueToday,
   },
   {
     title: navigation.overdue,
     url: "/tasks?due=overdue",
-    icon: "alert",
+    icon: IconAlertTriangle,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.overdue,
   },
   {
     title: navigation.inProgress,
     url: "/tasks?status=in_progress",
-    icon: "loader",
+    icon: IconLoader2,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.inProgress,
   },
 ];
@@ -87,26 +94,26 @@ export function TaskViews({ labels }: TaskViewsProps) {
           {viewItems.map((view) => {
             const isActive = location.pathname + location.search === view.url;
             const count = view.getCount(counts);
+            const Icon = view.icon;
 
             return (
               <SidebarMenuItem key={view.url}>
-                <NavLink
-                  to={view.url}
-                  onClick={() => isMobile && setOpenMobile(false)}
-                  className="block"
+                <SidebarMenuButton
+                  asChild
+                  tooltip={view.title}
+                  className={cn(
+                    "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
+                    isActive
+                      ? "text-foreground font-semibold"
+                      : "text-muted-foreground/90 hover:bg-accent hover:text-accent-foreground",
+                  )}
                 >
-                  <SidebarMenuButton
-                    tooltip={view.title}
-                    className={cn(
-                      "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
-                      isActive
-                        ? "text-foreground font-semibold"
-                        : "text-muted-foreground/90 hover:bg-accent hover:text-accent-foreground",
-                    )}
+                  <NavLink
+                    to={view.url}
+                    onClick={() => isMobile && setOpenMobile(false)}
+                    className="block"
                   >
-                    <span className="size-4 text-muted-foreground/70">
-                      {view.icon}
-                    </span>
+                    <Icon className="size-4 shrink-0 text-muted-foreground/70" />
                     <span
                       className={cn(
                         "text-sm font-medium truncate",
@@ -130,8 +137,8 @@ export function TaskViews({ labels }: TaskViewsProps) {
                         {digitsEnToFa(count)}
                       </span>
                     )}
-                  </SidebarMenuButton>
-                </NavLink>
+                  </NavLink>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             );
           })}

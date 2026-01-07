@@ -31,16 +31,7 @@ export const commandMenu = {
     ] as string[],
     dashboard: ["dashboard", "home", "داشبورد", "میز کار"] as string[],
     projects: ["projects", "پروژه"] as string[],
-    new: [
-      "new",
-      "create",
-      "task",
-      "issue",
-      "ایجاد",
-      "تسک",
-      "مورد",
-      "جدید",
-    ] as string[],
+    new: ["new", "create", "task", "ایجاد", "تسک", "مورد", "جدید"] as string[],
     insights: [
       "insights",
       "reports",

@@ -4,8 +4,6 @@ import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
 import type { Doc } from "@/lib/convex";
-import type { OrgFeatures } from "@/lib/mode";
-import { getOrgFeatures } from "@/lib/mode";
 
 type OrgRole = "owner" | "member";
 
@@ -22,7 +20,6 @@ interface AuthState {
   currentOrganization: Doc<"organizations"> | null;
   currentOrgRole: OrgRole | null;
   userOrganizations: OrganizationWithRole[];
-  currentOrgFeatures: OrgFeatures;
   isLoading: boolean;
   isLoadingOrgs: boolean;
   orgsError: Error | null;
@@ -50,7 +47,6 @@ export const useAuthStore = create<AuthState>()(
         currentOrganization: null,
         currentOrgRole: null,
         userOrganizations: [],
-        currentOrgFeatures: getOrgFeatures(),
         isLoading: false,
         isLoadingOrgs: false,
         orgsError: null,
@@ -83,23 +79,18 @@ export const useAuthStore = create<AuthState>()(
           const { currentOrganization } = get();
           if (!currentOrganization && orgs.length > 0) {
             const firstOrg = orgs[0].organization;
-            const features = getOrgFeatures();
 
             set({
               currentOrganization: firstOrg,
               currentOrgRole: orgs[0].role,
-              currentOrgFeatures: features,
             });
           }
         },
 
         setCurrentOrganization: (org, role) => {
-          const features = getOrgFeatures();
-
           set({
             currentOrganization: org,
             currentOrgRole: role,
-            currentOrgFeatures: features,
           });
         },
 
@@ -115,12 +106,9 @@ export const useAuthStore = create<AuthState>()(
           );
 
           if (orgWithRole) {
-            const features = getOrgFeatures();
-
             set({
               currentOrganization: orgWithRole.organization,
               currentOrgRole: orgWithRole.role,
-              currentOrgFeatures: features,
             });
           }
         },
@@ -132,7 +120,6 @@ export const useAuthStore = create<AuthState>()(
             currentOrganization: null,
             currentOrgRole: null,
             userOrganizations: [],
-            currentOrgFeatures: getOrgFeatures(),
           });
         },
 
@@ -143,7 +130,6 @@ export const useAuthStore = create<AuthState>()(
             currentOrganization: null,
             currentOrgRole: null,
             userOrganizations: [],
-            currentOrgFeatures: getOrgFeatures(),
             isLoading: false,
             isLoadingOrgs: false,
             orgsError: null,
@@ -153,24 +139,12 @@ export const useAuthStore = create<AuthState>()(
       {
         name: "anjam-auth-storage",
         storage: createJSONStorage(() => localStorage),
-        merge: (persistedState, currentState) => {
-          const merged = {
-            ...currentState,
-            ...(persistedState as Partial<AuthState>),
-          };
-
-          return {
-            ...merged,
-            currentOrgFeatures: getOrgFeatures(),
-          };
-        },
         partialize: (state) => ({
           user: state.user,
           isAuthenticated: state.isAuthenticated,
           currentOrganization: state.currentOrganization,
           currentOrgRole: state.currentOrgRole,
           userOrganizations: state.userOrganizations,
-          currentOrgFeatures: state.currentOrgFeatures,
         }),
       },
     ),
@@ -225,6 +199,4 @@ export const useAuthActions = () =>
     })),
   );
 
-export const useCurrentOrgFeatures = () =>
-  useAuthStore((state) => state.currentOrgFeatures);
 export const useAuthOrgsError = () => useAuthStore((state) => state.orgsError);

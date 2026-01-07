@@ -1,6 +1,5 @@
 import {
   IconBell,
-  IconFileText,
   IconHelp,
   IconInbox,
   IconMessage,
@@ -61,11 +60,6 @@ function getNavItems(
         title: "صندوق ورودی",
         url: "/inbox",
         icon: IconInbox,
-      },
-      {
-        title: "موردها",
-        url: "/issues",
-        icon: IconFileText,
       },
       {
         title: navigation.notifications,

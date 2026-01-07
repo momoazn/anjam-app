@@ -33,9 +33,6 @@ import { cn } from "@/lib/utils";
  * - Navigate to a view
  * - Set a view as default
  * - Delete a view
- *
- * Product mode terminology: "Views"
- * Operations mode terminology: "Saved Filters"
  */
 export default function Views() {
   const navigate = useNavigate();
@@ -103,9 +100,9 @@ export default function Views() {
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() => navigate("/issues")}
+              onClick={() => navigate("/tasks")}
             >
-              {savedFiltersConstants.views.goToIssues}
+              {savedFiltersConstants.views.goToTasks}
             </Button>
           </CardContent>
         </Card>

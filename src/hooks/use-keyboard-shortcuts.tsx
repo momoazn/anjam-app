@@ -1,8 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useCurrentOrgFeatures } from "@/store/auth-store";
-
 /**
  * Parse a keyboard event into a normalized key string
  */
@@ -27,19 +25,14 @@ function normalizeKeyEvent(e: KeyboardEvent): string {
  *
  * Product mode shortcuts (Linear-inspired):
  * - g + i: Go to Inbox
- * - g + p: Go to Issues (or Projects?)
- * - c: Create new issue
- * - /: Focus search (when not in input)
- *
- * Operations mode shortcuts:
- * - g + d: Go to Dashboard
- * - g + t: Go to Tasks
+ * - g + s: Go to Tasks
+ * - g + p: Go to Projects
  * - c: Create new task
+ * - /: Focus search (when not in input)
  */
 export function useKeyboardShortcuts() {
   const navigate = useNavigate();
   const location = useLocation();
-  const features = useCurrentOrgFeatures();
 
   // Track "g" prefix for vim-style navigation
   const goPrefixTimeoutRef = { current: null as NodeJS.Timeout | null };
@@ -96,7 +89,7 @@ export function useKeyboardShortcuts() {
             return;
           case "s":
             e.preventDefault();
-            navigate("/issues");
+            navigate("/tasks");
             return;
           case "p":
             e.preventDefault();
@@ -115,7 +108,7 @@ export function useKeyboardShortcuts() {
 
       // Single key shortcuts (not after "g")
 
-      // "c" to create new task/issue
+      // "c" to create new task
       if (normalizedKey === "c" && !e.repeat) {
         e.preventDefault();
         // Navigate to create task, preserving project context if on project page
@@ -155,7 +148,7 @@ export function useKeyboardShortcuts() {
     };
     // Ref objects are stable and don't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate, features, isInputFocused, location.pathname]);
+  }, [navigate, isInputFocused, location.pathname]);
 }
 
 /**

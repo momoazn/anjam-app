@@ -96,10 +96,12 @@ export function TaskBoardPage() {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [taskIdsByStatus, setTaskIdsByStatus] = useState<
     Record<TaskStatus, string[]>
   >(() => buildTaskIdsByStatus([]));
   const lastOverIdRef = useRef<string | null>(null);
+  const lastSyncedTasksKeyRef = useRef<string | null>(null);
 
   const { data: project } = useProject({
     id: projectId,
@@ -111,12 +113,23 @@ export function TaskBoardPage() {
     enabled: true,
   });
 
-  useEffect(() => {
-    if (tasksData.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTaskIdsByStatus(buildTaskIdsByStatus(tasksData));
-    }
+  const tasksDataKey = useMemo(() => {
+    if (!tasksData || tasksData.length === 0) return "empty";
+    // Only include fields that affect board rendering/order.
+    return tasksData
+      .map((t) => `${t._id}:${t.status ?? ""}:${t.order ?? ""}`)
+      .sort()
+      .join("|");
   }, [tasksData]);
+
+  useEffect(() => {
+    if (isDragging) return;
+    if (lastSyncedTasksKeyRef.current === tasksDataKey) return;
+
+    lastSyncedTasksKeyRef.current = tasksDataKey;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTaskIdsByStatus(buildTaskIdsByStatus(tasksData));
+  }, [tasksData, tasksDataKey, isDragging]);
 
   const tasksById = useMemo(() => {
     const map: Record<string, (typeof tasksData)[number]> = {};
@@ -186,6 +199,7 @@ export function TaskBoardPage() {
 
   const onDragStart = (event: DragStartEvent) => {
     setActiveId(String(event.active.id));
+    setIsDragging(true);
   };
 
   const onDragOver = (event: DragOverEvent) => {
@@ -249,6 +263,7 @@ export function TaskBoardPage() {
     const overId = over?.id ? String(over.id) : lastOverIdRef.current;
 
     setActiveId(null);
+    setIsDragging(false);
     lastOverIdRef.current = null;
 
     if (!overId) {
@@ -282,6 +297,7 @@ export function TaskBoardPage() {
 
   const onDragCancel = () => {
     setActiveId(null);
+    setIsDragging(false);
     lastOverIdRef.current = null;
     setTaskIdsByStatus(initialTaskIdsByStatus);
   };

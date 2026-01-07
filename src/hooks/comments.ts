@@ -113,27 +113,26 @@ export function useCreateComment() {
 
 /**
  * Hook to update a comment.
- * Note: Convex backend currently doesn't have an update mutation for comments,
- * but we'll define the hook for future use or add it if needed.
+ * Supports updating content and reactions.
  */
 export function useUpdateComment() {
-  // const updateCommentMutation = useMutation(api.comments.update);
+  const updateCommentMutation = useMutation(api.comments.update);
 
   return {
     mutate: async ({
-      id: _id,
-      updates: _updates,
+      id,
+      updates,
     }: {
       id: string;
-      updates: unknown;
+      updates: {
+        content?: string;
+        reactions?: Record<string, string[]>;
+      };
     }) => {
-      void _id;
-      void _updates;
-      // return await updateCommentMutation({
-      //   commentId: id as Id<"comments">,
-      //   updates,
-      // });
-      console.warn("Update comment not implemented in Convex yet");
+      return await updateCommentMutation({
+        commentId: id as Id<"comments">,
+        updates,
+      });
     },
     isPending: false,
   };

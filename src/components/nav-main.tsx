@@ -43,17 +43,9 @@ export function NavMain({ items, title }: NavMainProps) {
             const active =
               !item.external &&
               (path === item.url || path.startsWith(item.url + "/"));
-            const linkContent = (
-              <SidebarMenuButton
-                tooltip={item.title}
-                className={cn(
-                  "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                  active
-                    ? "bg-accent text-foreground shadow-sm"
-                    : "text-muted-foreground/90 hover:bg-accent hover:text-foreground hover:scale-[1.01]",
-                )}
-                aria-current={active ? "page" : undefined}
-              >
+
+            const content = (
+              <>
                 {item.icon && (
                   <item.icon
                     className={cn(
@@ -74,40 +66,60 @@ export function NavMain({ items, title }: NavMainProps) {
                 >
                   {item.title}
                 </span>
-
                 <div className="ms-auto">{item.badge}</div>
-              </SidebarMenuButton>
+              </>
             );
 
             return (
               <SidebarMenuItem key={item.title}>
                 {item.external ? (
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                    onClick={() => {
-                      if (isMobile) {
-                        setOpenMobile(false);
-                      }
-                    }}
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    className={cn(
+                      "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                      "text-muted-foreground/90 hover:bg-accent hover:text-foreground hover:scale-[1.01]",
+                    )}
                   >
-                    {linkContent}
-                  </a>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
+                      {content}
+                    </a>
+                  </SidebarMenuButton>
                 ) : (
-                  <NavLink
-                    to={item.url}
-                    end={item.url === "/dashboard"}
-                    className="block"
-                    onClick={() => {
-                      if (isMobile) {
-                        setOpenMobile(false);
-                      }
-                    }}
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    className={cn(
+                      "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                      active
+                        ? "bg-accent text-foreground shadow-sm"
+                        : "text-muted-foreground/90 hover:bg-accent hover:text-foreground hover:scale-[1.01]",
+                    )}
+                    aria-current={active ? "page" : undefined}
                   >
-                    {linkContent}
-                  </NavLink>
+                    <NavLink
+                      to={item.url}
+                      end={item.url === "/dashboard"}
+                      className="block"
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
+                      {content}
+                    </NavLink>
+                  </SidebarMenuButton>
                 )}
               </SidebarMenuItem>
             );

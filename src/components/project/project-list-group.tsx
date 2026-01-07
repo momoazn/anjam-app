@@ -102,18 +102,34 @@ export function ProjectListGroup({
                 key={project.id}
                 className="group border-b border-border/40 last:border-b-0"
               >
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="flex h-auto w-full items-center justify-between gap-3 rounded-none px-4 py-3 text-right hover:bg-muted/30"
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="flex h-auto w-full cursor-pointer items-center justify-between gap-3 rounded-none px-4 py-3 text-right hover:bg-muted/30"
                   onClick={() => navigate(`/projects/${project.id}/tasks`)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate(`/projects/${project.id}/tasks`);
+                    }
+                  }}
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <button
-                      type="button"
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleToggleFavorite(
+                            e as unknown as React.MouseEvent,
+                            project.id,
+                          );
+                        }
+                      }}
                       onClick={(e) => handleToggleFavorite(e, project.id)}
                       className={cn(
-                        "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                        "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors cursor-pointer",
                         isFavorite
                           ? "bg-amber-500/10 text-amber-500"
                           : "text-muted-foreground/50 hover:bg-muted/40",
@@ -125,7 +141,7 @@ export function ProjectListGroup({
                       ) : (
                         <IconStar className="size-4" />
                       )}
-                    </button>
+                    </div>
 
                     <div className="min-w-0">
                       <div className="text-muted-foreground flex items-center gap-2">
@@ -198,7 +214,7 @@ export function ProjectListGroup({
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                </Button>
+                </div>
               </div>
             );
           })}

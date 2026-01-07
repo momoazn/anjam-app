@@ -59,15 +59,25 @@ export function TaskListHeader({
     }
   };
 
+  const handleHeaderKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onToggleCollapse?.();
+    }
+  };
+
   return (
     <div className="group flex flex-col">
-      <Button
-        variant="ghost"
+      <div
+        role="button"
+        tabIndex={0}
         className={cn(
           "flex h-auto w-full items-center justify-between rounded-none px-3 py-2 text-right transition-colors focus-visible:ring-0",
           "hover:bg-muted/30",
         )}
         onClick={onToggleCollapse}
+        onKeyDown={handleHeaderKeyDown}
+        aria-label={tasks.status[status as keyof typeof tasks.status]}
       >
         <div className="flex min-w-0 items-center gap-3">
           {enableSelection && (
@@ -164,7 +174,7 @@ export function TaskListHeader({
             )}
           </div>
         </div>
-      </Button>
+      </div>
     </div>
   );
 }
