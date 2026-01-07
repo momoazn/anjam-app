@@ -1,13 +1,13 @@
 # Anjam
 
-A comprehensive task and project management application built with React, TypeScript, PocketBase, and Go.
+A comprehensive task and project management application built with React, TypeScript, and Convex.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - [Bun](https://bun.sh) 1.x
-- [Go](https://go.dev) 1.24+
+- [Convex CLI](https://docs.convex.dev/production/hosting/deployments) - `npm install -g convex` or `bunx convex`
 - Node.js tooling (installed via Bun)
 
 ### Installation
@@ -16,68 +16,46 @@ A comprehensive task and project management application built with React, TypeSc
 # Install dependencies
 bun install
 
-# Setup database with initial data
-bun run setup
+# Initialize Convex development deployment
+bunx convex dev
 
-# Start development server (frontend + backend)
+# Start development server
 bun run dev
-
-# Or run separately:
-bun run dev:client  # Frontend only (Vite on 5173)
-bun run dev:server  # Backend only (Air)
 ```
+
+The application will be available at `http://localhost:5173`
 
 ### Build
 
 ```bash
-# Build everything (frontend + Linux backend + Windows backend + macOS backend + packaging)
+# Build the frontend for production
 bun run build
 
-# Build the frontend only
-bun run build:client
-
-# Build the backend only (Linux binary in release/)
-bun run build:server
-
-# Build the Windows backend + package the ZIP
-bun run build:windows
-
-# Build only the macOS backend binary
-bun run build:mac
+# Preview production build
+bun run start
 ```
 
 ## 📋 Available Scripts
 
 ### Development
 
-- `bun run dev` - Start backend + frontend dev server
-- `bun run dev:full` - Start backend (Air) + frontend dev server
-- `bun run dev:client` - Start frontend only (Vite dev server)
-- `bun run dev:server` - Start backend only (Air live reload)
+- `bun run dev` - Start frontend dev server with hot reload (requires Convex dev server running separately)
 
 ### Building
 
-- `bun run build` - Run `scripts/build.ts` to orchestrate the frontend build, Linux backend, Windows backend, macOS backend, and release packaging.
-- `bun run build:client` - Build frontend for production.
-- `bun run build:server` - Build the Linux backend binary into `release/`.
-- `bun run build:windows` - Build the Windows backend and zip package.
-- `bun run build:mac` - Build the macOS backend binary into `release/`.
+- `bun run build` - Build frontend for production
+- `bun run build:analyze` - Build with bundle analysis
+- `bun run start` - Preview production build locally
 
 ### Quality Checks
 
-- `bun run check` - Typecheck + lint + format checks
-- `bun run fix` - Fix lint and formatting issues
+- `bun run check` - Typecheck + lint + format checks (**run this after changes**)
+- `bun run fix` - Auto-fix lint and formatting issues
 - `bun run format` - Prettier check
 - `bun run format:fix` - Prettier write
 - `bun run lint` - Run ESLint
 - `bun run lint:fix` - Run ESLint with fixes
 - `bun run type:check` - Run TypeScript type checking
-
-### Database Setup
-
-- `bun run setup` - Clear and seed database with initial data (recommended)
-- `bun run data:seed` - Seed database (alias for setup)
-- `bun run data:reset` - Reset database (alias for setup)
 
 ### Testing
 
@@ -86,23 +64,14 @@ bun run build:mac
 - `bun run test:coverage` - Generate coverage report
 - `bun run test:e2e` - Run E2E tests
 - `bun run test:e2e:ui` - E2E tests with UI
+- `bun run test:e2e:debug` - Debug E2E tests
 - `bun run test:all` - Run unit + E2E tests
 
 ### Utilities
 
-- `bun run types:generate` - Regenerate PocketBase TypeScript types
-- `bun run clean` - Clean build artifacts, dependencies, and release
+- `bun run clean` - Clean build artifacts and dependencies
 
 ## 🏗️ Project Structure
-
-### Backend (PocketBase)
-
-- `backend/` - Go service module
-  - `backend/main.go` - Entry point wiring PocketBase, custom handlers, and middleware
-  - `backend/backend_constants.go` - Backend message, collection, and validation constants
-  - `backend/pb_schema.json` - Imported PocketBase collection schema
-  - `backend/dist/` - Vite production output that gets embedded into the Go binary
-- `data/` - SQLite database files (`data.db`)
 
 ### Frontend (React + TypeScript)
 
@@ -112,17 +81,13 @@ bun run build:mac
   - `lib/` - Utilities and business logic
   - `store/` - State management
 - `public/` - Static assets
-- `backend/dist/` - Vite build output (embedded by Go)
 
-### Infrastructure
+### Backend (Convex)
 
-- `Dockerfile` and `docker-compose.yml` - Docker configuration files for containerized deployment
-
-### Documentation
-
-- `docs/` - Project documentation
-- `scripts/` - Utility scripts
-- `scripts/mock-data/` - Example data files
+- `convex/` - Convex backend
+  - `schema.ts` - Database schema
+  - `*.ts` - Functions (queries, mutations, actions)
+  - `_generated/` - Auto-generated types (don't edit)
 
 ## 📝 Coding Style & Conventions
 
@@ -164,63 +129,49 @@ Test files are co-located as `*.test.ts(x)`. Coverage thresholds: 60% (lines, fu
 
 E2E tests run against `http://localhost:5173`. Test directory: `e2e/`
 
-## 🗄️ Schema & Type Generation
-
-When changing `backend/pb_schema.json`:
-
-1. Update the schema file
-2. Run `bun run types:generate` to regenerate types
-3. This updates `src/lib/pocketbase-types.ts` used across the app
-
 ## 🚀 Deployment
 
-The application serves both API and frontend from a single Go binary. The frontend build is embedded in the Go server.
+### Convex Deployment
 
-### Transactional Email (SMTP)
+```bash
+# Deploy to Convex Cloud
+bunx convex deploy
 
-PocketBase sends transactional emails (password reset, verification, etc.) via SMTP (configured in `backend/settings.go` from env vars):
+# You'll be prompted to authenticate and select/create a deployment
+```
 
-- `SMTP_HOST`, `SMTP_PORT`
-- `SMTP_USERNAME`, `SMTP_PASSWORD`
-- `SMTP_TLS`, `SMTP_AUTH_METHOD`, `SMTP_LOCAL_NAME`
-- `SMTP_SENDER_NAME`, `SMTP_SENDER_ADDRESS`
+For production builds:
 
-If you want to use Resend, you can use their SMTP credentials here (no extra integration needed).
+```bash
+# Build frontend
+bun run build
+
+# The dist/ directory contains production-ready static assets
+```
 
 ### Production Checklist
 
-- [ ] Change default admin credentials
-- [ ] Configure production database
-- [ ] Set environment variables
+- [ ] Configure Convex deployment
+- [ ] Set environment variables (see `.env.example`)
 - [ ] Run `bun run check` - all checks must pass
 - [ ] Run `bun run build` - build must succeed
 - [ ] Test the application in production mode
+- [ ] Configure custom domain (if needed)
 
 ## 🔒 Security
 
-- Development seeds create default admin users - **change credentials before production**
-- Default account creation is allowed on first bootstrap when no admins exist; set `TM_ALLOW_DEFAULT_ACCOUNTS=true` if you also want to permit creating additional defaults after admins already exist.
-- Do not commit real production data
 - Keep secrets out of version control
-- Frontend proxies `/api` to `http://localhost:8090` (see `vite.config.ts`)
-
-## 🏁 Release Artifacts
-
-- `release/linux/anjam` is the Linux backend binary produced by `bun run build:server` (or `bun run build`).
-- `release/windows/anjam.exe` plus `release/windows/anjam-windows.zip` (which also bundles `scripts/dev/run.bat` + `scripts/dev/run-with-env.bat`) are generated by `bun run build:windows`.
-- `release/macos/anjam-macos` is the macOS backend binary created by `bun run build:mac`.
-- `release/` is ignored by git and is cleared by `bun run clean`, so rebuilds always recreate the release tree.
+- Use environment variables for sensitive configuration
+- Never commit `.env` files
 
 ## 📚 Documentation
 
 See the `docs/` directory for comprehensive documentation:
 
-- [Project Overview](./docs/PROJECT_OVERVIEW.md) - High-level introduction
-- [Development Guide](./docs/DEVELOPMENT_GUIDE.md) - Technical guidance
-- [Development Roadmap](./docs/DEVELOPMENT_ROADMAP.md) - Strategic planning
-- [Implementation Status](./docs/IMPLEMENTATION_STATUS.md) - Current state
-- [QA Testing Guide (SLIM)](./docs/QA_TESTING_GUIDE_SLIM.md) - Testing procedures
-- [Improvements Plan](./docs/IMPROVEMENTS_PLAN.md) - Refactoring and improvement roadmap
+- [System Architecture](./docs/architecture/system-architecture.md) - High-level architecture
+- [Frontend Architecture](./docs/development/frontend-architecture.md) - Frontend structure
+- [Development Guide](./docs/development/guide.md) - Technical guidance
+- [Product Design](./docs/product/design.md) - Product design documentation
 
 ## 🤝 Contributing
 

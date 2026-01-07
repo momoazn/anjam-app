@@ -1,12 +1,12 @@
 version: 2.1
 
 executors:
-  go-bun:
+  bun:
     docker:
-      - image: cimg/go:1.24
+      - image: cimg/node:lts-browsers
     environment:
       BUN_INSTALL: /home/circleci/.bun
-      PATH: /home/circleci/.bun/bin:/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin
+      PATH: /home/circleci/.bun/bin:/usr/local/bin:/usr/bin:/bin
 
 commands:
   install-bun:
@@ -30,7 +30,7 @@ commands:
 
 jobs:
   lint_typecheck:
-    executor: go-bun
+    executor: bun
     steps:
       - checkout
       - install-bun
@@ -43,7 +43,7 @@ jobs:
           name: Lint and typecheck
           command: bun run type:check && bun run lint
   tests:
-    executor: go-bun
+    executor: bun
     steps:
       - checkout
       - install-bun

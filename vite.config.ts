@@ -24,13 +24,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    proxy: {
-      "/api": "http://localhost:8090",
-    },
-  },
   build: {
-    outDir: "backend/dist",
+    outDir: "dist",
     target: "es2020",
     minify: "terser",
     rollupOptions: {
