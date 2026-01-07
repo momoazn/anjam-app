@@ -37,7 +37,8 @@
       "Bash(bunx convex codegen:*)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
-      "Bash(cut:*)"
+      "Bash(cut:*)",
+      "Bash(git -C /Users/mohamadhosein/Workspace/side/anjam log --oneline -20)"
     ],
     "deny": [],
     "ask": []
