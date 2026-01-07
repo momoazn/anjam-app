@@ -4,14 +4,12 @@ import { IconList, IconUsers } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { projects } from "@/constants";
-import { formatTimeSpent } from "@/lib/time-utils";
 
 type ProjectSidebarProps = {
   tasksLoading: boolean;
   totalTasks: number;
   completedTasks: number;
   inProgressTasks: number;
-  totalTimeSpent: number;
   onViewTasks: () => void;
   onViewUsers: () => void;
 };
@@ -21,7 +19,6 @@ export function ProjectSidebar({
   totalTasks,
   completedTasks,
   inProgressTasks,
-  totalTimeSpent,
   onViewTasks,
   onViewUsers,
 }: ProjectSidebarProps) {
@@ -48,10 +45,6 @@ export function ProjectSidebar({
               {
                 label: projects.details.inProgressTasks,
                 value: digitsEnToFa(inProgressTasks),
-              },
-              {
-                label: projects.details.totalTimeSpent,
-                value: digitsEnToFa(formatTimeSpent(totalTimeSpent)),
               },
             ].map((item) => (
               <div
