@@ -7,8 +7,14 @@ import App from "./app";
 import { ConvexAuthStateSync } from "./components/auth/convex-auth-sync";
 import "./index.css";
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
-const storageNamespace = import.meta.env.VITE_CONVEX_URL as string;
+const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
+if (!convexUrl) {
+  throw new Error(
+    "VITE_CONVEX_URL is missing. Set it in .env.local before starting Vite.",
+  );
+}
+const convex = new ConvexReactClient(convexUrl);
+const storageNamespace = convexUrl;
 
 const root = createRoot(document.getElementById("root")!);
 const isDevelopment = import.meta.env.MODE === "development";

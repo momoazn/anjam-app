@@ -21,7 +21,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
-import { useProductThemeEffect } from "@/hooks/use-product-theme";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsAuthenticated } from "@/store/auth-store";
 
@@ -105,7 +104,8 @@ function AppLayout() {
 
 function App() {
   useTheme();
-  useProductThemeEffect(); // Apply product theme based on org mode
+  const isDevelopment = import.meta.env.MODE === "development";
+  const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
   return (
     <ErrorBoundary>
@@ -125,6 +125,17 @@ function App() {
                   "rounded-xl border-border/40 bg-card/80 backdrop-blur-md product-beveled text-foreground shadow-2xl",
               }}
             />
+            {isDevelopment && convexUrl && (
+              <a
+                href={convexUrl}
+                target="_blank"
+                rel="noreferrer"
+                title={convexUrl}
+                className="fixed bottom-3 left-3 z-50 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] text-emerald-600 shadow-sm transition hover:border-emerald-500/70 hover:bg-emerald-500/20"
+              >
+                Convex connected
+              </a>
+            )}
           </NuqsAdapter>
         </Router>
         <ReactQueryDevtools
