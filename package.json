@@ -25,7 +25,6 @@
     "type:check": "bun x --bun tsc -p tsconfig.app.json --noEmit --incremental && bun x --bun tsc -p tsconfig.node.json --noEmit --incremental",
     "check": "bun run type:check && bun run lint && bun run format",
     "fix": "bun run lint:fix && bun run format:fix",
-    "clean": "rm -rf node_modules tmp release",
     "prepare": "husky"
   },
   "dependencies": {
