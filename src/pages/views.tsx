@@ -21,12 +21,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { savedFilters as savedFiltersConstants, shared } from "@/constants";
 import { useSavedFilters } from "@/hooks/use-saved-filters";
-import { getModeLabels } from "@/lib/mode";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 /**
  * Views Page - Manage Saved Filters
@@ -41,9 +39,6 @@ import { useCurrentOrgMode } from "@/store/auth-store";
  */
 export default function Views() {
   const navigate = useNavigate();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
-  const labels = getModeLabels();
   const { savedFilters, deleteFilter, setAsDefault, defaultFilterId } =
     useSavedFilters();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
@@ -92,12 +87,8 @@ export default function Views() {
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
-        title={labels.savedFilters}
-        subtitle={
-          mode === "product"
-            ? savedFiltersConstants.views.description
-            : savedFiltersConstants.views.manageDescription
-        }
+        title={savedFiltersConstants.views.title}
+        subtitle={savedFiltersConstants.views.description}
         icon={IconEye}
       />
 
@@ -107,24 +98,18 @@ export default function Views() {
           <CardContent className="flex flex-col items-center justify-center py-12">
             <IconEye className="text-muted-foreground mb-4 h-12 w-12 opacity-40" />
             <p className="text-muted-foreground text-center">
-              {mode === "product"
-                ? savedFiltersConstants.views.noViews
-                : savedFiltersConstants.views.noFilters}
+              {savedFiltersConstants.views.noViews}
             </p>
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() =>
-                navigate(mode === "product" ? "/issues" : "/tasks")
-              }
+              onClick={() => navigate("/issues")}
             >
-              {mode === "product"
-                ? savedFiltersConstants.views.goToIssues
-                : savedFiltersConstants.views.goToTasks}
+              {savedFiltersConstants.views.goToIssues}
             </Button>
           </CardContent>
         </Card>
-      ) : isProductMode ? (
+      ) : (
         <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
           {savedFilters.map((filter) => {
             const isDefault = filter.id === defaultFilterId;
@@ -196,68 +181,6 @@ export default function Views() {
                   </div>
                 </Button>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {savedFilters.map((filter) => {
-            const isDefault = filter.id === defaultFilterId;
-            return (
-              <Card
-                key={filter.id}
-                className="group cursor-pointer transition-all hover:shadow-md"
-                onClick={() => handleNavigateToView(filter.id)}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center justify-between text-lg">
-                    <span className="truncate">{filter.name}</span>
-                    {isDefault && (
-                      <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
-                        {savedFiltersConstants.views.default}
-                      </span>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-muted-foreground mb-4 text-xs">
-                    {savedFiltersConstants.createdAt}{" "}
-                    {new Date(filter.createdAt).toLocaleDateString("fa-IR")}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSetDefault(filter.id);
-                      }}
-                      title={
-                        isDefault
-                          ? savedFiltersConstants.views.clearDefault
-                          : savedFiltersConstants.views.setDefault
-                      }
-                    >
-                      {isDefault ? (
-                        <IconStarFilled className="text-warning h-4 w-4" />
-                      ) : (
-                        <IconStar className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteTarget(filter.id);
-                      }}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <IconTrash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
             );
           })}
         </div>

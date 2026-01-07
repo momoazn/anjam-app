@@ -1,10 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  IconDeviceFloppy,
-  IconLoader2,
-  IconStack2,
-  IconX,
-} from "@tabler/icons-react";
+import { IconDeviceFloppy, IconLoader2, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -12,16 +7,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { ProjectFields } from "@/components/forms/project-fields";
-import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, projects } from "@/constants";
 import { useCreateProject } from "@/hooks";
-import { cn } from "@/lib/utils";
 import {
   useAuthUser,
-  useCurrentOrgMode,
   useCurrentOrgRole,
   useCurrentOrganization,
 } from "@/store/auth-store";
@@ -45,8 +37,6 @@ export default function CreateProject() {
   const user = useAuthUser();
   const currentOrg = useCurrentOrganization();
   const currentOrgRole = useCurrentOrgRole();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const isAdmin = currentOrgRole === "owner";
   const [isPending, setIsPending] = useState(false);
 
@@ -99,12 +89,7 @@ export default function CreateProject() {
         variant="ghost"
         onClick={handleCancel}
         disabled={isPending}
-        className={cn(
-          "rounded-lg",
-          isProductMode
-            ? "h-8 px-3 text-xs font-semibold"
-            : "h-11 px-6 font-bold",
-        )}
+        className="rounded-lg h-8 px-3 text-xs font-semibold"
       >
         <IconX className="me-2 size-4" stroke={2.5} />
         {common.cancel}
@@ -112,12 +97,7 @@ export default function CreateProject() {
       <Button
         type="submit"
         disabled={isPending}
-        className={cn(
-          "shadow-primary/20 rounded-lg",
-          isProductMode
-            ? "h-8 px-3 text-xs font-semibold shadow-sm"
-            : "h-11 px-8 font-bold shadow-lg",
-        )}
+        className="shadow-primary/20 rounded-lg h-8 px-3 text-xs font-semibold shadow-sm"
       >
         {isPending ? (
           <IconLoader2 className="me-2 size-4 animate-spin" stroke={2.5} />
@@ -130,75 +110,29 @@ export default function CreateProject() {
   );
 
   return (
-    <PageTransition
-      className={cn(
-        "mx-auto w-full p-4 md:p-6",
-        isProductMode ? "max-w-3xl" : "max-w-7xl",
-      )}
-    >
+    <PageTransition className="mx-auto max-w-3xl w-full p-4 md:p-6">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className={cn(isProductMode ? "space-y-4" : "space-y-8")}
-        >
-          {isProductMode ? (
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0 text-right">
-                <h1 className="truncate text-base font-semibold">
-                  {projects.create.title}
-                </h1>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  {projects.create.description}
-                </p>
-              </div>
-              {headerActions}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 text-right">
+              <h1 className="truncate text-base font-semibold">
+                {projects.create.title}
+              </h1>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {projects.create.description}
+              </p>
             </div>
-          ) : (
-            <PageHeader
-              title={projects.create.title}
-              description={projects.create.description}
-              icon={IconStack2}
-            />
-          )}
+            {headerActions}
+          </div>
 
-          <div
-            className={cn(
-              "rounded-xl border border-border/40",
-              isProductMode
-                ? "bg-background/30 p-4 shadow-none"
-                : "bg-card p-6 shadow-sm",
-            )}
-          >
-            {!isProductMode ? (
-              <div className="mb-8 flex items-center gap-4 border-b pb-6">
-                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                  <IconStack2 className="size-6" stroke={2} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">
-                    {projects.details.information}
-                  </h3>
-                  <p className="text-muted-foreground text-xs font-medium">
-                    {projects.create.form.description}
-                  </p>
-                </div>
-              </div>
-            ) : null}
-
+          <div className="rounded-xl border border-border/40 bg-background/30 p-4 shadow-none">
             <ProjectFields
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              control={form.control as any}
-              codeMode={isProductMode ? "hidden" : "editable"}
-              showSupervisor={!isProductMode}
+              control={form.control}
+              codeMode="hidden"
+              showSupervisor={false}
               isAdmin={isAdmin}
             />
           </div>
-
-          {isProductMode ? null : (
-            <div className="flex items-center justify-end gap-3">
-              {headerActions}
-            </div>
-          )}
         </form>
       </Form>
     </PageTransition>

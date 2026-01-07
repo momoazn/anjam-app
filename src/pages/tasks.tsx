@@ -23,20 +23,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useUsers } from "@/hooks/users";
 import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
-import { Task, TaskPriority, TaskStatus } from "@/types/tasks";
-
-// Define a local interface for tasks with expanded properties
-interface TaskWithProject extends Task {
-  project?: { name: string };
-  assignee?: {
-    id: string;
-    username: string;
-    first_name?: string;
-    last_name?: string;
-  } | null;
-  display_id?: string;
-}
+import { useAuthUser } from "@/store/auth-store";
+import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 
 type TasksProps = {
   viewMode?: "tasks" | "issues";
@@ -45,8 +33,6 @@ type TasksProps = {
 export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [page, setPage] = useState(1);
@@ -205,13 +191,12 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     if (taskQuery.isPending || !items) {
       return {} as Record<TaskStatus, TaskWithProject[]>;
     }
-    return items.reduce(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (acc: any, task: any) => {
-        if (!acc[task.status]) {
-          acc[task.status] = [];
-        }
-        acc[task.status].push(task);
+    return items.reduce<Record<TaskStatus, TaskWithProject[]>>(
+      (acc, task) => {
+        const status = task.status as TaskStatus;
+        const list = acc[status] ?? [];
+        list.push(task);
+        acc[status] = list;
         return acc;
       },
       {} as Record<TaskStatus, TaskWithProject[]>,
@@ -309,12 +294,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
               <Button
                 variant="ghost"
                 onClick={() => navigate("/tasks/board")}
-                className={cn(
-                  "gap-2",
-                  isProductMode
-                    ? "h-8 px-3 text-xs font-semibold"
-                    : "h-10 px-4 text-sm font-bold",
-                )}
+                className={cn("gap-2", "h-8 px-3 text-xs font-semibold")}
               >
                 <LayoutGrid className="size-4" />
                 <span>{tasks.board.title}</span>
@@ -327,9 +307,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
                 onClick={toggleSelectionMode}
                 className={cn(
                   "gap-2",
-                  isProductMode
-                    ? "h-8 px-3 text-xs font-semibold"
-                    : "h-10 px-4 text-sm font-bold",
+                  "h-8 px-3 text-xs font-semibold",
                   selectionMode &&
                     "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30",
                 )}
@@ -346,9 +324,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
             <Button
               className={cn(
                 "gap-2 rounded-lg shadow-sm transition-all",
-                isProductMode
-                  ? "h-8 px-3 text-xs font-semibold"
-                  : "h-10 px-5 text-sm font-bold hover:scale-[1.02]",
+                "h-8 px-3 text-xs font-semibold",
               )}
               onClick={() => navigate("/tasks/new")}
             >
@@ -386,10 +362,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
         isLoadingUsers={isLoadingUsers}
       />
 
-      <div
-        className={cn("space-y-10", isProductMode && "space-y-4")}
-        data-animate-stagger
-      >
+      <div className={cn("space-y-10", "space-y-4")} data-animate-stagger>
         <TaskListView
           isLoading={taskQuery.isPending}
           totalTasks={totalTasks}
@@ -403,12 +376,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       </div>
 
       {!taskQuery.isPending && totalTasks > 0 && (
-        <div
-          className={cn(
-            "border-border/20 border-t",
-            isProductMode ? "mt-6 pt-6" : "mt-10 pt-10",
-          )}
-        >
+        <div className={cn("border-border/20 border-t", "mt-6 pt-6")}>
           <TaskPagination
             totalTasks={totalTasks}
             pageStart={pageStart}

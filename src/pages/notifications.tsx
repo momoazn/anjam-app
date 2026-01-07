@@ -1,10 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
-  IconActivity,
   IconBell,
   IconCheck,
-  IconCircleCheck,
-  IconClock,
   IconTrash,
   IconTrashX,
 } from "@tabler/icons-react";
@@ -22,7 +19,6 @@ import { NotificationList } from "@/components/notifications/notification-list";
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -39,12 +35,8 @@ import {
   useMarkAsRead,
   useNotifications,
 } from "@/hooks/notifications";
-import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 export default function Notifications() {
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const { data: notificationsData = [], isLoading, error } = useNotifications();
   const { data: mentionsData = [], isLoading: mentionsLoading } = useMentions();
   const markAsRead = useMarkAsRead();
@@ -216,134 +208,50 @@ export default function Notifications() {
         actions={headerActions}
       />
 
-      {isProductMode ? (
-        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-muted-foreground">
-          <span>
-            {notificationsText.stats.total}:{" "}
-            {digitsEnToFa(notificationsData.length)}
-          </span>
-          <span>
-            {notificationsText.stats.unread}: {digitsEnToFa(unreadCount)}
-          </span>
-          <span>
-            {notificationsText.stats.read}: {digitsEnToFa(readCount)}
-          </span>
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-muted-foreground">
+        <span>
+          {notificationsText.stats.total}:{" "}
+          {digitsEnToFa(notificationsData.length)}
+        </span>
+        <span>
+          {notificationsText.stats.unread}: {digitsEnToFa(unreadCount)}
+        </span>
+        <span>
+          {notificationsText.stats.read}: {digitsEnToFa(readCount)}
+        </span>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
+        <div className="p-4">
+          <NotificationFilters
+            filter={filter}
+            sort={sort}
+            selectedIds={selectedIds}
+            onFilterChange={(value) => {
+              void setFilter(value);
+            }}
+            onSortChange={(value) => {
+              void setSort(value);
+            }}
+            onBulkMarkRead={bulkMarkRead}
+            onBulkDelete={bulkDelete}
+            onClearSelection={() => setSelectedIds([])}
+            isBulkDeletePending={deleteNotification.isPending}
+          />
+
+          <NotificationList
+            notifications={filteredNotifications}
+            isLoading={isLoading}
+            error={error}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            onMarkAsRead={(id) => markAsRead.mutate(id)}
+            onDelete={handleDelete}
+          />
         </div>
-      ) : (
-        /* Stats Bar */
-        <Card className="border-border mb-8 overflow-hidden rounded-xl border shadow-sm">
-          <CardContent className="bg-border grid grid-cols-2 gap-px p-0 sm:grid-cols-4">
-            {[
-              {
-                label: notificationsText.stats.total,
-                value: notificationsData.length,
-                icon: IconActivity,
-                color: "text-primary",
-              },
-              {
-                label: notificationsText.stats.unread,
-                value: unreadCount,
-                icon: IconClock,
-                color: "text-amber-500",
-              },
-              {
-                label: notificationsText.stats.read,
-                value: readCount,
-                icon: IconCircleCheck,
-                color: "text-emerald-500",
-              },
-              {
-                label: notificationsText.stats.deletable,
-                value: readCount,
-                icon: IconTrash,
-                color: "text-rose-500",
-              },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-card hover:bg-muted/10 p-6 text-right transition-colors"
-              >
-                <div className="mb-2 flex items-center justify-end gap-3">
-                  <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
-                    {stat.label}
-                  </span>
-                  <stat.icon className={cn("size-4", stat.color)} />
-                </div>
-                <div className="text-3xl font-bold tracking-tight">
-                  {digitsEnToFa(stat.value)}
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+      </div>
 
-      {isProductMode ? (
-        <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
-          <div className="p-4">
-            <NotificationFilters
-              filter={filter}
-              sort={sort}
-              selectedIds={selectedIds}
-              onFilterChange={(value) => {
-                void setFilter(value);
-              }}
-              onSortChange={(value) => {
-                void setSort(value);
-              }}
-              onBulkMarkRead={bulkMarkRead}
-              onBulkDelete={bulkDelete}
-              onClearSelection={() => setSelectedIds([])}
-              isBulkDeletePending={deleteNotification.isPending}
-            />
-
-            <NotificationList
-              notifications={filteredNotifications}
-              isLoading={isLoading}
-              error={error}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
-              onMarkAsRead={(id) => markAsRead.mutate(id)}
-              onDelete={handleDelete}
-            />
-          </div>
-        </div>
-      ) : (
-        <Card className="border-border overflow-hidden rounded-xl border shadow-sm">
-          <CardContent className="p-6">
-            <NotificationFilters
-              filter={filter}
-              sort={sort}
-              selectedIds={selectedIds}
-              onFilterChange={(value) => {
-                void setFilter(value);
-              }}
-              onSortChange={(value) => {
-                void setSort(value);
-              }}
-              onBulkMarkRead={bulkMarkRead}
-              onBulkDelete={bulkDelete}
-              onClearSelection={() => setSelectedIds([])}
-              isBulkDeletePending={deleteNotification.isPending}
-            />
-
-            <NotificationList
-              notifications={filteredNotifications}
-              isLoading={isLoading}
-              error={error}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
-              onMarkAsRead={(id) => markAsRead.mutate(id)}
-              onDelete={handleDelete}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      <MentionsList
-        mentions={mentionsData}
-        isLoading={mentionsLoading}
-      />
+      <MentionsList mentions={mentionsData} isLoading={mentionsLoading} />
     </PageTransition>
   );
 }

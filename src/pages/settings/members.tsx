@@ -49,11 +49,14 @@ import {
   useRemoveOrgMember,
   useRevokeOrgInvite,
 } from "@/hooks";
-import type { Doc } from "../../../convex/_generated/dataModel";
-import { cn, getUserInitials } from "@/lib/utils";
-import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
+import type { Id } from "@/lib/convex";
+import { getUserInitials } from "@/lib/utils";
+import { useAuthUser } from "@/store/auth-store";
 
-function getUserDisplayName(user: Doc<"users">): string {
+import type { Doc } from "../../../convex/_generated/dataModel";
+
+function getUserDisplayName(user: Doc<"users"> | null | undefined): string {
+  if (!user) return organization.members.unknownUser;
   if (user.firstName && user.lastName) {
     return `${user.firstName} ${user.lastName}`;
   }
@@ -65,12 +68,12 @@ function getUserDisplayName(user: Doc<"users">): string {
 
 export function OrgMembersPage() {
   const currentUser = useAuthUser();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isCreateLinkOpen, setIsCreateLinkOpen] = useState(false);
   const [isRevokeConfirmOpen, setIsRevokeConfirmOpen] = useState(false);
-  const [inviteToRevoke, setInviteToRevoke] = useState<string | null>(null);
+  const [inviteToRevoke, setInviteToRevoke] = useState<Id<"invites"> | null>(
+    null,
+  );
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"owner" | "member">("member");
   const [linkRole, setLinkRole] = useState<"owner" | "member">("member");
@@ -95,7 +98,7 @@ export function OrgMembersPage() {
       setIsInviteOpen(false);
       setInviteEmail("");
       setInviteRole("member");
-    } catch (error) {
+    } catch {
       toast.error("Failed to invite member");
     }
   };
@@ -103,7 +106,7 @@ export function OrgMembersPage() {
   const handleRemoveMember = async (userId: string) => {
     try {
       await removeMember(userId);
-    } catch (error) {
+    } catch {
       toast.error("Failed to remove member");
     }
   };
@@ -118,7 +121,7 @@ export function OrgMembersPage() {
       setLinkRole("member");
       setLinkMaxUses(50);
       toast.success(organization.inviteLinks.createDialog.success);
-    } catch (error) {
+    } catch {
       toast.error("Failed to create invite link");
     }
   };
@@ -134,7 +137,7 @@ export function OrgMembersPage() {
     }
   };
 
-  const handleRevokeClick = (inviteId: string) => {
+  const handleRevokeClick = (inviteId: Id<"invites">) => {
     setInviteToRevoke(inviteId);
     setIsRevokeConfirmOpen(true);
   };
@@ -142,10 +145,10 @@ export function OrgMembersPage() {
   const handleConfirmRevoke = async () => {
     if (inviteToRevoke) {
       try {
-        await revokeInvite(inviteToRevoke as any);
+        await revokeInvite(inviteToRevoke);
         setIsRevokeConfirmOpen(false);
         setInviteToRevoke(null);
-      } catch (error) {
+      } catch {
         toast.error("Failed to revoke invite");
       }
     }
@@ -174,25 +177,16 @@ export function OrgMembersPage() {
         actions={
           <Button
             onClick={() => setIsInviteOpen(true)}
-            size={isProductMode ? "xs" : "sm"}
+            size="xs"
             className="gap-2"
           >
-            <IconUserPlus
-              className={cn("me-2", isProductMode ? "size-4" : "size-5")}
-            />
+            <IconUserPlus className="me-2 size-4" />
             {organization.members.invite}
           </Button>
         }
       />
 
-      <div
-        className={cn(
-          "relative overflow-hidden border border-border/40",
-          isProductMode
-            ? "rounded-xl bg-background/30 shadow-none"
-            : "rounded-2xl bg-card shadow-sm",
-        )}
-      >
+      <div className="relative overflow-hidden rounded-xl border border-border/40 bg-background/30 shadow-none">
         <Table>
           <TableHeader>
             <TableRow>
@@ -227,24 +221,13 @@ export function OrgMembersPage() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={user?.image || undefined}
-                          />
+                          <AvatarImage src={user?.image || undefined} />
                           <AvatarFallback>
-                            {getUserInitials(
-                              getUserDisplayName(
-                                user ?? ({ username: "?" } as any),
-                              ),
-                            )}
+                            {getUserInitials(getUserDisplayName(user))}
                           </AvatarFallback>
                         </Avatar>
                         <span className="font-medium">
-                          {getUserDisplayName(
-                            user ??
-                              ({
-                                username: organization.members.unknownUser,
-                              } as any),
-                          )}
+                          {getUserDisplayName(user)}
                         </span>
                       </div>
                     </TableCell>
@@ -329,7 +312,7 @@ export function OrgMembersPage() {
                 </TableRow>
               ) : (
                 inviteLinks.map((invite) => {
-                  const status = getInviteStatus(invite as any);
+                  const status = getInviteStatus(invite);
                   return (
                     <TableRow key={invite._id}>
                       <TableCell className="font-mono text-sm">
@@ -337,17 +320,20 @@ export function OrgMembersPage() {
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {organization.members.roles[invite.role as keyof typeof organization.members.roles] ||
-                            organization.members.roles.member}
+                          {organization.members.roles[
+                            invite.role as keyof typeof organization.members.roles
+                          ] || organization.members.roles.member}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         {invite.uses}/{invite.maxUses || "∞"}
                       </TableCell>
                       <TableCell>
-                        {invite.expiresAt ? new Date(invite.expiresAt).toLocaleDateString(
-                          "fa-IR",
-                        ) : "-"}
+                        {invite.expiresAt
+                          ? new Date(invite.expiresAt).toLocaleDateString(
+                              "fa-IR",
+                            )
+                          : "-"}
                       </TableCell>
                       <TableCell>
                         <Badge variant={getStatusBadgeVariant(status)}>

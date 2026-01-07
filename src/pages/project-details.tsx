@@ -14,19 +14,13 @@ import { Input } from "@/components/ui/input";
 import { common, projects } from "@/constants";
 import { useAllTasks, useProject, useUpdateProject } from "@/hooks";
 import { cn } from "@/lib/utils";
-import {
-  useAuthUser,
-  useCurrentOrgMode,
-  useCurrentOrgRole,
-} from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAuthUser();
-  const mode = useCurrentOrgMode();
   const currentOrgRole = useCurrentOrgRole();
-  const isProductMode = mode === "product";
   const isAdmin = currentOrgRole === "owner";
 
   const [isEditing, setIsEditing] = useState(false);
@@ -130,54 +124,33 @@ export default function ProjectDetails() {
           </span>
         }
         icon={Folder}
-        eyebrow={
-          isProductMode ? undefined : (
-            <Button
-              variant="link"
-              className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
-              onClick={() => navigate("/projects")}
-            >
-              <ArrowLeft className="mr-1 h-3 w-3" />
-              {projects.details.backToProjects}
-            </Button>
-          )
-        }
+        eyebrow={undefined}
         actions={
           isEditing ? (
             <div className="flex items-center gap-2">
-              {isProductMode ? (
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  onClick={() => navigate("/projects")}
-                >
-                  <ArrowLeft className="me-2 h-4 w-4" />
-                  {projects.details.backToProjects}
-                </Button>
-              ) : null}
               <Button
                 variant="ghost"
-                size={isProductMode ? "xs" : "sm"}
+                size="xs"
+                onClick={() => navigate("/projects")}
+              >
+                <ArrowLeft className="me-2 h-4 w-4" />
+                {projects.details.backToProjects}
+              </Button>
+              <Button
+                variant="ghost"
+                size="xs"
                 onClick={handleCancelEdit}
                 disabled={isUpdating}
               >
                 {common.cancel}
               </Button>
-              <Button
-                size={isProductMode ? "xs" : "sm"}
-                onClick={handleSaveEdit}
-                disabled={isUpdating}
-              >
+              <Button size="xs" onClick={handleSaveEdit} disabled={isUpdating}>
                 {common.save}
               </Button>
             </div>
           ) : (
             canEdit && (
-              <Button
-                variant="outline"
-                size={isProductMode ? "xs" : "sm"}
-                onClick={handleStartEdit}
-              >
+              <Button variant="outline" size="xs" onClick={handleStartEdit}>
                 {common.edit}
               </Button>
             )
@@ -185,7 +158,7 @@ export default function ProjectDetails() {
         }
       />
 
-      {isProductMode && isEditing ? (
+      {isEditing && (
         <div className="mb-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -216,17 +189,14 @@ export default function ProjectDetails() {
             </div>
           </div>
         </div>
-      ) : null}
+      )}
 
       <div
-        className={cn(
-          "grid grid-cols-1 lg:grid-cols-3",
-          isProductMode ? "gap-4" : "gap-6",
-        )}
+        className={cn("grid grid-cols-1 lg:grid-cols-3", "gap-4")}
         data-animate-stagger
       >
         <ProjectDetailsSections
-          project={project as any}
+          project={project}
           isEditing={isEditing}
           editedDescription={editedDescription}
           onDescriptionChange={setEditedDescription}

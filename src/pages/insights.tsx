@@ -25,8 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { reports } from "@/constants";
 import { useTasks } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
-import { cn, formatUserName } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
+import { formatUserName } from "@/lib/utils";
 
 /**
  * Insights Page - Product Mode
@@ -41,12 +40,8 @@ import { useCurrentOrgMode } from "@/store/auth-store";
  * - Workload by assignee
  */
 export default function Insights() {
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
-  const cardClassName = cn(
-    "rounded-xl border border-border/40",
-    isProductMode ? "bg-background/30 shadow-none" : "bg-card/50",
-  );
+  const cardClassName =
+    "rounded-xl border border-border/40 bg-background/30 shadow-none";
 
   // Date calculations for this week and last week
   const now = new Date();
@@ -80,13 +75,13 @@ export default function Insights() {
     const tasks = allTasks.items;
 
     // Helper to get created date from task (Convex uses _creationTime)
-    const getCreatedDate = (t: typeof tasks[0]): Date => {
+    const getCreatedDate = (t: (typeof tasks)[0]): Date => {
       // The hook maps _creationTime to created as ISO string
       return new Date(t.created || 0);
     };
 
     // Helper to get updated date from task (Convex uses updatedAt)
-    const getUpdatedDate = (t: typeof tasks[0]): Date | null => {
+    const getUpdatedDate = (t: (typeof tasks)[0]): Date | null => {
       if (t.updated) {
         return new Date(t.updated);
       }
@@ -96,8 +91,7 @@ export default function Insights() {
     // Basic metrics
     const createdThisWeek = tasks.filter(
       (t) =>
-        getCreatedDate(t) >= thisWeekStart &&
-        getCreatedDate(t) <= thisWeekEnd,
+        getCreatedDate(t) >= thisWeekStart && getCreatedDate(t) <= thisWeekEnd,
     ).length;
     const completedThisWeek = tasks.filter((t) => {
       if (t.status !== "done") return false;
@@ -106,8 +100,7 @@ export default function Insights() {
     }).length;
     const createdLastWeek = tasks.filter(
       (t) =>
-        getCreatedDate(t) >= lastWeekStart &&
-        getCreatedDate(t) <= lastWeekEnd,
+        getCreatedDate(t) >= lastWeekStart && getCreatedDate(t) <= lastWeekEnd,
     ).length;
     const completedLastWeek = tasks.filter((t) => {
       if (t.status !== "done") return false;
@@ -153,7 +146,18 @@ export default function Insights() {
     // Workload by assignee
     const workloadMap = new Map<string, number>();
     tasks.forEach((t) => {
-      const assigneeId = t.assignee || (t as any).assigneeUserId;
+      const assigneeId =
+        typeof t.assignee === "string"
+          ? t.assignee
+          : typeof (t as { assigneeUserId?: unknown }).assigneeUserId ===
+              "string"
+            ? (t as { assigneeUserId: string }).assigneeUserId
+            : typeof t.assignee === "object" &&
+                t.assignee !== null &&
+                "_id" in t.assignee &&
+                typeof (t.assignee as { _id?: unknown })._id === "string"
+              ? (t.assignee as { _id: string })._id
+              : undefined;
       if (assigneeId) {
         workloadMap.set(assigneeId, (workloadMap.get(assigneeId) || 0) + 1);
       }
@@ -161,13 +165,15 @@ export default function Insights() {
 
     const workloadByAssignee = Array.from(workloadMap.entries())
       .map(([userId, count]) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const user = users?.find((u) => (u as any).id === userId || (u as any)._id === userId);
+        const user = users?.find((u) => (u.id ?? u._id) === userId);
         return {
           userId,
           name: user
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ? formatUserName((user as any).firstName || (user as any).first_name, (user as any).lastName || (user as any).last_name, user.username)
+            ? formatUserName(
+                user.firstName ?? user.first_name,
+                user.lastName ?? user.last_name,
+                user.username,
+              )
             : "ناشناس",
           count,
         };
@@ -253,12 +259,7 @@ export default function Insights() {
       />
 
       {/* Top Metrics Grid */}
-      <div
-        className={cn(
-          "mb-6 grid gap-4 md:grid-cols-3",
-          isProductMode && "mb-4 gap-3",
-        )}
-      >
+      <div className="mb-4 grid gap-3 md:grid-cols-3">
         {/* Created This Week */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -314,12 +315,7 @@ export default function Insights() {
       </div>
 
       {/* Advanced Metrics Row */}
-      <div
-        className={cn(
-          "mb-6 grid gap-4 md:grid-cols-3",
-          isProductMode && "mb-4 gap-3",
-        )}
-      >
+      <div className="mb-4 grid gap-3 md:grid-cols-3">
         {/* Cycle Time */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -377,9 +373,7 @@ export default function Insights() {
       </div>
 
       {/* Charts Row */}
-      <div
-        className={cn("grid gap-4 md:grid-cols-2", isProductMode && "gap-3")}
-      >
+      <div className="grid gap-3 md:grid-cols-2">
         {/* Cycle Time Trend Chart */}
         <Card className={cardClassName}>
           <CardHeader>

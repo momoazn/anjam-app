@@ -9,15 +9,10 @@ import { ProjectCardSkeleton } from "@/components/skeletons/project-card-skeleto
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
 import { useProjects } from "@/hooks";
-import {
-  useCurrentOrgMode,
-  useCurrentOrgRole,
-} from "@/store/auth-store";
+import { useCurrentOrgRole } from "@/store/auth-store";
 
 export default function Projects() {
   const currentOrgRole = useCurrentOrgRole();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const navigate = useNavigate();
 
   const { data: userProjects, isPending: isLoadingProjects } = useProjects();
@@ -35,7 +30,6 @@ export default function Projects() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         icon={Target}
-        eyebrow={isProductMode ? undefined : projects.title}
         title={projects.title}
         subtitle={projects.list.count.replace(
           "{count}",
@@ -44,11 +38,7 @@ export default function Projects() {
         actions={
           canCreateProject ? (
             <Button
-              className={
-                isProductMode
-                  ? "h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
-                  : "h-10 gap-2 rounded-xl px-5 text-sm font-bold shadow-sm transition-all hover:scale-[1.02]"
-              }
+              className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
               onClick={() => navigate("/projects/new")}
             >
               <Plus className="size-4.5" />

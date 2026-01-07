@@ -12,9 +12,6 @@ import { useMutation as useConvexMutation } from "convex/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
-
 import { Logo } from "@/components/brand/logo";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
@@ -22,11 +19,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/constants";
 import { getHomeRoute } from "@/lib/mode";
-import {
-  useAuthStore,
-  useCurrentOrgMode,
-  useCurrentOrganization,
-} from "@/store/auth-store";
+import { useAuthStore, useCurrentOrganization } from "@/store/auth-store";
+
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 const STEPS = [
   {
@@ -52,7 +48,6 @@ const STEPS = [
 export default function Onboarding() {
   const navigate = useNavigate();
   const currentOrg = useCurrentOrganization();
-  useCurrentOrgMode(); // Initialize product mode
   const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
 
   // Convex mutations

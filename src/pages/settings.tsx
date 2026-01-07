@@ -10,12 +10,9 @@ import { ProfileSection } from "@/components/settings/profile-section";
 import { SecuritySection } from "@/components/settings/security-section";
 import { SettingsSidebar } from "@/components/settings/settings-sidebar";
 import { settings } from "@/constants";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
 
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
@@ -25,34 +22,18 @@ export default function SettingsPage() {
         icon={IconSettings}
       />
 
-      {isProductMode ? (
-        <div className="space-y-4">
-          <div className="overflow-x-auto">
-            <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          </div>
-          <div className="border-border/40 bg-background/30 w-full rounded-xl border p-4 shadow-none">
-            {activeTab === "profile" && <ProfileSection />}
-            {activeTab === "appearance" && <AppearanceSection />}
-            {activeTab === "security" && <SecuritySection />}
-            {activeTab === "preferences" && <PreferencesSection />}
-            {activeTab === "about" && <AboutSection />}
-          </div>
+      <div className="space-y-4">
+        <div className="overflow-x-auto">
+          <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
-      ) : (
-        <div className="flex flex-col items-start gap-10 lg:flex-row">
-          <aside className="sticky top-24 lg:w-1/4">
-            <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          </aside>
-
-          <div className="bg-muted/5 border-border/40 w-full flex-1 border p-8 shadow-sm">
-            {activeTab === "profile" && <ProfileSection />}
-            {activeTab === "appearance" && <AppearanceSection />}
-            {activeTab === "security" && <SecuritySection />}
-            {activeTab === "preferences" && <PreferencesSection />}
-            {activeTab === "about" && <AboutSection />}
-          </div>
+        <div className="border-border/40 bg-background/30 w-full rounded-xl border p-4 shadow-none">
+          {activeTab === "profile" && <ProfileSection />}
+          {activeTab === "appearance" && <AppearanceSection />}
+          {activeTab === "security" && <SecuritySection />}
+          {activeTab === "preferences" && <PreferencesSection />}
+          {activeTab === "about" && <AboutSection />}
         </div>
-      )}
+      </div>
     </PageTransition>
   );
 }

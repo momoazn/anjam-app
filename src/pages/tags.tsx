@@ -11,30 +11,28 @@ import { Button } from "@/components/ui/button";
 import { tagsManagement } from "@/constants";
 import { useDeleteTag, useTags } from "@/hooks/tags";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { useCurrentOrgMode, useCurrentOrgRole } from "@/store/auth-store";
+import { useCurrentOrgRole } from "@/store/auth-store";
 
 export default function TagsManagement() {
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedTag, setSelectedTag] = useState<any>(null);
-
   const { data: tags, isLoading } = useTags();
+  type Tag = NonNullable<typeof tags>[number];
+  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+
   const { toast } = useToast();
   const userRole = useCurrentOrgRole();
   const canDeleteTag = userRole === "owner";
 
   const deleteTag = useDeleteTag();
 
-  const handleEdit = (tag: any) => {
+  const handleEdit = (tag: Tag) => {
     setSelectedTag(tag);
     setEditDialogOpen(true);
   };
 
-  const handleDelete = (tag: any) => {
+  const handleDelete = (tag: Tag) => {
     setSelectedTag(tag);
     setDeleteDialogOpen(true);
   };
@@ -46,7 +44,7 @@ export default function TagsManagement() {
         toast({ title: tagsManagement.toast.deleted });
         setDeleteDialogOpen(false);
         setSelectedTag(null);
-      } catch (error) {
+      } catch {
         toast({
           title: tagsManagement.toast.deleteError,
           variant: "destructive",
@@ -57,12 +55,7 @@ export default function TagsManagement() {
 
   const headerActions = (
     <Button
-      className={cn(
-        "gap-2 rounded-xl shadow-sm transition-all",
-        isProductMode
-          ? "h-8 rounded-lg px-3 text-xs font-semibold"
-          : "h-10 px-5 text-sm font-bold hover:scale-[1.02]",
-      )}
+      className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold shadow-sm transition-all"
       onClick={() => setCreateDialogOpen(true)}
     >
       <IconPlus className="size-4.5" />
@@ -86,7 +79,7 @@ export default function TagsManagement() {
         actions={headerActions}
       />
 
-      <div className={cn("space-y-6", isProductMode && "space-y-4")}>
+      <div className="space-y-4">
         <TagsList
           tags={tags}
           isLoading={isLoading}

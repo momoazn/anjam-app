@@ -30,6 +30,7 @@ import { common, tasks as tasksText } from "@/constants";
 import { useTasksPageData } from "@/hooks/use-tasks-page-data";
 import { getTaskStatus, isTaskCompleted } from "@/lib/status-utils";
 import { cn, formatUserName } from "@/lib/utils";
+import type { Task } from "@/types/tasks";
 
 const priorityColors = {
   low: "bg-emerald-500/20 text-emerald-600",
@@ -53,13 +54,27 @@ const CalendarSkeleton = () => (
 );
 
 interface CalendarTaskProps {
-  task: any;
+  task: Task & {
+    project?: { _id: string } | null;
+    projectId?: string;
+    assignee?: {
+      firstName?: string;
+      first_name?: string;
+      lastName?: string;
+      last_name?: string;
+      username?: string;
+    } | null;
+  };
 }
 
 function CalendarTask({ task }: CalendarTaskProps) {
   const status = getTaskStatus(task);
-  const projectId = typeof task.project === "object" ? task.project._id : task.project;
-  const taskUrl = `/projects/${projectId}/tasks/${task.id}`;
+  const projectId =
+    (typeof task.project === "object" ? task.project?._id : undefined) ??
+    task.projectId ??
+    "";
+  const taskId = task.id ?? task._id;
+  const taskUrl = `/projects/${projectId}/tasks/${taskId}`;
 
   return (
     <Link to={taskUrl}>
@@ -96,13 +111,13 @@ export default function TaskCalendar() {
   const navigate = useNavigate();
 
   const tasksWithDeadlines = useMemo(() => {
-    return allTasks?.filter((task: any) => task.deadline && !task.deletedAt) || [];
+    return allTasks?.filter((task) => task.deadline && !task.deletedAt) || [];
   }, [allTasks]);
 
   const tasksByDate = useMemo(() => {
-    const grouped = new Map<string, any[]>();
+    const grouped = new Map<string, Task[]>();
 
-    tasksWithDeadlines.forEach((task: any) => {
+    tasksWithDeadlines.forEach((task) => {
       if (task.deadline) {
         const dateKey = format(new Date(task.deadline), "yyyy-MM-dd");
         if (!grouped.has(dateKey)) {
@@ -126,7 +141,7 @@ export default function TaskCalendar() {
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToToday = () => setCurrentMonth(new Date());
 
-  const getTasksForDay = (day: Date): any[] => {
+  const getTasksForDay = (day: Date): Task[] => {
     const dateKey = format(day, "yyyy-MM-dd");
     return tasksByDate.get(dateKey) || [];
   };

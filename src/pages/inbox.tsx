@@ -8,14 +8,12 @@ import { PageTransition } from "@/components/page-transition";
 import { TaskListSkeleton } from "@/components/skeletons/task-list-skeleton";
 import { TaskListItem } from "@/components/task/task-list-item";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EmptyStateNoTasks } from "@/components/ui/empty-state";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { inbox } from "@/constants";
 import { useMentions } from "@/hooks/mentions";
 import { useTasks } from "@/hooks/tasks";
 import { cn } from "@/lib/utils";
-import { useAuthUser, useCurrentOrgMode } from "@/store/auth-store";
+import { useAuthUser } from "@/store/auth-store";
 import { TaskWithDetails } from "@/types/tasks";
 
 type FilterOption = "all" | "active" | "done";
@@ -81,8 +79,6 @@ export default function Inbox() {
   const navigate = useNavigate();
   const user = useAuthUser();
   const userId = user?._id;
-  const currentOrgMode = useCurrentOrgMode();
-  const isProductMode = currentOrgMode === "product";
   const [searchParams, setSearchParams] = useSearchParams();
   const [recentlyOpen, setRecentlyOpen] = useState(false);
 
@@ -184,15 +180,9 @@ export default function Inbox() {
         <PageHeader
           title={inbox.title}
           icon={IconInbox}
-          subtitle={
-            isProductMode
-              ? totalCount === 0
-                ? inbox.description
-                : undefined
-              : inbox.description
-          }
+          subtitle={totalCount === 0 ? inbox.description : undefined}
         />
-        {isProductMode ? (
+        <>
           <>
             <div className="flex items-center justify-between gap-3">
               <ToggleGroup
@@ -226,9 +216,7 @@ export default function Inbox() {
               <TaskListSkeleton count={6} />
             </div>
           </>
-        ) : (
-          <TaskListSkeleton count={5} />
-        )}
+        </>
       </PageTransition>
     );
   }
@@ -237,218 +225,101 @@ export default function Inbox() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={inbox.title}
-        subtitle={
-          isProductMode
-            ? totalCount === 0
-              ? inbox.description
-              : undefined
-            : inbox.description
-        }
+        subtitle={totalCount === 0 ? inbox.description : undefined}
         icon={IconInbox}
       />
 
-      {isProductMode ? (
-        <>
-          {/* Compact toolbar */}
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <ToggleGroup
-              type="single"
-              value={currentFilter}
-              onValueChange={(value) => {
-                if (!value) return;
-                setFilter(value as FilterOption);
-              }}
-              className="justify-start"
-            >
-              <ToggleGroupItem value="all" className="h-8 px-3 text-xs">
-                همه
-              </ToggleGroupItem>
-              <ToggleGroupItem value="active" className="h-8 px-3 text-xs">
-                فعال
-              </ToggleGroupItem>
-              <ToggleGroupItem value="done" className="h-8 px-3 text-xs">
-                انجام‌شده
-              </ToggleGroupItem>
-            </ToggleGroup>
-
-            <Button
-              size="sm"
-              className="h-8 px-3"
-              onClick={() => navigate("/tasks/new")}
-            >
-              ساخت تسک
-            </Button>
-          </div>
-
-          {/* Single compact surface (Linear-like) */}
-          <div
-            className={cn(
-              "overflow-hidden rounded-xl border border-border/40",
-              "bg-background/30",
-            )}
+      <>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <ToggleGroup
+            type="single"
+            value={currentFilter}
+            onValueChange={(value) => {
+              if (!value) return;
+              setFilter(value as FilterOption);
+            }}
+            className="justify-start"
           >
-            {/* Assigned */}
-            <SectionHeader
-              title={inbox.sections.assigned}
-              count={sections.assigned.length}
-            />
-            {sections.assigned.length === 0 ? (
-              <InlineEmptyState
-                title="چیزی برای انجام ندارید"
-                actionLabel="ساخت تسک"
-                onAction={() => navigate("/tasks/new")}
-              />
-            ) : (
-              sections.assigned.map((task) => (
-                <TaskListItem key={task.id} task={task} showProject />
-              ))
-            )}
-
-            {/* Mentioned */}
-            <SectionHeader
-              title={inbox.sections.mentioned}
-              count={sections.mentioned.length}
-            />
-            {sections.mentioned.length === 0 ? (
-              <InlineEmptyState title="هنوز اشاره‌ای ندارید" />
-            ) : (
-              sections.mentioned.map((task) => (
-                <TaskListItem key={task.id} task={task} showProject />
-              ))
-            )}
-
-            {/* Recently updated (collapsed by default) */}
-            <SectionHeader
-              title={inbox.sections.recentlyUpdated}
-              count={sections.recentlyUpdated.length}
-              isCollapsible
-              isOpen={recentlyOpen}
-              onToggle={() => setRecentlyOpen((v) => !v)}
-            />
-            {recentlyOpen ? (
-              sections.recentlyUpdated.length === 0 ? (
-                <InlineEmptyState title={inbox.noRecentUpdates} />
-              ) : (
-                sections.recentlyUpdated.map((task) => (
-                  <TaskListItem key={task.id} task={task} showProject />
-                ))
-              )
-            ) : (
-              <div className="text-muted-foreground border-b border-border/40 px-3 py-3 text-xs">
-                برای دیدن به‌روزرسانی‌های اخیر باز کنید
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          {/* Filter Chips */}
-          <div className="mb-6 flex items-center gap-2">
-            <Button
-              variant={currentFilter === "all" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setFilter("all")}
-              className={cn(
-                "rounded-full",
-                currentFilter === "all" && "shadow-sm",
-              )}
-            >
+            <ToggleGroupItem value="all" className="h-8 px-3 text-xs">
               همه
-            </Button>
-            <Button
-              variant={currentFilter === "active" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setFilter("active")}
-              className={cn(
-                "rounded-full",
-                currentFilter === "active" && "shadow-sm",
-              )}
-            >
+            </ToggleGroupItem>
+            <ToggleGroupItem value="active" className="h-8 px-3 text-xs">
               فعال
-            </Button>
-            <Button
-              variant={currentFilter === "done" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setFilter("done")}
-              className={cn(
-                "rounded-full",
-                currentFilter === "done" && "shadow-sm",
-              )}
-            >
+            </ToggleGroupItem>
+            <ToggleGroupItem value="done" className="h-8 px-3 text-xs">
               انجام‌شده
-            </Button>
-          </div>
+            </ToggleGroupItem>
+          </ToggleGroup>
 
-          <div className="space-y-6">
-            {/* Assigned to me Section */}
-            <Card>
-              <CardHeader className="text-right">
-                <CardTitle className="text-lg">
-                  {inbox.sections.assigned} ({sections.assigned.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {sections.assigned.length === 0 ? (
-                  <EmptyStateNoTasks onCreate={() => navigate("/tasks/new")} />
-                ) : (
-                  <div className="space-y-2">
-                    {sections.assigned.map((task) => (
-                      <TaskListItem key={task.id} task={task} />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <Button
+            size="sm"
+            className="h-8 px-3"
+            onClick={() => navigate("/tasks/new")}
+          >
+            ساخت تسک
+          </Button>
+        </div>
 
-            {/* Mentioned Section */}
-            <Card>
-              <CardHeader className="text-right">
-                <CardTitle className="text-lg">
-                  {inbox.sections.mentioned} ({sections.mentioned.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {sections.mentioned.length === 0 ? (
-                  <div className="bg-muted/10 border-border/40 rounded-xl border border-dashed p-6 text-center">
-                    <p className="text-muted-foreground text-[10px] font-bold tracking-tight">
-                      {inbox.mentionedComingSoon}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {sections.mentioned.map((task) => (
-                      <TaskListItem key={task.id} task={task} />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+        {/* Single compact surface (Linear-like) */}
+        <div
+          className={cn(
+            "overflow-hidden rounded-xl border border-border/40",
+            "bg-background/30",
+          )}
+        >
+          {/* Assigned */}
+          <SectionHeader
+            title={inbox.sections.assigned}
+            count={sections.assigned.length}
+          />
+          {sections.assigned.length === 0 ? (
+            <InlineEmptyState
+              title="چیزی برای انجام ندارید"
+              actionLabel="ساخت تسک"
+              onAction={() => navigate("/tasks/new")}
+            />
+          ) : (
+            sections.assigned.map((task) => (
+              <TaskListItem key={task.id} task={task} showProject />
+            ))
+          )}
 
-            {/* Recently Updated Section */}
-            <Card>
-              <CardHeader className="text-right">
-                <CardTitle className="text-lg">
-                  {inbox.sections.recentlyUpdated} (
-                  {sections.recentlyUpdated.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {sections.recentlyUpdated.length === 0 ? (
-                  <p className="text-muted-foreground text-right text-sm">
-                    {inbox.noRecentUpdates}
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    {sections.recentlyUpdated.map((task) => (
-                      <TaskListItem key={task.id} task={task} />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
+          {/* Mentioned */}
+          <SectionHeader
+            title={inbox.sections.mentioned}
+            count={sections.mentioned.length}
+          />
+          {sections.mentioned.length === 0 ? (
+            <InlineEmptyState title="هنوز اشاره‌ای ندارید" />
+          ) : (
+            sections.mentioned.map((task) => (
+              <TaskListItem key={task.id} task={task} showProject />
+            ))
+          )}
+
+          {/* Recently updated (collapsed by default) */}
+          <SectionHeader
+            title={inbox.sections.recentlyUpdated}
+            count={sections.recentlyUpdated.length}
+            isCollapsible
+            isOpen={recentlyOpen}
+            onToggle={() => setRecentlyOpen((v) => !v)}
+          />
+          {recentlyOpen ? (
+            sections.recentlyUpdated.length === 0 ? (
+              <InlineEmptyState title={inbox.noRecentUpdates} />
+            ) : (
+              sections.recentlyUpdated.map((task) => (
+                <TaskListItem key={task.id} task={task} showProject />
+              ))
+            )
+          ) : (
+            <div className="text-muted-foreground border-b border-border/40 px-3 py-3 text-xs">
+              برای دیدن به‌روزرسانی‌های اخیر باز کنید
+            </div>
+          )}
+        </div>
+      </>
     </PageTransition>
   );
 }

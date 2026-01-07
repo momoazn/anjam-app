@@ -46,7 +46,7 @@ export default function Login() {
       await signIn("password", {
         email: identity.trim().toLowerCase(),
         password: password.trim(),
-        flow: "signIn"
+        flow: "signIn",
       });
       // Redirect is handled by the auth state change usually, or we can force it?
       // Convex Auth usually handles session establishment.

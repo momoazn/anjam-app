@@ -8,10 +8,10 @@ import { getHomeRoute } from "@/lib/mode";
 import { cn } from "@/lib/utils";
 import {
   useAuthStore,
-  useCurrentOrgMode,
   useCurrentOrganization,
   useUserOrganizations,
 } from "@/store/auth-store";
+
 import type { Doc } from "../../convex/_generated/dataModel";
 
 function getOrgInitials(name: string): string {
@@ -45,7 +45,6 @@ export function SelectOrganizationPage() {
   const navigate = useNavigate();
   const userOrganizations = useUserOrganizations();
   const currentOrg = useCurrentOrganization();
-  useCurrentOrgMode(); // Initialize product mode
 
   const handleOrgSelect = (orgId: string) => {
     // Switch to this organization

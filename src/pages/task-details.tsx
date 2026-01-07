@@ -21,23 +21,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
-import { useDeleteTask, useTask } from "@/hooks/tasks";
 import { useComments } from "@/hooks/comments";
+import { useDeleteTask, useTask } from "@/hooks/tasks";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const pendingDeleteRef = useRef<number | null>(null);
 
-  const {
-    data: task,
-    isLoading: taskLoading,
-  } = useTask({
+  const { data: task, isLoading: taskLoading } = useTask({
     id: id ?? "",
     enabled: !!id,
   });
@@ -84,38 +78,31 @@ export default function TaskDetails() {
             <span className="text-muted-foreground/40">•</span>
             <span>
               {tasks.details.createdBy}{" "}
-              {task.expand?.creator?.username || tasks.details.system}
+              {(typeof task.expand?.creator === "object" &&
+              task.expand?.creator &&
+              "username" in task.expand.creator &&
+              typeof (task.expand.creator as { username?: unknown })
+                .username === "string"
+                ? (task.expand.creator as { username: string }).username
+                : undefined) || tasks.details.system}
             </span>
           </div>
         }
         icon={Hash}
-        eyebrow={
-          isProductMode ? undefined : (
-            <Button
-              variant="link"
-              className="text-muted-foreground hover:text-foreground h-auto p-0 text-xs font-medium"
-              onClick={() => navigate("/tasks")}
-            >
-              <ChevronRight className="mr-1 h-3 w-3 rotate-180" />
-              {tasks.details.backToList}
-            </Button>
-          )
-        }
+        eyebrow={undefined}
         actions={
           <div className="flex items-center gap-2">
-            {isProductMode ? (
-              <Button
-                variant="ghost"
-                size="xs"
-                onClick={() => navigate("/tasks")}
-              >
-                <ChevronRight className="h-4 w-4 rotate-180" />
-                {tasks.details.backToList}
-              </Button>
-            ) : null}
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => navigate("/tasks")}
+            >
+              <ChevronRight className="h-4 w-4 rotate-180" />
+              {tasks.details.backToList}
+            </Button>
             <Button
               variant="outline"
-              size={isProductMode ? "xs" : "sm"}
+              size="xs"
               onClick={() => navigate(`/tasks/${id}/edit`)}
               className="gap-2"
             >
@@ -124,7 +111,7 @@ export default function TaskDetails() {
             </Button>
             <Button
               variant="ghost"
-              size={isProductMode ? "xs" : "sm"}
+              size="xs"
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleteTask.isPending}
               className="text-destructive hover:bg-destructive/10 gap-2"
@@ -136,12 +123,7 @@ export default function TaskDetails() {
         }
       />
 
-      <div
-        className={cn(
-          "grid grid-cols-1 lg:grid-cols-3",
-          isProductMode ? "gap-4" : "gap-6",
-        )}
-      >
+      <div className={cn("grid grid-cols-1 lg:grid-cols-3", "gap-4")}>
         <TaskDetailsContent
           task={task}
           comments={commentsData}

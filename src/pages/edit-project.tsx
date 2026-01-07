@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IconLoader2, IconPencil } from "@tabler/icons-react";
+import { IconLoader2 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,14 +7,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { ProjectFields } from "@/components/forms/project-fields";
-import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, projects } from "@/constants";
 import { useProject, useUpdateProject } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode, useCurrentOrgRole } from "@/store/auth-store";
+import { useCurrentOrgRole } from "@/store/auth-store";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, { message: projects.create.form.nameRequired }),
@@ -30,8 +29,6 @@ export default function EditProject() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const currentOrgRole = useCurrentOrgRole();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const isAdmin = currentOrgRole === "owner";
   const [isMutationPending, setIsMutationPending] = useState(false);
 
@@ -96,12 +93,7 @@ export default function EditProject() {
   const isPending = isMutationPending;
 
   return (
-    <PageTransition
-      className={cn(
-        "mx-auto w-full p-4 md:p-6",
-        isProductMode ? "max-w-3xl" : "max-w-7xl",
-      )}
-    >
+    <PageTransition className={cn("mx-auto w-full p-4 md:p-6", "max-w-3xl")}>
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-24 opacity-20">
           <IconLoader2 className="h-12 w-12 animate-spin" />
@@ -109,86 +101,51 @@ export default function EditProject() {
       ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {isProductMode ? (
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0 text-right">
-                  <h1 className="truncate text-base font-semibold">
-                    {projects.edit.title}
-                  </h1>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    {project?.name || id}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="xs"
-                    onClick={handleCancel}
-                    disabled={isPending}
-                  >
-                    {common.cancel}
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="xs"
-                    disabled={isPending}
-                    className="gap-2"
-                  >
-                    {isPending && (
-                      <IconLoader2 className="me-1 size-4 animate-spin" />
-                    )}
-                    <span>{projects.edit.submit}</span>
-                  </Button>
-                </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0 text-right">
+                <h1 className="truncate text-base font-semibold">
+                  {projects.edit.title}
+                </h1>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {project?.name || id}
+                </p>
               </div>
-            ) : (
-              <PageHeader
-                title={projects.edit.title}
-                subtitle={project?.name || id}
-                icon={IconPencil}
-              />
-            )}
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="xs"
+                  onClick={handleCancel}
+                  disabled={isPending}
+                >
+                  {common.cancel}
+                </Button>
+                <Button
+                  type="submit"
+                  size="xs"
+                  disabled={isPending}
+                  className="gap-2"
+                >
+                  {isPending && (
+                    <IconLoader2 className="me-1 size-4 animate-spin" />
+                  )}
+                  <span>{projects.edit.submit}</span>
+                </Button>
+              </div>
+            </div>
 
             <div
               className={cn(
                 "border-border/40 rounded-2xl border",
-                isProductMode
-                  ? "bg-background/30 p-4 shadow-none"
-                  : "bg-card p-8 shadow-sm",
+                "bg-background/30 p-4 shadow-none",
               )}
             >
               <ProjectFields
                 control={form.control}
-                codeMode={isProductMode ? "readonly" : "editable"}
-                showSupervisor={!isProductMode}
+                codeMode="readonly"
+                showSupervisor={false}
                 isAdmin={isAdmin}
               />
-
-              {isProductMode ? null : (
-                <div className="border-border/10 flex items-center justify-end gap-3 border-t pt-6">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCancel}
-                    disabled={isPending}
-                  >
-                    {common.cancel}
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="sm"
-                    disabled={isPending}
-                    className="gap-2"
-                  >
-                    {isPending && (
-                      <IconLoader2 className="me-2 h-4 w-4 animate-spin" />
-                    )}
-                    <span>{projects.edit.submit}</span>
-                  </Button>
-                </div>
-              )}
             </div>
           </form>
         </Form>

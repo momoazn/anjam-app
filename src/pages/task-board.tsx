@@ -5,13 +5,13 @@ import {
   DragOverlay,
   DragStartEvent,
   DropAnimation,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
   closestCorners,
   defaultDropAnimationSideEffects,
   useSensor,
   useSensors,
-  PointerSensor,
-  TouchSensor,
-  KeyboardSensor,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import {
@@ -20,7 +20,7 @@ import {
   IconList,
   IconPlus,
 } from "@tabler/icons-react";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -30,8 +30,9 @@ import { BoardCard } from "@/components/task/board/board-card";
 import { BoardColumn } from "@/components/task/board/board-column";
 import { Button } from "@/components/ui/button";
 import { common, tasks as tasksText } from "@/constants";
-import { useProject, useAllTasks, useReorderTask } from "@/hooks";
+import { useAllTasks, useProject, useReorderTask } from "@/hooks";
 import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
+import type { TaskStatus, TaskWithProject } from "@/types/tasks";
 
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
@@ -46,29 +47,40 @@ const dropAnimation: DropAnimation = {
 
 const orderStep = 10000;
 const statusKeys = TASK_STATUS_ORDER;
-const statusKeySet = new Set(statusKeys as string[]);
+const statusKeySet = new Set<TaskStatus>(statusKeys);
 
-const buildTaskIdsByStatus = (tasks: any[]) => {
-  const buckets: Record<string, any[]> = {};
+const buildTaskIdsByStatus = (tasks: TaskWithProject[]) => {
+  const buckets: Record<TaskStatus, TaskWithProject[]> = {
+    todo: [],
+    in_progress: [],
+    in_review: [],
+    done: [],
+    cancelled: [],
+  };
   statusKeys.forEach((status) => {
     buckets[status] = [];
   });
 
   tasks.forEach((task) => {
-    const status = statusKeySet.has(task.status || "")
-      ? task.status
-      : "todo";
+    const candidate = task.status ?? "todo";
+    const status = statusKeySet.has(candidate) ? candidate : "todo";
     buckets[status].push(task);
   });
 
-  const result: Record<string, string[]> = {};
+  const result: Record<TaskStatus, string[]> = {
+    todo: [],
+    in_progress: [],
+    in_review: [],
+    done: [],
+    cancelled: [],
+  };
   statusKeys.forEach((status) => {
     const sorted = [...buckets[status]].sort((a, b) => {
       const orderA = a.order ?? 0;
       const orderB = b.order ?? 0;
       return orderA - orderB;
     });
-    result[status] = sorted.map((task) => task.id);
+    result[status] = sorted.map((task) => task._id);
   });
 
   return result;
@@ -85,7 +97,7 @@ export function TaskBoardPage() {
   const { id: projectId } = useParams<{ id: string }>();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [taskIdsByStatus, setTaskIdsByStatus] = useState<
-    Record<string, string[]>
+    Record<TaskStatus, string[]>
   >(() => buildTaskIdsByStatus([]));
   const lastOverIdRef = useRef<string | null>(null);
 
@@ -101,28 +113,28 @@ export function TaskBoardPage() {
 
   useEffect(() => {
     if (tasksData.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTaskIdsByStatus(buildTaskIdsByStatus(tasksData));
     }
   }, [tasksData]);
 
   const tasksById = useMemo(() => {
-    const map: Record<string, any> = {};
+    const map: Record<string, (typeof tasksData)[number]> = {};
     tasksData.forEach((task) => {
-      map[task.id] = task;
+      map[task._id] = task;
     });
     return map;
   }, [tasksData]);
-
   const initialTaskIdsByStatus = useMemo(
     () => buildTaskIdsByStatus(tasksData),
     [tasksData],
   );
 
   const taskIdToStatus = useMemo(() => {
-    const map: Record<string, string> = {};
+    const map: Record<string, TaskStatus> = {};
     Object.entries(taskIdsByStatus).forEach(([status, ids]) => {
       ids.forEach((id) => {
-        map[id] = status;
+        map[id] = status as TaskStatus;
       });
     });
     return map;
@@ -130,9 +142,9 @@ export function TaskBoardPage() {
 
   const activeTask = activeId ? tasksById[activeId] : null;
 
-  const getStatusForId = (id: string | null) => {
+  const getStatusForId = (id: string | null): TaskStatus | null => {
     if (!id) return null;
-    if (statusKeySet.has(id)) return id;
+    if (statusKeySet.has(id as TaskStatus)) return id as TaskStatus;
     return taskIdToStatus[id] ?? null;
   };
 
@@ -191,7 +203,7 @@ export function TaskBoardPage() {
     if (!activeStatus || !overStatus) return;
 
     if (activeStatus === overStatus) {
-      if (statusKeySet.has(overId)) return;
+      if (statusKeySet.has(overId as TaskStatus)) return;
       setTaskIdsByStatus((prev) => {
         const columnIds = prev[activeStatus];
         const oldIndex = columnIds.indexOf(activeIdValue);
@@ -211,11 +223,15 @@ export function TaskBoardPage() {
       const activeIndex = activeItems.indexOf(activeIdValue);
       if (activeIndex === -1) return prev;
 
-      const nextActiveItems = activeItems.filter((id) => id !== activeIdValue);
-      const cleanedOverItems = overItems.filter((id) => id !== activeIdValue);
+      const nextActiveItems = activeItems.filter(
+        (id: string) => id !== activeIdValue,
+      );
+      const cleanedOverItems = overItems.filter(
+        (id: string) => id !== activeIdValue,
+      );
       const overIndex = cleanedOverItems.indexOf(overId);
       const newIndex =
-        statusKeySet.has(overId) || overIndex === -1
+        statusKeySet.has(overId as TaskStatus) || overIndex === -1
           ? cleanedOverItems.length
           : overIndex;
 
@@ -257,8 +273,8 @@ export function TaskBoardPage() {
 
     if (needsUpdate) {
       updateTaskPosition({
-        taskId: originalTask.id,
-        status: currentStatus as any,
+        taskId: originalTask.id ?? originalTask._id,
+        status: currentStatus,
         order: newOrder,
       });
     }
