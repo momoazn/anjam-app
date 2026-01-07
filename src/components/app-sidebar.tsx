@@ -26,7 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { app, navigation } from "@/constants";
+import { app, inbox, navigation } from "@/constants";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Permission } from "@/lib/permissions";
 import { isOrgAdmin } from "@/lib/permissions";
@@ -57,7 +57,7 @@ function getNavItems(
   return {
     navWorkspace: [
       {
-        title: "صندوق ورودی",
+        title: inbox.title,
         url: "/inbox",
         icon: IconInbox,
       },
@@ -69,7 +69,7 @@ function getNavItems(
     ],
     navManagement: [
       {
-        title: "بینش‌ها",
+        title: navigation.insights,
         url: "/insights",
         icon: IconRocket,
         permission: "org.view" as Permission,
@@ -84,7 +84,7 @@ function getNavItems(
     navAdmin: showAdminItems
       ? [
           {
-            title: "اعضا",
+            title: navigation.members,
             url: "/settings/members",
             icon: IconUsers,
           },
@@ -102,7 +102,7 @@ function getNavItems(
         icon: IconHelp,
       },
       {
-        title: "بازخورد آلفا",
+        title: navigation.alphaFeedback,
         url: "https://github.com/mohammadhmn/anjam/issues/new?labels=alpha-feedback",
         icon: IconMessage,
         external: true,
@@ -218,14 +218,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="bg-muted/40 flex items-center justify-between border-t px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground/60 font-mono text-[10px] font-bold uppercase tracking-widest">
-              نسخه ۰.۰.۰
+              {navigation.version}
             </span>
             <span className="text-muted-foreground/40 text-[9px] font-mono">
               v0.8.2-alpha
             </span>
           </div>
           <span className="rounded bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 border border-amber-500/20">
-            آلفا
+            {navigation.alpha}
           </span>
         </div>
       </SidebarFooter>

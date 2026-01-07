@@ -36,7 +36,7 @@ const viewItems = [
     getCount: () => 0,
   },
   {
-    title: "تسک‌های من",
+    title: navigation.myTasks,
     url: "/tasks?assigned=me&status=todo,in_progress,pending",
     icon: IconUser,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
