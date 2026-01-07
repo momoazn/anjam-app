@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { type Doc, Id, api } from "@/lib/convex";
 import { useCurrentOrganization } from "@/store/auth-store";
 
 /**
@@ -18,18 +17,22 @@ export function useProjects(options: { enabled?: boolean } = {}) {
   );
 
   return {
-    data: projects?.map((p: any) => ({
-      ...p,
-      id: p._id,
-      expand: {
-        supervisor: p.supervisor ? {
-          ...p.supervisor,
-          id: p.supervisor._id,
-          first_name: p.supervisor.firstName,
-          last_name: p.supervisor.lastName,
-        } : undefined,
-      }
-    })),
+    data: projects?.map(
+      (p: Doc<"projects"> & { supervisor?: Doc<"users"> | null }) => ({
+        ...p,
+        id: p._id,
+        expand: {
+          supervisor: p.supervisor
+            ? {
+                ...p.supervisor,
+                id: p.supervisor._id,
+                first_name: p.supervisor.firstName,
+                last_name: p.supervisor.lastName,
+              }
+            : undefined,
+        },
+      }),
+    ),
     isPending: projects === undefined,
     error: null,
   };
@@ -38,7 +41,10 @@ export function useProjects(options: { enabled?: boolean } = {}) {
 /**
  * Hook to get a single project by ID.
  */
-export function useProject(options: { id: string | undefined; enabled?: boolean }) {
+export function useProject(options: {
+  id: string | undefined;
+  enabled?: boolean;
+}) {
   const { id, enabled = true } = options;
 
   const project = useQuery(
@@ -50,15 +56,35 @@ export function useProject(options: { id: string | undefined; enabled?: boolean 
     data: project
       ? {
           ...project,
-          id: (project as any)._id,
+          id: project._id,
           expand: {
-            supervisor: (project as any).supervisor ? {
-              ...(project as any).supervisor,
-              id: (project as any).supervisor._id,
-              first_name: (project as any).supervisor.firstName,
-              last_name: (project as any).supervisor.lastName,
-            } : undefined,
-          }
+            supervisor: (
+              project as Doc<"projects"> & { supervisor?: Doc<"users"> | null }
+            ).supervisor
+              ? {
+                  ...(
+                    project as Doc<"projects"> & {
+                      supervisor: Doc<"users">;
+                    }
+                  ).supervisor,
+                  id: (
+                    project as Doc<"projects"> & {
+                      supervisor: Doc<"users">;
+                    }
+                  ).supervisor._id,
+                  first_name: (
+                    project as Doc<"projects"> & {
+                      supervisor: Doc<"users">;
+                    }
+                  ).supervisor.firstName,
+                  last_name: (
+                    project as Doc<"projects"> & {
+                      supervisor: Doc<"users">;
+                    }
+                  ).supervisor.lastName,
+                }
+              : undefined,
+          },
         }
       : undefined,
     isLoading: project === undefined,
@@ -83,7 +109,9 @@ export function useProjectWithSupervisor(options: {
 /**
  * Hook to create a project.
  */
-export function useCreateProject(options?: { onSuccess?: (id: string) => void }) {
+export function useCreateProject(options?: {
+  onSuccess?: (id: string) => void;
+}) {
   const createProjectMutation = useMutation(api.projects.create);
 
   return {
@@ -143,7 +171,7 @@ export function useUpdateProject(options?: { onSuccess?: () => void }) {
  */
 export function useDeleteProject(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const deleteProjectMutation = useMutation(api.projects.deleteProject);
 

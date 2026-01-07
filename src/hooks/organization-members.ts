@@ -184,12 +184,20 @@ export function useAcceptOrgInvitation() {
 }
 
 export function useInviteByToken(token: string) {
-  const invite = useQuery(api.invites.getByToken, token ? { token } : "skip");
+  const invite = useQuery(
+    api.invites.getByToken,
+
+    token ? { token } : "skip",
+  );
 
   return {
     data: invite,
+
     isLoading: invite === undefined,
-    error: invite === null ? new Error("Invite not found") : undefined,
+
+    error: (invite === null ? new Error("Invite not found") : undefined) as
+      | Error
+      | undefined,
   };
 }
 

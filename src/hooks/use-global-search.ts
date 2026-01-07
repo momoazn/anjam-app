@@ -1,39 +1,62 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "convex/react";
 
-import { queryKeys } from "@/hooks/query-keys";
+import { type Id, api } from "@/lib/convex";
+import { useCurrentOrganization } from "@/store/auth-store";
+
+interface SearchTaskResult {
+  id: string;
+  _id: Id<"tasks">;
+  title: string;
+  displayId: string;
+  status: string;
+  projectCode?: string;
+  projectName?: string;
+}
+
+interface SearchProjectResult {
+  id: string;
+  _id: Id<"projects">;
+  name: string;
+  code: string;
+}
 
 export type SearchResponse = {
-  tasks: Array<{
-    id: string;
-    title: string;
-    display_id: string;
-    project_code: string;
-    project_name: string;
-    status: string;
-  }>;
-  projects: Array<{
-    id: string;
-    name: string;
-    code: string;
-  }>;
-  users: Array<{
-    id: string;
-    name: string;
-    avatar: string;
-  }>;
+  tasks: SearchTaskResult[];
+  projects: SearchProjectResult[];
 };
 
 export function useGlobalSearch(query: string) {
-  return useQuery<SearchResponse>({
-    queryKey: queryKeys.globalSearch.byQuery(query),
-    queryFn: async () => {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      if (!response.ok) {
-        throw new Error("Search failed");
+  const currentOrg = useCurrentOrganization();
+  const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
+
+  const results = useQuery(
+    api.search.globalSearch,
+    organizationId && query.trim().length >= 2
+      ? { organizationId, q: query }
+      : "skip",
+  );
+
+  const isLoading = results === undefined;
+
+  const data: SearchResponse | undefined = results
+    ? {
+        tasks: results.tasks.map((task) => ({
+          id: task._id,
+          _id: task._id,
+          title: task.title,
+          displayId: task.displayId,
+          status: task.status,
+          projectCode: "",
+          projectName: "",
+        })),
+        projects: results.projects.map((project) => ({
+          id: project._id,
+          _id: project._id,
+          name: project.name,
+          code: project.code,
+        })),
       }
-      return response.json();
-    },
-    enabled: query.trim().length >= 2,
-    staleTime: 1000 * 60 * 5,
-  });
+    : undefined;
+
+  return { data, isLoading };
 }

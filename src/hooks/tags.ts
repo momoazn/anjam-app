@@ -6,13 +6,13 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 
 export interface Tag {
-  id: string;
-  _id: string;
+  id: Id<"tags">;
+  _id: Id<"tags">;
   _creationTime: number;
   name: string;
   color: string;
-  organizationId: string;
-  creatorUserId: string;
+  organizationId: Id<"organizations">;
+  creatorUserId: Id<"users">;
 }
 
 export function useTags() {

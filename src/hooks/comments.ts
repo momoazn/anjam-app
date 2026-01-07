@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 
-import { api, Id } from "@/lib/convex";
+import { type Doc, Id, api } from "@/lib/convex";
 
 export type CommentWithUser = {
   id: string;
@@ -13,7 +13,7 @@ export type CommentWithUser = {
   content: string;
   parent?: string;
   parentCommentId?: Id<"comments">;
-  reactions?: any;
+  reactions?: unknown;
   deleted_at?: string;
   deletedAt?: number;
   updatedAt?: number;
@@ -53,33 +53,36 @@ export function useComments(
   );
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: comments?.map((c: any) => ({
-      ...c,
-      id: c._id,
-      _id: c._id,
-      created: new Date(c._creationTime).toISOString(),
-      updated: c.updatedAt ? new Date(c.updatedAt).toISOString() : undefined,
-      parent: c.parentCommentId,
-      deleted_at: c.deletedAt ? new Date(c.deletedAt).toISOString() : undefined,
-      user: c.userId,
-      attachments: c.attachments || [],
-      expand: {
-        user: c.user
-          ? {
-              id: c.user._id,
-              _id: c.user._id,
-              username: c.user.username || "",
-              firstName: c.user.firstName,
-              first_name: c.user.firstName,
-              lastName: c.user.lastName,
-              last_name: c.user.lastName,
-              avatar: c.user.image,
-              image: c.user.image,
-            }
+    data: comments?.map(
+      (c: Doc<"comments"> & { user?: Doc<"users"> | null }) => ({
+        ...c,
+        id: c._id,
+        _id: c._id,
+        created: new Date(c._creationTime).toISOString(),
+        updated: c.updatedAt ? new Date(c.updatedAt).toISOString() : undefined,
+        parent: c.parentCommentId,
+        deleted_at: c.deletedAt
+          ? new Date(c.deletedAt).toISOString()
           : undefined,
-      },
-    })) as CommentWithUser[] | undefined,
+        user: c.userId,
+        attachments: [],
+        expand: {
+          user: c.user
+            ? {
+                id: c.user._id,
+                _id: c.user._id,
+                username: c.user.username || "",
+                firstName: c.user.firstName,
+                first_name: c.user.firstName,
+                lastName: c.user.lastName,
+                last_name: c.user.lastName,
+                avatar: c.user.image,
+                image: c.user.image,
+              }
+            : undefined,
+        },
+      }),
+    ) as CommentWithUser[] | undefined,
     isLoading: comments === undefined,
     isPending: comments === undefined,
     error: null,
@@ -93,8 +96,11 @@ export function useCreateComment() {
   const createCommentMutation = useMutation(api.comments.create);
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutate: async (data: any) => {
+    mutate: async (data: {
+      taskId: string;
+      content: string;
+      parentCommentId?: string;
+    }) => {
       return await createCommentMutation({
         taskId: data.taskId as Id<"tasks">,
         content: data.content,
@@ -114,10 +120,14 @@ export function useUpdateComment() {
   // const updateCommentMutation = useMutation(api.comments.update);
 
   return {
-    mutate: async ({ id: _id, updates: _updates }: { id: string; updates: any }) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutate: async ({
+      id: _id,
+      updates: _updates,
+    }: {
+      id: string;
+      updates: unknown;
+    }) => {
       void _id;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       void _updates;
       // return await updateCommentMutation({
       //   commentId: id as Id<"comments">,

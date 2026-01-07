@@ -1,8 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { isFeatureEnabled } from "@/lib/mode";
-import { useCurrentOrgFeatures, useCurrentOrgMode } from "@/store/auth-store";
+import { useCurrentOrgFeatures } from "@/store/auth-store";
 
 /**
  * Parse a keyboard event into a normalized key string
@@ -40,7 +39,6 @@ function normalizeKeyEvent(e: KeyboardEvent): string {
 export function useKeyboardShortcuts() {
   const navigate = useNavigate();
   const location = useLocation();
-  const mode = useCurrentOrgMode();
   const features = useCurrentOrgFeatures();
 
   // Track "g" prefix for vim-style navigation
@@ -91,61 +89,27 @@ export function useKeyboardShortcuts() {
         }
 
         // Product mode navigation
-        if (mode === "product") {
-          switch (e.key.toLowerCase()) {
-            case "i":
-              e.preventDefault();
-              navigate("/inbox");
-              return;
-            case "s":
-              e.preventDefault();
-              navigate("/issues");
-              return;
-            case "p":
-              e.preventDefault();
-              navigate("/projects");
-              return;
-            case "n":
-              e.preventDefault();
-              navigate("/insights");
-              return;
-            case "v":
-              e.preventDefault();
-              navigate("/views");
-              return;
-          }
-        } else {
-          // Operations mode navigation
-          switch (e.key.toLowerCase()) {
-            case "d":
-              e.preventDefault();
-              navigate("/dashboard");
-              return;
-            case "t":
-              e.preventDefault();
-              navigate("/tasks");
-              return;
-            case "m":
-              e.preventDefault();
-              navigate("/my-tasks");
-              return;
-            case "p":
-              e.preventDefault();
-              navigate("/projects");
-              return;
-            case "r":
-              if (isFeatureEnabled(features, "reports")) {
-                e.preventDefault();
-                navigate("/reports");
-              }
-              return;
-            case "s":
-              if (isFeatureEnabled(features, "timesheet")) {
-                e.preventDefault();
-                navigate("/timesheet");
-              }
-              return;
-          }
+        switch (e.key.toLowerCase()) {
+          case "i":
+            e.preventDefault();
+            navigate("/inbox");
+            return;
+          case "s":
+            e.preventDefault();
+            navigate("/issues");
+            return;
+          case "p":
+            e.preventDefault();
+            navigate("/projects");
+            return;
+          case "n":
+            e.preventDefault();
+            navigate("/insights");
+            return;
+          case "v":
+            e.preventDefault();
+            navigate("/views");
+            return;
         }
       }
 
@@ -191,7 +155,7 @@ export function useKeyboardShortcuts() {
     };
     // Ref objects are stable and don't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate, mode, features, isInputFocused, location.pathname]);
+  }, [navigate, features, isInputFocused, location.pathname]);
 }
 
 /**

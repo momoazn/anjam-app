@@ -1,8 +1,13 @@
-import { useMutation, useQuery } from "convex/react";
-import { api, Id } from "@/lib/convex";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+
+import { Id, api } from "@/lib/convex";
 
 export function useNotifications() {
-  const notifications = useQuery(api.notifications.listForMe);
+  const { isAuthenticated } = useConvexAuth();
+  const notifications = useQuery(
+    api.notifications.listForMe,
+    isAuthenticated ? {} : "skip",
+  );
 
   return {
     data: notifications,
@@ -12,7 +17,11 @@ export function useNotifications() {
 }
 
 export function useUnreadCount() {
-  const notifications = useQuery(api.notifications.listForMe);
+  const { isAuthenticated } = useConvexAuth();
+  const notifications = useQuery(
+    api.notifications.listForMe,
+    isAuthenticated ? {} : "skip",
+  );
 
   if (!notifications) return 0;
   return notifications.filter((n) => !n.read).length;

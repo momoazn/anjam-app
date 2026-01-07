@@ -1,17 +1,22 @@
 import { useMutation, useQuery } from "convex/react";
+
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 
-export function useSubtasks(taskId: string | undefined, options?: { enabled?: boolean }) {
-  const enabled = taskId !== undefined && taskId !== "" && (options?.enabled ?? true);
+export function useSubtasks(
+  taskId: string | undefined,
+  options?: { enabled?: boolean },
+) {
+  const enabled =
+    taskId !== undefined && taskId !== "" && (options?.enabled ?? true);
 
   const subtasks = useQuery(
     api.subtasks.listByTask,
-    enabled ? { taskId: taskId as Id<"tasks"> } : "skip"
+    enabled ? { taskId: taskId as Id<"tasks"> } : "skip",
   );
 
   return {
-    data: subtasks?.map((s: any) => ({
+    data: subtasks?.map((s) => ({
       ...s,
       id: s._id, // Compatibility with existing components
       created: new Date(s._creationTime).toISOString(),
@@ -58,12 +63,27 @@ export function useUpdateSubtask() {
   const updateMutation = useMutation(api.subtasks.update);
 
   return {
-    mutate: async ({ id, updates }: { id: string; updates: any }) => {
+    mutate: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: {
+        title?: string;
+        assigneeUserId?: string;
+        assignee?: string;
+        isDone?: boolean;
+        is_done?: boolean;
+        order?: number;
+      };
+    }) => {
       return await updateMutation({
         subtaskId: id as Id<"subtasks">,
         updates: {
           title: updates.title,
-          assigneeUserId: (updates.assigneeUserId || updates.assignee) as Id<"users"> | undefined,
+          assigneeUserId: (updates.assigneeUserId || updates.assignee) as
+            | Id<"users">
+            | undefined,
           isDone: updates.isDone ?? updates.is_done,
           order: updates.order,
         },

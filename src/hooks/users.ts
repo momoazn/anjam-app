@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 
+import { useCurrentOrganization } from "@/store/auth-store";
+
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { useCurrentOrganization } from "@/store/auth-store";
 
 /**
  * Hook to list all users in the current organization.
@@ -66,12 +67,13 @@ export function useUser({
  * In Convex v1, we currently use organization-level membership.
  */
 export function useProjectUsers({
-  projectId: _projectId,
+  projectId,
   enabled = true,
 }: {
   projectId: string | undefined;
   enabled?: boolean;
 }) {
+  void projectId;
   // For now, return all organization users since projects don't have separate membership in the current Convex schema
   // We can refine this later if we add project_members table to Convex
   const currentOrg = useCurrentOrganization();
@@ -100,23 +102,29 @@ export function useProjectUsers({
 // For now, providing stubs or mapping to existing ones if available
 
 export function useCreateUser() {
-   // Stub for create user if needed, though usually handled via auth
-   return {
-     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-     mutate: async (_data: any) => {
-       console.warn("useCreateUser not implemented");
-       return null;
-     },
-     isPending: false
-   }
+  // Stub for create user if needed, though usually handled via auth
+  return {
+    mutate: async (_data: unknown) => {
+      void _data;
+      console.warn("useCreateUser not implemented");
+      return null;
+    },
+    isPending: false,
+  };
 }
 
 export function useUpdateUser() {
   const setUsername = useMutation(api.users.setUsername);
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutate: async ({ id: _id, updates }: { id: string; updates: any }) => {
+    mutate: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: { username?: string };
+    }) => {
+      void id;
       if (updates.username) {
         return await setUsername({ username: updates.username });
       }
@@ -130,14 +138,12 @@ export function useUpdateUser() {
 // Mutations - these would need backend implementation if we want to support them
 // For now, providing stubs or mapping to existing ones if available
 
-
 /**
  * Hook to remove a user from the organization.
  */
 export function useDeleteUser(options?: {
   onSuccess?: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const removeMutation = useMutation(api.orgMembers.remove);
   const currentOrg = useCurrentOrganization();

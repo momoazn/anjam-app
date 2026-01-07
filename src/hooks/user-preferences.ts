@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 export type UserPreferences = {
   ui: {
@@ -61,15 +61,10 @@ function storePreferences(preferences: UserPreferences): void {
 }
 
 export function useUserPreferences() {
-  const [preferences, setPreferences] = useState<UserPreferences>(
-    DEFAULT_USER_PREFERENCES,
+  const [preferences, setPreferences] = useState<UserPreferences>(() =>
+    getStoredPreferences(),
   );
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setPreferences(getStoredPreferences());
-    setIsLoading(false);
-  }, []);
+  const [isLoading] = useState(false);
 
   const updatePreferences = useCallback(
     (updates: Partial<UserPreferences>) => {

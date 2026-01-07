@@ -2,7 +2,10 @@ import { useQuery } from "convex/react";
 
 import { api } from "@/lib/convex";
 
-export function useInviteByToken(token: string | undefined, options?: { enabled?: boolean }) {
+export function useInviteByToken(
+  token: string | undefined,
+  options?: { enabled?: boolean },
+) {
   const enabled = options?.enabled ?? true;
   const invite = useQuery(
     api.invites.getByToken,
@@ -12,6 +15,8 @@ export function useInviteByToken(token: string | undefined, options?: { enabled?
   return {
     data: invite,
     isLoading: invite === undefined,
+    error: (invite === null ? new Error("Invite not found") : undefined) as
+      | Error
+      | undefined,
   };
 }
-

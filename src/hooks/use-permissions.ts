@@ -35,7 +35,7 @@ export function usePermissions(_projectId?: string): UsePermissionsResult {
 
   const permissions = computePermissions(
     currentOrgRole ?? undefined,
-    projectRole
+    projectRole,
   );
 
   const can = (permission: Permission): boolean => {

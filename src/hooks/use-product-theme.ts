@@ -4,16 +4,14 @@
  */
 import { useEffect } from "react";
 
-import { applyModeTheme, getProductClasses } from "@/lib/mode";
+import { getProductClasses } from "@/lib/mode";
 
 /**
  * Hook to automatically apply product theme to document body.
  * Should be called once in the root App component.
  */
 export function useProductThemeEffect() {
-  useEffect(() => {
-    applyModeTheme();
-  }, []);
+  useEffect(() => {}, []);
 }
 
 /**
