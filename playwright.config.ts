@@ -32,20 +32,10 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: "chromium-operations",
-      testIgnore: ["specs/dual-mode.spec.ts"],
+      name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
         storageState: "playwright/.auth/user.json",
-      },
-      dependencies: ["setup"],
-    },
-    {
-      name: "chromium-product",
-      testMatch: ["specs/dual-mode.spec.ts"],
-      use: {
-        ...devices["Desktop Chrome"],
-        storageState: "playwright/.auth/user-product-mode.json",
       },
       dependencies: ["setup"],
     },

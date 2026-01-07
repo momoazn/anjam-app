@@ -7,7 +7,6 @@ import { TEST_USERS } from "./fixtures/test-data";
 
 const authDir = "playwright/.auth";
 const authFileUser = `${authDir}/user.json`;
-const authFileProductMode = `${authDir}/user-product-mode.json`;
 
 async function authenticateAndSelectOrg(
   page: Page,
@@ -29,7 +28,7 @@ async function authenticateAndSelectOrg(
 
   await page.getByRole("button", { name: /ورود|login/i }).click();
 
-  await page.waitForURL(/\/(dashboard|select-organization|onboarding)/);
+  await page.waitForURL(/\/(inbox|select-organization|onboarding)/);
   await page.waitForLoadState("networkidle");
 
   const orgSelector = page
@@ -39,12 +38,12 @@ async function authenticateAndSelectOrg(
 
   if (orgCount > 0) {
     await orgSelector.first().click();
-    await page.waitForURL(/\/dashboard/);
+    await page.waitForURL(/\/inbox/);
     await page.waitForLoadState("networkidle");
   }
 }
 
-setup("authenticate as manager (operations mode org1)", async ({ page }) => {
+setup("authenticate as manager (org1)", async ({ page }) => {
   await authenticateAndSelectOrg(
     page,
     TEST_USERS.manager.email,
@@ -52,11 +51,11 @@ setup("authenticate as manager (operations mode org1)", async ({ page }) => {
     /^org1$/,
   );
   await page.context().storageState({ path: authFileUser });
-  console.log("✅ Authentication setup complete (org1 - operations mode)");
+  console.log("✅ Authentication setup complete (org1)");
 });
 
-setup("authenticate as supervisor (product mode org2)", async ({ page }) => {
-  const authDirPath = path.dirname(authFileProductMode);
+setup("authenticate as supervisor (org2)", async ({ page }) => {
+  const authDirPath = path.dirname(authFileUser);
   if (!fs.existsSync(authDirPath)) {
     fs.mkdirSync(authDirPath, { recursive: true });
   }
@@ -67,6 +66,6 @@ setup("authenticate as supervisor (product mode org2)", async ({ page }) => {
     TEST_USERS.supervisor.password,
     /^org2$/,
   );
-  await page.context().storageState({ path: authFileProductMode });
-  console.log("✅ Authentication setup complete (org2 - product mode)");
+  await page.context().storageState({ path: authFileUser });
+  console.log("✅ Authentication setup complete (org2)");
 });
