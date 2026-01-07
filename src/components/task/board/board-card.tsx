@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { projects, shared, tasks } from "@/constants";
+import { useTags } from "@/hooks/tags";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
@@ -46,7 +47,7 @@ export function BoardCard({ task }: BoardCardProps) {
     });
 
   const updateTask = useUpdateTask();
-
+  const { data: tags } = useTags();
   const { data: users } = useUsers({ enabled: true });
 
   const style = {
@@ -222,15 +223,20 @@ export function BoardCard({ task }: BoardCardProps) {
       {/* Tags */}
       {task.tags && task.tags.length > 0 && (
         <div className="relative z-10 flex w-full flex-wrap justify-end gap-1">
-          {task.tags.map((tag) => (
-            <Badge
-              key={tag}
-              variant="outline"
-              className="border-border/40 bg-background/50 rounded-md px-1.5 py-0 text-[10px] font-bold"
-            >
-              {tag}
-            </Badge>
-          ))}
+          {task.tags.map((tag) => {
+            const tagRecord = tags?.find(
+              (candidate) => candidate.id === tag || candidate._id === tag,
+            );
+            return (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="border-border/40 bg-background/50 rounded-md px-1.5 py-0 text-[10px] font-bold"
+              >
+                {tagRecord?.name ?? tag}
+              </Badge>
+            );
+          })}
         </div>
       )}
 

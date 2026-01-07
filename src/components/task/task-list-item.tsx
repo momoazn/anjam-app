@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { shared, task as taskLabels, tasks } from "@/constants";
+import { useTags } from "@/hooks/tags";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
@@ -75,6 +76,7 @@ function TaskListItemInner({
     !isTaskCanceled(task);
 
   const updateTask = useUpdateTask();
+  const { data: tags } = useTags();
 
   const { data: users } = useUsers({ enabled: true }); // Removed batch/sort options not supported yet
 
@@ -218,18 +220,20 @@ function TaskListItemInner({
 
         {task.tags && task.tags.length > 0 && (
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {task.tags.map((tag: string) => (
-              <Badge
-                key={tag}
-                variant="outline"
-                className="rounded-md px-1.5 py-0 text-[10px] font-medium"
-              >
-                {/* Convex tags might be IDs if not expanded. Assuming expanded name or just ID for now. */}
-                {/* If tags are just IDs, this will show ID. We need tag expansion if we want names. */}
-                {/* For now, assuming task.tags is array of strings (names or IDs) */}
-                {tag}
-              </Badge>
-            ))}
+            {task.tags.map((tag: string) => {
+              const tagRecord = tags?.find(
+                (candidate) => candidate.id === tag || candidate._id === tag,
+              );
+              return (
+                <Badge
+                  key={tag}
+                  variant="outline"
+                  className="rounded-md px-1.5 py-0 text-[10px] font-medium"
+                >
+                  {tagRecord?.name ?? tag}
+                </Badge>
+              );
+            })}
           </div>
         )}
       </div>

@@ -98,6 +98,7 @@ export default defineSchema({
     taskNumber: v.number(),
     taskType: v.optional(v.string()),
     storyPoints: v.optional(v.number()),
+    estimatedMinutes: v.optional(v.number()),
     watchers: v.optional(v.array(v.id("users"))),
     deletedAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),

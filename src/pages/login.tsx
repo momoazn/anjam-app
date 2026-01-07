@@ -51,10 +51,8 @@ export default function Login() {
       });
       // Redirect is handled by the auth state change usually, or we can force it?
       // Convex Auth usually handles session establishment.
-      // We will rely on the root component to detect auth state change or we can navigate.
-      // However, signIn with password might not throw if successful?
-      // Actually, signIn returns a promise.
-      navigate("/", { replace: true });
+      // Redirect to app; RequireOrganization will handle org selection/onboarding.
+      navigate("/inbox", { replace: true });
     } catch (error) {
       handleError(error);
     } finally {

@@ -31,6 +31,8 @@ export function handleError(error: unknown): void {
     message.includes("failed to authenticate")
   ) {
     toast.error(auth.errors.invalidCredentials);
+  } else if (message.includes("invalidaccountid")) {
+    toast.error(auth.errors.invalidCredentials);
   } else if (message.includes("invalidsecret")) {
     toast.error(auth.errors.invalidCredentials);
   } else if (

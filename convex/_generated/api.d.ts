@@ -20,6 +20,7 @@ import type * as orgMembers from "../orgMembers.js";
 import type * as organizations from "../organizations.js";
 import type * as projects from "../projects.js";
 import type * as search from "../search.js";
+import type * as seed from "../seed.js";
 import type * as subtasks from "../subtasks.js";
 import type * as tags from "../tags.js";
 import type * as tasks from "../tasks.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   organizations: typeof organizations;
   projects: typeof projects;
   search: typeof search;
+  seed: typeof seed;
   subtasks: typeof subtasks;
   tags: typeof tags;
   tasks: typeof tasks;

@@ -28,6 +28,7 @@ interface AuthState {
   setUser: (user: Doc<"users"> | null) => void;
   setAuthLoading: (loading: boolean) => void;
   setOrganizations: (orgs: OrganizationWithRole[]) => void;
+  setOrganizationsLoading: (loading: boolean) => void;
   setCurrentOrganization: (
     org: Doc<"organizations"> | null,
     role: OrgRole | null,
@@ -85,6 +86,10 @@ export const useAuthStore = create<AuthState>()(
               currentOrgRole: orgs[0].role,
             });
           }
+        },
+
+        setOrganizationsLoading: (loading) => {
+          set({ isLoadingOrgs: loading });
         },
 
         setCurrentOrganization: (org, role) => {

@@ -7,13 +7,15 @@ import { useAuthStore } from "@/store/auth-store";
 
 export function ConvexAuthStateSync() {
   const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
-  const { setUser, setAuthLoading, setOrganizations } = useAuthStore(
-    useShallow((state) => ({
-      setUser: state.setUser,
-      setAuthLoading: state.setAuthLoading,
-      setOrganizations: state.setOrganizations,
-    })),
-  );
+  const { setUser, setAuthLoading, setOrganizations, setOrganizationsLoading } =
+    useAuthStore(
+      useShallow((state) => ({
+        setUser: state.setUser,
+        setAuthLoading: state.setAuthLoading,
+        setOrganizations: state.setOrganizations,
+        setOrganizationsLoading: state.setOrganizationsLoading,
+      })),
+    );
 
   // Fetch user data if authenticated
   const userData = useQuery(api.users.getMe, isAuthenticated ? {} : "skip");
@@ -32,6 +34,14 @@ export function ConvexAuthStateSync() {
       isAuthenticated && (userData === undefined || userOrgs === undefined);
     setAuthLoading(isAuthLoading || isDataLoading);
   }, [isAuthLoading, isAuthenticated, userData, userOrgs, setAuthLoading]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setOrganizationsLoading(false);
+      return;
+    }
+    setOrganizationsLoading(userOrgs === undefined);
+  }, [isAuthenticated, userOrgs, setOrganizationsLoading]);
 
   // Sync user data
   useEffect(() => {
