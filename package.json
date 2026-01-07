@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bun x --bun vite --host",
+    "dev": "concurrently -n convex,vite -c magenta,cyan \"bun run dev:convex\" \"bun run dev:vite\"",
+    "dev:vite": "bun x --bun vite --host 127.0.0.1 --port 5173 --strictPort",
+    "dev:convex": "bunx convex dev",
     "build": "bun x --bun vite build",
     "build:analyze": "ANALYZE=true bun x --bun vite build",
     "start": "bun x --bun vite preview",
@@ -15,8 +17,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "test:all": "bun run test:run && bun run test:e2e",
-    "lint": "bun x --bun eslint .",
-    "lint:fix": "bun x --bun eslint . --fix",
+    "lint": "bun x --bun eslint . --max-warnings 1000",
+    "lint:fix": "bun x --bun eslint . --fix --max-warnings 1000",
     "format": "bun x --bun prettier --check .",
     "format:fix": "bun x --bun prettier --write .",
     "type:check": "bun x --bun tsc -p tsconfig.app.json --noEmit --incremental && bun x --bun tsc -p tsconfig.node.json --noEmit --incremental",
@@ -97,7 +99,8 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.50.1",
     "vite": "^7.3.0",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "concurrently": "^9.2.1"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

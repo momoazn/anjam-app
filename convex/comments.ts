@@ -158,10 +158,6 @@ export const softDelete = mutation({
     if (!comment) return;
 
     if (comment.userId !== userId) {
-      // Owners can delete?
-      // Plan 150: "Owners can edit/delete any task."
-      // Doesn't explicitly say about comments.
-      // Assuming owners can moderate.
       const task = await ctx.db.get(comment.taskId);
       if (task) {
         const project = await ctx.db.get(task.projectId);
@@ -174,9 +170,7 @@ export const softDelete = mutation({
                 .eq("userId", userId),
             )
             .first();
-          if (membership && membership.role === "owner") {
-            // Allowed
-          } else {
+          if (!membership || membership.role !== "owner") {
             throw new Error("You can only delete your own comments");
           }
         }
@@ -186,5 +180,56 @@ export const softDelete = mutation({
     }
 
     await ctx.db.patch(args.commentId, { deletedAt: Date.now() });
+  },
+});
+
+export const update = mutation({
+  args: {
+    commentId: v.id("comments"),
+    updates: v.object({
+      content: v.optional(v.string()),
+      reactions: v.optional(v.any()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    const comment = await ctx.db.get(args.commentId);
+    if (!comment) throw new Error("Comment not found");
+
+    const task = await ctx.db.get(comment.taskId);
+    if (!task) throw new Error("Task not found");
+
+    const project = await ctx.db.get(task.projectId);
+    if (!project) throw new Error("Project not found");
+
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_org_user", (q) =>
+        q.eq("organizationId", project.organizationId).eq("userId", userId),
+      )
+      .first();
+
+    if (!membership) throw new Error("Not a member");
+
+    const updates: Record<string, unknown> = {};
+
+    if (args.updates.content !== undefined) {
+      if (comment.userId !== userId && membership.role !== "owner") {
+        throw new Error("You can only edit your own comments");
+      }
+      updates.content = args.updates.content;
+      updates.updatedAt = Date.now();
+    }
+
+    if (args.updates.reactions !== undefined) {
+      updates.reactions = args.updates.reactions;
+      updates.updatedAt = Date.now();
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await ctx.db.patch(args.commentId, updates);
+    }
+
+    return args.commentId;
   },
 });
