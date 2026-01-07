@@ -2,9 +2,26 @@ import { format } from "date-fns-jalali";
 import * as XLSX from "xlsx";
 
 import { reports, tasks } from "@/constants";
-import type { Doc } from "../../convex/_generated/dataModel";
+import type { ConvexTaskPriority } from "@/lib/reports/types";
 
+import type { Doc } from "../../convex/_generated/dataModel";
 import { formatDateISO } from "./date-utils";
+
+type ProjectExportTask = {
+  _id: string;
+  id: string;
+  projectId: string;
+  assigneeUserId?: string;
+  title: string;
+  description?: string;
+  priority: ConvexTaskPriority;
+  status: string;
+  deadline?: number;
+  _creationTime: number;
+  updatedAt?: number;
+  displayId?: string;
+  timeSpentMinutes?: number;
+};
 
 export function stripHtml(html: string | null | undefined): string {
   if (!html) return "";
@@ -13,7 +30,9 @@ export function stripHtml(html: string | null | undefined): string {
 }
 
 function getUserName(
-  user: (Doc<"users"> & { first_name?: string; last_name?: string }) | undefined,
+  user:
+    | (Doc<"users"> & { first_name?: string; last_name?: string })
+    | undefined,
   fallback: string = "-",
 ): string {
   if (!user) return fallback;
@@ -67,10 +86,16 @@ function generateFilename(project: Doc<"projects">): string {
 
 export async function exportProjectToExcel(
   project: Doc<"projects"> & {
-    expand?: { supervisor?: Doc<"users"> & { first_name?: string; last_name?: string } };
+    expand?: {
+      supervisor?: Doc<"users"> & { first_name?: string; last_name?: string };
+    };
   },
-  projectTasks: any[],
-  users: (Doc<"users"> & { id?: string; first_name?: string; last_name?: string })[],
+  projectTasks: ProjectExportTask[],
+  users: (Doc<"users"> & {
+    id?: string;
+    first_name?: string;
+    last_name?: string;
+  })[],
 ): Promise<void> {
   const workbook = XLSX.utils.book_new();
 
@@ -166,4 +191,3 @@ export async function exportProjectToExcel(
   const filename = generateFilename(project);
   XLSX.writeFile(workbook, filename);
 }
-

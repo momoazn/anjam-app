@@ -29,9 +29,7 @@ export function formatDateTime(dateString: string): {
   return { date: digitsEnToFa(dateStr), time: digitsEnToFa(timeStr) };
 }
 
-export function formatDateLocale(
-  dateValue?: string | number | null,
-): string {
+export function formatDateLocale(dateValue?: string | number | null): string {
   if (!dateValue) return "-";
   const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) return "-";

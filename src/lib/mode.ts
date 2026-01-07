@@ -1,5 +1,3 @@
-export type OrgMode = "product";
-
 export type FeatureKey =
   | "timeTracking"
   | "timesheet"
@@ -21,26 +19,14 @@ export interface OrgFeatures {
   activityFeed: boolean;
 }
 
-interface OrgModeSettings {
-  features?: {
-    calendar?: boolean;
-    activityFeedCollapsed?: boolean;
-  };
-}
-
-// Product mode features (always product mode now)
-export function getOrgFeatures(
-  _mode: OrgMode | undefined | null,
-  settings?: { modeSettings?: OrgModeSettings },
-): OrgFeatures {
-  const calendarEnabled = settings?.modeSettings?.features?.calendar ?? false;
+export function getOrgFeatures(): OrgFeatures {
   return {
     timeTracking: false,
     timesheet: false,
     reports: false,
     auditLogs: false,
     loginLogs: false,
-    calendar: calendarEnabled,
+    calendar: false,
     taskBoard: true,
     activityFeed: false,
   };
@@ -51,13 +37,6 @@ export function isFeatureEnabled(
   key: FeatureKey,
 ): boolean {
   return features[key] ?? false;
-}
-
-export function applyModeTheme(): void {
-  if (typeof document === "undefined") return;
-
-  const body = document.body;
-  body.classList.add("product-theme");
 }
 
 export function getProductClasses() {
@@ -73,7 +52,6 @@ export function getProductClasses() {
   };
 }
 
-// Deprecated exports for backward compatibility (always return product mode values)
 export function getHomeRoute(): string {
   return "/inbox";
 }
@@ -102,16 +80,4 @@ export function getModeLabels(): ModeLabels {
 
 export function getModeLabel(key: keyof ModeLabels): string {
   return getModeLabels()[key];
-}
-
-export function isProductThemeActive(): boolean {
-  return true;
-}
-
-export function normalizeOrgMode(): OrgMode {
-  return "product";
-}
-
-export function getConfiguredOrgMode(): OrgMode | null {
-  return "product";
 }

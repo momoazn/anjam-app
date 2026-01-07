@@ -80,13 +80,10 @@ export function filterTasksByControls(
     }
 
     // Time window rule: include if created OR updated falls in range
-    const createdInRange = isWithinInterval(
-      new Date(task._creationTime),
-      {
-        start: controls.start,
-        end: controls.end,
-      },
-    );
+    const createdInRange = isWithinInterval(new Date(task._creationTime), {
+      start: controls.start,
+      end: controls.end,
+    });
     const updatedAt = task.updatedAt ?? task.updated;
     const updatedInRange = updatedAt
       ? isWithinInterval(new Date(updatedAt), {

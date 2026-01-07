@@ -2,9 +2,9 @@ import { toast } from "sonner";
 
 import { auth, errors } from "@/constants";
 
-import { logDebug, logError } from "./logger";
+import { logError } from "./logger";
 
-export function handleError(error: any): void {
+export function handleError(error: unknown): void {
   logError("Application error", error);
 
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -31,19 +31,14 @@ export function handleError(error: any): void {
     message.includes("failed to authenticate")
   ) {
     toast.error(auth.errors.invalidCredentials);
-  } else if (message.includes("uniqueness constraint") || message.includes("already exists")) {
+  } else if (
+    message.includes("uniqueness constraint") ||
+    message.includes("already exists")
+  ) {
     toast.error(auth.errors.userAlreadyExists);
   } else if (errorMessage) {
     toast.error(errorMessage);
   } else {
     toast.error(auth.errors.serverError);
   }
-}
-
-// Stub for backward compatibility with PocketBase-style error handling
-// Convex handles errors differently, so this is a no-op
-export function handlePocketBaseError(_error: unknown): void {
-  // Convex errors are handled by the mutation/query hooks directly
-  // This function is kept for backward compatibility
-  logDebug("PocketBase error stub called (no-op for Convex)");
 }

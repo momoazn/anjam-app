@@ -66,7 +66,9 @@ export function matchesStatusFilter(
     const statusArray = selectedStatus
       .split(",")
       .filter((status): status is TaskStatus => isValidStatus(status));
-    return statusArray.length > 0 && statusArray.includes(task.status as TaskStatus);
+    return (
+      statusArray.length > 0 && statusArray.includes(task.status as TaskStatus)
+    );
   }
 
   if (isValidStatus(selectedStatus)) {
@@ -163,4 +165,3 @@ export function filterTasks(
     );
   });
 }
-

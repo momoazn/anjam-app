@@ -100,8 +100,7 @@ export function computeProductivityTrend(
   bucket: "daily" | "weekly" | "monthly" | "quarterly" | "annual",
 ): EmployeeBucket[] {
   const userTasks = tasksList.filter(
-    (t) =>
-      t.assigneeUserId === userId || t.assignee === userId,
+    (t) => t.assigneeUserId === userId || t.assignee === userId,
   );
   const bucketsResult = computeEmployeeBuckets(
     userTasks,
@@ -149,15 +148,13 @@ export function computeEmployeeSummary(
       (task.assigneeUserId === userId || task.assignee === userId) &&
       task.status === "in_progress",
   ).length;
-  const overdue = tasksList.filter(
-    (task) => {
-      const assigneeId = task.assigneeUserId ?? task.assignee;
-      if (assigneeId !== userId) return false;
-      if (task.status === "done") return false;
-      if (!task.deadline) return false;
-      return new Date(task.deadline) < now;
-    },
-  ).length;
+  const overdue = tasksList.filter((task) => {
+    const assigneeId = task.assigneeUserId ?? task.assignee;
+    if (assigneeId !== userId) return false;
+    if (task.status === "done") return false;
+    if (!task.deadline) return false;
+    return new Date(task.deadline) < now;
+  }).length;
 
   // Calculate avg time-to-complete in days
   const MS_PER_DAY = 1000 * 60 * 60 * 24;

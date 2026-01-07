@@ -2,11 +2,7 @@ import { isWithinInterval } from "date-fns-jalali";
 
 import { tasks } from "@/constants";
 
-import type {
-  ConvexTask,
-  ConvexTaskPriority,
-  ConvexUser,
-} from "./types";
+import type { ConvexTask, ConvexTaskPriority, ConvexUser } from "./types";
 import type {
   OverviewMetrics,
   PriorityCount,
@@ -83,12 +79,9 @@ export function calculateUserPerformance(
     .map((user) => {
       const userId = user._id || user.id;
       const userTasks = tasksList.filter(
-        (task) =>
-          task.assigneeUserId === userId || task.assignee === userId,
+        (task) => task.assigneeUserId === userId || task.assignee === userId,
       );
-      const completedTasks = userTasks.filter(
-        (task) => task.status === "done",
-      );
+      const completedTasks = userTasks.filter((task) => task.status === "done");
 
       return {
         name:
@@ -118,9 +111,8 @@ export function calculateTaskStats(tasksList: ConvexTask[]): TaskStatsData {
     priorityDistribution: calculatePriorityDistribution(tasksList),
     totalTasks: tasksList.length,
     completedTasks: tasksList.filter((task) => task.status === "done").length,
-    inProgressTasks: tasksList.filter(
-      (task) => task.status === "in_progress",
-    ).length,
+    inProgressTasks: tasksList.filter((task) => task.status === "in_progress")
+      .length,
     pendingTasks: tasksList.filter(
       (task) => task.status === "todo" || task.status === "in_review",
     ).length,

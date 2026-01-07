@@ -17,8 +17,7 @@ export function computeOvertimeAnalysis(
     .map((user) => {
       const userId = user._id || user.id;
       const userTasks = tasksList.filter(
-        (t) =>
-          t.assigneeUserId === userId || t.assignee === userId,
+        (t) => t.assigneeUserId === userId || t.assignee === userId,
       );
 
       // Tasks in range (created or updated)
@@ -117,8 +116,7 @@ export function computeWorkloadDistribution(
     .map((user) => {
       const userId = user._id || user.id;
       const userTasks = tasksList.filter(
-        (t) =>
-          t.assigneeUserId === userId || t.assignee === userId,
+        (t) => t.assigneeUserId === userId || t.assignee === userId,
       );
 
       // Active tasks (in progress)
