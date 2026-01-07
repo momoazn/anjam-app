@@ -11,8 +11,4 @@ export function getProductClasses() {
   };
 }
 
-export function getHomeRoute(): string {
-  return "/inbox";
-}
-
 export const DEFAULT_TASK_STATUS = "todo" as const;
