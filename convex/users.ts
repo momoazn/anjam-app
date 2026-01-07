@@ -85,6 +85,8 @@ export const ensureProfile = mutation({
       }
     }
 
+    const userId = user._id;
+
     // Ensure uniqueness
     while (true) {
       const normalized = normalizeUsername(username);

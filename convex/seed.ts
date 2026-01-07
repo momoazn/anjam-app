@@ -88,17 +88,52 @@ const TASKS = [
 
 export const writeDevData = internalMutation({
   args: {
-    users: v.array(
+    authUsers: v.array(
       v.object({
         email: v.string(),
-        userId: v.id("users"),
+        authUserId: v.string(),
+        name: v.string(),
+        username: v.string(),
       }),
     ),
     reset: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    const createdUsers: Array<{ email: string; userId: Id<"users"> }> = [];
+    for (const authUser of args.authUsers) {
+      const existing = await ctx.db
+        .query("users")
+        .withIndex("by_authUserId", (q) =>
+          q.eq("authUserId", authUser.authUserId),
+        )
+        .first();
+
+      if (existing) {
+        if (!existing.username) {
+          await ctx.db.patch(existing._id, {
+            username: authUser.username,
+            usernameNormalized: normalizeUsername(authUser.username),
+            updatedAt: Date.now(),
+          });
+        }
+        createdUsers.push({ email: authUser.email, userId: existing._id });
+        continue;
+      }
+
+      const userId = await ctx.db.insert("users", {
+        authUserId: authUser.authUserId,
+        email: authUser.email,
+        name: authUser.name,
+        username: authUser.username,
+        usernameNormalized: normalizeUsername(authUser.username),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      createdUsers.push({ email: authUser.email, userId });
+    }
+
     const emailToId = new Map<string, Id<"users">>(
-      args.users.map((u) => [u.email, u.userId]),
+      createdUsers.map((u) => [u.email, u.userId]),
     );
     const getUserId = (email: string) => {
       const userId = emailToId.get(email.toLowerCase());
@@ -302,7 +337,12 @@ export const seedDevData = action({
     reset: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const createdUsers = [];
+    const authUsers: Array<{
+      email: string;
+      authUserId: string;
+      name: string;
+      username: string;
+    }> = [];
     const { auth, headers } = await authComponent.getAuth(
       createAuth,
       ctx as unknown as GenericCtx<DataModel>,
@@ -331,25 +371,11 @@ export const seedDevData = action({
         ).user;
       const authUserId =
         "id" in authUser && authUser.id ? authUser.id : authUser._id;
-
-      const existingAppUser = await ctx.db
-        .query("users")
-        .withIndex("by_authUserId", (q) => q.eq("authUserId", authUserId))
-        .first();
-      const userId =
-        existingAppUser?._id ??
-        (await ctx.db.insert("users", {
-          authUserId: authUserId,
-          email,
-          name: user.name,
-          username: user.username,
-          usernameNormalized: normalizeUsername(user.username),
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        }));
-      createdUsers.push({
+      authUsers.push({
         email,
-        userId,
+        authUserId,
+        name: user.name,
+        username: user.username,
       });
     }
 
@@ -358,7 +384,7 @@ export const seedDevData = action({
       "internal"
     >;
     return await ctx.runMutation(writeDevDataRef, {
-      users: createdUsers,
+      authUsers,
       reset: args.reset ?? false,
     });
   },
