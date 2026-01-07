@@ -15,12 +15,14 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { KeyboardShortcutsDialog } from "@/components/help/keyboard-shortcuts-dialog";
+import { ModalManager } from "@/components/modals/modal-manager";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { useModalUrlWatcher } from "@/hooks/use-modal-url-watcher";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsAuthenticated } from "@/store/auth-store";
 
@@ -104,6 +106,7 @@ function AppLayout() {
 
 function App() {
   useTheme();
+  useModalUrlWatcher();
   const isDevelopment = import.meta.env.MODE === "development";
   const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
@@ -116,6 +119,7 @@ function App() {
             <AppLayout />
             <CommandMenu />
             <KeyboardShortcutsDialog />
+            <ModalManager />
             <Toaster
               position="bottom-right"
               className="font-arad"
