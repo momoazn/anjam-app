@@ -22,7 +22,7 @@ import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { MetricCardSkeleton } from "@/components/skeletons/metric-card-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { reports } from "@/constants";
+import { insights as insightsLabels } from "@/constants";
 import { useTasks } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { formatUserName } from "@/lib/utils";
@@ -30,7 +30,7 @@ import { formatUserName } from "@/lib/utils";
 /**
  * Insights Page - Product Mode
  *
- * Lightweight metrics dashboard replacing heavy Reports page
+ * Lightweight insightsLabels dashboard replacing heavy Reports page
  * Shows:
  * - Tasks created this week
  * - Tasks completed this week
@@ -57,7 +57,7 @@ export default function Insights() {
   const { data: users } = useUsers({ enabled: true });
 
   // Compute insights from task data
-  const insights = useMemo(() => {
+  const metrics = useMemo(() => {
     if (!allTasks?.items) {
       return {
         createdThisWeek: 0,
@@ -88,7 +88,7 @@ export default function Insights() {
       return null;
     };
 
-    // Basic metrics
+    // Basic insightsLabels
     const createdThisWeek = tasks.filter(
       (t) =>
         getCreatedDate(t) >= thisWeekStart && getCreatedDate(t) <= thisWeekEnd,
@@ -241,8 +241,8 @@ export default function Insights() {
     return (
       <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
         <PageHeader
-          title={reports.insights.title}
-          subtitle={reports.insights.description}
+          title={insightsLabels.title}
+          subtitle={insightsLabels.description}
           icon={IconRocket}
         />
         <MetricCardSkeleton />
@@ -253,8 +253,8 @@ export default function Insights() {
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
-        title={reports.insights.title}
-        subtitle={reports.insights.description}
+        title={insightsLabels.title}
+        subtitle={insightsLabels.description}
         icon={IconRocket}
       />
 
@@ -263,18 +263,18 @@ export default function Insights() {
         {/* Created This Week */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>{reports.insights.createdThisWeek}</CardTitle>
+            <CardTitle>{insightsLabels.createdThisWeek}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(insights.createdThisWeek)}
+              {digitsEnToFa(metrics.createdThisWeek)}
             </div>
             <p className="text-muted-foreground text-xs">
               {getPercentageChange(
-                insights.createdThisWeek,
-                insights.createdLastWeek,
+                metrics.createdThisWeek,
+                metrics.createdLastWeek,
               )}{" "}
-              {reports.insights.fromLastWeek}
+              {insightsLabels.fromLastWeek}
             </p>
           </CardContent>
         </Card>
@@ -282,18 +282,18 @@ export default function Insights() {
         {/* Completed This Week */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>{reports.insights.completedThisWeek}</CardTitle>
+            <CardTitle>{insightsLabels.completedThisWeek}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(insights.completedThisWeek)}
+              {digitsEnToFa(metrics.completedThisWeek)}
             </div>
             <p className="text-muted-foreground text-xs">
               {getPercentageChange(
-                insights.completedThisWeek,
-                insights.completedLastWeek,
+                metrics.completedThisWeek,
+                metrics.completedLastWeek,
               )}{" "}
-              {reports.insights.fromLastWeek}
+              {insightsLabels.fromLastWeek}
             </p>
           </CardContent>
         </Card>
@@ -301,14 +301,14 @@ export default function Insights() {
         {/* In Progress */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>{reports.insights.inProgress}</CardTitle>
+            <CardTitle>{insightsLabels.inProgress}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(insights.inProgress)}
+              {digitsEnToFa(metrics.inProgress)}
             </div>
             <p className="text-muted-foreground text-xs">
-              {reports.insights.currentlyActive}
+              {insightsLabels.currentlyActive}
             </p>
           </CardContent>
         </Card>
@@ -319,14 +319,14 @@ export default function Insights() {
         {/* Cycle Time */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>{reports.insights.cycleTime}</CardTitle>
+            <CardTitle>{insightsLabels.cycleTime}</CardTitle>
             <IconClock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(insights.cycleTime)}
+              {digitsEnToFa(metrics.cycleTime)}
               <span className="text-sm font-normal text-muted-foreground mr-1">
-                {reports.insights.cycleTimeUnit}
+                {insightsLabels.cycleTimeUnit}
               </span>
             </div>
             <p className="text-muted-foreground text-xs">
@@ -338,12 +338,12 @@ export default function Insights() {
         {/* On-Time Rate */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>{reports.insights.onTimeRate}</CardTitle>
+            <CardTitle>{insightsLabels.onTimeRate}</CardTitle>
             <IconCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(insights.onTimeRate)}٪
+              {digitsEnToFa(insightsLabels.onTimeRate)}٪
             </div>
             <p className="text-muted-foreground text-xs">
               تسک‌های تکمیل‌شده قبل از مهلت
@@ -360,9 +360,9 @@ export default function Insights() {
           <CardContent>
             <div className="text-2xl font-bold">
               {digitsEnToFa(
-                insights.inProgress +
-                  insights.createdThisWeek -
-                  insights.completedThisWeek,
+                metrics.inProgress +
+                  metrics.createdThisWeek -
+                  metrics.completedThisWeek,
               )}
             </div>
             <p className="text-muted-foreground text-xs">
@@ -383,11 +383,11 @@ export default function Insights() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {insights.weeklyCycleTime.length > 0 &&
-            insights.weeklyCycleTime.some((w) => w.tasks > 0) ? (
+            {metrics.weeklyCycleTime.length > 0 &&
+            metrics.weeklyCycleTime.some((w) => w.tasks > 0) ? (
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={insights.weeklyCycleTime}>
+                  <BarChart data={metrics.weeklyCycleTime}>
                     <XAxis
                       dataKey="week"
                       tick={{ fontSize: 10 }}
@@ -426,7 +426,7 @@ export default function Insights() {
               </div>
             ) : (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
-                {reports.insights.noData}
+                {insightsLabels.noData}
               </div>
             )}
           </CardContent>
@@ -437,15 +437,15 @@ export default function Insights() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <IconUsers className="h-4 w-4" />
-              {reports.insights.workloadByAssignee}
+              {insightsLabels.workloadByAssignee}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {insights.workloadByAssignee.length > 0 ? (
+            {metrics.workloadByAssignee.length > 0 ? (
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={insights.workloadByAssignee}
+                    data={metrics.workloadByAssignee}
                     layout="vertical"
                     margin={{ left: 20 }}
                   >
@@ -467,7 +467,7 @@ export default function Insights() {
                       }}
                       formatter={(value: number | undefined) => [
                         digitsEnToFa(value || 0),
-                        reports.insights.tasks,
+                        insightsLabels.tasks,
                       ]}
                     />
                     <Bar
@@ -480,7 +480,7 @@ export default function Insights() {
               </div>
             ) : (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
-                {reports.insights.noData}
+                {insightsLabels.noData}
               </div>
             )}
           </CardContent>

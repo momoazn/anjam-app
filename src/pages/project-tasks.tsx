@@ -10,7 +10,7 @@ import { TaskFilters } from "@/components/task/task-filters";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
 import { Button } from "@/components/ui/button";
-import { projects, reports, tasks as tasksText } from "@/constants";
+import { projects, tasks as tasksText } from "@/constants";
 import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { statusOrder } from "@/lib/status-utils";
@@ -148,7 +148,7 @@ export default function ProjectTasks() {
           {projects.details.completedTasks}: {digitsEnToFa(taskStats.completed)}
         </span>
         <span>
-          {reports.overdue}: {digitsEnToFa(taskStats.overdue)}
+          {tasksText.filters.overdue}: {digitsEnToFa(taskStats.overdue)}
         </span>
       </div>
 

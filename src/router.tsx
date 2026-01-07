@@ -9,11 +9,11 @@ import {
   auth,
   errors,
   inbox,
+  insights,
   navigation,
   notFound,
   organization,
   projects,
-  reports,
   savedFilters,
   settings,
   tagsManagement,
@@ -410,7 +410,7 @@ const routes: RouteType[] = [
     element: <Insights />,
     protected: true,
     requiresOrg: true,
-    title: reports.insights.title,
+    title: insights.title,
   },
   // Views page and saved-filters alias
   {

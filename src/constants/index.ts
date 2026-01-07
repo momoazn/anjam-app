@@ -14,15 +14,19 @@ export { auth } from "./auth";
 export { navigation, navigationSectionLabels } from "./navigation";
 export { landing } from "./landing";
 export { users, projects, organization } from "./organization";
-export { tasks, comments, tagsManagement, savedFilters } from "./tasks";
-export { reports, dashboard } from "./reports";
+export {
+  tasks,
+  comments,
+  tagsManagement,
+  savedFilters,
+  insights,
+} from "./tasks";
 export {
   errors,
   notifications,
   auditLogs,
   settings,
   helps,
-  timesheet,
   system,
 } from "./system";
 export {
