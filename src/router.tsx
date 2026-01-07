@@ -8,10 +8,12 @@ import {
   app,
   auth,
   errors,
+  inbox,
   navigation,
   notFound,
   organization,
   projects,
+  reports,
   savedFilters,
   settings,
   tagsManagement,
@@ -345,7 +347,7 @@ const routes: RouteType[] = [
     path: "/",
     element: <Landing />,
     protected: false,
-    title: "داشبورد",
+    title: navigation.dashboard,
   },
   // Organization routes
   {
@@ -383,7 +385,7 @@ const routes: RouteType[] = [
     element: <Inbox />,
     protected: true,
     requiresOrg: true,
-    title: "صندوق ورودی",
+    title: inbox.title,
   },
   {
     path: "/members",
@@ -408,7 +410,7 @@ const routes: RouteType[] = [
     element: <Insights />,
     protected: true,
     requiresOrg: true,
-    title: "بینش‌ها",
+    title: reports.insights.title,
   },
   // Views page and saved-filters alias
   {
@@ -469,7 +471,7 @@ const routes: RouteType[] = [
     path: "/pending-activation",
     element: <PendingActivation />,
     protected: false,
-    title: "در انتظار فعال‌سازی",
+    title: auth.pendingActivation.title,
   },
   {
     path: "/invite/:token",
