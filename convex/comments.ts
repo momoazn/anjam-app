@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId, normalizeUsername } from "./utils";
 
@@ -134,15 +135,15 @@ export const create = mutation({
 
     // Notify assignee if not the commenter
     if (task.assigneeUserId && task.assigneeUserId !== userId) {
-        await ctx.db.insert("notifications", {
-            userId: task.assigneeUserId,
-            type: "comment",
-            title: "New comment on task",
-            message: `${(await ctx.db.get(userId))?.username || "Someone"} commented on ${task.displayId}`,
-            data: { taskId: args.taskId, commentId, projectId: task.projectId },
-            read: false,
-            createdAt: Date.now(),
-        });
+      await ctx.db.insert("notifications", {
+        userId: task.assigneeUserId,
+        type: "comment",
+        title: "New comment on task",
+        message: `${(await ctx.db.get(userId))?.username || "Someone"} commented on ${task.displayId}`,
+        data: { taskId: args.taskId, commentId, projectId: task.projectId },
+        read: false,
+        createdAt: Date.now(),
+      });
     }
 
     return commentId;
@@ -157,29 +158,31 @@ export const softDelete = mutation({
     if (!comment) return;
 
     if (comment.userId !== userId) {
-        // Owners can delete?
-        // Plan 150: "Owners can edit/delete any task."
-        // Doesn't explicitly say about comments.
-        // Assuming owners can moderate.
-        const task = await ctx.db.get(comment.taskId);
-        if (task) {
-             const project = await ctx.db.get(task.projectId);
-             if (project) {
-                 const membership = await ctx.db
-                    .query("organizationMembers")
-                    .withIndex("by_org_user", (q) =>
-                        q.eq("organizationId", project.organizationId).eq("userId", userId),
-                    )
-                    .first();
-                 if (membership && membership.role === "owner") {
-                     // Allowed
-                 } else {
-                     throw new Error("You can only delete your own comments");
-                 }
-             }
-        } else {
-             throw new Error("You can only delete your own comments");
+      // Owners can delete?
+      // Plan 150: "Owners can edit/delete any task."
+      // Doesn't explicitly say about comments.
+      // Assuming owners can moderate.
+      const task = await ctx.db.get(comment.taskId);
+      if (task) {
+        const project = await ctx.db.get(task.projectId);
+        if (project) {
+          const membership = await ctx.db
+            .query("organizationMembers")
+            .withIndex("by_org_user", (q) =>
+              q
+                .eq("organizationId", project.organizationId)
+                .eq("userId", userId),
+            )
+            .first();
+          if (membership && membership.role === "owner") {
+            // Allowed
+          } else {
+            throw new Error("You can only delete your own comments");
+          }
         }
+      } else {
+        throw new Error("You can only delete your own comments");
+      }
     }
 
     await ctx.db.patch(args.commentId, { deletedAt: Date.now() });

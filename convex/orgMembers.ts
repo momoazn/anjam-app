@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "./utils";
 
@@ -63,9 +64,9 @@ export const remove = mutation({
     // Cannot remove yourself if you are the last owner?
     // For simplicity, allow removing, but maybe check if target is self
     if (requesterId === args.userId) {
-       // Allow leaving? The plan says "remove members".
-       // If leaving, we might want a separate "leave" mutation, but this works.
-       // Check if there are other owners if leaving?
+      // Allow leaving? The plan says "remove members".
+      // If leaving, we might want a separate "leave" mutation, but this works.
+      // Check if there are other owners if leaving?
     }
 
     const targetMembership = await ctx.db

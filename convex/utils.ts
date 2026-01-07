@@ -1,4 +1,5 @@
 import { Auth } from "convex/server";
+
 import { Id } from "./_generated/dataModel";
 
 export const getAuthUserId = async (ctx: { auth: Auth }) => {
@@ -6,7 +7,8 @@ export const getAuthUserId = async (ctx: { auth: Auth }) => {
   if (identity === null) {
     throw new Error("Unauthenticated");
   }
-  return identity.subject as Id<"users">;
+  const [userId] = identity.subject.split("|");
+  return userId as Id<"users">;
 };
 
 export const normalizeUsername = (username: string) => {

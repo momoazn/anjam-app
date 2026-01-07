@@ -1,9 +1,10 @@
+import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { authTables } from "@convex-dev/auth/server";
 
 // Separate users from authTables to extend it
 const { users: _authUsers, ...otherAuthTables } = authTables;
+void _authUsers;
 
 export default defineSchema({
   ...otherAuthTables,

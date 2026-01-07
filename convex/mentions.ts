@@ -14,20 +14,20 @@ export const listForMe = query({
 
     // Enrich
     return await Promise.all(
-        mentions.map(async (m) => {
-            const comment = m.commentId ? await ctx.db.get(m.commentId) : null;
-            const task = m.taskId ? await ctx.db.get(m.taskId) : null;
-            const project = m.projectId ? await ctx.db.get(m.projectId) : null;
-            const author = comment ? await ctx.db.get(comment.userId) : null;
+      mentions.map(async (m) => {
+        const comment = m.commentId ? await ctx.db.get(m.commentId) : null;
+        const task = m.taskId ? await ctx.db.get(m.taskId) : null;
+        const project = m.projectId ? await ctx.db.get(m.projectId) : null;
+        const author = comment ? await ctx.db.get(comment.userId) : null;
 
-            return {
-                ...m,
-                comment,
-                task,
-                project,
-                author
-            };
-        })
+        return {
+          ...m,
+          comment,
+          task,
+          project,
+          author,
+        };
+      }),
     );
   },
 });

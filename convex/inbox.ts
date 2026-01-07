@@ -1,3 +1,4 @@
+import type { Doc } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import { getAuthUserId } from "./utils";
 
@@ -36,42 +37,48 @@ export const getForMe = query({
 
     // Get unique tasks from mentions
     const mentionedTaskIds = new Set(
-        mentions
-            .map(m => m.taskId)
-            .filter((id): id is NonNullable<typeof id> => !!id)
+      mentions
+        .map((m) => m.taskId)
+        .filter((id): id is NonNullable<typeof id> => !!id),
     );
 
     const mentionedTasks = await Promise.all(
-        Array.from(mentionedTaskIds).map(id => ctx.db.get(id))
+      Array.from(mentionedTaskIds).map((id) => ctx.db.get(id)),
     );
 
     // 3. Recently updated where creator == me
     // Query all tasks created by user, then sort by updatedAt desc
     const createdByMeAll = await ctx.db
-        .query("tasks")
-        .withIndex("by_creator", (q) => q.eq("creatorUserId", userId))
-        .filter((q) => q.eq(q.field("deletedAt"), undefined))
-        .collect();
+      .query("tasks")
+      .withIndex("by_creator", (q) => q.eq("creatorUserId", userId))
+      .filter((q) => q.eq(q.field("deletedAt"), undefined))
+      .collect();
 
     // Combine assigned + created to find "recently updated"
     // "Section C: tasks updated recently where user is participant"
     // Participant = assigned OR created.
     const allParticipating = [...assignedTasks, ...createdByMeAll];
     // Dedup by ID
-    const uniqueParticipating = Array.from(new Map(allParticipating.map(t => [t._id, t])).values());
+    const uniqueParticipating = Array.from(
+      new Map(allParticipating.map((t) => [t._id, t])).values(),
+    );
 
     // Sort by updatedAt desc
-    uniqueParticipating.sort((a, b) => (b.updatedAt || b._creationTime) - (a.updatedAt || a._creationTime));
+    uniqueParticipating.sort(
+      (a, b) =>
+        (b.updatedAt || b._creationTime) - (a.updatedAt || a._creationTime),
+    );
     const recentlyUpdated = uniqueParticipating.slice(0, 20);
 
-
     // Enrich tasks with project and creator info
-    const enrichTask = async (t: any) => {
-        if (!t) return null;
-        const project = await ctx.db.get(t.projectId);
-        const creator = await ctx.db.get(t.creatorUserId);
-        const assignee = t.assigneeUserId ? await ctx.db.get(t.assigneeUserId) : null;
-        return { ...t, project, creator, assignee };
+    const enrichTask = async (t: Doc<"tasks"> | null) => {
+      if (!t) return null;
+      const project = await ctx.db.get(t.projectId);
+      const creator = await ctx.db.get(t.creatorUserId);
+      const assignee = t.assigneeUserId
+        ? await ctx.db.get(t.assigneeUserId)
+        : null;
+      return { ...t, project, creator, assignee };
     };
 
     const assignedEnriched = await Promise.all(assignedTasks.map(enrichTask));
@@ -79,9 +86,9 @@ export const getForMe = query({
     const recentEnriched = await Promise.all(recentlyUpdated.map(enrichTask));
 
     return {
-        assigned: assignedEnriched.filter(t => !!t),
-        mentioned: mentionedEnriched.filter(t => !!t),
-        recentlyUpdated: recentEnriched.filter(t => !!t),
+      assigned: assignedEnriched.filter((t) => !!t),
+      mentioned: mentionedEnriched.filter((t) => !!t),
+      recentlyUpdated: recentEnriched.filter((t) => !!t),
     };
   },
 });

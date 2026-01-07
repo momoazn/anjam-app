@@ -1,5 +1,7 @@
-import { query } from "./_generated/server";
 import { v } from "convex/values";
+
+import type { Id } from "./_generated/dataModel";
+import { query } from "./_generated/server";
 import { getAuthUserId } from "./utils";
 
 export const getForOrg = query({
@@ -25,78 +27,82 @@ export const getForOrg = query({
 
     // Compute metrics
     const now = new Date();
-    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()).getTime();
+    const startOfWeek = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - now.getDay(),
+    ).getTime();
 
     let createdThisWeek = 0;
     let completedThisWeek = 0;
     let inProgress = 0;
-    let totalCompleted = 0;
     let totalTimeSpent = 0;
     let completedWithTime = 0;
 
-    const byAssignee: Record<string, { name: string, count: number }> = {};
+    const byAssignee: Record<string, { name: string; count: number }> = {};
 
     for (const task of tasks) {
-        if (task.deletedAt) continue;
+      if (task.deletedAt) continue;
 
-        if (task._creationTime >= startOfWeek) {
-            createdThisWeek++;
+      if (task._creationTime >= startOfWeek) {
+        createdThisWeek++;
+      }
+
+      if (task.status === "done") {
+        // We don't have completedAt in schema, relying on updatedAt or _creationTime?
+        // If status is done, updatedAt is roughly when it was done if not updated since.
+        // This is an approximation.
+        // For "completed this week", we check updatedAt.
+        if (task.updatedAt && task.updatedAt >= startOfWeek) {
+          completedThisWeek++;
         }
 
-        if (task.status === "done") {
-             // We don't have completedAt in schema, relying on updatedAt or _creationTime?
-             // If status is done, updatedAt is roughly when it was done if not updated since.
-             // This is an approximation.
-             // For "completed this week", we check updatedAt.
-             if (task.updatedAt && task.updatedAt >= startOfWeek) {
-                 completedThisWeek++;
-             }
-             totalCompleted++;
-
-             // Cycle time approximation: updatedAt - _creationTime
-             if (task.updatedAt) {
-                 totalTimeSpent += (task.updatedAt - task._creationTime);
-                 completedWithTime++;
-             }
+        // Cycle time approximation: updatedAt - _creationTime
+        if (task.updatedAt) {
+          totalTimeSpent += task.updatedAt - task._creationTime;
+          completedWithTime++;
         }
+      }
 
-        if (task.status === "in_progress") {
-            inProgress++;
-        }
+      if (task.status === "in_progress") {
+        inProgress++;
+      }
 
-        if (task.assigneeUserId) {
-            // We need assignee names.
-            // We can fetch them later or here.
-            // For now just count by ID.
-            const aid = task.assigneeUserId;
-            if (!byAssignee[aid]) {
-                byAssignee[aid] = { name: "Loading...", count: 0 };
-            }
-            byAssignee[aid].count++;
+      if (task.assigneeUserId) {
+        // We need assignee names.
+        // We can fetch them later or here.
+        // For now just count by ID.
+        const aid = task.assigneeUserId;
+        if (!byAssignee[aid]) {
+          byAssignee[aid] = { name: "Loading...", count: 0 };
         }
+        byAssignee[aid].count++;
+      }
     }
 
     // Fetch user names for assignee workload
     const assigneeIds = Object.keys(byAssignee);
-    await Promise.all(assigneeIds.map(async (id) => {
-        // Cast id to Id<"users">
-        const user: any = await ctx.db.get(id as any);
+    await Promise.all(
+      assigneeIds.map(async (id) => {
+        const user = await ctx.db.get(id as Id<"users">);
         if (user) {
-            byAssignee[id].name = user.username || user.firstName || "User";
+          byAssignee[id].name = user.username || user.firstName || "User";
         }
-    }));
+      }),
+    );
 
-    const cycleTime = completedWithTime > 0 ? totalTimeSpent / completedWithTime : 0;
+    const cycleTime =
+      completedWithTime > 0 ? totalTimeSpent / completedWithTime : 0;
     // on-time rate needs deadline.
     // ...
 
     return {
-        createdThisWeek,
-        completedThisWeek,
-        inProgress,
-        cycleTime, // in ms
-        workload: Object.values(byAssignee),
-        totalTasks: tasks.length
+      createdThisWeek,
+      completedThisWeek,
+      inProgress,
+      cycleTime, // in ms
+      workload: Object.values(byAssignee),
+      totalTasks: tasks.length,
     };
   },
 });

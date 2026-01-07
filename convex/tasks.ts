@@ -1,7 +1,9 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+
+import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "./utils";
-import { paginationOptsValidator } from "convex/server";
 
 export const create = mutation({
   args: {
@@ -134,7 +136,9 @@ export const get = query({
     }
 
     const creator = await ctx.db.get(task.creatorUserId);
-    const assignee = task.assigneeUserId ? await ctx.db.get(task.assigneeUserId) : null;
+    const assignee = task.assigneeUserId
+      ? await ctx.db.get(task.assigneeUserId)
+      : null;
     const projectDoc = await ctx.db.get(task.projectId);
 
     // Fetch tags
@@ -185,7 +189,9 @@ export const list = query({
         if (args.projectId) {
           search = search.eq("projectId", args.projectId);
         }
-        return search.eq("organizationId", args.organizationId).eq("deletedAt", undefined);
+        return search
+          .eq("organizationId", args.organizationId)
+          .eq("deletedAt", undefined);
       });
     } else if (args.projectId) {
       q = baseQuery.withIndex("by_projectId", (q) =>
@@ -278,16 +284,18 @@ export const update = mutation({
     // Owners can edit any task.
     if (membership.role !== "owner") {
       if (task.creatorUserId !== userId && task.assigneeUserId !== userId) {
-        throw new Error("You can only edit tasks you created or are assigned to");
+        throw new Error(
+          "You can only edit tasks you created or are assigned to",
+        );
       }
     }
 
     // If status updates to 'done', maybe set completedAt? Not in schema.
     // Just patch updates.
-    const updates: any = { ...args.updates };
+    const updates = { ...args.updates } as Partial<Doc<"tasks">>;
     await ctx.db.patch(args.taskId, {
       ...updates,
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     });
   },
 });
@@ -387,20 +395,22 @@ export const listAll = query({
 
     if (!membership) throw new Error("Not a member");
 
-    let q: any = ctx.db.query("tasks");
-
-    if (args.projectId) {
-      q = q.withIndex("by_projectId", (q: any) => q.eq("projectId", args.projectId!));
-    } else {
-      q = q.withIndex("by_org", (q: any) => q.eq("organizationId", args.organizationId));
-    }
+    const q = args.projectId
+      ? ctx.db
+          .query("tasks")
+          .withIndex("by_projectId", (q) => q.eq("projectId", args.projectId!))
+      : ctx.db
+          .query("tasks")
+          .withIndex("by_org", (q) =>
+            q.eq("organizationId", args.organizationId),
+          );
 
     const tasks = await q
-      .filter((q: any) => q.eq(q.field("deletedAt"), undefined))
+      .filter((q) => q.eq(q.field("deletedAt"), undefined))
       .collect();
 
     return await Promise.all(
-      tasks.map(async (task: any) => {
+      tasks.map(async (task) => {
         const assignee = task.assigneeUserId
           ? await ctx.db.get(task.assigneeUserId)
           : null;
@@ -420,19 +430,23 @@ export const bulkUpdate = mutation({
   args: {
     ids: v.array(v.id("tasks")),
     updates: v.object({
-      status: v.optional(v.union(
-        v.literal("todo"),
-        v.literal("in_progress"),
-        v.literal("in_review"),
-        v.literal("done"),
-        v.literal("cancelled"),
-      )),
-      priority: v.optional(v.union(
-        v.literal("low"),
-        v.literal("medium"),
-        v.literal("high"),
-        v.literal("urgent"),
-      )),
+      status: v.optional(
+        v.union(
+          v.literal("todo"),
+          v.literal("in_progress"),
+          v.literal("in_review"),
+          v.literal("done"),
+          v.literal("cancelled"),
+        ),
+      ),
+      priority: v.optional(
+        v.union(
+          v.literal("low"),
+          v.literal("medium"),
+          v.literal("high"),
+          v.literal("urgent"),
+        ),
+      ),
       assigneeUserId: v.optional(v.id("users")),
     }),
   },

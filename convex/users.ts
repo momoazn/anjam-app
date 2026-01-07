@@ -1,5 +1,6 @@
-import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+
+import { mutation, query } from "./_generated/server";
 import { getAuthUserId, normalizeUsername } from "./utils";
 
 export const getMe = query({
@@ -113,7 +114,9 @@ export const list = query({
     if (args.organizationId) {
       const members = await ctx.db
         .query("organizationMembers")
-        .withIndex("by_org", (q) => q.eq("organizationId", args.organizationId!))
+        .withIndex("by_org", (q) =>
+          q.eq("organizationId", args.organizationId!),
+        )
         .collect();
 
       const userIds = members.map((m) => m.userId);
