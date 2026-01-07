@@ -136,7 +136,6 @@ export default function CreateTask() {
               control={form.control}
               isInProject={isInProject}
               projectId={projectId}
-              variant="product"
             />
           </div>
         </form>

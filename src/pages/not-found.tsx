@@ -36,7 +36,7 @@ export default function NotFound() {
 
         <div className="flex items-center gap-4 pt-8" data-animate-stagger>
           <Button asChild className="h-12 px-8 font-bold shadow-sm">
-            <Link to="/dashboard">{navigation.dashboard}</Link>
+            <Link to="/inbox">صندوق ورودی</Link>
           </Button>
           <Button asChild variant="outline" className="h-12 px-8 font-bold">
             <Link to="/projects">{navigation.projects}</Link>

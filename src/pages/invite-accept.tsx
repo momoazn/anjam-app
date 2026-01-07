@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
 import { useAcceptOrgInvitation, useInviteByToken } from "@/hooks";
-import { getHomeRoute } from "@/lib/mode";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -83,7 +82,7 @@ export default function InviteAccept() {
 
       await acceptInviteMutation.mutate(token ?? "");
       toast.success(auth.invite.success);
-      navigate(getHomeRoute(), { replace: true });
+      navigate("/inbox", { replace: true });
     } catch (err: unknown) {
       toast.error(
         err instanceof Error ? err.message : "Failed to accept invite",

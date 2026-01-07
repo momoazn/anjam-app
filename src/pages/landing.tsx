@@ -64,7 +64,7 @@ const LandingPage = () => {
             {landing.loginButton}
           </Link>
           <Button asChild variant="outline" size="xs">
-            <Link to={isLoggedIn ? "/dashboard" : "/login"}>
+            <Link to={isLoggedIn ? "/inbox" : "/login"}>
               {isLoggedIn ? landing.dashboard : landing.getStarted}
             </Link>
           </Button>

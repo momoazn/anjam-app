@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/constants";
-import { getHomeRoute } from "@/lib/mode";
 import { useAuthStore, useCurrentOrganization } from "@/store/auth-store";
 
 import { api } from "../../convex/_generated/api";
@@ -116,8 +115,8 @@ export default function Onboarding() {
       });
     },
     onSuccess: () => {
-      fetchOrgs(); // This is likely a no-op now as sync handles it, but keeping for safety
-      navigate(getHomeRoute(), { replace: true });
+      fetchOrgs();
+      navigate("/inbox", { replace: true });
     },
     onError: (error) => {
       console.error(error);

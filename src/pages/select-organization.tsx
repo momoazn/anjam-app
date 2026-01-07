@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { organization } from "@/constants";
-import { getHomeRoute } from "@/lib/mode";
 import { cn } from "@/lib/utils";
 import {
   useAuthStore,
@@ -47,9 +46,8 @@ export function SelectOrganizationPage() {
   const currentOrg = useCurrentOrganization();
 
   const handleOrgSelect = (orgId: string) => {
-    // Switch to this organization
     useAuthStore.getState().switchOrganization(orgId);
-    navigate(getHomeRoute());
+    navigate("/inbox");
   };
 
   return (

@@ -163,7 +163,6 @@ export default function EditTask() {
               control={form.control}
               isInProject={!!projectID}
               projectId={projectID}
-              variant="product"
             />
           </div>
         </form>
