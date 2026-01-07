@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { auth, organization, shared } from "@/constants";
 import { api } from "@/lib/convex";
 import { logError } from "@/lib/logger";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/store/app-context-store";
 
 const createOrgSchema = z.object({
   name: z.string().min(1).max(200),

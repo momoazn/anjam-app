@@ -52,7 +52,7 @@ import {
 } from "@/hooks";
 import type { Id } from "@/lib/convex";
 import { getUserInitials } from "@/lib/utils";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser } from "@/store/app-context-store";
 
 import type { Doc } from "../../../convex/_generated/dataModel";
 

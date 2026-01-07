@@ -15,7 +15,7 @@ import { organization, shared } from "@/constants";
 import { Id, api } from "@/lib/convex";
 import { logError } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-import { useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrganization } from "@/store/app-context-store";
 
 const orgSettingsSchema = z.object({
   name: z.string().min(1).max(200),
