@@ -141,6 +141,10 @@ export const inbox = {
   description: "پیگیری تسک‌ها و به‌روزرسانی‌های شما",
   loading: "در حال بارگذاری صندوق ورودی...",
   noRecentUpdates: "هیچ به‌روزرسانی در ۷ روز گذشته وجود ندارد",
+  noTodos: "چیزی برای انجام ندارید",
+  noMentions: "هنوز اشاره‌ای ندارید",
+  openRecent: "برای دیدن به‌روزرسانی‌های اخیر باز کنید",
+  createTask: "ساخت تسک",
   sections: {
     assigned: "اختصاص داده شده به من",
     mentioned: "اشاره شده",
@@ -148,6 +152,13 @@ export const inbox = {
   },
   mentionedComingSoon:
     "قابلیت نمایش تسک‌هایی که در آن‌ها به شما اشاره شده به‌زودی اضافه خواهد شد",
+  buttons: {
+    all: "همه",
+    active: "فعال",
+    done: "انجام‌شده",
+    close: "بستن",
+    open: "باز کردن",
+  },
 } as const;
 
 // Project Status Settings
