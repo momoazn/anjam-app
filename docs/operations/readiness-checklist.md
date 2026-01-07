@@ -1,55 +1,37 @@
-# Production Readiness Checklist (v2)
+# Production Readiness Checklist (v3 - Convex + Vite)
 
-## Code & Build
+## Build & Deploy
 
-- [ ] `bun run check` passes (typecheck + lint + format).
-- [ ] `bun run build` succeeds.
-- [ ] Docker image builds successfully (`docker compose build`).
+- [ ] `bun run build` succeeds (frontend production build).
+- [ ] `bunx convex deploy` succeeds (backend functions + schema).
+- [ ] Hosting target configured for SPA routing (all routes serve `index.html`).
 
 ## Environment Configuration
 
-- [ ] `.env` file created from `.env.example`.
-- [ ] `ANJAM_ENCRYPTION_KEY` generated and configured (`openssl rand -hex 16`).
-- [ ] `TM_ALLOW_DEFAULT_ACCOUNTS=false` set (after initial admin created).
-- [ ] `GOMEMLIMIT` set appropriately for deployment environment.
+- [ ] `VITE_CONVEX_URL` set to production deployment URL.
+- [ ] Optional: `RESEND_API_KEY` + `AUTH_RESEND_FROM` configured if email auth is enabled.
+- [ ] Optional: `VITE_PUBLIC_POSTHOG_KEY` + `VITE_PUBLIC_POSTHOG_HOST` configured if analytics enabled.
+- [ ] `TZ=Asia/Tehran` set in production runtime (required for Jalali calendar).
 
-## PocketBase Dashboard Settings
+## Auth & Access Control
 
-- [ ] **Rate limiting enabled** in Dashboard (Settings > Application).
-- [ ] **MFA/OTP enabled** for `_superusers` collection.
-- [ ] Trusted proxy headers configured (`X-Real-IP` or `X-Forwarded-For`).
-- [ ] Log level and retention configured in Dashboard.
-- [ ] Mail settings configured (SMTP) for password resets and MFA codes.
+- [ ] Manual auth test checklist completed. See `docs/qa/auth-manual-checklist.md`.
+- [ ] Password policy validated (min length, mismatch, invalid email).
+- [ ] Role-based access verified (owner/member).
 
-## Security & Networking
+## Observability & Ops
 
-- [ ] TLS termination in place (reverse proxy with Let's Encrypt or similar).
-- [ ] Default superuser credentials changed (`admin@example.com`).
-- [ ] Admin access strategy defined (who has superuser access and how).
-- [ ] WebSocket headers configured in reverse proxy for realtime features.
+- [ ] Convex dashboard access configured for operators.
+- [ ] Error tracking configured (if applicable).
+- [ ] Basic uptime monitoring configured for frontend host.
 
-## Data & Backups
+## Data & Continuity
 
-- [ ] Data volume persisted (`anjam-data` Docker volume or bind mount).
-- [ ] Automated backups configured (PocketBase built-in or file-based).
-- [ ] Backup frequency and retention documented.
-- [ ] Restore procedure tested at least once.
-
-## Docker Deployment
-
-- [ ] Container resource limits set (memory, file descriptors).
-- [ ] Health check passing (`docker inspect --format='{{.State.Health.Status}}' anjam`).
-- [ ] Restart policy configured (`unless-stopped` or `always`).
-- [ ] Logs accessible (`docker logs anjam`).
-
-## Monitoring & Ops
-
-- [ ] Health check endpoint accessible (`/api/health`).
-- [ ] Basic alerts configured (disk, memory, uptime).
-- [ ] Database integrity check scheduled (`PRAGMA integrity_check`).
+- [ ] No production seed scripts required (initial admin created via UI).
+- [ ] Data retention/export plan documented (Convex managed storage).
 
 ## Release & Rollback
 
-- [ ] Release artifact versioned and stored.
-- [ ] Rollback steps documented and rehearsed.
+- [ ] Release artifact/version recorded.
+- [ ] Rollback steps documented (previous frontend build + Convex deploy rollback strategy).
 - [ ] Post-deploy smoke test checklist prepared.
