@@ -1,6 +1,6 @@
 # Roadmap & Planning
 
-**Last Updated**: January 4, 2026
+**Last Updated**: January 7, 2026
 
 ## Overview
 
@@ -10,53 +10,15 @@ This document consolidates strategic planning, improvements, and implementation 
 
 ## Quick Reference
 
-- **Current Status**: Architecture redesign ~95% complete
-- **Priority Focus**: Dual-mode implementation, i18n migration, technical debt reduction
+- **Current Status**: Product-only mode, Convex backend
+- **Priority Focus**: Core features, technical debt reduction
 - **Test Coverage**: 60% target (lines, functions, branches, statements)
 
 ---
 
 ## Strategic Priorities
 
-### 1. Dual-Mode Implementation (Operations vs Product)
-
-**Status**: ✅ Complete
-
-Implemented build-time configurable mode providing two distinct experiences:
-
-- **Operations Mode**: Full-featured HR/ops workspace with time tracking, reports, timesheet, audit logs
-- **Product Mode**: Linear-inspired startup experience with Inbox, Issues, Insights
-
-**Key Features**:
-
-- Build-time/environment configuration (`VITE_ORG_MODE` frontend, `TM_ORG_MODE` backend)
-- Feature gating at UI, routing, and API layers
-- Separate navigation presets per mode
-- Product mode hides time tracking, reports, timesheet, audit logs
-- Backend enforces restrictions (e.g., blocks time_entries writes in product mode)
-- All organizations in a deployment use the same mode
-
-**Configuration**:
-
-```bash
-# Frontend (Vite build)
-VITE_ORG_MODE=operations   # default
-VITE_ORG_MODE=product
-
-# Backend (Go build or environment)
-TM_ORG_MODE=product        # environment variable override
-go build -ldflags "-X main.organizationMode=product"
-```
-
-**Files**:
-
-- `src/lib/mode.ts` - Frontend mode configuration
-- `backend/mode_resolver.go` - Backend mode resolution
-- `backend/pb_schema.json` - Schema (mode field removed from organizations)
-
----
-
-### 2. i18n Persian & RTL Migration
+### 1. i18n Persian & RTL Migration
 
 **Status**: ⏳ Planning Complete
 
