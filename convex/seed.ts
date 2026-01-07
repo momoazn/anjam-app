@@ -1,9 +1,12 @@
-import { createAccount } from "@convex-dev/auth/server";
+import type { GenericCtx } from "@convex-dev/better-auth";
 import type { FunctionReference } from "convex/server";
 import { v } from "convex/values";
 
+import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import type { DataModel } from "./_generated/dataModel";
 import { action, internalMutation } from "./_generated/server";
+import { authComponent, createAuth } from "./auth";
 import { normalizeUsername } from "./utils";
 
 const TEST_USERS = [
@@ -300,25 +303,53 @@ export const seedDevData = action({
   },
   handler: async (ctx, args) => {
     const createdUsers = [];
+    const { auth, headers } = await authComponent.getAuth(
+      createAuth,
+      ctx as unknown as GenericCtx<DataModel>,
+    );
+
     for (const user of TEST_USERS) {
-      const { user: userDoc } = await createAccount(ctx, {
-        provider: "password",
-        account: {
-          id: user.email.toLowerCase(),
-          secret: user.password,
+      const email = user.email.toLowerCase();
+      const existingAuthUser = await ctx.runQuery(
+        components.betterAuth.adapter.findOne,
+        {
+          model: "user",
+          where: [{ field: "email", value: email }],
         },
-        profile: {
+      );
+      const authUser =
+        existingAuthUser ??
+        (
+          await auth.api.signUpEmail({
+            body: {
+              name: user.name,
+              email,
+              password: user.password,
+            },
+            headers,
+          })
+        ).user;
+      const authUserId =
+        "id" in authUser && authUser.id ? authUser.id : authUser._id;
+
+      const existingAppUser = await ctx.db
+        .query("users")
+        .withIndex("by_authUserId", (q) => q.eq("authUserId", authUserId))
+        .first();
+      const userId =
+        existingAppUser?._id ??
+        (await ctx.db.insert("users", {
+          authUserId: authUserId,
+          email,
           name: user.name,
-          email: user.email.toLowerCase(),
           username: user.username,
           usernameNormalized: normalizeUsername(user.username),
           createdAt: Date.now(),
           updatedAt: Date.now(),
-        },
-      });
+        }));
       createdUsers.push({
-        email: user.email.toLowerCase(),
-        userId: userDoc._id,
+        email,
+        userId,
       });
     }
 

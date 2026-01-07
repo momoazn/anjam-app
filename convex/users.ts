@@ -1,6 +1,9 @@
+import type { GenericCtx } from "@convex-dev/better-auth";
 import { v } from "convex/values";
 
+import type { DataModel } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { authComponent } from "./auth";
 import { getAuthUserId, normalizeUsername } from "./utils";
 
 const usernameRegex = /^[a-zA-Z0-9_]+$/;
@@ -11,24 +14,53 @@ const sanitizeUsername = (username: string) =>
 export const getMe = query({
   args: {},
   handler: async (ctx) => {
-    try {
-      const userId = await getAuthUserId(ctx);
-      const user = await ctx.db.get(userId);
-      return user;
-    } catch {
+    const authUser = await authComponent.safeGetAuthUser(
+      ctx as unknown as GenericCtx<DataModel>,
+    );
+    if (!authUser) {
       return null;
     }
+
+    return await ctx.db
+      .query("users")
+      .withIndex("by_authUserId", (q) => q.eq("authUserId", authUser._id))
+      .first();
   },
 });
 
 export const ensureProfile = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    const user = await ctx.db.get(userId);
+  args: {
+    username: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const authUser = await authComponent.getAuthUser(
+      ctx as unknown as GenericCtx<DataModel>,
+    );
+    let user = await ctx.db
+      .query("users")
+      .withIndex("by_authUserId", (q) => q.eq("authUserId", authUser._id))
+      .first();
 
     if (!user) {
-      throw new Error("User record not found");
+      const now = Date.now();
+      const name = authUser.name ?? "";
+      const [firstName, ...rest] = name.split(" ").filter(Boolean);
+      const lastName = rest.length ? rest.join(" ") : undefined;
+
+      const userId = await ctx.db.insert("users", {
+        authUserId: authUser._id,
+        email: authUser.email ?? undefined,
+        name: authUser.name ?? undefined,
+        image: authUser.image ?? undefined,
+        firstName,
+        lastName,
+        createdAt: now,
+        updatedAt: now,
+      });
+      user = await ctx.db.get(userId);
+      if (!user) {
+        throw new Error("User record not found");
+      }
     }
 
     // If username is already set, we are good
@@ -36,11 +68,22 @@ export const ensureProfile = mutation({
       return;
     }
 
-    // Generate username from email
+    const requestedUsername = args.username?.trim();
     const email = user.email || "";
     const baseName = email.split("@")[0] || "user";
-    let username = sanitizeUsername(baseName);
+    let username = requestedUsername
+      ? sanitizeUsername(requestedUsername)
+      : sanitizeUsername(baseName);
     let suffix = 1;
+
+    if (requestedUsername) {
+      if (username.length < 3) {
+        throw new Error("Username must be at least 3 characters");
+      }
+      if (!usernameRegex.test(username)) {
+        throw new Error("Username contains invalid characters");
+      }
+    }
 
     // Ensure uniqueness
     while (true) {

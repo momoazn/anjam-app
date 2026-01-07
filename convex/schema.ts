@@ -1,22 +1,12 @@
-import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-// Separate users from authTables to extend it
-const { users: _authUsers, ...otherAuthTables } = authTables;
-void _authUsers;
-
 export default defineSchema({
-  ...otherAuthTables,
-
   users: defineTable({
-    // Auth fields (required by @convex-dev/auth)
+    authUserId: v.string(),
+    email: v.optional(v.string()),
     name: v.optional(v.string()),
     image: v.optional(v.string()),
-    email: v.optional(v.string()),
-    emailVerified: v.optional(v.string()),
-
-    // App fields
     username: v.optional(v.string()),
     usernameNormalized: v.optional(v.string()), // for case-insensitive uniqueness
     firstName: v.optional(v.string()),
@@ -24,6 +14,7 @@ export default defineSchema({
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
   })
+    .index("by_authUserId", ["authUserId"])
     .index("by_usernameNormalized", ["usernameNormalized"])
     .index("by_email", ["email"]),
 

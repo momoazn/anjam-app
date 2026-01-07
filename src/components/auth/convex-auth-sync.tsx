@@ -58,8 +58,8 @@ export function ConvexAuthStateSync() {
   // Ensure we have a usable profile (e.g. username for mentions).
   useEffect(() => {
     if (!isAuthenticated) return;
-    if (!userData) return;
-    if (userData.username) return;
+    if (userData === undefined) return;
+    if (userData?.username) return;
     void ensureProfile({});
   }, [ensureProfile, isAuthenticated, userData]);
 

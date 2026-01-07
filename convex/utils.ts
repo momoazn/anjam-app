@@ -1,14 +1,27 @@
-import { Auth } from "convex/server";
+import type { GenericCtx } from "@convex-dev/better-auth";
+import type { Auth } from "convex/server";
 
-import { Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
+import type { DataModel } from "./_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { authComponent } from "./auth";
 
-export const getAuthUserId = async (ctx: { auth: Auth }) => {
-  const identity = await ctx.auth.getUserIdentity();
-  if (identity === null) {
-    throw new Error("Unauthenticated");
+type AuthedCtx = QueryCtx | MutationCtx;
+
+export const getAuthUserId = async (ctx: AuthedCtx & { auth: Auth }) => {
+  const authUser = await authComponent.getAuthUser(
+    ctx as unknown as GenericCtx<DataModel>,
+  );
+  const appUser = await ctx.db
+    .query("users")
+    .withIndex("by_authUserId", (q) => q.eq("authUserId", authUser._id))
+    .first();
+
+  if (!appUser) {
+    throw new Error("User profile not found");
   }
-  const [userId] = identity.subject.split("|");
-  return userId as Id<"users">;
+
+  return appUser._id as Id<"users">;
 };
 
 export const normalizeUsername = (username: string) => {

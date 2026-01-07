@@ -1,4 +1,3 @@
-import { useAuthActions as useConvexAuthActions } from "@convex-dev/auth/react";
 import { IconLogout, IconUserCircle } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { navigation, user as userLabels } from "@/constants";
+import { authClient } from "@/lib/auth-client";
 import type { Doc } from "@/lib/convex";
 import {
   useAuthActions,
@@ -56,12 +56,11 @@ export function HeaderUserMenu() {
   const navigate = useNavigate();
   const user = useAuthUser();
   const currentOrgRole = useCurrentOrgRole();
-  const { signOut } = useConvexAuthActions();
   const logout = useAuthActions().logout;
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      await authClient.signOut();
     } finally {
       logout();
       navigate("/login", { replace: true });

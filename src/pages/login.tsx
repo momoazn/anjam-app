@@ -1,4 +1,3 @@
-import { useAuthActions } from "@convex-dev/auth/react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconFingerprint,
@@ -17,12 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
+import { authClient } from "@/lib/auth-client";
 import { handleError } from "@/lib/error-handler";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { signIn } = useAuthActions();
-
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -44,11 +42,13 @@ export default function Login() {
 
     setSubmitting(true);
     try {
-      await signIn("password", {
+      const result = await authClient.signIn.email({
         email: identity.trim().toLowerCase(),
         password: password.trim(),
-        flow: "signIn",
       });
+      if (result.error) {
+        throw new Error(result.error.message || auth.errors.invalidCredentials);
+      }
       // Redirect is handled by the auth state change usually, or we can force it?
       // Convex Auth usually handles session establishment.
       // Redirect to app; RequireOrganization will handle org selection/onboarding.

@@ -9,6 +9,9 @@
 ## Environment Configuration
 
 - [ ] `VITE_CONVEX_URL` set to production deployment URL.
+- [ ] `VITE_CONVEX_SITE_URL` set to Convex site URL (ends in `.convex.site`).
+- [ ] `SITE_URL` set to the public app URL (used by Better Auth).
+- [ ] `BETTER_AUTH_SECRET` set (minimum 32 chars, random).
 - [ ] Optional: `RESEND_API_KEY` + `AUTH_RESEND_FROM` configured if email auth is enabled.
 - [ ] Optional: `VITE_PUBLIC_POSTHOG_KEY` + `VITE_PUBLIC_POSTHOG_HOST` configured if analytics enabled.
 - [ ] `TZ=Asia/Tehran` set in production runtime (required for Jalali calendar).

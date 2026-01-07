@@ -1,10 +1,11 @@
-import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { ConvexReactClient } from "convex/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "./app";
 import { ConvexAuthStateSync } from "./components/auth/convex-auth-sync";
+import { authClient } from "./lib/auth-client";
 import "./index.css";
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
@@ -14,7 +15,6 @@ if (!convexUrl) {
   );
 }
 const convex = new ConvexReactClient(convexUrl);
-const storageNamespace = convexUrl;
 
 const root = createRoot(document.getElementById("root")!);
 const isDevelopment = import.meta.env.MODE === "development";
@@ -22,10 +22,10 @@ const isDevelopment = import.meta.env.MODE === "development";
 if (isDevelopment) {
   root.render(
     <StrictMode>
-      <ConvexAuthProvider client={convex} storageNamespace={storageNamespace}>
+      <ConvexBetterAuthProvider client={convex} authClient={authClient}>
         <ConvexAuthStateSync />
         <App />
-      </ConvexAuthProvider>
+      </ConvexBetterAuthProvider>
     </StrictMode>,
   );
 } else {
@@ -41,13 +41,10 @@ if (isDevelopment) {
             debug: false,
           }}
         >
-          <ConvexAuthProvider
-            client={convex}
-            storageNamespace={storageNamespace}
-          >
+          <ConvexBetterAuthProvider client={convex} authClient={authClient}>
             <ConvexAuthStateSync />
             <App />
-          </ConvexAuthProvider>
+          </ConvexBetterAuthProvider>
         </PostHogProvider>
       </StrictMode>,
     );

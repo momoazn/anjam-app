@@ -1,4 +1,3 @@
-import { useAuthActions as useConvexAuthActions } from "@convex-dev/auth/react";
 import {
   IconDotsVertical,
   IconLogout,
@@ -29,6 +28,7 @@ import {
   useAuthUser,
   useCurrentOrgRole,
 } from "@/store/auth-store";
+import { authClient } from "@/lib/auth-client";
 
 import { UserAvatar } from "./user-avatar";
 
@@ -71,12 +71,11 @@ export function NavUser() {
   const { isMobile, state } = useSidebar();
   const navigate = useNavigate();
   const user = useAuthUser();
-  const { signOut } = useConvexAuthActions();
   const logout = useAuthActions().logout;
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      await authClient.signOut();
     } finally {
       logout();
       navigate("/login", { replace: true });

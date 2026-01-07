@@ -28,7 +28,9 @@ export function handleError(error: unknown): void {
     toast.error(errors.permission.onlySuperusers);
   } else if (
     message.includes("invalid credentials") ||
-    message.includes("failed to authenticate")
+    message.includes("failed to authenticate") ||
+    message.includes("invalid email or password") ||
+    message.includes("invalid_email_or_password")
   ) {
     toast.error(auth.errors.invalidCredentials);
   } else if (message.includes("invalidaccountid")) {

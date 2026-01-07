@@ -1,4 +1,3 @@
-import { useAuthActions } from "@convex-dev/auth/react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconAlertCircle,
@@ -7,6 +6,7 @@ import {
   IconMail,
   IconShieldLock,
 } from "@tabler/icons-react";
+import { useMutation } from "convex/react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -19,16 +19,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
 import { useAcceptOrgInvitation, useInviteByToken } from "@/hooks";
+import { authClient } from "@/lib/auth-client";
+import { api } from "@/lib/convex";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function InviteAccept() {
   const navigate = useNavigate();
   const { token } = useParams<{ token: string }>();
-  const { signIn } = useAuthActions();
 
   const { data: inviteData, isLoading, error } = useInviteByToken(token ?? "");
   const acceptInviteMutation = useAcceptOrgInvitation();
+  const ensureProfile = useMutation(api.users.ensureProfile);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,19 +69,25 @@ export default function InviteAccept() {
       // Create an account (or log in) first, then accept the invite as the authenticated user.
       // Invite acceptance is implemented as `acceptExistingUser` in Convex.
       try {
-        await signIn("password", {
+        const result = await authClient.signUp.email({
+          name: trimmedEmail.split("@")[0] || "User",
           email: trimmedEmail,
           password,
-          flow: "signUp",
         });
+        if (result.error) {
+          throw new Error(result.error.message || "Sign up failed");
+        }
       } catch {
-        await signIn("password", {
+        const result = await authClient.signIn.email({
           email: trimmedEmail,
           password,
-          flow: "signIn",
         });
+        if (result.error) {
+          throw new Error(result.error.message || "Sign in failed");
+        }
       }
 
+      await ensureProfile({});
       await acceptInviteMutation.mutate(token ?? "");
       toast.success(auth.invite.success);
       navigate("/inbox", { replace: true });

@@ -1,4 +1,3 @@
-import { useAuthActions } from "@convex-dev/auth/react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconFingerprint,
@@ -6,6 +5,7 @@ import {
   IconShieldLock,
   IconUser,
 } from "@tabler/icons-react";
+import { useMutation } from "convex/react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -17,6 +17,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
+import { authClient } from "@/lib/auth-client";
+import { api } from "@/lib/convex";
 import { handleError } from "@/lib/error-handler";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,7 +26,7 @@ const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
 export default function Register() {
   const navigate = useNavigate();
-  const { signIn } = useAuthActions();
+  const ensureProfile = useMutation(api.users.ensureProfile);
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -73,12 +75,16 @@ export default function Register() {
 
     setSubmitting(true);
     try {
-      await signIn("password", {
+      const result = await authClient.signUp.email({
+        name: trimmedUsername,
         email: trimmedEmail,
         password,
-        username: trimmedUsername, // Pass username, might need server config to save it
-        flow: "signUp",
       });
+      if (result.error) {
+        throw new Error(result.error.message || "Registration failed");
+      }
+
+      await ensureProfile({ username: trimmedUsername });
       toast.success(auth.register.success);
       navigate("/onboarding", { replace: true });
     } catch (error) {

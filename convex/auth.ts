@@ -1,14 +1,26 @@
-import { Password } from "@convex-dev/auth/providers/Password";
-import { convexAuth } from "@convex-dev/auth/server";
+import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import { convex } from "@convex-dev/better-auth/plugins";
+import { betterAuth } from "better-auth";
 
-// import Resend from "@auth/core/providers/resend";
+import { components } from "./_generated/api";
+import type { DataModel } from "./_generated/dataModel";
+import authConfig from "./auth.config";
 
-export const { auth, signIn, signOut, store } = convexAuth({
-  providers: [
-    Password,
-    // Resend({
-    //   apiKey: process.env.RESEND_API_KEY,
-    //   from: process.env.AUTH_RESEND_FROM,
-    // }),
-  ],
-});
+const siteUrl = process.env.SITE_URL;
+if (!siteUrl) {
+  throw new Error("SITE_URL is missing. Set it in your Convex environment.");
+}
+
+export const authComponent = createClient<DataModel>(components.betterAuth);
+
+export const createAuth = (ctx: GenericCtx<DataModel>) => {
+  return betterAuth({
+    baseURL: siteUrl,
+    database: authComponent.adapter(ctx),
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+    },
+    plugins: [convex({ authConfig })],
+  });
+};
