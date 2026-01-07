@@ -23,7 +23,6 @@ import { useGlobalSearch } from "@/hooks/use-global-search";
 import type { SearchResponse } from "@/hooks/use-global-search";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 interface CommandItem {
   id: string;
@@ -70,10 +69,8 @@ export function CommandMenu() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [debouncedQuery] = useDebounce(search, 300);
   const navigate = useNavigate();
-  const currentOrgMode = useCurrentOrgMode();
-  const isProductMode = currentOrgMode === "product";
   const { resolvedTheme } = useTheme();
-  const isProductVisualTheme = isProductMode && resolvedTheme === "dark";
+  const isProductVisualTheme = resolvedTheme === "dark";
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: searchData, isLoading: isSearchLoading } =
@@ -94,9 +91,9 @@ export function CommandMenu() {
   }, []);
 
   const navigateToInbox = useCallback(() => {
-    navigate(isProductMode ? "/inbox" : "/my-tasks");
+    navigate("/inbox");
     setOpen(false);
-  }, [isProductMode, navigate]);
+  }, [navigate]);
 
   const navigateToDashboard = useCallback(() => {
     navigate("/dashboard");
@@ -149,9 +146,7 @@ export function CommandMenu() {
     const items: CommandItem[] = [
       {
         id: "nav-inbox",
-        label: isProductMode
-          ? commandMenu.product.inbox
-          : commandMenu.operations.myTasks,
+        label: commandMenu.product.inbox,
         icon: IconSearch,
         action: navigateToInbox,
         keywords: commandMenu.keywords.inbox,
@@ -159,9 +154,7 @@ export function CommandMenu() {
       },
       {
         id: "nav-dashboard",
-        label: isProductMode
-          ? commandMenu.product.dashboard
-          : commandMenu.operations.dashboard,
+        label: commandMenu.product.dashboard,
         icon: LayoutGrid,
         action: navigateToDashboard,
         keywords: commandMenu.keywords.dashboard,
@@ -169,9 +162,7 @@ export function CommandMenu() {
       },
       {
         id: "nav-projects",
-        label: isProductMode
-          ? commandMenu.product.projects
-          : commandMenu.operations.projects,
+        label: commandMenu.product.projects,
         icon: FolderOpen,
         action: navigateToProjects,
         keywords: commandMenu.keywords.projects,
@@ -179,9 +170,7 @@ export function CommandMenu() {
       },
       {
         id: "project-new",
-        label: isProductMode
-          ? commandMenu.product.createProject
-          : commandMenu.operations.createProject,
+        label: commandMenu.product.createProject,
         icon: FolderOpen,
         action: navigateToNewProject,
         keywords: commandMenu.keywords.new,
@@ -189,41 +178,32 @@ export function CommandMenu() {
       },
       {
         id: "task-new",
-        label: isProductMode
-          ? commandMenu.product.createItem
-          : commandMenu.operations.createTask,
+        label: commandMenu.product.createItem,
         icon: Plus,
         action: navigateToNewTask,
         keywords: commandMenu.keywords.new,
         type: "command",
       },
-    ];
-
-    if (isProductMode) {
-      items.push({
+      {
         id: "nav-insights",
         label: commandMenu.product.insights,
         icon: IconActivity,
         action: navigateToInsights,
         keywords: commandMenu.keywords.insights,
         type: "command",
-      });
-    }
-
-    items.push({
-      id: "nav-settings",
-      label: isProductMode
-        ? commandMenu.product.settings
-        : commandMenu.operations.settings,
-      icon: Settings,
-      action: navigateToSettings,
-      keywords: commandMenu.keywords.settings,
-      type: "command",
-    });
+      },
+      {
+        id: "nav-settings",
+        label: commandMenu.product.settings,
+        icon: Settings,
+        action: navigateToSettings,
+        keywords: commandMenu.keywords.settings,
+        type: "command",
+      },
+    ];
 
     return items;
   }, [
-    isProductMode,
     navigateToInbox,
     navigateToDashboard,
     navigateToProjects,
@@ -248,7 +228,7 @@ export function CommandMenu() {
             label: task.title,
             icon: FileText,
             action: () => navigateToTask(task.id),
-            subtitle: `${task.display_id} • ${task.project_name}`,
+            subtitle: `${task.displayId} • ${task.projectName}`,
             badge: task.status,
             type: "task",
           });
@@ -412,11 +392,7 @@ export function CommandMenu() {
                 ? "text-[var(--product-text-primary)] placeholder:text-[var(--product-text-tertiary)]"
                 : "",
             )}
-            placeholder={
-              isProductMode
-                ? commandMenu.product.placeholder
-                : commandMenu.operations.placeholder
-            }
+            placeholder={commandMenu.product.placeholder}
             role="combobox"
             aria-expanded={open}
             aria-controls="command-menu-listbox"
@@ -455,9 +431,7 @@ export function CommandMenu() {
                   : "text-muted-foreground",
               )}
             >
-              {isProductMode
-                ? commandMenu.product.noResults
-                : commandMenu.operations.noResults}
+              {commandMenu.product.noResults}
             </p>
           )}
           {allItems.length > 0 && (

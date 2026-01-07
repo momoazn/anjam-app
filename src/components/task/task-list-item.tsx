@@ -58,7 +58,10 @@ function TaskListItemInner({
   const taskId = (task.id ?? task._id) as string;
 
   const StatusIcon = taskStatusIcons[task.status as TaskStatus];
-  const statusIconColor = getStatusColorVariant(task.status as TaskStatus, "icon");
+  const statusIconColor = getStatusColorVariant(
+    task.status as TaskStatus,
+    "icon",
+  );
 
   const PriorityIcon = priorityIcons[task.priority as TaskPriority];
   const priorityIconColor = priorityColors[task.priority as TaskPriority];
@@ -82,7 +85,10 @@ function TaskListItemInner({
   };
 
   const handlePriorityChange = (value: string) => {
-    updateTask.mutate({ id: taskId, updates: { priority: value as TaskPriority } });
+    updateTask.mutate({
+      id: taskId,
+      updates: { priority: value as TaskPriority },
+    });
     toast.success(tasks.edit.success);
   };
 
@@ -133,9 +139,7 @@ function TaskListItemInner({
         {isSelectable ? (
           <Checkbox
             checked={isSelected}
-            onCheckedChange={(checked: boolean) =>
-              onSelectionChange?.(checked)
-            }
+            onCheckedChange={(checked: boolean) => onSelectionChange?.(checked)}
             className="size-4 rounded-md transition-transform hover:scale-110"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           />
@@ -165,28 +169,16 @@ function TaskListItemInner({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="border-border rounded-lg border">
-                  <SelectItem
-                    value="low"
-                    className="text-xs font-bold"
-                  >
+                  <SelectItem value="low" className="text-xs font-bold">
                     {tasks.priority.low}
                   </SelectItem>
-                  <SelectItem
-                    value="medium"
-                    className="text-xs font-bold"
-                  >
+                  <SelectItem value="medium" className="text-xs font-bold">
                     {tasks.priority.medium}
                   </SelectItem>
-                  <SelectItem
-                    value="high"
-                    className="text-xs font-bold"
-                  >
+                  <SelectItem value="high" className="text-xs font-bold">
                     {tasks.priority.high}
                   </SelectItem>
-                  <SelectItem
-                    value="urgent"
-                    className="text-xs font-bold"
-                  >
+                  <SelectItem value="urgent" className="text-xs font-bold">
                     {tasks.priority.urgent}
                   </SelectItem>
                 </SelectContent>
@@ -209,9 +201,7 @@ function TaskListItemInner({
           {showProject && task.project?.name && (
             <div className="text-primary/60 flex items-center gap-1">
               <IconTarget className="size-2.5" />
-              <span className="text-[10px] font-bold">
-                {task.project.name}
-              </span>
+              <span className="text-[10px] font-bold">{task.project.name}</span>
             </div>
           )}
         </div>
@@ -325,7 +315,7 @@ function TaskListItemInner({
                   {tasks.addTask.unassigned}
                 </SelectItem>
                 {users && users.length > 0 ? (
-                  users.map((user: any) => {
+                  users.map((user: NonNullable<typeof users>[number]) => {
                     const userId = (user.id ?? user._id) as string;
                     return (
                       <SelectItem

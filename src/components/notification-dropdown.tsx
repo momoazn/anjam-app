@@ -28,6 +28,14 @@ import {
 } from "@/hooks/notifications";
 import { cn } from "@/lib/utils";
 
+type NotificationRecord = {
+  _id: string;
+  createdAt: number;
+  read: boolean;
+  title: string;
+  message: string;
+};
+
 type NotificationDropdownProps = {
   align?: "start" | "center" | "end";
 };
@@ -46,7 +54,7 @@ const formatNotificationTime = (timestamp?: number | null) => {
 function NotificationItem({
   notification,
 }: {
-  notification: any;
+  notification: NotificationRecord;
 }) {
   const markAsReadMutation = useMarkAsRead();
 
@@ -137,7 +145,10 @@ export function NotificationDropdown({
   const markAllAsRead = useMarkAllAsRead();
   const clearAll = useClearAll();
 
-  const recentNotifications = notificationsData.slice(0, 10);
+  const recentNotifications = (notificationsData as NotificationRecord[]).slice(
+    0,
+    10,
+  );
 
   return (
     <DropdownMenu>
@@ -219,7 +230,7 @@ export function NotificationDropdown({
             aria-live="polite"
             dir="rtl"
           >
-            {recentNotifications.map((notification: any) => (
+            {recentNotifications.map((notification) => (
               <NotificationItem
                 key={notification._id}
                 notification={notification}

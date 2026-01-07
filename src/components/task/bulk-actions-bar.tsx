@@ -116,19 +116,18 @@ export function BulkActionsBar({
     }
   };
 
-  const priorityOptions: Array<{ value: TaskPriority; label: string }> =
-    [
-      { value: "low", label: tasks.priority.low },
-      {
-        value: "medium",
-        label: tasks.priority.medium,
-      },
-      { value: "high", label: tasks.priority.high },
-      {
-        value: "urgent",
-        label: tasks.priority.urgent,
-      },
-    ];
+  const priorityOptions: Array<{ value: TaskPriority; label: string }> = [
+    { value: "low", label: tasks.priority.low },
+    {
+      value: "medium",
+      label: tasks.priority.medium,
+    },
+    { value: "high", label: tasks.priority.high },
+    {
+      value: "urgent",
+      label: tasks.priority.urgent,
+    },
+  ];
 
   return (
     <>

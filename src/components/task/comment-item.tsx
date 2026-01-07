@@ -1,9 +1,22 @@
-import { useState, useRef, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  IconCheck,
+  IconDots,
+  IconEdit,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-react";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -11,17 +24,15 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { formatTaskDate } from "@/lib/date-utils";
-import { tasks, comments as commentsConst } from "@/constants";
+import { comments as commentsConst, tasks } from "@/constants";
 import type { CommentWithUser } from "@/hooks/comments";
-import { useAuthUser } from "@/store/auth-store";
-import { useUpdateComment, useSoftDeleteComment } from "@/hooks/comments";
-import { UserAvatar } from "../user-avatar";
+import { useSoftDeleteComment, useUpdateComment } from "@/hooks/comments";
 import { useToast } from "@/hooks/use-toast";
+import { formatTaskDate } from "@/lib/date-utils";
+import { cn } from "@/lib/utils";
+import { useAuthUser } from "@/store/auth-store";
 
-import { IconDots, IconEdit, IconTrash, IconX, IconCheck } from "@tabler/icons-react";
+import { UserAvatar } from "../user-avatar";
 
 type CommentItemProps = {
   comment: CommentWithUser;
@@ -50,7 +61,7 @@ const reactionConfig = {
 
 type ReactionMap = Record<string, string[]>;
 
-function parseReactions(reactions: any): ReactionMap {
+function parseReactions(reactions: unknown): ReactionMap {
   if (!reactions) return {};
   if (typeof reactions === "string") {
     try {
@@ -109,7 +120,7 @@ export function CommentItem({
           updates: { content: editContent.trim() },
         });
         setIsEditing(false);
-      } catch (error) {
+      } catch {
         toast({
           title: "Error",
           description: "Failed to update comment",
@@ -360,8 +371,10 @@ export function CommentItem({
                   className="text-muted-foreground hover:text-primary text-[10px] font-bold transition-colors"
                   onClick={() => onToggleThread?.(comment.id)}
                 >
-                  {isCollapsed ? commentsConst.item.show : commentsConst.item.hide} (
-                  {replyCount})
+                  {isCollapsed
+                    ? commentsConst.item.show
+                    : commentsConst.item.hide}{" "}
+                  ({replyCount})
                 </button>
               )}
 

@@ -2,7 +2,6 @@ import { TaskEmptyState } from "@/components/task/task-empty-state";
 import { TaskListGroup } from "@/components/task/task-list-group";
 import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
 import { TaskStatus, TaskWithProject } from "@/types/tasks";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 export type TaskListViewProps = {
   isLoading: boolean;
@@ -25,9 +24,6 @@ export function TaskListView({
   selectedTasks,
   onSelectionChange,
 }: TaskListViewProps) {
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
-
   if (isLoading) {
     return <TaskListSkeleton />;
   }
@@ -40,7 +36,6 @@ export function TaskListView({
     <>
       {statusOrder
         .filter((status) => {
-          if (!isProductMode) return true;
           return (groupedTasks?.[status] ?? []).length > 0;
         })
         .map((status) => {

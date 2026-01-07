@@ -16,7 +16,6 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { organization as organizationConstants } from "@/constants";
-import type { Doc } from "../../../convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import {
   useAuthStore,
@@ -24,6 +23,8 @@ import {
   useCurrentOrganization,
   useUserOrganizations,
 } from "@/store/auth-store";
+
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 // =============================================================================
 // Types
@@ -63,7 +64,8 @@ function getOrgLogoUrl(org: Doc<"organizations">): string | null {
   // In Convex, logos are stored as storage IDs or full URLs in settings or as a direct field.
   // For now, if there's no direct logo field on the Doc, return null.
   // The schema we saw didn't have a logo field yet, but the PB one did.
-  return (org as any).logo || null;
+  const orgWithLogo = org as Doc<"organizations"> & { logo?: string | null };
+  return orgWithLogo.logo ?? null;
 }
 
 // =============================================================================
@@ -155,7 +157,9 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
           <div className="flex flex-col items-start">
             <span className="text-sm font-semibold">{currentOrg.name}</span>
             <Badge
-              variant={getRoleBadgeVariant((currentOrgRole ?? "member") as OrgRole)}
+              variant={getRoleBadgeVariant(
+                (currentOrgRole ?? "member") as OrgRole,
+              )}
               className="mt-0.5 w-fit px-1 py-0 text-[8px]"
             >
               {organizationConstants.members.roles[currentOrgRole as OrgRole] ||
@@ -192,14 +196,14 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
               <div className="flex flex-col items-start text-start">
                 <span className="text-sm font-semibold">{currentOrg.name}</span>
                 <Badge
-                  variant={getRoleBadgeVariant((currentOrgRole ?? "member") as OrgRole)}
+                  variant={getRoleBadgeVariant(
+                    (currentOrgRole ?? "member") as OrgRole,
+                  )}
                   className="mt-0.5 px-1 py-0 text-[8px]"
                 >
-                  {
-                    organizationConstants.members.roles[
-                      currentOrgRole as OrgRole
-                    ] || organizationConstants.members.roles.member
-                  }
+                  {organizationConstants.members.roles[
+                    currentOrgRole as OrgRole
+                  ] || organizationConstants.members.roles.member}
                 </Badge>
               </div>
               <IconChevronDown className="ms-auto h-3.5 w-3.5 opacity-50" />

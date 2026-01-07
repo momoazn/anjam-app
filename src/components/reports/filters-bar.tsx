@@ -23,10 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { common, reports, tasks } from "@/constants";
-import type {
-  ConvexTaskPriority,
-  ConvexTaskStatus,
-} from "@/lib/reports/types";
+import type { ConvexTaskPriority, ConvexTaskStatus } from "@/lib/reports/types";
 import { formatUserName } from "@/lib/utils";
 
 // Convex project type (minimal)

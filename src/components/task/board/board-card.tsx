@@ -26,36 +26,7 @@ import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
 import { getStatusColorVariant } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
-import { Task } from "@/types/tasks";
-
-// Convex-compatible TaskWithProject interface for board card
-interface TaskWithProject extends Omit<Task, "id"> {
-  id?: string; // Override to make optional for compatibility
-  project?: { name: string };
-  assignee?: {
-    id: string;
-    _id: string;
-    username: string;
-    firstName?: string;
-    first_name?: string;
-    lastName?: string;
-    last_name?: string;
-  } | null;
-  display_id?: string; // Compatibility field mapped from displayId
-  expand?: {
-    project?: { name: string };
-    assignee?: {
-      id: string;
-      _id: string;
-      username: string;
-      firstName?: string;
-      first_name?: string;
-      lastName?: string;
-      last_name?: string;
-    };
-  };
-}
+import { TaskWithProject } from "@/types/tasks";
 
 interface BoardCardProps {
   task: TaskWithProject;
@@ -64,8 +35,6 @@ interface BoardCardProps {
 export function BoardCard({ task }: BoardCardProps) {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const taskId = task.id ?? task._id;
   const { setNodeRef, attributes, listeners, transform, isDragging } =
     useSortable({
@@ -136,10 +105,7 @@ export function BoardCard({ task }: BoardCardProps) {
       role="button"
       tabIndex={0}
       className={cn(
-        "group relative flex h-auto w-full cursor-grab flex-col text-right transition-colors hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:cursor-grabbing",
-        isProductMode
-          ? "hover:bg-muted/30 gap-2 rounded-none bg-transparent px-3 py-2.5"
-          : "border-border/40 bg-card hover:bg-muted/30 hover:border-primary/40 gap-3 border-b p-4",
+        "group relative flex h-auto w-full cursor-grab flex-col text-right transition-colors hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:cursor-grabbing hover:bg-muted/30 gap-2 rounded-none bg-transparent px-3 py-2.5",
       )}
       onClick={handleCardClick}
       onKeyDown={handleCardKeyDown}
@@ -172,9 +138,7 @@ export function BoardCard({ task }: BoardCardProps) {
                   assignee={assigneeRecord}
                   hasAssigneeId={!!task.assigneeUserId}
                   size="md"
-                  indicatorClassName={
-                    isProductMode ? "border-background" : "border-card"
-                  }
+                  indicatorClassName="border-background"
                 />
               </button>
             </PopoverTrigger>
@@ -236,7 +200,7 @@ export function BoardCard({ task }: BoardCardProps) {
                 }}
               >
                 <IconClock className="size-3" />
-	                <span className="text-[10px] font-bold tabular-nums">
+                <span className="text-[10px] font-bold tabular-nums">
                   {digitsEnToFa(
                     formatDateShort(new Date(task.deadline).toISOString()),
                   )}
@@ -256,7 +220,7 @@ export function BoardCard({ task }: BoardCardProps) {
       </div>
 
       {/* Tags */}
-      {!isProductMode && task.tags && task.tags.length > 0 && (
+      {task.tags && task.tags.length > 0 && (
         <div className="relative z-10 flex w-full flex-wrap justify-end gap-1">
           {task.tags.map((tag) => (
             <Badge
@@ -273,8 +237,7 @@ export function BoardCard({ task }: BoardCardProps) {
       {/* Visual Status Bar */}
       <div
         className={cn(
-          "absolute inset-y-0 end-0 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
-          isProductMode ? "w-0.5" : "w-1",
+          "absolute inset-y-0 end-0 w-0.5 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
           getStatusColorVariant(task.status, "icon").replace("text", "bg"),
         )}
       />

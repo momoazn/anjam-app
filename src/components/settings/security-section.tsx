@@ -74,7 +74,7 @@ export function SecuritySection() {
     enabled: !!user?._id,
   });
 
-  const onChangePassword = async (_values: PasswordFormValues) => {
+  const onChangePassword = async () => {
     if (!user?._id) return;
     // Password change via old PB API - not yet implemented in Convex
     toast({
@@ -263,10 +263,13 @@ export function SecuritySection() {
                       <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-bold tabular-nums">
                         <IconClock className="size-2.5 opacity-40" />
                         {digitsEnToFa(
-                          new Date(log.createdAt || "").toLocaleString("fa-IR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }),
+                          new Date(log.createdAt || "").toLocaleString(
+                            "fa-IR",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          ),
                         )}
                       </div>
                     </div>

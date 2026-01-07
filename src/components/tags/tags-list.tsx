@@ -9,14 +9,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { tagsManagement } from "@/constants";
-import { useCurrentOrgMode } from "@/store/auth-store";
+import type { Tag } from "@/hooks/tags";
+
 type TagsListProps = {
-  tags: any[] | undefined;
+  tags: Tag[] | undefined;
   isLoading: boolean;
   canDeleteTag: boolean;
   onCreateClick: () => void;
-  onEdit: (tag: any) => void;
-  onDelete: (tag: any) => void;
+  onEdit: (tag: Tag) => void;
+  onDelete: (tag: Tag) => void;
 };
 
 const TagsListSkeleton = () => (
@@ -65,9 +66,6 @@ export function TagsList({
   onEdit,
   onDelete,
 }: TagsListProps) {
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
-
   if (isLoading) {
     return <TagsListSkeleton />;
   }
@@ -76,108 +74,50 @@ export function TagsList({
     return <EmptyState onCreateClick={onCreateClick} />;
   }
 
-  if (isProductMode) {
-    return (
-      <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
-        {tags.map((tag) => (
-          <div
-            key={tag._id}
-            className="border-b border-border/40 last:border-b-0"
-          >
-            <div className="flex items-center justify-between gap-3 px-3 py-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <div
-                  className="size-2.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: tag.color }}
-                />
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold">
-                    {tag.name}
-                  </div>
-                  <div className="text-muted-foreground mt-0.5 flex items-center gap-1 font-mono text-[10px] font-semibold opacity-70">
-                    <IconHash className="size-3 opacity-50" />
-                    {tag._id.slice(0, 6)}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-lg"
-                  onClick={() => onEdit(tag)}
-                  title={tagsManagement.editButton}
-                >
-                  <IconPencil className="h-4 w-4" />
-                </Button>
-                {canDeleteTag ? (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive size-8 rounded-lg"
-                    onClick={() => onDelete(tag)}
-                    title={tagsManagement.deleteButton}
-                  >
-                    <IconTrash className="h-4 w-4" />
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div
-      className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-      data-animate-stagger
-    >
+    <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
       {tags.map((tag) => (
         <div
           key={tag._id}
-          className="group bg-card border-border/40 hover:border-primary/20 relative overflow-hidden rounded-2xl border p-4 transition-all hover:shadow-md"
+          className="border-b border-border/40 last:border-b-0"
         >
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 opacity-40">
-              <IconHash className="size-3" />
-              <span className="font-mono text-[9px] font-bold tracking-tight">
-                {tag._id.slice(0, 6)}
-              </span>
+          <div className="flex items-center justify-between gap-3 px-3 py-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <div
+                className="size-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: tag.color }}
+              />
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold">{tag.name}</div>
+                <div className="text-muted-foreground mt-0.5 flex items-center gap-1 font-mono text-[10px] font-semibold opacity-70">
+                  <IconHash className="size-3 opacity-50" />
+                  {tag._id.slice(0, 6)}
+                </div>
+              </div>
             </div>
-            <div
-              className="h-3 w-3 rounded-full shadow-sm"
-              style={{ backgroundColor: tag.color }}
-            />
-          </div>
 
-          <h3 className="mb-6 truncate text-sm font-bold tracking-tight">
-            {tag.name}
-          </h3>
-
-          <div className="flex items-center gap-1 opacity-0 transition-all group-hover:opacity-100">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-primary/10 hover:text-primary h-8 w-8 rounded-xl"
-              onClick={() => onEdit(tag)}
-              title={tagsManagement.editButton}
-            >
-              <IconPencil className="h-4 w-4" />
-            </Button>
-            {canDeleteTag && (
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-xl text-rose-500 hover:bg-rose-500/10"
-                onClick={() => onDelete(tag)}
-                title={tagsManagement.deleteButton}
+                className="size-8 rounded-lg"
+                onClick={() => onEdit(tag)}
+                title={tagsManagement.editButton}
               >
-                <IconTrash className="h-4 w-4" />
+                <IconPencil className="h-4 w-4" />
               </Button>
-            )}
+              {canDeleteTag ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-destructive hover:text-destructive size-8 rounded-lg"
+                  onClick={() => onDelete(tag)}
+                  title={tagsManagement.deleteButton}
+                >
+                  <IconTrash className="h-4 w-4" />
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
       ))}

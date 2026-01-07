@@ -12,18 +12,11 @@ import { useState } from "react";
 import { CommentComposer } from "@/components/task/comment-composer";
 import { CommentsList } from "@/components/task/comments-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  comments as commentsText,
-  shared,
-  tasks,
-} from "@/constants";
+import { comments as commentsText, shared, tasks } from "@/constants";
 import type { CommentWithUser } from "@/hooks/comments";
 import { formatTaskDate } from "@/lib/date-utils";
 import { cn, formatUserName } from "@/lib/utils";
-import {
-  useCurrentOrgFeatures,
-  useCurrentOrgMode,
-} from "@/store/auth-store";
+import { useCurrentOrgFeatures } from "@/store/auth-store";
 import { TaskWithDetails } from "@/types/tasks";
 
 export type TaskDetailsContentProps = {
@@ -40,8 +33,6 @@ export function TaskDetailsContent({
   onTaskRefresh,
 }: TaskDetailsContentProps) {
   const features = useCurrentOrgFeatures();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   void features;
 
   const [replyTarget, setReplyTarget] = useState<CommentWithUser | null>(null);
@@ -54,168 +45,107 @@ export function TaskDetailsContent({
     setReplyTarget(null);
   };
 
+  const isRecord = (value: unknown): value is Record<string, unknown> =>
+    typeof value === "object" && value !== null;
+
+  const getStringProp = (value: unknown, key: string): string | undefined =>
+    isRecord(value) && typeof value[key] === "string" ? value[key] : undefined;
+
+  const expandProject = isRecord(task.expand?.project)
+    ? task.expand?.project
+    : undefined;
+  const expandAssignee = isRecord(task.expand?.assignee)
+    ? task.expand?.assignee
+    : undefined;
+
   const project =
-    typeof task.project === "object" ? task.project : task.expand?.project;
+    typeof task.project === "object" && task.project
+      ? task.project
+      : expandProject;
   const assignee =
     typeof task.assignee === "object" && task.assignee
       ? task.assignee
-      : task.expand?.assignee;
+      : expandAssignee;
+
+  const assigneeFirstName = getStringProp(assignee, "firstName");
+  const assigneeLastName = getStringProp(assignee, "lastName");
+  const assigneeUsername = getStringProp(assignee, "username");
+  const projectName = getStringProp(project, "name");
 
   return (
-    <div
-      className={cn(
-        "lg:col-span-2",
-        isProductMode ? "space-y-6" : "space-y-12",
-      )}
-    >
+    <div className="lg:col-span-2 space-y-6">
       {/* Detail Grid */}
-      {isProductMode ? (
-        <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
-          {[
-            {
-              label: tasks.details.assignee,
-              value: assignee
-                ? formatUserName(
-                    assignee.firstName,
-                    assignee.lastName,
-                    assignee.username,
-                  )
-                : tasks.addTask.unassigned,
-              icon: IconUser,
-              muted: !assignee,
-            },
-            {
-              label: shared.project,
-              value: project?.name || tasks.details.unknownProject,
-              icon: IconTarget,
-            },
-            {
-              label: tasks.details.deadline,
-              value: task.deadline
-                ? digitsEnToFa(
-                    formatTaskDate(new Date(task.deadline).toISOString()),
-                  )
-                : "—",
-              icon: IconCalendar,
-              muted: !task.deadline,
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="flex items-center justify-between gap-3 border-b border-border/40 px-4 py-3 last:border-b-0"
-            >
-              <div className="text-muted-foreground flex items-center gap-2 text-xs font-semibold">
-                <item.icon className="size-4 opacity-70" />
-                <span>{item.label}</span>
-              </div>
-              <div
-                className={cn(
-                  "text-right text-sm font-semibold",
-                  item.muted && "text-muted-foreground/60",
-                )}
-              >
-                {item.value}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {[
-            {
-              label: tasks.details.assignee,
-              value: assignee ? (
-                formatUserName(
-                  assignee.firstName,
-                  assignee.lastName,
-                  assignee.username,
+      <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
+        {[
+          {
+            label: tasks.details.assignee,
+            value: assignee
+              ? formatUserName(
+                  assigneeFirstName,
+                  assigneeLastName,
+                  assigneeUsername,
                 )
-              ) : (
-                <span className="text-muted-foreground/40">
-                  {tasks.addTask.unassigned}
-                </span>
-              ),
-              icon: IconUser,
-            },
-            {
-              label: shared.project,
-              value: project?.name || tasks.details.unknownProject,
-              icon: IconTarget,
-            },
-            {
-              label: tasks.details.deadline,
-              value: task.deadline ? (
-                digitsEnToFa(
+              : tasks.addTask.unassigned,
+            icon: IconUser,
+            muted: !assignee,
+          },
+          {
+            label: shared.project,
+            value: projectName || tasks.details.unknownProject,
+            icon: IconTarget,
+          },
+          {
+            label: tasks.details.deadline,
+            value: task.deadline
+              ? digitsEnToFa(
                   formatTaskDate(new Date(task.deadline).toISOString()),
                 )
-              ) : (
-                <span className="opacity-20">—</span>
-              ),
-              icon: IconCalendar,
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="group bg-card hover:bg-muted/30 relative overflow-hidden rounded-xl border p-4 shadow-sm transition-all"
-            >
-              <div className="relative z-10 flex h-full flex-col justify-between gap-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-[10px] font-bold tracking-tight">
-                    {item.label}
-                  </span>
-                  <item.icon className="text-primary/40 group-hover:text-primary size-4 transition-colors" />
-                </div>
-                <div className="text-right text-sm font-bold">{item.value}</div>
-              </div>
+              : "—",
+            icon: IconCalendar,
+            muted: !task.deadline,
+          },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className="flex items-center justify-between gap-3 border-b border-border/40 px-4 py-3 last:border-b-0"
+          >
+            <div className="text-muted-foreground flex items-center gap-2 text-xs font-semibold">
+              <item.icon className="size-4 opacity-70" />
+              <span>{item.label}</span>
             </div>
-          ))}
-        </div>
-      )}
+            <div
+              className={cn(
+                "text-right text-sm font-semibold",
+                item.muted && "text-muted-foreground/60",
+              )}
+            >
+              {item.value}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Description */}
       {task.description && (
         <section className="relative">
-          {isProductMode ? (
-            <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4">
-              <div className="text-muted-foreground mb-2 flex items-center gap-2 text-xs font-semibold">
-                <IconQuote className="size-4 opacity-70" />
-                <span>{shared.description}</span>
-              </div>
-              <p className="text-foreground/80 whitespace-pre-wrap text-right text-sm leading-relaxed font-medium">
-                {task.description}
-              </p>
+          <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4">
+            <div className="text-muted-foreground mb-2 flex items-center gap-2 text-xs font-semibold">
+              <IconQuote className="size-4 opacity-70" />
+              <span>{shared.description}</span>
             </div>
-          ) : (
-            <>
-              <div className="bg-primary text-primary-foreground absolute -top-3 -right-3 z-10 flex size-10 items-center justify-center rounded-full shadow-lg">
-                <IconQuote className="size-5" />
-              </div>
-              <div className="bg-card relative overflow-hidden rounded-xl border p-6 shadow-sm">
-                <p className="text-foreground/80 relative z-10 text-right text-base leading-relaxed font-medium whitespace-pre-wrap">
-                  {task.description}
-                </p>
-              </div>
-            </>
-          )}
+            <p className="text-foreground/80 whitespace-pre-wrap text-right text-sm leading-relaxed font-medium">
+              {task.description}
+            </p>
+          </div>
         </section>
       )}
 
       {/* Tabs Section */}
       <Tabs defaultValue="comments" className="w-full" dir="rtl">
-        <TabsList
-          className={cn(
-            "w-full justify-start gap-1",
-            isProductMode
-              ? "bg-muted/30 h-9 rounded-lg border border-border/40 p-0.5"
-              : "bg-muted/50 h-12 rounded-xl p-1",
-          )}
-        >
+        <TabsList className="w-full justify-start gap-1 bg-muted/30 h-9 rounded-lg border border-border/40 p-0.5">
           <TabsTrigger
             value="comments"
-            className={cn(
-              "data-[state=active]:bg-background h-full flex-1 rounded-lg text-xs font-bold transition-all data-[state=active]:shadow-sm",
-              isProductMode && "px-3",
-            )}
+            className="data-[state=active]:bg-background h-full flex-1 rounded-lg text-xs font-bold transition-all data-[state=active]:shadow-sm px-3"
           >
             <IconMessages className="ms-1.5 size-4" />
             {commentsText.title}
@@ -225,42 +155,31 @@ export function TaskDetailsContent({
           </TabsTrigger>
         </TabsList>
 
-        <div
-          className={cn(
-            "mt-4 overflow-hidden rounded-xl border border-border/40",
-            isProductMode
-              ? "bg-background/30 shadow-none"
-              : "bg-card shadow-sm",
-          )}
-        >
-          <div className={cn(isProductMode ? "p-4" : "p-6 md:p-8")}>
-            <TabsContent value="comments" className="m-0 outline-none">
-              <div className={cn("space-y-8", isProductMode && "space-y-5")}>
-                {commentsLoading ? (
-                  <div className="flex justify-center py-12 opacity-20">
-                    <IconLoader2 className="h-10 w-10 animate-spin" />
-                  </div>
-                ) : (
-                  <>
-                    <CommentsList
-                      comments={comments}
-                      onReply={(comment) => setReplyTarget(comment)}
+        <div className="mt-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 shadow-none">
+          <TabsContent value="comments" className="m-0 outline-none">
+            <div className="space-y-5 p-4">
+              {commentsLoading ? (
+                <div className="flex justify-center py-12 opacity-20">
+                  <IconLoader2 className="h-10 w-10 animate-spin" />
+                </div>
+              ) : (
+                <>
+                  <CommentsList
+                    comments={comments}
+                    onReply={(comment) => setReplyTarget(comment)}
+                  />
+                  <div className="border-t pt-5">
+                    <CommentComposer
+                      taskId={taskId}
+                      replyTarget={replyTarget}
+                      onCancelReply={() => setReplyTarget(null)}
+                      onCommentAdded={handleCommentAdded}
                     />
-                    <div
-                      className={cn("border-t pt-8", isProductMode && "pt-5")}
-                    >
-                      <CommentComposer
-                        taskId={taskId}
-                        replyTarget={replyTarget}
-                        onCancelReply={() => setReplyTarget(null)}
-                        onCommentAdded={handleCommentAdded}
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            </TabsContent>
-          </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </TabsContent>
         </div>
       </Tabs>
     </div>

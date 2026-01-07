@@ -34,7 +34,14 @@ const getGroupTitle = (group: string) => {
 };
 
 type NotificationListProps = {
-  notifications: any[];
+  notifications: Array<{
+    _id: string;
+    createdAt: number;
+    read: boolean;
+    type: string;
+    title: string;
+    message: string;
+  }>;
   isLoading: boolean;
   error: unknown;
   selectedIds: string[];
@@ -54,11 +61,22 @@ export function NotificationList({
 }: NotificationListProps) {
   const groupedNotifications: Record<
     "today" | "yesterday" | "thisWeek" | "older",
-    any[]
+    NotificationListProps["notifications"]
   > = notifications.reduce(
-    (groups: Record<"today" | "yesterday" | "thisWeek" | "older", any[]>, notification: any) => {
+    (
+      groups: Record<
+        "today" | "yesterday" | "thisWeek" | "older",
+        NotificationListProps["notifications"]
+      >,
+      notification,
+    ) => {
       const group = getDateGroup(notification.createdAt);
-      if (group === "today" || group === "yesterday" || group === "thisWeek" || group === "older") {
+      if (
+        group === "today" ||
+        group === "yesterday" ||
+        group === "thisWeek" ||
+        group === "older"
+      ) {
         groups[group].push(notification);
       } else {
         groups.older.push(notification);
@@ -100,7 +118,7 @@ export function NotificationList({
   return (
     <ScrollArea className="h-[calc(100vh-24rem)]">
       <div className="space-y-10" data-animate-stagger>
-        {(Object.entries(groupedNotifications) as Array<[string, any[]]>).map(
+        {Object.entries(groupedNotifications).map(
           ([group, groupNotifications]) => {
             if (groupNotifications.length === 0) return null;
 
@@ -118,7 +136,7 @@ export function NotificationList({
                   className="border-border/20 overflow-hidden rounded-xl border shadow-sm"
                   data-animate-stagger
                 >
-                  {groupNotifications.map((notification: any) => (
+                  {groupNotifications.map((notification) => (
                     <NotificationItem
                       key={notification._id}
                       notification={notification}

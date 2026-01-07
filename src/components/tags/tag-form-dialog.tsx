@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { common, tagsManagement } from "@/constants";
-import { useCreateTag, useUpdateTag } from "@/hooks/tags";
+import { type Tag, useCreateTag, useUpdateTag } from "@/hooks/tags";
 import { useToast } from "@/hooks/use-toast";
 
 const TAG_COLORS = [
@@ -30,13 +30,13 @@ const TAG_COLORS = [
 export type TagFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  tag?: any;
+  tag?: Tag;
   mode: "create" | "edit";
 };
 
 type TagFormDialogFormProps = {
   onOpenChange: (open: boolean) => void;
-  tag?: any;
+  tag?: Tag;
   mode: "create" | "edit";
 };
 
@@ -86,9 +86,11 @@ function TagFormDialogForm({
       }
       onOpenChange(false);
       resetForm();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Error saving tag";
       toast({
-        title: error.message || "Error saving tag",
+        title: message,
         variant: "destructive",
       });
     }

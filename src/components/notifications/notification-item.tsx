@@ -16,7 +16,14 @@ const formatNotificationTime = (timestamp?: number | null) => {
 };
 
 type NotificationItemProps = {
-  notification: any;
+  notification: {
+    _id: string;
+    createdAt: number;
+    read: boolean;
+    type: string;
+    title: string;
+    message: string;
+  };
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
   selected: boolean;
@@ -81,7 +88,11 @@ export function NotificationItem({
             variant="outline"
             className="border-border/40 bg-muted/30 text-muted-foreground rounded-md px-1.5 py-0 text-[10px] font-bold"
           >
-            {notificationsText.types[notification.type as keyof typeof notificationsText.types]}
+            {
+              notificationsText.types[
+                notification.type as keyof typeof notificationsText.types
+              ]
+            }
           </Badge>
         </div>
       </div>

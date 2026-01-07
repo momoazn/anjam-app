@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { projects } from "@/constants";
 import { useDeleteProject } from "@/hooks";

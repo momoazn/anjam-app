@@ -63,7 +63,10 @@ export function PriorityDistribution({ data, onSliceClick }: Props) {
           style={{ cursor: onSliceClick ? "pointer" : "default" }}
         >
           {data.map((entry) => (
-            <Cell key={entry.key} fill={chartConfig[entry.key]?.color || "var(--chart-1)"} />
+            <Cell
+              key={entry.key}
+              fill={chartConfig[entry.key]?.color || "var(--chart-1)"}
+            />
           ))}
         </Pie>
         <ChartTooltip

@@ -66,7 +66,11 @@ export function UserAvatar({
       <Avatar className={avatarClassName}>
         <AvatarImage src={avatarUrl} className="object-cover" />
         <AvatarFallback className="bg-muted text-muted-foreground text-sm font-semibold">
-          {getUserInitials(getFirstName(user), getLastName(user), user.username)}
+          {getUserInitials(
+            getFirstName(user),
+            getLastName(user),
+            user.username,
+          )}
         </AvatarFallback>
       </Avatar>
     );

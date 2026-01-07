@@ -4,8 +4,8 @@ import { Suspense } from "react";
 import { EmployeePerformanceTable } from "@/components/reports/employee-performance-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { reports } from "@/constants";
-import type { ConvexUser } from "@/lib/reports/types";
 import type { EmployeeSummary } from "@/lib/reports";
+import type { ConvexUser } from "@/lib/reports/types";
 
 type TableSectionProps = {
   summaries: EmployeeSummary[];

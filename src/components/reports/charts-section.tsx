@@ -19,7 +19,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { reports } from "@/constants";
-import type { ConvexTask, ConvexTaskPriority } from "@/lib/reports/types";
 import type {
   EmployeeBucket,
   buildLeaderboard,
@@ -29,6 +28,7 @@ import type {
   computeTeamAverages,
   computeWorkloadDistribution,
 } from "@/lib/reports";
+import type { ConvexTask, ConvexTaskPriority } from "@/lib/reports/types";
 import type { ConvexUser } from "@/lib/reports/types";
 
 const Leaderboard = lazy(() =>

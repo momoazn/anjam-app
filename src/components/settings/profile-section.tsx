@@ -7,6 +7,7 @@ import {
   IconUser,
   IconUserCircle,
 } from "@tabler/icons-react";
+import { useMutation } from "convex/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,9 +27,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/users";
-import { useAuthActions, useAuthUser } from "@/store/auth-store";
-import { useMutation } from "convex/react";
 import { api } from "@/lib/convex";
+import { useAuthActions, useAuthUser } from "@/store/auth-store";
 
 const profileSchema = z.object({
   username: z.string().min(3, auth.errors.usernameMinLength),
@@ -127,7 +127,7 @@ export function ProfileSection() {
     }
   }, [fullUser, form]);
 
-  const handleAvatarChange = (_event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = () => {
     // File uploads are out of scope for v1 - just show toast
     toast({
       title: "Coming soon",
@@ -165,7 +165,10 @@ export function ProfileSection() {
     } catch (error) {
       toast({
         title: settings.profile.toast.updateError,
-        description: error instanceof Error ? error.message : settings.profile.toast.updateErrorDescription,
+        description:
+          error instanceof Error
+            ? error.message
+            : settings.profile.toast.updateErrorDescription,
         variant: "destructive",
       });
     }

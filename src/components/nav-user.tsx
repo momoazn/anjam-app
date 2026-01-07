@@ -20,14 +20,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  navigation,
-  user as userLabels,
-  users as usersText,
-} from "@/constants";
+import { navigation, organization, user as userLabels } from "@/constants";
+import type { Doc } from "@/lib/convex";
 import { cn } from "@/lib/utils";
-import { useAuthActions, useAuthUser } from "@/store/auth-store";
-import type { Doc } from "../../convex/_generated/dataModel";
+import {
+  useAuthActions,
+  useAuthUser,
+  useCurrentOrgRole,
+} from "@/store/auth-store";
 
 import { UserAvatar } from "./user-avatar";
 
@@ -36,11 +36,16 @@ type UserInfoProps = {
 };
 
 function UserInfo({ user }: UserInfoProps) {
+  const orgRole = useCurrentOrgRole();
+  const roleLabel =
+    orgRole === "owner"
+      ? organization.members.roles.owner
+      : organization.members.roles.member;
   return (
     <>
       <div className="relative">
         <UserAvatar
-          user={user as any}
+          user={user}
           className="border-border/40 size-8 rounded-lg border"
         />
         <div className="absolute -end-0.5 -bottom-0.5 h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
@@ -53,11 +58,7 @@ function UserInfo({ user }: UserInfoProps) {
         </div>
         <div className="flex items-center justify-end gap-1.5">
           <span className="text-muted-foreground/40 truncate font-mono text-[8px] leading-none tracking-tight">
-            {
-              usersText.table.roles[
-                (user as any).role as keyof typeof usersText.table.roles
-              ] || "member"
-            }
+            {roleLabel}
           </span>
         </div>
       </div>

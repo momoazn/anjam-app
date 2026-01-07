@@ -200,15 +200,18 @@ export function MyTasksTabs({
                   </div>
                 </div>
                 <div className="divide-border/40 divide-y">
-	                  {project.tasks.map((task) => (
-	                    <Button
-	                      key={task.id ?? task._id}
-	                      variant="ghost"
-	                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
-	                      onClick={() =>
-	                        onProjectTaskClick(project.projectId, task.id ?? task._id)
-	                      }
-	                    >
+                  {project.tasks.map((task) => (
+                    <Button
+                      key={task.id ?? task._id}
+                      variant="ghost"
+                      className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
+                      onClick={() =>
+                        onProjectTaskClick(
+                          project.projectId,
+                          task.id ?? task._id,
+                        )
+                      }
+                    >
                       <div className="flex-1 text-right">
                         <h4 className="group-hover:text-primary text-base font-bold tracking-tight transition-colors">
                           {task.title}

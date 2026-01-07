@@ -5,19 +5,22 @@ import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { notifications as notificationsText } from "@/constants";
-import { stripHtml } from "@/lib/excel-export";
 import { useDeleteNotification } from "@/hooks/notifications";
+import { stripHtml } from "@/lib/excel-export";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 type MentionsListProps = {
-  mentions: any[];
+  mentions: Array<{
+    _id: string;
+    createdAt: number;
+    taskId?: string;
+    task?: { title?: string; displayId?: string } | null;
+    comment?: { content?: string } | null;
+  }>;
   isLoading: boolean;
 };
 
 export function MentionsList({ mentions, isLoading }: MentionsListProps) {
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
   const deleteNotification = useDeleteNotification();
 
   const handleMarkAsRead = async (mentionId: string) => {
@@ -27,10 +30,7 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
   return (
     <section
       className={cn(
-        "mt-8 space-y-4 text-right",
-        isProductMode
-          ? "overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4 shadow-none"
-          : "border-border/40 bg-card rounded-xl border p-6 shadow-sm",
+        "mt-8 overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4 shadow-none space-y-4 text-right",
       )}
     >
       <div className="flex items-center justify-between gap-4">
@@ -59,12 +59,8 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
         <div className="space-y-3">
           {mentions.map((mention) => {
             const taskName =
-              mention.task?.title ||
-              mention.task?.displayId ||
-              "-";
-            const rawSnippet = stripHtml(
-              mention.comment?.content ?? "",
-            );
+              mention.task?.title || mention.task?.displayId || "-";
+            const rawSnippet = stripHtml(mention.comment?.content ?? "");
             const snippet =
               rawSnippet.length > 140
                 ? `${rawSnippet.slice(0, 140)}...`

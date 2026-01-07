@@ -153,8 +153,11 @@ function SortableSubtaskRow({
 
 export function Subtasks({ taskId, projectId }: SubtasksProps) {
   // Cast the hook return to our local type
-  const { data: rawSubtasks, isLoading: isLoadingSubtasks } = useSubtasks(taskId);
-  const subtasksData = rawSubtasks as unknown as SubtaskWithAssignee[] | undefined;
+  const { data: rawSubtasks, isLoading: isLoadingSubtasks } =
+    useSubtasks(taskId);
+  const subtasksData = rawSubtasks as unknown as
+    | SubtaskWithAssignee[]
+    | undefined;
 
   const { data: users } = useProjectUsers({ projectId });
 
@@ -168,7 +171,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   const deleteSubtask = useDeleteSubtask();
 
   // Sync ordered list with subtasksData, preserving manual reordering
-   
+
   useEffect(() => {
     if (!subtasksData) return;
     const sorted = [...subtasksData].sort((a, b) => {
@@ -179,7 +182,6 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     });
     setOrdered(sorted);
   }, [subtasksData]);
-   
 
   const assigneeOptions = useMemo(() => {
     const options = users?.map((user) => ({
@@ -224,7 +226,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
         id: subtaskId,
         updates: { is_done: !done },
       });
-    } catch (error) {
+    } catch {
       toast.error("Failed to update subtask");
     }
   };
@@ -233,7 +235,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     try {
       await deleteSubtask.mutate(id);
       toast.success(tasks.details.subtasks.deleteSuccess);
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete subtask");
     }
   };
@@ -245,10 +247,10 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
           updateSubtask.mutate({
             id: subtask.id,
             updates: { order: index + 1 },
-          })
-        )
+          }),
+        ),
       );
-    } catch (error) {
+    } catch {
       toast.error(tasks.details.subtasks.orderUpdateError);
       // Revert logic could go here if we had access to previous state easily
     }
@@ -265,7 +267,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
       // Fix orders in the items themselves for local state
       const updatedOrder = nextOrder.map((item, index) => ({
         ...item,
-        order: index + 1
+        order: index + 1,
       }));
       persistOrder(updatedOrder);
       return updatedOrder;

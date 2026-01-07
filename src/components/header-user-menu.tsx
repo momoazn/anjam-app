@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { navigation, user as userLabels } from "@/constants";
 import type { Doc } from "@/lib/convex";
-import { useAuthActions, useAuthUser, useCurrentOrgRole } from "@/store/auth-store";
+import {
+  useAuthActions,
+  useAuthUser,
+  useCurrentOrgRole,
+} from "@/store/auth-store";
 
 import { UserAvatar } from "./user-avatar";
 

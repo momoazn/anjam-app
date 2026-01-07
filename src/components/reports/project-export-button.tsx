@@ -2,10 +2,10 @@ import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Doc } from "@/lib/convex";
 
 import { Button } from "@/components/ui/button";
 import { projects, reports } from "@/constants";
+import type { Doc } from "@/lib/convex";
 import { exportProjectToExcel } from "@/lib/excel-export";
 import type { ConvexTask, ConvexUser } from "@/lib/reports/types";
 
@@ -53,7 +53,12 @@ export function ProjectExportButton({
     try {
       // Create a compatible project object for the export function
       const exportProject: Doc<"projects"> & {
-        expand?: { supervisor?: Doc<"users"> & { first_name?: string; last_name?: string } };
+        expand?: {
+          supervisor?: Doc<"users"> & {
+            first_name?: string;
+            last_name?: string;
+          };
+        };
       } = {
         _id: project._id as Doc<"projects">["_id"],
         _creationTime: project._creationTime,

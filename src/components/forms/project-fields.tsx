@@ -1,6 +1,6 @@
 import { IconUpload } from "@tabler/icons-react";
 import { useMemo } from "react";
-import type { Control } from "react-hook-form";
+import type { Control, FieldValues, Path } from "react-hook-form";
 
 import { FileUpload } from "@/components/ui/file-upload";
 import {
@@ -14,18 +14,11 @@ import { projects } from "@/constants";
 import { useUsers } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { formatUserName } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
 
 import { FormField as GenericFormField } from "./form-field";
 
-type ProjectFieldsProps = {
-  control: Control<{
-    name: string;
-    code: string;
-    description?: string;
-    assets?: FileWithPreview[];
-    supervisor?: string;
-  }>;
+type ProjectFieldsProps<TFieldValues extends FieldValues = FieldValues> = {
+  control: Control<TFieldValues>;
   codeMode?: "editable" | "readonly" | "hidden";
   showDescription?: boolean;
   showAssets?: boolean;
@@ -33,18 +26,15 @@ type ProjectFieldsProps = {
   isAdmin?: boolean;
 };
 
-export function ProjectFields({
+export function ProjectFields<TFieldValues extends FieldValues = FieldValues>({
   control,
   codeMode,
   showDescription = true,
   showAssets = true,
   showSupervisor = false,
   isAdmin = false,
-}: ProjectFieldsProps) {
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
-  const resolvedCodeMode =
-    codeMode ?? (isProductMode ? "readonly" : "editable");
+}: ProjectFieldsProps<TFieldValues>) {
+  const resolvedCodeMode = codeMode ?? "readonly";
   const { data: allUsers } = useUsers({
     enabled: showSupervisor && isAdmin,
   });
@@ -68,7 +58,7 @@ export function ProjectFields({
       >
         <GenericFormField
           control={control}
-          name="name"
+          name={"name" as Path<TFieldValues>}
           label={projects.create.form.name}
           type="input"
           required
@@ -77,19 +67,11 @@ export function ProjectFields({
         {resolvedCodeMode === "hidden" ? null : (
           <GenericFormField
             control={control}
-            name="code"
-            label={
-              resolvedCodeMode === "readonly" && isProductMode
-                ? `${projects.create.form.code} (اختیاری)`
-                : projects.create.form.code
-            }
+            name={"code" as Path<TFieldValues>}
+            label={`${projects.create.form.code} (اختیاری)`}
             type="input"
-            required={!isProductMode}
-            placeholder={
-              resolvedCodeMode === "readonly" && isProductMode
-                ? "به صورت خودکار تولید می‌شود"
-                : "e.g. ABC"
-            }
+            required={false}
+            placeholder="به صورت خودکار تولید می‌شود"
             disabled={resolvedCodeMode === "readonly"}
           />
         )}
@@ -99,7 +81,7 @@ export function ProjectFields({
         {showSupervisor && isAdmin && (
           <GenericFormField
             control={control}
-            name="supervisor"
+            name={"supervisor" as Path<TFieldValues>}
             label={projects.create.form.supervisor}
             type="select"
             options={supervisors}
@@ -111,7 +93,7 @@ export function ProjectFields({
       {showDescription && (
         <GenericFormField
           control={control}
-          name="description"
+          name={"description" as Path<TFieldValues>}
           label={projects.create.form.description}
           type="textarea"
           placeholder={projects.create.form.descriptionPlaceholder}
@@ -122,7 +104,7 @@ export function ProjectFields({
       {showAssets && (
         <ShadcnFormField
           control={control}
-          name="assets"
+          name={"assets" as Path<TFieldValues>}
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel className="text-muted-foreground/60 flex items-center justify-end gap-2 text-[9px] font-bold tracking-tight">

@@ -20,11 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { tasks } from "@/constants";
-import {
-  useProjectUsers,
-  useProjects,
-  useUsers,
-} from "@/hooks";
+import { useProjectUsers, useProjects, useUsers } from "@/hooks";
 import {
   TASK_STATUS_CONFIG,
   getStatusColorVariant,
@@ -35,20 +31,6 @@ import {
 import { formatUserName } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
-// Convex task status types
-const TASK_STATUSES = [
-  "todo",
-  "in_progress",
-  "in_review",
-  "done",
-  "cancelled",
-] as const;
-
-type TaskStatus = typeof TASK_STATUSES[number];
-
-// Convex task priority types (values)
-const TASK_PRIORITY_VALUES = ["low", "medium", "high", "urgent"] as const;
-
 import { TagPicker } from "../task/tag-picker";
 import {
   Select,
@@ -58,6 +40,20 @@ import {
   SelectValue,
 } from "../ui/select";
 import { FormField as GenericFormField } from "./form-field";
+
+// Convex task status types
+const TASK_STATUSES = [
+  "todo",
+  "in_progress",
+  "in_review",
+  "done",
+  "cancelled",
+] as const;
+
+type TaskStatus = (typeof TASK_STATUSES)[number];
+
+// Convex task priority types (values)
+const TASK_PRIORITY_VALUES = ["low", "medium", "high", "urgent"] as const;
 
 type TaskFieldsProps = {
   control: Control<TaskFormData>;
@@ -98,12 +94,23 @@ export function TaskFields({
     const unassignedLabel = String(tasks.addTask.unassigned);
     const opts = [{ value: unassignedLabel, label: unassignedLabel }];
     if (assignees) {
-      assignees.forEach((u: any) => {
-        const firstName = u.firstName ?? u.first_name;
-        const lastName = u.lastName ?? u.last_name;
+      assignees.forEach((u) => {
+        const firstName =
+          (u as { firstName?: string; first_name?: string }).firstName ??
+          (u as { first_name?: string }).first_name;
+        const lastName =
+          (u as { lastName?: string; last_name?: string }).lastName ??
+          (u as { last_name?: string }).last_name;
         opts.push({
-          value: u.id || u._id,
-          label: formatUserName(firstName, lastName, u.username),
+          value:
+            (u as { id?: string; _id?: string }).id ||
+            (u as { _id?: string })._id ||
+            "",
+          label: formatUserName(
+            firstName,
+            lastName,
+            (u as { username?: string }).username,
+          ),
         });
       });
     }
@@ -259,9 +266,7 @@ export function TaskFields({
               control={control}
               name="status"
               render={({ field }) => {
-                const value =
-                  (field.value as TaskStatus) ||
-                  "todo";
+                const value = (field.value as TaskStatus) || "todo";
                 const StatusIcon =
                   taskStatusIcons[value] || taskStatusIcons.todo;
                 const statusColor = getStatusColorVariant(value, "icon");
@@ -282,8 +287,7 @@ export function TaskFields({
                         {statusOptions.map((option) => {
                           const itemStatus = option.value as TaskStatus;
                           const ItemIcon =
-                            taskStatusIcons[itemStatus] ||
-                            taskStatusIcons.todo;
+                            taskStatusIcons[itemStatus] || taskStatusIcons.todo;
                           const itemColor = getStatusColorVariant(
                             itemStatus,
                             "icon",
@@ -323,7 +327,7 @@ export function TaskFields({
               name="priority"
               render={({ field }) => {
                 const value =
-                  (field.value as typeof TASK_PRIORITY_VALUES[number]) ||
+                  (field.value as (typeof TASK_PRIORITY_VALUES)[number]) ||
                   "medium";
                 const PriorityIcon = priorityIcons[value];
                 const priorityColor = priorityColors[value];

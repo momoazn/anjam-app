@@ -46,9 +46,7 @@ export function UserFields({
     // In Convex v1, roles are org-level (owner/member)
     // Only owners can manage members
     if (userRole === "owner") {
-      return [
-        { value: "member", label: users.table.roles.employee },
-      ];
+      return [{ value: "member", label: users.table.roles.employee }];
     }
 
     // Members can't change roles
@@ -95,16 +93,17 @@ export function UserFields({
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {(!isEditingSelf || userRole === "owner") && availableRoles.length > 0 && (
-          <GenericFormField
-            control={control}
-            name="role"
-            label={users.table.columns.role}
-            type="select"
-            options={availableRoles}
-            required
-          />
-        )}
+        {(!isEditingSelf || userRole === "owner") &&
+          availableRoles.length > 0 && (
+            <GenericFormField
+              control={control}
+              name="role"
+              label={users.table.columns.role}
+              type="select"
+              options={availableRoles}
+              required
+            />
+          )}
       </div>
     </div>
   );

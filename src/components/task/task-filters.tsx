@@ -26,6 +26,7 @@ import {
   ALL_FILTER_VALUE,
   type UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
+import type { FilterableTask } from "@/lib/filter-utils";
 import { statusOrder } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
 import { TaskPriority, TaskStatus } from "@/types/tasks";
@@ -41,14 +42,12 @@ interface UserWithCompat {
   last_name?: string;
 }
 
-const priorityOrder: TaskPriority[] = [
-  "low",
-  "medium",
-  "high",
-  "urgent",
-];
+const priorityOrder: TaskPriority[] = ["low", "medium", "high", "urgent"];
 
-type TaskFiltersProps = Omit<UseTaskFiltersReturn<any>, "filteredTasks"> & {
+type TaskFiltersProps = Omit<
+  UseTaskFiltersReturn<FilterableTask>,
+  "filteredTasks"
+> & {
   users: UserWithCompat[] | undefined;
   isLoadingUsers: boolean;
 };
@@ -242,9 +241,7 @@ export function TaskFilters({
           <Select
             value={selectedStatus}
             onValueChange={(value) =>
-              setSelectedStatus(
-                value as TaskStatus | typeof ALL_FILTER_VALUE,
-              )
+              setSelectedStatus(value as TaskStatus | typeof ALL_FILTER_VALUE)
             }
           >
             <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">

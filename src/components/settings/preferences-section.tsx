@@ -132,7 +132,7 @@ export function PreferencesSection() {
         },
       });
       toast.success(settings.appearance.saveSuccess);
-    } catch (error) {
+    } catch {
       toast.error("خطا در ذخیره تنظیمات");
     } finally {
       setIsSaving(false);
@@ -153,7 +153,7 @@ export function PreferencesSection() {
         setTheme(updates.theme);
       }
       toast.success(settings.appearance.saveSuccess);
-    } catch (error) {
+    } catch {
       toast.error("خطا در ذخیره تنظیمات");
     } finally {
       setIsSaving(false);
@@ -289,7 +289,6 @@ export function PreferencesSection() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }
