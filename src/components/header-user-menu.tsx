@@ -1,3 +1,4 @@
+import { useAuthActions as useConvexAuthActions } from "@convex-dev/auth/react";
 import { IconLogout, IconUserCircle } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
@@ -55,11 +56,16 @@ export function HeaderUserMenu() {
   const navigate = useNavigate();
   const user = useAuthUser();
   const currentOrgRole = useCurrentOrgRole();
+  const { signOut } = useConvexAuthActions();
   const logout = useAuthActions().logout;
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } finally {
+      logout();
+      navigate("/login", { replace: true });
+    }
   };
 
   const handleEditProfile = () => {

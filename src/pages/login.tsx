@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
+import { handleError } from "@/lib/error-handler";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -55,8 +56,7 @@ export default function Login() {
       // Actually, signIn returns a promise.
       navigate("/", { replace: true });
     } catch (error) {
-      console.error(error);
-      toast.error("Invalid credentials or error logging in");
+      handleError(error);
     } finally {
       setSubmitting(false);
     }

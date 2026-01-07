@@ -23,7 +23,6 @@ import type * as search from "../search.js";
 import type * as subtasks from "../subtasks.js";
 import type * as tags from "../tags.js";
 import type * as tasks from "../tasks.js";
-import type * as timeEntries from "../timeEntries.js";
 import type * as users from "../users.js";
 import type * as utils from "../utils.js";
 
@@ -49,7 +48,6 @@ declare const fullApi: ApiFromModules<{
   subtasks: typeof subtasks;
   tags: typeof tags;
   tasks: typeof tasks;
-  timeEntries: typeof timeEntries;
   users: typeof users;
   utils: typeof utils;
 }>;

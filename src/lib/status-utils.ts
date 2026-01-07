@@ -86,21 +86,6 @@ export function isTaskCanceled(task: { status?: string }): boolean {
   return getTaskStatus(task).isCanceled;
 }
 
-export function getStatusColorClass(task: { status?: string }): string {
-  return getStatusColorVariant(getTaskStatus(task).key, "background");
-}
-
-export function getAllTaskStatuses(): TaskStatusConfig[] {
-  // Filter out any statuses that might be in ORDER but not in CONFIG (if any)
-  return TASK_STATUS_ORDER.filter((s) => s in TASK_STATUS_CONFIG).map(
-    (status) => TASK_STATUS_CONFIG[status as TaskStatus],
-  );
-}
-
-export function getStatusByKey(key: TaskStatus): TaskStatusConfig {
-  return TASK_STATUS_CONFIG[key];
-}
-
 export function getStatusColorVariant(
   status: TaskStatus,
   variant: "icon" | "background" | "badge" | "border" | "fill",
@@ -138,20 +123,4 @@ export function getStatusColorVariant(
   }
 }
 
-export function isActiveStatus(status: TaskStatus): boolean {
-  const config = TASK_STATUS_CONFIG[status];
-  return !config.isCompleted && !config.isCanceled;
-}
-
-export function isTerminalStatus(status: TaskStatus): boolean {
-  return (
-    TASK_STATUS_CONFIG[status].isCompleted ||
-    TASK_STATUS_CONFIG[status].isCanceled
-  );
-}
-
 export const statusOrder = TASK_STATUS_ORDER;
-
-export function getStatusConfig(status: TaskStatus) {
-  return TASK_STATUS_CONFIG[status];
-}

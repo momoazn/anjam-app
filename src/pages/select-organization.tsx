@@ -11,8 +11,6 @@ import {
   useUserOrganizations,
 } from "@/store/auth-store";
 
-import type { Doc } from "../../convex/_generated/dataModel";
-
 function getOrgInitials(name: string): string {
   return name
     .split(" ")
@@ -20,13 +18,6 @@ function getOrgInitials(name: string): string {
     .join("")
     .toUpperCase()
     .slice(0, 2);
-}
-
-function getOrgLogoUrl(org: Doc<"organizations"> | null): string | undefined {
-  if (!org) return undefined;
-  // In Convex v1, logo is not stored on the organization document
-  // TODO: Add logo support to Convex schema
-  return undefined;
 }
 
 function getRoleBadgeVariant(
@@ -101,7 +92,7 @@ export function SelectOrganizationPage() {
                 </div>
               )}
               <Avatar className="h-20 w-20 rounded-xl">
-                <AvatarImage src={getOrgLogoUrl(org)} />
+                <AvatarImage />
                 <AvatarFallback className="rounded-xl text-xl font-bold">
                   {getOrgInitials(org.name)}
                 </AvatarFallback>

@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
+import { handleError } from "@/lib/error-handler";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const usernameRegex = /^[a-zA-Z0-9_]+$/;
@@ -81,8 +82,7 @@ export default function Register() {
       toast.success(auth.register.success);
       navigate("/onboarding", { replace: true });
     } catch (error) {
-      console.error(error);
-      toast.error("Error creating account");
+      handleError(error);
     } finally {
       setSubmitting(false);
     }

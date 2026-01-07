@@ -122,7 +122,7 @@ function App() {
               toastOptions={{
                 duration: 3000,
                 className:
-                  "rounded-xl border-border/40 bg-card/80 backdrop-blur-md product-beveled text-foreground shadow-2xl",
+                  "rounded-xl border-border/40 bg-card/80 backdrop-blur-md text-foreground shadow-2xl",
               }}
             />
             {isDevelopment && convexUrl && (

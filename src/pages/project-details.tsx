@@ -109,8 +109,6 @@ export default function ProjectDetails() {
     tasks?.filter((task) => task.status === "done").length || 0;
   const inProgressTasks =
     tasks?.filter((task) => task.status === "in_progress").length || 0;
-  const totalTimeSpent =
-    tasks?.reduce((sum, task) => sum + (task.timeSpentMinutes || 0), 0) || 0;
 
   return (
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
@@ -207,7 +205,6 @@ export default function ProjectDetails() {
           totalTasks={totalTasks}
           completedTasks={completedTasks}
           inProgressTasks={inProgressTasks}
-          totalTimeSpent={totalTimeSpent}
           onViewTasks={() => navigate(`/projects/${id}/tasks`)}
           onViewUsers={() => navigate(`/members`)}
         />

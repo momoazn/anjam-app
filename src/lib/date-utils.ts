@@ -18,17 +18,6 @@ export const formatDateShort = (d: string | number | null | undefined) =>
 export const formatDateISO = (d: string | number | null | undefined) =>
   formatDate(d, "yyyy/MM/dd");
 
-export function formatDateTime(dateString: string): {
-  date: string;
-  time: string;
-} {
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return { date: "-", time: "-" };
-  const dateStr = format(date, "yyyy/MM/dd");
-  const timeStr = format(date, "HH:mm:ss");
-  return { date: digitsEnToFa(dateStr), time: digitsEnToFa(timeStr) };
-}
-
 export function formatDateLocale(dateValue?: string | number | null): string {
   if (!dateValue) return "-";
   const date = new Date(dateValue);

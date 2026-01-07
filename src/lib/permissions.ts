@@ -38,10 +38,6 @@ export const PERMISSIONS = {
   "comment.create": "Create comments",
   "comment.delete_own": "Delete own comments",
   "comment.delete_any": "Delete any comment",
-
-  "time_entry.create": "Log time",
-  "time_entry.delete_own": "Delete own time entries",
-  "time_entry.delete_any": "Delete any time entry",
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -146,18 +142,6 @@ export function canComment(
   );
 }
 
-export function canLogTime(
-  orgRole: OrgRole | null | undefined,
-  projectRole: ProjectRole | null | undefined,
-): boolean {
-  if (isOrgAdmin(orgRole)) return true;
-  return (
-    projectRole === "owner" ||
-    projectRole === "admin" ||
-    projectRole === "member"
-  );
-}
-
 export function computePermissions(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
@@ -191,9 +175,5 @@ export function computePermissions(
     "comment.create": canComment(orgRole, projectRole),
     "comment.delete_own": canComment(orgRole, projectRole),
     "comment.delete_any": canEditAnyTask(orgRole, projectRole),
-
-    "time_entry.create": canLogTime(orgRole, projectRole),
-    "time_entry.delete_own": canLogTime(orgRole, projectRole),
-    "time_entry.delete_any": canEditAnyTask(orgRole, projectRole),
   };
 }
