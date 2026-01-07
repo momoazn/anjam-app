@@ -78,10 +78,6 @@ const ProjectDetails = createLazyPage(
   () => import("@/pages/project-details"),
   errors.pageLoad.projects,
 );
-const CreateProject = createLazyPage(
-  () => import("@/pages/create-project"),
-  errors.pageLoad.projects,
-);
 const EditProject = createLazyPage(
   () => import("@/pages/edit-project"),
   errors.pageLoad.projects,
@@ -95,10 +91,6 @@ const TaskBoardPage = createLazyPage(
 );
 const Tasks = createLazyPage(
   () => import("@/pages/tasks"),
-  errors.pageLoad.tasks,
-);
-const CreateTask = createLazyPage(
-  () => import("@/pages/create-task"),
   errors.pageLoad.tasks,
 );
 const TaskDetails = createLazyPage(
@@ -313,6 +305,24 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// LandingRoute component (redirects authenticated users to inbox, shows landing for guests)
+const LandingRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading: isAuthLoading } = useConvexAuth();
+  const isLoggedIn = useAuthIsAuthenticated();
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+  if (isLoggedIn) {
+    return <Navigate to="/inbox" replace />;
+  }
+  return <>{children}</>;
+};
+
 type RouteType = {
   path: string;
   element: React.ReactNode;
@@ -345,7 +355,11 @@ const Title = ({
 const routes: RouteType[] = [
   {
     path: "/",
-    element: <Landing />,
+    element: (
+      <LandingRoute>
+        <Landing />
+      </LandingRoute>
+    ),
     protected: false,
     title: navigation.dashboard,
   },
@@ -436,7 +450,7 @@ const routes: RouteType[] = [
   },
   {
     path: "/projects/new",
-    element: <CreateProject />,
+    element: <Navigate to="/projects" replace />,
     protected: true,
     requiresOrg: true,
     title: projects.create.title,
@@ -506,7 +520,7 @@ const routes: RouteType[] = [
   },
   {
     path: "/tasks/new",
-    element: <CreateTask />,
+    element: <Navigate to="/tasks" replace />,
     protected: true,
     requiresOrg: true,
     title: tasks.addTask.title,
@@ -559,7 +573,7 @@ const routes: RouteType[] = [
   },
   {
     path: "/projects/:id/tasks/new",
-    element: <CreateTask />,
+    element: <Navigate to="/projects/:id/tasks" replace />,
     protected: true,
     requiresOrg: true,
     title: tasks.addTask.title,
