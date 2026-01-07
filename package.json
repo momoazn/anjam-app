@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -n convex,vite -c magenta,cyan \"bun run dev:convex\" \"bun run dev:vite\"",
-    "dev:vite": "bun x --bun vite --host 127.0.0.1 --port 5173 --strictPort",
+    "dev:vite": "bun x --bun vite --host 0.0.0.0 --port 5173 --strictPort",
     "dev:convex": "bunx convex dev",
     "build": "bun x --bun vite build",
     "build:analyze": "ANALYZE=true bun x --bun vite build",

@@ -6,6 +6,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
@@ -316,7 +317,13 @@ export function OrgMembersPage() {
                   return (
                     <TableRow key={invite._id}>
                       <TableCell className="font-mono text-sm">
-                        {invite.token.slice(0, 12)}...
+                        <Link
+                          to={`/invite/${invite.token}`}
+                          className="hover:underline"
+                          title={invite.token}
+                        >
+                          {invite.token.slice(0, 12)}...
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">

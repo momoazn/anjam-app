@@ -3,6 +3,11 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId, normalizeUsername } from "./utils";
 
+const usernameRegex = /^[a-zA-Z0-9_]+$/;
+
+const sanitizeUsername = (username: string) =>
+  username.trim().replace(/[^a-zA-Z0-9_]/g, "_");
+
 export const getMe = query({
   args: {},
   handler: async (ctx) => {
@@ -34,7 +39,7 @@ export const ensureProfile = mutation({
     // Generate username from email
     const email = user.email || "";
     const baseName = email.split("@")[0] || "user";
-    let username = baseName;
+    let username = sanitizeUsername(baseName);
     let suffix = 1;
 
     // Ensure uniqueness
@@ -68,7 +73,14 @@ export const setUsername = mutation({
   args: { username: v.string() },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    const normalized = normalizeUsername(args.username);
+    const cleaned = sanitizeUsername(args.username);
+    if (cleaned.length < 3) {
+      throw new Error("Username must be at least 3 characters");
+    }
+    if (!usernameRegex.test(cleaned)) {
+      throw new Error("Username contains invalid characters");
+    }
+    const normalized = normalizeUsername(cleaned);
 
     // Check uniqueness
     const existing = await ctx.db
@@ -83,7 +95,7 @@ export const setUsername = mutation({
     }
 
     await ctx.db.patch(userId, {
-      username: args.username,
+      username: cleaned,
       usernameNormalized: normalized,
       updatedAt: Date.now(),
     });

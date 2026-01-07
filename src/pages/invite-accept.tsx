@@ -1,3 +1,4 @@
+import { useAuthActions } from "@convex-dev/auth/react";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconAlertCircle,
@@ -18,12 +19,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
 import { useAcceptOrgInvitation, useInviteByToken } from "@/hooks";
+import { getHomeRoute } from "@/lib/mode";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function InviteAccept() {
   const navigate = useNavigate();
   const { token } = useParams<{ token: string }>();
+  const { signIn } = useAuthActions();
 
   const { data: inviteData, isLoading, error } = useInviteByToken(token ?? "");
   const acceptInviteMutation = useAcceptOrgInvitation();
@@ -62,9 +65,25 @@ export default function InviteAccept() {
     }
 
     try {
+      // Create an account (or log in) first, then accept the invite as the authenticated user.
+      // Invite acceptance is implemented as `acceptExistingUser` in Convex.
+      try {
+        await signIn("password", {
+          email: trimmedEmail,
+          password,
+          flow: "signUp",
+        });
+      } catch {
+        await signIn("password", {
+          email: trimmedEmail,
+          password,
+          flow: "signIn",
+        });
+      }
+
       await acceptInviteMutation.mutate(token ?? "");
       toast.success(auth.invite.success);
-      navigate("/dashboard", { replace: true });
+      navigate(getHomeRoute(), { replace: true });
     } catch (err: unknown) {
       toast.error(
         err instanceof Error ? err.message : "Failed to accept invite",

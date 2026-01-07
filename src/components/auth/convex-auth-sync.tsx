@@ -1,4 +1,4 @@
-import { useConvexAuth, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -17,6 +17,7 @@ export function ConvexAuthStateSync() {
 
   // Fetch user data if authenticated
   const userData = useQuery(api.users.getMe, isAuthenticated ? {} : "skip");
+  const ensureProfile = useMutation(api.users.ensureProfile);
 
   // Fetch organizations if authenticated
   const userOrgs = useQuery(
@@ -43,6 +44,14 @@ export function ConvexAuthStateSync() {
       setUser(userData);
     }
   }, [isAuthenticated, userData, setUser]);
+
+  // Ensure we have a usable profile (e.g. username for mentions).
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!userData) return;
+    if (userData.username) return;
+    void ensureProfile({});
+  }, [ensureProfile, isAuthenticated, userData]);
 
   // Sync organizations
   useEffect(() => {
