@@ -1,12 +1,14 @@
-import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { authClient } from "@/lib/auth-client";
 import { api } from "@/lib/convex";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/store/app-context-store";
 
-export function ConvexAuthStateSync() {
-  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
+export function AuthStateSync() {
+  const { data: session, isPending: isAuthLoading } = authClient.useSession();
+  const isAuthenticated = Boolean(session?.user);
   const { setUser, setAuthLoading, setOrganizations, setOrganizationsLoading } =
     useAuthStore(
       useShallow((state) => ({
@@ -29,7 +31,7 @@ export function ConvexAuthStateSync() {
 
   // Sync auth loading state
   useEffect(() => {
-    // We are loading if Convex Auth is loading, or if we are authenticated but data hasn't loaded yet
+    // We are loading if auth session is loading, or if we are authenticated but data hasn't loaded yet
     const isDataLoading =
       isAuthenticated && (userData === undefined || userOrgs === undefined);
     setAuthLoading(isAuthLoading || isDataLoading);

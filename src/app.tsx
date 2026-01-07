@@ -22,9 +22,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
-import { useModalUrlWatcher } from "@/hooks/use-modal-url-watcher";
 import { useTheme } from "@/hooks/use-theme";
-import { useAuthIsAuthenticated } from "@/store/auth-store";
+import { useAuthIsAuthenticated } from "@/store/app-context-store";
 
 import { AppRoutes } from "./router";
 
@@ -106,7 +105,6 @@ function AppLayout() {
 
 function App() {
   useTheme();
-  useModalUrlWatcher();
   const isDevelopment = import.meta.env.MODE === "development";
   const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 

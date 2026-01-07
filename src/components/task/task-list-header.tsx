@@ -6,7 +6,7 @@ import {
   MoreHorizontal,
   Plus,
 } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,6 +19,7 @@ import {
 import { task, tasks } from "@/constants";
 import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { useOpenModal } from "@/store/modal-store";
 import type { TaskStatus } from "@/types/tasks";
 
 export type TaskSortMode = "default" | "priority" | "date";
@@ -46,16 +47,16 @@ export function TaskListHeader({
   allSelected = false,
   onSelectAll,
 }: TaskListHeaderProps) {
-  const navigate = useNavigate();
+  const openModal = useOpenModal();
   const { id: projectId } = useParams<{ id: string }>();
   const IconComponent = taskStatusIcons[status as TaskStatus];
   const statusColor = getStatusColorVariant(status, "icon");
 
   const handleCreateTask = () => {
     if (projectId) {
-      navigate(`/projects/${projectId}/tasks/new`);
+      openModal("create-task", { projectId });
     } else {
-      navigate("/tasks/new");
+      openModal("create-task");
     }
   };
 

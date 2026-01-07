@@ -1,15 +1,24 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-type ModalType = "create-project" | "create-task" | null;
+type ModalType =
+  | "create-project"
+  | "create-task"
+  | "edit-project"
+  | "edit-task"
+  | null;
 
 interface ModalState {
   type: ModalType;
   isOpen: boolean;
   data?: {
     projectId?: string;
+    taskId?: string;
   };
-  openModal: (type: ModalType, data?: { projectId?: string }) => void;
+  openModal: (
+    type: ModalType,
+    data?: { projectId?: string; taskId?: string },
+  ) => void;
   closeModal: () => void;
 }
 

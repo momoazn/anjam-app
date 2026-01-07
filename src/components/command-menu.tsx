@@ -22,6 +22,7 @@ import { commandMenu } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
 import type { SearchResponse } from "@/hooks/use-global-search";
 import { cn } from "@/lib/utils";
+import { useOpenModal } from "@/store/modal-store";
 
 interface CommandItem {
   id: string;
@@ -68,6 +69,7 @@ export function CommandMenu() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [debouncedQuery] = useDebounce(search, 300);
   const navigate = useNavigate();
+  const openModal = useOpenModal();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: searchData, isLoading: isSearchLoading } =
@@ -98,14 +100,14 @@ export function CommandMenu() {
   }, [navigate]);
 
   const navigateToNewTask = useCallback(() => {
-    navigate("/tasks/new");
+    openModal("create-task");
     setOpen(false);
-  }, [navigate]);
+  }, [openModal]);
 
   const navigateToNewProject = useCallback(() => {
-    navigate("/projects/new");
+    openModal("create-project");
     setOpen(false);
-  }, [navigate]);
+  }, [openModal]);
 
   const navigateToInsights = useCallback(() => {
     navigate("/insights");

@@ -4,9 +4,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "./app";
-import { ConvexAuthStateSync } from "./components/auth/convex-auth-sync";
-import { authClient } from "./lib/auth-client";
+import { AuthStateSync } from "./components/auth/auth-state-sync";
 import "./index.css";
+import { authClient } from "./lib/auth-client";
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 if (!convexUrl) {
@@ -23,7 +23,7 @@ if (isDevelopment) {
   root.render(
     <StrictMode>
       <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-        <ConvexAuthStateSync />
+        <AuthStateSync />
         <App />
       </ConvexBetterAuthProvider>
     </StrictMode>,
@@ -42,7 +42,7 @@ if (isDevelopment) {
           }}
         >
           <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-            <ConvexAuthStateSync />
+            <AuthStateSync />
             <App />
           </ConvexBetterAuthProvider>
         </PostHogProvider>

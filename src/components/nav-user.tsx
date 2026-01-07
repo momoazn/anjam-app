@@ -21,14 +21,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { navigation, organization, user as userLabels } from "@/constants";
+import { authClient } from "@/lib/auth-client";
 import type { Doc } from "@/lib/convex";
 import { cn } from "@/lib/utils";
 import {
   useAuthActions,
   useAuthUser,
   useCurrentOrgRole,
-} from "@/store/auth-store";
-import { authClient } from "@/lib/auth-client";
+} from "@/store/app-context-store";
 
 import { UserAvatar } from "./user-avatar";
 

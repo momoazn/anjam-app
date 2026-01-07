@@ -1,6 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { useOpenModal } from "@/store/modal-store";
+
 /**
  * Parse a keyboard event into a normalized key string
  */
@@ -33,6 +35,7 @@ function normalizeKeyEvent(e: KeyboardEvent): string {
 export function useKeyboardShortcuts() {
   const navigate = useNavigate();
   const location = useLocation();
+  const openModal = useOpenModal();
 
   // Track "g" prefix for vim-style navigation
   const goPrefixTimeoutRef = { current: null as NodeJS.Timeout | null };
@@ -111,12 +114,11 @@ export function useKeyboardShortcuts() {
       // "c" to create new task
       if (normalizedKey === "c" && !e.repeat) {
         e.preventDefault();
-        // Navigate to create task, preserving project context if on project page
         if (location.pathname.match(/^\/projects\/[^/]+/)) {
           const projectId = location.pathname.split("/")[2];
-          navigate(`/projects/${projectId}/tasks/new`);
+          openModal("create-task", { projectId });
         } else {
-          navigate("/tasks/new");
+          openModal("create-task");
         }
         return;
       }

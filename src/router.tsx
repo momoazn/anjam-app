@@ -1,4 +1,3 @@
-import { useConvexAuth } from "convex/react";
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
@@ -22,6 +21,7 @@ import {
 } from "@/constants";
 
 import { usePermissions } from "./hooks/use-permissions";
+import { authClient } from "./lib/auth-client";
 import type { Permission } from "./lib/permissions";
 import {
   useAuthIsAuthenticated,
@@ -29,7 +29,7 @@ import {
   useAuthUser,
   useCurrentOrgOnboardingCompleted,
   useCurrentOrganization,
-} from "./store/auth-store";
+} from "./store/app-context-store";
 
 // Standardized error fallback component for lazy-loaded routes
 const PageLoadError = ({ message }: { message: string }) => (
@@ -55,78 +55,70 @@ const createLazyPage = (
   );
 
 const Login = createLazyPage(
-  () => import("@/pages/login"),
+  () => import("@/pages/auth/login"),
   errors.pageLoad.login,
 );
 const Register = createLazyPage(
-  () => import("@/pages/register"),
+  () => import("@/pages/auth/register"),
   errors.pageLoad.register,
 );
 const Landing = createLazyPage(
-  () => import("@/pages/landing"),
+  () => import("@/pages/utility/landing"),
   errors.pageLoad.notFound,
 );
 const PendingActivation = createLazyPage(
-  () => import("@/pages/pending-activation"),
+  () => import("@/pages/auth/pending-activation"),
   errors.pageLoad.notFound,
 );
 const Projects = createLazyPage(
-  () => import("@/pages/projects"),
+  () => import("@/pages/projects/index"),
   errors.pageLoad.projects,
 );
 const ProjectDetails = createLazyPage(
-  () => import("@/pages/project-details"),
-  errors.pageLoad.projects,
-);
-const EditProject = createLazyPage(
-  () => import("@/pages/edit-project"),
+  () => import("@/pages/projects/details"),
   errors.pageLoad.projects,
 );
 const TaskBoardPage = createLazyPage(
   () =>
-    import("@/pages/task-board").then((module) => ({
+    import("@/pages/tasks/board").then((module) => ({
       default: module.TaskBoardPage,
     })),
   errors.pageLoad.tasks,
 );
 const Tasks = createLazyPage(
-  () => import("@/pages/tasks"),
+  () => import("@/pages/tasks/index"),
   errors.pageLoad.tasks,
 );
 const TaskDetails = createLazyPage(
-  () => import("@/pages/task-details"),
-  errors.pageLoad.tasks,
-);
-const EditTask = createLazyPage(
-  () => import("@/pages/edit-task"),
+  () => import("@/pages/tasks/details"),
   errors.pageLoad.tasks,
 );
 const Tags = createLazyPage(
-  () => import("@/pages/tags"),
+  () => import("@/pages/utility/tags"),
   errors.pageLoad.notFound,
 );
 const TaskCalendar = createLazyPage(
-  () => import("@/pages/task-calendar"),
+  () => import("@/pages/tasks/calendar"),
   errors.pageLoad.notFound,
 );
 const Inbox = createLazyPage(
-  () => import("@/pages/inbox"),
+  () => import("@/pages/insights/inbox"),
   errors.pageLoad.notFound,
 );
 const ProjectTasks = createLazyPage(
-  () => import("@/pages/project-tasks"),
+  () => import("@/pages/projects/tasks"),
   errors.pageLoad.projectTasks,
 );
 const Insights = createLazyPage(
-  () => import("@/pages/insights"),
+  () => import("@/pages/insights/insights"),
   errors.pageLoad.notFound,
 );
 const Helps = createLazyPage(
-  () => import("@/pages/helps"),
+  () => import("@/pages/utility/helps"),
   errors.pageLoad.helps,
 );
 const Settings = createLazyPage(
-  () => import("@/pages/settings"),
+  () => import("@/pages/settings/index"),
   errors.pageLoad.notFound,
 );
 const PreferencesPage = createLazyPage(
@@ -134,22 +126,22 @@ const PreferencesPage = createLazyPage(
   errors.pageLoad.notFound,
 );
 const Notifications = createLazyPage(
-  () => import("@/pages/notifications"),
+  () => import("@/pages/insights/notifications"),
   errors.pageLoad.notifications,
 );
 const Views = createLazyPage(
-  () => import("@/pages/views"),
+  () => import("@/pages/insights/views"),
   errors.pageLoad.notFound,
 );
 const NotFound = createLazyPage(
-  () => import("@/pages/not-found"),
+  () => import("@/pages/utility/not-found"),
   errors.pageLoad.notFound,
 );
 
 // Organization pages (lazy loaded)
 const SelectOrganization = createLazyPage(
   () =>
-    import("@/pages/select-organization").then((module) => ({
+    import("@/pages/organizations/select").then((module) => ({
       default: module.SelectOrganizationPage,
     })),
   errors.pageLoad.notFound,
@@ -170,19 +162,19 @@ const OrgMembers = createLazyPage(
 );
 const InviteAccept = createLazyPage(
   () =>
-    import("@/pages/invite-accept").then((module) => ({
+    import("@/pages/auth/invite-accept").then((module) => ({
       default: module.InviteAccept,
     })),
   errors.pageLoad.notFound,
 );
 const Onboarding = createLazyPage(
-  () => import("@/pages/onboarding"),
+  () => import("@/pages/auth/onboarding"),
   errors.pageLoad.notFound,
 );
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isLoading: isAuthLoading } = useConvexAuth();
+  const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
   if (isAuthLoading) {
     return (
@@ -199,7 +191,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // RequireOrganization component - ensures user has an organization selected
 const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
-  const { isLoading: isAuthLoading } = useConvexAuth();
+  const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
   const currentOrg = useCurrentOrganization();
   const userOrganizations = useAuthStore((s) => s.userOrganizations);
@@ -252,7 +244,7 @@ const PermissionProtectedRoute = ({
   children: React.ReactNode;
   permission: Permission;
 }) => {
-  const { isLoading: isAuthLoading } = useConvexAuth();
+  const { isPending: isAuthLoading } = authClient.useSession();
   const user = useAuthUser();
   const { can } = usePermissions();
   const isLoggedIn = useAuthIsAuthenticated();
@@ -289,7 +281,7 @@ const PermissionProtectedRoute = ({
 
 // PublicRoute component (redirects authenticated users to inbox)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isLoading: isAuthLoading } = useConvexAuth();
+  const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
 
   if (isAuthLoading) {
@@ -307,7 +299,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 
 // LandingRoute component (redirects authenticated users to inbox, shows landing for guests)
 const LandingRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isLoading: isAuthLoading } = useConvexAuth();
+  const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
 
   if (isAuthLoading) {
@@ -449,25 +441,11 @@ const routes: RouteType[] = [
     title: navigation.projects,
   },
   {
-    path: "/projects/new",
-    element: <Navigate to="/projects" replace />,
-    protected: true,
-    requiresOrg: true,
-    title: projects.create.title,
-  },
-  {
     path: "/projects/:id/details",
     element: <ProjectDetails />,
     protected: true,
     requiresOrg: true,
     title: projects.details.title,
-  },
-  {
-    path: "/projects/:id/edit",
-    element: <EditProject />,
-    protected: true,
-    requiresOrg: true,
-    title: projects.edit.title,
   },
   {
     path: "/login",
@@ -519,25 +497,11 @@ const routes: RouteType[] = [
     title: tasks.board.title,
   },
   {
-    path: "/tasks/new",
-    element: <Navigate to="/tasks" replace />,
-    protected: true,
-    requiresOrg: true,
-    title: tasks.addTask.title,
-  },
-  {
     path: "/tasks/:id",
     element: <TaskDetails />,
     protected: true,
     requiresOrg: true,
     title: tasks.details.title,
-  },
-  {
-    path: "/tasks/:id/edit",
-    element: <EditTask />,
-    protected: true,
-    requiresOrg: true,
-    title: tasks.edit.title,
   },
   {
     path: "/tags",
@@ -570,13 +534,6 @@ const routes: RouteType[] = [
     protected: true,
     requiresOrg: true,
     title: tasks.board.title,
-  },
-  {
-    path: "/projects/:id/tasks/new",
-    element: <Navigate to="/projects/:id/tasks" replace />,
-    protected: true,
-    requiresOrg: true,
-    title: tasks.addTask.title,
   },
   {
     path: "/helps",

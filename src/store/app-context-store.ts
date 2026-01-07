@@ -1,8 +1,8 @@
-import { useConvexAuth } from "convex/react";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
+import { authClient } from "@/lib/auth-client";
 import type { Doc } from "@/lib/convex";
 
 type OrgRole = "owner" | "member";
@@ -39,18 +39,50 @@ interface AuthState {
   clear: () => void;
 }
 
+const STORAGE_KEY = "anjam-auth-storage";
+
+const initialState = {
+  user: null,
+  isAuthenticated: false,
+  currentOrganization: null,
+  currentOrgRole: null,
+  userOrganizations: [],
+  isLoading: false,
+  isLoadingOrgs: false,
+  orgsError: null,
+} satisfies Omit<
+  AuthState,
+  | "login"
+  | "updateUser"
+  | "setUser"
+  | "setAuthLoading"
+  | "setOrganizations"
+  | "setOrganizationsLoading"
+  | "setCurrentOrganization"
+  | "fetchUserOrganizations"
+  | "switchOrganization"
+  | "logout"
+  | "clear"
+>;
+
+const selectOrgState = (orgs: OrganizationWithRole[]) => {
+  if (orgs.length === 0) {
+    return {
+      currentOrganization: null,
+      currentOrgRole: null,
+    };
+  }
+  return {
+    currentOrganization: orgs[0].organization,
+    currentOrgRole: orgs[0].role,
+  };
+};
+
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
       (set, get) => ({
-        user: null,
-        isAuthenticated: false,
-        currentOrganization: null,
-        currentOrgRole: null,
-        userOrganizations: [],
-        isLoading: false,
-        isLoadingOrgs: false,
-        orgsError: null,
+        ...initialState,
 
         login: (user) => {
           set({
@@ -75,17 +107,12 @@ export const useAuthStore = create<AuthState>()(
         },
 
         setOrganizations: (orgs) => {
-          set({ userOrganizations: orgs, isLoadingOrgs: false });
-
           const { currentOrganization } = get();
-          if (!currentOrganization && orgs.length > 0) {
-            const firstOrg = orgs[0].organization;
-
-            set({
-              currentOrganization: firstOrg,
-              currentOrgRole: orgs[0].role,
-            });
-          }
+          set({
+            userOrganizations: orgs,
+            isLoadingOrgs: false,
+            ...(currentOrganization ? {} : selectOrgState(orgs)),
+          });
         },
 
         setOrganizationsLoading: (loading) => {
@@ -120,29 +147,16 @@ export const useAuthStore = create<AuthState>()(
 
         logout: () => {
           set({
-            user: null,
-            isAuthenticated: false,
-            currentOrganization: null,
-            currentOrgRole: null,
-            userOrganizations: [],
+            ...initialState,
           });
         },
 
         clear: () => {
-          set({
-            user: null,
-            isAuthenticated: false,
-            currentOrganization: null,
-            currentOrgRole: null,
-            userOrganizations: [],
-            isLoading: false,
-            isLoadingOrgs: false,
-            orgsError: null,
-          });
+          set({ ...initialState });
         },
       }),
       {
-        name: "anjam-auth-storage",
+        name: STORAGE_KEY,
         storage: createJSONStorage(() => localStorage),
         partialize: (state) => ({
           user: state.user,
@@ -159,11 +173,12 @@ export const useAuthStore = create<AuthState>()(
 
 export const useAuthUser = () => useAuthStore((state) => state.user);
 export const useAuthIsAuthenticated = () => {
-  // Prefer Convex auth as source of truth; fallback to persisted state while Convex loads.
+  // Prefer Better Auth session as source of truth; fallback to persisted state while it loads.
   // This avoids incorrect redirects if the auth-store user sync lags behind.
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { data: session, isPending } = authClient.useSession();
   const persisted = useAuthStore((state) => state.isAuthenticated);
-  return isLoading ? persisted : isAuthenticated;
+  const isAuthenticated = Boolean(session?.user);
+  return isPending ? persisted : isAuthenticated;
 };
 export const useCurrentOrganization = () =>
   useAuthStore((state) => state.currentOrganization);

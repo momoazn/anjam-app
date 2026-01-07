@@ -1,9 +1,11 @@
-import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 
+import { authClient } from "@/lib/auth-client";
 import { Id, api } from "@/lib/convex";
 
 export function useNotifications() {
-  const { isAuthenticated } = useConvexAuth();
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = Boolean(session?.user);
   const notifications = useQuery(
     api.notifications.listForMe,
     isAuthenticated ? {} : "skip",
@@ -17,7 +19,8 @@ export function useNotifications() {
 }
 
 export function useUnreadCount() {
-  const { isAuthenticated } = useConvexAuth();
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = Boolean(session?.user);
   const notifications = useQuery(
     api.notifications.listForMe,
     isAuthenticated ? {} : "skip",
