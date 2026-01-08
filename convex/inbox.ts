@@ -47,17 +47,18 @@ export const getForMe = query({
     );
 
     // 3. Recently updated where creator == me
-    // Query all tasks created by user, then sort by updatedAt desc
-    const createdByMeAll = await ctx.db
+    // Fetch only the most recent tasks created by the user (avoid loading the full history).
+    const createdByMeRecent = await ctx.db
       .query("tasks")
-      .withIndex("by_creator", (q) => q.eq("creatorUserId", userId))
+      .withIndex("by_creator_updatedAt", (q) => q.eq("creatorUserId", userId))
+      .order("desc")
       .filter((q) => q.eq(q.field("deletedAt"), undefined))
-      .collect();
+      .take(50);
 
     // Combine assigned + created to find "recently updated"
     // "Section C: tasks updated recently where user is participant"
     // Participant = assigned OR created.
-    const allParticipating = [...assignedTasks, ...createdByMeAll];
+    const allParticipating = [...assignedTasks, ...createdByMeRecent];
     // Dedup by ID
     const uniqueParticipating = Array.from(
       new Map(allParticipating.map((t) => [t._id, t])).values(),

@@ -18,13 +18,6 @@ export const getForOrg = query({
 
     if (!membership) throw new Error("Not a member");
 
-    // Fetch all tasks for the org
-    // Using `by_org` index which we added
-    const tasks = await ctx.db
-      .query("tasks")
-      .withIndex("by_org", (q) => q.eq("organizationId", args.organizationId))
-      .collect();
-
     // Compute metrics
     const now = new Date();
     const startOfWeek = new Date(
@@ -33,36 +26,52 @@ export const getForOrg = query({
       now.getDate() - now.getDay(),
     ).getTime();
 
-    let createdThisWeek = 0;
-    let completedThisWeek = 0;
-    let inProgress = 0;
+    const [createdThisWeekTasks, completedThisWeekTasks, inProgressTasks, all] =
+      await Promise.all([
+        ctx.db
+          .query("tasks")
+          .withIndex("by_org", (q) =>
+            q.eq("organizationId", args.organizationId),
+          )
+          .filter((q) => q.eq(q.field("deletedAt"), undefined))
+          .filter((q) => q.gte(q.field("_creationTime"), startOfWeek))
+          .collect(),
+        ctx.db
+          .query("tasks")
+          .withIndex("by_org", (q) =>
+            q.eq("organizationId", args.organizationId),
+          )
+          .filter((q) => q.eq(q.field("deletedAt"), undefined))
+          .filter((q) => q.eq(q.field("status"), "done"))
+          .filter((q) => q.gte(q.field("updatedAt"), startOfWeek))
+          .collect(),
+        ctx.db
+          .query("tasks")
+          .withIndex("by_org", (q) =>
+            q.eq("organizationId", args.organizationId),
+          )
+          .filter((q) => q.eq(q.field("deletedAt"), undefined))
+          .filter((q) => q.eq(q.field("status"), "in_progress"))
+          .collect(),
+        ctx.db
+          .query("tasks")
+          .withIndex("by_org", (q) =>
+            q.eq("organizationId", args.organizationId),
+          )
+          .filter((q) => q.eq(q.field("deletedAt"), undefined))
+          .collect(),
+      ]);
+
+    const createdThisWeek = createdThisWeekTasks.length;
+    const completedThisWeek = completedThisWeekTasks.length;
+    const inProgress = inProgressTasks.length;
 
     const byAssignee: Record<string, { name: string; count: number }> = {};
-
-    for (const task of tasks) {
-      if (task.deletedAt) continue;
-
-      if (task._creationTime >= startOfWeek) {
-        createdThisWeek++;
-      }
-
-      if (task.status === "done") {
-        if (task.updatedAt && task.updatedAt >= startOfWeek) {
-          completedThisWeek++;
-        }
-      }
-
-      if (task.status === "in_progress") {
-        inProgress++;
-      }
-
-      if (task.assigneeUserId) {
-        const aid = task.assigneeUserId;
-        if (!byAssignee[aid]) {
-          byAssignee[aid] = { name: "Loading...", count: 0 };
-        }
-        byAssignee[aid].count++;
-      }
+    for (const task of all) {
+      if (!task.assigneeUserId) continue;
+      const assigneeId = task.assigneeUserId;
+      byAssignee[assigneeId] ??= { name: "Loading...", count: 0 };
+      byAssignee[assigneeId].count++;
     }
 
     // Fetch user names for assignee workload
@@ -81,7 +90,7 @@ export const getForOrg = query({
       completedThisWeek,
       inProgress,
       workload: Object.values(byAssignee),
-      totalTasks: tasks.length,
+      totalTasks: all.length,
     };
   },
 });

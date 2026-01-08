@@ -14,6 +14,7 @@ import type * as http from "../http.js";
 import type * as inbox from "../inbox.js";
 import type * as insights from "../insights.js";
 import type * as invites from "../invites.js";
+import type * as lib_auth from "../lib/auth.js";
 import type * as mentions from "../mentions.js";
 import type * as notifications from "../notifications.js";
 import type * as orgMembers from "../orgMembers.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   inbox: typeof inbox;
   insights: typeof insights;
   invites: typeof invites;
+  "lib/auth": typeof lib_auth;
   mentions: typeof mentions;
   notifications: typeof notifications;
   orgMembers: typeof orgMembers;

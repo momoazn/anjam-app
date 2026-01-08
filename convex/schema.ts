@@ -107,6 +107,7 @@ export default defineSchema({
     .index("by_project_taskNumber", ["projectId", "taskNumber"])
     .index("by_assignee", ["assigneeUserId"])
     .index("by_creator", ["creatorUserId"])
+    .index("by_creator_updatedAt", ["creatorUserId", "updatedAt"])
     .index("by_status", ["status"])
     .index("by_deletedAt", ["deletedAt"])
     .searchIndex("search_title", {
