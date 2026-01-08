@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { Logo } from "@/components/brand/logo";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { landing } from "@/constants";
 import { useTheme } from "@/hooks/use-theme";

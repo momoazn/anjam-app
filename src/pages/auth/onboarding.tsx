@@ -12,7 +12,7 @@ import { useMutation as useConvexMutation } from "convex/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Logo } from "@/components/brand/logo";
+import { Logo } from "@/components/logo";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

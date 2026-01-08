@@ -7,7 +7,7 @@ import { ProjectListGroup } from "@/components/project/project-list-group";
 import { ProjectCardSkeleton } from "@/components/skeletons/project-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/constants";
-import { useProjects } from "@/hooks";
+import { useProjects } from "@/hooks/projects";
 import { useCurrentOrgRole } from "@/store/app-context-store";
 import { useOpenModal } from "@/store/modal-store";
 

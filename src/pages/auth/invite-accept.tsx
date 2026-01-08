@@ -11,14 +11,15 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-import { Logo } from "@/components/brand/logo";
+import { Logo } from "@/components/logo";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
-import { useAcceptOrgInvitation, useInviteByToken } from "@/hooks";
+import { useInviteByToken } from "@/hooks/invites";
+import { useAcceptOrgInvitation } from "@/hooks/organization-members";
 import { authClient } from "@/lib/auth-client";
 import { api } from "@/lib/convex";
 

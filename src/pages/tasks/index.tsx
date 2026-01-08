@@ -7,8 +7,8 @@ import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { Toolbar, ToolbarSeparator } from "@/components/recipes/toolbar";
 import { BulkActionsBar } from "@/components/task/bulk-actions-bar";
+import { TaskListView } from "@/components/task/list/task-list-view";
 import { TaskFiltersPanel } from "@/components/task/task-filters-panel";
-import { TaskListView } from "@/components/task/task-list-view";
 import { TaskPagination } from "@/components/task/task-pagination";
 import { Button } from "@/components/ui/button";
 import { common, savedFilters as savedFiltersText, tasks } from "@/constants";
@@ -17,13 +17,13 @@ import {
   useBulkUpdateTasks,
   useTasks,
 } from "@/hooks/tasks";
-import { useSavedFilters } from "@/hooks/use-saved-filters";
 import { ALL_FILTER_VALUE, useTaskFilters } from "@/hooks/use-task-filters";
 import { useToast } from "@/hooks/use-toast";
 import { useUsers } from "@/hooks/users";
 import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/app-context-store";
+import { useSavedFilters } from "@/store/filters-store";
 import { useOpenModal } from "@/store/modal-store";
 import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 
@@ -215,13 +215,13 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   );
 
   const handleBulkDelete = async () => {
-    await bulkDelete.mutateAsync(selectedTasks);
+    await bulkDelete.mutate(selectedTasks);
     setSelectedTasks([]);
     setSelectionMode(false);
   };
 
   const handleBulkAssign = async (assigneeId: string) => {
-    await bulkUpdate.mutateAsync({
+    await bulkUpdate.mutate({
       ids: selectedTasks,
       updates: { assignee: assigneeId },
     });
@@ -229,7 +229,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   };
 
   const handleBulkStatus = async (status: TaskStatus) => {
-    await bulkUpdate.mutateAsync({
+    await bulkUpdate.mutate({
       ids: selectedTasks,
       updates: { status },
     });
@@ -237,7 +237,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   };
 
   const handleBulkPriority = async (priority: TaskPriority) => {
-    await bulkUpdate.mutateAsync({
+    await bulkUpdate.mutate({
       ids: selectedTasks,
       updates: { priority },
     });

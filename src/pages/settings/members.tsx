@@ -49,7 +49,7 @@ import {
   useOrganizationMembers,
   useRemoveOrgMember,
   useRevokeOrgInvite,
-} from "@/hooks";
+} from "@/hooks/organization-members";
 import type { Id } from "@/lib/convex";
 import { getUserInitials } from "@/lib/utils";
 import { useAuthUser } from "@/store/app-context-store";

@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { common, projects } from "@/constants";
-import { useAllTasks, useProject, useUpdateProject } from "@/hooks";
+import { useProject, useUpdateProject } from "@/hooks/projects";
+import { useAllTasks } from "@/hooks/tasks";
 import { cn } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 

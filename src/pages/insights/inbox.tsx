@@ -5,8 +5,8 @@ import { useSearchParams } from "react-router-dom";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
-import { TaskListSkeleton } from "@/components/skeletons/task-list-skeleton";
-import { TaskListItem } from "@/components/task/task-list-item";
+import { TaskListItem } from "@/components/task/list/task-list-item";
+import { TaskListSkeleton } from "@/components/task/list/task-list-skeleton";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { inbox } from "@/constants";
@@ -123,10 +123,10 @@ export default function Inbox() {
     // Section 2: Mentioned in comments
     // Get unique tasks from mentions, excluding those already in assigned
     const mentionedTaskIds = new Set(
-      mentions?.map((m) => m.expand?.task?.id).filter(Boolean) as string[],
+      mentions?.map((m) => m.expand?.task?._id).filter(Boolean) as string[],
     );
     const mentionedTasks = Array.from(mentionedTaskIds)
-      .map((taskId) => tasks.find((t) => t.id === taskId))
+      .map((taskId) => tasks.find((t) => t._id === taskId))
       .filter((t): t is TaskWithDetails => Boolean(t));
 
     // Filter functions
@@ -160,8 +160,8 @@ export default function Inbox() {
         tasks
           .filter(
             (t) =>
-              t.updated &&
-              new Date(t.updated) >= sevenDaysAgo &&
+              t.updatedAt &&
+              new Date(t.updatedAt) >= sevenDaysAgo &&
               (t.assigneeUserId === userId || t.creatorUserId === userId),
           )
           .slice(0, 10) as TaskWithDetails[],
@@ -214,7 +214,7 @@ export default function Inbox() {
               </Button>
             </div>
             <div className="mt-4">
-              <TaskListSkeleton count={6} />
+              <TaskListSkeleton />
             </div>
           </>
         </>
@@ -281,7 +281,7 @@ export default function Inbox() {
             />
           ) : (
             sections.assigned.map((task) => (
-              <TaskListItem key={task.id} task={task} showProject />
+              <TaskListItem key={task._id} task={task} showProject />
             ))
           )}
 
@@ -294,7 +294,7 @@ export default function Inbox() {
             <InlineEmptyState title={inbox.noMentions} />
           ) : (
             sections.mentioned.map((task) => (
-              <TaskListItem key={task.id} task={task} showProject />
+              <TaskListItem key={task._id} task={task} showProject />
             ))
           )}
 
@@ -311,7 +311,7 @@ export default function Inbox() {
               <InlineEmptyState title={inbox.noRecentUpdates} />
             ) : (
               sections.recentlyUpdated.map((task) => (
-                <TaskListItem key={task.id} task={task} showProject />
+                <TaskListItem key={task._id} task={task} showProject />
               ))
             )
           ) : (

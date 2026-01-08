@@ -27,7 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { common, tasks as tasksText } from "@/constants";
-import { useTasksPageData } from "@/hooks/use-tasks-page-data";
+import { useAllTasks } from "@/hooks/tasks";
 import { getTaskStatus, isTaskCompleted } from "@/lib/status-utils";
 import { cn, formatUserName } from "@/lib/utils";
 import { useOpenModal } from "@/store/modal-store";
@@ -60,9 +60,7 @@ interface CalendarTaskProps {
     projectId?: string;
     assignee?: {
       firstName?: string;
-      first_name?: string;
       lastName?: string;
-      last_name?: string;
       username?: string;
     } | null;
   };
@@ -74,7 +72,7 @@ function CalendarTask({ task }: CalendarTaskProps) {
     (typeof task.project === "object" ? task.project?._id : undefined) ??
     task.projectId ??
     "";
-  const taskId = task.id ?? task._id;
+  const taskId = task._id;
   const taskUrl = `/projects/${projectId}/tasks/${taskId}`;
 
   return (
@@ -95,8 +93,8 @@ function CalendarTask({ task }: CalendarTaskProps) {
         {task.assignee && (
           <p className="truncate text-[8px] font-medium tracking-tight opacity-60">
             {formatUserName(
-              task.assignee.firstName || task.assignee.first_name,
-              task.assignee.lastName || task.assignee.last_name,
+              task.assignee.firstName,
+              task.assignee.lastName,
               task.assignee.username,
             )}
           </p>
@@ -108,7 +106,9 @@ function CalendarTask({ task }: CalendarTaskProps) {
 
 export default function TaskCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { tasks: allTasks, isLoadingTasks } = useTasksPageData();
+  const tasksQuery = useAllTasks();
+  const allTasks = tasksQuery.data || [];
+  const isLoadingTasks = tasksQuery.isLoading;
   const openModal = useOpenModal();
 
   const tasksWithDeadlines = useMemo(() => {
@@ -286,7 +286,7 @@ export default function TaskCalendar() {
 
                   <div className="flex-1 space-y-1 overflow-hidden">
                     {dayTasks.slice(0, 4).map((task) => (
-                      <CalendarTask key={task.id} task={task} />
+                      <CalendarTask key={task._id} task={task} />
                     ))}
                     {dayTasks.length > 4 && (
                       <div className="border-border/10 text-muted-foreground/40 mt-2 border-t pt-1 text-center text-[8px] font-bold tracking-tight">

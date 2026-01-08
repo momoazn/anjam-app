@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { FormField } from "@/components/forms/form-field";
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
+import { FormField } from "@/components/recipes/form-field";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { organization, shared } from "@/constants";

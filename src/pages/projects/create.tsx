@@ -11,7 +11,7 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, projects } from "@/constants";
-import { useCreateProject } from "@/hooks";
+import { useCreateProject } from "@/hooks/projects";
 import {
   useAuthUser,
   useCurrentOrgRole,

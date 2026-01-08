@@ -30,7 +30,8 @@ import { BoardCard } from "@/components/task/board/board-card";
 import { BoardColumn } from "@/components/task/board/board-column";
 import { Button } from "@/components/ui/button";
 import { common, tasks as tasksText } from "@/constants";
-import { useAllTasks, useProject, useReorderTask } from "@/hooks";
+import { useProject } from "@/hooks/projects";
+import { useAllTasks, useReorderTask } from "@/hooks/tasks";
 import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
 import { useOpenModal } from "@/store/modal-store";
 import type { TaskStatus, TaskWithProject } from "@/types/tasks";
@@ -290,7 +291,7 @@ export function TaskBoardPage() {
 
     if (needsUpdate) {
       updateTaskPosition({
-        taskId: originalTask.id ?? originalTask._id,
+        taskId: originalTask._id,
         status: currentStatus,
         order: newOrder,
       });
@@ -390,7 +391,7 @@ export function TaskBoardPage() {
                 className="border-primary/20 bg-card w-70 overflow-hidden rounded-xl border shadow-2xl"
                 style={{
                   opacity: 0.95,
-                  viewTransitionName: `task-${activeTask.id}`,
+                  viewTransitionName: `task-${activeTask._id}`,
                 }}
               >
                 <BoardCard task={activeTask} />

@@ -5,9 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
-import { TaskDetailsContent } from "@/components/task/task-details-content";
-import { TaskDetailsSidebar } from "@/components/task/task-details-sidebar";
-import { TaskDetailsSkeleton } from "@/components/task/task-details-skeleton";
+import { TaskDetailsContent } from "@/components/task/details/task-details-content";
+import { TaskDetailsSidebar } from "@/components/task/details/task-details-sidebar";
+import { TaskDetailsSkeleton } from "@/components/task/details/task-details-skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -80,13 +80,7 @@ export default function TaskDetails() {
             <span className="text-muted-foreground/40">•</span>
             <span>
               {tasks.details.createdBy}{" "}
-              {(typeof task.expand?.creator === "object" &&
-              task.expand?.creator &&
-              "username" in task.expand.creator &&
-              typeof (task.expand.creator as { username?: unknown })
-                .username === "string"
-                ? (task.expand.creator as { username: string }).username
-                : undefined) || tasks.details.system}
+              {task.creator?.username || tasks.details.system}
             </span>
           </div>
         }

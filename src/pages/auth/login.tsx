@@ -9,8 +9,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { Logo } from "@/components/brand/logo";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { Logo } from "@/components/logo";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

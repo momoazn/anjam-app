@@ -26,25 +26,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { common, notifications as notificationsText } from "@/constants";
-import { useMentions } from "@/hooks";
+import { useMentions } from "@/hooks/mentions";
 import {
-  useClearAll,
-  useClearRead,
-  useDeleteNotification,
-  useMarkAllAsRead,
-  useMarkAsRead,
+  useNotificationMutation,
   useNotifications,
 } from "@/hooks/notifications";
 
 export default function Notifications() {
   const { data: notificationsData = [], isLoading, error } = useNotifications();
   const { data: mentionsData = [], isLoading: mentionsLoading } = useMentions();
-  const markAsRead = useMarkAsRead();
-
-  const markAllAsRead = useMarkAllAsRead();
-  const deleteNotification = useDeleteNotification();
-  const clearAll = useClearAll();
-  const clearRead = useClearRead();
+  const markAsRead = useNotificationMutation("markRead");
+  const markAllAsRead = useNotificationMutation("markAllRead");
+  const deleteNotification = useNotificationMutation("delete");
+  const clearAll = useNotificationMutation("clearAll");
+  const clearRead = useNotificationMutation("clearRead");
   const pendingDeletesRef = useRef(new Map<string, number>());
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 

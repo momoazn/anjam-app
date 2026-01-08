@@ -76,14 +76,13 @@ export default function Insights() {
 
     // Helper to get created date from task (Convex uses _creationTime)
     const getCreatedDate = (t: (typeof tasks)[0]): Date => {
-      // The hook maps _creationTime to created as ISO string
-      return new Date(t.created || 0);
+      return new Date(t._creationTime || 0);
     };
 
     // Helper to get updated date from task (Convex uses updatedAt)
     const getUpdatedDate = (t: (typeof tasks)[0]): Date | null => {
-      if (t.updated) {
-        return new Date(t.updated);
+      if (t.updatedAt) {
+        return new Date(t.updatedAt);
       }
       return null;
     };
@@ -165,15 +164,11 @@ export default function Insights() {
 
     const workloadByAssignee = Array.from(workloadMap.entries())
       .map(([userId, count]) => {
-        const user = users?.find((u) => (u.id ?? u._id) === userId);
+        const user = users?.find((u) => u._id === userId);
         return {
           userId,
           name: user
-            ? formatUserName(
-                user.firstName ?? user.first_name,
-                user.lastName ?? user.last_name,
-                user.username,
-              )
+            ? formatUserName(user.firstName, user.lastName, user.username)
             : "ناشناس",
           count,
         };

@@ -12,7 +12,7 @@ import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { common, tasks } from "@/constants";
-import { useCreateTask } from "@/hooks";
+import { useCreateTask } from "@/hooks/tasks";
 import { useAuthUser } from "@/store/app-context-store";
 import type { TaskPriority, TaskStatus } from "@/types/tasks";
 

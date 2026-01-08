@@ -6,13 +6,15 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
-import { TaskFilters } from "@/components/task/task-filters";
-import { TaskListGroup } from "@/components/task/task-list-group";
-import { TaskListSkeleton } from "@/components/task/task-list-skeleton";
+import { TaskFilters } from "@/components/task/filters/task-filters";
+import { TaskListGroup } from "@/components/task/list/task-list-group";
+import { TaskListSkeleton } from "@/components/task/list/task-list-skeleton";
 import { Button } from "@/components/ui/button";
 import { projects, tasks as tasksText } from "@/constants";
-import { useProjectTasksPageData } from "@/hooks/use-project-tasks-page-data";
+import { useProject } from "@/hooks/projects";
+import { useAllTasks } from "@/hooks/tasks";
 import { useTaskFilters } from "@/hooks/use-task-filters";
+import { useUsers } from "@/hooks/users";
 import { statusOrder } from "@/lib/status-utils";
 import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { useOpenModal } from "@/store/modal-store";
@@ -25,13 +27,25 @@ export default function ProjectTasks() {
   const openModal = useOpenModal();
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const {
-    project,
-    tasks: tasksData,
-    users,
-    isLoadingTasks,
-    isLoadingUsers,
-  } = useProjectTasksPageData(projectId as string);
+  const projectQuery = useProject({
+    id: projectId,
+    enabled: Boolean(projectId),
+  });
+
+  const tasksQuery = useAllTasks({
+    projectId,
+    enabled: Boolean(projectId),
+  });
+
+  const usersQuery = useUsers({
+    enabled: true,
+  });
+
+  const project = projectQuery.data;
+  const tasksData = tasksQuery.data || [];
+  const users = usersQuery.data || [];
+  const isLoadingTasks = tasksQuery.isLoading;
+  const isLoadingUsers = usersQuery.isLoading;
 
   const {
     searchTerm,

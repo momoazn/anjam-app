@@ -23,8 +23,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { savedFilters as savedFiltersConstants, shared } from "@/constants";
-import { useSavedFilters } from "@/hooks/use-saved-filters";
 import { cn } from "@/lib/utils";
+import { useSavedFilters } from "@/store/filters-store";
 
 /**
  * Views Page - Manage Saved Filters

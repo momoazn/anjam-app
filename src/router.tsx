@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { PageErrorBoundary } from "@/components/error/page-error-boundary";
-import { RouteSuspense } from "@/components/suspense/route-suspense";
+import { PageErrorBoundary } from "@/components/page-error-boundary";
+import { RouteSuspense } from "@/components/route-suspense";
 import {
   app,
   auth,
