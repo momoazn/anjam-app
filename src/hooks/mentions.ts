@@ -10,10 +10,10 @@ export function useMentions() {
     data: mentions?.map((m: Mention) => ({
       ...m,
       expand: {
-        task: m.task ? { ...m.task, id: m.task._id } : undefined,
-        comment: m.comment ? { ...m.comment, id: m.comment._id } : undefined,
-        project: m.project ? { ...m.project, id: m.project._id } : undefined,
-        author: m.author ? { ...m.author, id: m.author._id } : undefined,
+        task: m.task ?? undefined,
+        comment: m.comment ?? undefined,
+        project: m.project ?? undefined,
+        author: m.author ?? undefined,
       },
     })),
     isLoading: mentions === undefined,

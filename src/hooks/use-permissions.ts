@@ -26,10 +26,6 @@ export function usePermissions(_projectId?: string): UsePermissionsResult {
   void _projectId;
   const currentOrgRole = useCurrentOrgRole();
 
-  // In v1, we simplified project roles to match org roles for now,
-  // or default to "member" if they are in the org.
-  // For proper project-level overrides, we'd need to fetch the project member record.
-  // For now, we assume if you are an org owner/admin, you are project owner/admin.
   const projectRole: ProjectRole =
     currentOrgRole === "owner" ? "owner" : "member";
 
@@ -57,19 +53,4 @@ export function usePermissions(_projectId?: string): UsePermissionsResult {
 
     refetch: () => {},
   };
-}
-
-export function useCanDo(permission: Permission, projectId?: string): boolean {
-  const { can } = usePermissions(projectId);
-  return can(permission);
-}
-
-export function useIsOrgAdmin(): boolean {
-  const { isOrgAdmin } = usePermissions();
-  return isOrgAdmin;
-}
-
-export function useCanManageProject(projectId: string): boolean {
-  const { can } = usePermissions(projectId);
-  return can("project.update");
 }

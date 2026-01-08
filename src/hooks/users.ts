@@ -19,13 +19,7 @@ export function useUsers(options: { enabled?: boolean } = {}) {
   );
 
   return {
-    data: users?.map((u) => ({
-      ...u,
-      id: u._id,
-      // Compatibility fields for PB UI
-      first_name: u.firstName,
-      last_name: u.lastName,
-    })),
+    data: users,
     isPending: users === undefined,
     isLoading: users === undefined,
     error: null,
@@ -48,14 +42,7 @@ export function useUser({
   );
 
   return {
-    data: user
-      ? {
-          ...user,
-          id: user._id,
-          first_name: user.firstName,
-          last_name: user.lastName,
-        }
-      : undefined,
+    data: user ?? undefined,
     isPending: user === undefined,
     isLoading: user === undefined,
     error: null,
@@ -86,10 +73,10 @@ export function useProjectUsers({
 
   return {
     data: users?.map((u) => ({
-      id: u._id,
+      _id: u._id,
       username: u.username,
-      first_name: u.firstName,
-      last_name: u.lastName,
+      firstName: u.firstName,
+      lastName: u.lastName,
       project_role: "member", // Default role
     })),
     isPending: users === undefined,
@@ -162,20 +149,7 @@ export function useDeleteUser(options?: {
         throw error;
       }
     },
-    mutateAsync: async (userId: string) => {
-      if (!currentOrg) return;
-      try {
-        const result = await removeMutation({
-          organizationId: currentOrg._id,
-          userId: userId as Id<"users">,
-        });
-        options?.onSuccess?.();
-        return result;
-      } catch (error) {
-        options?.onError?.(error);
-        throw error;
-      }
-    },
+
     isPending: false,
   };
 }

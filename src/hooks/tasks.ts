@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from "convex/react";
-import { useCallback } from "react";
 
 import type { Doc } from "@/lib/convex";
 import { Id, api } from "@/lib/convex";
@@ -22,73 +21,46 @@ type TaskDetails = Doc<"tasks"> & {
 function toTaskWithProject(task: ListedTask): TaskWithProject {
   return {
     ...task,
-    id: task._id,
-    display_id: task.displayId,
+    displayId: task.displayId,
     project: task.project
       ? {
           _id: task.project._id,
-          id: task.project._id,
           name: task.project.name,
           code: task.project.code,
         }
       : {
           _id: task.projectId,
-          id: task.projectId,
           name: "Loading...",
           code: "",
         },
     assignee:
       task.assignee ??
-      (task.assigneeUserId
-        ? { _id: task.assigneeUserId, id: task.assigneeUserId }
-        : null),
+      (task.assigneeUserId ? { _id: task.assigneeUserId } : null),
     creator: task.creator ?? null,
-    updated: task.updatedAt
-      ? new Date(task.updatedAt).toISOString()
-      : new Date(task._creationTime).toISOString(),
-    created: new Date(task._creationTime).toISOString(),
-    expand: {
-      project: task.project,
-      assignee: task.assignee,
-      creator: task.creator,
-    },
+    updatedAt: task.updatedAt,
   };
 }
 
 function toTaskWithDetails(task: TaskDetails): TaskWithDetails {
   return {
     ...task,
-    id: task._id,
-    display_id: task.displayId,
+    displayId: task.displayId,
     project: task.project
       ? {
           _id: task.project._id,
-          id: task.project._id,
           name: task.project.name,
           code: task.project.code,
         }
       : {
           _id: task.projectId,
-          id: task.projectId,
           name: "Loading...",
           code: "",
         },
     assignee:
       task.assignee ??
-      (task.assigneeUserId
-        ? { _id: task.assigneeUserId, id: task.assigneeUserId }
-        : null),
+      (task.assigneeUserId ? { _id: task.assigneeUserId } : null),
     creator: task.creator ?? null,
-    created: new Date(task._creationTime).toISOString(),
-    updated: task.updatedAt
-      ? new Date(task.updatedAt).toISOString()
-      : new Date(task._creationTime).toISOString(),
-    expand: {
-      project: task.project,
-      assignee: task.assignee,
-      creator: task.creator,
-      tags: task.tagsData,
-    },
+    updatedAt: task.updatedAt,
   };
 }
 
@@ -380,7 +352,7 @@ export function useBulkUpdateTasks() {
   const bulkUpdateMutation = useMutation(api.tasks.bulkUpdate);
 
   return {
-    mutateAsync: async ({
+    mutate: async ({
       ids,
       updates,
     }: {
@@ -414,20 +386,11 @@ export function useBulkDeleteTasks() {
   const bulkDeleteMutation = useMutation(api.tasks.bulkDelete);
 
   return {
-    mutateAsync: async (ids: string[]) => {
+    mutate: async (ids: string[]) => {
       return await bulkDeleteMutation({
         ids: ids as Id<"tasks">[],
       });
     },
     isPending: false,
   };
-}
-
-/**
- * Prefetch task (No-op in Convex as it doesn't use TanStack Query cache)
- */
-export function usePrefetchTask() {
-  return useCallback(() => {
-    // No-op
-  }, []);
 }

@@ -3,34 +3,24 @@ import { useMutation, useQuery } from "convex/react";
 import { type Doc, Id, api } from "@/lib/convex";
 
 export type CommentWithUser = {
-  id: string;
   _id: Id<"comments">;
   _creationTime: number;
-  created: string;
-  updated?: string;
   taskId: Id<"tasks">;
   userId: Id<"users">;
   content: string;
-  parent?: string;
   parentCommentId?: Id<"comments">;
   reactions?: unknown;
-  deleted_at?: string;
   deletedAt?: number;
   updatedAt?: number;
-  user: string;
   // Attachments support for Convex
   attachments?: string[];
   // Expand fields with compatibility
   expand: {
     user?: {
-      id: string;
       _id: Id<"users">;
       username: string;
       firstName?: string;
-      first_name?: string;
       lastName?: string;
-      last_name?: string;
-      avatar?: string;
       image?: string;
     };
   };
@@ -56,27 +46,14 @@ export function useComments(
     data: comments?.map(
       (c: Doc<"comments"> & { user?: Doc<"users"> | null }) => ({
         ...c,
-        id: c._id,
-        _id: c._id,
-        created: new Date(c._creationTime).toISOString(),
-        updated: c.updatedAt ? new Date(c.updatedAt).toISOString() : undefined,
-        parent: c.parentCommentId,
-        deleted_at: c.deletedAt
-          ? new Date(c.deletedAt).toISOString()
-          : undefined,
-        user: c.userId,
         attachments: [],
         expand: {
           user: c.user
             ? {
-                id: c.user._id,
                 _id: c.user._id,
                 username: c.user.username || "",
                 firstName: c.user.firstName,
-                first_name: c.user.firstName,
                 lastName: c.user.lastName,
-                last_name: c.user.lastName,
-                avatar: c.user.image,
                 image: c.user.image,
               }
             : undefined,

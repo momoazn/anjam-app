@@ -20,16 +20,8 @@ export function useProjects(options: { enabled?: boolean } = {}) {
     data: projects?.map(
       (p: Doc<"projects"> & { supervisor?: Doc<"users"> | null }) => ({
         ...p,
-        id: p._id,
         expand: {
-          supervisor: p.supervisor
-            ? {
-                ...p.supervisor,
-                id: p.supervisor._id,
-                first_name: p.supervisor.firstName,
-                last_name: p.supervisor.lastName,
-              }
-            : undefined,
+          supervisor: p.supervisor ?? undefined,
         },
       }),
     ),
@@ -56,33 +48,12 @@ export function useProject(options: {
     data: project
       ? {
           ...project,
-          id: project._id,
           expand: {
             supervisor: (
               project as Doc<"projects"> & { supervisor?: Doc<"users"> | null }
             ).supervisor
-              ? {
-                  ...(
-                    project as Doc<"projects"> & {
-                      supervisor: Doc<"users">;
-                    }
-                  ).supervisor,
-                  id: (
-                    project as Doc<"projects"> & {
-                      supervisor: Doc<"users">;
-                    }
-                  ).supervisor._id,
-                  first_name: (
-                    project as Doc<"projects"> & {
-                      supervisor: Doc<"users">;
-                    }
-                  ).supervisor.firstName,
-                  last_name: (
-                    project as Doc<"projects"> & {
-                      supervisor: Doc<"users">;
-                    }
-                  ).supervisor.lastName,
-                }
+              ? (project as Doc<"projects"> & { supervisor: Doc<"users"> })
+                  .supervisor
               : undefined,
           },
         }
@@ -187,17 +158,7 @@ export function useDeleteProject(options?: {
         throw error;
       }
     },
-    mutateAsync: async (id: string) => {
-      try {
-        await deleteProjectMutation({
-          projectId: id as Id<"projects">,
-        });
-        options?.onSuccess?.();
-      } catch (error) {
-        options?.onError?.(error);
-        throw error;
-      }
-    },
+
     isPending: false,
   };
 }

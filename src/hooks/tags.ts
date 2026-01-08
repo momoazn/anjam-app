@@ -52,8 +52,7 @@ export function useCreateTag() {
 
   return {
     mutate,
-    mutateAsync: mutate,
-    isPending: false, // Convex mutations don't have a built-in isPending in this way, but we can wrap it if needed
+    isPending: false,
   };
 }
 
@@ -76,7 +75,6 @@ export function useUpdateTag() {
 
   return {
     mutate,
-    mutateAsync: mutate,
     isPending: false,
   };
 }
@@ -92,7 +90,6 @@ export function useDeleteTag() {
 
   return {
     mutate,
-    mutateAsync: mutate,
     isPending: false,
   };
 }

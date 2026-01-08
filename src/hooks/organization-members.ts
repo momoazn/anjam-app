@@ -37,15 +37,13 @@ export function useOrganizationMembers(options?: UseOrgMembersOptions) {
       const user = m.user
         ? {
             ...m.user,
-            id: m.user._id,
-            first_name: m.user.firstName,
-            last_name: m.user.lastName,
+            firstName: m.user.firstName,
+            lastName: m.user.lastName,
           }
         : null;
 
       return {
         ...m,
-        id: m._id,
         user,
         expand: {
           user,

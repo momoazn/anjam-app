@@ -18,16 +18,14 @@ export function useSubtasks(
   return {
     data: subtasks?.map((s) => ({
       ...s,
-      id: s._id, // Compatibility with existing components
-      created: new Date(s._creationTime).toISOString(),
       expand: {
         assignee: s.assignee
           ? {
-              id: s.assignee._id,
+              _id: s.assignee._id,
               username: s.assignee.username || "",
-              first_name: s.assignee.firstName,
-              last_name: s.assignee.lastName,
-              avatar: s.assignee.image,
+              firstName: s.assignee.firstName,
+              lastName: s.assignee.lastName,
+              image: s.assignee.image,
             }
           : undefined,
       },
