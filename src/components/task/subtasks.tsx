@@ -28,29 +28,29 @@ import { common, tasks } from "@/constants";
 import {
   useCreateSubtask,
   useDeleteSubtask,
-  useProjectUsers,
   useSubtasks,
   useUpdateSubtask,
-} from "@/hooks";
+} from "@/hooks/subtasks";
+import { useProjectUsers } from "@/hooks/users";
 import { formatTaskDate } from "@/lib/date-utils";
 import { cn, formatUserName } from "@/lib/utils";
 
 // Define a local interface matching the hook's return shape
 interface SubtaskWithAssignee {
-  id: string;
+  _id: string;
   title: string;
-  is_done: boolean;
+  isDone: boolean;
   order?: number;
-  created: string;
+  _creationTime: number;
   taskId: string;
   assigneeUserId?: string;
   expand?: {
     assignee?: {
-      id: string;
+      _id: string;
       username: string;
-      first_name?: string;
-      last_name?: string;
-      avatar?: string;
+      firstName?: string;
+      lastName?: string;
+      image?: string;
     };
   };
 }
@@ -86,7 +86,7 @@ function SortableSubtaskRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: subtask.id });
+  } = useSortable({ id: subtask._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -115,7 +115,8 @@ function SortableSubtaskRow({
           <div>
             <p className="text-sm font-bold tracking-tight">{subtask.title}</p>
             <p className="text-muted-foreground text-[11px] font-medium">
-              {assigneeName} · {formatTaskDate(subtask.created)}
+              {assigneeName} ·
+              {formatTaskDate(new Date(subtask._creationTime).toISOString())}
             </p>
           </div>
         </div>
@@ -125,13 +126,13 @@ function SortableSubtaskRow({
             size="sm"
             className={cn(
               "rounded-lg text-[10px] font-bold",
-              subtask.is_done ? "text-success" : "text-muted-foreground",
+              subtask.isDone ? "text-success" : "text-muted-foreground",
             )}
             onClick={onToggle}
             disabled={isUpdating}
           >
             <IconCheck className="size-3" />
-            {subtask.is_done
+            {subtask.isDone
               ? tasks.details.subtasks.reopen
               : tasks.details.subtasks.markDone}
           </Button>
@@ -155,9 +156,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   // Cast the hook return to our local type
   const { data: rawSubtasks, isLoading: isLoadingSubtasks } =
     useSubtasks(taskId);
-  const subtasksData = rawSubtasks as unknown as
-    | SubtaskWithAssignee[]
-    | undefined;
+  const subtasksData = rawSubtasks as SubtaskWithAssignee[] | undefined;
 
   const { data: users } = useProjectUsers({ projectId });
 
@@ -176,7 +175,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     if (!subtasksData) return;
     const sorted = [...subtasksData].sort((a, b) => {
       if (getSubtaskOrder(a) === getSubtaskOrder(b)) {
-        return new Date(a.created).getTime() - new Date(b.created).getTime();
+        return a._creationTime - b._creationTime;
       }
       return getSubtaskOrder(a) - getSubtaskOrder(b);
     });
@@ -185,8 +184,8 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
 
   const assigneeOptions = useMemo(() => {
     const options = users?.map((user) => ({
-      value: user.id,
-      label: formatUserName(user.first_name, user.last_name, user.username),
+      value: user._id,
+      label: formatUserName(user.firstName, user.lastName, user.username),
     }));
     return options ?? [];
   }, [users]);
@@ -224,7 +223,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     try {
       await updateSubtask.mutate({
         id: subtaskId,
-        updates: { is_done: !done },
+        updates: { isDone: !done },
       });
     } catch {
       toast.error("Failed to update subtask");
@@ -245,7 +244,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
       await Promise.all(
         nextOrder.map((subtask, index) =>
           updateSubtask.mutate({
-            id: subtask.id,
+            id: subtask._id,
             updates: { order: index + 1 },
           }),
         ),
@@ -261,8 +260,8 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     if (!over || active.id === over.id) return;
 
     setOrdered((items) => {
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
+      const oldIndex = items.findIndex((item) => item._id === active.id);
+      const newIndex = items.findIndex((item) => item._id === over.id);
       const nextOrder = arrayMove(items, oldIndex, newIndex);
       // Fix orders in the items themselves for local state
       const updatedOrder = nextOrder.map((item, index) => ({
@@ -359,27 +358,27 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
               onDragEnd={handleDragEnd}
             >
               <SortableContext
-                items={ordered.map((item) => item.id)}
+                items={ordered.map((item) => item._id)}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-3">
                   {ordered.map((subtask) => {
                     const assigneeName = subtask.expand?.assignee
                       ? formatUserName(
-                          subtask.expand.assignee.first_name,
-                          subtask.expand.assignee.last_name,
+                          subtask.expand.assignee.firstName,
+                          subtask.expand.assignee.lastName,
                           subtask.expand.assignee.username,
                         )
                       : tasks.details.unknownUser;
                     return (
                       <SortableSubtaskRow
-                        key={subtask.id}
+                        key={subtask._id}
                         subtask={subtask}
                         assigneeName={assigneeName}
                         onToggle={() =>
-                          toggleCompletion(subtask.id, Boolean(subtask.is_done))
+                          toggleCompletion(subtask._id, subtask.isDone)
                         }
-                        onDelete={() => handleDelete(subtask.id)}
+                        onDelete={() => handleDelete(subtask._id)}
                         // Since we don't have individual loading states from hooks easily, we pass false or global state
                         isUpdating={updateSubtask.isPending}
                         isDeleting={deleteSubtask.isPending}

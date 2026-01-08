@@ -36,7 +36,7 @@ interface BoardCardProps {
 export function BoardCard({ task }: BoardCardProps) {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
-  const taskId = task.id ?? task._id;
+  const taskId = task._id;
   const { setNodeRef, attributes, listeners, transform, isDragging } =
     useSortable({
       id: taskId,
@@ -68,7 +68,7 @@ export function BoardCard({ task }: BoardCardProps) {
 
   const assigneeRecord = task.assignee;
   const showProjectLabel = !projectId;
-  const displayId = task.displayId || task.display_id || "";
+  const displayId = task.displayId || "";
 
   const handleAssigneeChange = (value: string) => {
     updateTask.mutate({
@@ -98,7 +98,7 @@ export function BoardCard({ task }: BoardCardProps) {
 
   return (
     <div
-      id={`task-${task.id}`}
+      id={`task-${task._id}`}
       ref={setNodeRef}
       style={style}
       {...attributes}
@@ -161,12 +161,12 @@ export function BoardCard({ task }: BoardCardProps) {
                   {users && users.length > 0 ? (
                     users.map((user) => (
                       <SelectItem
-                        key={user.id}
-                        value={user.id}
+                        key={user._id}
+                        value={user._id}
                         className="text-xs font-bold"
                       >
-                        {user.first_name || user.last_name
-                          ? `${user.first_name} ${user.last_name}`
+                        {user.firstName || user.lastName
+                          ? `${user.firstName} ${user.lastName}`
                           : user.username}
                       </SelectItem>
                     ))

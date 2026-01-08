@@ -2,15 +2,10 @@ import { UserAvatar } from "@/components/user-avatar";
 import { cn } from "@/lib/utils";
 
 type AssigneeUser = {
-  id?: string;
-  _id?: string;
   username?: string;
   firstName?: string;
-  first_name?: string;
   lastName?: string;
-  last_name?: string;
   image?: string;
-  avatar?: string;
 };
 
 type TaskAssigneeAvatarProps = {
@@ -64,11 +59,11 @@ export function TaskAssigneeAvatar({
   // Convert assignee to the format expected by UserAvatar
   const userProps = assignee
     ? {
-        first_name: assignee.first_name || assignee.firstName,
-        last_name: assignee.last_name || assignee.lastName,
+        firstName: assignee.firstName,
+        lastName: assignee.lastName,
         username: assignee.username ?? "",
-        avatar: assignee.avatar || assignee.image,
-        id: assignee.id || assignee._id || "",
+        image: assignee.image,
+        _id: "",
       }
     : undefined;
 

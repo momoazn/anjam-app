@@ -19,13 +19,10 @@ import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 interface TaskQuickEditProps {
   task: TaskWithProject;
   users: Array<{
-    id: string;
     _id: string;
     username: string;
     firstName?: string;
-    first_name?: string;
     lastName?: string;
-    last_name?: string;
   }>;
   children: React.ReactNode;
 }
@@ -45,7 +42,7 @@ export function StatusQuickEdit({
   const updateTask = useUpdateTask();
 
   const handleStatusChange = (status: string) => {
-    const taskId = task.id ?? task._id;
+    const taskId = task._id;
     updateTask.mutate({
       id: taskId,
       updates: { status: status as TaskStatus },
@@ -97,7 +94,7 @@ export function PriorityQuickEdit({
   ];
 
   const handlePriorityChange = (priority: string) => {
-    const taskId = task.id ?? task._id;
+    const taskId = task._id;
     updateTask.mutate({
       id: taskId,
       updates: { priority: priority as TaskPriority },
@@ -138,10 +135,10 @@ export function AssigneeQuickEdit({
 }: {
   task: TaskWithProject;
   users: Array<{
-    id: string;
+    _id: string;
     username: string;
-    first_name?: string;
-    last_name?: string;
+    firstName?: string;
+    lastName?: string;
   }>;
   onValueChange: () => void;
 }) {
@@ -149,7 +146,7 @@ export function AssigneeQuickEdit({
   const updateTask = useUpdateTask();
 
   const handleAssigneeChange = (assigneeId: string) => {
-    const taskId = task.id ?? task._id;
+    const taskId = task._id;
     updateTask.mutate({
       id: taskId,
       updates: { assigneeUserId: assigneeId || undefined },
@@ -182,12 +179,12 @@ export function AssigneeQuickEdit({
             ) : (
               users.map((user) => (
                 <SelectItem
-                  key={user.id}
-                  value={user.id}
+                  key={user._id}
+                  value={user._id}
                   className="text-xs font-bold"
                 >
-                  {user.first_name || user.last_name
-                    ? `${user.first_name} ${user.last_name}`
+                  {user.firstName || user.lastName
+                    ? `${user.firstName} ${user.lastName}`
                     : user.username}
                 </SelectItem>
               ))
@@ -214,7 +211,7 @@ export function DueDateQuickEdit({
 
   const handleDateChange = (date: Date | undefined) => {
     setSelectedDate(date);
-    const taskId = task.id ?? task._id;
+    const taskId = task._id;
     updateTask.mutate({
       id: taskId,
       updates: { deadline: date ? date.getTime() : undefined },

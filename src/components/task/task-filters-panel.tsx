@@ -1,26 +1,23 @@
 import { useState } from "react";
 
-import { ManageSavedFiltersDialog } from "@/components/task/manage-saved-filters-dialog";
-import { SaveFilterDialog } from "@/components/task/save-filter-dialog";
-import { SavedFiltersDropdown } from "@/components/task/saved-filters-dropdown";
-import { TaskFilters } from "@/components/task/task-filters";
+import { ManageSavedFiltersDialog } from "@/components/task/filters/manage-saved-filters-dialog";
+import { SaveFilterDialog } from "@/components/task/filters/save-filter-dialog";
+import { SavedFiltersDropdown } from "@/components/task/filters/saved-filters-dropdown";
+import { TaskFilters } from "@/components/task/filters/task-filters";
 import { Button } from "@/components/ui/button";
-import type { SavedFilter } from "@/hooks/use-saved-filters";
 import type {
   TaskFilterValues,
   UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
 import type { FilterableTask } from "@/lib/filter-utils";
+import type { SavedFilter } from "@/store/filters-store";
 
 // User type with compatibility fields
 interface UserWithCompat {
-  id: string;
   _id: string;
   username?: string;
   firstName?: string;
-  first_name?: string;
   lastName?: string;
-  last_name?: string;
 }
 
 export type TaskFiltersPanelProps = {

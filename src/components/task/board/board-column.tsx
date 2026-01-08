@@ -80,14 +80,12 @@ export function BoardColumn({
             className="flex min-h-full flex-col p-0 divide-y divide-border/40"
           >
             <SortableContext
-              items={tasks
-                .map((t) => t.id ?? t._id)
-                .filter((id): id is string => Boolean(id))}
+              items={tasks.map((t) => t._id)}
               strategy={verticalListSortingStrategy}
             >
               {showPlaceholder && <BoardPlaceholder />}
               {tasks.map((task) => (
-                <BoardCard key={task.id ?? task._id} task={task} />
+                <BoardCard key={task._id} task={task} />
               ))}
             </SortableContext>
 

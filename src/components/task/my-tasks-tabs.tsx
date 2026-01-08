@@ -1,9 +1,9 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Activity, Layers, Layout } from "lucide-react";
 
+import { TaskListGroup } from "@/components/task/list/task-list-group";
 import { MyTasksEmptyState } from "@/components/task/my-tasks-empty-state";
 import { MyTasksSkeleton } from "@/components/task/my-tasks-skeleton";
-import { TaskListGroup } from "@/components/task/task-list-group";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -202,14 +202,11 @@ export function MyTasksTabs({
                 <div className="divide-border/40 divide-y">
                   {project.tasks.map((task) => (
                     <Button
-                      key={task.id ?? task._id}
+                      key={task._id}
                       variant="ghost"
                       className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
                       onClick={() =>
-                        onProjectTaskClick(
-                          project.projectId,
-                          task.id ?? task._id,
-                        )
+                        onProjectTaskClick(project.projectId, task._id)
                       }
                     >
                       <div className="flex-1 text-right">
