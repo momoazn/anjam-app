@@ -7,7 +7,7 @@ export type MentionOption = {
   username: string;
   firstName?: string;
   lastName?: string;
-  avatar?: string;
+  image?: string;
 };
 
 type MentionAutocompleteProps = {
@@ -53,11 +53,11 @@ export function MentionAutocomplete({
             </span>
             <UserAvatar
               user={{
-                id: item.id,
+                _id: item.id,
                 username: item.username,
-                first_name: item.firstName,
-                last_name: item.lastName,
-                avatar: item.avatar,
+                firstName: item.firstName,
+                lastName: item.lastName,
+                image: item.image,
               }}
               className="border-border/40 size-7 rounded-md border"
             />

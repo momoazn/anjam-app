@@ -21,8 +21,8 @@ import {
 import { navigation, navigationSectionLabels } from "@/constants";
 import { useProjects } from "@/hooks/projects";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import { useUserPreferences } from "@/hooks/user-preferences";
 import { cn } from "@/lib/utils";
+import { useUserPreferences } from "@/store/preferences-store";
 
 export function ProjectsSubmenu() {
   const { data: projects = [] } = useProjects();
@@ -37,11 +37,11 @@ export function ProjectsSubmenu() {
   );
 
   const favoriteProjects = useMemo(() => {
-    return projects.filter((p) => favoriteIds.includes(p.id));
+    return projects.filter((p) => favoriteIds.includes(p._id));
   }, [projects, favoriteIds]);
 
   const recentProjects = useMemo(() => {
-    return projects.filter((p) => !favoriteIds.includes(p.id)).slice(0, 5);
+    return projects.filter((p) => !favoriteIds.includes(p._id)).slice(0, 5);
   }, [projects, favoriteIds]);
 
   const isProjectsActive = location.pathname === "/projects";
@@ -120,11 +120,11 @@ export function ProjectsSubmenu() {
                 {favoritesExpanded &&
                   favoriteProjects.map((project) => {
                     const isActive =
-                      location.pathname === `/projects/${project.id}/tasks`;
-                    const count = byProject.get(project.id) || 0;
+                      location.pathname === `/projects/${project._id}/tasks`;
+                    const count = byProject.get(project._id) || 0;
 
                     return (
-                      <SidebarMenuItem key={project.id}>
+                      <SidebarMenuItem key={project._id}>
                         <SidebarMenuButton
                           asChild
                           className={cn(
@@ -135,7 +135,7 @@ export function ProjectsSubmenu() {
                           )}
                         >
                           <NavLink
-                            to={`/projects/${project.id}/tasks`}
+                            to={`/projects/${project._id}/tasks`}
                             onClick={() => isMobile && setOpenMobile(false)}
                             className="block"
                           >
@@ -194,11 +194,11 @@ export function ProjectsSubmenu() {
                 {recentsExpanded &&
                   recentProjects.map((project) => {
                     const isActive =
-                      location.pathname === `/projects/${project.id}/tasks`;
-                    const count = byProject.get(project.id) || 0;
+                      location.pathname === `/projects/${project._id}/tasks`;
+                    const count = byProject.get(project._id) || 0;
 
                     return (
-                      <SidebarMenuItem key={project.id}>
+                      <SidebarMenuItem key={project._id}>
                         <SidebarMenuButton
                           asChild
                           className={cn(
@@ -209,7 +209,7 @@ export function ProjectsSubmenu() {
                           )}
                         >
                           <NavLink
-                            to={`/projects/${project.id}/tasks`}
+                            to={`/projects/${project._id}/tasks`}
                             onClick={() => isMobile && setOpenMobile(false)}
                             className="block"
                           >

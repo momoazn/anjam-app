@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { projects } from "@/constants";
-import { useCreateProject } from "@/hooks";
+import { useCreateProject } from "@/hooks/projects";
 import {
   useAuthUser,
   useCurrentOrgRole,

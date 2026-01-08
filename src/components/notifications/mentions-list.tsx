@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { notifications as notificationsText } from "@/constants";
-import { useDeleteNotification } from "@/hooks/notifications";
+import { useNotificationMutation } from "@/hooks/notifications";
 import { cn, stripHtml } from "@/lib/utils";
 
 type MentionsListProps = {
@@ -20,10 +20,10 @@ type MentionsListProps = {
 };
 
 export function MentionsList({ mentions, isLoading }: MentionsListProps) {
-  const deleteNotification = useDeleteNotification();
+  const deleteNotification = useNotificationMutation("delete");
 
   const handleMarkAsRead = async (mentionId: string) => {
-    await deleteNotification.mutateAsync(mentionId);
+    await deleteNotification.mutate(mentionId);
   };
 
   return (

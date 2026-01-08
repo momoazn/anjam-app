@@ -209,10 +209,10 @@ export function CommandMenu() {
       searchData.tasks.forEach(
         (task: NonNullable<SearchResponse>["tasks"][0]) => {
           items.push({
-            id: `task-${task.id}`,
+            id: `task-${task._id}`,
             label: task.title,
             icon: FileText,
-            action: () => navigateToTask(task.id),
+            action: () => navigateToTask(task._id),
             subtitle: `${task.displayId} • ${task.projectName}`,
             badge: task.status,
             type: "task",

@@ -5,23 +5,20 @@ import { cn, getUserInitials } from "@/lib/utils";
 type UserAvatarProps = {
   username?: string;
   user?: {
-    firstName?: string;
-    first_name?: string;
-    lastName?: string;
-    last_name?: string;
-    username?: string;
-    avatar?: string;
-    id?: string;
     _id?: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    image?: string;
   };
   showUnassigned?: boolean;
   className?: string;
 };
 
 function getAvatarUrl(user: UserAvatarProps["user"]) {
-  if (!user || !user.avatar) return undefined;
+  if (!user || !user.image) return undefined;
 
-  const avatar = user.avatar;
+  const avatar = user.image;
 
   // In Convex, avatars are typically stored as storage IDs or full URLs.
   // If it's a full URL or blob/data URL, use it as-is.
@@ -40,11 +37,11 @@ function getAvatarUrl(user: UserAvatarProps["user"]) {
 }
 
 function getFirstName(user: UserAvatarProps["user"]): string | undefined {
-  return user?.firstName ?? user?.first_name;
+  return user?.firstName;
 }
 
 function getLastName(user: UserAvatarProps["user"]): string | undefined {
-  return user?.lastName ?? user?.last_name;
+  return user?.lastName;
 }
 
 export function UserAvatar({

@@ -15,21 +15,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EmptyStateNoProjects } from "@/components/ui/empty-state";
 import { projects as projectsText } from "@/constants";
-import { useTasks } from "@/hooks";
+import { useTasks } from "@/hooks/tasks";
+import { cn } from "@/lib/utils";
 import {
   useToggleProjectFavorite,
   useUserPreferences,
-} from "@/hooks/user-preferences";
-import { cn } from "@/lib/utils";
+} from "@/store/preferences-store";
 
-type Project = {
-  id: string;
+type ProjectListItem = {
+  _id: string;
   name: string;
   code: string;
 };
 
 type ProjectListGroupProps = {
-  projects: Project[];
+  projects: ProjectListItem[];
   onEdit: (projectId: string) => void;
   canEditDelete: boolean;
   canCreate?: boolean;
@@ -43,7 +43,8 @@ export function ProjectListGroup({
 }: ProjectListGroupProps) {
   const navigate = useNavigate();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] =
+    useState<ProjectListItem | null>(null);
 
   const { data: preferencesData } = useUserPreferences();
   const toggleFavorite = useToggleProjectFavorite();
@@ -53,7 +54,7 @@ export function ProjectListGroup({
   const { data: allTasksResult } = useTasks();
   const allTasks = allTasksResult?.items ?? [];
 
-  const handleDelete = (project: Project) => {
+  const handleDelete = (project: ProjectListItem) => {
     setSelectedProject(project);
     setIsDeleteOpen(true);
   };
@@ -94,23 +95,23 @@ export function ProjectListGroup({
       ) : (
         <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
           {projects.map((project) => {
-            const progress = getProjectProgress(project.id);
-            const isFavorite = favoriteIds.includes(project.id);
+            const progress = getProjectProgress(project._id);
+            const isFavorite = favoriteIds.includes(project._id);
 
             return (
               <div
-                key={project.id}
+                key={project._id}
                 className="group border-b border-border/40 last:border-b-0"
               >
                 <div
                   role="button"
                   tabIndex={0}
                   className="flex h-auto w-full cursor-pointer items-center justify-between gap-3 rounded-none px-4 py-3 text-right hover:bg-muted/30"
-                  onClick={() => navigate(`/projects/${project.id}/tasks`)}
+                  onClick={() => navigate(`/projects/${project._id}/tasks`)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      navigate(`/projects/${project.id}/tasks`);
+                      navigate(`/projects/${project._id}/tasks`);
                     }
                   }}
                 >
@@ -123,11 +124,11 @@ export function ProjectListGroup({
                           e.preventDefault();
                           handleToggleFavorite(
                             e as unknown as React.MouseEvent,
-                            project.id,
+                            project._id,
                           );
                         }
                       }}
-                      onClick={(e) => handleToggleFavorite(e, project.id)}
+                      onClick={(e) => handleToggleFavorite(e, project._id)}
                       className={cn(
                         "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors cursor-pointer",
                         isFavorite
@@ -185,7 +186,7 @@ export function ProjectListGroup({
                       >
                         <DropdownMenuItem
                           onClick={() =>
-                            navigate(`/projects/${project.id}/details`)
+                            navigate(`/projects/${project._id}/details`)
                           }
                           className="gap-2 rounded-lg p-3 text-xs font-semibold"
                         >
@@ -196,7 +197,7 @@ export function ProjectListGroup({
                           <>
                             <DropdownMenuSeparator className="bg-border/40" />
                             <DropdownMenuItem
-                              onClick={() => onEdit(project.id)}
+                              onClick={() => onEdit(project._id)}
                               className="gap-2 rounded-lg p-3 text-xs font-semibold"
                             >
                               <Edit className="size-4" />

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { tasks } from "@/constants";
-import { useCreateTask } from "@/hooks";
+import { useCreateTask } from "@/hooks/tasks";
 import { useAuthUser } from "@/store/app-context-store";
 import {
   useCloseModal,

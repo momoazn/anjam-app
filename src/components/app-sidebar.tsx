@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
 
-import { Logo } from "@/components/brand/logo";
+import { Logo } from "@/components/logo";
 import { NavMain } from "@/components/nav-main";
 import { OrgSwitcher } from "@/components/organization/org-switcher";
 import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";

@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { settings } from "@/constants";
+import { useTheme } from "@/hooks/use-theme";
+import { useAuthUser } from "@/store/app-context-store";
 import {
   DEFAULT_USER_PREFERENCES,
   useUpdateUserPreferences,
   useUserPreferences,
-} from "@/hooks";
-import { useTheme } from "@/hooks/use-theme";
-import { useAuthUser } from "@/store/app-context-store";
+} from "@/store/preferences-store";
 
 type PreferencesPayload = typeof DEFAULT_USER_PREFERENCES;
 type DisplayPayload = PreferencesPayload["display"];

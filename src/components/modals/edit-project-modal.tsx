@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { projects } from "@/constants";
-import { useProject, useUpdateProject } from "@/hooks";
+import { useProject, useUpdateProject } from "@/hooks/projects";
 import { useCurrentOrgRole } from "@/store/app-context-store";
 import {
   useCloseModal,

@@ -1,7 +1,7 @@
 import { Moon, Search, Sun } from "lucide-react";
 
 import { HeaderUserMenu } from "@/components/header-user-menu";
-import { NotificationDropdown } from "@/components/notification-dropdown";
+import { NotificationDropdown } from "@/components/notifications/dropdown";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
