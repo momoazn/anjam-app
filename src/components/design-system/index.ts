@@ -1,7 +1,7 @@
 // Design System Components
 // Centralized reusable components following Industrial Editorial aesthetic
 
-export { SpringCard, SpringButton } from "./spring-interactions";
+export { SpringCard, SpringButton } from "@/components/ui/spring-interactions";
 
 // Design utilities and constants
 export const designTokens = {

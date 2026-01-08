@@ -2,6 +2,7 @@ import { IconUpload } from "@tabler/icons-react";
 import { useMemo } from "react";
 import type { Control, FieldValues, Path } from "react-hook-form";
 
+import { FormField as GenericFormField } from "@/components/recipes/form-field";
 import { FileUpload } from "@/components/ui/file-upload";
 import {
   FormControl,
@@ -11,11 +12,9 @@ import {
   FormField as ShadcnFormField,
 } from "@/components/ui/form";
 import { projects } from "@/constants";
-import { useUsers } from "@/hooks";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
+import { useUsers } from "@/hooks/users";
 import { formatUserName } from "@/lib/utils";
-
-import { FormField as GenericFormField } from "./form-field";
 
 type ProjectFieldsProps<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
@@ -42,8 +41,8 @@ export function ProjectFields<TFieldValues extends FieldValues = FieldValues>({
   const supervisors = useMemo(() => {
     if (!allUsers) return [];
     return allUsers.map((u) => ({
-      value: u.id,
-      label: formatUserName(u.first_name, u.last_name, u.username),
+      value: u._id,
+      label: formatUserName(u.firstName, u.lastName, u.username),
     }));
   }, [allUsers]);
 

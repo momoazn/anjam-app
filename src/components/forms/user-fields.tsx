@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
+import { FormField as GenericFormField } from "@/components/recipes/form-field";
 import { auth, users } from "@/constants";
 import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
-
-import { FormField as GenericFormField } from "./form-field";
 
 // Convex-compatible role type (organization-level roles)
 type UserRole = "owner" | "member";
@@ -18,8 +17,8 @@ function getUserRole(orgRole: string | null): UserRole {
 export type UserFieldsFormValues = {
   username: string;
   password?: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   role: string;
 };
 
@@ -58,14 +57,14 @@ export function UserFields({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <GenericFormField
           control={control}
-          name="first_name"
+          name="firstName"
           label={users.form.firstName}
           type="input"
           required
         />
         <GenericFormField
           control={control}
-          name="last_name"
+          name="lastName"
           label={users.form.lastName}
           type="input"
           required
