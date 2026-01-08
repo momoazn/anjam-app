@@ -1,4 +1,6 @@
-export type OrgRole = "owner" | "admin" | "member";
+import { type OrgRole } from "@/types/user";
+
+export type { OrgRole };
 export type ProjectRole = "owner" | "admin" | "member" | "viewer";
 
 export interface PermissionContext {
@@ -47,11 +49,11 @@ export function isOrgOwner(role: OrgRole | null | undefined): boolean {
 }
 
 export function isOrgAdmin(role: OrgRole | null | undefined): boolean {
-  return role === "owner" || role === "admin";
+  return role === "owner";
 }
 
 export function isOrgMember(role: OrgRole | null | undefined): boolean {
-  return role === "owner" || role === "admin" || role === "member";
+  return role === "owner" || role === "member";
 }
 
 export function canManageProjects(

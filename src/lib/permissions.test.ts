@@ -10,26 +10,24 @@ import {
 describe("organization role helpers", () => {
   it("identifies owners", () => {
     expect(isOrgOwner("owner")).toBe(true);
-    expect(isOrgOwner("admin")).toBe(false);
+    expect(isOrgOwner("member")).toBe(false);
   });
 
-  it("identifies admins", () => {
+  it("identifies admins (same as owner)", () => {
     expect(isOrgAdmin("owner")).toBe(true);
-    expect(isOrgAdmin("admin")).toBe(true);
     expect(isOrgAdmin("member")).toBe(false);
   });
 
   it("identifies members", () => {
     expect(isOrgMember("owner")).toBe(true);
-    expect(isOrgMember("admin")).toBe(true);
     expect(isOrgMember("member")).toBe(true);
     expect(isOrgMember(null)).toBe(false);
   });
 });
 
 describe("computePermissions", () => {
-  it("grants org admin full project permissions", () => {
-    const permissions = computePermissions("admin", "viewer");
+  it("grants org owner full project permissions", () => {
+    const permissions = computePermissions("owner", "viewer");
     expect(permissions["project.view"]).toBe(true);
     expect(permissions["project.manage_members"]).toBe(true);
     expect(permissions["task.create"]).toBe(true);

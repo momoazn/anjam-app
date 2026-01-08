@@ -1,10 +1,48 @@
+import {
+  Icon,
+  IconAntennaBars2,
+  IconAntennaBars3,
+  IconAntennaBars4,
+  IconAntennaBars5,
+  IconCircle,
+  IconCircleCheckFilled,
+  IconCircleHalf2,
+  IconCircleX,
+  IconEye,
+} from "@tabler/icons-react";
+
 import { tasks } from "@/constants";
-import { TaskStatus } from "@/types/tasks";
+import { TaskPriority, TaskStatus } from "@/types/tasks";
 
-import { TASK_STATUS_ORDER } from "./status-icons";
+export const taskStatusIcons: Record<TaskStatus, Icon> = {
+  todo: IconCircle,
+  in_progress: IconCircleHalf2,
+  in_review: IconEye,
+  done: IconCircleCheckFilled,
+  cancelled: IconCircleX,
+};
 
-export { taskStatusIcons, TASK_STATUS_ORDER } from "./status-icons";
-export { priorityColors, priorityIcons } from "./status-priority";
+export const TASK_STATUS_ORDER: TaskStatus[] = [
+  "todo",
+  "in_progress",
+  "in_review",
+  "done",
+  "cancelled",
+];
+
+export const priorityColors: Record<TaskPriority, string> = {
+  low: "text-emerald-600 dark:text-emerald-400",
+  medium: "text-amber-600 dark:text-amber-400",
+  high: "text-orange-600 dark:text-orange-400",
+  urgent: "text-rose-600 dark:text-rose-400",
+};
+
+export const priorityIcons: Record<TaskPriority, Icon> = {
+  low: IconAntennaBars2,
+  medium: IconAntennaBars3,
+  high: IconAntennaBars4,
+  urgent: IconAntennaBars5,
+};
 
 export interface TaskStatusConfig {
   key: TaskStatus;
