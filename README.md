@@ -177,6 +177,10 @@ See the `docs/` directory for comprehensive documentation:
 - [Development Guide](./docs/development/guide.md) - Technical guidance
 - [Product Design](./docs/product/design.md) - Product design documentation
 
+## 📋 Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for a detailed history of changes, including the major architectural migration to Convex Cloud.
+
 ## 🤝 Contributing
 
 ### Commit Messages
