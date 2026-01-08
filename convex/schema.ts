@@ -54,7 +54,15 @@ export default defineSchema({
     updatedAt: v.optional(v.number()),
   })
     .index("by_org", ["organizationId"])
-    .index("by_code", ["code"]),
+    .index("by_code", ["code"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["organizationId"],
+    })
+    .searchIndex("search_code", {
+      searchField: "code",
+      filterFields: ["organizationId"],
+    }),
 
   // Counter table for sequential task numbers per project
   projectCounters: defineTable({

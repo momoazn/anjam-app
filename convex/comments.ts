@@ -114,7 +114,6 @@ export const create = mutation({
               createdAt: Date.now(),
             });
 
-            // TODO: Trigger notification for mentioned user
             await ctx.db.insert("notifications", {
               userId: user._id,
               type: "comment", // or system? "comment added"

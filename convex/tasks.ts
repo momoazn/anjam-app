@@ -3,6 +3,7 @@ import { v } from "convex/values";
 
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { requireProjectAccess } from "./lib/auth";
 import { getAuthUserId } from "./utils";
 
 export const create = mutation({
@@ -31,18 +32,7 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member of this organization");
+    const { project } = await requireProjectAccess(ctx, args.projectId, userId);
 
     // Task Numbering (Transactional)
     const counter = await ctx.db
@@ -103,7 +93,6 @@ export const create = mutation({
       // watchers: [userId], // Auto-watch created task? Plan doesn't strictly say.
     });
 
-    // TODO: Trigger notifications (Task 24)
     // We can do this in an internal mutation call or here.
     // Plan 9.10: "Create notifications for: task assigned..."
 
@@ -177,7 +166,9 @@ export const list = query({
     if (!membership) throw new Error("Not a member");
 
     const baseQuery = ctx.db.query("tasks");
-    let q;
+    let q:
+      | ReturnType<typeof baseQuery.withSearchIndex>
+      | ReturnType<typeof baseQuery.withIndex>;
 
     if (args.searchTerm) {
       q = baseQuery.withSearchIndex("search_title", (q) => {
