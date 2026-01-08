@@ -7,7 +7,6 @@ import {
   IconFolderPlus,
   IconUserPlus,
 } from "@tabler/icons-react";
-import { useMutation } from "@tanstack/react-query";
 import { useMutation as useConvexMutation } from "convex/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -65,13 +64,13 @@ export default function Onboarding() {
   const [orgName, setOrgName] = useState(currentOrg?.name || "");
   const [projectName, setProjectName] = useState("");
   const [inviteEmails, setInviteEmails] = useState<string[]>([""]);
+  const [isCompleting, setIsCompleting] = useState(false);
 
-  // Mutation to complete onboarding
-  const completeOnboarding = useMutation({
-    mutationFn: async () => {
+  const completeOnboarding = async () => {
+    setIsCompleting(true);
+    try {
       let orgId = currentOrg?._id as Id<"organizations"> | undefined;
 
-      // If no organization exists, create one first
       if (!orgId) {
         if (!orgName.trim()) {
           throw new Error("Organization name is required");
@@ -81,7 +80,6 @@ export default function Onboarding() {
         });
       }
 
-      // Update organization name if changed and org was not just created
       if (orgName.trim() && currentOrg && orgName.trim() !== currentOrg.name) {
         await updateOrg({
           organizationId: orgId!,
@@ -91,7 +89,6 @@ export default function Onboarding() {
         });
       }
 
-      // Create first project if name provided
       if (projectName.trim()) {
         await createProject({
           name: projectName.trim(),
@@ -99,33 +96,28 @@ export default function Onboarding() {
         });
       }
 
-      // Process invite emails - create invite link if any valid emails provided
       const validEmails = inviteEmails.filter(
         (e) => e.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim()),
       );
       if (validEmails.length > 0) {
-        // Create an invite link with max uses equal to number of emails
         await createInvite({
           organizationId: orgId!,
           maxUses: validEmails.length,
         });
-        // Note: In a production app, you'd send emails with the invite link here
       }
 
-      // Mark onboarding as completed for current user's membership
       await setOnboardingCompleted({
         organizationId: orgId!,
       });
-    },
-    onSuccess: () => {
+
       fetchOrgs();
       navigate("/inbox", { replace: true });
-    },
-    onError: (error) => {
-      console.error(error);
-      // toast.error("Failed to complete onboarding");
-    },
-  });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsCompleting(false);
+    }
+  };
 
   const handleAddEmail = () => {
     setInviteEmails([...inviteEmails, ""]);
@@ -156,11 +148,11 @@ export default function Onboarding() {
   };
 
   const handleSkip = () => {
-    completeOnboarding.mutate();
+    completeOnboarding();
   };
 
   const handleFinish = () => {
-    completeOnboarding.mutate();
+    completeOnboarding();
   };
 
   const renderStepContent = () => {
@@ -326,7 +318,7 @@ export default function Onboarding() {
                   <Button
                     variant="ghost"
                     onClick={handlePrevious}
-                    disabled={completeOnboarding.isPending}
+                    disabled={isCompleting}
                   >
                     <IconArrowRight className="mr-2 size-4" />
                     {auth.onboarding.previous}
@@ -337,26 +329,18 @@ export default function Onboarding() {
                 <Button
                   variant="outline"
                   onClick={handleSkip}
-                  disabled={completeOnboarding.isPending}
+                  disabled={isCompleting}
                 >
                   {auth.onboarding.skip}
                 </Button>
                 {currentStep < 3 ? (
-                  <Button
-                    onClick={handleNext}
-                    disabled={completeOnboarding.isPending}
-                  >
+                  <Button onClick={handleNext} disabled={isCompleting}>
                     {auth.onboarding.next}
                     <IconArrowLeft className="ms-2 size-4" />
                   </Button>
                 ) : (
-                  <Button
-                    onClick={handleFinish}
-                    disabled={completeOnboarding.isPending}
-                  >
-                    {completeOnboarding.isPending
-                      ? "..."
-                      : auth.onboarding.finish}
+                  <Button onClick={handleFinish} disabled={isCompleting}>
+                    {isCompleting ? "..." : auth.onboarding.finish}
                     <IconCheck className="ms-2 size-4" />
                   </Button>
                 )}

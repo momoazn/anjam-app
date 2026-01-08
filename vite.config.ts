@@ -35,7 +35,6 @@ export default defineConfig({
             "react",
             "react-dom",
             "react-router-dom",
-            "@tanstack/react-query",
             "date-fns",
             "date-fns-jalali",
             "react-day-picker",
@@ -67,12 +66,6 @@ export default defineConfig({
     sourcemap: true,
   },
   optimizeDeps: {
-    include: [
-      "react",
-      "react-dom",
-      "react-router-dom",
-      "@tanstack/react-query",
-      "recharts",
-    ],
+    include: ["react", "react-dom", "react-router-dom", "recharts"],
   },
 });

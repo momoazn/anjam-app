@@ -1,9 +1,3 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-  keepPreviousData,
-} from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Loader2 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { Suspense } from "react";
@@ -26,27 +20,6 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuthIsAuthenticated } from "@/store/app-context-store";
 
 import { AppRoutes } from "./router";
-
-type RetryableError = {
-  status?: number;
-};
-
-// Optimized QueryClient configuration
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-      refetchOnMount: true, // Refetch only if data is stale
-      retry: (failureCount, error) => {
-        const status = (error as RetryableError | undefined)?.status;
-        if (status && [400, 401, 403, 404].includes(status)) return false;
-        return failureCount < 3;
-      },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      placeholderData: keepPreviousData,
-    },
-  },
-});
 
 // Loading fallback component
 function LoadingFallback() {
@@ -110,41 +83,35 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <NuqsAdapter>
-            <ScrollToTop />
-            <AppLayout />
-            <CommandMenu />
-            <KeyboardShortcutsDialog />
-            <ModalManager />
-            <Toaster
-              position="bottom-right"
-              className="font-arad"
-              toastOptions={{
-                duration: 3000,
-                className:
-                  "rounded-xl border-border/40 bg-card/80 backdrop-blur-md text-foreground shadow-2xl",
-              }}
-            />
-            {isDevelopment && convexUrl && (
-              <a
-                href={convexUrl}
-                target="_blank"
-                rel="noreferrer"
-                title={convexUrl}
-                className="fixed bottom-3 left-3 z-50 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] text-emerald-600 shadow-sm transition hover:border-emerald-500/70 hover:bg-emerald-500/20"
-              >
-                Convex connected
-              </a>
-            )}
-          </NuqsAdapter>
-        </Router>
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-left"
-        />
-      </QueryClientProvider>
+      <Router>
+        <NuqsAdapter>
+          <ScrollToTop />
+          <AppLayout />
+          <CommandMenu />
+          <KeyboardShortcutsDialog />
+          <ModalManager />
+          <Toaster
+            position="bottom-right"
+            className="font-arad"
+            toastOptions={{
+              duration: 3000,
+              className:
+                "rounded-xl border-border/40 bg-card/80 backdrop-blur-md text-foreground shadow-2xl",
+            }}
+          />
+          {isDevelopment && convexUrl && (
+            <a
+              href={convexUrl}
+              target="_blank"
+              rel="noreferrer"
+              title={convexUrl}
+              className="fixed bottom-3 left-3 z-50 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] text-emerald-600 shadow-sm transition hover:border-emerald-500/70 hover:bg-emerald-500/20"
+            >
+              Convex connected
+            </a>
+          )}
+        </NuqsAdapter>
+      </Router>
     </ErrorBoundary>
   );
 }
