@@ -10,9 +10,10 @@ This document consolidates strategic planning, improvements, and implementation 
 
 ## Quick Reference
 
-- **Current Status**: Product-only mode, Convex backend
-- **Priority Focus**: Core features, technical debt reduction
+- **Current Status**: ✅ Convex Cloud migration completed, Product mode active
+- **Priority Focus**: Core features, performance optimization
 - **Test Coverage**: 60% target (lines, functions, branches, statements)
+- **Architecture**: React 19 + Convex Cloud + Better Auth
 
 ---
 
@@ -39,19 +40,25 @@ This document consolidates strategic planning, improvements, and implementation 
 
 ### 3. Technical Debt & Refactoring
 
-**Status**: ⏳ Ongoing
+**Status**: ✅ Completed (Convex Migration)
 
-#### Priority 1: Backend Refactoring
+#### Completed: Backend Architecture Migration
 
-**Current State**: `main.go` at 1,217 lines
-**Target**: <200 lines, split into packages (handlers, hooks, middleware, notifications, utils)
+**✅ Migration Completed**: PocketBase/Go backend → Convex Cloud
 
-#### Priority 2: Frontend Reports Utils Refactoring
+- Removed Go codebase entirely
+- Migrated to fully-managed Convex backend
+- Implemented Better Auth for authentication
+- Real-time data synchronization enabled
+
+#### Remaining Frontend Refactoring
+
+**Priority 1: Frontend Reports Utils Refactoring**
 
 **Current State**: `src/lib/reports-utils.ts` at 1,146 lines
 **Target**: Split into modules (metrics, aggregations, time-calculations, chart-data, types, filters)
 
-#### Priority 3: Frontend Page Decomposition
+**Priority 2: Frontend Page Decomposition**
 
 **Target**: Decompose large pages:
 
@@ -60,7 +67,7 @@ This document consolidates strategic planning, improvements, and implementation 
 - Project Details: 619 → ~200 lines
 - Tasks: 606 → ~200 lines
 
-#### Priority 4: Hooks Consolidation
+**Priority 3: Hooks Consolidation**
 
 **Remaining Hooks** (>150 lines):
 
@@ -70,24 +77,10 @@ This document consolidates strategic planning, improvements, and implementation 
 - `use-saved-filters.ts` (152 lines)
 - `tags.ts` (92 lines) ✅ Already under target
 
-#### Priority 5: Status Utils Simplification
+**Priority 4: Status Utils Simplification**
 
 **Current State**: `src/lib/status-utils.ts` at 332 lines
 **Target**: ~150 lines, split into status-icons.ts and status-priority.ts
-
-#### Priority 6: Async Audit Logging
-
-**Current Issue**: Synchronous DB writes block operations
-**Target**: Buffered queue, background worker, batch writes (10 entries/transaction)
-
-#### Priority 7: Rate Limiting Configuration
-
-**Target**: Enable PocketBase's built-in rate limiting
-
-- Auth endpoints: 10 req/min for guests
-- General API: 100 req/min
-
-**Plan**: `plans/technical-debt-refactoring-plan.md`
 
 ---
 
@@ -235,6 +228,13 @@ This document consolidates strategic planning, improvements, and implementation 
 - Search permission vulnerability fixed
 - Soft delete standardization
 
+**Backend Migration (Phase X)** ✅ **COMPLETED**
+
+- ✅ Convex Cloud migration from PocketBase/Go
+- ✅ Better Auth integration for authentication
+- ✅ Real-time data synchronization
+- ✅ Fully-managed backend infrastructure
+
 **Organizations (Phase 1)**
 
 - Organization management (create, list, settings)
@@ -276,7 +276,7 @@ This document consolidates strategic planning, improvements, and implementation 
 - Groups removed from UI and hooks
 - Group references removed from forms
 
-**Dual Mode**
+**Dual Mode** ✅ **COMPLETED**
 
 - Mode field in organizations
 - Feature gating system
@@ -294,7 +294,7 @@ This document consolidates strategic planning, improvements, and implementation 
 See individual plans above for pending items:
 
 - i18n migration (`plans/i18n-migration-plan.md`)
-- Technical debt reduction (`plans/technical-debt-refactoring-plan.md`)
+- Frontend technical debt reduction (remaining refactoring items)
 - Feature enhancements (this document, Medium-Term & Long-Term sections)
 
 ---
@@ -307,6 +307,29 @@ See individual plans above for pending items:
 - Limited auditing beyond logins and CRUD operations
 - No global search (planned in Short-Term)
 - No first-class subtasks/dependencies (planned in Medium-Term)
+
+## Completed Major Milestones
+
+### ✅ Convex Cloud Migration (Completed)
+
+**Timeline**: Completed January 2026
+**Scope**: Full migration from PocketBase/Go backend to Convex Cloud
+**Impact**:
+
+- Eliminated backend maintenance overhead
+- Real-time data synchronization
+- Better Auth integration for secure authentication
+- Fully-managed infrastructure
+
+### ✅ Dual-Mode Implementation (Completed)
+
+**Timeline**: Completed January 2026
+**Scope**: Organization mode switching between Operations and Product modes
+**Impact**:
+
+- Feature gating system implementation
+- Separate UI flows for different use cases
+- Enhanced user experience targeting
 
 ---
 
@@ -335,6 +358,8 @@ When proposing new features or improvements:
 
 The following detailed implementation plans have been completed and archived:
 
+- **Convex Cloud Migration** - Backend architecture migration completed
+  - Better Auth integration completed
 - **Dual-Mode Implementation** - See archived files in `docs/archive/`
   - `plans/dual-mode.md` - Specification (755 lines)
   - `plans/dual-mode-task-list.md` - Implementation checklist

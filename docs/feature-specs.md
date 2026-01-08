@@ -103,7 +103,7 @@ Add a comprehensive filtering interface to the tasks page that allows users to c
 
 2. **Extend useTaskFilters hook**
    - Add advanced filter support
-   - Parse filter groups to PocketBase query syntax
+   - Parse filter groups to Convex query syntax
 
 3. **Update Tasks page**
    - Integrate AdvancedFiltersPanel alongside existing TaskFiltersPanel
@@ -113,7 +113,7 @@ Add a comprehensive filtering interface to the tasks page that allows users to c
    - Store presets in localStorage or database
    - Quick access from filter panel
 
-### Filter Query Syntax (PocketBase)
+### Filter Query Syntax (Convex)
 
 ```typescript
 function buildFilterQuery(filters: AdvancedFilters): string {

@@ -1,46 +1,48 @@
-# Production Runbook - Anjam v1
+# Production Runbook - Anjam v2 (Convex Cloud)
 
-This runbook provides step-by-step procedures for deploying, configuring, and maintaining Anjam in production.
+This runbook provides step-by-step procedures for deploying, configuring, and maintaining Anjam with Convex Cloud backend in production.
 
 ## Prerequisites
 
-- Go 1.24+ (for building from source)
-- Docker (if using containerized deployment)
-- SQLite 3+ (database engine, included with PocketBase)
+- Node.js 18+ and Bun 1.x (for building frontend)
+- Docker (for containerized deployment)
 - Reverse proxy (nginx, Caddy, or similar) for TLS termination
 - System administration access to the production server
+- Convex account and project setup
 
 ## Part 1: Deployment
 
-### 1.1 Deploy the Binary
+### 1.1 Convex Cloud Setup
 
-**From Release Archive:**
+**1. Create Convex Project:**
 
-1. Download the appropriate binary from the release directory:
-   - Linux: `anjam-linux`
-   - Windows: `anjam-windows.exe`
-   - macOS: `anjam-macos`
+1. Visit [convex.dev](https://convex.dev) and create an account
+2. Create a new project for production
+3. Note your deployment URL: `https://<project-name>.convex.site`
+4. Generate API keys for deployment
 
-2. Create application directory:
+**2. Configure Convex Environment:**
 
-   ```bash
-   mkdir -p /opt/anjam
-   mkdir -p /opt/anjam/data
-   chmod 700 /opt/anjam
-   ```
+```bash
+# Set Convex deployment URL
+export VITE_CONVEX_URL="https://<project-name>.convex.site"
 
-3. Copy binary and set permissions:
+# Set Convex deployment key (for CI/CD)
+export CONVEX_DEPLOYMENT="<project-name>:<deployment-name>"
+export CONVEX_DEPLOY_KEY="<deploy-key>"
+```
 
-   ```bash
-   cp anjam-linux /opt/anjam/anjam
-   chmod 755 /opt/anjam/anjam
-   ```
+**3. Deploy Convex Backend:**
 
-4. Verify binary signature (if signed):
-   ```bash
-   # Check file integrity
-   sha256sum /opt/anjam/anjam
-   ```
+```bash
+# Install Convex CLI
+bunx convex deploy
+
+# Or use the deployment key
+bunx convex deploy --cmd convex deploy --preview-name production
+```
+
+### 1.2 Frontend Deployment
 
 **From Docker Container (Recommended):**
 
@@ -50,9 +52,16 @@ This runbook provides step-by-step procedures for deploying, configuring, and ma
    cp .env.example .env
    # Edit .env with your production values
 
-   # Generate encryption key:
-   openssl rand -hex 16
-   # Add the generated key to ANJAM_ENCRYPTION_KEY in .env
+   # Required Convex settings
+   VITE_CONVEX_URL="https://<project-name>.convex.site"
+
+   # Optional: Email configuration
+   RESEND_API_KEY="<resend-api-key>"
+   AUTH_RESEND_FROM="noreply@yourdomain.com"
+
+   # Optional: Analytics
+   VITE_PUBLIC_POSTHOG_KEY="<posthog-key>"
+   VITE_PUBLIC_POSTHOG_HOST="https://app.posthog.com"
    ```
 
 2. Build and start with docker compose:
@@ -64,27 +73,26 @@ This runbook provides step-by-step procedures for deploying, configuring, and ma
 3. Or build and run manually:
 
    ```bash
-   docker build -f Dockerfile -t anjam:latest .
+   # Build frontend
+   bun run build
+
+   # Run with nginx
    docker run -d \
-     --name anjam \
-     -p 8090:8090 \
-     -v anjam-data:/app/data \
-     -e TM_ORG_MODE=operations \
-     -e TM_ALLOW_DEFAULT_ACCOUNTS=false \
-     -e ANJAM_ENCRYPTION_KEY="<your-32-char-key>" \
-     -e GOMEMLIMIT=512MiB \
-     --memory=1g \
-     --ulimit nofile=4096:4096 \
-     anjam:latest
+     --name anjam-frontend \
+     -p 80:80 \
+     -p 443:443 \
+     -v $(pwd)/dist:/usr/share/nginx/html \
+     -v /etc/nginx/conf.d:/etc/nginx/conf.d \
+     nginx:alpine
    ```
 
 4. Verify deployment:
    ```bash
-   docker logs anjam
-   curl http://localhost:8090/api/health
+   docker logs anjam-frontend
+   curl http://localhost
    ```
 
-### 1.2 Configure TLS Termination
+### 1.3 Configure TLS Termination
 
 **Using nginx:**
 
@@ -101,12 +109,20 @@ server {
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
 
-    # Proxy configuration
+    # Frontend serving
     location / {
-        proxy_pass http://127.0.0.1:8090;
+        proxy_pass http://127.0.0.1:3000;  # Or serve static files directly
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Convex API proxy (optional - for custom domain)
+    location /api/ {
+        proxy_pass https://<project-name>.convex.site/api/;
+        proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -125,61 +141,43 @@ server {
 
 ```caddy
 ianjam.ir {
-    reverse_proxy 127.0.0.1:8090
+    reverse_proxy 127.0.0.1:3000
     encode gzip
 }
 ```
 
-### 1.3 Systemd Service Setup (Linux)
+### 1.4 Systemd Service Setup (Linux)
 
-Create `/etc/systemd/system/anjam.service`:
+Create `/etc/systemd/system/anjam-frontend.service`:
 
 ```ini
 [Unit]
-Description=Anjam
+Description=Anjam Frontend
 After=network.target
 
 [Service]
 Type=simple
 User=anjam
 WorkingDirectory=/opt/anjam
-ExecStart=/opt/anjam/anjam --http=0.0.0.0:8090 --encryptionEnv=ANJAM_ENCRYPTION_KEY
+ExecStart=/usr/bin/serve -s dist -l 3000
 Restart=on-failure
 RestartSec=10s
 
-# Organization Mode: "operations" (default) or "product"
-Environment="TM_ORG_MODE=operations"
-
-# Security settings
-Environment="TM_ALLOW_DEFAULT_ACCOUNTS=false"
-
-# Settings encryption (generate with: openssl rand -hex 16)
-Environment="ANJAM_ENCRYPTION_KEY=<32-character-random-string>"
-
-# Memory management (adjust based on available RAM)
-# Recommended: 50-75% of available memory
-Environment="GOMEMLIMIT=512MiB"
-
-# Increase file descriptors for realtime connections
-LimitNOFILE=4096
+# Environment variables
+Environment="NODE_ENV=production"
+Environment="VITE_CONVEX_URL=https://<project-name>.convex.site"
 
 [Install]
 WantedBy=multi-user.target
-```
-
-**Generate encryption key:**
-
-```bash
-openssl rand -hex 16
 ```
 
 Enable and start:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable anjam
-sudo systemctl start anjam
-sudo systemctl status anjam
+sudo systemctl enable anjam-frontend
+sudo systemctl start anjam-frontend
+sudo systemctl status anjam-frontend
 ```
 
 ## Part 2: Configuration
@@ -189,99 +187,69 @@ sudo systemctl status anjam
 Set these before starting the application:
 
 ```bash
+# Required: Convex configuration
+export VITE_CONVEX_URL="https://<project-name>.convex.site"
+
 # Organization Mode (build-time configuration)
 # Options: "operations" (default) or "product"
-# Note: This applies to ALL organizations in the deployment
-export TM_ORG_MODE=operations
+export VITE_ORG_MODE=operations
 
-# Security settings
-export TM_ALLOW_DEFAULT_ACCOUNTS=false
-# Add any PocketBase flags in the service command if needed.
+# Optional: Email configuration
+export RESEND_API_KEY="your-resend-api-key"
+export AUTH_RESEND_FROM="noreply@yourdomain.com"
+
+# Optional: Analytics
+export VITE_PUBLIC_POSTHOG_KEY="your-posthog-key"
+export VITE_PUBLIC_POSTHOG_HOST="https://app.posthog.com"
+
+# Optional: Security settings
+export VITE_ALLOW_DEFAULT_ACCOUNTS=false
 ```
 
 **Building for Different Modes:**
 
 ```bash
 # Build for operations mode (default)
-bun run build:server
+bun run build
 
 # Build for product mode (Linear-like experience)
-go build -ldflags "-X main.organizationMode=product" -o anjam-product ./backend
-
-# Or use environment variable at runtime
-TM_ORG_MODE=product ./anjam
+VITE_ORG_MODE=product bun run build
 ```
 
-### 2.2 PocketBase Dashboard Configuration
+### 2.2 Better Auth Configuration
 
-Access PocketBase admin UI at `https://ianjam.ir/_/`:
+Better Auth is integrated with Convex and requires no separate configuration. The auth system:
 
-1. **Default Credentials:**
-   - Email: `admin@example.com`
-   - Password: `admin12345`
-   - **Change immediately after first login**
+- Uses Convex for user data storage
+- Supports email/password authentication
+- Includes session management
+- Provides secure token handling
 
-2. **Enable Multi-Factor Authentication (MFA) - HIGHLY RECOMMENDED:**
-   - Navigate to Collections > `_superusers`
-   - Edit collection settings
-   - Enable MFA/OTP requirement
-   - This enforces email-based one-time passwords for admin access
+**Key Features:**
 
-3. **Enable Rate Limiting - HIGHLY RECOMMENDED:**
-   - Navigate to Settings > Application
-   - Enable the built-in rate limiter (available since PocketBase v0.23.0)
-   - Recommended settings:
-     - Auth endpoints: 10 requests/minute per IP
-     - API endpoints: 100 requests/minute per IP
-   - Prevents brute force attacks and API abuse
+- Automatic user creation on signup
+- Email verification (if SMTP configured)
+- Password reset functionality
+- Session persistence
 
-4. **Configure Logging:**
-   - Navigate to Settings > Logs
-   - Set log level to `info` (or `debug` for troubleshooting)
-   - Configure retention policy (e.g., 30 days)
+### 2.3 Frontend Security Configuration
 
-5. **Configure Email (Recommended):**
-   - Navigate to Settings > Mail
-   - Configure SMTP for password resets and notifications
-   - Recommended services: MailerSend, SendGrid, Mailgun, or AWS SES
-   - Test SMTP settings before deploying
-   - **Note:** Without SMTP, MFA cannot send verification codes
+**Content Security Policy (CSP):**
 
-6. **Configure User IP Proxy Headers:**
-   - If behind a reverse proxy (nginx, Caddy, etc.)
-   - Navigate to Settings > Application
-   - Set "Trusted proxy headers" to: `X-Real-IP` or `X-Forwarded-For`
-   - This ensures accurate IP logging and rate limiting
+Add to your nginx configuration:
 
-7. **User Management:**
-   - Create admin users via the Users collection
-   - Disable default accounts after setup:
-     - Deactivate `admin@example.com` superuser
-     - Ensure only application admins exist
-     - Set `TM_ALLOW_DEFAULT_ACCOUNTS=false` in environment
-
-### 2.3 Data Directory Persistence
-
-Ensure data directory is properly configured:
-
-```bash
-# Check data directory
-ls -la /opt/anjam/data/
-
-# Expected structure
-# data/
-# ├── data.db           (SQLite database)
-# └── files/            (Uploaded files, if enabled)
+```nginx
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.convex.cloud; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://<project-name>.convex.site;" always;
 ```
 
-Mount data directory on a persistent volume:
+**CORS Configuration:**
 
-```bash
-# Example: Using bind mount
-mount --bind /mnt/persistent-storage/anjam-data /opt/anjam/data
+Convex handles CORS automatically. For custom domains:
 
-# For Docker: Use named volumes
-docker volume create anjam-data
+```nginx
+add_header Access-Control-Allow-Origin "https://<project-name>.convex.site" always;
+add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
 ```
 
 ## Part 3: Operational Procedures
@@ -291,143 +259,102 @@ docker volume create anjam-data
 Check application health:
 
 ```bash
-# HTTP health check
-curl -s https://ianjam.ir/api/health
+# Frontend health check
+curl -s https://ianjam.ir
+
+# Convex API health check
+curl -s https://<project-name>.convex.site/api/health
 
 # Docker health check
-docker inspect --format='{{.State.Health.Status}}' anjam
+docker inspect --format='{{.State.Health.Status}}' anjam-frontend
 
 # Docker container logs
-docker logs --tail 100 anjam
+docker logs --tail 100 anjam-frontend
 
 # System resource check (Docker)
-docker stats anjam --no-stream
+docker stats anjam-frontend --no-stream
 
 # System resource check (non-Docker)
-ps aux | grep anjam
-df -h /opt/anjam/data
-
-# Database integrity check (run periodically)
-# For Docker:
-docker exec anjam sqlite3 /app/data/data.db "PRAGMA integrity_check;"
-# For non-Docker:
-sqlite3 /opt/anjam/data/data.db "PRAGMA integrity_check;"
+ps aux | grep node
 ```
 
 ### 3.2 Monitoring and Alerting
 
 Recommended metrics to monitor:
 
-- **Process Health:**
+- **Frontend Health:**
+  - Bundle size and load time
+  - JavaScript errors in browser console
+  - Core Web Vitals (LCP, FID, CLS)
+
+- **Convex Health:**
+  - API response times
+  - Function execution duration
+  - Error rates
+  - Real-time connection status
+
+- **System Resources:**
   - CPU usage (should be < 10% at rest)
-  - Memory usage (should be < 500 MB)
-  - File descriptor count
+  - Memory usage for frontend container
+  - Disk usage for logs
 
-- **Disk Usage:**
-  - Database file size: `/opt/anjam/data/data.db`
-  - Alert when usage > 80% of available space
+**Monitoring Tools:**
 
-- **Response Time:**
-  - API response time should be < 500 ms
-  - Database query time < 100 ms
-
-PocketBase does not expose a native Prometheus metrics endpoint. If you need metrics,
-use system-level monitoring or add a dedicated exporter.
+- Convex Dashboard: Built-in metrics and logs
+- Browser DevTools: Frontend performance
+- External monitoring: Pingdom, UptimeRobot
 
 ### 3.3 Backup Procedures
 
-PocketBase v0.16+ includes built-in backup/restore APIs accessible via the Dashboard settings.
-Backups are ZIP archives of the `pb_data` directory and can be stored locally or in S3-compatible storage.
-The application enters read-only mode briefly during backup generation.
+**Convex Data Backup:**
 
-**Option 1: PocketBase Built-in Backups (Recommended)**
+Convex provides automatic data backup and recovery. However, you should:
 
-1. Access PocketBase admin UI at `https://ianjam.ir/_/`
-2. Navigate to Settings > Backups
-3. Configure backup settings:
-   - Enable scheduled backups
-   - Set retention policy
-   - Optionally configure S3-compatible storage (MinIO, AWS S3, etc.)
-4. Test restore procedure in a staging environment
+1. **Export Data Regularly:**
 
-**Option 2: Automated File-based Backup**
+   ```bash
+   # Use Convex CLI to export data
+   bunx convex export --path ./backups/convex-data-$(date +%Y%m%d)
+   ```
 
-Create `/opt/anjam/backup.sh`:
+2. **Backup Frontend Configuration:**
 
-```bash
-#!/bin/bash
-BACKUP_DIR=/mnt/backups/anjam
-DATA_DIR=/opt/anjam/data
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+   ```bash
+   # Backup environment files and configs
+   tar -czf anjam-config-$(date +%Y%m%d).tar.gz \
+     .env nginx.conf docker-compose.yml
+   ```
 
-mkdir -p $BACKUP_DIR
+3. **Store Backups Safely:**
+   - Use cloud storage (S3, GCS, etc.)
+   - Implement retention policies
+   - Test restore procedures
 
-# Backup database
-cp $DATA_DIR/data.db $BACKUP_DIR/data.db.$TIMESTAMP
-gzip $BACKUP_DIR/data.db.$TIMESTAMP
-
-# Backup files (if applicable)
-if [ -d "$DATA_DIR/files" ]; then
-    tar -czf $BACKUP_DIR/files.$TIMESTAMP.tar.gz $DATA_DIR/files
-fi
-
-# Keep only last 30 days of backups
-find $BACKUP_DIR -name "data.db.*" -mtime +30 -delete
-find $BACKUP_DIR -name "files.*.tar.gz" -mtime +30 -delete
-
-echo "Backup completed: $TIMESTAMP"
-```
-
-Schedule with cron:
+**Frontend Asset Backup:**
 
 ```bash
-0 2 * * * /opt/anjam/backup.sh >> /var/log/anjam-backup.log 2>&1
+# Backup built frontend assets
+tar -czf anjam-frontend-$(date +%Y%m%d).tar.gz dist/
 ```
 
-**Manual Backup:**
+### 3.4 Frontend Optimization
+
+**Bundle Size Monitoring:**
 
 ```bash
-# For Docker deployments:
-docker exec anjam sqlite3 /app/data/data.db ".backup '/app/data/backup.db'"
-docker cp anjam:/app/data/backup.db /mnt/backups/data.db.$(date +%Y%m%d)
-docker exec anjam rm /app/data/backup.db
+# Analyze bundle size
+bun run build:analyze
 
-# For non-Docker deployments:
-cp /opt/anjam/data/data.db /mnt/backups/data.db.backup
-
-# Verify backup integrity
-sqlite3 /mnt/backups/data.db.backup "PRAGMA integrity_check;"
+# Check for large dependencies
+bun run build --stats
 ```
 
-**Docker Volume Backup:**
+**Performance Optimization:**
 
-```bash
-# Create backup of entire data volume
-docker run --rm \
-  -v anjam-data:/data \
-  -v /mnt/backups:/backup \
-  alpine tar czf /backup/anjam-data-$(date +%Y%m%d).tar.gz -C /data .
-```
-
-### 3.4 System Limits (Linux)
-
-Configure OS limits for production workloads:
-
-Edit `/etc/security/limits.d/anjam.conf`:
-
-```
-anjam soft nofile 65536
-anjam hard nofile 65536
-anjam soft nproc 32768
-anjam hard nproc 32768
-```
-
-Check current limits:
-
-```bash
-ulimit -n   # File descriptors
-ulimit -u   # Processes
-```
+- Enable gzip compression in nginx
+- Implement proper caching headers
+- Use CDN for static assets
+- Optimize images and fonts
 
 ## Part 4: Rollback Procedures
 
@@ -438,200 +365,236 @@ If the new version has critical issues:
 1. **Identify the previous working version:**
 
    ```bash
-   ls -lt /opt/anjam/anjam.* | head -5
+   ls -lt /opt/anjam/dist.* | head -5
    ```
 
 2. **Stop the current service:**
 
    ```bash
-   sudo systemctl stop anjam
+   sudo systemctl stop anjam-frontend
    ```
 
-3. **Restore previous binary:**
+3. **Restore previous build:**
 
    ```bash
-   cp /opt/anjam/anjam.previous /opt/anjam/anjam
-   chmod 755 /opt/anjam/anjam
+   cp -r /opt/anjam/dist.previous /opt/anjam/dist
    ```
 
-4. **Restore previous database backup (if needed):**
+4. **Start the service:**
 
    ```bash
-   cp /mnt/backups/data.db.backup.previous /opt/anjam/data/data.db
+   sudo systemctl start anjam-frontend
    ```
 
-5. **Start the service:**
-
+5. **Verify health:**
    ```bash
-   sudo systemctl start anjam
+   curl -s https://ianjam.ir
    ```
 
-6. **Verify health:**
+### 4.2 Rollback Convex Changes
+
+If Convex backend changes cause issues:
+
+1. **Revert to previous deployment:**
+
    ```bash
-   curl -s https://ianjam.ir/api/health
+   bunx convex deploy --preview-name previous-stable
    ```
 
-### 4.2 Rollback from Database Corruption
-
-If the database becomes corrupted:
-
-1. **Stop the application:**
-
+2. **Or rollback specific functions:**
    ```bash
-   sudo systemctl stop anjam
-   ```
-
-2. **Restore from backup:**
-
-   ```bash
-   gunzip /mnt/backups/data.db.YYYYMMDD_HHMMSS.gz
-   cp /mnt/backups/data.db.YYYYMMDD_HHMMSS /opt/anjam/data/data.db
-   ```
-
-3. **Verify database integrity:**
-
-   ```bash
-   sqlite3 /opt/anjam/data/data.db "PRAGMA integrity_check;"
-   ```
-
-4. **Start the application:**
-   ```bash
-   sudo systemctl start anjam
+   # Use Convex dashboard to rollback
+   # Or deploy from previous git commit
    ```
 
 ## Part 5: Troubleshooting
 
 ### Common Issues
 
-**Issue: Port 8090 already in use**
+**Issue: Frontend not loading**
 
 ```bash
-sudo lsof -i :8090
-kill -9 <PID>
+# Check if build completed successfully
+ls -la dist/
+
+# Check nginx logs
+sudo tail -f /var/log/nginx/error.log
+
+# Check if Convex is accessible
+curl https://<project-name>.convex.site/api/health
 ```
 
-**Issue: Database locked**
+**Issue: Authentication not working**
 
 ```bash
-# Check for stale connections
-sqlite3 /opt/anjam/data/data.db ".databases"
+# Check Convex logs in dashboard
+# Verify VITE_CONVEX_URL is correct
+# Check browser network tab for auth requests
+```
 
-# Restart the service
-sudo systemctl restart anjam
+**Issue: Real-time updates not working**
+
+```bash
+# Check WebSocket connections in browser
+# Verify Convex subscription limits
+# Check network for proxy issues
 ```
 
 **Issue: High memory usage**
 
 ```bash
-# Check process memory
-ps aux | grep anjam
+# Check frontend bundle size
+bun run build:analyze
 
-# Restart with memory monitoring
-watch -n 1 'ps aux | grep anjam'
-```
-
-**Issue: Slow API responses**
-
-```bash
-# Check database size
-ls -lh /opt/anjam/data/data.db
-
-# Run VACUUM to optimize
-sqlite3 /opt/anjam/data/data.db "VACUUM;"
+# Check for memory leaks in browser
+# Monitor JavaScript heap usage
 ```
 
 ### Log Analysis
 
 View application logs:
 
-PocketBase emits logs to stdout/stderr; use your service manager or container logs.
-
 ```bash
-# Systemd logs
-sudo journalctl -u anjam -f
+# Frontend logs (if using serve)
+sudo journalctl -u anjam-frontend -f
 
-# Docker logs (if running in a container)
-docker logs -f anjam
+# Nginx logs
+sudo tail -f /var/log/nginx/access.log
+sudo tail -f /var/log/nginx/error.log
+
+# Browser console logs (client-side)
+# Open DevTools > Console in browser
 ```
 
 ## Part 6: Maintenance
 
-### 6.1 Database Maintenance
+### 6.1 Frontend Maintenance
 
-Run monthly database optimization:
-
-```bash
-# Analyze query performance
-sqlite3 /opt/anjam/data/data.db "ANALYZE;"
-
-# Defragment database
-sqlite3 /opt/anjam/data/data.db "VACUUM;"
-
-# Rebuild indexes
-sqlite3 /opt/anjam/data/data.db "REINDEX;"
-```
-
-### 6.2 Security Updates
-
-Monitor for security updates:
+**Monthly Tasks:**
 
 ```bash
-# Check binary version
-/opt/anjam/anjam --version
+# Update dependencies
+bun update
 
-# Subscribe to security announcements
-# https://github.com/pocketbase/pocketbase/releases
+# Security audit
+bun audit
+
+# Rebuild and test
+bun run build
+bun run test:run
 ```
+
+**Dependency Updates:**
+
+```bash
+# Check for outdated packages
+bun outdated
+
+# Update packages
+bun update
+
+# Test after updates
+bun run test:all
+```
+
+### 6.2 Convex Maintenance
+
+**Monitor Convex Dashboard:**
+
+- Function execution metrics
+- Error rates and logs
+- Database usage
+- Real-time connection health
+
+**Update Convex:**
+
+```bash
+# Update Convex CLI
+bun update convex
+
+# Update Convex functions
+bunx convex dev  # Test locally first
+bunx convex deploy  # Deploy to production
+```
+
+## Part 7: Security Considerations
+
+### 7.1 Frontend Security
+
+**Content Security Policy:**
+
+```nginx
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.convex.cloud https://<project-name>.convex.site; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://<project-name>.convex.site wss://<project-name>.convex.site;" always;
+```
+
+**HTTPS Enforcement:**
+
+```nginx
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name ianjam.ir;
+    return 301 https://$server_name$request_uri;
+}
+```
+
+### 7.2 Authentication Security
+
+- Better Auth handles secure token management
+- Sessions are stored securely in Convex
+- Password requirements enforced by Better Auth
+- Email verification available if SMTP configured
 
 ## Checklist: Production Deployment
 
 ### Pre-Deployment
 
-- [ ] `.env` file created from `.env.example`
-- [ ] Encryption key generated (`openssl rand -hex 16`) and added to `.env`
-- [ ] `TM_ORG_MODE` configured (default: `operations`, or `product` for Linear-like experience)
-- [ ] `TM_ALLOW_DEFAULT_ACCOUNTS=false` set (after first admin created)
+- [ ] Convex project created and configured
+- [ ] VITE_CONVEX_URL set correctly
+- [ ] Environment variables configured
+- [ ] Frontend built successfully (`bun run build`)
 
-### Docker Deployment
+### Frontend Deployment
 
-- [ ] `docker compose up -d --build` successful
-- [ ] Container health check passing (`docker inspect --format='{{.State.Health.Status}}' anjam`)
-- [ ] Logs show no errors (`docker logs anjam`)
-- [ ] Data volume created and mounted (`anjam-data`)
+- [ ] Docker container built and running
+- [ ] Static files served correctly
+- [ ] Health check endpoint responding
+- [ ] No JavaScript errors in browser console
 
 ### TLS & Networking
 
 - [ ] TLS certificates installed and configured
 - [ ] Reverse proxy configured for HTTPS (nginx/Caddy)
-- [ ] WebSocket upgrade headers configured for realtime features
+- [ ] Content Security Policy headers set
+- [ ] CORS configured for Convex API
 
-### PocketBase Dashboard Configuration
+### Convex Integration
 
-- [ ] Default superuser credentials changed (admin@example.com)
-- [ ] **MFA enabled for `_superusers` collection** (highly recommended)
-- [ ] **Rate limiting enabled** (highly recommended)
-- [ ] Trusted proxy headers configured (`X-Real-IP` or `X-Forwarded-For`)
-- [ ] SMTP configured for password resets and MFA codes
-- [ ] Logging level and retention configured
-
-### Data & Backups
-
-- [ ] Backup strategy configured (PocketBase built-in or file-based)
-- [ ] Backup schedule tested
-- [ ] Restore procedure documented and tested
+- [ ] Convex deployment successful
+- [ ] Real-time connections working
+- [ ] Authentication functional
+- [ ] Database functions executing correctly
 
 ### Monitoring & Operations
 
-- [ ] Health check endpoint accessible (`/api/health`)
-- [ ] Log aggregation configured (if needed)
-- [ ] Alerting configured (disk, memory, uptime)
-- [ ] Database integrity verified (`PRAGMA integrity_check`)
+- [ ] Frontend health monitoring configured
+- [ ] Convex dashboard accessible
+- [ ] Log aggregation configured
+- [ ] Alerting configured (uptime, performance)
 
 ### Security
 
-- [ ] No sensitive data in environment variables or logs
-- [ ] Default accounts disabled/removed
-- [ ] Admin UI access restricted (if needed)
+- [ ] HTTPS enforced
+- [ ] Content Security Policy configured
+- [ ] No sensitive data in frontend code
+- [ ] Authentication working securely
+
+### Backup & Recovery
+
+- [ ] Convex data export procedure documented
+- [ ] Frontend configuration backed up
+- [ ] Restore procedures tested
+- [ ] Backup retention policy configured
 
 ## Support and Incident Response
 
@@ -639,18 +602,19 @@ Monitor for security updates:
 
 1. **Detection:** Monitor health checks and alerts
 2. **Assessment:** Check logs and system metrics
-3. **Mitigation:** Scale, restart, or rollback as needed
+3. **Mitigation:** Rollback frontend or Convex deployment
 4. **Resolution:** Fix root cause and redeploy
 5. **Post-Mortem:** Document incident and improvements
 
 ### Emergency Contacts
 
+- Convex Support: Via Convex dashboard
 - On-call engineer: [to be configured]
-- Database administrator: [to be configured]
 - Infrastructure team: [to be configured]
 
 ---
 
-**Version:** 1.1
-**Last Updated:** 2026-01-04
+**Version:** 2.0
+**Last Updated:** 2026-01-08
 **Maintained By:** DevOps Team
+**Major Changes:** Complete rewrite for Convex Cloud architecture

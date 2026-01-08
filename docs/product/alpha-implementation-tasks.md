@@ -44,7 +44,7 @@ Each task is actionable and ready to be worked on.
 - [x] **P1-4**: Fix SVG attribute casing warnings
   - Verified: No SVG attribute casing issues found
 
-- [x] **P1-5**: Update PocketBase SDK `beforeSend` usage
+- [x] **P1-5**: Update Convex client configuration
   - Updated `src/lib/pocketbase.ts` to non-deprecated format
 
 ### Loading States

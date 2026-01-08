@@ -14,11 +14,11 @@ These are core to day‑to‑day usefulness; without them the app will feel inco
 **How to implement / validate**
 
 1. **Backend model**
-   - Verify `backend/pb_schema.json` defines:
+   - Verify Convex schema in `convex/schema.ts` defines:
      - `projects` with fields such as `name`, `description`, `code`, `group`, status fields as needed.
      - `tasks` with `project` relation, `assignee`, `creator`, `priority`, `status`, `deadline`, `tags`, `description`, `time_spent_minutes`, `estimated_hours`, `estimated_minutes` (already present).
      - `comments` with `task` relation, `content`, `created_by`.
-   - Run `bun run types:generate` after any schema change to keep `src/lib/pocketbase-types.ts` in sync.
+   - Run `bunx convex dev` after any schema change to keep generated types in sync.
 
 2. **Frontend usage**
    - Ensure the create/edit pages (`src/pages/create-project.tsx`, `create-task.tsx`, `edit-project.tsx`, `edit-task.tsx`) expose these fields clearly.
@@ -54,12 +54,12 @@ These are core to day‑to‑day usefulness; without them the app will feel inco
 
 **How to implement / validate**
 
-1. **Backend hooks**
-   - In `backend/main.go`, confirm these event handlers are registered:
-     - `handleTaskAssignmentNotification` for task assignment.
-     - `handleTaskUpdateNotification` for status changes.
-     - `handleProjectUpdateNotification` for project changes.
-     - `handleCommentNotification` for new comments.
+1. **Backend functions**
+   - In `convex/` directory, confirm these functions are implemented:
+     - `createTaskAssignmentNotification` for task assignment.
+     - `createTaskUpdateNotification` for status changes.
+     - `createProjectUpdateNotification` for project changes.
+     - `createCommentNotification` for new comments.
 2. **Notification creation**
    - Verify `createNotification` writes to the `notifications` collection safely (it already validates user existence and doesn’t fail the parent operation).
 3. **Frontend UI**
@@ -75,7 +75,7 @@ These are core to day‑to‑day usefulness; without them the app will feel inco
 Startups need sensible guardrails, not full enterprise IAM complexity.
 
 - **Basic RBAC (fixed roles)**
-  - A small set of roles (admin, manager, supervisor, employee) with clearly defined powers (as you already have in `src/lib/permissions.ts` and PocketBase rules).
+  - A small set of roles (admin, manager, supervisor, employee) with clearly defined powers (as you already have in `src/lib/permissions.ts` and Convex auth rules).
   - Key boundaries:
     - Only admins/managers can create or deactivate users.
     - Only certain roles can create/update/delete projects.
@@ -86,9 +86,9 @@ Startups need sensible guardrails, not full enterprise IAM complexity.
 1. **Permissions map**
    - Review `src/lib/permissions.ts` to ensure each `Permission` key matches actual usage across routes (`src/router.tsx`) and components.
    - Keep `permissions.test.ts` in sync with any changes to avoid regressions.
-2. **PocketBase rules**
-   - In `backend/pb_schema.json`, confirm each collection has `listRule`, `viewRule`, `createRule`, `updateRule`, `deleteRule` that align with the intended RBAC model.
-   - Pay special attention to `users`, `groups`, `projects`, `tasks`, and `users_projects` collections.
+2. **Convex auth rules**
+   - In `convex/` directory, confirm each query/mutation has proper authentication and authorization checks that align with the intended RBAC model.
+   - Pay special attention to `users`, `organizations`, `projects`, `tasks`, and `organizationMembers` collections.
 3. **Route protection**
    - Check `src/router.tsx`:
      - Routes that should be restricted by role use `PermissionProtectedRoute` with an appropriate `permission` key.
@@ -107,9 +107,9 @@ Startups need sensible guardrails, not full enterprise IAM complexity.
 **How to implement / validate**
 
 1. **Login protection**
-   - Review `trackAuthMiddleware` and related handlers in `backend/main.go` to ensure:
-     - Failed attempts increment `failed_login_attempts`.
-     - After `MaxFailedLoginAttempts` the user is marked `blocked` with `blocked_at`/`blocked_reason` set.
+   - Review authentication middleware and related functions in `convex/auth.ts` to ensure:
+   - Failed attempts increment `failed_login_attempts`.
+   - After `MaxFailedLoginAttempts` the user is marked `blocked` with `blocked_at`/`blocked_reason` set.
    - Confirm `handleAuthRequest` (if present) or auth event handlers prevent login when `blocked` or `active=false`.
 2. **Admin controls**
    - Verify the custom API endpoints:
@@ -148,7 +148,7 @@ These are the features that make the app pleasant and efficient for small teams.
 
 1. **Backend**
    - Confirm `comments` collection in `backend/pb_schema.json` has fields `task`, `content`, `created_by`, timestamps.
-   - Ensure `handleCommentNotification` is wired via `OnRecordAfterCreateSuccess("comments")` in `backend/main.go`.
+   - Ensure `createCommentNotification` is implemented in `convex/notifications.ts`.
 2. **Frontend**
    - Verify `src/components/task/comments-list.tsx`, `comment-item.tsx`, and `comment-composer.tsx` are used in `task-details.tsx`.
    - Check that creating a comment calls the PocketBase `comments` collection, and the UI updates via React Query.
@@ -303,8 +303,8 @@ The goal is a single entry point that searches across tasks and projects (and la
      ```
 
 2. **Register the route in Go**
-   - In `backend/main.go`, within `app.OnServe().BindFunc(func(se *core.ServeEvent) error { ... })`, add:
-     - `se.Router.GET("/api/tm/search", handleGlobalSearch)`.
+   - In Convex functions, implement proper error handling and logging:
+   - `se.Router.GET("/api/tm/search", handleGlobalSearch)`.
    - Implement `handleGlobalSearch(e *core.RequestEvent) error` near other request handlers:
      - Use `validateAuth(e)` to ensure the user is logged in.
      - Read `q := e.Request.URL.Query().Get("q")` and trim/validate.
@@ -321,8 +321,8 @@ The goal is a single entry point that searches across tasks and projects (and la
    - Return `e.JSON(200, map[string]any{ "tasks": tasks, "projects": projects })`.
 
 5. **Security and RBAC**
-   - Ensure queries respect PocketBase rules or apply additional filters:
-     - Filter projects/tasks by group/role if needed (e.g. only those the user can view).
+   - Ensure queries respect Convex auth rules or apply additional filters:
+   - Filter projects/tasks by group/role if needed (e.g. only those the user can view).
 
 **Frontend – search UI and data flow**
 
