@@ -274,27 +274,6 @@
 }
 
 /* Animations */
-@keyframes page-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.5rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes stagger-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(0.25rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* App-like content transition - no full page fade, just subtle content entrance */
 @keyframes content-enter {
@@ -427,40 +406,6 @@
 
   .scrollbar-none::-webkit-scrollbar {
     display: none !important;
-  }
-
-  /* Thin scrollbar for sidebar - technical precision */
-  .scrollbar-thin {
-    scrollbar-width: 6px;
-    -ms-overflow-style: none;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border: 2px solid transparent;
-    background-clip: content-box;
-    border-radius: 3px;
-    transition: background 0.2s ease;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: var(--muted-foreground);
-    border: 2px solid transparent;
-    background-clip: content-box;
-  }
-
-  /* Firefox support */
-  .scrollbar-thin * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
   }
 }
 
