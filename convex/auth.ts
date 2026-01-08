@@ -14,12 +14,17 @@ if (!siteUrl) {
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
+  // Security default: require email verification unless explicitly disabled.
+  // Set `AUTH_REQUIRE_EMAIL_VERIFICATION=false` in the Convex environment to opt out (e.g. local/dev).
+  const requireEmailVerification =
+    process.env.AUTH_REQUIRE_EMAIL_VERIFICATION?.toLowerCase() !== "false";
+
   return betterAuth({
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: false,
+      requireEmailVerification,
     },
     plugins: [convex({ authConfig })],
   });

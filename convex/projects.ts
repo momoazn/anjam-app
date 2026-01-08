@@ -135,13 +135,9 @@ export const update = mutation({
       )
       .first();
 
-    if (!membership) throw new Error("Not a member");
-
-    // All members can update projects?
-    // Plan: "Members can edit projects... wait.
-    // Plan 125/135: "projects.update (mutation)" ... "Any org member can create projects; only owners can delete."
-    // It doesn't explicitly say about update. "Create/list/edit/view scoped to org."
-    // Implies members can edit.
+    if (!membership || membership.role !== "owner") {
+      throw new Error("Only owners can update projects");
+    }
 
     await ctx.db.patch(args.projectId, args.updates);
   },
