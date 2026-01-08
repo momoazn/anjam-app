@@ -15,7 +15,6 @@ export type TaskType = (typeof TASK_TYPES)[number];
 
 export interface Task {
   _id: string;
-  id?: string;
   _creationTime: number;
   projectId: string;
   organizationId: string;
@@ -37,15 +36,6 @@ export interface Task {
   updatedAt?: number;
 }
 
-export type TaskExpand = {
-  project?: unknown;
-  assignee?: unknown;
-  creator?: unknown;
-  tags?: unknown[];
-  task?: unknown;
-  comment?: unknown;
-};
-
 export interface TaskWithProject extends Task {
   project?: {
     _id: string;
@@ -55,30 +45,20 @@ export interface TaskWithProject extends Task {
   } | null;
   assignee?: {
     _id: string;
-    id?: string;
     username?: string;
     firstName?: string;
-    first_name?: string;
     lastName?: string;
-    last_name?: string;
     image?: string;
-    avatar?: string;
   } | null;
   creator?: {
     _id: string;
-    id?: string;
     username?: string;
     firstName?: string;
-    first_name?: string;
     lastName?: string;
-    last_name?: string;
     image?: string;
-    avatar?: string;
   } | null;
-  display_id?: string;
-  updated?: string;
-  created?: string;
-  expand?: TaskExpand;
+  displayId: string;
+  updatedAt?: number;
 }
 
 export interface TaskWithDetails extends Task {
@@ -90,25 +70,18 @@ export interface TaskWithDetails extends Task {
   } | null;
   assignee?: {
     _id: string;
-    id?: string;
     username?: string;
     firstName?: string;
     lastName?: string;
-    first_name?: string;
-    last_name?: string;
-    avatar?: string;
+    image?: string;
   } | null;
   creator?: {
     _id: string;
-    id?: string;
     username?: string;
     firstName?: string;
     lastName?: string;
-    first_name?: string;
-    last_name?: string;
+    image?: string;
   } | null;
-  display_id?: string;
-  created?: string;
-  updated?: string;
-  expand?: TaskExpand;
+  displayId: string;
+  updatedAt?: number;
 }
