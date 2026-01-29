@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { PageErrorBoundary } from "@/components/page-error-boundary";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { RouteSuspense } from "@/components/route-suspense";
 import {
   app,
@@ -574,7 +574,7 @@ const routes: RouteType[] = [
 // AppRoutes component
 export const AppRoutes = () => {
   return (
-    <PageErrorBoundary onRetry={() => window.location.reload()}>
+    <ErrorBoundary onError={() => window.location.reload()}>
       <Routes>
         {routes.map((route) => {
           const routeKey = route.path.startsWith("/projects")
@@ -621,6 +621,6 @@ export const AppRoutes = () => {
           return <Route key={route.path} path={route.path} element={element} />;
         })}
       </Routes>
-    </PageErrorBoundary>
+    </ErrorBoundary>
   );
 };

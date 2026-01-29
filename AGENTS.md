@@ -16,18 +16,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Frontend**: React 19 + TypeScript SPA with Vite bundler
   - `src/components/`: UI components (Radix UI + Tailwind CSS)
     - `ui/` - Base components (shadcn/ui pattern)
-    - `design-system/` - Design system components
     - Other dirs organized by feature (auth, comments, forms, etc.)
   - `src/pages/`: Route-level page components
   - `src/lib/`: Business logic, utilities, and Convex client
-  - `src/hooks/`: TanStack Query hooks organized by resource
+  - `src/hooks/`: Custom React hooks organized by resource
   - `src/store/`: Zustand stores (auth, sidebar) with persistence
   - `src/types/`: TypeScript type definitions
   - Path alias `@/` maps to `src/`
 
 - **Tech Stack**:
   - React Router v7 (routing)
-  - TanStack Query v5 (server state)
   - Zustand (local state)
   - Tailwind CSS v4 (styling)
   - Radix UI (headless components)
@@ -106,13 +104,6 @@ bunx vitest run src/lib/utils.test.ts
 - Import types from `convex/_generated/dataModel.d.ts` for data models
 
 ### State Management
-
-**Server State** (TanStack Query):
-
-- Query keys centralized in `src/hooks/query-keys.ts`
-- Factory functions: `queryKeys.tasks.list(filters)`, `queryKeys.projects.detail(id)`
-- Invalidators: `src/lib/query-invalidators.ts` for cache management after mutations
-- Config in `app.tsx`: 5min staleTime, 3 retries, keepPreviousData
 
 **Local State** (Zustand):
 
