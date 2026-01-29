@@ -19,7 +19,16 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
   const requireEmailVerification =
     process.env.AUTH_REQUIRE_EMAIL_VERIFICATION?.toLowerCase() !== "false";
 
+  // Better Auth secret for session security (generate a secure random string)
+  const secret = process.env.BETTER_AUTH_SECRET;
+  if (!secret) {
+    throw new Error(
+      "BETTER_AUTH_SECRET is missing. Set it in your Convex environment variables.",
+    );
+  }
+
   return betterAuth({
+    secret,
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
     emailAndPassword: {

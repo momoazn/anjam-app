@@ -70,7 +70,8 @@ export const ensureProfile = mutation({
 
     const requestedUsername = args.username?.trim();
     const email = user.email || "";
-    const baseName = email.split("@")[0] || "user";
+    // Use auth user's name as base (from registration) before falling back to email
+    const baseName = authUser.name?.trim() || email.split("@")[0] || "user";
     let username = requestedUsername
       ? sanitizeUsername(requestedUsername)
       : sanitizeUsername(baseName);
