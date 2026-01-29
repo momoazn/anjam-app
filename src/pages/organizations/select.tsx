@@ -1,0 +1,115 @@
+import { IconPlus } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { organization } from "@/constants";
+import { cn } from "@/lib/utils";
+import {
+  useAuthStore,
+  useCurrentOrganization,
+  useUserOrganizations,
+} from "@/store/app-context-store";
+
+function getOrgInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+function getRoleBadgeVariant(
+  role: string,
+): "default" | "secondary" | "outline" {
+  switch (role) {
+    case "owner":
+      return "default";
+    default:
+      return "outline";
+  }
+}
+
+export function SelectOrganizationPage() {
+  const navigate = useNavigate();
+  const userOrganizations = useUserOrganizations();
+  const currentOrg = useCurrentOrganization();
+
+  const handleOrgSelect = (orgId: string) => {
+    useAuthStore.getState().switchOrganization(orgId);
+    navigate("/inbox");
+  };
+
+  return (
+    <div className="container mx-auto max-w-7xl py-12">
+      <div className="mb-12 text-center">
+        <h1 className="mb-4 text-3xl font-bold tracking-tight">
+          {organization.select.title}
+        </h1>
+        <p className="text-muted-foreground">
+          {organization.select.description}
+        </p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Create New Organization Card */}
+        <button
+          type="button"
+          onClick={() => navigate("/onboarding")}
+          className="group border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/5 relative flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed p-8 transition-all"
+        >
+          <div className="border-muted-foreground/25 group-hover:border-primary/50 flex h-16 w-16 items-center justify-center rounded-full border border-dashed transition-colors">
+            <IconPlus className="text-muted-foreground group-hover:text-primary h-8 w-8 transition-colors" />
+          </div>
+          <div className="text-center">
+            <span className="text-lg font-bold">
+              {organization.select.createNew}
+            </span>
+          </div>
+        </button>
+
+        {/* Organization Cards */}
+        {userOrganizations.map(({ organization: org, role }) => {
+          const isSelected = currentOrg?._id === org._id;
+          return (
+            <button
+              type="button"
+              key={org._id}
+              onClick={() => handleOrgSelect(org._id)}
+              className={cn(
+                "group relative flex flex-col items-center gap-4 rounded-2xl border p-6 text-left transition-all",
+                isSelected
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50 hover:bg-muted/5",
+              )}
+            >
+              {isSelected && (
+                <div className="absolute -top-3 -right-3">
+                  <Badge variant="default" className="rounded-lg text-[10px]">
+                    انتخاب شده
+                  </Badge>
+                </div>
+              )}
+              <Avatar className="h-20 w-20 rounded-xl">
+                <AvatarImage />
+                <AvatarFallback className="rounded-xl text-xl font-bold">
+                  {getOrgInitials(org.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="w-full text-center">
+                <h3 className="truncate text-lg font-bold">{org.name}</h3>
+                <Badge
+                  variant={getRoleBadgeVariant(role)}
+                  className="mx-auto mt-2 block w-fit rounded-lg"
+                >
+                  {role}
+                </Badge>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

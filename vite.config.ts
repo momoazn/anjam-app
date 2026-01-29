@@ -24,13 +24,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    proxy: {
-      "/api": "http://localhost:8090",
-    },
-  },
   build: {
-    outDir: "backend/dist",
+    outDir: "dist",
     target: "es2020",
     minify: "terser",
     rollupOptions: {
@@ -40,7 +35,6 @@ export default defineConfig({
             "react",
             "react-dom",
             "react-router-dom",
-            "@tanstack/react-query",
             "date-fns",
             "date-fns-jalali",
             "react-day-picker",
@@ -72,12 +66,6 @@ export default defineConfig({
     sourcemap: true,
   },
   optimizeDeps: {
-    include: [
-      "react",
-      "react-dom",
-      "react-router-dom",
-      "@tanstack/react-query",
-      "recharts",
-    ],
+    include: ["react", "react-dom", "react-router-dom", "recharts"],
   },
 });

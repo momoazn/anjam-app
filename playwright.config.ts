@@ -1,8 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const workspaceGoCache = `${process.cwd()}/backend/.gocache`;
-const workspaceGoTmp = `${process.cwd()}/backend/.gotmp`;
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -35,43 +32,20 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: "chromium-operations",
-      testIgnore: ["specs/dual-mode.spec.ts"],
+      name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
         storageState: "playwright/.auth/user.json",
       },
       dependencies: ["setup"],
     },
-    {
-      name: "chromium-product",
-      testMatch: ["specs/dual-mode.spec.ts"],
-      use: {
-        ...devices["Desktop Chrome"],
-        storageState: "playwright/.auth/user-product-mode.json",
-      },
-      dependencies: ["setup"],
-    },
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      command: "bun run dev:server",
-      url: "http://127.0.0.1:8090/api/health",
-      reuseExistingServer: !process.env.CI,
-      timeout: 120000,
-      env: {
-        ...process.env,
-        GOCACHE: workspaceGoCache,
-        GOTMPDIR: workspaceGoTmp,
-      },
-    },
-    {
-      command: "bun run dev:client",
-      url: "http://127.0.0.1:5173",
-      reuseExistingServer: !process.env.CI,
-      timeout: 120000,
-    },
-  ],
+  webServer: {
+    command: "bun run dev",
+    url: "http://127.0.0.1:5173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
 });

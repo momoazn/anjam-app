@@ -1,6 +1,6 @@
 # Frontend Architecture
 
-This document outlines the architectural patterns, component structure, and state management used in the frontend of Anjam.
+This document outlines architectural patterns, component structure, and state management used in frontend of Anjam.
 
 ## 1. Tech Stack
 
@@ -9,18 +9,19 @@ This document outlines the architectural patterns, component structure, and stat
 - **State Management**: Zustand (Auth, Sidebar) + TanStack Query (Server State)
 - **UI Library**: Shadcn UI (Radix Primitives + Tailwind CSS)
 - **Routing**: React Router DOM
+- **Backend**: Convex (fully-managed backend platform)
 
 ## 2. Organization Context
 
-The application is multi-tenant. The "Current Organization" is the root context for most data views.
+The application is multi-tenant. The "Current Organization" is root context for most data views.
 
 ### Auth Store (`src/store/auth-store.ts`)
 
-Manages the user's session and their active organization.
+Manages a user's session and their active organization.
 
 - `currentOrganization`: The organization currently being viewed.
 - `currentOrgRole`: The user's role in that organization (`owner`, `admin`, `member`).
-- `switchOrganization(orgId)`: Updates the context and refreshes data.
+- `switchOrganization(orgId)`: Updates context and refreshes data.
 
 ### Org Switcher
 
@@ -51,7 +52,7 @@ All API interaction is encapsulated in custom hooks located in `src/hooks/`.
 
 - **Pattern**: `use[Resource][Action]` (e.g., `useTasks`, `useCreateTask`).
 - **Keys**: Centralized in `src/hooks/query-keys.ts` to ensure consistent cache invalidation.
-- **Error Handling**: Centralized error utils (`handlePocketBaseError`) used in mutation `onError` callbacks.
+- **Error Handling**: Centralized error utils (`handleConvexError`) used in mutation `onError` callbacks.
 
 ### Empty States
 
@@ -76,7 +77,7 @@ We use a standardized `EmptyState` component for consistent UX when lists are em
 ### Activity & Notifications
 
 - **Activity Feed**: Powered by `audit_logs` collection, filtered by project or task.
-- **Real-time**: Subscribes to PocketBase SSE for live updates on tasks and activities.
+- **Real-time**: Convex provides automatic real-time synchronization for tasks and activities.
 
 ## 5. Styling Conventions
 
@@ -84,5 +85,5 @@ We use a standardized `EmptyState` component for consistent UX when lists are em
 - **Typography**:
   - Small Labels: `text-[10px] font-black tracking-[0.2em] uppercase`
   - Standard Text: `text-sm` or `text-[13px]`
-- **Colors**: Semantic usage of `muted`, `primary`, `destructive` from the theme.
+- **Colors**: Semantic usage of `muted`, `primary`, `destructive` from theme.
 - **Components**: Shadcn components should be used as primitives. Avoid custom CSS/SCSS files.

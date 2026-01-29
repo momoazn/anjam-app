@@ -1,10 +1,5 @@
 import {
   IconBell,
-  IconChartBar,
-  IconClock,
-  IconDashboard,
-  IconFileDescription,
-  IconFileText,
   IconHelp,
   IconInbox,
   IconMessage,
@@ -15,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
 
-import { Logo } from "@/components/brand/logo";
+import { Logo } from "@/components/logo";
 import { NavMain } from "@/components/nav-main";
 import { OrgSwitcher } from "@/components/organization/org-switcher";
 import { ProjectsSubmenu } from "@/components/sidebar/projects-submenu";
@@ -31,17 +26,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { app, navigation, navigationLabels } from "@/constants";
+import { app, inbox, navigation } from "@/constants";
 import { usePermissions } from "@/hooks/use-permissions";
-import { getModeLabels, isFeatureEnabled } from "@/lib/mode";
 import type { Permission } from "@/lib/permissions";
 import { isOrgAdmin } from "@/lib/permissions";
-import {
-  useAuthUser,
-  useCurrentOrgFeatures,
-  useCurrentOrgMode,
-  useCurrentOrgRole,
-} from "@/store/auth-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 
 type NavItem = {
   title: string;
@@ -51,8 +40,6 @@ type NavItem = {
   external?: boolean;
 };
 
-type NavPreset = "operations" | "product";
-
 interface NavItemSet {
   navWorkspace: NavItem[];
   navManagement: NavItem[];
@@ -61,95 +48,18 @@ interface NavItemSet {
 }
 
 /**
- * Generate navigation items based on organization mode
- *
- * Product mode (Linear-inspired):
- * - Inbox, Issues, Projects, Views, Insights, Settings
- *
- * Operations mode (Current):
- * - Dashboard, Tasks, Projects, Reports, Timesheet, Audit Logs, Settings
+ * Product mode navigation items (Linear-inspired)
  */
-function getNavItemsForMode(
-  preset: NavPreset,
-  labels: ReturnType<typeof getModeLabels>,
-  features: ReturnType<typeof import("@/lib/mode").getOrgFeatures>,
+function getNavItems(
   can: (permission: Permission) => boolean,
   showAdminItems: boolean,
 ): NavItemSet {
-  if (preset === "product") {
-    return {
-      navWorkspace: [
-        {
-          title: labels.myTasks, // "Inbox"
-          url: "/inbox",
-          icon: IconInbox,
-        },
-        {
-          title: labels.tasks, // "Issues"
-          url: "/issues",
-          icon: IconFileText,
-        },
-        {
-          title: navigation.notifications,
-          url: "/notifications",
-          icon: IconBell,
-        },
-      ],
-      navManagement: [
-        {
-          title: labels.reports, // "Insights"
-          url: "/insights",
-          icon: IconRocket,
-          permission: "org.view" as Permission,
-        },
-        {
-          title: navigation.tags,
-          url: "/tags",
-          icon: IconTag,
-          permission: "project.view" as Permission,
-        },
-      ].filter((item) => (item.permission ? can(item.permission) : true)),
-      navAdmin: showAdminItems
-        ? [
-            {
-              title: labels.members,
-              url: "/settings/members",
-              icon: IconUsers,
-            },
-            {
-              title: navigation.settings,
-              url: "/settings/organization",
-              icon: IconSettings,
-            },
-          ]
-        : [],
-      navSecondary: [
-        {
-          title: navigation.helps,
-          url: "/helps",
-          icon: IconHelp,
-        },
-        ...(preset === "product"
-          ? [
-              {
-                title: "بازخورد آلفا",
-                url: "https://github.com/mohammadhmn/anjam/issues/new?labels=alpha-feedback",
-                icon: IconMessage,
-                external: true,
-              } as const,
-            ]
-          : []),
-      ],
-    };
-  }
-
-  // Operations mode: current nav structure with feature filtering
   return {
     navWorkspace: [
       {
-        title: navigation.dashboard,
-        url: "/dashboard",
-        icon: IconDashboard,
+        title: inbox.title,
+        url: "/inbox",
+        icon: IconInbox,
       },
       {
         title: navigation.notifications,
@@ -159,9 +69,9 @@ function getNavItemsForMode(
     ],
     navManagement: [
       {
-        title: navigation.reports,
-        url: "/reports",
-        icon: IconChartBar,
+        title: navigation.insights,
+        url: "/insights",
+        icon: IconRocket,
         permission: "org.view" as Permission,
       },
       {
@@ -170,39 +80,11 @@ function getNavItemsForMode(
         icon: IconTag,
         permission: "project.view" as Permission,
       },
-      {
-        title: navigationLabels.timesheet,
-        url: "/timesheet",
-        icon: IconClock,
-        permission: "time_entry.create" as Permission,
-      },
-      {
-        title: navigation.auditLogs,
-        url: "/audit-logs",
-        icon: IconFileDescription,
-        permission: "org.view" as Permission,
-      },
-    ].filter((item) => {
-      // Filter by permission
-      if (item.permission && !can(item.permission)) return false;
-
-      // Filter by feature availability
-      if (item.url === "/timesheet" && !isFeatureEnabled(features, "timesheet"))
-        return false;
-      if (item.url === "/reports" && !isFeatureEnabled(features, "reports"))
-        return false;
-      if (
-        item.url === "/audit-logs" &&
-        !isFeatureEnabled(features, "auditLogs")
-      )
-        return false;
-
-      return true;
-    }),
+    ].filter((item) => (item.permission ? can(item.permission) : true)),
     navAdmin: showAdminItems
       ? [
           {
-            title: navigation.users,
+            title: navigation.members,
             url: "/settings/members",
             icon: IconUsers,
           },
@@ -219,14 +101,18 @@ function getNavItemsForMode(
         url: "/helps",
         icon: IconHelp,
       },
+      {
+        title: navigation.alphaFeedback,
+        url: "https://github.com/mohammadhmn/anjam/issues/new?labels=alpha-feedback",
+        icon: IconMessage,
+        external: true,
+      },
     ],
   };
 }
 
 function AppSidebarHeader() {
   const { isMobile, setOpenMobile, state } = useSidebar();
-  const mode = useCurrentOrgMode();
-  const homeRoute = mode === "product" ? "/inbox" : "/dashboard";
 
   return (
     <SidebarHeader className="border-border/40 h-20 border-b p-2">
@@ -237,7 +123,7 @@ function AppSidebarHeader() {
             className="hover:bg-accent active:bg-accent/80 h-full rounded-xl transition-all duration-200"
           >
             <NavLink
-              to={homeRoute}
+              to="/inbox"
               className="flex h-full w-full items-center gap-4 px-4"
               onClick={() => {
                 if (isMobile) {
@@ -273,23 +159,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthUser();
   const { can } = usePermissions();
   const currentOrgRole = useCurrentOrgRole();
-  const mode = useCurrentOrgMode();
-  const features = useCurrentOrgFeatures();
-  const labels = getModeLabels(mode);
   const showAdminItems = isOrgAdmin(currentOrgRole);
 
   if (!user) {
     return null;
   }
 
-  const preset: NavPreset = mode === "product" ? "product" : "operations";
-  const navItems = getNavItemsForMode(
-    preset,
-    labels,
-    features,
-    can,
-    showAdminItems,
-  );
+  const navItems = getNavItems(can, showAdminItems);
 
   return (
     <Sidebar collapsible="icon" className="border-border/40" {...props}>
@@ -318,7 +194,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
 
         {/* Task Views Section */}
-        <TaskViews labels={labels} />
+        <TaskViews labels={{ savedFilters: "نماها" }} />
 
         {/* Management Section */}
         {navItems.navManagement.length > 0 && (
@@ -342,14 +218,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="bg-muted/40 flex items-center justify-between border-t px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground/60 font-mono text-[10px] font-bold uppercase tracking-widest">
-              نسخه ۰.۰.۰
+              {navigation.version}
             </span>
             <span className="text-muted-foreground/40 text-[9px] font-mono">
               v0.8.2-alpha
             </span>
           </div>
           <span className="rounded bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 border border-amber-500/20">
-            آلفا
+            {navigation.alpha}
           </span>
         </div>
       </SidebarFooter>

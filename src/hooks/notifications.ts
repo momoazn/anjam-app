@@ -1,181 +1,68 @@
-import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
 
-import {
-  deleteMultipleNotifications,
-  deleteNotification,
-  fetchReadNotifications,
-  fetchUnreadNotifications,
-  fetchUserNotifications,
-  markAsRead,
-  markMultipleAsRead,
-  subscribeToNotifications,
-  unsubscribeFromNotifications,
-} from "@/lib/notifications-utils";
-import { useAuthUser } from "@/store/auth-store";
-
-import { queryKeys } from "./query-keys";
-import { createMutation } from "./use-mutation-factory";
+import { authClient } from "@/lib/auth-client";
+import { Id, api } from "@/lib/convex";
 
 export function useNotifications() {
-  const user = useAuthUser();
-  const userId = user?.id;
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = Boolean(session?.user);
+  const notifications = useQuery(
+    api.notifications.listForMe,
+    isAuthenticated ? {} : "skip",
+  );
 
-  const { refetch, ...query } = useQuery({
-    queryKey: queryKeys.notifications.byUser(userId),
-    queryFn: async () => {
-      if (!userId) return [];
-      return fetchUserNotifications(userId);
-    },
-    enabled: !!userId,
-  });
-
-  const subscribe = useCallback(async () => {
-    if (!userId) return;
-    await subscribeToNotifications(userId, () => {
-      refetch();
-    });
-  }, [userId, refetch]);
-
-  const unsubscribe = useCallback(() => {
-    unsubscribeFromNotifications();
-  }, []);
-
-  useEffect(() => {
-    subscribe();
-
-    return () => {
-      unsubscribe();
-    };
-  }, [subscribe, unsubscribe]);
-
-  return query;
+  return {
+    data: notifications,
+    isLoading: notifications === undefined,
+    error: null as unknown,
+  };
 }
 
 export function useUnreadCount() {
-  const user = useAuthUser();
-  const userId = user?.id;
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = Boolean(session?.user);
+  const notifications = useQuery(
+    api.notifications.listForMe,
+    isAuthenticated ? {} : "skip",
+  );
 
-  const { data: notifications = [] } = useQuery({
-    queryKey: queryKeys.notifications.unreadList(userId),
-    queryFn: async () => {
-      if (!userId) return [];
-      return fetchUnreadNotifications(userId);
-    },
-    enabled: !!userId,
-  });
-
+  if (!notifications) return 0;
   return notifications.filter((n) => !n.read).length;
 }
 
-export function useMarkAsRead() {
-  const user = useAuthUser();
+type NotificationMutationAction =
+  | "markRead"
+  | "markAllRead"
+  | "delete"
+  | "clearAll"
+  | "clearRead";
 
-  const mutation = createMutation<void, Error, string>(markAsRead, (client) => {
-    if (user?.id) {
-      client.invalidateQueries({
-        queryKey: queryKeys.notifications.byUser(user.id),
-      });
-      client.invalidateQueries({
-        queryKey: queryKeys.notifications.unreadList(user.id),
+export function useNotificationMutation(action: NotificationMutationAction) {
+  const mutation = useMutation(
+    action === "markRead"
+      ? api.notifications.markRead
+      : action === "markAllRead"
+        ? api.notifications.markAllRead
+        : action === "delete"
+          ? api.notifications.deleteNotification
+          : action === "clearAll"
+            ? api.notifications.clearAll
+            : api.notifications.clearRead,
+  ) as unknown as (args: Record<string, unknown>) => Promise<unknown>;
+
+  const mutate = async (id?: string) => {
+    if (action === "markRead" || action === "delete") {
+      if (!id) return undefined;
+      return await mutation({
+        notificationId: id as Id<"notifications">,
       });
     }
-  });
 
-  return mutation();
-}
+    return await mutation({});
+  };
 
-export function useMarkAllAsRead() {
-  const user = useAuthUser();
-
-  const mutation = createMutation<string, Error, string>(
-    async (userId) => {
-      const notifications = await fetchUnreadNotifications(userId);
-      await markMultipleAsRead(notifications);
-      return userId;
-    },
-    (client, _data, userId) => {
-      const targetUserId = userId || user?.id;
-      if (targetUserId) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(targetUserId),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(targetUserId),
-        });
-      }
-    },
-  );
-
-  return mutation();
-}
-
-export function useDeleteNotification() {
-  const user = useAuthUser();
-
-  const mutation = createMutation<void, Error, string>(
-    deleteNotification,
-    (client) => {
-      if (user?.id) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(user.id),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(user.id),
-        });
-      }
-    },
-  );
-
-  return mutation();
-}
-
-export function useClearAll() {
-  const user = useAuthUser();
-
-  const mutation = createMutation<string, Error, string>(
-    async (userId) => {
-      const notifications = await fetchUserNotifications(userId);
-      await deleteMultipleNotifications(notifications);
-      return userId;
-    },
-    (client, _data, userId) => {
-      const targetUserId = userId || user?.id;
-      if (targetUserId) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(targetUserId),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(targetUserId),
-        });
-      }
-    },
-  );
-
-  return mutation();
-}
-
-export function useClearRead() {
-  const user = useAuthUser();
-
-  const mutation = createMutation<string, Error, string>(
-    async (userId) => {
-      const notifications = await fetchReadNotifications(userId);
-      await deleteMultipleNotifications(notifications);
-      return userId;
-    },
-    (client, _data, userId) => {
-      const targetUserId = userId || user?.id;
-      if (targetUserId) {
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.byUser(targetUserId),
-        });
-        client.invalidateQueries({
-          queryKey: queryKeys.notifications.unreadList(targetUserId),
-        });
-      }
-    },
-  );
-
-  return mutation();
+  return {
+    mutate,
+    isPending: false,
+  };
 }

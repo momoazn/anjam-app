@@ -1,4 +1,4 @@
-import { IconBell, IconPalette, IconSettings } from "@tabler/icons-react";
+import { IconPalette, IconSettings } from "@tabler/icons-react";
 import type { Icon as IconType } from "@tabler/icons-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,19 +12,15 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { settings } from "@/constants";
+import { useTheme } from "@/hooks/use-theme";
+import { useAuthUser } from "@/store/app-context-store";
 import {
-  DEFAULT_NOTIFICATION_PREFERENCES,
   DEFAULT_USER_PREFERENCES,
   useUpdateUserPreferences,
   useUserPreferences,
-} from "@/hooks";
-import { useTheme } from "@/hooks/use-theme";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { useAuthUser } from "@/store/auth-store";
+} from "@/store/preferences-store";
 
-type NotificationKey = keyof typeof DEFAULT_NOTIFICATION_PREFERENCES;
 type PreferencesPayload = typeof DEFAULT_USER_PREFERENCES;
-type NotificationPayload = typeof DEFAULT_NOTIFICATION_PREFERENCES;
 type DisplayPayload = PreferencesPayload["display"];
 
 const timezoneOptions = [
@@ -116,95 +112,49 @@ export function PreferencesSection() {
 
   const preferencesData: PreferencesPayload = {
     ...DEFAULT_USER_PREFERENCES,
-    ...(data?.preferences as PreferencesPayload | undefined),
+    ...(data as PreferencesPayload | undefined),
   };
   const uiPreferences = preferencesData.ui;
   const displayPreferences = preferencesData.display;
-  const notificationPrefs: NotificationPayload = {
-    ...DEFAULT_NOTIFICATION_PREFERENCES,
-    ...(data?.notifications as NotificationPayload | undefined),
-  };
 
   const isBusy = isLoading || isSaving;
-  const notificationToggles: Record<
-    NotificationKey,
-    {
-      label: string;
-      description: string;
-    }
-  > = {
-    taskAssigned: settings.preferences.toggles.taskAssigned,
-    projectUpdated: settings.preferences.toggles.projectUpdated,
-  };
 
   const handleActivityToggle = async (value: boolean) => {
-    if (!data) return;
     setIsSaving(true);
     try {
-      await updatePreferences.mutateAsync({
-        id: data.id,
+      await updatePreferences.mutate({
         updates: {
-          preferences: {
-            ...preferencesData,
-            ui: {
-              ...uiPreferences,
-              showActivityFeed: value,
-            },
+          ...preferencesData,
+          ui: {
+            ...uiPreferences,
+            showActivityFeed: value,
           },
         },
       });
       toast.success(settings.appearance.saveSuccess);
-    } catch (error) {
-      handlePocketBaseError(error as Error);
+    } catch {
+      toast.error("خطا در ذخیره تنظیمات");
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDisplayUpdate = async (updates: Partial<DisplayPayload>) => {
-    if (!data) return;
     setIsSaving(true);
     try {
       const nextDisplay = { ...displayPreferences, ...updates };
-      await updatePreferences.mutateAsync({
-        id: data.id,
+      await updatePreferences.mutate({
         updates: {
-          preferences: {
-            ...preferencesData,
-            display: nextDisplay,
-          },
+          ...preferencesData,
+          display: nextDisplay,
         },
       });
       if (updates.theme) {
         setTheme(updates.theme);
       }
       toast.success(settings.appearance.saveSuccess);
-    } catch (error) {
-      handlePocketBaseError(error as Error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleNotificationToggle = async (
-    key: NotificationKey,
-    value: boolean,
-  ) => {
-    if (!data) return;
-    setIsSaving(true);
-    try {
-      await updatePreferences.mutateAsync({
-        id: data.id,
-        updates: {
-          notifications: {
-            ...notificationPrefs,
-            [key]: value,
-          },
-        },
-      });
-      toast.success(settings.appearance.saveSuccess);
-    } catch (error) {
-      handlePocketBaseError(error as Error);
+    } catch {
+      toast.error("خطا در ذخیره تنظیمات");
     } finally {
       setIsSaving(false);
     }
@@ -337,29 +287,6 @@ export function PreferencesSection() {
               </SelectContent>
             </Select>
           </div>
-        </div>
-      </section>
-
-      {/* Notifications */}
-      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
-        <SectionHeader
-          icon={IconBell}
-          title={settings.preferences.notificationsTitle}
-          description={settings.preferences.notificationsDescription}
-        />
-        <div className="space-y-1">
-          {(Object.keys(notificationToggles) as NotificationKey[]).map(
-            (key) => (
-              <ToggleRow
-                key={key}
-                label={notificationToggles[key].label}
-                description={notificationToggles[key].description}
-                checked={Boolean(notificationPrefs[key])}
-                disabled={isBusy || !data}
-                onChange={(value) => handleNotificationToggle(key, value)}
-              />
-            ),
-          )}
         </div>
       </section>
     </div>

@@ -1,37 +1,40 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "convex/react";
 import { isPast, isToday } from "date-fns";
 import { useMemo } from "react";
 
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { ProjectsResponse } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser, useCurrentOrganization } from "@/store/app-context-store";
 
-import { queryKeys } from "./query-keys";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
 export function useTaskCounts() {
-  const queryClient = useQueryClient();
   const user = useAuthUser();
+  const currentOrg = useCurrentOrganization();
+  const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
-  const tasks = useMemo(() => {
-    const tasksData = queryClient.getQueryData<{
-      items: TaskWithProject[];
-    }>(
-      queryKeys.tasks.list({
-        projectId: undefined,
-        expandFields: "project,assignee",
-        mode: "full",
-      }),
-    );
-    const items = tasksData?.items ?? [];
-    return items.filter((task) => !task.deleted_at);
-  }, [queryClient]);
+  const tasks = useQuery(
+    api.tasks.listAll,
+    organizationId ? { organizationId } : "skip",
+  );
 
   const counts = useMemo(() => {
-    const userId = user?.id;
+    if (!tasks) {
+      return {
+        myTasks: 0,
+        dueToday: 0,
+        overdue: 0,
+        inProgress: 0,
+        byProject: new Map<string, number>(),
+      };
+    }
+
+    const userId = user?._id;
+
+    // Convex listAll already filters out deleted tasks
 
     const myTasks = tasks.filter(
       (task) =>
-        task.assignee === userId &&
+        task.assigneeUserId === userId &&
         (task.status === "todo" || task.status === "in_progress"),
     ).length;
 
@@ -61,11 +64,7 @@ export function useTaskCounts() {
         return;
       }
 
-      const projectId =
-        typeof task.project === "string"
-          ? task.project
-          : (task.project as ProjectsResponse)?.id;
-
+      const projectId = task.projectId;
       if (!projectId) {
         return;
       }
@@ -80,7 +79,7 @@ export function useTaskCounts() {
       inProgress,
       byProject,
     };
-  }, [tasks, user?.id]);
+  }, [tasks, user?._id]);
 
   return counts;
 }

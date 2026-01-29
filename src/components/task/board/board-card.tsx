@@ -20,15 +20,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { dashboard, shared, tasks } from "@/constants";
+import { projects, shared, tasks } from "@/constants";
+import { useTags } from "@/hooks/tags";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { UsersResponse } from "@/lib/pocketbase-types";
 import { getStatusColorVariant } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
+import { TaskWithProject } from "@/types/tasks";
 
 interface BoardCardProps {
   task: TaskWithProject;
@@ -37,29 +36,24 @@ interface BoardCardProps {
 export function BoardCard({ task }: BoardCardProps) {
   const navigate = useNavigate();
   const { id: projectId } = useParams<{ id: string }>();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
+  const taskId = task._id;
   const { setNodeRef, attributes, listeners, transform, isDragging } =
     useSortable({
-      id: task.id,
+      id: taskId,
       data: {
         type: "Task",
         task,
       },
     });
 
-  const updateTask = useUpdateTask({
-    onSuccess: () => {
-      toast.success(tasks.edit.success);
-    },
-  });
-
-  const { data: users } = useUsers({ batch: 100, sort: "-created" });
+  const updateTask = useUpdateTask();
+  const { data: tags } = useTags();
+  const { data: users } = useUsers({ enabled: true });
 
   const style = {
     ...(isDragging ? {} : { transition: "all 150ms ease-out" }),
     transform: CSS.Transform.toString(transform),
-    viewTransitionName: `task-${task.id}`,
+    viewTransitionName: `task-${taskId}`,
   };
 
   if (isDragging) {
@@ -72,25 +66,28 @@ export function BoardCard({ task }: BoardCardProps) {
     );
   }
 
-  const assigneeRecord = task.expand?.assignee as UsersResponse | undefined;
+  const assigneeRecord = task.assignee;
   const showProjectLabel = !projectId;
+  const displayId = task.displayId || "";
 
   const handleAssigneeChange = (value: string) => {
     updateTask.mutate({
-      id: task.id,
-      updates: { assignee: value === "__unassigned" ? "" : value },
+      id: taskId,
+      updates: { assigneeUserId: value === "__unassigned" ? undefined : value },
     });
+    toast.success(tasks.edit.success);
   };
 
   const handleDueDateChange = (date: Date | undefined) => {
     updateTask.mutate({
-      id: task.id,
-      updates: { deadline: date ? date.toISOString() : undefined },
+      id: taskId,
+      updates: { deadline: date ? date.getTime() : undefined },
     });
+    toast.success(tasks.edit.success);
   };
 
   const handleCardClick = () => {
-    navigate(`/tasks/${task.id}`);
+    navigate(`/tasks/${taskId}`);
   };
 
   const handleCardKeyDown = (e: React.KeyboardEvent) => {
@@ -101,7 +98,7 @@ export function BoardCard({ task }: BoardCardProps) {
 
   return (
     <div
-      id={`task-${task.id}`}
+      id={`task-${task._id}`}
       ref={setNodeRef}
       style={style}
       {...attributes}
@@ -109,10 +106,7 @@ export function BoardCard({ task }: BoardCardProps) {
       role="button"
       tabIndex={0}
       className={cn(
-        "group relative flex h-auto w-full cursor-grab flex-col text-right transition-colors hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:cursor-grabbing",
-        isProductMode
-          ? "hover:bg-muted/30 gap-2 rounded-none bg-transparent px-3 py-2.5"
-          : "border-border/40 bg-card hover:bg-muted/30 hover:border-primary/40 gap-3 border-b p-4",
+        "group relative flex h-auto w-full cursor-grab flex-col text-right transition-colors hover:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:cursor-grabbing hover:bg-muted/30 gap-2 rounded-none bg-transparent px-3 py-2.5",
       )}
       onClick={handleCardClick}
       onKeyDown={handleCardKeyDown}
@@ -121,7 +115,7 @@ export function BoardCard({ task }: BoardCardProps) {
         <div className="flex items-center gap-1.5 opacity-40">
           <IconHash className="size-3" />
           <span className="text-[10px] font-bold">
-            {digitsEnToFa(task.display_id)}
+            {digitsEnToFa(displayId)}
           </span>
         </div>
       </div>
@@ -143,17 +137,15 @@ export function BoardCard({ task }: BoardCardProps) {
               >
                 <TaskAssigneeAvatar
                   assignee={assigneeRecord}
-                  hasAssigneeId={!!task.assignee}
+                  hasAssigneeId={!!task.assigneeUserId}
                   size="md"
-                  indicatorClassName={
-                    isProductMode ? "border-background" : "border-card"
-                  }
+                  indicatorClassName="border-background"
                 />
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-[180px] p-1.5" align="start">
               <Select
-                value={task.assignee || "__unassigned"}
+                value={task.assigneeUserId || "__unassigned"}
                 onValueChange={handleAssigneeChange}
               >
                 <SelectTrigger className="border-transparent bg-transparent h-8 text-right text-xs focus:ring-0">
@@ -169,12 +161,12 @@ export function BoardCard({ task }: BoardCardProps) {
                   {users && users.length > 0 ? (
                     users.map((user) => (
                       <SelectItem
-                        key={user.id}
-                        value={user.id}
+                        key={user._id}
+                        value={user._id}
                         className="text-xs font-bold"
                       >
-                        {user.first_name || user.last_name
-                          ? `${user.first_name} ${user.last_name}`
+                        {user.firstName || user.lastName
+                          ? `${user.firstName} ${user.lastName}`
                           : user.username}
                       </SelectItem>
                     ))
@@ -192,7 +184,7 @@ export function BoardCard({ task }: BoardCardProps) {
             <div className="flex items-center gap-1 opacity-40">
               <IconTarget className="size-3" />
               <span className="max-w-[100px] truncate text-[10px] font-bold">
-                {task.expand?.project?.name || dashboard.cards.noProject}
+                {task.project?.name || projects.details.noProject}
               </span>
             </div>
           )}
@@ -210,7 +202,9 @@ export function BoardCard({ task }: BoardCardProps) {
               >
                 <IconClock className="size-3" />
                 <span className="text-[10px] font-bold tabular-nums">
-                  {digitsEnToFa(formatDateShort(task.deadline))}
+                  {digitsEnToFa(
+                    formatDateShort(new Date(task.deadline).toISOString()),
+                  )}
                 </span>
               </button>
             </PopoverTrigger>
@@ -227,25 +221,29 @@ export function BoardCard({ task }: BoardCardProps) {
       </div>
 
       {/* Tags */}
-      {!isProductMode && task.tags && task.tags.length > 0 && (
+      {task.tags && task.tags.length > 0 && (
         <div className="relative z-10 flex w-full flex-wrap justify-end gap-1">
-          {task.tags.map((tag) => (
-            <Badge
-              key={tag}
-              variant="outline"
-              className="border-border/40 bg-background/50 rounded-md px-1.5 py-0 text-[10px] font-bold"
-            >
-              {tag}
-            </Badge>
-          ))}
+          {task.tags.map((tag) => {
+            const tagRecord = tags?.find(
+              (candidate) => candidate.id === tag || candidate._id === tag,
+            );
+            return (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="border-border/40 bg-background/50 rounded-md px-1.5 py-0 text-[10px] font-bold"
+              >
+                {tagRecord?.name ?? tag}
+              </Badge>
+            );
+          })}
         </div>
       )}
 
       {/* Visual Status Bar */}
       <div
         className={cn(
-          "absolute inset-y-0 end-0 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
-          isProductMode ? "w-0.5" : "w-1",
+          "absolute inset-y-0 end-0 w-0.5 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
           getStatusColorVariant(task.status, "icon").replace("text", "bg"),
         )}
       />

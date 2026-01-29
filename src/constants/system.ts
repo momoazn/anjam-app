@@ -29,7 +29,6 @@ export const errors = {
     invalidDate: "تاریخ نامعتبر است",
     numberInvalid: "عدد نامعتبر است",
     estimatedHoursRange: "ساعت باید بین {min} تا {max} باشد",
-    estimatedMinutesRange: "دقیقه باید بین {min} تا {max} باشد",
   },
   notFound: {
     projectNotFound: "پروژه یافت نشد",
@@ -38,7 +37,6 @@ export const errors = {
   operationFailed: {
     addUserToProject: "خطا در افزودن کاربر به پروژه",
     removeUserFromProject: "خطا در حذف کاربر از پروژه",
-    saveTimeEntry: "خطا در ذخیره ورود زمانی",
     exportProject: "خطا در خروجی پروژه",
     fetchLoginLogs: "خطا در دریافت سوابق ورود",
     applyFilter: "خطا در اعمال فیلتر",
@@ -321,7 +319,7 @@ export const settings = {
     manifest: "مشخصات نرم‌افزار",
     buildVersion: "نسخه ساخت",
     architecture: "معماری",
-    framework: "فریم‌ورک PocketBase",
+    framework: "فریم‌ورک Convex",
     uiEngine: "موتور رابط کاربری",
     uiStack: "React + Tailwind CSS",
   },
@@ -808,25 +806,6 @@ export const helps = {
       },
     },
   },
-} as const;
-
-// Timesheet
-
-export const timesheet = {
-  headers: {
-    date: "تاریخ",
-    taskTitle: "عنوان تسک",
-    project: "پروژه",
-    minutesSpent: "دقیقه‌های صرف شده",
-  },
-  noTimeSpent: "زمانی ثبت نشده است",
-  emptyStateDescription:
-    "برای ثبت تایم‌شیت، روی تسک‌ها زمان ثبت کنید یا یک تسک جدید بسازید.",
-  createTaskCta: "ساخت تسک جدید",
-  calendarCta: "مشاهده تقویم تسک‌ها",
-  weeklyTotal: "مجموع هفته",
-  hoursUnit: "ساعت",
-  minutesUnit: "دقیقه",
 } as const;
 
 export const system = {

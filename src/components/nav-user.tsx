@@ -20,22 +20,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  navigation,
-  user as userLabels,
-  users as usersText,
-} from "@/constants";
-import type { UsersRecord } from "@/lib/pocketbase-types";
+import { navigation, organization, user as userLabels } from "@/constants";
+import { authClient } from "@/lib/auth-client";
+import type { Doc } from "@/lib/convex";
 import { cn } from "@/lib/utils";
-import { useAuthActions, useAuthUser } from "@/store/auth-store";
+import {
+  useAuthActions,
+  useAuthUser,
+  useCurrentOrgRole,
+} from "@/store/app-context-store";
 
 import { UserAvatar } from "./user-avatar";
 
 type UserInfoProps = {
-  user: UsersRecord;
+  user: Doc<"users">;
 };
 
 function UserInfo({ user }: UserInfoProps) {
+  const orgRole = useCurrentOrgRole();
+  const roleLabel =
+    orgRole === "owner"
+      ? organization.members.roles.owner
+      : organization.members.roles.member;
   return (
     <>
       <div className="relative">
@@ -48,16 +54,12 @@ function UserInfo({ user }: UserInfoProps) {
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-right">
         <div className="flex items-center justify-end gap-2">
           <span className="text-foreground truncate text-[11px] font-bold tracking-tight">
-            {user.first_name} {user.last_name}
+            {user.firstName} {user.lastName}
           </span>
         </div>
         <div className="flex items-center justify-end gap-1.5">
           <span className="text-muted-foreground/40 truncate font-mono text-[8px] leading-none tracking-tight">
-            {
-              usersText.table.roles[
-                user.role as keyof typeof usersText.table.roles
-              ]
-            }
+            {roleLabel}
           </span>
         </div>
       </div>
@@ -71,9 +73,13 @@ export function NavUser() {
   const user = useAuthUser();
   const logout = useAuthActions().logout;
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+    } finally {
+      logout();
+      navigate("/login", { replace: true });
+    }
   };
 
   const handleEditProfile = () => {

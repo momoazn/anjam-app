@@ -1,20 +1,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconBuilding, IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import { useMutation } from "convex/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { FormField } from "@/components/forms/form-field";
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
+import { FormField } from "@/components/recipes/form-field";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { organization, shared } from "@/constants";
+import { Id, api } from "@/lib/convex";
 import { logError } from "@/lib/logger";
-import { pb } from "@/lib/pocketbase";
 import { cn } from "@/lib/utils";
-import { useCurrentOrgMode, useCurrentOrganization } from "@/store/auth-store";
+import { useCurrentOrganization } from "@/store/app-context-store";
 
 const orgSettingsSchema = z.object({
   name: z.string().min(1).max(200),
@@ -31,8 +32,7 @@ type OrgSettingsForm = z.infer<typeof orgSettingsSchema>;
 export function OrgSettingsPage() {
   const navigate = useNavigate();
   const currentOrg = useCurrentOrganization();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
+  const updateOrg = useMutation(api.organizations.update);
 
   const form = useForm<OrgSettingsForm>({
     resolver: zodResolver(orgSettingsSchema),
@@ -54,10 +54,13 @@ export function OrgSettingsPage() {
     }
 
     try {
-      await pb.collection("organizations").update(currentOrg.id, {
-        name: data.name,
-        slug: data.slug,
-        description: data.description || "",
+      await updateOrg({
+        organizationId: currentOrg._id as Id<"organizations">,
+        updates: {
+          name: data.name,
+          slug: data.slug,
+          description: data.description || "",
+        },
       });
 
       toast.success(organization.settings.saveSuccess);
@@ -87,22 +90,20 @@ export function OrgSettingsPage() {
         icon={IconBuilding}
       />
 
-      <div className={cn(isProductMode ? "mt-4" : "mt-8")}>
+      <div className="mt-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <section
               className={cn(
                 "relative overflow-hidden border border-border/40",
-                isProductMode
-                  ? "rounded-xl bg-background/30 p-4 shadow-none"
-                  : "rounded-lg bg-card p-8 shadow-sm",
+                "rounded-xl bg-background/30 p-4 shadow-none",
               )}
             >
               <div className="relative z-10">
                 <div
                   className={cn(
                     "border-border mb-8 flex items-center gap-4 border-b pb-4",
-                    isProductMode && "mb-4",
+                    "mb-4",
                   )}
                 >
                   <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-md">
@@ -152,11 +153,7 @@ export function OrgSettingsPage() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className={cn(
-                  isProductMode
-                    ? "h-8 rounded-lg px-3 text-xs font-semibold"
-                    : "h-11 px-8",
-                )}
+                className={cn("h-8 rounded-lg px-3 text-xs font-semibold")}
               >
                 <IconDeviceFloppy className="me-2 size-5" />
                 {form.formState.isSubmitting
@@ -167,11 +164,7 @@ export function OrgSettingsPage() {
                 type="button"
                 variant="outline"
                 onClick={() => navigate(-1)}
-                className={cn(
-                  isProductMode
-                    ? "h-8 rounded-lg px-3 text-xs font-semibold"
-                    : "h-11 px-8",
-                )}
+                className={cn("h-8 rounded-lg px-3 text-xs font-semibold")}
               >
                 <IconX className="me-2 size-5" />
                 {shared.cancel}

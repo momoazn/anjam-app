@@ -1,18 +1,17 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { Activity, Layers, Layout } from "lucide-react";
 
+import { TaskListGroup } from "@/components/task/list/task-list-group";
 import { MyTasksEmptyState } from "@/components/task/my-tasks-empty-state";
 import { MyTasksSkeleton } from "@/components/task/my-tasks-skeleton";
-import { TaskListGroup } from "@/components/task/task-list-group";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { myTasks as myTasksText, tasks } from "@/constants";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import type { TasksStatusOptions } from "@/lib/pocketbase-types";
 import { statusOrder } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { TaskStatus, TaskWithProject } from "@/types/tasks";
 
 export type MyTasksTabsProps = {
   activeTab: string;
@@ -22,8 +21,8 @@ export type MyTasksTabsProps = {
     active: number;
     completed: number;
   };
-  activeGrouped: Record<TasksStatusOptions, TaskWithProject[]>;
-  completedGrouped: Record<TasksStatusOptions, TaskWithProject[]>;
+  activeGrouped: Record<TaskStatus, TaskWithProject[]>;
+  completedGrouped: Record<TaskStatus, TaskWithProject[]>;
   categorizedActive: TaskWithProject[];
   categorizedCompleted: TaskWithProject[];
   tasksByProject: Array<{
@@ -203,11 +202,11 @@ export function MyTasksTabs({
                 <div className="divide-border/40 divide-y">
                   {project.tasks.map((task) => (
                     <Button
-                      key={task.id}
+                      key={task._id}
                       variant="ghost"
                       className="group hover:bg-muted/30 flex h-auto w-full cursor-pointer items-center justify-between rounded-xl p-6 text-right transition-colors focus-visible:ring-0"
                       onClick={() =>
-                        onProjectTaskClick(project.projectId, task.id)
+                        onProjectTaskClick(project.projectId, task._id)
                       }
                     >
                       <div className="flex-1 text-right">

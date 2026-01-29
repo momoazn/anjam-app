@@ -88,9 +88,7 @@ test.describe("Authentication - Logout (US-004)", () => {
 
     // After logout, localstorage/session should be cleared
     const cookies = await page.context().cookies();
-    const authCookies = cookies.filter(
-      (c) => c.name.includes("auth") || c.name.includes("pb_auth"),
-    );
+    const authCookies = cookies.filter((c) => c.name.includes("auth"));
 
     // Auth cookies should be removed or expired
     expect(

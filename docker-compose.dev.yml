@@ -1,0 +1,17 @@
+services:
+  web:
+    image: oven/bun:1.3.5
+    working_dir: /app
+    command: bun run dev:vite
+    environment:
+      # Vite reads VITE_* from the environment in dev.
+      VITE_CONVEX_URL: ${VITE_CONVEX_URL}
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - bun-cache:/root/.bun
+    restart: unless-stopped
+
+volumes:
+  bun-cache:

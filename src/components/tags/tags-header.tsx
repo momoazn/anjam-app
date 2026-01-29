@@ -2,10 +2,10 @@ import { Plus, Tag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { tagsManagement } from "@/constants";
-import type { TagsResponse } from "@/lib/pocketbase-types";
+import type { Tag as TagType } from "@/hooks/tags";
 
 type TagsHeaderProps = {
-  tags: TagsResponse[] | undefined;
+  tags: TagType[] | undefined;
   onCreateClick: () => void;
 };
 

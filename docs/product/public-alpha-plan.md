@@ -93,7 +93,7 @@ Non-goal: change **Organization mode** UX/feature set. Any shared changes must b
 - Fix uncontrolled→controlled warnings on selects/comboboxes.
 - Fix chart render sizing warnings (`width(-1)/height(-1)`) by making charts container-aware and rendering after layout is stable.
 - Fix SVG attribute casing warnings (React prop casing).
-- Update PocketBase SDK `beforeSend` usage to the non-deprecated format.
+- Update Convex client configuration for production deployment.
 
 **UX changes**
 

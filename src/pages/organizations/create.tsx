@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/incompatible-library */
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation as useConvexMutation } from "convex/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -17,17 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { auth, organization, shared } from "@/constants";
+import { api } from "@/lib/convex";
 import { logError } from "@/lib/logger";
-import { pb } from "@/lib/pocketbase";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/store/app-context-store";
 
 const createOrgSchema = z.object({
   name: z.string().min(1).max(200),
-  slug: z
-    .string()
-    .regex(/^[a-z0-9-]+$/)
-    .min(1)
-    .max(100),
   description: z.string().optional(),
 });
 
@@ -37,30 +32,14 @@ export function CreateOrganizationPage() {
   const navigate = useNavigate();
   const currentUser = useAuthStore((s) => s.user);
   const switchOrganization = useAuthStore((s) => s.switchOrganization);
-  const fetchUserOrganizations = useAuthStore((s) => s.fetchUserOrganizations);
+  const createOrg = useConvexMutation(api.organizations.create);
 
   const form = useForm<CreateOrgForm>({
     resolver: zodResolver(createOrgSchema),
     defaultValues: {
       name: "",
-      slug: "",
       description: "",
     },
-  });
-
-  const nameValue = form.watch("name");
-
-  // Auto-generate slug from name
-  form.watch((value, { name }) => {
-    if (name === "name" && value.name) {
-      const slug = value.name
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .trim();
-      form.setValue("slug", slug);
-    }
   });
 
   const onSubmit = async (data: CreateOrgForm) => {
@@ -70,22 +49,14 @@ export function CreateOrganizationPage() {
     }
 
     try {
-      const response = (await pb.send("/api/v1/organizations", {
-        method: "POST",
-        body: {
-          name: data.name,
-          description: data.description || "",
-        },
-      })) as { organization: { id: string } };
-
-      // Refresh user's organizations
-      await fetchUserOrganizations();
-
-      // Switch to the new organization
-      await switchOrganization(response.organization.id);
+      const orgId = await createOrg({
+        name: data.name,
+        description: data.description || "",
+      });
+      await switchOrganization(orgId);
 
       toast.success(organization.create.success);
-      navigate("/dashboard");
+      navigate("/projects");
     } catch (error) {
       logError("Error creating organization", error);
       toast.error(organization.create.error);
@@ -118,26 +89,6 @@ export function CreateOrganizationPage() {
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{organization.settings.slug}</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder={organization.settings.slugPlaceholder}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-                <p className="text-muted-foreground mt-1 text-xs">
-                  {organization.settings.slugHelper}: /org/{nameValue || "slug"}
-                </p>
               </FormItem>
             )}
           />

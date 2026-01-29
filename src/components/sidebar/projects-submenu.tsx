@@ -21,11 +21,8 @@ import {
 import { navigation, navigationSectionLabels } from "@/constants";
 import { useProjects } from "@/hooks/projects";
 import { useTaskCounts } from "@/hooks/use-task-counts";
-import {
-  type UserPreferences,
-  useUserPreferences,
-} from "@/hooks/user-preferences";
 import { cn } from "@/lib/utils";
+import { useUserPreferences } from "@/store/preferences-store";
 
 export function ProjectsSubmenu() {
   const { data: projects = [] } = useProjects();
@@ -35,18 +32,16 @@ export function ProjectsSubmenu() {
 
   const { data: preferencesData } = useUserPreferences();
   const favoriteIds = useMemo(
-    () =>
-      (preferencesData?.preferences as UserPreferences)?.favorites
-        ?.projectIds || [],
-    [preferencesData?.preferences],
+    () => preferencesData?.favorites?.projectIds || [],
+    [preferencesData?.favorites?.projectIds],
   );
 
   const favoriteProjects = useMemo(() => {
-    return projects.filter((p) => favoriteIds.includes(p.id));
+    return projects.filter((p) => favoriteIds.includes(p._id));
   }, [projects, favoriteIds]);
 
   const recentProjects = useMemo(() => {
-    return projects.filter((p) => !favoriteIds.includes(p.id)).slice(0, 5);
+    return projects.filter((p) => !favoriteIds.includes(p._id)).slice(0, 5);
   }, [projects, favoriteIds]);
 
   const isProjectsActive = location.pathname === "/projects";
@@ -68,19 +63,20 @@ export function ProjectsSubmenu() {
         <SidebarMenu className="gap-0.5">
           {/* All Projects Module - Always Visible */}
           <SidebarMenuItem>
-            <NavLink
-              to="/projects"
-              onClick={() => isMobile && setOpenMobile(false)}
-              className="block"
+            <SidebarMenuButton
+              asChild
+              tooltip={navigation.allProjects}
+              className={cn(
+                "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
+                isProjectsActive
+                  ? "bg-accent text-foreground shadow-sm"
+                  : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
+              )}
             >
-              <SidebarMenuButton
-                tooltip={navigation.allProjects}
-                className={cn(
-                  "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
-                  isProjectsActive
-                    ? "bg-accent text-foreground shadow-sm"
-                    : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
-                )}
+              <NavLink
+                to="/projects"
+                onClick={() => isMobile && setOpenMobile(false)}
+                className="block"
               >
                 <IconLayoutGrid
                   className={cn(
@@ -100,8 +96,8 @@ export function ProjectsSubmenu() {
                 >
                   {navigation.allProjects}
                 </span>
-              </SidebarMenuButton>
-            </NavLink>
+              </NavLink>
+            </SidebarMenuButton>
           </SidebarMenuItem>
 
           {/* Favorite Projects - Collapsible Section */}
@@ -124,23 +120,24 @@ export function ProjectsSubmenu() {
                 {favoritesExpanded &&
                   favoriteProjects.map((project) => {
                     const isActive =
-                      location.pathname === `/projects/${project.id}/tasks`;
-                    const count = byProject.get(project.id) || 0;
+                      location.pathname === `/projects/${project._id}/tasks`;
+                    const count = byProject.get(project._id) || 0;
 
                     return (
-                      <SidebarMenuItem key={project.id}>
-                        <NavLink
-                          to={`/projects/${project.id}/tasks`}
-                          onClick={() => isMobile && setOpenMobile(false)}
-                          className="block"
+                      <SidebarMenuItem key={project._id}>
+                        <SidebarMenuButton
+                          asChild
+                          className={cn(
+                            "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
+                            isActive
+                              ? "bg-accent text-foreground"
+                              : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
+                          )}
                         >
-                          <SidebarMenuButton
-                            className={cn(
-                              "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
-                              isActive
-                                ? "bg-accent text-foreground"
-                                : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
-                            )}
+                          <NavLink
+                            to={`/projects/${project._id}/tasks`}
+                            onClick={() => isMobile && setOpenMobile(false)}
+                            className="block"
                           >
                             <div className="flex size-4 items-center justify-center">
                               <IconStarFilled
@@ -168,8 +165,8 @@ export function ProjectsSubmenu() {
                                 </span>
                               )}
                             </div>
-                          </SidebarMenuButton>
-                        </NavLink>
+                          </NavLink>
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
                   })}
@@ -197,23 +194,24 @@ export function ProjectsSubmenu() {
                 {recentsExpanded &&
                   recentProjects.map((project) => {
                     const isActive =
-                      location.pathname === `/projects/${project.id}/tasks`;
-                    const count = byProject.get(project.id) || 0;
+                      location.pathname === `/projects/${project._id}/tasks`;
+                    const count = byProject.get(project._id) || 0;
 
                     return (
-                      <SidebarMenuItem key={project.id}>
-                        <NavLink
-                          to={`/projects/${project.id}/tasks`}
-                          onClick={() => isMobile && setOpenMobile(false)}
-                          className="block"
+                      <SidebarMenuItem key={project._id}>
+                        <SidebarMenuButton
+                          asChild
+                          className={cn(
+                            "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
+                            isActive
+                              ? "bg-accent text-foreground"
+                              : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
+                          )}
                         >
-                          <SidebarMenuButton
-                            className={cn(
-                              "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
-                              isActive
-                                ? "bg-accent text-foreground"
-                                : "text-muted-foreground/90 hover:bg-accent hover:text-foreground",
-                            )}
+                          <NavLink
+                            to={`/projects/${project._id}/tasks`}
+                            onClick={() => isMobile && setOpenMobile(false)}
+                            className="block"
                           >
                             <IconHash
                               className={cn(
@@ -241,8 +239,8 @@ export function ProjectsSubmenu() {
                                 </span>
                               )}
                             </div>
-                          </SidebarMenuButton>
-                        </NavLink>
+                          </NavLink>
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
                   })}

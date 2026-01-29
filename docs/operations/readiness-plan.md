@@ -1,46 +1,55 @@
-# Production Readiness Plan (v1)
+# Production Readiness Plan (v2 - Convex Cloud)
 
-Goal: Ship the first production version safely with PocketBase-native features, minimal custom infra, and repeatable release steps.
+Goal: Ship the first production version safely with Convex Cloud backend, Better Auth authentication, and modern frontend deployment.
 
 ## Scope Assumptions
 
-- Use PocketBase built-in rate limiting, logging, and email settings.
-- Ignore auto-admin creation risk for v1 (per decision).
-- Single binary deployment (embedded frontend).
+- Use Convex Cloud managed backend with automatic scaling
+- Use Better Auth for authentication with secure token management
+- Separate frontend deployment (Vite-built SPA) from backend
+- Frontend served via nginx/CDN, backend hosted on Convex Cloud
 
 ## Plan
 
-### 1) Backend changes (code)
+### 1) Convex Cloud Setup
 
-- Remove custom rate limiting middleware wiring from `backend/main.go`.
-- Delete `backend/rate_limiter.go` if no longer referenced.
-- Verify no other code references the custom limiter.
+- Create production Convex project and configure deployment settings
+- Set up Better Auth integration with Convex backend
+- Configure environment variables for production deployment
+- Deploy backend functions to Convex Cloud
 
-### 2) PocketBase configuration (Dashboard)
+### 2) Frontend Configuration
 
-- Enable and configure rate limiting (Settings > Application).
-- Configure logs (level + retention) in Dashboard.
-- Configure mail (SMTP) or disable email flows if not needed.
+- Configure production build with correct Convex URL
+- Set up nginx/CDN for static file serving
+- Configure Content Security Policy for Convex integration
+- Set up TLS termination and HTTPS enforcement
 
-### 3) Runtime hardening
+### 3) Authentication Configuration
 
-- Ensure TLS termination (PocketBase HTTPS or reverse proxy).
-- Set data directory persistence and backups.
-- Set OS limits (file descriptors, memory) appropriate for expected load.
+- Configure Better Auth with production settings
+- Set up email/SMTP configuration if email auth enabled
+- Verify authentication flows work correctly
+- Test role-based access control
 
-### 4) Release validation
+### 4) Release Validation
 
-- Run `bun run check`.
-- Run `bun run build`.
-- Run a production-mode smoke test on the built binary.
+- Run `bun run check` (typecheck + lint + format)
+- Run `bun run build` (production frontend build)
+- Run `bunx convex deploy` (deploy backend functions)
+- Run production smoke tests (E2E tests)
 
-### 5) Operational readiness
+### 5) Operational Readiness
 
-- Define monitoring/alerting (process health, disk usage, response time).
-- Document rollback steps (previous binary + data backups).
+- Set up Convex dashboard monitoring
+- Configure frontend uptime monitoring
+- Document rollback steps (previous frontend build + Convex rollback)
+- Set up error tracking and alerting
 
 ## Deliverables
 
-- Code changes merged for rate limiting removal.
-- PocketBase dashboard configured (screenshots or written settings).
-- Production runbook updated with deploy, backup, and rollback steps.
+- Convex Cloud project configured and deployed
+- Frontend build and deployment pipeline established
+- Authentication system validated with Better Auth
+- Production runbook updated with Convex deployment procedures
+- Monitoring and alerting configured for frontend and backend

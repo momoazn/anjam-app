@@ -7,7 +7,8 @@ import {
   IconUser,
   IconUserCircle,
 } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useMutation } from "convex/react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -26,14 +27,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/users";
-import { pb } from "@/lib/pocketbase";
-import type { UsersResponse } from "@/lib/pocketbase-types";
-import { useAuthActions, useAuthUser } from "@/store/auth-store";
+import { api } from "@/lib/convex";
+import { useAuthActions, useAuthUser } from "@/store/app-context-store";
 
 const profileSchema = z.object({
   username: z.string().min(3, auth.errors.usernameMinLength),
-  first_name: z.string().min(1, auth.errors.firstNameRequired),
-  last_name: z.string().min(1, auth.errors.lastNameRequired),
+  firstName: z.string().min(1, auth.errors.firstNameRequired),
+  lastName: z.string().min(1, auth.errors.lastNameRequired),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -102,79 +102,79 @@ function ProfileSectionSkeleton() {
 export function ProfileSection() {
   const user = useAuthUser();
   const { updateUser } = useAuthActions();
-  const { data: fullUser, refetch } = useUser({ id: user?.id ?? "" });
+  const { data: fullUser } = useUser({ id: user?._id ?? "" });
   const { toast } = useToast();
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const updateProfile = useMutation(api.users.updateProfile);
+  const setUsername = useMutation(api.users.setUsername);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       username: "",
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
     },
   });
 
   useEffect(() => {
     if (fullUser) {
       form.reset({
-        username: fullUser.username,
-        first_name: fullUser.first_name ?? "",
-        last_name: fullUser.last_name ?? "",
+        username: fullUser.username || "",
+        firstName: fullUser.firstName || "",
+        lastName: fullUser.lastName || "",
       });
     }
   }, [fullUser, form]);
 
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setAvatarFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
+  const handleAvatarChange = () => {
+    // File uploads are out of scope for v1 - just show toast
+    toast({
+      title: "Coming soon",
+      description: "Avatar uploads will be available in a future update.",
+    });
   };
 
   const onSubmit = async (values: ProfileFormValues) => {
-    if (!user?.id) return;
+    if (!user?._id) return;
 
     try {
-      const formData = new FormData();
-      formData.append("username", values.username);
-      formData.append("first_name", values.first_name);
-      formData.append("last_name", values.last_name);
+      // Update firstName and lastName
+      await updateProfile({
+        firstName: values.firstName,
+        lastName: values.lastName,
+      });
 
-      if (avatarFile) {
-        formData.append("avatar", avatarFile);
+      // Update username if changed
+      if (values.username !== fullUser?.username) {
+        await setUsername({ username: values.username });
       }
 
-      const updatedRecord = await pb
-        .collection("users")
-        .update<UsersResponse>(user.id, formData);
+      // Refresh user data
+      updateUser({
+        ...user,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        username: values.username,
+      });
 
-      refetch();
-      updateUser(updatedRecord);
       toast({
         title: settings.profile.toast.updateSuccess,
         description: settings.profile.toast.updateSuccessDescription,
       });
-      setAvatarFile(null);
-    } catch {
+    } catch (error) {
       toast({
         title: settings.profile.toast.updateError,
-        description: settings.profile.toast.updateErrorDescription,
+        description:
+          error instanceof Error
+            ? error.message
+            : settings.profile.toast.updateErrorDescription,
         variant: "destructive",
       });
     }
   };
 
   if (!fullUser) return <ProfileSectionSkeleton />;
-
-  const currentAvatarUrl = previewUrl
-    ? previewUrl
-    : fullUser.avatar
-      ? pb.files.getUrl(fullUser, fullUser.avatar)
-      : undefined;
 
   return (
     <div className="space-y-8" data-animate-stagger>
@@ -194,17 +194,9 @@ export function ProfileSection() {
             <div className="flex flex-col items-start gap-8 lg:flex-row">
               <div className="group relative shrink-0">
                 <div className="bg-muted relative aspect-square h-24 w-24 overflow-hidden rounded-2xl border shadow-sm">
-                  {currentAvatarUrl ? (
-                    <img
-                      src={currentAvatarUrl}
-                      alt={fullUser.username}
-                      className="h-full w-full object-cover transition-all duration-300"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <IconUser className="text-muted-foreground/20 size-10" />
-                    </div>
-                  )}
+                  <div className="flex h-full w-full items-center justify-center">
+                    <IconUser className="text-muted-foreground/20 size-10" />
+                  </div>
                   <div className="border-background absolute -right-1 -bottom-1 h-3 w-3 rounded-full border-2 bg-emerald-500" />
                 </div>
 
@@ -230,7 +222,7 @@ export function ProfileSection() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="first_name"
+                    name="firstName"
                     render={({ field }) => (
                       <FormItem className="space-y-1">
                         <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
@@ -248,7 +240,7 @@ export function ProfileSection() {
                   />
                   <FormField
                     control={form.control}
-                    name="last_name"
+                    name="lastName"
                     render={({ field }) => (
                       <FormItem className="space-y-1">
                         <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">

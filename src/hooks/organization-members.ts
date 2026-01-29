@@ -1,24 +1,19 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { pb } from "@/lib/pocketbase";
-import type {
-  OrganizationMembersResponse,
-  UsersResponse,
-} from "@/lib/pocketbase-types";
-import { useAuthStore, useCurrentOrganization } from "@/store/auth-store";
+import { Doc, Id, api } from "@/lib/convex";
+import { useCurrentOrganization } from "@/store/app-context-store";
 
-import { queryKeys } from "./query-keys";
+export type OrgRole = "owner" | "member";
+export type MemberStatus = "invited" | "active" | "suspended";
 
-type OrgRole = "owner" | "admin" | "member";
-type MemberStatus = "invited" | "active" | "suspended";
-
-interface OrgMemberWithUser extends OrganizationMembersResponse {
-  expand?: {
-    user?: UsersResponse;
-    invited_by?: UsersResponse;
-  };
+export interface OrgMemberWithUser extends Omit<
+  Doc<"organizationMembers">,
+  "role" | "status"
+> {
+  role: OrgRole;
+  status: MemberStatus;
+  user: Doc<"users"> | null;
 }
 
 interface UseOrgMembersOptions {
@@ -27,194 +22,181 @@ interface UseOrgMembersOptions {
   enabled?: boolean;
 }
 
-interface InviteMemberInput {
-  email: string;
-  role: OrgRole;
-}
-
-interface UpdateMemberRoleInput {
-  memberId: string;
-  role: OrgRole;
-}
-
-function buildMemberFilter(
-  orgId: string,
-  options?: UseOrgMembersOptions,
-): string {
-  const filters: string[] = [`organization = "${orgId}"`];
-
-  if (options?.status) {
-    filters.push(`status = "${options.status}"`);
-  }
-
-  if (options?.role) {
-    filters.push(`role = "${options.role}"`);
-  }
-
-  return filters.join(" && ");
-}
-
 export function useOrganizationMembers(options?: UseOrgMembersOptions) {
   const currentOrg = useCurrentOrganization();
-  const orgId = currentOrg?.id;
+  const orgId = currentOrg?._id;
 
-  return useQuery({
-    queryKey: queryKeys.orgMembers.list(orgId, options),
-    queryFn: async (): Promise<OrgMemberWithUser[]> => {
-      if (!orgId) throw new Error("No organization selected");
+  const members = useQuery(
+    api.orgMembers.listByOrg,
+    (options?.enabled ?? true) && orgId ? { organizationId: orgId } : "skip",
+  );
 
-      const records = await pb
-        .collection("organization_members")
-        .getFullList<OrgMemberWithUser>({
-          filter: buildMemberFilter(orgId, options),
-          expand: "user,invited_by",
-          sort: "role,-created", // owners first, then by newest
-        });
+  // Apply frontend filtering for status/role if needed
+  const filteredMembers = members
+    ?.map((m) => {
+      const user = m.user
+        ? {
+            ...m.user,
+            firstName: m.user.firstName,
+            lastName: m.user.lastName,
+          }
+        : null;
 
-      return records;
-    },
-    enabled: (options?.enabled ?? true) && !!orgId,
-  });
+      return {
+        ...m,
+        user,
+        expand: {
+          user,
+        },
+      };
+    })
+    .filter((m) => {
+      if (options?.status && m.status !== options.status) return false;
+      if (options?.role && m.role !== options.role) return false;
+      return true;
+    });
+
+  return {
+    data: filteredMembers as
+      | (OrgMemberWithUser & {
+          id: string;
+          expand: { user: Doc<"users"> | null };
+        })[]
+      | undefined,
+    isLoading: members === undefined,
+    isPending: members === undefined,
+  };
 }
 
-export function useOrganizationMember(
-  memberId: string,
-  options?: { enabled?: boolean },
-) {
-  return useQuery({
-    queryKey: queryKeys.orgMembers.detail(memberId),
-    queryFn: async (): Promise<OrgMemberWithUser> => {
-      const record = await pb
-        .collection("organization_members")
-        .getOne<OrgMemberWithUser>(memberId, {
-          expand: "user,invited_by",
-        });
-      return record;
+export function useOrganizationInvites() {
+  const currentOrg = useCurrentOrganization();
+  const orgId = currentOrg?._id;
+
+  const invites = useQuery(
+    api.invites.list,
+    orgId ? { organizationId: orgId } : "skip",
+  );
+
+  return {
+    data: invites,
+    isLoading: invites === undefined,
+  };
+}
+
+export function useCreateOrgInvite() {
+  const createInviteLink = useMutation(api.invites.createLink);
+  const currentOrg = useCurrentOrganization();
+
+  return {
+    mutate: async ({ maxUses }: { role: OrgRole; maxUses?: number }) => {
+      if (!currentOrg) throw new Error("No organization selected");
+
+      const token = await createInviteLink({
+        organizationId: currentOrg._id,
+        maxUses,
+        // Optional: add expiresAt
+      });
+
+      return token;
     },
-    enabled: (options?.enabled ?? true) && !!memberId,
-  });
+    isPending: false, // Convex mutations don't have a built-in isPending like TanStack Query
+  };
+}
+
+export function useRevokeOrgInvite() {
+  const revokeMutation = useMutation(api.invites.revoke);
+
+  return {
+    mutate: async (inviteId: Id<"invites">) => {
+      await revokeMutation({ inviteId });
+      toast.success("Invite revoked");
+    },
+    isPending: false,
+  };
 }
 
 export function useInviteOrgMember() {
-  const queryClient = useQueryClient();
+  const createInviteLink = useMutation(api.invites.createLink);
   const currentOrg = useCurrentOrganization();
-  const currentUser = useAuthStore((s) => s.user);
 
-  return useMutation({
-    mutationFn: async ({ email, role }: InviteMemberInput) => {
+  return {
+    mutate: async ({ email }: { email: string; role: OrgRole }) => {
       if (!currentOrg) throw new Error("No organization selected");
 
-      // Step 1: Find user by email
-      let user: UsersResponse;
-      try {
-        user = await pb
-          .collection("users")
-          .getFirstListItem<UsersResponse>(`email = "${email}"`);
-      } catch {
-        // User doesn't exist - you might want to create an invited user
-        // or throw an error depending on your business logic
-        throw new Error(`No user found with email: ${email}`);
-      }
-
-      // Step 2: Check if already a member
-      try {
-        await pb
-          .collection("organization_members")
-          .getFirstListItem(
-            `organization = "${currentOrg.id}" && user = "${user.id}"`,
-          );
-        throw new Error("User is already a member of this organization");
-      } catch (err) {
-        // Expected - user is not a member yet
-        const errorMessage = (err as Error).message ?? "";
-        if (errorMessage.includes("already a member")) {
-          throw err;
-        }
-      }
-
-      // Step 3: Create membership
-      const membership = await pb.collection("organization_members").create({
-        organization: currentOrg.id,
-        user: user.id,
-        role: role,
-        status: "invited",
-        invited_by: currentUser?.id,
-        invited_at: new Date().toISOString(),
+      // For now, we still use invite links but maybe we'll send an email in the future
+      // The current implementation in members.tsx expects an email based invite
+      const token = await createInviteLink({
+        organizationId: currentOrg._id,
       });
 
-      return membership;
+      const inviteUrl = `${window.location.origin}/invite/${token}`;
+
+      // In a real app, you'd send an email here.
+      // For now, we'll just copy the link as a fallback.
+      await navigator.clipboard.writeText(inviteUrl);
+      toast.success(`Invite link for ${email} created and copied to clipboard`);
+
+      return token;
     },
-    onSuccess: () => {
-      toast.success("Invitation sent successfully");
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
+    isPending: false,
+  };
 }
 
 export function useUpdateOrgMemberRole() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ memberId, role }: UpdateMemberRoleInput) => {
-      const updated = await pb
-        .collection("organization_members")
-        .update(memberId, { role });
-      return updated;
+  // Not implemented in Convex yet, adding placeholder
+  return {
+    mutate: async (_args: { memberId: string; role: OrgRole }) => {
+      void _args;
+      toast.error("Role updates not yet implemented in Convex");
     },
-    onSuccess: () => {
-      toast.success("Member role updated");
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
+    isPending: false,
+  };
 }
 
 export function useRemoveOrgMember() {
-  const queryClient = useQueryClient();
+  const removeMutation = useMutation(api.orgMembers.remove);
+  const currentOrg = useCurrentOrganization();
 
-  return useMutation({
-    mutationFn: async (memberId: string) => {
-      await pb.collection("organization_members").delete(memberId);
+  return {
+    mutate: async (userId: string) => {
+      if (!currentOrg) return;
+      await removeMutation({
+        organizationId: currentOrg._id as Id<"organizations">,
+        userId: userId as Id<"users">,
+      });
+      toast.success("Member removed");
     },
-    onSuccess: () => {
-      toast.success("Member removed from organization");
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
+    isPending: false,
+  };
 }
 
 export function useAcceptOrgInvitation() {
-  const queryClient = useQueryClient();
-  const fetchOrgs = useAuthStore((s) => s.fetchUserOrganizations);
+  const acceptMutation = useMutation(api.invites.acceptExistingUser);
 
-  return useMutation({
-    mutationFn: async (memberId: string) => {
-      const updated = await pb
-        .collection("organization_members")
-        .update(memberId, {
-          status: "active",
-          joined_at: new Date().toISOString(),
-        });
-      return updated;
+  return {
+    mutate: async (token: string) => {
+      return await acceptMutation({ token });
     },
-    onSuccess: () => {
-      toast.success("Invitation accepted!");
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgMembers.all });
-      // Refresh user's organization list
-      fetchOrgs();
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
+    isPending: false,
+  };
+}
+
+export function useInviteByToken(token: string) {
+  const invite = useQuery(
+    api.invites.getByToken,
+
+    token ? { token } : "skip",
+  );
+
+  return {
+    data: invite,
+
+    isLoading: invite === undefined,
+
+    error: (invite === null ? new Error("Invite not found") : undefined) as
+      | Error
+      | undefined,
+  };
 }
 
 export function useOrgMemberCount() {
@@ -225,4 +207,25 @@ export function useOrgMemberCount() {
 export function usePendingInvitationsCount() {
   const { data: members } = useOrganizationMembers({ status: "invited" });
   return members?.length ?? 0;
+}
+
+export function getInviteStatus(
+  invite: Doc<"invites">,
+): "active" | "expired" | "exhausted" | "revoked" {
+  // Convex doesn't have a 'revoked' field in schema yet, but it can be deleted.
+  // If we want 'revoked', we'd need a field. For now, since 'revoke' mutation deletes it,
+  // we won't see 'revoked' status in the list.
+
+  const expiresAt = invite.expiresAt ? new Date(invite.expiresAt) : null;
+  if (expiresAt && expiresAt < new Date()) return "expired";
+
+  if (invite.maxUses && invite.uses >= invite.maxUses) {
+    return "exhausted";
+  }
+
+  return "active";
+}
+
+export function getInviteUrl(token: string): string {
+  return `${window.location.origin}/invite/${token}`;
 }

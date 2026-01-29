@@ -1,52 +1,35 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconCheck, IconCircleCheck } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns-jalali";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { notifications as notificationsText } from "@/constants";
-import { stripHtml } from "@/lib/excel-export";
-import { pb } from "@/lib/pocketbase";
-import type {
-  CommentsResponse,
-  MentionsResponse,
-  ProjectsResponse,
-  TasksResponse,
-} from "@/lib/pocketbase-types";
-import { cn } from "@/lib/utils";
-import { useCurrentOrgMode } from "@/store/auth-store";
-
-export type MentionWithExpand = MentionsResponse & {
-  expand?: {
-    comment?: CommentsResponse;
-    task?: TasksResponse;
-    project?: ProjectsResponse;
-  };
-};
+import { useNotificationMutation } from "@/hooks/notifications";
+import { cn, stripHtml } from "@/lib/utils";
 
 type MentionsListProps = {
-  mentions: MentionsResponse[];
+  mentions: Array<{
+    _id: string;
+    createdAt: number;
+    taskId?: string;
+    task?: { title?: string; displayId?: string } | null;
+    comment?: { content?: string } | null;
+  }>;
   isLoading: boolean;
 };
 
 export function MentionsList({ mentions, isLoading }: MentionsListProps) {
-  const queryClient = useQueryClient();
-  const mode = useCurrentOrgMode();
-  const isProductMode = mode === "product";
+  const deleteNotification = useNotificationMutation("delete");
 
   const handleMarkAsRead = async (mentionId: string) => {
-    await pb.collection("mentions").delete(mentionId);
-    queryClient.invalidateQueries({ queryKey: ["mentions"] });
+    await deleteNotification.mutate(mentionId);
   };
 
   return (
     <section
       className={cn(
-        "mt-8 space-y-4 text-right",
-        isProductMode
-          ? "overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4 shadow-none"
-          : "border-border/40 bg-card rounded-xl border p-6 shadow-sm",
+        "mt-8 overflow-hidden rounded-xl border border-border/40 bg-background/30 p-4 shadow-none space-y-4 text-right",
       )}
     >
       <div className="flex items-center justify-between gap-4">
@@ -74,27 +57,22 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
       ) : (
         <div className="space-y-3">
           {mentions.map((mention) => {
-            const mentionWithExpand = mention as MentionWithExpand;
             const taskName =
-              mentionWithExpand.expand?.task?.title ||
-              mentionWithExpand.expand?.task?.display_id ||
-              "-";
-            const rawSnippet = stripHtml(
-              mentionWithExpand.expand?.comment?.content ?? "",
-            );
+              mention.task?.title || mention.task?.displayId || "-";
+            const rawSnippet = stripHtml(mention.comment?.content ?? "");
             const snippet =
               rawSnippet.length > 140
                 ? `${rawSnippet.slice(0, 140)}...`
                 : rawSnippet;
-            const timeAgo = mention.created
-              ? formatDistanceToNow(new Date(mention.created), {
+            const timeAgo = mention.createdAt
+              ? formatDistanceToNow(new Date(mention.createdAt), {
                   addSuffix: true,
                 })
               : "";
 
             return (
               <article
-                key={mention.id}
+                key={mention._id}
                 className="border-border/30 bg-muted/10 rounded-lg border p-4 text-right"
               >
                 <div className="flex items-center justify-between gap-3">
@@ -114,13 +92,13 @@ export function MentionsList({ mentions, isLoading }: MentionsListProps) {
                       variant="ghost"
                       size="icon"
                       className="size-9 rounded-lg"
-                      onClick={() => handleMarkAsRead(mention.id)}
+                      onClick={() => handleMarkAsRead(mention._id)}
                     >
                       <IconCheck className="size-4" />
                     </Button>
-                    {mentionWithExpand.task && (
+                    {mention.taskId && (
                       <Link
-                        to={`/tasks/${mentionWithExpand.task}`}
+                        to={`/tasks/${mention.taskId}`}
                         className="text-primary text-xs font-bold"
                       >
                         {notificationsText.mentions.viewTask}

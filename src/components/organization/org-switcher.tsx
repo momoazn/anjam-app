@@ -16,15 +16,15 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { organization as organizationConstants } from "@/constants";
-import { pb } from "@/lib/pocketbase";
-import type { OrganizationsResponse } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 import {
   useAuthStore,
   useCurrentOrgRole,
   useCurrentOrganization,
   useUserOrganizations,
-} from "@/store/auth-store";
+} from "@/store/app-context-store";
+
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 // =============================================================================
 // Types
@@ -34,7 +34,7 @@ interface OrgSwitcherProps {
   collapsed?: boolean;
 }
 
-type OrgRole = "owner" | "admin" | "member";
+type OrgRole = "owner" | "member";
 
 // =============================================================================
 // Helper Functions
@@ -55,16 +55,17 @@ function getRoleBadgeVariant(
   switch (role) {
     case "owner":
       return "default";
-    case "admin":
-      return "secondary";
     default:
       return "outline";
   }
 }
 
-function getOrgLogoUrl(org: OrganizationsResponse): string | null {
-  if (!org.logo) return null;
-  return pb.files.getURL(org, org.logo, { thumb: "100x100" });
+function getOrgLogoUrl(org: Doc<"organizations">): string | null {
+  // In Convex, logos are stored as storage IDs or full URLs in settings or as a direct field.
+  // For now, if there's no direct logo field on the Doc, return null.
+  // The schema we saw didn't have a logo field yet, but the PB one did.
+  const orgWithLogo = org as Doc<"organizations"> & { logo?: string | null };
+  return orgWithLogo.logo ?? null;
 }
 
 // =============================================================================
@@ -92,8 +93,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
   const handleOrgSelect = async (orgId: string) => {
     await switchOrganization(orgId);
     setIsOpen(false);
-    // Optionally navigate to dashboard after switch
-    navigate("/dashboard");
+    navigate("/inbox");
   };
 
   const handleCreateOrg = () => {
@@ -156,10 +156,13 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
           <div className="flex flex-col items-start">
             <span className="text-sm font-semibold">{currentOrg.name}</span>
             <Badge
-              variant={getRoleBadgeVariant(currentOrgRole ?? "member")}
+              variant={getRoleBadgeVariant(
+                (currentOrgRole ?? "member") as OrgRole,
+              )}
               className="mt-0.5 w-fit px-1 py-0 text-[8px]"
             >
-              {organizationConstants.members.roles[currentOrgRole ?? "member"]}
+              {organizationConstants.members.roles[currentOrgRole as OrgRole] ||
+                organizationConstants.members.roles.member}
             </Badge>
           </div>
         )}
@@ -192,14 +195,14 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
               <div className="flex flex-col items-start text-start">
                 <span className="text-sm font-semibold">{currentOrg.name}</span>
                 <Badge
-                  variant={getRoleBadgeVariant(currentOrgRole ?? "member")}
+                  variant={getRoleBadgeVariant(
+                    (currentOrgRole ?? "member") as OrgRole,
+                  )}
                   className="mt-0.5 px-1 py-0 text-[8px]"
                 >
-                  {
-                    organizationConstants.members.roles[
-                      currentOrgRole ?? "member"
-                    ]
-                  }
+                  {organizationConstants.members.roles[
+                    currentOrgRole as OrgRole
+                  ] || organizationConstants.members.roles.member}
                 </Badge>
               </div>
               <IconChevronDown className="ms-auto h-3.5 w-3.5 opacity-50" />
@@ -219,11 +222,11 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         <DropdownMenuSeparator />
 
         {userOrganizations.map(({ organization, role }) => {
-          const isSelected = organization.id === currentOrg.id;
+          const isSelected = organization._id === currentOrg?._id;
           return (
             <DropdownMenuItem
-              key={organization.id}
-              onClick={() => handleOrgSelect(organization.id)}
+              key={organization._id}
+              onClick={() => handleOrgSelect(organization._id)}
               className={cn(
                 "flex cursor-pointer flex-row-reverse items-center gap-2 rounded-lg p-2",
                 isSelected && "bg-muted",
@@ -240,10 +243,11 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
                   {organization.name}
                 </span>
                 <Badge
-                  variant={getRoleBadgeVariant(role)}
+                  variant={getRoleBadgeVariant(role as OrgRole)}
                   className="mt-0.5 w-fit px-1 py-0 text-[8px]"
                 >
-                  {organizationConstants.members.roles[role]}
+                  {organizationConstants.members.roles[role as OrgRole] ||
+                    organizationConstants.members.roles.member}
                 </Badge>
               </div>
               {isSelected && (

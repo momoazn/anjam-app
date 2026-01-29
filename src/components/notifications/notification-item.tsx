@@ -6,18 +6,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { notifications as notificationsText, shared } from "@/constants";
-import type { NotificationsRecord } from "@/lib/pocketbase-types";
 import { cn } from "@/lib/utils";
 
-const formatNotificationTime = (dateString?: string | null) => {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
+const formatNotificationTime = (timestamp?: number | null) => {
+  if (!timestamp) return "-";
+  const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "-";
   return digitsEnToFa(format(date, "MM/dd HH:mm"));
 };
 
 type NotificationItemProps = {
-  notification: NotificationsRecord;
+  notification: {
+    _id: string;
+    createdAt: number;
+    read: boolean;
+    type: string;
+    title: string;
+    message: string;
+  };
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
   selected: boolean;
@@ -43,7 +49,7 @@ export function NotificationItem({
       <div className="border-border/10 bg-muted/5 flex w-12 shrink-0 items-center justify-center border-s">
         <Checkbox
           checked={selected}
-          onCheckedChange={() => onToggleSelect(notification.id)}
+          onCheckedChange={() => onToggleSelect(notification._id)}
           className="size-4 rounded-md transition-transform hover:scale-110"
           aria-label={notificationsText.selected}
         />
@@ -75,14 +81,18 @@ export function NotificationItem({
           <div className="flex items-center gap-1.5">
             <IconHash className="size-3" />
             <span className="text-[10px] font-bold">
-              {notification.id.slice(0, 8)}
+              {notification._id.slice(0, 8)}
             </span>
           </div>
           <Badge
             variant="outline"
             className="border-border/40 bg-muted/30 text-muted-foreground rounded-md px-1.5 py-0 text-[10px] font-bold"
           >
-            {notificationsText.types[notification.type]}
+            {
+              notificationsText.types[
+                notification.type as keyof typeof notificationsText.types
+              ]
+            }
           </Badge>
         </div>
       </div>
@@ -95,7 +105,7 @@ export function NotificationItem({
           </span>
           <div className="text-foreground/60 flex items-center gap-1.5 text-[10px] font-bold tabular-nums">
             <IconClock className="text-primary/40 size-3" />
-            {formatNotificationTime(notification.created)}
+            {formatNotificationTime(notification.createdAt)}
           </div>
         </div>
 
@@ -104,7 +114,7 @@ export function NotificationItem({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => onMarkAsRead(notification.id)}
+              onClick={() => onMarkAsRead(notification._id)}
               className="hover:bg-primary/10 hover:text-primary size-8 rounded-lg transition-all"
               title={notificationsText.actions.markAsRead}
             >
@@ -114,7 +124,7 @@ export function NotificationItem({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onDelete(notification.id)}
+            onClick={() => onDelete(notification._id)}
             className="size-8 rounded-lg text-rose-500/80 transition-all hover:bg-rose-500/10"
             title={notificationsText.actions.delete}
           >

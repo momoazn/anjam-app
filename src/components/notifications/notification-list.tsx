@@ -6,11 +6,10 @@ import { NotificationSkeleton } from "@/components/notifications/notification-sk
 import { EmptyStateNoNotifications } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { notifications as notificationsText, shared } from "@/constants";
-import type { NotificationsRecord } from "@/lib/pocketbase-types";
 
-const getDateGroup = (dateString?: string | null) => {
-  if (!dateString) return "older";
-  const date = new Date(dateString);
+const getDateGroup = (timestamp?: number | null) => {
+  if (!timestamp) return "older";
+  const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "older";
 
   if (isToday(date)) return "today";
@@ -35,7 +34,14 @@ const getGroupTitle = (group: string) => {
 };
 
 type NotificationListProps = {
-  notifications: NotificationsRecord[];
+  notifications: Array<{
+    _id: string;
+    createdAt: number;
+    read: boolean;
+    type: string;
+    title: string;
+    message: string;
+  }>;
   isLoading: boolean;
   error: unknown;
   selectedIds: string[];
@@ -53,10 +59,28 @@ export function NotificationList({
   onMarkAsRead,
   onDelete,
 }: NotificationListProps) {
-  const groupedNotifications = notifications.reduce(
-    (groups, notification) => {
-      const group = getDateGroup(notification.created);
-      groups[group].push(notification);
+  const groupedNotifications: Record<
+    "today" | "yesterday" | "thisWeek" | "older",
+    NotificationListProps["notifications"]
+  > = notifications.reduce(
+    (
+      groups: Record<
+        "today" | "yesterday" | "thisWeek" | "older",
+        NotificationListProps["notifications"]
+      >,
+      notification,
+    ) => {
+      const group = getDateGroup(notification.createdAt);
+      if (
+        group === "today" ||
+        group === "yesterday" ||
+        group === "thisWeek" ||
+        group === "older"
+      ) {
+        groups[group].push(notification);
+      } else {
+        groups.older.push(notification);
+      }
       return groups;
     },
     {
@@ -64,7 +88,7 @@ export function NotificationList({
       yesterday: [],
       thisWeek: [],
       older: [],
-    } as Record<string, NotificationsRecord[]>,
+    },
   );
 
   if (isLoading) {
@@ -114,11 +138,11 @@ export function NotificationList({
                 >
                   {groupNotifications.map((notification) => (
                     <NotificationItem
-                      key={notification.id}
+                      key={notification._id}
                       notification={notification}
                       onMarkAsRead={onMarkAsRead}
                       onDelete={onDelete}
-                      selected={selectedIds.includes(notification.id)}
+                      selected={selectedIds.includes(notification._id)}
                       onToggleSelect={onToggleSelect}
                     />
                   ))}

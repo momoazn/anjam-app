@@ -1,9 +1,3 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-  keepPreviousData,
-} from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Loader2 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 import { Suspense } from "react";
@@ -15,38 +9,17 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { KeyboardShortcutsDialog } from "@/components/help/keyboard-shortcuts-dialog";
+import { ModalManager } from "@/components/modals/modal-manager";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
-import { useProductThemeEffect } from "@/hooks/use-product-theme";
 import { useTheme } from "@/hooks/use-theme";
-import { useAuthIsAuthenticated } from "@/store/auth-store";
+import { useAuthIsAuthenticated } from "@/store/app-context-store";
 
 import { AppRoutes } from "./router";
-
-type RetryableError = {
-  status?: number;
-};
-
-// Optimized QueryClient configuration
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-      refetchOnMount: true, // Refetch only if data is stale
-      retry: (failureCount, error) => {
-        const status = (error as RetryableError | undefined)?.status;
-        if (status && [400, 401, 403, 404].includes(status)) return false;
-        return failureCount < 3;
-      },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      placeholderData: keepPreviousData,
-    },
-  },
-});
 
 // Loading fallback component
 function LoadingFallback() {
@@ -105,33 +78,40 @@ function AppLayout() {
 
 function App() {
   useTheme();
-  useProductThemeEffect(); // Apply product theme based on org mode
+  const isDevelopment = import.meta.env.MODE === "development";
+  const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <NuqsAdapter>
-            <ScrollToTop />
-            <AppLayout />
-            <CommandMenu />
-            <KeyboardShortcutsDialog />
-            <Toaster
-              position="bottom-right"
-              className="font-arad"
-              toastOptions={{
-                duration: 3000,
-                className:
-                  "rounded-xl border-border/40 bg-card/80 backdrop-blur-md product-beveled text-foreground shadow-2xl",
-              }}
-            />
-          </NuqsAdapter>
-        </Router>
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-left"
-        />
-      </QueryClientProvider>
+      <Router>
+        <NuqsAdapter>
+          <ScrollToTop />
+          <AppLayout />
+          <CommandMenu />
+          <KeyboardShortcutsDialog />
+          <ModalManager />
+          <Toaster
+            position="bottom-right"
+            className="font-arad"
+            toastOptions={{
+              duration: 3000,
+              className:
+                "rounded-xl border-border/40 bg-card/80 backdrop-blur-md text-foreground shadow-2xl",
+            }}
+          />
+          {isDevelopment && convexUrl && (
+            <a
+              href={convexUrl}
+              target="_blank"
+              rel="noreferrer"
+              title={convexUrl}
+              className="fixed bottom-3 left-3 z-50 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] text-emerald-600 shadow-sm transition hover:border-emerald-500/70 hover:bg-emerald-500/20"
+            >
+              Convex connected
+            </a>
+          )}
+        </NuqsAdapter>
+      </Router>
     </ErrorBoundary>
   );
 }

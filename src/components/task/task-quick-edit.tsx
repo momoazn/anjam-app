@@ -12,21 +12,17 @@ import {
 } from "@/components/ui/select";
 import { shared, tasks } from "@/constants";
 import { useUpdateTask } from "@/hooks/tasks";
-import type { TaskWithProject } from "@/lib/pocketbase";
-import {
-  TasksPriorityOptions,
-  TasksStatusOptions,
-} from "@/lib/pocketbase-types";
 import { TASK_STATUS_CONFIG } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
+import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 
 interface TaskQuickEditProps {
   task: TaskWithProject;
   users: Array<{
-    id: string;
+    _id: string;
     username: string;
-    first_name?: string;
-    last_name?: string;
+    firstName?: string;
+    lastName?: string;
   }>;
   children: React.ReactNode;
 }
@@ -43,18 +39,16 @@ export function StatusQuickEdit({
   onValueChange: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const updateTask = useUpdateTask({
-    onSuccess: () => {
-      toast.success(tasks.edit.success);
-      onValueChange();
-    },
-  });
+  const updateTask = useUpdateTask();
 
   const handleStatusChange = (status: string) => {
+    const taskId = task._id;
     updateTask.mutate({
-      id: task.id,
-      updates: { status: status as TasksStatusOptions },
+      id: taskId,
+      updates: { status: status as TaskStatus },
     });
+    toast.success(tasks.edit.success);
+    onValueChange();
     setIsOpen(false);
   };
 
@@ -90,26 +84,23 @@ export function PriorityQuickEdit({
   onValueChange: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const updateTask = useUpdateTask({
-    onSuccess: () => {
-      toast.success(tasks.edit.success);
-      onValueChange();
-    },
-  });
+  const updateTask = useUpdateTask();
 
-  const priorityOptions: Array<{ value: TasksPriorityOptions; label: string }> =
-    [
-      { value: TasksPriorityOptions.low, label: tasks.priority.low },
-      { value: TasksPriorityOptions.medium, label: tasks.priority.medium },
-      { value: TasksPriorityOptions.high, label: tasks.priority.high },
-      { value: TasksPriorityOptions.urgent, label: tasks.priority.urgent },
-    ];
+  const priorityOptions: Array<{ value: TaskPriority; label: string }> = [
+    { value: "low", label: tasks.priority.low },
+    { value: "medium", label: tasks.priority.medium },
+    { value: "high", label: tasks.priority.high },
+    { value: "urgent", label: tasks.priority.urgent },
+  ];
 
   const handlePriorityChange = (priority: string) => {
+    const taskId = task._id;
     updateTask.mutate({
-      id: task.id,
-      updates: { priority: priority as TasksPriorityOptions },
+      id: taskId,
+      updates: { priority: priority as TaskPriority },
     });
+    toast.success(tasks.edit.success);
+    onValueChange();
     setIsOpen(false);
   };
 
@@ -144,23 +135,24 @@ export function AssigneeQuickEdit({
 }: {
   task: TaskWithProject;
   users: Array<{
-    id: string;
+    _id: string;
     username: string;
-    first_name?: string;
-    last_name?: string;
+    firstName?: string;
+    lastName?: string;
   }>;
   onValueChange: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const updateTask = useUpdateTask({
-    onSuccess: () => {
-      toast.success(tasks.edit.success);
-      onValueChange();
-    },
-  });
+  const updateTask = useUpdateTask();
 
   const handleAssigneeChange = (assigneeId: string) => {
-    updateTask.mutate({ id: task.id, updates: { assignee: assigneeId } });
+    const taskId = task._id;
+    updateTask.mutate({
+      id: taskId,
+      updates: { assigneeUserId: assigneeId || undefined },
+    });
+    toast.success(tasks.edit.success);
+    onValueChange();
     setIsOpen(false);
   };
 
@@ -168,7 +160,7 @@ export function AssigneeQuickEdit({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverContent className="w-[180px] p-1.5" align="start">
         <Select
-          value={task.assignee || "__unassigned"}
+          value={task.assigneeUserId || "__unassigned"}
           onValueChange={(value) =>
             handleAssigneeChange(value === "__unassigned" ? "" : value)
           }
@@ -187,12 +179,12 @@ export function AssigneeQuickEdit({
             ) : (
               users.map((user) => (
                 <SelectItem
-                  key={user.id}
-                  value={user.id}
+                  key={user._id}
+                  value={user._id}
                   className="text-xs font-bold"
                 >
-                  {user.first_name || user.last_name
-                    ? `${user.first_name} ${user.last_name}`
+                  {user.firstName || user.lastName
+                    ? `${user.firstName} ${user.lastName}`
                     : user.username}
                 </SelectItem>
               ))
@@ -215,19 +207,17 @@ export function DueDateQuickEdit({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     task.deadline ? new Date(task.deadline) : undefined,
   );
-  const updateTask = useUpdateTask({
-    onSuccess: () => {
-      toast.success(tasks.edit.success);
-      onValueChange();
-    },
-  });
+  const updateTask = useUpdateTask();
 
   const handleDateChange = (date: Date | undefined) => {
     setSelectedDate(date);
+    const taskId = task._id;
     updateTask.mutate({
-      id: task.id,
-      updates: { deadline: date ? date.toISOString() : undefined },
+      id: taskId,
+      updates: { deadline: date ? date.getTime() : undefined },
     });
+    toast.success(tasks.edit.success);
+    onValueChange();
     setIsOpen(false);
   };
 

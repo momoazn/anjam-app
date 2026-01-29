@@ -20,12 +20,14 @@ Consolidated strategic planning, improvements roadmap, and implementation priori
 
 ### 📁 [Archived Plans](./archive/)
 
-All implementation plans have been completed and archived in `docs/archive/`.
+Historical implementation plans that have been completed or superseded.
 
-- **[Archived Plans](./archive/)**: Historical implementation plans
+- **[Archived Plans](./archive/)**: Completed migration and implementation documents
+  - Convex Cloud Migration - Completed migration from PocketBase/Go to Convex
+  - Better Auth Integration - Completed authentication system migration
   - Dual-Mode Implementation - Organization mode switching (completed)
-  - i18n Migration - Deprecated (not implemented)
   - Technical Debt Refactoring - Backend/frontend refactoring (completed)
+  - i18n Migration - Deprecated (not implemented)
   - Old Roadmap/Status/Improvements - Previous planning documents
 
 ### 💻 [Development](./development/)
@@ -49,9 +51,9 @@ High-level product information and design resources.
 
 Resources for deploying and maintaining Anjam in production.
 
-- **[Production Runbook](./operations/runbook.md)**: Detailed deployment and maintenance procedures.
+- **[Production Runbook](./operations/runbook.md)**: Convex Cloud deployment and maintenance procedures.
 - **[Readiness Checklist](./operations/readiness-checklist.md)**: Checklist to verify before going live.
-- **[Readiness Plan](./operations/readiness-plan.md)**: Strategy for achieving production readiness.
+- **[Readiness Plan](./operations/readiness-plan.md)**: Strategy for achieving production readiness with Convex.
 - **[CI/Dokploy](./ci-dokploy.md)**: CI/CD pipeline configuration for Dokploy deployment.
 
 ### 📖 [Reference](./)

@@ -13,7 +13,6 @@ import {
   IconTrash,
   IconUser,
 } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -25,22 +24,36 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { tasks } from "@/constants";
+import { common, tasks } from "@/constants";
 import {
   useCreateSubtask,
   useDeleteSubtask,
-  useProjectUsers,
   useSubtasks,
   useUpdateSubtask,
-} from "@/hooks";
-import { queryKeys } from "@/hooks/query-keys";
+} from "@/hooks/subtasks";
+import { useProjectUsers } from "@/hooks/users";
 import { formatTaskDate } from "@/lib/date-utils";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import { pb } from "@/lib/pocketbase";
-import type { SubtasksResponse, UsersResponse } from "@/lib/pocketbase-types";
 import { cn, formatUserName } from "@/lib/utils";
 
-type SubtaskWithAssignee = SubtasksResponse<{ assignee?: UsersResponse }>;
+// Define a local interface matching the hook's return shape
+interface SubtaskWithAssignee {
+  _id: string;
+  title: string;
+  isDone: boolean;
+  order?: number;
+  _creationTime: number;
+  taskId: string;
+  assigneeUserId?: string;
+  expand?: {
+    assignee?: {
+      _id: string;
+      username: string;
+      firstName?: string;
+      lastName?: string;
+      image?: string;
+    };
+  };
+}
 
 const getSubtaskOrder = (subtask: SubtaskWithAssignee) => subtask.order ?? 0;
 
@@ -73,7 +86,7 @@ function SortableSubtaskRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: subtask.id });
+  } = useSortable({ id: subtask._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -93,7 +106,7 @@ function SortableSubtaskRow({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            className="text-muted-foreground/40"
+            className="text-muted-foreground/40 cursor-grab active:cursor-grabbing"
             {...attributes}
             {...listeners}
           >
@@ -102,7 +115,8 @@ function SortableSubtaskRow({
           <div>
             <p className="text-sm font-bold tracking-tight">{subtask.title}</p>
             <p className="text-muted-foreground text-[11px] font-medium">
-              {assigneeName} · {formatTaskDate(subtask.created)}
+              {assigneeName} ·
+              {formatTaskDate(new Date(subtask._creationTime).toISOString())}
             </p>
           </div>
         </div>
@@ -112,13 +126,13 @@ function SortableSubtaskRow({
             size="sm"
             className={cn(
               "rounded-lg text-[10px] font-bold",
-              subtask.is_done ? "text-success" : "text-muted-foreground",
+              subtask.isDone ? "text-success" : "text-muted-foreground",
             )}
             onClick={onToggle}
             disabled={isUpdating}
           >
             <IconCheck className="size-3" />
-            {subtask.is_done
+            {subtask.isDone
               ? tasks.details.subtasks.reopen
               : tasks.details.subtasks.markDone}
           </Button>
@@ -139,94 +153,106 @@ function SortableSubtaskRow({
 }
 
 export function Subtasks({ taskId, projectId }: SubtasksProps) {
-  const queryClient = useQueryClient();
-  const { data: subtasksData, isFetching: isLoadingSubtasks } =
+  // Cast the hook return to our local type
+  const { data: rawSubtasks, isLoading: isLoadingSubtasks } =
     useSubtasks(taskId);
+  const subtasksData = rawSubtasks as SubtaskWithAssignee[] | undefined;
+
   const { data: users } = useProjectUsers({ projectId });
 
   const [ordered, setOrdered] = useState<SubtaskWithAssignee[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [newAssignee, setNewAssignee] = useState<string>("");
+  const [isCreating, setIsCreating] = useState(false);
 
   const createSubtask = useCreateSubtask();
   const updateSubtask = useUpdateSubtask();
   const deleteSubtask = useDeleteSubtask();
 
   // Sync ordered list with subtasksData, preserving manual reordering
-  // This is necessary to sync with external data while allowing local drag reordering
-  /* eslint-disable react-hooks/set-state-in-effect */
+
   useEffect(() => {
     if (!subtasksData) return;
     const sorted = [...subtasksData].sort((a, b) => {
       if (getSubtaskOrder(a) === getSubtaskOrder(b)) {
-        return new Date(a.created).getTime() - new Date(b.created).getTime();
+        return a._creationTime - b._creationTime;
       }
       return getSubtaskOrder(a) - getSubtaskOrder(b);
     });
     setOrdered(sorted);
   }, [subtasksData]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const assigneeOptions = useMemo(() => {
     const options = users?.map((user) => ({
-      value: user.id,
-      label: formatUserName(user.first_name, user.last_name, user.username),
+      value: user._id,
+      label: formatUserName(user.firstName, user.lastName, user.username),
     }));
     return options ?? [];
   }, [users]);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     const title = newTitle.trim();
     if (!title) {
       toast.error(tasks.details.subtasks.titleRequired);
       return;
     }
-    createSubtask.mutate(
-      {
-        task: taskId,
+
+    setIsCreating(true);
+    try {
+      await createSubtask.mutate({
+        taskId,
         title,
-        assignee:
+        assigneeUserId:
           newAssignee === "unassigned" || !newAssignee
             ? undefined
             : newAssignee,
         order: ordered.length + 1,
-      },
-      {
-        onSuccess: () => {
-          setNewTitle("");
-          setNewAssignee("");
-          toast.success(tasks.details.subtasks.addSuccess);
-        },
-        onError: (error: unknown) => {
-          handlePocketBaseError(error as Error);
-        },
-      },
-    );
+      });
+      setNewTitle("");
+      setNewAssignee("");
+      toast.success(tasks.details.subtasks.addSuccess);
+    } catch (error) {
+      toast.error("خطا در ایجاد مورد جدید");
+      console.error(error);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
-  const toggleCompletion = (subtaskId: string, done: boolean) => {
-    updateSubtask.mutate({
-      id: subtaskId,
-      updates: { is_done: !done },
-    });
+  const toggleCompletion = async (subtaskId: string, done: boolean) => {
+    try {
+      await updateSubtask.mutate({
+        id: subtaskId,
+        updates: { isDone: !done },
+      });
+    } catch {
+      toast.error("Failed to update subtask");
+    }
   };
 
-  const handleDelete = (id: string) => {
-    deleteSubtask.mutate(id, {
-      onSuccess: () => toast.success(tasks.details.subtasks.deleteSuccess),
-      onError: (error: unknown) => handlePocketBaseError(error as Error),
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteSubtask.mutate(id);
+      toast.success(tasks.details.subtasks.deleteSuccess);
+    } catch {
+      toast.error("Failed to delete subtask");
+    }
   };
 
   const persistOrder = async (nextOrder: SubtaskWithAssignee[]) => {
-    await Promise.all(
-      nextOrder.map((subtask, index) =>
-        pb.collection("subtasks").update(subtask.id, { order: index + 1 }),
-      ),
-    );
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.subtasks.listByTask(taskId),
-    });
+    try {
+      await Promise.all(
+        nextOrder.map((subtask, index) =>
+          updateSubtask.mutate({
+            id: subtask._id,
+            updates: { order: index + 1 },
+          }),
+        ),
+      );
+    } catch {
+      toast.error(tasks.details.subtasks.orderUpdateError);
+      // Revert logic could go here if we had access to previous state easily
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -234,13 +260,16 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
     if (!over || active.id === over.id) return;
 
     setOrdered((items) => {
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
+      const oldIndex = items.findIndex((item) => item._id === active.id);
+      const newIndex = items.findIndex((item) => item._id === over.id);
       const nextOrder = arrayMove(items, oldIndex, newIndex);
-      persistOrder(nextOrder).catch(() => {
-        toast.error(tasks.details.subtasks.orderUpdateError);
-      });
-      return nextOrder;
+      // Fix orders in the items themselves for local state
+      const updatedOrder = nextOrder.map((item, index) => ({
+        ...item,
+        order: index + 1,
+      }));
+      persistOrder(updatedOrder);
+      return updatedOrder;
     });
   };
 
@@ -265,6 +294,9 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
                 onChange={(event) => setNewTitle(event.target.value)}
                 placeholder={tasks.details.subtasks.addPlaceholder}
                 className="border-border/40 bg-muted/5 mt-2 rounded-lg text-right text-sm font-bold"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleCreate();
+                }}
               />
             </div>
             <div className="w-56">
@@ -308,7 +340,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
             </div>
             <Button
               onClick={handleCreate}
-              disabled={createSubtask.isPending}
+              disabled={isCreating}
               className="border-border/40 h-10 rounded-lg text-[10px] font-bold tracking-tight"
             >
               <IconPlus className="size-4" />
@@ -319,36 +351,35 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
 
         <div className="mt-6 space-y-3">
           {isLoadingSubtasks ? (
-            <p className="text-muted-foreground">
-              {tasks.details.timeTracking.loading}
-            </p>
+            <p className="text-muted-foreground">{common.loading}</p>
           ) : ordered.length > 0 ? (
             <DndContext
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
               <SortableContext
-                items={ordered.map((item) => item.id)}
+                items={ordered.map((item) => item._id)}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-3">
                   {ordered.map((subtask) => {
                     const assigneeName = subtask.expand?.assignee
                       ? formatUserName(
-                          subtask.expand.assignee.first_name,
-                          subtask.expand.assignee.last_name,
+                          subtask.expand.assignee.firstName,
+                          subtask.expand.assignee.lastName,
                           subtask.expand.assignee.username,
                         )
                       : tasks.details.unknownUser;
                     return (
                       <SortableSubtaskRow
-                        key={subtask.id}
+                        key={subtask._id}
                         subtask={subtask}
                         assigneeName={assigneeName}
                         onToggle={() =>
-                          toggleCompletion(subtask.id, Boolean(subtask.is_done))
+                          toggleCompletion(subtask._id, subtask.isDone)
                         }
-                        onDelete={() => handleDelete(subtask.id)}
+                        onDelete={() => handleDelete(subtask._id)}
+                        // Since we don't have individual loading states from hooks easily, we pass false or global state
                         isUpdating={updateSubtask.isPending}
                         isDeleting={deleteSubtask.isPending}
                       />

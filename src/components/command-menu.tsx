@@ -11,7 +11,7 @@ import {
   IconTarget,
 } from "@tabler/icons-react";
 import Fuse from "fuse.js";
-import { FileText, FolderOpen, LayoutGrid, Plus, Settings } from "lucide-react";
+import { FileText, FolderOpen, Plus, Settings } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
@@ -21,9 +21,8 @@ import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 import { commandMenu } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
 import type { SearchResponse } from "@/hooks/use-global-search";
-import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth-store";
+import { useOpenModal } from "@/store/modal-store";
 
 interface CommandItem {
   id: string;
@@ -70,10 +69,7 @@ export function CommandMenu() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [debouncedQuery] = useDebounce(search, 300);
   const navigate = useNavigate();
-  const currentOrgMode = useAuthStore((state) => state.currentOrgMode);
-  const isProductMode = currentOrgMode === "product";
-  const { resolvedTheme } = useTheme();
-  const isProductVisualTheme = isProductMode && resolvedTheme === "dark";
+  const openModal = useOpenModal();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: searchData, isLoading: isSearchLoading } =
@@ -94,12 +90,7 @@ export function CommandMenu() {
   }, []);
 
   const navigateToInbox = useCallback(() => {
-    navigate(isProductMode ? "/inbox" : "/my-tasks");
-    setOpen(false);
-  }, [isProductMode, navigate]);
-
-  const navigateToDashboard = useCallback(() => {
-    navigate("/dashboard");
+    navigate("/inbox");
     setOpen(false);
   }, [navigate]);
 
@@ -109,14 +100,14 @@ export function CommandMenu() {
   }, [navigate]);
 
   const navigateToNewTask = useCallback(() => {
-    navigate("/tasks/new");
+    openModal("create-task");
     setOpen(false);
-  }, [navigate]);
+  }, [openModal]);
 
   const navigateToNewProject = useCallback(() => {
-    navigate("/projects/new");
+    openModal("create-project");
     setOpen(false);
-  }, [navigate]);
+  }, [openModal]);
 
   const navigateToInsights = useCallback(() => {
     navigate("/insights");
@@ -149,29 +140,15 @@ export function CommandMenu() {
     const items: CommandItem[] = [
       {
         id: "nav-inbox",
-        label: isProductMode
-          ? commandMenu.product.inbox
-          : commandMenu.operations.myTasks,
+        label: commandMenu.labels.inbox,
         icon: IconSearch,
         action: navigateToInbox,
         keywords: commandMenu.keywords.inbox,
         type: "command",
       },
       {
-        id: "nav-dashboard",
-        label: isProductMode
-          ? commandMenu.product.dashboard
-          : commandMenu.operations.dashboard,
-        icon: LayoutGrid,
-        action: navigateToDashboard,
-        keywords: commandMenu.keywords.dashboard,
-        type: "command",
-      },
-      {
         id: "nav-projects",
-        label: isProductMode
-          ? commandMenu.product.projects
-          : commandMenu.operations.projects,
+        label: commandMenu.labels.projects,
         icon: FolderOpen,
         action: navigateToProjects,
         keywords: commandMenu.keywords.projects,
@@ -179,9 +156,7 @@ export function CommandMenu() {
       },
       {
         id: "project-new",
-        label: isProductMode
-          ? commandMenu.product.createProject
-          : commandMenu.operations.createProject,
+        label: commandMenu.labels.createProject,
         icon: FolderOpen,
         action: navigateToNewProject,
         keywords: commandMenu.keywords.new,
@@ -189,43 +164,33 @@ export function CommandMenu() {
       },
       {
         id: "task-new",
-        label: isProductMode
-          ? commandMenu.product.createItem
-          : commandMenu.operations.createTask,
+        label: commandMenu.labels.createItem,
         icon: Plus,
         action: navigateToNewTask,
         keywords: commandMenu.keywords.new,
         type: "command",
       },
-    ];
-
-    if (isProductMode) {
-      items.push({
+      {
         id: "nav-insights",
-        label: commandMenu.product.insights,
+        label: commandMenu.labels.insights,
         icon: IconActivity,
         action: navigateToInsights,
         keywords: commandMenu.keywords.insights,
         type: "command",
-      });
-    }
-
-    items.push({
-      id: "nav-settings",
-      label: isProductMode
-        ? commandMenu.product.settings
-        : commandMenu.operations.settings,
-      icon: Settings,
-      action: navigateToSettings,
-      keywords: commandMenu.keywords.settings,
-      type: "command",
-    });
+      },
+      {
+        id: "nav-settings",
+        label: commandMenu.labels.settings,
+        icon: Settings,
+        action: navigateToSettings,
+        keywords: commandMenu.keywords.settings,
+        type: "command",
+      },
+    ];
 
     return items;
   }, [
-    isProductMode,
     navigateToInbox,
-    navigateToDashboard,
     navigateToProjects,
     navigateToNewProject,
     navigateToNewTask,
@@ -244,11 +209,11 @@ export function CommandMenu() {
       searchData.tasks.forEach(
         (task: NonNullable<SearchResponse>["tasks"][0]) => {
           items.push({
-            id: `task-${task.id}`,
+            id: `task-${task._id}`,
             label: task.title,
             icon: FileText,
-            action: () => navigateToTask(task.id),
-            subtitle: `${task.display_id} • ${task.project_name}`,
+            action: () => navigateToTask(task._id),
+            subtitle: `${task.displayId} • ${task.projectName}`,
             badge: task.status,
             type: "task",
           });
@@ -376,47 +341,22 @@ export function CommandMenu() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogOverlay
-        className={cn(
-          "backdrop-blur-sm",
-          isProductVisualTheme
-            ? "bg-[rgba(12,12,14,0.6)]"
-            : "bg-[rgba(0,0,0,0.28)]",
-          isProductVisualTheme && "product-glass",
-        )}
-      />
+      <DialogOverlay className="backdrop-blur-sm bg-background/80" />
       <DialogContent
-        className={cn(
-          "overflow-hidden p-0 shadow-2xl",
-          isProductVisualTheme ? "product-elevated product-beveled" : "bg-card",
-        )}
+        className="overflow-hidden p-0 shadow-2xl bg-card"
         showCloseButton={false}
       >
         <div className="flex items-center border-b px-3" dir="ltr">
           <IconSearch
-            className={cn(
-              "size-4 shrink-0",
-              isProductVisualTheme
-                ? "text-[var(--product-text-secondary)]"
-                : "text-muted-foreground",
-            )}
+            className="size-4 shrink-0 text-muted-foreground"
             aria-hidden="true"
           />
           <input
             ref={inputRef}
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className={cn(
-              "flex h-12 w-full rounded-md bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
-              isProductVisualTheme
-                ? "text-[var(--product-text-primary)] placeholder:text-[var(--product-text-tertiary)]"
-                : "",
-            )}
-            placeholder={
-              isProductMode
-                ? commandMenu.product.placeholder
-                : commandMenu.operations.placeholder
-            }
+            className="flex h-12 w-full rounded-md bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            placeholder={commandMenu.labels.placeholder}
             role="combobox"
             aria-expanded={open}
             aria-controls="command-menu-listbox"
@@ -429,14 +369,7 @@ export function CommandMenu() {
               commandMenu.ariaLabels.searchInput
             }
           />
-          <kbd
-            className={cn(
-              "pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100",
-              isProductVisualTheme
-                ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
-                : "border-border bg-muted text-muted-foreground",
-            )}
-          >
+          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 border-border bg-muted text-muted-foreground">
             <span className="text-xs">{commandMenu.shortcuts.commandK}</span>
           </kbd>
         </div>
@@ -447,17 +380,8 @@ export function CommandMenu() {
             </div>
           )}
           {showNoResults && (
-            <p
-              className={cn(
-                "p-4 text-center text-sm",
-                isProductVisualTheme
-                  ? "text-[var(--product-text-secondary)]"
-                  : "text-muted-foreground",
-              )}
-            >
-              {isProductMode
-                ? commandMenu.product.noResults
-                : commandMenu.operations.noResults}
+            <p className="p-4 text-center text-sm text-muted-foreground">
+              {commandMenu.labels.noResults}
             </p>
           )}
           {allItems.length > 0 && (
@@ -482,34 +406,16 @@ export function CommandMenu() {
                       "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all",
                       "hover:bg-accent hover:text-accent-foreground",
                       "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-                      isProductVisualTheme
-                        ? "text-[var(--product-text-secondary)] hover:text-[var(--product-text-primary)] product-kbd-focus"
-                        : "",
-                      idx === activeIndex &&
-                        (isProductVisualTheme
-                          ? "product-selected"
-                          : "bg-accent/20"),
+                      idx === activeIndex && "bg-accent/20",
                     )}
                     data-active={idx === activeIndex}
                     tabIndex={idx === activeIndex ? 0 : -1}
                     onMouseEnter={() => setActiveIndex(idx)}
                   >
-                    <div
-                      className={cn(
-                        "flex size-8 items-center justify-center rounded-lg",
-                        item.type === "task"
-                          ? "bg-muted"
-                          : isProductVisualTheme
-                            ? "bg-[var(--product-bg-secondary)]"
-                            : "bg-muted",
-                      )}
-                    >
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-muted">
                       <Icon
                         className={cn(
-                          "size-4 shrink-0",
-                          isProductVisualTheme
-                            ? "text-[var(--product-text-tertiary)]"
-                            : "text-muted-foreground",
+                          "size-4 shrink-0 text-muted-foreground",
                           item.type === "task" && "text-muted-foreground",
                         )}
                       />
@@ -534,36 +440,15 @@ export function CommandMenu() {
                     {item.type === "command" &&
                       "shortcut" in item &&
                       item.shortcut && (
-                        <kbd
-                          className={cn(
-                            "pointer-events-none ml-2 inline-flex h-5 select-none items-center rounded border px-1.5 font-mono text-[10px]",
-                            isProductVisualTheme
-                              ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
-                              : "border-border bg-muted text-muted-foreground",
-                          )}
-                        >
+                        <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center rounded border px-1.5 font-mono text-[10px] border-border bg-muted text-muted-foreground">
                           {item.shortcut}
                         </kbd>
                       )}
                     {item.type === "task" && (
-                      <IconTarget
-                        className={cn(
-                          "size-3 shrink-0",
-                          isProductVisualTheme
-                            ? "text-[var(--product-text-tertiary)]"
-                            : "text-muted-foreground/50",
-                        )}
-                      />
+                      <IconTarget className="size-3 shrink-0 text-muted-foreground/50" />
                     )}
                     {item.type === "project" && (
-                      <IconHash
-                        className={cn(
-                          "size-3 shrink-0",
-                          isProductVisualTheme
-                            ? "text-[var(--product-text-tertiary)]"
-                            : "text-muted-foreground/50",
-                        )}
-                      />
+                      <IconHash className="size-3 shrink-0 text-muted-foreground/50" />
                     )}
                   </button>
                 );
@@ -572,14 +457,7 @@ export function CommandMenu() {
           )}
         </div>
         {search.length >= 2 && (
-          <div
-            className={cn(
-              "flex items-center justify-between border-t px-4 py-2 text-[10px]",
-              isProductVisualTheme
-                ? "border-[var(--product-border)] text-[var(--product-text-tertiary)]"
-                : "border-border text-muted-foreground",
-            )}
-          >
+          <div className="flex items-center justify-between border-t px-4 py-2 text-[10px] border-border text-muted-foreground">
             <div className="flex items-center gap-3">
               <span>{commandMenu.navigationInstructions.upDown}</span>
               <span>{commandMenu.navigationInstructions.enter}</span>

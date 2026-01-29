@@ -107,6 +107,7 @@ export const auth = {
     next: "بعدی",
     previous: "قبلی",
     finish: "اتمام",
+    addEmail: "افزودن ایمیل دیگر",
     placeholders: {
       email: "email@example.com",
     },

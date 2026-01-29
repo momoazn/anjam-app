@@ -1,26 +1,9 @@
-import {
-  Activity,
-  BellOff,
-  Building2,
-  FolderOpen,
-  ListTodo,
-  MessageCircle,
-  SearchX,
-  Users,
-} from "lucide-react";
+import { BellOff, FolderOpen, ListTodo, SearchX } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  auditLogs,
-  comments,
-  notifications,
-  organization,
-  projects,
-  tasks,
-  users,
-} from "@/constants";
+import { notifications, projects, tasks } from "@/constants";
 
 type EmptyStateProps = {
   icon: ReactNode;
@@ -70,16 +53,6 @@ export function EmptyStateNoProjects({ onCreate }: { onCreate?: () => void }) {
   );
 }
 
-export function EmptyStateNoProjectsAccess() {
-  return (
-    <EmptyState
-      icon={<FolderOpen className="h-12 w-12" />}
-      title={projects.list.noProjects}
-      description={organization.members.empty}
-    />
-  );
-}
-
 export function EmptyStateNoTasks({ onCreate }: { onCreate?: () => void }) {
   return (
     <EmptyState
@@ -93,16 +66,6 @@ export function EmptyStateNoTasks({ onCreate }: { onCreate?: () => void }) {
           </Button>
         ) : null
       }
-    />
-  );
-}
-
-export function EmptyStateNoTasksViewer() {
-  return (
-    <EmptyState
-      icon={<ListTodo className="h-12 w-12" />}
-      title={tasks.emptyState.projectNoTasksYet}
-      description={tasks.emptyState.projectNoTasksYetDescription}
     />
   );
 }
@@ -123,98 +86,6 @@ export function EmptyStateNoNotifications() {
       icon={<BellOff className="h-12 w-12" />}
       title={notifications.emptyState.title}
       description={notifications.emptyState.description}
-    />
-  );
-}
-
-export function EmptyStateNoOrganization({
-  onSelect,
-}: {
-  onSelect?: () => void;
-}) {
-  return (
-    <EmptyState
-      icon={<Building2 className="h-12 w-12" />}
-      title={organization.title}
-      description={organization.create.formDescription}
-      action={
-        onSelect ? (
-          <Button className="gap-2" onClick={onSelect}>
-            {organization.create.button}
-          </Button>
-        ) : null
-      }
-    />
-  );
-}
-
-export function EmptyStateNoMembers({ onInvite }: { onInvite?: () => void }) {
-  return (
-    <EmptyState
-      icon={<Users className="h-12 w-12" />}
-      title={organization.members.empty}
-      description={organization.members.invite}
-      action={
-        onInvite ? (
-          <Button className="gap-2" onClick={onInvite}>
-            {organization.members.invite}
-          </Button>
-        ) : null
-      }
-    />
-  );
-}
-
-export function EmptyStateNoComments() {
-  return (
-    <EmptyState
-      icon={<MessageCircle className="h-12 w-12" />}
-      title={comments.empty.noComments}
-      description={comments.empty.beFirst}
-    />
-  );
-}
-
-export function EmptyStateNoActivity() {
-  return (
-    <EmptyState
-      icon={<Activity className="h-12 w-12" />}
-      title={auditLogs.activityStream.title}
-      description={auditLogs.activityStream.empty}
-    />
-  );
-}
-
-export function EmptyStateNoUsers({ onCreate }: { onCreate?: () => void }) {
-  return (
-    <EmptyState
-      icon={<Users className="h-12 w-12" />}
-      title={users.emptyState.title}
-      description={users.emptyState.description}
-      action={
-        onCreate ? (
-          <Button className="gap-2" onClick={onCreate}>
-            {users.create.button}
-          </Button>
-        ) : null
-      }
-    />
-  );
-}
-
-export function EmptyStateNoProjectMembers({ onAdd }: { onAdd?: () => void }) {
-  return (
-    <EmptyState
-      icon={<Users className="h-12 w-12" />}
-      title={projects.users.emptyState.title}
-      description={projects.users.emptyState.description}
-      action={
-        onAdd ? (
-          <Button className="gap-2" onClick={onAdd}>
-            {projects.users.add}
-          </Button>
-        ) : null
-      }
     />
   );
 }

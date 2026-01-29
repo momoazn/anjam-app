@@ -13,10 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { common, tagsManagement } from "@/constants";
-import { useCreateTag, useUpdateTag } from "@/hooks/tags";
+import { type Tag, useCreateTag, useUpdateTag } from "@/hooks/tags";
 import { useToast } from "@/hooks/use-toast";
-import { handlePocketBaseError } from "@/lib/error-handler";
-import type { TagsResponse } from "@/lib/pocketbase-types";
 
 const TAG_COLORS = [
   { value: "#9CA3AF", label: tagsManagement.colors.gray },
@@ -32,13 +30,13 @@ const TAG_COLORS = [
 export type TagFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  tag?: TagsResponse;
+  tag?: Tag;
   mode: "create" | "edit";
 };
 
 type TagFormDialogFormProps = {
   onOpenChange: (open: boolean) => void;
-  tag?: TagsResponse;
+  tag?: Tag;
   mode: "create" | "edit";
 };
 
@@ -56,34 +54,15 @@ function TagFormDialogForm({
   const [color, setColor] = useState(initialColor);
   const { toast } = useToast();
 
-  const createTag = useCreateTag({
-    onSuccess: () => {
-      toast({ title: tagsManagement.toast.created });
-      onOpenChange(false);
-      resetForm();
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
-
-  const updateTag = useUpdateTag({
-    onSuccess: () => {
-      toast({ title: tagsManagement.toast.updated });
-      onOpenChange(false);
-      resetForm();
-    },
-    onError: (error) => {
-      handlePocketBaseError(error);
-    },
-  });
+  const createTag = useCreateTag();
+  const updateTag = useUpdateTag();
 
   const resetForm = () => {
     setName(initialName);
     setColor(initialColor);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!name.trim()) {
@@ -94,10 +73,26 @@ function TagFormDialogForm({
       return;
     }
 
-    if (mode === "create") {
-      createTag.mutate({ name: name.trim(), color });
-    } else if (tag) {
-      updateTag.mutate({ id: tag.id, updates: { name: name.trim(), color } });
+    try {
+      if (mode === "create") {
+        await createTag.mutate({ name: name.trim(), color });
+        toast({ title: tagsManagement.toast.created });
+      } else if (tag) {
+        await updateTag.mutate({
+          id: tag._id,
+          updates: { name: name.trim(), color },
+        });
+        toast({ title: tagsManagement.toast.updated });
+      }
+      onOpenChange(false);
+      resetForm();
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Error saving tag";
+      toast({
+        title: message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -196,7 +191,7 @@ export function TagFormDialog({
   tag,
   mode,
 }: TagFormDialogProps) {
-  const formKey = open ? `${mode}-${tag?.id ?? "new"}` : "closed";
+  const formKey = open ? `${mode}-${tag?._id ?? "new"}` : "closed";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

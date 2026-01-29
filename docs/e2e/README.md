@@ -49,8 +49,8 @@ e2e/
 
 - Bun package manager
 - Playwright browsers installed
-- Backend server running on `http://localhost:8090`
 - Frontend dev server running on `http://localhost:5173`
+- Convex development server running
 
 ### Initial Setup
 
@@ -60,9 +60,6 @@ bun install
 
 # Install Playwright browsers
 bun exec playwright install
-
-# Run database setup (creates seed data)
-bun run setup
 ```
 
 ## Running Tests
@@ -311,19 +308,16 @@ Subsequent tests use this saved state to start already authenticated.
 
 ### Seed Data
 
-Default test users and organizations are created by `bun run setup`:
+Test users and organizations should be created as needed during test setup.
 
 **Users:**
 
-- admin@example.com / admin12345 (role: admin)
-- manager@example.com / manager123 (role: manager)
-- supervisor@example.com / supervisor123 (role: supervisor)
-- employee1@example.com / employee123 (role: employee)
-- employee2@example.com / employee123 (role: employee)
+- Test users with different roles (admin, manager, supervisor, employee)
+- Credentials defined in test fixtures
 
 **Organizations:**
 
-- Multiple test organizations created with projects and tasks
+- Multiple test organizations with projects and tasks
 
 ### Test Isolation
 
@@ -338,9 +332,10 @@ Each test should:
 ### Example Test File
 
 ```typescript
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "../pages/login.page";
+import { expect, test } from "@playwright/test";
+
 import { TEST_USERS } from "../fixtures/test-data";
+import { LoginPage } from "../pages/login.page";
 
 test.describe("Feature - Description (US-XXX)", () => {
   test.beforeEach(async ({ page }) => {
@@ -365,7 +360,7 @@ test.describe("Feature - Description (US-XXX)", () => {
     await input.fill("invalid input");
 
     // Should show error
-    await expect(page.locator("text=/error message/i)).toBeVisible();
+    await expect(page.locator("text=/error message/i")).toBeVisible();
   });
 });
 ```
@@ -428,7 +423,7 @@ See [user-stories.md](../docs/user-stories.md#implementation-notes) for full det
 
 When adding new tests:
 
-1. Follow the existing file structure and naming conventions
+1. Follow existing file structure and naming conventions
 2. Group related tests with `test.describe()`
 3. Use Page Object Models for UI interactions
 4. Add meaningful test descriptions with user story IDs

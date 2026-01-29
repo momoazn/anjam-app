@@ -13,25 +13,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { common, tasks } from "@/constants";
-import {
-  TasksPriorityOptions,
-  type TasksStatusOptions,
-} from "@/lib/pocketbase-types";
+import { TaskPriority, TaskStatus } from "@/types/tasks";
 
 interface BulkActionsBarProps {
   selectedCount: number;
   onClearSelection: () => void;
   onBulkDelete: () => Promise<void>;
   onBulkAssign: (assigneeId: string) => Promise<void>;
-  onBulkStatus: (status: TasksStatusOptions) => Promise<void>;
-  onBulkPriority: (priority: TasksPriorityOptions) => Promise<void>;
+  onBulkStatus: (status: TaskStatus) => Promise<void>;
+  onBulkPriority: (priority: TaskPriority) => Promise<void>;
   users: Array<{
-    id: string;
+    _id: string;
     username: string;
-    first_name?: string;
-    last_name?: string;
+    firstName?: string;
+    lastName?: string;
   }>;
-  availableStatuses: Array<{ value: TasksStatusOptions; label: string }>;
+  availableStatuses: Array<{ value: TaskStatus; label: string }>;
 }
 
 export function BulkActionsBar({
@@ -64,7 +61,7 @@ export function BulkActionsBar({
     }
   };
 
-  const handleBulkStatus = async (status: TasksStatusOptions) => {
+  const handleBulkStatus = async (status: TaskStatus) => {
     try {
       setIsLoading(true);
       await onBulkStatus(status);
@@ -81,7 +78,7 @@ export function BulkActionsBar({
     }
   };
 
-  const handleBulkPriority = async (priority: TasksPriorityOptions) => {
+  const handleBulkPriority = async (priority: TaskPriority) => {
     try {
       setIsLoading(true);
       await onBulkPriority(priority);
@@ -116,19 +113,18 @@ export function BulkActionsBar({
     }
   };
 
-  const priorityOptions: Array<{ value: TasksPriorityOptions; label: string }> =
-    [
-      { value: TasksPriorityOptions.low, label: tasks.priority.low },
-      {
-        value: TasksPriorityOptions.medium,
-        label: tasks.priority.medium,
-      },
-      { value: TasksPriorityOptions.high, label: tasks.priority.high },
-      {
-        value: TasksPriorityOptions.urgent,
-        label: tasks.priority.urgent,
-      },
-    ];
+  const priorityOptions: Array<{ value: TaskPriority; label: string }> = [
+    { value: "low", label: tasks.priority.low },
+    {
+      value: "medium",
+      label: tasks.priority.medium,
+    },
+    { value: "high", label: tasks.priority.high },
+    {
+      value: "urgent",
+      label: tasks.priority.urgent,
+    },
+  ];
 
   return (
     <>
@@ -173,12 +169,12 @@ export function BulkActionsBar({
               ) : (
                 users.map((user) => (
                   <SelectItem
-                    key={user.id}
-                    value={user.id}
+                    key={user._id}
+                    value={user._id}
                     className="text-[10px] font-bold"
                   >
-                    {user.first_name || user.last_name
-                      ? `${user.first_name} ${user.last_name}`
+                    {user.firstName || user.lastName
+                      ? `${user.firstName} ${user.lastName}`
                       : user.username}
                   </SelectItem>
                 ))

@@ -61,7 +61,9 @@ When a user attempts an action on a resource (e.g., "Delete Task"):
     - Retrieve user's role in the specific project.
     - Check if that role has the required permission (e.g., `task.delete`).
 
-## 3. Database Schema (PocketBase)
+## 3. Database Schema (Convex)
+
+The schema is defined in `convex/schema.ts`. Convex automatically regenerates TypeScript types in `convex/_generated/` whenever the schema changes.
 
 ### Core Collections
 
@@ -69,109 +71,91 @@ When a user attempts an action on a resource (e.g., "Delete Task"):
 
 - `name`: Text
 - `slug`: Text (Unique URL identifier)
-- `logo`: File
+- `logo`: File (stored in Convex storage)
 - `settings`: JSON
-- `plan`: Select (free/pro/enterprise)
+- `plan`: Text (free/pro/enterprise)
 - `active`: Bool
-
-#### Organization Mode (Build-Time Configuration)
-
-The organization mode is **not stored per-organization** - it is configured at build time for the entire deployment.
-
-**Configuration Methods:**
-
-| Layer    | Variable                               | Values                    | Default      |
-| -------- | -------------------------------------- | ------------------------- | ------------ |
-| Frontend | `VITE_ORG_MODE`                        | `operations` \| `product` | `operations` |
-| Backend  | `TM_ORG_MODE` env var                  | `operations` \| `product` | `operations` |
-| Backend  | ldflags `-X main.organizationMode=...` | `operations` \| `product` | `operations` |
-
-**Mode Effects:**
-
-| Feature       | Operations Mode | Product Mode |
-| ------------- | --------------- | ------------ |
-| Time Tracking | Enabled         | Disabled     |
-| Timesheet     | Enabled         | Disabled     |
-| Reports       | Enabled         | Disabled     |
-| Audit Logs    | Enabled         | Disabled     |
-| Calendar      | Enabled         | Optional     |
-| Home Route    | `/dashboard`    | `/inbox`     |
-| Task Labels   | "Tasks"         | "Issues"     |
 
 #### `organization_members`
 
-- `organization`: Relation -> organizations
-- `user`: Relation -> users
-- `role`: Select (owner, admin, member)
-- `status`: Select (invited, active, suspended)
+- `organization`: Id (Reference to organizations)
+- `user`: Id (Reference to users)
+- `role`: Text (owner, admin, member)
+- `status`: Text (invited, active, suspended)
 
 #### `projects`
 
-- `organization`: Relation -> organizations
+- `organization`: Id (Reference to organizations)
 - `name`, `code`, `description`...
-- `github_repo_*`: Fields for GitHub integration.
+- `github_repo_*`: Fields for GitHub integration
 
 #### `project_members`
 
-- `project`: Relation -> projects
-- `user`: Relation -> users
-- `role`: Select (owner, admin, member, viewer)
+- `project`: Id (Reference to projects)
+- `user`: Id (Reference to users)
+- `role`: Text (owner, admin, member, viewer)
 
 #### `project_statuses`
 
-- `project`: Relation -> projects
-- `key`, `label`, `color`, `order`: Custom statuses per project.
+- `project`: Id (Reference to projects)
+- `key`, `label`, `color`, `order`: Custom statuses per project
 
 #### `tasks`
 
-- `project`: Relation -> projects
+- `project`: Id (Reference to projects)
 - `title`, `description`...
 - `status`: Text (matches a `project_statuses` key)
-- `priority`: Select (low, medium, high, urgent)
-- `assignee`: Relation -> users
+- `priority`: Text (low, medium, high, urgent)
+- `assignee`: Id (Reference to users)
 
 #### `subtasks`
 
-- `task`: Relation -> tasks
+- `task`: Id (Reference to tasks)
 - `title`: Text
 - `completed`: Bool
 
 #### `time_entries`
 
-- `task`: Relation -> tasks
-- `user`: Relation -> users
+- `task`: Id (Reference to tasks)
+- `user`: Id (Reference to users)
 - `minutes`: Number
-- `date`: Date
+- `date`: Number (Unix timestamp)
 
 #### `audit_logs`
 
-- `organization`: Relation -> organizations
-- `actor`: Relation -> users
-- `action`, `resource`, `changes`: Tracking all mutations.
+- `organization`: Id (Reference to organizations)
+- `actor`: Id (Reference to users)
+- `action`, `resource`, `changes`: Tracking all mutations
 
 ## 4. API & Security Patterns
 
-### Access Rules (API Rules)
+### Access Control (Convex)
 
-PocketBase API rules enforce the hierarchy at the database level.
+Convex enforces access control at the function level through query, mutation, and action functions.
 
 - **Tenant Isolation**: All queries must filter by organization membership.
+  ```typescript
+  // In queries, check that user is a member of the organization
+  const membership = await ctx.db
+    .query("organization_members")
+    .withIndex("by_org_user", (q) =>
+      q.eq("organization", organizationId).eq("user", userId),
+    )
+    .first();
   ```
-  @collection.organization_members.organization.id ?= organization.id &&
-  @collection.organization_members.user.id ?= @request.auth.id
-  ```
-- **Soft Delete**: All relevant collections use a `deleted_at` field. Rules filter out deleted items:
-  ```
-  (deleted_at = '' || deleted_at = null)
+- **Soft Delete**: All relevant collections use a `deleted_at` field. Query filters exclude deleted items:
+  ```typescript
+  q.eq("deleted_at", undefined);
   ```
 
-### Backend Logic (Go)
+### Backend Logic (Convex)
 
-- **Transactions**: Critical operations (e.g., creating an org + owner) run in transactions.
-- **Hooks**:
-  - `OnRecordCreate`: Auto-generate IDs, validate constraints.
-  - `OnRecordUpdate`: Handle side-effects (notifications, audit logs).
-- **Audit Logging**: A centralized system captures all creates, updates, and deletes into `audit_logs`.
+- **Transactions**: Critical operations (e.g., creating an org + owner) run in Convex transactions.
+- **Function Types**:
+  - **Queries**: Read-only data fetching, automatically optimized for caching
+  - **Mutations**: Data modifications with automatic reactivity
+  - **Actions**: Complex operations that can call external APIs
+- **Audit Logging**: A centralized system captures all creates, updates, and deletes into `audit_logs` via mutation functions.
 
 ## 5. Frontend Architecture
 

@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { PageErrorBoundary } from "@/components/error/page-error-boundary";
-import { RouteSuspense } from "@/components/suspense/route-suspense";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { RouteSuspense } from "@/components/route-suspense";
 import {
   app,
   auth,
   errors,
-  myTasks,
+  inbox,
+  insights,
   navigation,
-  navigationLabels,
   notFound,
   organization,
   projects,
@@ -18,22 +18,18 @@ import {
   tagsManagement,
   tasks,
   ui,
-  users,
 } from "@/constants";
 
 import { usePermissions } from "./hooks/use-permissions";
-import type { FeatureKey } from "./lib/mode";
-import { getHomeRoute, isFeatureEnabled } from "./lib/mode";
+import { authClient } from "./lib/auth-client";
 import type { Permission } from "./lib/permissions";
 import {
   useAuthIsAuthenticated,
   useAuthStore,
   useAuthUser,
-  useCurrentOrgFeatures,
-  useCurrentOrgMode,
   useCurrentOrgOnboardingCompleted,
   useCurrentOrganization,
-} from "./store/auth-store";
+} from "./store/app-context-store";
 
 // Standardized error fallback component for lazy-loaded routes
 const PageLoadError = ({ message }: { message: string }) => (
@@ -59,120 +55,70 @@ const createLazyPage = (
   );
 
 const Login = createLazyPage(
-  () => import("@/pages/login"),
+  () => import("@/pages/auth/login"),
   errors.pageLoad.login,
 );
 const Register = createLazyPage(
-  () => import("@/pages/register"),
+  () => import("@/pages/auth/register"),
   errors.pageLoad.register,
 );
 const Landing = createLazyPage(
-  () => import("@/pages/landing"),
+  () => import("@/pages/utility/landing"),
   errors.pageLoad.notFound,
 );
 const PendingActivation = createLazyPage(
-  () => import("@/pages/pending-activation"),
+  () => import("@/pages/auth/pending-activation"),
   errors.pageLoad.notFound,
 );
-const Dashboard = createLazyPage(
-  () => import("@/pages/dashboard"),
-  errors.pageLoad.dashboard,
-);
 const Projects = createLazyPage(
-  () => import("@/pages/projects"),
+  () => import("@/pages/projects/index"),
   errors.pageLoad.projects,
 );
 const ProjectDetails = createLazyPage(
-  () => import("@/pages/project-details"),
-  errors.pageLoad.projects,
-);
-const CreateProject = createLazyPage(
-  () => import("@/pages/create-project"),
-  errors.pageLoad.projects,
-);
-const EditProject = createLazyPage(
-  () => import("@/pages/edit-project"),
+  () => import("@/pages/projects/details"),
   errors.pageLoad.projects,
 );
 const TaskBoardPage = createLazyPage(
   () =>
-    import("@/pages/task-board").then((module) => ({
+    import("@/pages/tasks/board").then((module) => ({
       default: module.TaskBoardPage,
     })),
   errors.pageLoad.tasks,
 );
 const Tasks = createLazyPage(
-  () => import("@/pages/tasks"),
-  errors.pageLoad.tasks,
-);
-
-// Issues page wrapper - uses Tasks component with issues viewMode
-const Issues = () => {
-  const TasksComponent = Tasks as React.ComponentType<{ viewMode?: string }>;
-  return <TasksComponent viewMode="issues" />;
-};
-const CreateTask = createLazyPage(
-  () => import("@/pages/create-task"),
+  () => import("@/pages/tasks/index"),
   errors.pageLoad.tasks,
 );
 const TaskDetails = createLazyPage(
-  () => import("@/pages/task-details"),
-  errors.pageLoad.tasks,
-);
-const EditTask = createLazyPage(
-  () => import("@/pages/edit-task"),
+  () => import("@/pages/tasks/details"),
   errors.pageLoad.tasks,
 );
 const Tags = createLazyPage(
-  () => import("@/pages/tags"),
+  () => import("@/pages/utility/tags"),
   errors.pageLoad.notFound,
 );
 const TaskCalendar = createLazyPage(
-  () => import("@/pages/task-calendar"),
-  errors.pageLoad.notFound,
-);
-const MyTasks = createLazyPage(
-  () => import("@/pages/my-tasks"),
+  () => import("@/pages/tasks/calendar"),
   errors.pageLoad.notFound,
 );
 const Inbox = createLazyPage(
-  () => import("@/pages/inbox"),
-  errors.pageLoad.notFound,
-);
-const Timesheet = createLazyPage(
-  () => import("@/pages/timesheet"),
+  () => import("@/pages/insights/inbox"),
   errors.pageLoad.notFound,
 );
 const ProjectTasks = createLazyPage(
-  () => import("@/pages/project-tasks"),
+  () => import("@/pages/projects/tasks"),
   errors.pageLoad.projectTasks,
 );
-const Users = createLazyPage(
-  () => import("@/pages/users"),
-  errors.pageLoad.users,
-);
-const CreateUser = createLazyPage(
-  () => import("@/pages/create-user"),
-  errors.pageLoad.users,
-);
-const ProjectUsers = createLazyPage(
-  () => import("@/pages/project-users"),
-  errors.pageLoad.projectUsers,
-);
-const EditUser = createLazyPage(
-  () => import("@/pages/edit-user"),
-  errors.pageLoad.users,
-);
-const Reports = createLazyPage(
-  () => import("@/pages/reports"),
-  errors.pageLoad.reports,
+const Insights = createLazyPage(
+  () => import("@/pages/insights/insights"),
+  errors.pageLoad.notFound,
 );
 const Helps = createLazyPage(
-  () => import("@/pages/helps"),
+  () => import("@/pages/utility/helps"),
   errors.pageLoad.helps,
 );
 const Settings = createLazyPage(
-  () => import("@/pages/settings"),
+  () => import("@/pages/settings/index"),
   errors.pageLoad.notFound,
 );
 const PreferencesPage = createLazyPage(
@@ -180,30 +126,22 @@ const PreferencesPage = createLazyPage(
   errors.pageLoad.notFound,
 );
 const Notifications = createLazyPage(
-  () => import("@/pages/notifications"),
+  () => import("@/pages/insights/notifications"),
   errors.pageLoad.notifications,
 );
-const AuditLogs = createLazyPage(
-  () => import("@/pages/audit-logs"),
-  errors.pageLoad.notFound,
-);
-const Insights = createLazyPage(
-  () => import("@/pages/insights"),
-  errors.pageLoad.notFound,
-);
 const Views = createLazyPage(
-  () => import("@/pages/views"),
+  () => import("@/pages/insights/views"),
   errors.pageLoad.notFound,
 );
 const NotFound = createLazyPage(
-  () => import("@/pages/not-found"),
+  () => import("@/pages/utility/not-found"),
   errors.pageLoad.notFound,
 );
 
 // Organization pages (lazy loaded)
 const SelectOrganization = createLazyPage(
   () =>
-    import("@/pages/select-organization").then((module) => ({
+    import("@/pages/organizations/select").then((module) => ({
       default: module.SelectOrganizationPage,
     })),
   errors.pageLoad.notFound,
@@ -224,45 +162,27 @@ const OrgMembers = createLazyPage(
 );
 const InviteAccept = createLazyPage(
   () =>
-    import("@/pages/invite-accept").then((module) => ({
+    import("@/pages/auth/invite-accept").then((module) => ({
       default: module.InviteAccept,
     })),
   errors.pageLoad.notFound,
 );
 const Onboarding = createLazyPage(
-  () => import("@/pages/onboarding"),
+  () => import("@/pages/auth/onboarding"),
   errors.pageLoad.notFound,
 );
 
-/**
- * ModeProtectedRoute - Route guard that blocks access based on current org mode.
- *
- * If mode is not allowed, redirects to home route for the current mode.
- */
-const ModeProtectedRoute = ({
-  children,
-  allowedModes,
-  redirectTo,
-}: {
-  children: React.ReactNode;
-  allowedModes: Array<"operations" | "product">;
-  redirectTo?: string;
-}) => {
-  const mode = useCurrentOrgMode();
-
-  if (!mode) return <>{children}</>;
-
-  if (!allowedModes.includes(mode)) {
-    const fallback = redirectTo ?? getHomeRoute(mode);
-    return <Navigate to={fallback} replace />;
-  }
-
-  return <>{children}</>;
-};
-
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -271,12 +191,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // RequireOrganization component - ensures user has an organization selected
 const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
+  const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
   const currentOrg = useCurrentOrganization();
   const userOrganizations = useAuthStore((s) => s.userOrganizations);
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
   const onboardingCompleted = useCurrentOrgOnboardingCompleted();
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -316,10 +244,18 @@ const PermissionProtectedRoute = ({
   children: React.ReactNode;
   permission: Permission;
 }) => {
+  const { isPending: isAuthLoading } = authClient.useSession();
   const user = useAuthUser();
   const { can } = usePermissions();
   const isLoggedIn = useAuthIsAuthenticated();
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -327,66 +263,54 @@ const PermissionProtectedRoute = ({
   // Special case: allow users to edit their own profile
   if (
     permission === "org.manage_members" &&
-    window.location.pathname.match(/^\/users\/[^/]+\/edit$/)
+    window.location.pathname.match(/^\/settings\/members\/[^/]+$/)
   ) {
     const urlParts = window.location.pathname.split("/");
-    const userIdInUrl = urlParts[2];
-    if (user?.id === userIdInUrl) {
-      // User is editing their own profile, allow access
+    const userIdInUrl = urlParts[4];
+    if (user?._id === userIdInUrl) {
       return <>{children}</>;
     }
   }
 
   if (!can(permission)) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/inbox" replace />;
   }
 
   return <>{children}</>;
 };
 
-/**
- * FeatureProtectedRoute - Route guard that blocks access to features disabled in current org mode
- *
- * Usage:
- *   <FeatureProtectedRoute feature="timesheet">
- *     <Timesheet />
- *   </FeatureProtectedRoute>
- *
- * If feature is disabled, redirects to home route for the current mode.
- */
-const FeatureProtectedRoute = ({
-  children,
-  feature,
-  redirectTo,
-}: {
-  children: React.ReactNode;
-  feature: FeatureKey;
-  redirectTo?: string;
-}) => {
-  const features = useCurrentOrgFeatures();
-  const mode = useCurrentOrgMode();
-  const isLoggedIn = useAuthIsAuthenticated();
-
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (!isFeatureEnabled(features, feature)) {
-    // Redirect to mode-appropriate home (product: /inbox, operations: /dashboard)
-    const fallback = redirectTo ?? getHomeRoute(mode);
-    return <Navigate to={fallback} replace />;
-  }
-
-  return <>{children}</>;
-};
-
-// PublicRoute component (redirects authenticated users to appropriate home)
+// PublicRoute component (redirects authenticated users to inbox)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
-  const mode = useCurrentOrgMode();
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
   if (isLoggedIn) {
-    return <Navigate to={getHomeRoute(mode)} replace />;
+    return <Navigate to="/inbox" replace />;
+  }
+  return <>{children}</>;
+};
+
+// LandingRoute component (redirects authenticated users to inbox, shows landing for guests)
+const LandingRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isPending: isAuthLoading } = authClient.useSession();
+  const isLoggedIn = useAuthIsAuthenticated();
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+  if (isLoggedIn) {
+    return <Navigate to="/inbox" replace />;
   }
   return <>{children}</>;
 };
@@ -396,9 +320,8 @@ type RouteType = {
   element: React.ReactNode;
   protected: boolean;
   permission?: string;
-  feature?: FeatureKey; // NEW: for feature-gated routes
   title?: string;
-  requiresOrg?: boolean; // If true, requires organization to be selected
+  requiresOrg?: boolean;
 };
 
 const Title = ({
@@ -420,15 +343,19 @@ const Title = ({
   );
 };
 
-// Memoized routes configuration
+// Routes configuration for product mode (Linear-inspired)
 const routes: RouteType[] = [
   {
     path: "/",
-    element: <Landing />,
+    element: (
+      <LandingRoute>
+        <Landing />
+      </LandingRoute>
+    ),
     protected: false,
-    title: "داشبورد",
+    title: navigation.dashboard,
   },
-  // Organization routes (public - no RequireOrganization needed)
+  // Organization routes
   {
     path: "/select-organization",
     element: <SelectOrganization />,
@@ -458,24 +385,13 @@ const routes: RouteType[] = [
     requiresOrg: true,
     title: organization.members.title,
   },
-  {
-    path: "/dashboard",
-    element: (
-      <ModeProtectedRoute allowedModes={["operations"]}>
-        <Dashboard />
-      </ModeProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    title: navigation.dashboard,
-  },
-  // Product mode route aliases
+  // Product mode routes
   {
     path: "/inbox",
     element: <Inbox />,
     protected: true,
     requiresOrg: true,
-    title: "پیام‌ها و اعلانات",
+    title: inbox.title,
   },
   {
     path: "/members",
@@ -490,7 +406,7 @@ const routes: RouteType[] = [
   },
   {
     path: "/issues",
-    element: <Issues />,
+    element: <Inbox />,
     protected: true,
     requiresOrg: true,
     title: tasks.title,
@@ -500,7 +416,7 @@ const routes: RouteType[] = [
     element: <Insights />,
     protected: true,
     requiresOrg: true,
-    title: "بینش‌ها",
+    title: insights.title,
   },
   // Views page and saved-filters alias
   {
@@ -525,25 +441,11 @@ const routes: RouteType[] = [
     title: navigation.projects,
   },
   {
-    path: "/projects/new",
-    element: <CreateProject />,
-    protected: true,
-    requiresOrg: true,
-    title: projects.create.title,
-  },
-  {
     path: "/projects/:id/details",
     element: <ProjectDetails />,
     protected: true,
     requiresOrg: true,
     title: projects.details.title,
-  },
-  {
-    path: "/projects/:id/edit",
-    element: <EditProject />,
-    protected: true,
-    requiresOrg: true,
-    title: projects.edit.title,
   },
   {
     path: "/login",
@@ -561,7 +463,7 @@ const routes: RouteType[] = [
     path: "/pending-activation",
     element: <PendingActivation />,
     protected: false,
-    title: users.pendingActivation.title,
+    title: auth.pendingActivation.title,
   },
   {
     path: "/invite/:token",
@@ -592,14 +494,7 @@ const routes: RouteType[] = [
     ),
     protected: true,
     requiresOrg: true,
-    title: tasks.board.title, // Assuming a title for task board
-  },
-  {
-    path: "/tasks/new",
-    element: <CreateTask />,
-    protected: true,
-    requiresOrg: true,
-    title: tasks.addTask.title,
+    title: tasks.board.title,
   },
   {
     path: "/tasks/:id",
@@ -607,13 +502,6 @@ const routes: RouteType[] = [
     protected: true,
     requiresOrg: true,
     title: tasks.details.title,
-  },
-  {
-    path: "/tasks/:id/edit",
-    element: <EditTask />,
-    protected: true,
-    requiresOrg: true,
-    title: tasks.edit.title,
   },
   {
     path: "/tags",
@@ -624,38 +512,10 @@ const routes: RouteType[] = [
   },
   {
     path: "/tasks/calendar",
-    element: (
-      <FeatureProtectedRoute feature="calendar">
-        <TaskCalendar />
-      </FeatureProtectedRoute>
-    ),
+    element: <TaskCalendar />,
     protected: true,
     requiresOrg: true,
-    feature: "calendar",
     title: tasks.calendar.title,
-  },
-  {
-    path: "/my-tasks",
-    element: (
-      <ModeProtectedRoute allowedModes={["operations"]}>
-        <MyTasks />
-      </ModeProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    title: myTasks.title,
-  },
-  {
-    path: "/timesheet",
-    element: (
-      <FeatureProtectedRoute feature="timesheet">
-        <Timesheet />
-      </FeatureProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    feature: "timesheet",
-    title: navigationLabels.timesheet,
   },
   {
     path: "/projects/:id/tasks",
@@ -674,75 +534,6 @@ const routes: RouteType[] = [
     protected: true,
     requiresOrg: true,
     title: tasks.board.title,
-  },
-  {
-    path: "/projects/:id/tasks/new",
-    element: <CreateTask />,
-    protected: true,
-    requiresOrg: true,
-    title: tasks.addTask.title,
-  },
-  {
-    path: "/tasks/new",
-    element: <CreateTask />,
-    protected: true,
-    requiresOrg: true,
-    title: tasks.addTask.title,
-  },
-  {
-    path: "/users",
-    element: (
-      <ModeProtectedRoute allowedModes={["operations"]}>
-        <Users />
-      </ModeProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    permission: "org.manage_members",
-    title: users.title,
-  },
-  {
-    path: "/users/new",
-    element: (
-      <ModeProtectedRoute allowedModes={["operations"]}>
-        <CreateUser />
-      </ModeProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    permission: "org.manage_members",
-    title: users.create.title,
-  },
-  {
-    path: "/users/:id/edit",
-    element: (
-      <ModeProtectedRoute allowedModes={["operations"]}>
-        <EditUser />
-      </ModeProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    permission: "org.manage_members",
-    title: users.edit.title,
-  },
-  {
-    path: "/projects/:id/users",
-    element: <ProjectUsers />,
-    protected: true,
-    requiresOrg: true,
-    title: projects.users.title,
-  },
-  {
-    path: "/reports",
-    element: (
-      <FeatureProtectedRoute feature="reports">
-        <Reports />
-      </FeatureProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    feature: "reports",
-    title: navigation.reports,
   },
   {
     path: "/helps",
@@ -773,20 +564,6 @@ const routes: RouteType[] = [
     title: navigation.notifications,
   },
   {
-    path: "/audit-logs",
-    element: (
-      <PermissionProtectedRoute permission="org.manage_members">
-        <FeatureProtectedRoute feature="auditLogs">
-          <AuditLogs />
-        </FeatureProtectedRoute>
-      </PermissionProtectedRoute>
-    ),
-    protected: true,
-    requiresOrg: true,
-    feature: "auditLogs",
-    title: navigation.auditLogs,
-  },
-  {
     path: "*",
     element: <NotFound />,
     protected: false,
@@ -797,23 +574,16 @@ const routes: RouteType[] = [
 // AppRoutes component
 export const AppRoutes = () => {
   return (
-    <PageErrorBoundary onRetry={() => window.location.reload()}>
+    <ErrorBoundary onError={() => window.location.reload()}>
       <Routes>
         {routes.map((route) => {
-          const routeKey =
-            route.path === "/dashboard"
-              ? "dashboard"
-              : route.path.startsWith("/projects")
-                ? "projects"
-                : route.path.startsWith("/tasks")
-                  ? "tasks"
-                  : route.path.startsWith("/users")
-                    ? "users"
-                    : route.path.startsWith("/reports")
-                      ? "reports"
-                      : route.path.startsWith("/notifications")
-                        ? "notifications"
-                        : undefined;
+          const routeKey = route.path.startsWith("/projects")
+            ? "projects"
+            : route.path.startsWith("/tasks")
+              ? "tasks"
+              : route.path.startsWith("/notifications")
+                ? "notifications"
+                : undefined;
 
           const content = (
             <RouteSuspense routeKey={routeKey}>
@@ -851,6 +621,6 @@ export const AppRoutes = () => {
           return <Route key={route.path} path={route.path} element={element} />;
         })}
       </Routes>
-    </PageErrorBoundary>
+    </ErrorBoundary>
   );
 };

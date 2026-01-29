@@ -1,73 +1,11 @@
 services:
-  anjam:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Provide your Convex deployment URL, e.g. https://robust-viper-987.convex.cloud
+        VITE_CONVEX_URL: ${VITE_CONVEX_URL}
     ports:
-      - "8090:8090"
-    volumes:
-      # Use named volume for production data persistence
-      - anjam-data:/app/data
-    environment:
-      # Security: Disable default account creation after initial setup
-      - TM_ALLOW_DEFAULT_ACCOUNTS=${TM_ALLOW_DEFAULT_ACCOUNTS:-false}
-
-      # Settings encryption: Protects sensitive data stored in PocketBase
-      # Generate with: openssl rand -hex 16
-      - ANJAM_ENCRYPTION_KEY=${ANJAM_ENCRYPTION_KEY:-}
-
-      # Memory management: Helps Go garbage collector in constrained environments
-      - GOMEMLIMIT=${GOMEMLIMIT:-512MiB}
-
-      # Timezone
-      - TZ=${TZ:-Asia/Tehran}
-
-      # Rate limiting (highly recommended)
-      - PB_RATE_LIMIT_ENABLED=${PB_RATE_LIMIT_ENABLED:-true}
-
-      # Trusted proxy headers (required behind reverse proxy)
-      - PB_TRUSTED_PROXY_HEADERS=${PB_TRUSTED_PROXY_HEADERS:-X-Forwarded-For,X-Real-IP}
-      - PB_TRUSTED_PROXY_USE_LEFTMOST=${PB_TRUSTED_PROXY_USE_LEFTMOST:-true}
-
-      # SMTP configuration (required for password resets, MFA)
-      - SMTP_HOST=${SMTP_HOST:-}
-      - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_USERNAME=${SMTP_USERNAME:-}
-      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
-      - SMTP_TLS=${SMTP_TLS:-true}
-      - SMTP_AUTH_METHOD=${SMTP_AUTH_METHOD:-PLAIN}
-      - SMTP_LOCAL_NAME=${SMTP_LOCAL_NAME:-}
-      - SMTP_SENDER_NAME=${SMTP_SENDER_NAME:-Anjam}
-      - SMTP_SENDER_ADDRESS=${SMTP_SENDER_ADDRESS:-}
-
-      # Logging
-      - PB_LOGS_MAX_DAYS=${PB_LOGS_MAX_DAYS:-30}
-      - PB_LOGS_MIN_LEVEL=${PB_LOGS_MIN_LEVEL:-0}
-      - PB_LOGS_LOG_IP=${PB_LOGS_LOG_IP:-true}
-      - PB_LOGS_LOG_AUTH_ID=${PB_LOGS_LOG_AUTH_ID:-true}
-    # Restart policy
+      - "5173:80"
     restart: unless-stopped
-    # Health check - verify HTTP server is responding
-    healthcheck:
-      test:
-        ["CMD", "wget", "-q", "--spider", "http://localhost:8090/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    # Resource limits (adjust based on expected load)
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-        reservations:
-          memory: 256M
-    # Increase file descriptor limit for realtime connections
-    ulimits:
-      nofile:
-        soft: 4096
-        hard: 4096
-
-volumes:
-  anjam-data:
-    driver: local

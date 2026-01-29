@@ -1,29 +1,27 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { tasks } from "@/constants";
-import { pb } from "@/lib/pocketbase";
 import { cn, getUserInitials } from "@/lib/utils";
 
 type UserAvatarProps = {
   username?: string;
   user?: {
-    first_name?: string;
-    last_name?: string;
+    _id?: string;
+    firstName?: string;
+    lastName?: string;
     username?: string;
-    avatar?: string;
-    id?: string;
-    collectionId?: string;
-    collectionName?: string;
+    image?: string;
   };
   showUnassigned?: boolean;
   className?: string;
 };
 
 function getAvatarUrl(user: UserAvatarProps["user"]) {
-  if (!user || !user.avatar) return undefined;
+  if (!user || !user.image) return undefined;
 
-  const avatar = user.avatar;
+  const avatar = user.image;
 
-  // If avatar already looks like a full URL or blob/data URL, use it as-is
+  // In Convex, avatars are typically stored as storage IDs or full URLs.
+  // If it's a full URL or blob/data URL, use it as-is.
   if (
     avatar.startsWith("http://") ||
     avatar.startsWith("https://") ||
@@ -33,23 +31,17 @@ function getAvatarUrl(user: UserAvatarProps["user"]) {
     return avatar;
   }
 
-  // If we have a PocketBase record shape, build the file URL
-  if (user.id && (user.collectionId || user.collectionName)) {
-    try {
-      const record = {
-        id: user.id,
-        collectionId: user.collectionId || "",
-        collectionName: user.collectionName || "users",
-        avatar: avatar,
-      };
-      return pb.files.getUrl(record, avatar);
-    } catch {
-      // Fall through to returning the raw value if something goes wrong
-    }
-  }
-
-  // Fallback: return the raw avatar value (may still work if it's a relative path)
+  // Fallback: return the raw avatar value.
+  // Note: For Convex storage IDs, the caller should ideally resolve them to URLs via useQuery(api.storage.getUrl, ...)
   return avatar;
+}
+
+function getFirstName(user: UserAvatarProps["user"]): string | undefined {
+  return user?.firstName;
+}
+
+function getLastName(user: UserAvatarProps["user"]): string | undefined {
+  return user?.lastName;
 }
 
 export function UserAvatar({
@@ -71,7 +63,11 @@ export function UserAvatar({
       <Avatar className={avatarClassName}>
         <AvatarImage src={avatarUrl} className="object-cover" />
         <AvatarFallback className="bg-muted text-muted-foreground text-sm font-semibold">
-          {getUserInitials(user.first_name, user.last_name, user.username)}
+          {getUserInitials(
+            getFirstName(user),
+            getLastName(user),
+            user.username,
+          )}
         </AvatarFallback>
       </Avatar>
     );

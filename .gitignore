@@ -58,3 +58,6 @@ audit_fallback.jsonl
 
 # Auto Claude data directory
 .auto-claude/
+
+# Local agent settings
+.claude/settings.local.json

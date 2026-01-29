@@ -1,17 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconActivity,
-  IconCheck,
-  IconClock,
   IconLoader2,
-  IconServer,
   IconShield,
   IconShieldLock,
   IconTerminal,
-  IconX,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -27,9 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { auth, settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
-import { pb } from "@/lib/pocketbase";
-import type { UserLoginLogsResponse } from "@/lib/pocketbase-types";
-import { useAuthUser } from "@/store/auth-store";
+import { useAuthUser } from "@/store/app-context-store";
 
 const passwordSchema = z
   .object({
@@ -59,42 +51,14 @@ export function SecuritySection() {
     },
   });
 
-  const { data: loginLogs, isLoading: loadingLogs } = useQuery({
-    queryKey: ["login-logs", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      try {
-        const res = await pb.send<{
-          data: { items: UserLoginLogsResponse[] };
-        }>(`/api/v1/users/${user.id}/login-logs`, { method: "GET" });
-        return res.data.items;
-      } catch {
-        return [];
-      }
-    },
-    enabled: !!user?.id,
-  });
-
-  const onChangePassword = async (values: PasswordFormValues) => {
-    if (!user?.id) return;
-    try {
-      await pb.collection("users").update(user.id, {
-        oldPassword: values.oldPassword,
-        password: values.password,
-        passwordConfirm: values.passwordConfirm,
-      });
-      toast({
-        title: settings.security.toast.passwordChanged,
-        description: settings.security.toast.passwordChangedDescription,
-      });
-      form.reset();
-    } catch {
-      toast({
-        title: settings.security.toast.passwordError,
-        description: settings.security.toast.passwordErrorDescription,
-        variant: "destructive",
-      });
-    }
+  const onChangePassword = async () => {
+    if (!user?._id) return;
+    // Password change via old PB API - not yet implemented in Convex
+    toast({
+      title: settings.security.toast.passwordError,
+      description: "Password change is not yet implemented in Convex",
+      variant: "destructive",
+    });
   };
 
   return (
@@ -234,67 +198,12 @@ export function SecuritySection() {
             {settings.security.activeSessionsDescription}
           </p>
 
-          {loadingLogs ? (
-            <div className="flex justify-center p-8 opacity-20">
-              <IconLoader2 className="h-6 w-6 animate-spin" />
-            </div>
-          ) : (
-            <div className="grid gap-3">
-              {loginLogs && loginLogs.length > 0 ? (
-                loginLogs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="group border-border/40 bg-card relative flex items-center rounded-2xl border p-3 shadow-sm transition-all hover:shadow-md"
-                  >
-                    <div className="bg-muted/30 border-border/40 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border">
-                      {log.success ? (
-                        <IconCheck className="size-4 text-emerald-600" />
-                      ) : (
-                        <IconX className="size-4 text-rose-600" />
-                      )}
-                    </div>
-
-                    <div className="flex-1 px-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground/40 text-[8px] font-bold tracking-tight">
-                          {settings.security.remoteHost}
-                        </span>
-                        <IconServer className="size-2.5 opacity-20" />
-                      </div>
-                      <p className="text-[11px] font-bold tabular-nums">
-                        {log.ip_address || settings.security.unknownIp}
-                      </p>
-                      <p className="text-muted-foreground/40 max-w-60 truncate text-[9px] font-bold">
-                        {log.user_agent || settings.security.unknownDevice}
-                      </p>
-                    </div>
-
-                    <div className="border-border/10 flex shrink-0 flex-col items-end border-l pl-3">
-                      <span className="text-muted-foreground/40 mb-1 text-[7px] font-bold tracking-tight">
-                        {settings.security.authTime}
-                      </span>
-                      <div className="text-foreground/60 flex items-center gap-1.5 text-[9px] font-bold tabular-nums">
-                        <IconClock className="size-2.5 opacity-40" />
-                        {digitsEnToFa(
-                          new Date(log.created || "").toLocaleString("fa-IR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }),
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="bg-muted/10 border-border/40 rounded-2xl border border-dashed p-8 text-center grayscale">
-                  <IconTerminal className="mx-auto mb-3 size-6 stroke-[1.5] opacity-20" />
-                  <p className="text-[10px] font-bold tracking-tight opacity-40">
-                    {settings.security.noLoginHistory}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="bg-muted/10 border-border/40 rounded-2xl border border-dashed p-8 text-center grayscale">
+            <IconTerminal className="mx-auto mb-3 size-6 stroke-[1.5] opacity-20" />
+            <p className="text-[10px] font-bold tracking-tight opacity-40">
+              {settings.security.noLoginHistory}
+            </p>
+          </div>
         </div>
       </div>
     </div>
