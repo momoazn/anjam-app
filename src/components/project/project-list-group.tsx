@@ -1,5 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconHash, IconStar, IconStarFilled } from "@tabler/icons-react";
+import { IconHash } from "@tabler/icons-react";
 import { Edit, FileText, MoreHorizontal, Trash } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,11 +16,6 @@ import {
 import { EmptyStateNoProjects } from "@/components/ui/empty-state";
 import { projects as projectsText } from "@/constants";
 import { useTasks } from "@/hooks/tasks";
-import { cn } from "@/lib/utils";
-import {
-  useToggleProjectFavorite,
-  useUserPreferences,
-} from "@/store/preferences-store";
 
 type ProjectListItem = {
   _id: string;
@@ -46,11 +41,6 @@ export function ProjectListGroup({
   const [selectedProject, setSelectedProject] =
     useState<ProjectListItem | null>(null);
 
-  const { data: preferencesData } = useUserPreferences();
-  const toggleFavorite = useToggleProjectFavorite();
-
-  const favoriteIds = preferencesData?.favorites?.projectIds || [];
-
   const { data: allTasksResult } = useTasks();
   const allTasks = allTasksResult?.items ?? [];
 
@@ -59,14 +49,7 @@ export function ProjectListGroup({
     setIsDeleteOpen(true);
   };
 
-  const handleToggleFavorite = (e: React.MouseEvent, projectId: string) => {
-    e.stopPropagation();
-    toggleFavorite.mutate(projectId);
-  };
-
   const getProjectProgress = (projectId: string) => {
-    if (!allTasks) return { total: 0, completed: 0, progress: 0 };
-
     const projectTasks = allTasks.filter(
       (task) => task.projectId === projectId,
     );
@@ -96,8 +79,6 @@ export function ProjectListGroup({
         <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
           {projects.map((project) => {
             const progress = getProjectProgress(project._id);
-            const isFavorite = favoriteIds.includes(project._id);
-
             return (
               <div
                 key={project._id}
@@ -116,34 +97,6 @@ export function ProjectListGroup({
                   }}
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          handleToggleFavorite(
-                            e as unknown as React.MouseEvent,
-                            project._id,
-                          );
-                        }
-                      }}
-                      onClick={(e) => handleToggleFavorite(e, project._id)}
-                      className={cn(
-                        "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors cursor-pointer",
-                        isFavorite
-                          ? "bg-amber-500/10 text-amber-500"
-                          : "text-muted-foreground/50 hover:bg-muted/40",
-                      )}
-                      aria-label="علاقه‌مندی"
-                    >
-                      {isFavorite ? (
-                        <IconStarFilled className="size-4" />
-                      ) : (
-                        <IconStar className="size-4" />
-                      )}
-                    </div>
-
                     <div className="min-w-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <IconHash className="size-3" />
@@ -222,11 +175,13 @@ export function ProjectListGroup({
         </div>
       )}
 
-      <DeleteProjectDialog
-        open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
-        project={selectedProject}
-      />
+      {selectedProject && (
+        <DeleteProjectDialog
+          project={selectedProject}
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+        />
+      )}
     </>
   );
 }

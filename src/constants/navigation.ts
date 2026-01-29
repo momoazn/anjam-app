@@ -5,19 +5,15 @@ export const navigation = {
   dashboard: "میز کار",
   projects: "پروژه‌های فعال",
   tasks: "تسک‌ها",
-  users: "کاربران",
-  reports: "گزارش‌ها",
   helps: "راهنما",
   settings: "تنظیمات",
   alphaFeedback: "بازخورد آلفا",
   notifications: "پیام‌ها و اعلانات",
-  auditLogs: "لاگ‌های تغییرات",
   tags: "تگ‌ها",
   insights: "بینش‌ها",
   members: "اعضا",
   version: "نسخه ۰.۰.۰",
   alpha: "آلفا",
-  taskCalendar: "تقویم تسک‌ها",
   myTasks: "مسئولیت‌های من",
   quickCreate: {
     button: "ایجاد سریع",
@@ -25,9 +21,6 @@ export const navigation = {
   },
   projectsSection: "پروژه‌ها",
   allProjects: "همه پروژه‌ها",
-  recentProjects: "پروژه‌های اخیر",
-  starredProjects: "پروژه‌های نشان‌شده",
-  taskViews: "نماهای تسک",
   dueToday: "سررسید امروز",
   overdue: "گذشته‌موعد",
   inProgress: "در حال انجام",
@@ -38,12 +31,5 @@ export const navigation = {
 } as const;
 
 export const navigationSectionLabels = {
-  organization: "سازمان",
-  workspace: "فضای کاری",
   tasks: "تسک‌ها",
-  projects: "پروژه‌ها",
-  management: "مدیریت",
-  help: "راهنما و تنظیمات",
-  favorites: "نشان‌شده‌ها",
-  recent: "اخیر",
 } as const;
