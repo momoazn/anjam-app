@@ -1,5 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
+  IconEye,
+  IconEyeOff,
   IconFingerprint,
   IconServer,
   IconShieldLock,
@@ -23,6 +25,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
     identity?: string;
@@ -100,7 +103,7 @@ export default function Login() {
       </div>
 
       {/* Right Side: Login Form */}
-      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
+      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-125 lg:px-12 xl:w-[600px] xl:px-20">
         <PageTransition className="w-full" disableStagger>
           <ErrorBoundary>
             <div className="mb-10 lg:hidden">
@@ -156,16 +159,31 @@ export default function Login() {
                     </Label>
                     <IconServer className="text-muted-foreground/40 size-3.5" />
                   </div>
-                  <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.login.placeholders.password}
-                    required
-                    dir="ltr"
-                    disabled={submitting}
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="font-bold pr-9"
+                      placeholder={auth.login.placeholders.password}
+                      required
+                      dir="ltr"
+                      disabled={submitting}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-muted-foreground/ hover:text-muted-foreground absolute inset-y-0 right-0 flex items-center pr-3 transition-colors disabled:opacity-50"
+                      disabled={submitting}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <IconEyeOff className="size-4" />
+                      ) : (
+                        <IconEye className="size-4" />
+                      )}
+                    </button>
+                  </div>
                   {errors.password && (
                     <p className="text-destructive text-[10px] font-bold">
                       {errors.password}
