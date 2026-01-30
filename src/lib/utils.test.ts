@@ -18,71 +18,67 @@ describe("cn", () => {
 });
 
 describe("getUserInitials", () => {
-  it("should return initials from first and last name", () => {
-    expect(getUserInitials("John", "Doe")).toBe("JD");
+  it("should return initials from display name", () => {
+    expect(getUserInitials("John Doe")).toBe("JD");
   });
 
-  it("should return initials from first and last name in uppercase", () => {
-    expect(getUserInitials("john", "doe")).toBe("JD");
+  it("should return initials from display name in uppercase", () => {
+    expect(getUserInitials("john doe")).toBe("JD");
   });
 
-  it("should return first 2 chars of username when names are not provided", () => {
-    expect(getUserInitials(undefined, undefined, "johndoe")).toBe("JO");
+  it("should return first 2 chars of email when display name is not provided", () => {
+    expect(getUserInitials(undefined, "johndoe@example.com")).toBe("JO");
   });
 
-  it("should prioritize names over username", () => {
-    expect(getUserInitials("Jane", "Smith", "janedoe")).toBe("JS");
+  it("should prioritize display name over email", () => {
+    expect(getUserInitials("Jane Smith", "janedoe@example.com")).toBe("JS");
   });
 
   it('should return "?" when no data is provided', () => {
     expect(getUserInitials()).toBe("?");
   });
 
-  it("should handle single character names", () => {
-    expect(getUserInitials("J", "D")).toBe("JD");
+  it("should handle single character display name", () => {
+    expect(getUserInitials("J")).toBe("J");
   });
 
-  it("should handle username with single character", () => {
-    expect(getUserInitials(undefined, undefined, "j")).toBe("J");
+  it("should handle email with single character local part", () => {
+    expect(getUserInitials(undefined, "j@example.com")).toBe("J");
   });
 });
 
 describe("formatUserName", () => {
-  it("should format full name with username", () => {
-    expect(formatUserName("John", "Doe", "johndoe")).toBe("John Doe - johndoe");
+  it("should format display name", () => {
+    expect(formatUserName("John Doe")).toBe("John Doe");
   });
 
-  it("should format full name without username", () => {
-    expect(formatUserName("John", "Doe")).toBe("John Doe");
+  it("should fall back to email when display name is not provided", () => {
+    expect(formatUserName(undefined, "johndoe@example.com")).toBe(
+      "johndoe@example.com",
+    );
   });
 
-  it("should format first name only with username", () => {
-    expect(formatUserName("John", undefined, "johndoe")).toBe("John - johndoe");
-  });
-
-  it("should format last name only with username", () => {
-    expect(formatUserName(undefined, "Doe", "johndoe")).toBe("Doe - johndoe");
-  });
-
-  it("should return username when no names provided", () => {
-    expect(formatUserName(undefined, undefined, "johndoe")).toBe("johndoe");
+  it("should prioritize display name over email", () => {
+    expect(formatUserName("John Doe", "johndoe@example.com")).toBe("John Doe");
   });
 
   it("should return empty string when nothing provided", () => {
     expect(formatUserName()).toBe("");
   });
 
-  it("should trim whitespace from names", () => {
-    expect(formatUserName("  John  ", "  Doe  ", "johndoe")).toBe(
-      "John Doe - johndoe",
+  it("should trim whitespace from display name", () => {
+    expect(formatUserName("  John Doe  ")).toBe("John Doe");
+  });
+
+  it("should handle empty string display name", () => {
+    expect(formatUserName("", "johndoe@example.com")).toBe(
+      "johndoe@example.com",
     );
   });
 
-  it("should handle empty string names", () => {
-    expect(formatUserName("", "", "johndoe")).toBe("johndoe");
-  });
-
-  it("should handle whitespace-only names", () => {
-    expect(formatUserName("   ", "   ", "johndoe")).toBe("johndoe");
+  it("should handle whitespace-only display name", () => {
+    expect(formatUserName("   ", "johndoe@example.com")).toBe(
+      "johndoe@example.com",
+    );
   });
 });
