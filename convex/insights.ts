@@ -80,7 +80,7 @@ export const getForOrg = query({
       assigneeIds.map(async (id) => {
         const user = await ctx.db.get(id as Id<"users">);
         if (user) {
-          byAssignee[id].name = user.username || user.firstName || "User";
+          byAssignee[id].name = user.displayName || user.email || "User";
         }
       }),
     );

@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId, normalizeUsername } from "./utils";
+import { getAuthUserId } from "./utils";
 
 export const listByTask = query({
   args: { taskId: v.id("tasks") },
@@ -79,19 +79,20 @@ export const create = mutation({
     const matches = args.content.matchAll(mentionRegex);
     const mentionedUsernames = new Set<string>();
     for (const match of matches) {
-      mentionedUsernames.add(normalizeUsername(match[1]));
+      mentionedUsernames.add(match[1].toLowerCase());
     }
 
     if (mentionedUsernames.size > 0) {
-      // Find users by normalized username
-      // We need to query one by one or is there a batch way? One by one for now.
+      // Find users by username (match against displayName or email)
+      // We need to query all users and filter manually since we don't have username index anymore
+      const allUsers = await ctx.db.query("users").collect();
+
       for (const username of mentionedUsernames) {
-        const user = await ctx.db
-          .query("users")
-          .withIndex("by_usernameNormalized", (q) =>
-            q.eq("usernameNormalized", username),
-          )
-          .first();
+        const user = allUsers.find(
+          (u) =>
+            u.displayName?.toLowerCase().startsWith(username) ||
+            u.email?.toLowerCase().startsWith(username),
+        );
 
         if (user) {
           // Verify user is in org?
@@ -114,11 +115,12 @@ export const create = mutation({
               createdAt: Date.now(),
             });
 
+            const currentUser = await ctx.db.get(userId);
             await ctx.db.insert("notifications", {
               userId: user._id,
               type: "comment", // or system? "comment added"
               title: "You were mentioned",
-              message: `${(await ctx.db.get(userId))?.username || "Someone"} mentioned you in a comment`,
+              message: `${currentUser?.displayName || currentUser?.email || "Someone"} mentioned you in a comment`,
               data: {
                 taskId: args.taskId,
                 commentId,
@@ -134,11 +136,12 @@ export const create = mutation({
 
     // Notify assignee if not the commenter
     if (task.assigneeUserId && task.assigneeUserId !== userId) {
+      const currentUser = await ctx.db.get(userId);
       await ctx.db.insert("notifications", {
         userId: task.assigneeUserId,
         type: "comment",
         title: "New comment on task",
-        message: `${(await ctx.db.get(userId))?.username || "Someone"} commented on ${task.displayId}`,
+        message: `${currentUser?.displayName || currentUser?.email || "Someone"} commented on ${task.displayId}`,
         data: { taskId: args.taskId, commentId, projectId: task.projectId },
         read: false,
         createdAt: Date.now(),

@@ -7,38 +7,32 @@ import type { Id } from "./_generated/dataModel";
 import type { DataModel } from "./_generated/dataModel";
 import { action, internalMutation } from "./_generated/server";
 import { authComponent, createAuth } from "./auth";
-import { normalizeUsername } from "./utils";
 
 const TEST_USERS = [
   {
     email: "admin@example.com",
     password: "admin12345",
-    name: "Admin User",
-    username: "admin",
+    displayName: "Admin User",
   },
   {
     email: "manager@example.com",
     password: "manager123",
-    name: "Manager User",
-    username: "manager",
+    displayName: "Manager User",
   },
   {
     email: "supervisor@example.com",
     password: "supervisor123",
-    name: "Supervisor User",
-    username: "supervisor",
+    displayName: "Supervisor User",
   },
   {
     email: "employee1@example.com",
     password: "employee123",
-    name: "Employee 1",
-    username: "employee1",
+    displayName: "Employee 1",
   },
   {
     email: "employee2@example.com",
     password: "employee123",
-    name: "Employee 2",
-    username: "employee2",
+    displayName: "Employee 2",
   },
 ] as const;
 
@@ -92,8 +86,7 @@ export const writeDevData = internalMutation({
       v.object({
         email: v.string(),
         authUserId: v.string(),
-        name: v.string(),
-        username: v.string(),
+        displayName: v.string(),
       }),
     ),
     reset: v.optional(v.boolean()),
@@ -109,10 +102,9 @@ export const writeDevData = internalMutation({
         .first();
 
       if (existing) {
-        if (!existing.username) {
+        if (!existing.displayName) {
           await ctx.db.patch(existing._id, {
-            username: authUser.username,
-            usernameNormalized: normalizeUsername(authUser.username),
+            displayName: authUser.displayName,
             updatedAt: Date.now(),
           });
         }
@@ -123,9 +115,7 @@ export const writeDevData = internalMutation({
       const userId = await ctx.db.insert("users", {
         authUserId: authUser.authUserId,
         email: authUser.email,
-        name: authUser.name,
-        username: authUser.username,
-        usernameNormalized: normalizeUsername(authUser.username),
+        displayName: authUser.displayName,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
@@ -340,8 +330,7 @@ export const seedDevData = action({
     const authUsers: Array<{
       email: string;
       authUserId: string;
-      name: string;
-      username: string;
+      displayName: string;
     }> = [];
     const { auth, headers } = await authComponent.getAuth(
       createAuth,
@@ -362,7 +351,7 @@ export const seedDevData = action({
         (
           await auth.api.signUpEmail({
             body: {
-              name: user.name,
+              name: user.displayName,
               email,
               password: user.password,
             },
@@ -374,8 +363,7 @@ export const seedDevData = action({
       authUsers.push({
         email,
         authUserId,
-        name: user.name,
-        username: user.username,
+        displayName: user.displayName,
       });
     }
 
