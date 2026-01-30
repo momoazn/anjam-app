@@ -24,10 +24,6 @@ export const getAuthUserId = async (ctx: AuthedCtx & { auth: Auth }) => {
   return appUser._id as Id<"users">;
 };
 
-export const normalizeUsername = (username: string) => {
-  return username.trim().toLowerCase();
-};
-
 export const generateSlug = (name: string) => {
   return name
     .toLowerCase()

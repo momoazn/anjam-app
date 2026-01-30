@@ -5,17 +5,12 @@ export default defineSchema({
   users: defineTable({
     authUserId: v.string(),
     email: v.optional(v.string()),
-    name: v.optional(v.string()),
+    displayName: v.optional(v.string()),
     image: v.optional(v.string()),
-    username: v.optional(v.string()),
-    usernameNormalized: v.optional(v.string()), // for case-insensitive uniqueness
-    firstName: v.optional(v.string()),
-    lastName: v.optional(v.string()),
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
   })
     .index("by_authUserId", ["authUserId"])
-    .index("by_usernameNormalized", ["usernameNormalized"])
     .index("by_email", ["email"]),
 
   organizations: defineTable({
