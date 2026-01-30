@@ -62,8 +62,8 @@ export function CommentComposer({
         <div className="bg-muted/30 border-border/40 flex items-center justify-between rounded-xl border px-4 py-2 text-right text-[11px] font-bold tracking-tight">
           <span>
             {comments.item.replyingTo}
-            {replyTarget.expand?.user?.firstName ||
-              replyTarget.expand?.user?.username}
+            {replyTarget.expand?.user?.displayName ||
+              replyTarget.expand?.user?.email}
           </span>
           <Button
             variant="ghost"

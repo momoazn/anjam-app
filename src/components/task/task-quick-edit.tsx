@@ -136,9 +136,8 @@ export function AssigneeQuickEdit({
   task: TaskWithProject;
   users: Array<{
     _id: string;
-    username: string;
-    firstName?: string;
-    lastName?: string;
+    displayName: string;
+    email?: string;
   }>;
   onValueChange: () => void;
 }) {
@@ -183,9 +182,7 @@ export function AssigneeQuickEdit({
                   value={user._id}
                   className="text-xs font-bold"
                 >
-                  {user.firstName || user.lastName
-                    ? `${user.firstName} ${user.lastName}`
-                    : user.username}
+                  {user.displayName}
                 </SelectItem>
               ))
             )}

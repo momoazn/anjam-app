@@ -54,9 +54,8 @@ export function TaskDetailsContent({
       ? task.assignee
       : undefined;
 
-  const assigneeFirstName = getStringProp(assignee, "firstName");
-  const assigneeLastName = getStringProp(assignee, "lastName");
-  const assigneeUsername = getStringProp(assignee, "username");
+  const assigneeDisplayName = getStringProp(assignee, "displayName");
+  const assigneeEmail = getStringProp(assignee, "email");
   const projectName = getStringProp(project, "name");
 
   return (
@@ -67,11 +66,7 @@ export function TaskDetailsContent({
           {
             label: tasks.details.assignee,
             value: assignee
-              ? formatUserName(
-                  assigneeFirstName,
-                  assigneeLastName,
-                  assigneeUsername,
-                )
+              ? formatUserName(assigneeDisplayName, assigneeEmail)
               : tasks.addTask.unassigned,
             icon: IconUser,
             muted: !assignee,

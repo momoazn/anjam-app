@@ -316,9 +316,7 @@ function TaskListItemInner({
                         value={userId}
                         className="text-xs font-bold"
                       >
-                        {user.firstName || user.lastName
-                          ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim()
-                          : user.username}
+                        {user.displayName || user.email}
                       </SelectItem>
                     );
                   })

@@ -4,9 +4,8 @@ import { formatUserName } from "@/lib/utils";
 
 export type MentionOption = {
   id: string;
-  username: string;
-  firstName?: string;
-  lastName?: string;
+  displayName: string;
+  email?: string;
   image?: string;
 };
 
@@ -46,17 +45,16 @@ export function MentionAutocomplete({
             }`}
           >
             <span>
-              @{item.username}
+              @{item.email}
               <span className="text-muted-foreground/60 ms-2 text-[10px]">
-                {formatUserName(item.firstName, item.lastName, item.username)}
+                {formatUserName(item.displayName, item.email)}
               </span>
             </span>
             <UserAvatar
               user={{
                 _id: item.id,
-                username: item.username,
-                firstName: item.firstName,
-                lastName: item.lastName,
+                displayName: item.displayName,
+                email: item.email,
                 image: item.image,
               }}
               className="border-border/40 size-7 rounded-md border"

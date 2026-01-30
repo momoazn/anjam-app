@@ -24,9 +24,8 @@ interface BulkActionsBarProps {
   onBulkPriority: (priority: TaskPriority) => Promise<void>;
   users: Array<{
     _id: string;
-    username: string;
-    firstName?: string;
-    lastName?: string;
+    displayName: string;
+    email?: string;
   }>;
   availableStatuses: Array<{ value: TaskStatus; label: string }>;
 }
@@ -173,9 +172,7 @@ export function BulkActionsBar({
                     value={user._id}
                     className="text-[10px] font-bold"
                   >
-                    {user.firstName || user.lastName
-                      ? `${user.firstName} ${user.lastName}`
-                      : user.username}
+                    {user.displayName || user.email}
                   </SelectItem>
                 ))
               )}
