@@ -45,16 +45,14 @@ export interface TaskWithProject extends Task {
   } | null;
   assignee?: {
     _id: string;
-    username?: string;
-    firstName?: string;
-    lastName?: string;
+    displayName?: string;
+    email?: string;
     image?: string;
   } | null;
   creator?: {
     _id: string;
-    username?: string;
-    firstName?: string;
-    lastName?: string;
+    displayName?: string;
+    email?: string;
     image?: string;
   } | null;
   displayId: string;
@@ -70,16 +68,14 @@ export interface TaskWithDetails extends Task {
   } | null;
   assignee?: {
     _id: string;
-    username?: string;
-    firstName?: string;
-    lastName?: string;
+    displayName?: string;
+    email?: string;
     image?: string;
   } | null;
   creator?: {
     _id: string;
-    username?: string;
-    firstName?: string;
-    lastName?: string;
+    displayName?: string;
+    email?: string;
     image?: string;
   } | null;
   displayId: string;
