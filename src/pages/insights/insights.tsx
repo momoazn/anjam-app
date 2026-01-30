@@ -167,9 +167,7 @@ export default function Insights() {
         const user = users?.find((u) => u._id === userId);
         return {
           userId,
-          name: user
-            ? formatUserName(user.firstName, user.lastName, user.username)
-            : "ناشناس",
+          name: user ? formatUserName(user.displayName, user.email) : "ناشناس",
           count,
         };
       })

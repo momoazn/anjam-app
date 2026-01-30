@@ -59,9 +59,8 @@ interface CalendarTaskProps {
     project?: { _id: string } | null;
     projectId?: string;
     assignee?: {
-      firstName?: string;
-      lastName?: string;
-      username?: string;
+      displayName?: string;
+      email?: string;
     } | null;
   };
 }
@@ -92,11 +91,7 @@ function CalendarTask({ task }: CalendarTaskProps) {
         </div>
         {task.assignee && (
           <p className="truncate text-[8px] font-medium tracking-tight opacity-60">
-            {formatUserName(
-              task.assignee.firstName,
-              task.assignee.lastName,
-              task.assignee.username,
-            )}
+            {formatUserName(task.assignee.displayName, task.assignee.email)}
           </p>
         )}
       </div>

@@ -5,7 +5,6 @@ import {
   IconFingerprint,
   IconMail,
   IconShieldLock,
-  IconUser,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -20,15 +19,14 @@ import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
 import { authClient } from "@/lib/auth-client";
 import { handleError } from "@/lib/error-handler";
+import { displayNameFromEmail } from "@/lib/utils";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
 export default function Register() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +34,6 @@ export default function Register() {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
-    username?: string;
     password?: string;
     confirmPassword?: string;
   }>({});
@@ -46,19 +43,10 @@ export default function Register() {
 
     const newErrors: typeof errors = {};
     const trimmedEmail = email.trim().toLowerCase();
-    const trimmedUsername = username.trim();
 
     if (!trimmedEmail) newErrors.email = auth.errors.emailRequired;
     else if (!emailRegex.test(trimmedEmail)) {
       newErrors.email = auth.errors.emailInvalid;
-    }
-
-    if (!trimmedUsername) {
-      newErrors.username = auth.register.errors.usernameRequired;
-    } else if (!usernameRegex.test(trimmedUsername)) {
-      newErrors.username = auth.register.errors.usernameInvalid;
-    } else if (trimmedUsername.length < 3) {
-      newErrors.username = auth.register.errors.usernameTooShort;
     }
 
     if (!password) newErrors.password = auth.errors.passwordRequired;
@@ -76,8 +64,11 @@ export default function Register() {
 
     setSubmitting(true);
     try {
+      // Generate display name from email for better UX
+      const name = displayNameFromEmail(trimmedEmail);
+
       const result = await authClient.signUp.email({
-        name: trimmedUsername,
+        name,
         email: trimmedEmail,
         password,
       });
@@ -131,7 +122,7 @@ export default function Register() {
         <div className="opacity-0">{/* Bottom spacer */}</div>
       </div>
 
-      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
+      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-125 lg:px-12 xl:w-150 xl:px-20">
         <PageTransition className="w-full" disableStagger>
           <div className="mb-10 lg:hidden">
             <Logo size={48} className="mb-6" />
@@ -176,29 +167,6 @@ export default function Register() {
                   {errors.email && (
                     <p className="text-destructive text-[10px] font-bold">
                       {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                      {auth.register.username}
-                    </Label>
-                    <IconUser className="text-muted-foreground/40 size-3" />
-                  </div>
-                  <Input
-                    type="text"
-                    value={username}
-                    dir="ltr"
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.register.usernamePlaceholder}
-                    disabled={submitting}
-                  />
-                  {errors.username && (
-                    <p className="text-destructive text-[10px] font-bold">
-                      {errors.username}
                     </p>
                   )}
                 </div>
