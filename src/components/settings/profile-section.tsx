@@ -3,7 +3,6 @@ import {
   IconCamera,
   IconFingerprint,
   IconLoader2,
-  IconTerminal,
   IconUser,
   IconUserCircle,
 } from "@tabler/icons-react";
@@ -24,16 +23,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { auth, settings } from "@/constants";
+import { settings } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/users";
 import { api } from "@/lib/convex";
 import { useAuthActions, useAuthUser } from "@/store/app-context-store";
 
 const profileSchema = z.object({
-  username: z.string().min(3, auth.errors.usernameMinLength),
-  firstName: z.string().min(1, auth.errors.firstNameRequired),
-  lastName: z.string().min(1, auth.errors.lastNameRequired),
+  displayName: z.string().min(1, "Display name is required"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -54,19 +51,8 @@ function ProfileSectionSkeleton() {
           <Skeleton className="h-24 w-24 shrink-0 rounded-2xl" />
 
           <div className="w-full flex-1 space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-1">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-9 w-full rounded-xl" />
-              </div>
-              <div className="space-y-1">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-9 w-full rounded-xl" />
-              </div>
-            </div>
-
             <div className="space-y-1">
-              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-3 w-24" />
               <Skeleton className="h-9 w-full rounded-xl" />
               <Skeleton className="h-2 w-48" />
             </div>
@@ -75,24 +61,6 @@ function ProfileSectionSkeleton() {
 
         <div className="border-border flex justify-end border-t pt-4">
           <Skeleton className="h-10 w-28 rounded-xl" />
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <IconFingerprint className="text-primary size-4" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-          <div className="bg-border h-px flex-1" />
-        </div>
-
-        <div className="bg-muted/30 rounded-2xl border p-4 shadow-sm">
-          <div className="grid gap-2">
-            <Skeleton className="h-3 w-12" />
-            <Skeleton className="h-9 w-full rounded-lg" />
-            <Skeleton className="h-2 w-56" />
-          </div>
         </div>
       </div>
     </div>
@@ -106,23 +74,18 @@ export function ProfileSection() {
   const { toast } = useToast();
 
   const updateProfile = useMutation(api.users.updateProfile);
-  const setUsername = useMutation(api.users.setUsername);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: "",
-      firstName: "",
-      lastName: "",
+      displayName: "",
     },
   });
 
   useEffect(() => {
     if (fullUser) {
       form.reset({
-        username: fullUser.username || "",
-        firstName: fullUser.firstName || "",
-        lastName: fullUser.lastName || "",
+        displayName: fullUser.displayName || "",
       });
     }
   }, [fullUser, form]);
@@ -139,23 +102,15 @@ export function ProfileSection() {
     if (!user?._id) return;
 
     try {
-      // Update firstName and lastName
+      // Update displayName
       await updateProfile({
-        firstName: values.firstName,
-        lastName: values.lastName,
+        displayName: values.displayName,
       });
-
-      // Update username if changed
-      if (values.username !== fullUser?.username) {
-        await setUsername({ username: values.username });
-      }
 
       // Refresh user data
       updateUser({
         ...user,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        username: values.username,
+        displayName: values.displayName,
       });
 
       toast({
@@ -219,70 +174,22 @@ export function ProfileSection() {
               </div>
 
               <div className="w-full flex-1 space-y-4">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
-                          {settings.profile.firstName}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="focus-visible:ring-primary h-9 rounded-xl border bg-white font-medium shadow-sm focus-visible:ring-1"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-[10px] font-medium" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
-                          {settings.profile.lastName}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="focus-visible:ring-primary h-9 rounded-xl border bg-white font-medium shadow-sm focus-visible:ring-1"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-[10px] font-medium" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
                 <FormField
                   control={form.control}
-                  name="username"
+                  name="displayName"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
-                          {settings.profile.username}
-                        </FormLabel>
-                        <IconTerminal className="size-3 opacity-20" />
-                      </div>
+                      <FormLabel className="text-muted-foreground font-mono text-[10px] font-bold tracking-widest">
+                        Display Name
+                      </FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 font-mono text-[10px] font-bold">
-                            @
-                          </span>
-                          <Input
-                            {...field}
-                            dir="ltr"
-                            className="focus-visible:ring-primary h-9 rounded-xl border bg-white pl-7 font-mono text-xs font-medium tracking-tight shadow-sm focus-visible:ring-1"
-                          />
-                        </div>
+                        <Input
+                          {...field}
+                          className="focus-visible:ring-primary h-9 rounded-xl border bg-white font-medium shadow-sm focus-visible:ring-1"
+                        />
                       </FormControl>
                       <FormDescription className="text-[9px] font-medium opacity-40">
-                        {settings.profile.usernameDescription}
+                        This is how you appear to others in the app
                       </FormDescription>
                       <FormMessage className="text-[10px] font-medium" />
                     </FormItem>

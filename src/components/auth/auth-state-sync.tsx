@@ -57,12 +57,12 @@ export function AuthStateSync() {
     }
   }, [isAuthenticated, userData, setUser]);
 
-  // Ensure we have a usable profile (e.g. username for mentions).
+  // Ensure we have a user profile created
   useEffect(() => {
     if (!isAuthenticated) return;
     if (userData === undefined) return;
-    if (userData?.username) return;
-    void ensureProfile({});
+    // If no user data exists in our DB, create it
+    if (!userData) void ensureProfile({});
   }, [ensureProfile, isAuthenticated, userData]);
 
   // Sync organizations
