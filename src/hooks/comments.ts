@@ -18,9 +18,8 @@ export type CommentWithUser = {
   expand: {
     user?: {
       _id: Id<"users">;
-      username: string;
-      firstName?: string;
-      lastName?: string;
+      displayName: string;
+      email: string;
       image?: string;
     };
   };
@@ -51,9 +50,8 @@ export function useComments(
           user: c.user
             ? {
                 _id: c.user._id,
-                username: c.user.username || "",
-                firstName: c.user.firstName,
-                lastName: c.user.lastName,
+                displayName: c.user.displayName || "",
+                email: c.user.email || "",
                 image: c.user.image,
               }
             : undefined,

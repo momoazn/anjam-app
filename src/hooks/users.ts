@@ -74,9 +74,8 @@ export function useProjectUsers({
   return {
     data: users?.map((u) => ({
       _id: u._id,
-      username: u.username,
-      firstName: u.firstName,
-      lastName: u.lastName,
+      displayName: u.displayName,
+      email: u.email,
       project_role: "member", // Default role
     })),
     isPending: users === undefined,
@@ -101,21 +100,14 @@ export function useCreateUser() {
 }
 
 export function useUpdateUser() {
-  const setUsername = useMutation(api.users.setUsername);
-
+  // Username mutation is no longer available
   return {
-    mutate: async ({
-      id,
-      updates,
-    }: {
+    mutate: async (_args: {
       id: string;
-      updates: { username?: string };
+      updates: { displayName?: string };
     }) => {
-      void id;
-      if (updates.username) {
-        return await setUsername({ username: updates.username });
-      }
-      // Other updates not yet supported in Convex backend
+      void _args;
+      console.warn("useUpdateUser not implemented");
       return null;
     },
     isPending: false,

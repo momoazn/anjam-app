@@ -22,9 +22,8 @@ export function useSubtasks(
         assignee: s.assignee
           ? {
               _id: s.assignee._id,
-              username: s.assignee.username || "",
-              firstName: s.assignee.firstName,
-              lastName: s.assignee.lastName,
+              displayName: s.assignee.displayName || "",
+              email: s.assignee.email || "",
               image: s.assignee.image,
             }
           : undefined,
