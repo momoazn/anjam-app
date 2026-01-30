@@ -32,15 +32,11 @@ export function AssigneeField({ control, projectId }: AssigneeFieldProps) {
     const opts = [{ value: unassignedLabel, label: unassignedLabel }];
     if (assignees) {
       assignees.forEach((u) => {
-        const firstName = (u as { firstName?: string }).firstName;
-        const lastName = (u as { lastName?: string }).lastName;
+        const displayName = (u as { displayName?: string }).displayName;
+        const email = (u as { email?: string }).email;
         opts.push({
           value: (u as { _id?: string })._id || "",
-          label: formatUserName(
-            firstName,
-            lastName,
-            (u as { username?: string }).username,
-          ),
+          label: formatUserName(displayName, email),
         });
       });
     }
