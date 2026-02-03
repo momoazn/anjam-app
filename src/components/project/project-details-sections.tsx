@@ -21,9 +21,8 @@ type ProjectDetailsSectionsProps = {
     description?: string;
     updatedAt?: number;
     supervisor?: {
-      firstName?: string;
-      lastName?: string;
-      username?: string;
+      displayName?: string;
+      email?: string;
     } | null;
   };
   isEditing: boolean;
@@ -54,11 +53,7 @@ export function ProjectDetailsSections({
             {
               label: projects.details.supervisor,
               value: supervisor
-                ? formatUserName(
-                    supervisor.firstName,
-                    supervisor.lastName,
-                    supervisor.username,
-                  )
+                ? formatUserName(supervisor.displayName, supervisor.email)
                 : "—",
               icon: IconUser,
               muted: !supervisor,

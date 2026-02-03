@@ -80,7 +80,7 @@ export default function TaskDetails() {
             <span className="text-muted-foreground/40">•</span>
             <span>
               {tasks.details.createdBy}{" "}
-              {task.creator?.username || tasks.details.system}
+              {task.creator?.displayName || tasks.details.system}
             </span>
           </div>
         }

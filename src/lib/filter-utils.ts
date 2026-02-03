@@ -23,7 +23,7 @@ export interface FilterableTask {
   status: string;
   priority: string;
   assigneeUserId?: string;
-  assignee?: { username?: string } | null; // Expanded user
+  assignee?: { displayName?: string } | null; // Expanded user
   deadline?: number;
   tags?: string[];
   deletedAt?: number;
@@ -134,7 +134,7 @@ export function matchesSearchFilter(
 ): boolean {
   if (!searchTerm) return true;
   const lowerSearch = searchTerm.toLowerCase();
-  const assigneeName = task.assignee?.username?.toLowerCase();
+  const assigneeName = task.assignee?.displayName?.toLowerCase();
   return (
     task.title.toLowerCase().includes(lowerSearch) ||
     (assigneeName != null && assigneeName.includes(lowerSearch))

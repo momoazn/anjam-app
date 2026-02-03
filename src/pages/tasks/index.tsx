@@ -404,7 +404,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
             users?.map((u) => ({
               ...u,
               id: u._id,
-              username: u.username || u.email || "",
+              displayName: u.displayName || u.email || "",
             })) || []
           }
           availableStatuses={availableStatuses}

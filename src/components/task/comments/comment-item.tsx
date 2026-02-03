@@ -54,9 +54,8 @@ function CommentAuthor({
   user,
 }: {
   user?: {
-    firstName?: string;
-    lastName?: string;
-    username?: string;
+    displayName?: string;
+    email?: string;
   } | null;
 }) {
   if (!user) {
@@ -66,8 +65,7 @@ function CommentAuthor({
       </span>
     );
   }
-  const name =
-    `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username;
+  const name = user.displayName || user.email;
   return <span className="text-[10px] font-bold tracking-tight">{name}</span>;
 }
 

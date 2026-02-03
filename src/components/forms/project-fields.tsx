@@ -42,7 +42,7 @@ export function ProjectFields<TFieldValues extends FieldValues = FieldValues>({
     if (!allUsers) return [];
     return allUsers.map((u) => ({
       value: u._id,
-      label: formatUserName(u.firstName, u.lastName, u.username),
+      label: formatUserName(u.displayName, u.email),
     }));
   }, [allUsers]);
 

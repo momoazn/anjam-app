@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { Control } from "react-hook-form";
 
 import { FormField as GenericFormField } from "@/components/recipes/form-field";
-import { auth, users } from "@/constants";
+import { users } from "@/constants";
 import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 
 // Convex-compatible role type (organization-level roles)
@@ -15,10 +15,8 @@ function getUserRole(orgRole: string | null): UserRole {
 }
 
 export type UserFieldsFormValues = {
-  username: string;
+  displayName: string;
   password?: string;
-  firstName: string;
-  lastName: string;
   role: string;
 };
 
@@ -54,36 +52,22 @@ export function UserFields({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6">
         <GenericFormField
           control={control}
-          name="firstName"
-          label={users.form.firstName}
-          type="input"
-          required
-        />
-        <GenericFormField
-          control={control}
-          name="lastName"
-          label={users.form.lastName}
+          name="displayName"
+          label="Display Name"
           type="input"
           required
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <GenericFormField
-          control={control}
-          name="username"
-          label={auth.login.username}
-          type="input"
-          required
-        />
+      <div className="grid grid-cols-1 gap-6">
         {!isEdit && (
           <GenericFormField
             control={control}
             name="password"
-            label={auth.login.password}
+            label="Password"
             type="input"
             required
             placeholder="••••••••"
@@ -91,7 +75,7 @@ export function UserFields({
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6">
         {(!isEditingSelf || userRole === "owner") &&
           availableRoles.length > 0 && (
             <GenericFormField

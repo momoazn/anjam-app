@@ -1,11 +1,11 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
+  IconEye,
+  IconEyeOff,
   IconFingerprint,
   IconMail,
   IconShieldLock,
-  IconUser,
 } from "@tabler/icons-react";
-import { useMutation } from "convex/react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -18,24 +18,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
 import { authClient } from "@/lib/auth-client";
-import { api } from "@/lib/convex";
 import { handleError } from "@/lib/error-handler";
+import { displayNameFromEmail } from "@/lib/utils";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
 export default function Register() {
   const navigate = useNavigate();
-  const ensureProfile = useMutation(api.users.ensureProfile);
 
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
-    username?: string;
     password?: string;
     confirmPassword?: string;
   }>({});
@@ -45,19 +43,10 @@ export default function Register() {
 
     const newErrors: typeof errors = {};
     const trimmedEmail = email.trim().toLowerCase();
-    const trimmedUsername = username.trim();
 
     if (!trimmedEmail) newErrors.email = auth.errors.emailRequired;
     else if (!emailRegex.test(trimmedEmail)) {
       newErrors.email = auth.errors.emailInvalid;
-    }
-
-    if (!trimmedUsername) {
-      newErrors.username = auth.register.errors.usernameRequired;
-    } else if (!usernameRegex.test(trimmedUsername)) {
-      newErrors.username = auth.register.errors.usernameInvalid;
-    } else if (trimmedUsername.length < 3) {
-      newErrors.username = auth.register.errors.usernameTooShort;
     }
 
     if (!password) newErrors.password = auth.errors.passwordRequired;
@@ -75,8 +64,11 @@ export default function Register() {
 
     setSubmitting(true);
     try {
+      // Generate display name from email for better UX
+      const name = displayNameFromEmail(trimmedEmail);
+
       const result = await authClient.signUp.email({
-        name: trimmedUsername,
+        name,
         email: trimmedEmail,
         password,
       });
@@ -84,7 +76,6 @@ export default function Register() {
         throw new Error(result.error.message || "Registration failed");
       }
 
-      await ensureProfile({ username: trimmedUsername });
       toast.success(auth.register.success);
       navigate("/onboarding", { replace: true });
     } catch (error) {
@@ -131,7 +122,7 @@ export default function Register() {
         <div className="opacity-0">{/* Bottom spacer */}</div>
       </div>
 
-      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
+      <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-125 lg:px-12 xl:w-150 xl:px-20">
         <PageTransition className="w-full" disableStagger>
           <div className="mb-10 lg:hidden">
             <Logo size={48} className="mb-6" />
@@ -183,43 +174,35 @@ export default function Register() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-                      {auth.register.username}
-                    </Label>
-                    <IconUser className="text-muted-foreground/40 size-3" />
-                  </div>
-                  <Input
-                    type="text"
-                    value={username}
-                    dir="ltr"
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.register.usernamePlaceholder}
-                    disabled={submitting}
-                  />
-                  {errors.username && (
-                    <p className="text-destructive text-[10px] font-bold">
-                      {errors.username}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
                       {auth.register.password}
                     </Label>
                     <IconShieldLock className="text-muted-foreground/40 size-3" />
                   </div>
-                  <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.login.placeholders.password}
-                    required
-                    dir="ltr"
-                    disabled={submitting}
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="font-bold pr-9"
+                      placeholder={auth.login.placeholders.password}
+                      required
+                      dir="ltr"
+                      disabled={submitting}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-muted-foreground/ hover:text-muted-foreground absolute inset-y-0 right-0 flex items-center pr-3 transition-colors disabled:opacity-50"
+                      disabled={submitting}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <IconEyeOff className="size-4" />
+                      ) : (
+                        <IconEye className="size-4" />
+                      )}
+                    </button>
+                  </div>
                   {errors.password && (
                     <p className="text-destructive text-[10px] font-bold">
                       {errors.password}
@@ -234,16 +217,33 @@ export default function Register() {
                     </Label>
                     <IconShieldLock className="text-muted-foreground/40 size-3" />
                   </div>
-                  <Input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.login.placeholders.password}
-                    required
-                    dir="ltr"
-                    disabled={submitting}
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="font-bold pr-9"
+                      placeholder={auth.login.placeholders.password}
+                      required
+                      dir="ltr"
+                      disabled={submitting}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="text-muted-foreground/ hover:text-muted-foreground absolute inset-y-0 right-0 flex items-center pr-3 transition-colors disabled:opacity-50"
+                      disabled={submitting}
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? (
+                        <IconEyeOff className="size-4" />
+                      ) : (
+                        <IconEye className="size-4" />
+                      )}
+                    </button>
+                  </div>
                   {errors.confirmPassword && (
                     <p className="text-destructive text-[10px] font-bold">
                       {errors.confirmPassword}

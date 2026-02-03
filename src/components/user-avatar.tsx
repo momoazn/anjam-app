@@ -6,9 +6,8 @@ type UserAvatarProps = {
   username?: string;
   user?: {
     _id?: string;
-    firstName?: string;
-    lastName?: string;
-    username?: string;
+    displayName?: string;
+    email?: string;
     image?: string;
   };
   showUnassigned?: boolean;
@@ -36,14 +35,6 @@ function getAvatarUrl(user: UserAvatarProps["user"]) {
   return avatar;
 }
 
-function getFirstName(user: UserAvatarProps["user"]): string | undefined {
-  return user?.firstName;
-}
-
-function getLastName(user: UserAvatarProps["user"]): string | undefined {
-  return user?.lastName;
-}
-
 export function UserAvatar({
   user,
   username,
@@ -63,11 +54,7 @@ export function UserAvatar({
       <Avatar className={avatarClassName}>
         <AvatarImage src={avatarUrl} className="object-cover" />
         <AvatarFallback className="bg-muted text-muted-foreground text-sm font-semibold">
-          {getUserInitials(
-            getFirstName(user),
-            getLastName(user),
-            user.username,
-          )}
+          {getUserInitials(user.displayName, user.email)}
         </AvatarFallback>
       </Avatar>
     );
@@ -78,7 +65,7 @@ export function UserAvatar({
     return (
       <Avatar className={avatarClassName}>
         <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-          {getUserInitials(undefined, undefined, username)}
+          {getUserInitials(undefined, username)}
         </AvatarFallback>
       </Avatar>
     );

@@ -37,8 +37,8 @@ export function useOrganizationMembers(options?: UseOrgMembersOptions) {
       const user = m.user
         ? {
             ...m.user,
-            firstName: m.user.firstName,
-            lastName: m.user.lastName,
+            displayName: m.user.displayName,
+            email: m.user.email,
           }
         : null;
 

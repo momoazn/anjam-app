@@ -15,9 +15,6 @@ export type UserPreferences = {
       | "America/New_York";
     dateFormat: "locale" | "yyyy/MM/dd" | "dd/MM/yyyy" | "MM/dd/yyyy";
   };
-  favorites: {
-    projectIds: string[];
-  };
 };
 
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
@@ -28,9 +25,6 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
     theme: "system",
     timezone: "auto",
     dateFormat: "locale",
-  },
-  favorites: {
-    projectIds: [],
   },
 };
 
@@ -43,7 +37,6 @@ interface PreferencesState {
   preferences: UserPreferences;
   isLoading: boolean;
   updatePreferences: (updates: Partial<UserPreferences>) => void;
-  toggleProjectFavorite: (projectId: string) => void;
 }
 
 const STORAGE_KEY = "anjam_user_preferences";
@@ -65,26 +58,6 @@ export const usePreferencesStore = create<PreferencesState>()(
         updatePreferences: (updates) => {
           const newPreferences = { ...get().preferences, ...updates };
           set({ preferences: newPreferences });
-        },
-
-        toggleProjectFavorite: (projectId) => {
-          const { preferences } = get();
-          const currentFavorites = preferences.favorites?.projectIds || [];
-          const isFavorite = currentFavorites.includes(projectId);
-
-          const nextFavorites = isFavorite
-            ? currentFavorites.filter((id) => id !== projectId)
-            : [...currentFavorites, projectId];
-
-          set({
-            preferences: {
-              ...preferences,
-              favorites: {
-                ...preferences.favorites,
-                projectIds: nextFavorites,
-              },
-            },
-          });
         },
       }),
       {
@@ -114,17 +87,7 @@ export const useUpdateUserPreferences = () =>
     isPending: false,
   }));
 
-export const useToggleProjectFavorite = () =>
-  usePreferencesStore((state) => ({
-    mutate: async (projectId: string) => {
-      state.toggleProjectFavorite(projectId);
-    },
-    isPending: false,
-  }));
-
 export const usePreferences = () =>
   usePreferencesStore((state) => state.preferences);
 export const useUpdatePreferences = () =>
   usePreferencesStore((state) => state.updatePreferences);
-export const useToggleFavorite = () =>
-  usePreferencesStore((state) => state.toggleProjectFavorite);

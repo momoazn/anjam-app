@@ -58,13 +58,7 @@ import type { Doc } from "../../../convex/_generated/dataModel";
 
 function getUserDisplayName(user: Doc<"users"> | null | undefined): string {
   if (!user) return organization.members.unknownUser;
-  if (user.firstName && user.lastName) {
-    return `${user.firstName} ${user.lastName}`;
-  }
-  if (user.firstName) {
-    return user.firstName;
-  }
-  return user.username || user.name || "Unknown User";
+  return user.displayName || user.email || "Unknown User";
 }
 
 export function OrgMembersPage() {

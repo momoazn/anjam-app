@@ -61,7 +61,7 @@ export function BoardCard({ task }: BoardCardProps) {
       <div
         ref={setNodeRef}
         style={style}
-        className="border-primary/20 bg-primary/5 relative h-[4.5rem] min-h-[4.5rem] rounded-xl border-2 border-dashed opacity-40"
+        className="border-primary/20 bg-primary/5 relative h-18 min-h-18 rounded-xl border-2 border-dashed opacity-40"
       />
     );
   }
@@ -143,7 +143,7 @@ export function BoardCard({ task }: BoardCardProps) {
                 />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-[180px] p-1.5" align="start">
+            <PopoverContent className="w-45 p-1.5" align="start">
               <Select
                 value={task.assigneeUserId || "__unassigned"}
                 onValueChange={handleAssigneeChange}
@@ -165,9 +165,7 @@ export function BoardCard({ task }: BoardCardProps) {
                         value={user._id}
                         className="text-xs font-bold"
                       >
-                        {user.firstName || user.lastName
-                          ? `${user.firstName} ${user.lastName}`
-                          : user.username}
+                        {user.displayName || user.email}
                       </SelectItem>
                     ))
                   ) : (
@@ -183,7 +181,7 @@ export function BoardCard({ task }: BoardCardProps) {
           {showProjectLabel && (
             <div className="flex items-center gap-1 opacity-40">
               <IconTarget className="size-3" />
-              <span className="max-w-[100px] truncate text-[10px] font-bold">
+              <span className="max-w-25 truncate text-[10px] font-bold">
                 {task.project?.name || projects.details.noProject}
               </span>
             </div>

@@ -54,7 +54,7 @@ function UserInfo({ user }: UserInfoProps) {
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-right">
         <div className="flex items-center justify-end gap-2">
           <span className="text-foreground truncate text-[11px] font-bold tracking-tight">
-            {user.firstName} {user.lastName}
+            {user.displayName || user.email}
           </span>
         </div>
         <div className="flex items-center justify-end gap-1.5">

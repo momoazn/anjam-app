@@ -111,7 +111,7 @@ export const getByToken = query({
       status: "valid" as const,
       invite,
       orgName: org?.name,
-      inviterName: inviter?.username || inviter?.name || "Someone",
+      inviterName: inviter?.displayName || inviter?.email || "Someone",
     };
   },
 });

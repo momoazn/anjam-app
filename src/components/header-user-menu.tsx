@@ -39,7 +39,7 @@ function UserInfo({ user, role }: UserInfoProps) {
       <div className="flex flex-1 flex-col gap-0.5 text-right">
         <div className="flex items-center justify-end gap-2">
           <span className="text-foreground truncate text-sm font-bold">
-            {user.firstName} {user.lastName}
+            {user.displayName || user.email}
           </span>
         </div>
         <div className="flex items-center justify-end gap-1.5">
@@ -80,7 +80,7 @@ export function HeaderUserMenu() {
           variant="ghost"
           size="icon"
           className="hover:bg-muted/50 flex h-9 w-9 items-center justify-center rounded-full p-0 transition-all"
-          title={`${user.firstName} ${user.lastName}`}
+          title={`${user.displayName || user.email}`}
         >
           <UserAvatar user={user} className="h-9 w-9 rounded-full" />
         </Button>

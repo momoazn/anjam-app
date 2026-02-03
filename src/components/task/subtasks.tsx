@@ -47,9 +47,8 @@ interface SubtaskWithAssignee {
   expand?: {
     assignee?: {
       _id: string;
-      username: string;
-      firstName?: string;
-      lastName?: string;
+      displayName: string;
+      email: string;
       image?: string;
     };
   };
@@ -185,7 +184,7 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
   const assigneeOptions = useMemo(() => {
     const options = users?.map((user) => ({
       value: user._id,
-      label: formatUserName(user.firstName, user.lastName, user.username),
+      label: formatUserName(user.displayName, user.email),
     }));
     return options ?? [];
   }, [users]);
@@ -365,9 +364,8 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
                   {ordered.map((subtask) => {
                     const assigneeName = subtask.expand?.assignee
                       ? formatUserName(
-                          subtask.expand.assignee.firstName,
-                          subtask.expand.assignee.lastName,
-                          subtask.expand.assignee.username,
+                          subtask.expand.assignee.displayName,
+                          subtask.expand.assignee.email,
                         )
                       : tasks.details.unknownUser;
                     return (

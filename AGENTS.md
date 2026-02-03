@@ -137,6 +137,7 @@ Before committing: run `bun run check`
 **Required**:
 
 - `VITE_CONVEX_URL` - Convex deployment URL (auto-injected during `build:deploy`)
+- `BETTER_AUTH_SECRET` - Better Auth secret for session security (generate with `openssl rand -base64 32`)
 
 **Optional** (email via Resend):
 

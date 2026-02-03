@@ -6,9 +6,8 @@ import { useAuthUser } from "@/store/app-context-store";
 
 export type MentionOption = {
   id: string;
-  username: string;
-  firstName?: string;
-  lastName?: string;
+  displayName: string;
+  email?: string;
   image?: string;
 };
 
@@ -30,21 +29,17 @@ export function useCommentMentions() {
       .filter((user): user is NonNullable<typeof user> => Boolean(user))
       .filter((user) => {
         if (!normalized) return true;
-        const fullName = formatUserName(
-          user.firstName,
-          user.lastName,
-          user.username,
-        ).toLowerCase();
+        const name = formatUserName(user.displayName, user.email);
+        const emailPrefix = user.email?.split("@")[0] ?? "";
         return (
-          (user.username || "").toLowerCase().includes(normalized) ||
-          fullName.includes(normalized)
+          name.toLowerCase().includes(normalized) ||
+          emailPrefix.toLowerCase().includes(normalized)
         );
       })
       .map((user) => ({
         id: user._id,
-        username: user.username || "",
-        firstName: user.firstName,
-        lastName: user.lastName,
+        displayName: user.displayName || user.email || "",
+        email: user.email,
         image: user.image,
       }));
   }, [orgMembers, mentionQuery]);
@@ -72,7 +67,13 @@ export function useCommentMentions() {
     if (!option || mentionStart === null) return;
     const before = content.slice(0, mentionStart);
     const after = content.slice(mentionCursor);
-    const mentionText = `@${option.username} `;
+    // Use email prefix (before @) as the unique mention identifier
+    // This avoids ambiguity between users with similar display names (e.g., "John Smith" vs "John Doe")
+    const emailPrefix =
+      option.email?.split("@")[0] ||
+      option.displayName.split(" ")[0] ||
+      option.displayName;
+    const mentionText = `@${emailPrefix} `;
     const nextValue = `${before}${mentionText}${after}`;
     setContent(nextValue);
     setMentionStart(null);

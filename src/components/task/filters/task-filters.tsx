@@ -34,9 +34,8 @@ import { TaskPriority, TaskStatus } from "@/types/tasks";
 // User type with compatibility fields
 interface UserWithCompat {
   _id: string;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
+  displayName?: string;
+  email?: string;
 }
 
 const priorityOrder: TaskPriority[] = ["low", "medium", "high", "urgent"];
@@ -144,7 +143,7 @@ export function TaskFilters({
     if (selectedAssignee !== ALL_FILTER_VALUE) {
       const user = users?.find((u) => u._id === selectedAssignee);
       labels.push({
-        label: `${tasks.filters.labels.assignee}: ${user ? formatUserName(user.firstName, user.lastName, user.username) : selectedAssignee}`,
+        label: `${tasks.filters.labels.assignee}: ${user ? formatUserName(user.displayName, user.email) : selectedAssignee}`,
         onClear: () => setSelectedAssignee(ALL_FILTER_VALUE),
       });
     }
@@ -334,7 +333,7 @@ export function TaskFilters({
                   value={user._id}
                   className="text-[11px] font-medium"
                 >
-                  {formatUserName(user.firstName, user.lastName, user.username)}
+                  {formatUserName(user.displayName, user.email)}
                 </SelectItem>
               ))}
             </SelectContent>
