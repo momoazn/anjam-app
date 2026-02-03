@@ -32,35 +32,41 @@ export function MentionAutocomplete({
         {comments.item.mention}
       </div>
       <div className="space-y-1">
-        {items.map((item, index) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => onSelect(item)}
-            onMouseEnter={() => onHover(index)}
-            className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-xs font-bold tracking-tight transition-all ${
-              index === selectedIndex
-                ? "bg-primary/10 text-primary"
-                : "hover:bg-muted/30"
-            }`}
-          >
-            <span>
-              @{item.email}
-              <span className="text-muted-foreground/60 ms-2 text-[10px]">
-                {formatUserName(item.displayName, item.email)}
+        {items.map((item, index) => {
+          const emailPrefix =
+            item.email?.split("@")[0] ||
+            item.displayName.split(" ")[0] ||
+            item.displayName;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item)}
+              onMouseEnter={() => onHover(index)}
+              className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-xs font-bold tracking-tight transition-all ${
+                index === selectedIndex
+                  ? "bg-primary/10 text-primary"
+                  : "hover:bg-muted/30"
+              }`}
+            >
+              <span>
+                @{emailPrefix}
+                <span className="text-muted-foreground/60 ms-2 text-[10px]">
+                  {formatUserName(item.displayName, item.email)}
+                </span>
               </span>
-            </span>
-            <UserAvatar
-              user={{
-                _id: item.id,
-                displayName: item.displayName,
-                email: item.email,
-                image: item.image,
-              }}
-              className="border-border/40 size-7 rounded-md border"
-            />
-          </button>
-        ))}
+              <UserAvatar
+                user={{
+                  _id: item.id,
+                  displayName: item.displayName,
+                  email: item.email,
+                  image: item.image,
+                }}
+                className="border-border/40 size-7 rounded-md border"
+              />
+            </button>
+          );
+        })}
       </div>
     </div>
   );

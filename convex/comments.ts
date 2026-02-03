@@ -74,8 +74,8 @@ export const create = mutation({
       parentCommentId: args.parentCommentId,
     });
 
-    // Parse mentions: @username
-    const mentionRegex = /@(\w+)/g;
+    // Parse mentions: @username (allow dots/hyphens for email prefixes)
+    const mentionRegex = /@([\w.-]+)/g;
     const matches = args.content.matchAll(mentionRegex);
     const mentionedUsernames = new Set<string>();
     for (const match of matches) {
@@ -83,29 +83,52 @@ export const create = mutation({
     }
 
     if (mentionedUsernames.size > 0) {
-      // Find users by username (match against displayName or email)
-      // We need to query all users and filter manually since we don't have username index anymore
-      const allUsers = await ctx.db.query("users").collect();
+      // Query organization members and join with user data for efficient mention matching
+      // This is much more efficient than querying all users
+      const orgMembers = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_org", (q) =>
+          q.eq("organizationId", project.organizationId),
+        )
+        .filter((q) => q.eq(q.field("status"), "active"))
+        .collect();
+
+      // Get all member user data in parallel
+      const memberUsers = await Promise.all(
+        orgMembers.map(async (member) => {
+          const user = await ctx.db.get(member.userId);
+          return user ? { user, membership: member } : null;
+        }),
+      );
+
+      // Filter out nulls and create a lookup
+      const validMembers = memberUsers.filter(
+        (item): item is NonNullable<typeof item> => item !== null,
+      );
+
+      const memberByEmailPrefix = new Map<
+        string,
+        (typeof validMembers)[number]
+      >();
+      const duplicatePrefixes = new Set<string>();
+      for (const member of validMembers) {
+        const emailPrefix = member.user.email?.split("@")[0]?.toLowerCase();
+        if (!emailPrefix) continue;
+        if (memberByEmailPrefix.has(emailPrefix)) {
+          duplicatePrefixes.add(emailPrefix);
+          continue;
+        }
+        memberByEmailPrefix.set(emailPrefix, member);
+      }
 
       for (const username of mentionedUsernames) {
-        const user = allUsers.find(
-          (u) =>
-            u.displayName?.toLowerCase().startsWith(username) ||
-            u.email?.toLowerCase().startsWith(username),
-        );
+        // Match by email prefix (before @) - most reliable identifier
+        // Skip ambiguous prefixes to avoid notifying the wrong user.
+        if (duplicatePrefixes.has(username)) continue;
+        const match = memberByEmailPrefix.get(username);
 
-        if (user) {
-          // Verify user is in org?
-          // Yes, mentions should only notify members.
-          const isMember = await ctx.db
-            .query("organizationMembers")
-            .withIndex("by_org_user", (q) =>
-              q
-                .eq("organizationId", project.organizationId)
-                .eq("userId", user._id),
-            )
-            .first();
-
+        if (match) {
+          const { user, membership: isMember } = match;
           if (isMember) {
             await ctx.db.insert("mentions", {
               mentionedUserId: user._id,

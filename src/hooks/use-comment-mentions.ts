@@ -30,7 +30,11 @@ export function useCommentMentions() {
       .filter((user) => {
         if (!normalized) return true;
         const name = formatUserName(user.displayName, user.email);
-        return name.toLowerCase().includes(normalized);
+        const emailPrefix = user.email?.split("@")[0] ?? "";
+        return (
+          name.toLowerCase().includes(normalized) ||
+          emailPrefix.toLowerCase().includes(normalized)
+        );
       })
       .map((user) => ({
         id: user._id,
@@ -63,9 +67,13 @@ export function useCommentMentions() {
     if (!option || mentionStart === null) return;
     const before = content.slice(0, mentionStart);
     const after = content.slice(mentionCursor);
-    // Use first word of display name for the mention text
-    const firstName = option.displayName.split(" ")[0] || option.displayName;
-    const mentionText = `@${firstName} `;
+    // Use email prefix (before @) as the unique mention identifier
+    // This avoids ambiguity between users with similar display names (e.g., "John Smith" vs "John Doe")
+    const emailPrefix =
+      option.email?.split("@")[0] ||
+      option.displayName.split(" ")[0] ||
+      option.displayName;
+    const mentionText = `@${emailPrefix} `;
     const nextValue = `${before}${mentionText}${after}`;
     setContent(nextValue);
     setMentionStart(null);
