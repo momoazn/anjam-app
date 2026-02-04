@@ -17,7 +17,14 @@ import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { commandMenu } from "@/constants";
 import { useGlobalSearch } from "@/hooks/use-global-search";
 import type { SearchResponse } from "@/hooks/use-global-search";
@@ -346,6 +353,12 @@ export function CommandMenu() {
         className="overflow-hidden p-0 shadow-2xl bg-card"
         showCloseButton={false}
       >
+        <DialogHeader className="sr-only">
+          <DialogTitle>پالت دستورات</DialogTitle>
+          <DialogDescription>
+            {commandMenu.labels.placeholder}
+          </DialogDescription>
+        </DialogHeader>
         <div className="flex items-center border-b px-3" dir="ltr">
           <IconSearch
             className="size-4 shrink-0 text-muted-foreground"
