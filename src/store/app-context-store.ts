@@ -22,6 +22,7 @@ interface AuthState {
   userOrganizations: OrganizationWithRole[];
   isLoading: boolean;
   isLoadingOrgs: boolean;
+  hasLoadedOrgs: boolean;
   orgsError: Error | null;
   login: (user: Doc<"users">, token?: string) => void;
   updateUser: (user: Doc<"users">) => void;
@@ -49,6 +50,7 @@ const initialState = {
   userOrganizations: [],
   isLoading: false,
   isLoadingOrgs: false,
+  hasLoadedOrgs: false,
   orgsError: null,
 } satisfies Omit<
   AuthState,
@@ -108,9 +110,11 @@ export const useAuthStore = create<AuthState>()(
 
         setOrganizations: (orgs) => {
           const { currentOrganization } = get();
+          const isAuthenticated = get().isAuthenticated;
           set({
             userOrganizations: orgs,
             isLoadingOrgs: false,
+            hasLoadedOrgs: isAuthenticated,
             ...(currentOrganization ? {} : selectOrgState(orgs)),
           });
         },
@@ -180,6 +184,14 @@ export const useAuthIsAuthenticated = () => {
   const isAuthenticated = Boolean(session?.user);
   return isPending ? persisted : isAuthenticated;
 };
+export const useAuthIsAuthenticatedStrict = () => {
+  // Strictly use Better Auth session as source of truth and treat "pending" as unauthenticated.
+  // Use this for data fetching to avoid triggering Convex queries while auth cookies/tokens
+  // are not yet available (which spams Convex logs with "Unauthenticated").
+  const { data: session, isPending } = authClient.useSession();
+  if (isPending) return false;
+  return Boolean(session?.user);
+};
 export const useCurrentOrganization = () =>
   useAuthStore((state) => state.currentOrganization);
 export const useCurrentOrgRole = () =>
@@ -191,7 +203,11 @@ export const useCurrentOrgOnboardingCompleted = () =>
     const orgWithRole = state.userOrganizations.find(
       (o) => o.organization._id === currentOrg._id,
     );
-    return orgWithRole?.onboardingCompleted ?? true;
+    // Only require onboarding completion for owners. Members can join an existing org via invite
+    // and should not be blocked by the org creation wizard.
+    if (!orgWithRole) return true;
+    if (orgWithRole.role !== "owner") return true;
+    return orgWithRole.onboardingCompleted ?? true;
   });
 export const useAuthRole = () =>
   useAuthStore((state) => (state.user ? "admin" : null));

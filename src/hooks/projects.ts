@@ -1,19 +1,23 @@
 import { useMutation, useQuery } from "convex/react";
 
 import { type Doc, Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/app-context-store";
+import {
+  useAuthIsAuthenticatedStrict,
+  useCurrentOrganization,
+} from "@/store/app-context-store";
 
 /**
  * Hook to list all projects in the current organization.
  */
 export function useProjects(options: { enabled?: boolean } = {}) {
   const { enabled = true } = options;
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
   const projects = useQuery(
     api.projects.listByOrg,
-    enabled && organizationId ? { organizationId } : "skip",
+    enabled && isAuthenticated && organizationId ? { organizationId } : "skip",
   );
 
   return {
@@ -38,10 +42,13 @@ export function useProject(options: {
   enabled?: boolean;
 }) {
   const { id, enabled = true } = options;
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
 
   const project = useQuery(
     api.projects.get,
-    enabled && id ? { projectId: id as Id<"projects"> } : "skip",
+    enabled && isAuthenticated && id
+      ? { projectId: id as Id<"projects"> }
+      : "skip",
   );
 
   return {

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { useShallow } from "zustand/react/shallow";
 
 export type UserPreferences = {
   ui: {
@@ -73,19 +74,26 @@ export const usePreferencesStore = create<PreferencesState>()(
 );
 
 export const useUserPreferences = () =>
-  usePreferencesStore((state) => ({
-    data: state.preferences,
-    isLoading: state.isLoading,
-    updatePreferences: state.updatePreferences,
-  }));
+  usePreferencesStore(
+    useShallow((state) => ({
+      data: state.preferences,
+      isLoading: state.isLoading,
+      updatePreferences: state.updatePreferences,
+    })),
+  );
 
-export const useUpdateUserPreferences = () =>
-  usePreferencesStore((state) => ({
+export const useUpdateUserPreferences = () => {
+  const updatePreferences = usePreferencesStore(
+    (state) => state.updatePreferences,
+  );
+
+  return {
     mutate: async (payload: { updates: Partial<UserPreferences> }) => {
-      state.updatePreferences(payload.updates);
+      updatePreferences(payload.updates);
     },
     isPending: false,
-  }));
+  } as const;
+};
 
 export const usePreferences = () =>
   usePreferencesStore((state) => state.preferences);

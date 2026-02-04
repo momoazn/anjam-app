@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { useShallow } from "zustand/react/shallow";
 
 import { DEFAULT_TASK_FILTERS } from "@/lib/filter-utils";
 import type { TaskFilterValues } from "@/lib/filter-utils";
@@ -157,17 +158,19 @@ export const useFiltersStore = create<FiltersState>()(
 );
 
 export const useSavedFilters = () =>
-  useFiltersStore((state) => ({
-    savedFilters: state.savedFilters,
-    saveFilter: state.saveFilter,
-    updateFilter: state.updateFilter,
-    deleteFilter: state.deleteFilter,
-    setAsDefault: state.setAsDefault,
-    getDefaultFilter: state.getDefaultFilter,
-    defaultFilterId: state.defaultFilterId,
-    getCurrentFilterMatch: state.getCurrentFilterMatch,
-    isDefaultFilters: state.isDefaultFilters,
-  }));
+  useFiltersStore(
+    useShallow((state) => ({
+      savedFilters: state.savedFilters,
+      saveFilter: state.saveFilter,
+      updateFilter: state.updateFilter,
+      deleteFilter: state.deleteFilter,
+      setAsDefault: state.setAsDefault,
+      getDefaultFilter: state.getDefaultFilter,
+      defaultFilterId: state.defaultFilterId,
+      getCurrentFilterMatch: state.getCurrentFilterMatch,
+      isDefaultFilters: state.isDefaultFilters,
+    })),
+  );
 export const useDefaultFilterId = () =>
   useFiltersStore((state) => state.defaultFilterId);
 export const useSaveFilter = () => useFiltersStore((state) => state.saveFilter);
@@ -185,9 +188,11 @@ export const useIsDefaultFilters = () =>
   useFiltersStore((state) => state.isDefaultFilters);
 
 export const useFiltersActions = () =>
-  useFiltersStore((state) => ({
-    saveFilter: state.saveFilter,
-    updateFilter: state.updateFilter,
-    deleteFilter: state.deleteFilter,
-    setAsDefault: state.setAsDefault,
-  }));
+  useFiltersStore(
+    useShallow((state) => ({
+      saveFilter: state.saveFilter,
+      updateFilter: state.updateFilter,
+      deleteFilter: state.deleteFilter,
+      setAsDefault: state.setAsDefault,
+    })),
+  );

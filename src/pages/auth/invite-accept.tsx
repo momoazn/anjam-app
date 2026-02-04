@@ -22,12 +22,15 @@ import { useInviteByToken } from "@/hooks/invites";
 import { useAcceptOrgInvitation } from "@/hooks/organization-members";
 import { authClient } from "@/lib/auth-client";
 import { api } from "@/lib/convex";
+import { useAuthIsAuthenticated } from "@/store/app-context-store";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function InviteAccept() {
   const navigate = useNavigate();
   const { token } = useParams<{ token: string }>();
+  const isLoggedIn = useAuthIsAuthenticated();
+  const { data: session } = authClient.useSession();
 
   const { data: inviteData, isLoading, error } = useInviteByToken(token ?? "");
   const acceptInviteMutation = useAcceptOrgInvitation();
@@ -41,6 +44,19 @@ export default function InviteAccept() {
     password?: string;
     confirmPassword?: string;
   }>({});
+
+  const acceptAsCurrentUser = async () => {
+    try {
+      await ensureProfile({});
+      await acceptInviteMutation.mutate(token ?? "");
+      toast.success(auth.invite.success);
+      navigate("/inbox", { replace: true });
+    } catch (err: unknown) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to accept invite",
+      );
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,6 +116,7 @@ export default function InviteAccept() {
   };
 
   const submitting = acceptInviteMutation.isPending;
+  const canAcceptAsCurrentUser = isLoggedIn;
 
   // Loading state
   if (isLoading) {
@@ -205,104 +222,139 @@ export default function InviteAccept() {
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                      {auth.register.email}
-                    </Label>
-                    <IconMail className="text-muted-foreground/40 size-3" />
-                  </div>
-                  <Input
-                    type="email"
-                    value={email}
-                    dir="ltr"
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.login.placeholders.email}
-                    required
-                    autoFocus
+              {canAcceptAsCurrentUser ? (
+                <div className="space-y-5">
+                  {session?.user?.email ? (
+                    <div
+                      className="text-muted-foreground text-xs font-semibold"
+                      dir="ltr"
+                    >
+                      {session.user.email}
+                    </div>
+                  ) : null}
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="w-full"
                     disabled={submitting}
-                  />
-                  {errors.email && (
-                    <p className="text-destructive text-[10px] font-bold">
-                      {errors.email}
-                    </p>
-                  )}
+                    onClick={acceptAsCurrentUser}
+                  >
+                    <span className="flex items-center gap-2">
+                      {submitting
+                        ? auth.invite.joiningButton
+                        : auth.invite.joinButton}
+                      {!submitting && (
+                        <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                      )}
+                    </span>
+                  </Button>
                 </div>
+              ) : (
+                <>
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-5"
+                    noValidate
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                          {auth.register.email}
+                        </Label>
+                        <IconMail className="text-muted-foreground/40 size-3" />
+                      </div>
+                      <Input
+                        type="email"
+                        value={email}
+                        dir="ltr"
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="font-bold"
+                        placeholder={auth.login.placeholders.email}
+                        required
+                        autoFocus
+                        disabled={submitting}
+                      />
+                      {errors.email && (
+                        <p className="text-destructive text-[10px] font-bold">
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                      {auth.register.password}
-                    </Label>
-                    <IconShieldLock className="text-muted-foreground/40 size-3" />
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                          {auth.register.password}
+                        </Label>
+                        <IconShieldLock className="text-muted-foreground/40 size-3" />
+                      </div>
+                      <Input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="font-bold"
+                        placeholder={auth.login.placeholders.password}
+                        required
+                        dir="ltr"
+                        disabled={submitting}
+                      />
+                      {errors.password && (
+                        <p className="text-destructive text-[10px] font-bold">
+                          {errors.password}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                          {auth.register.confirmPassword}
+                        </Label>
+                        <IconShieldLock className="text-muted-foreground/40 size-3" />
+                      </div>
+                      <Input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="font-bold"
+                        placeholder={auth.login.placeholders.password}
+                        required
+                        dir="ltr"
+                        disabled={submitting}
+                      />
+                      {errors.confirmPassword && (
+                        <p className="text-destructive text-[10px] font-bold">
+                          {errors.confirmPassword}
+                        </p>
+                      )}
+                    </div>
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="w-full"
+                      disabled={submitting}
+                    >
+                      <span className="flex items-center gap-2">
+                        {submitting
+                          ? auth.invite.joiningButton
+                          : auth.invite.joinButton}
+                        {!submitting && (
+                          <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
+                        )}
+                      </span>
+                    </Button>
+                  </form>
+                  <div className="mt-6 flex items-center justify-between border-t pt-4">
+                    <span className="text-muted-foreground text-xs font-semibold">
+                      {auth.invite.loginPrompt}
+                    </span>
+                    <Button variant="ghost" asChild>
+                      <Link to="/login">{auth.register.loginButton}</Link>
+                    </Button>
                   </div>
-                  <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.login.placeholders.password}
-                    required
-                    dir="ltr"
-                    disabled={submitting}
-                  />
-                  {errors.password && (
-                    <p className="text-destructive text-[10px] font-bold">
-                      {errors.password}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
-                      {auth.register.confirmPassword}
-                    </Label>
-                    <IconShieldLock className="text-muted-foreground/40 size-3" />
-                  </div>
-                  <Input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="font-bold"
-                    placeholder={auth.login.placeholders.password}
-                    required
-                    dir="ltr"
-                    disabled={submitting}
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-destructive text-[10px] font-bold">
-                      {errors.confirmPassword}
-                    </p>
-                  )}
-                </div>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full"
-                  disabled={submitting}
-                >
-                  <span className="flex items-center gap-2">
-                    {submitting
-                      ? auth.invite.joiningButton
-                      : auth.invite.joinButton}
-                    {!submitting && (
-                      <IconFingerprint className="size-5 transition-transform group-hover:rotate-12" />
-                    )}
-                  </span>
-                </Button>
-              </form>
-              <div className="mt-6 flex items-center justify-between border-t pt-4">
-                <span className="text-muted-foreground text-xs font-semibold">
-                  {auth.invite.loginPrompt}
-                </span>
-                <Button variant="ghost" asChild>
-                  <Link to="/login">{auth.register.loginButton}</Link>
-                </Button>
-              </div>
+                </>
+              )}
             </CardContent>
           </Card>
 

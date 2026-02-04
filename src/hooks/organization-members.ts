@@ -2,7 +2,10 @@ import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 
 import { Doc, Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/app-context-store";
+import {
+  useAuthIsAuthenticatedStrict,
+  useCurrentOrganization,
+} from "@/store/app-context-store";
 
 export type OrgRole = "owner" | "member";
 export type MemberStatus = "invited" | "active" | "suspended";
@@ -23,12 +26,15 @@ interface UseOrgMembersOptions {
 }
 
 export function useOrganizationMembers(options?: UseOrgMembersOptions) {
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const orgId = currentOrg?._id;
 
   const members = useQuery(
     api.orgMembers.listByOrg,
-    (options?.enabled ?? true) && orgId ? { organizationId: orgId } : "skip",
+    (options?.enabled ?? true) && isAuthenticated && orgId
+      ? { organizationId: orgId }
+      : "skip",
   );
 
   // Apply frontend filtering for status/role if needed
@@ -69,12 +75,13 @@ export function useOrganizationMembers(options?: UseOrgMembersOptions) {
 }
 
 export function useOrganizationInvites() {
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const orgId = currentOrg?._id;
 
   const invites = useQuery(
     api.invites.list,
-    orgId ? { organizationId: orgId } : "skip",
+    isAuthenticated && orgId ? { organizationId: orgId } : "skip",
   );
 
   return {

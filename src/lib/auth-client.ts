@@ -7,6 +7,14 @@ const convexSiteUrl =
   (convexUrl ? convexUrl.replace(".convex.cloud", ".convex.site") : undefined);
 
 export const authClient = createAuthClient({
-  baseURL: convexSiteUrl ? `${convexSiteUrl}/api/auth` : "/api/auth",
+  // In local development, use a same-origin `/api/auth` endpoint so the browser can persist
+  // auth cookies for `http://127.0.0.1:5173`. Vite proxies this route to the Convex HTTP endpoint.
+  baseURL: import.meta.env.DEV
+    ? typeof window !== "undefined"
+      ? new URL("/api/auth", window.location.origin).toString()
+      : "/api/auth"
+    : convexSiteUrl
+      ? `${convexSiteUrl}/api/auth`
+      : "/api/auth",
   plugins: [convexClient()],
 });

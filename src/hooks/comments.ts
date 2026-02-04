@@ -9,7 +9,7 @@ export type CommentWithUser = {
   userId: Id<"users">;
   content: string;
   parentCommentId?: Id<"comments">;
-  reactions?: unknown;
+  reactions?: Record<string, string[]>;
   deletedAt?: number;
   updatedAt?: number;
   // Attachments support for Convex

@@ -2,19 +2,24 @@ import { useQuery } from "convex/react";
 import { isPast, isToday } from "date-fns";
 import { useMemo } from "react";
 
-import { useAuthUser, useCurrentOrganization } from "@/store/app-context-store";
+import {
+  useAuthIsAuthenticatedStrict,
+  useAuthUser,
+  useCurrentOrganization,
+} from "@/store/app-context-store";
 
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 
 export function useTaskCounts() {
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const user = useAuthUser();
   const currentOrg = useCurrentOrganization();
   const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
   const tasks = useQuery(
     api.tasks.listAll,
-    organizationId ? { organizationId } : "skip",
+    isAuthenticated && organizationId ? { organizationId } : "skip",
   );
 
   const counts = useMemo(() => {

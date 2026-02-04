@@ -14,7 +14,7 @@ export function useNotifications() {
   return {
     data: notifications,
     isLoading: notifications === undefined,
-    error: null as unknown,
+    error: null,
   };
 }
 
@@ -38,27 +38,31 @@ type NotificationMutationAction =
   | "clearRead";
 
 export function useNotificationMutation(action: NotificationMutationAction) {
-  const mutation = useMutation(
-    action === "markRead"
-      ? api.notifications.markRead
-      : action === "markAllRead"
-        ? api.notifications.markAllRead
-        : action === "delete"
-          ? api.notifications.deleteNotification
-          : action === "clearAll"
-            ? api.notifications.clearAll
-            : api.notifications.clearRead,
-  ) as unknown as (args: Record<string, unknown>) => Promise<unknown>;
+  const markReadMutation = useMutation(api.notifications.markRead);
+  const markAllReadMutation = useMutation(api.notifications.markAllRead);
+  const deleteMutation = useMutation(api.notifications.deleteNotification);
+  const clearAllMutation = useMutation(api.notifications.clearAll);
+  const clearReadMutation = useMutation(api.notifications.clearRead);
 
   const mutate = async (id?: string) => {
-    if (action === "markRead" || action === "delete") {
-      if (!id) return undefined;
-      return await mutation({
-        notificationId: id as Id<"notifications">,
-      });
+    switch (action) {
+      case "markRead":
+        if (!id) return undefined;
+        return await markReadMutation({
+          notificationId: id as Id<"notifications">,
+        });
+      case "markAllRead":
+        return await markAllReadMutation({});
+      case "delete":
+        if (!id) return undefined;
+        return await deleteMutation({
+          notificationId: id as Id<"notifications">,
+        });
+      case "clearAll":
+        return await clearAllMutation({});
+      case "clearRead":
+        return await clearReadMutation({});
     }
-
-    return await mutation({});
   };
 
   return {

@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 
-import { useCurrentOrganization } from "@/store/app-context-store";
+import {
+  useAuthIsAuthenticatedStrict,
+  useCurrentOrganization,
+} from "@/store/app-context-store";
 
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
@@ -10,12 +13,13 @@ import { Id } from "../../convex/_generated/dataModel";
  */
 export function useUsers(options: { enabled?: boolean } = {}) {
   const { enabled = true } = options;
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const organizationId = currentOrg?._id;
 
   const users = useQuery(
     api.users.list,
-    enabled && organizationId ? { organizationId } : "skip",
+    enabled && isAuthenticated && organizationId ? { organizationId } : "skip",
   );
 
   return {
@@ -61,6 +65,7 @@ export function useProjectUsers({
   enabled?: boolean;
 }) {
   void projectId;
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   // For now, return all organization users since projects don't have separate membership in the current Convex schema
   // We can refine this later if we add project_members table to Convex
   const currentOrg = useCurrentOrganization();
@@ -68,7 +73,7 @@ export function useProjectUsers({
 
   const users = useQuery(
     api.users.list,
-    enabled && organizationId ? { organizationId } : "skip",
+    enabled && isAuthenticated && organizationId ? { organizationId } : "skip",
   );
 
   return {

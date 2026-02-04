@@ -2,7 +2,10 @@ import { useMutation, useQuery } from "convex/react";
 
 import type { Doc } from "@/lib/convex";
 import { Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/app-context-store";
+import {
+  useAuthIsAuthenticatedStrict,
+  useCurrentOrganization,
+} from "@/store/app-context-store";
 import { TaskWithDetails, TaskWithProject } from "@/types/tasks";
 
 type ListedTask = Doc<"tasks"> & {
@@ -79,6 +82,7 @@ export function useTasks(
     enabled?: boolean;
   } = {},
 ) {
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
   const {
@@ -94,7 +98,7 @@ export function useTasks(
 
   const result = useQuery(
     api.tasks.list,
-    enabled && organizationId
+    enabled && isAuthenticated && organizationId
       ? {
           organizationId,
           projectId: projectId as Id<"projects"> | undefined,
@@ -130,13 +134,14 @@ export function useAllTasks(
     enabled?: boolean;
   } = {},
 ) {
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
   const { enabled = true, projectId } = options;
 
   const tasks = useQuery(
     api.tasks.listAll,
-    enabled && organizationId
+    enabled && isAuthenticated && organizationId
       ? {
           organizationId,
           projectId: projectId as Id<"projects"> | undefined,

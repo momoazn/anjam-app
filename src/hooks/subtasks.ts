@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
+import { useMemo } from "react";
 
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
@@ -15,8 +16,8 @@ export function useSubtasks(
     enabled ? { taskId: taskId as Id<"tasks"> } : "skip",
   );
 
-  return {
-    data: subtasks?.map((s) => ({
+  const expandedSubtasks = useMemo(() => {
+    return subtasks?.map((s) => ({
       ...s,
       expand: {
         assignee: s.assignee
@@ -28,7 +29,11 @@ export function useSubtasks(
             }
           : undefined,
       },
-    })),
+    }));
+  }, [subtasks]);
+
+  return {
+    data: expandedSubtasks,
     isLoading: subtasks === undefined,
     isPending: subtasks === undefined,
     error: null,

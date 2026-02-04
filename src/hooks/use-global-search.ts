@@ -1,7 +1,10 @@
 import { useQuery } from "convex/react";
 
 import { type Id, api } from "@/lib/convex";
-import { useCurrentOrganization } from "@/store/app-context-store";
+import {
+  useAuthIsAuthenticatedStrict,
+  useCurrentOrganization,
+} from "@/store/app-context-store";
 
 interface SearchTaskResult {
   id: string;
@@ -26,12 +29,13 @@ export type SearchResponse = {
 };
 
 export function useGlobalSearch(query: string) {
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
   const results = useQuery(
     api.search.globalSearch,
-    organizationId && query.trim().length >= 2
+    isAuthenticated && organizationId && query.trim().length >= 2
       ? { organizationId, q: query }
       : "skip",
   );

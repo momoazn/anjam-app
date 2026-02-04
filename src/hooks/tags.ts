@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 
-import { useCurrentOrganization } from "@/store/app-context-store";
+import {
+  useAuthIsAuthenticatedStrict,
+  useCurrentOrganization,
+} from "@/store/app-context-store";
 
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
@@ -16,12 +19,13 @@ export interface Tag {
 }
 
 export function useTags() {
+  const isAuthenticated = useAuthIsAuthenticatedStrict();
   const currentOrg = useCurrentOrganization();
   const organizationId = currentOrg?._id as Id<"organizations"> | undefined;
 
   const tags = useQuery(
     api.tags.listByOrg,
-    organizationId ? { organizationId } : "skip",
+    isAuthenticated && organizationId ? { organizationId } : "skip",
   );
 
   return {
