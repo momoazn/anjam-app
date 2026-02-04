@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { generateSlug, getAuthUserId } from "./utils";
+import { generateSlug, getAuthUserId, getAuthUserIdIfExists } from "./utils";
 
 export const create = mutation({
   args: {
@@ -51,7 +51,11 @@ export const create = mutation({
 export const listMine = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    // Avoid hard-failing the app bootstrap for freshly-created auth users.
+    // AuthStateSync will call `users.ensureProfile` if `users.getMe` returns null,
+    // but it also calls this query; if we throw here, the profile creation never runs.
+    const userId = await getAuthUserIdIfExists(ctx);
+    if (!userId) return [];
 
     const memberships = await ctx.db
       .query("organizationMembers")

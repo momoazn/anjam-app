@@ -1,12 +1,13 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "./utils";
+import { getAuthUserId, getAuthUserIdIfExists } from "./utils";
 
 export const listForMe = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await getAuthUserIdIfExists(ctx);
+    if (!userId) return [];
 
     return await ctx.db
       .query("notifications")

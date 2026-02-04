@@ -1,10 +1,11 @@
 import { query } from "./_generated/server";
-import { getAuthUserId } from "./utils";
+import { getAuthUserIdIfExists } from "./utils";
 
 export const listForMe = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await getAuthUserIdIfExists(ctx);
+    if (!userId) return [];
 
     const mentions = await ctx.db
       .query("mentions")

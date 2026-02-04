@@ -156,7 +156,7 @@ export const acceptExistingUser = mutation({
       status: "active",
       invitedByUserId: invite.inviterId,
       joinedAt: Date.now(),
-      onboardingCompleted: false,
+      onboardingCompleted: true,
     });
 
     // Increment uses

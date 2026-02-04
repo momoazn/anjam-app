@@ -26,9 +26,14 @@ export const getMe = query({
 export const ensureProfile = mutation({
   args: {},
   handler: async (ctx) => {
-    const authUser = await authComponent.getAuthUser(
+    const authUser = await authComponent.safeGetAuthUser(
       ctx as unknown as GenericCtx<DataModel>,
     );
+    // Avoid spamming Convex logs with "Unauthenticated" during logout/session races.
+    // Callers can treat a null return as a no-op.
+    if (!authUser) {
+      return null;
+    }
     const existingUser = await ctx.db
       .query("users")
       .withIndex("by_authUserId", (q) => q.eq("authUserId", authUser._id))
