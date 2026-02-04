@@ -9,14 +9,7 @@ import {
 import { endOfWeek, format, startOfWeek, subWeeks } from "date-fns";
 import { faIR } from "date-fns/locale";
 import { useMemo } from "react";
-import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Bar, BarChart, Tooltip, XAxis, YAxis } from "recharts";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
@@ -378,44 +371,46 @@ export default function Insights() {
           <CardContent>
             {metrics.weeklyCycleTime.length > 0 &&
             metrics.weeklyCycleTime.some((w) => w.tasks > 0) ? (
-              <div className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={metrics.weeklyCycleTime}>
-                    <XAxis
-                      dataKey="week"
-                      tick={{ fontSize: 10 }}
-                      interval={0}
-                      angle={-45}
-                      textAnchor="end"
-                      height={40}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 10 }}
-                      tickFormatter={(v) => digitsEnToFa(v)}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        fontSize: 12,
-                        borderRadius: 8,
-                      }}
-                      formatter={(
-                        value: number | undefined,
-                        name: string | undefined,
-                      ) => [
-                        name === "cycleTime" && value
-                          ? `${digitsEnToFa(value)} روز`
-                          : digitsEnToFa(value || 0),
-                        name === "cycleTime" ? "زمان چرخه" : "تکمیل‌شده",
-                      ]}
-                      labelFormatter={(label) => `هفته ${label}`}
-                    />
-                    <Bar
-                      dataKey="cycleTime"
-                      fill="hsl(var(--primary))"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="h-[200px] w-full overflow-hidden">
+                <BarChart
+                  width={560}
+                  height={200}
+                  data={metrics.weeklyCycleTime}
+                >
+                  <XAxis
+                    dataKey="week"
+                    tick={{ fontSize: 10 }}
+                    interval={0}
+                    angle={-45}
+                    textAnchor="end"
+                    height={40}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(v) => digitsEnToFa(v)}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      fontSize: 12,
+                      borderRadius: 8,
+                    }}
+                    formatter={(
+                      value: number | undefined,
+                      name: string | undefined,
+                    ) => [
+                      name === "cycleTime" && value
+                        ? `${digitsEnToFa(value)} روز`
+                        : digitsEnToFa(value || 0),
+                      name === "cycleTime" ? "زمان چرخه" : "تکمیل‌شده",
+                    ]}
+                    labelFormatter={(label) => `هفته ${label}`}
+                  />
+                  <Bar
+                    dataKey="cycleTime"
+                    fill="hsl(var(--primary))"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
               </div>
             ) : (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
@@ -435,41 +430,41 @@ export default function Insights() {
           </CardHeader>
           <CardContent>
             {metrics.workloadByAssignee.length > 0 ? (
-              <div className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={metrics.workloadByAssignee}
-                    layout="vertical"
-                    margin={{ left: 20 }}
-                  >
-                    <XAxis
-                      type="number"
-                      tick={{ fontSize: 10 }}
-                      tickFormatter={(v) => digitsEnToFa(v)}
-                    />
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      tick={{ fontSize: 10 }}
-                      width={80}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        fontSize: 12,
-                        borderRadius: 8,
-                      }}
-                      formatter={(value: number | undefined) => [
-                        digitsEnToFa(value || 0),
-                        insightsLabels.tasks,
-                      ]}
-                    />
-                    <Bar
-                      dataKey="count"
-                      fill="hsl(var(--primary))"
-                      radius={[0, 4, 4, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="h-[200px] w-full overflow-hidden">
+                <BarChart
+                  width={560}
+                  height={200}
+                  data={metrics.workloadByAssignee}
+                  layout="vertical"
+                  margin={{ left: 20 }}
+                >
+                  <XAxis
+                    type="number"
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(v) => digitsEnToFa(v)}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    tick={{ fontSize: 10 }}
+                    width={80}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      fontSize: 12,
+                      borderRadius: 8,
+                    }}
+                    formatter={(value: number | undefined) => [
+                      digitsEnToFa(value || 0),
+                      insightsLabels.tasks,
+                    ]}
+                  />
+                  <Bar
+                    dataKey="count"
+                    fill="hsl(var(--primary))"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
               </div>
             ) : (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">

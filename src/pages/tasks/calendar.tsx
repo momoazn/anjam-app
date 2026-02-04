@@ -67,12 +67,8 @@ interface CalendarTaskProps {
 
 function CalendarTask({ task }: CalendarTaskProps) {
   const status = getTaskStatus(task);
-  const projectId =
-    (typeof task.project === "object" ? task.project?._id : undefined) ??
-    task.projectId ??
-    "";
   const taskId = task._id;
-  const taskUrl = `/projects/${projectId}/tasks/${taskId}`;
+  const taskUrl = `/tasks/${taskId}`;
 
   return (
     <Link to={taskUrl}>

@@ -89,6 +89,10 @@ const Tasks = createLazyPage(
   () => import("@/pages/tasks/index"),
   errors.pageLoad.tasks,
 );
+const TaskCreate = createLazyPage(
+  () => import("@/pages/tasks/create"),
+  errors.pageLoad.tasks,
+);
 const TaskDetails = createLazyPage(
   () => import("@/pages/tasks/details"),
   errors.pageLoad.tasks,
@@ -196,6 +200,7 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   const currentOrg = useCurrentOrganization();
   const userOrganizations = useAuthStore((s) => s.userOrganizations);
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
+  const hasLoadedOrgs = useAuthStore((s) => s.hasLoadedOrgs);
   const onboardingCompleted = useCurrentOrgOnboardingCompleted();
 
   if (isAuthLoading) {
@@ -210,7 +215,7 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   }
 
   // Don't redirect while loading organizations
-  if (isLoadingOrgs) {
+  if (isLoadingOrgs || !hasLoadedOrgs) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-muted-foreground animate-pulse">Loading...</div>
@@ -486,6 +491,13 @@ const routes: RouteType[] = [
     title: tasks.title,
   },
   {
+    path: "/tasks/new",
+    element: <TaskCreate />,
+    protected: true,
+    requiresOrg: true,
+    title: tasks.addTask.title,
+  },
+  {
     path: "/tasks/board",
     element: (
       <PermissionProtectedRoute permission="task.view">
@@ -612,8 +624,7 @@ export const AppRoutes = () => {
           } else if (
             route.path === "/login" ||
             route.path === "/register" ||
-            route.path === "/pending-activation" ||
-            route.path === "/invite/:token"
+            route.path === "/pending-activation"
           ) {
             element = <PublicRoute>{content}</PublicRoute>;
           }
