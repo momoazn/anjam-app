@@ -96,7 +96,11 @@ export function EditTaskModal() {
       await updateTask({
         id: taskId,
         updates: {
-          ...values,
+          title: values.title,
+          description: values.description,
+          status: values.status,
+          priority: values.priority,
+          tags: values.tags,
           assigneeUserId:
             values.assignee !== tasks.addTask.unassigned
               ? values.assignee

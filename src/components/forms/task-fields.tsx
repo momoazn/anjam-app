@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { AssigneeField } from "./fields/assignee-field";
 import { DateField } from "./fields/date-field";
 import { PriorityField } from "./fields/priority-field";
+import { ProjectField } from "./fields/project-field";
 import { StatusField } from "./fields/status-field";
 import { TagsField } from "./fields/tags-field";
 
@@ -76,6 +77,7 @@ export function TaskFields({
               <span className={metaLabelClass}>
                 <IconStack2 className="size-3" /> {tasks.form.project}
               </span>
+              <ProjectField control={control} />
             </div>
           )}
 

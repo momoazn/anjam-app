@@ -58,7 +58,7 @@ const getSubtaskOrder = (subtask: SubtaskWithAssignee) => subtask.order ?? 0;
 
 type SubtasksProps = {
   taskId: string;
-  projectId: string;
+  projectId?: string;
 };
 
 type SortableSubtaskRowProps = {
@@ -178,7 +178,26 @@ export function Subtasks({ taskId, projectId }: SubtasksProps) {
       }
       return getSubtaskOrder(a) - getSubtaskOrder(b);
     });
-    setOrdered(sorted);
+    setOrdered((previous) => {
+      const previousSignature = previous
+        .map(
+          (s) =>
+            `${s._id}:${getSubtaskOrder(s)}:${s.isDone}:${s.title}:${
+              s.assigneeUserId ?? ""
+            }`,
+        )
+        .join("|");
+      const nextSignature = sorted
+        .map(
+          (s) =>
+            `${s._id}:${getSubtaskOrder(s)}:${s.isDone}:${s.title}:${
+              s.assigneeUserId ?? ""
+            }`,
+        )
+        .join("|");
+
+      return previousSignature === nextSignature ? previous : sorted;
+    });
   }, [subtasksData]);
 
   const assigneeOptions = useMemo(() => {

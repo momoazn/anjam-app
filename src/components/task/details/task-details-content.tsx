@@ -1,6 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconCalendar,
+  IconChecklist,
   IconLoader2,
   IconMessages,
   IconQuote,
@@ -11,6 +12,7 @@ import { useState } from "react";
 
 import { CommentComposer } from "@/components/task/comments/comment-composer";
 import { CommentsList } from "@/components/task/comments/comments-list";
+import { Subtasks } from "@/components/task/subtasks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { comments as commentsText, shared, tasks } from "@/constants";
 import type { CommentWithUser } from "@/hooks/comments";
@@ -57,6 +59,7 @@ export function TaskDetailsContent({
   const assigneeDisplayName = getStringProp(assignee, "displayName");
   const assigneeEmail = getStringProp(assignee, "email");
   const projectName = getStringProp(project, "name");
+  const projectId = getStringProp(project, "_id");
 
   return (
     <div className="lg:col-span-2 space-y-6">
@@ -135,6 +138,14 @@ export function TaskDetailsContent({
               {digitsEnToFa(comments.length)}
             </span>
           </TabsTrigger>
+
+          <TabsTrigger
+            value="subtasks"
+            className="data-[state=active]:bg-background h-full flex-1 rounded-lg text-xs font-bold transition-all data-[state=active]:shadow-sm px-3"
+          >
+            <IconChecklist className="ms-1.5 size-4" />
+            {tasks.details.subtasks.title}
+          </TabsTrigger>
         </TabsList>
 
         <div className="mt-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 shadow-none">
@@ -160,6 +171,12 @@ export function TaskDetailsContent({
                   </div>
                 </>
               )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="subtasks" className="m-0 outline-none">
+            <div className="space-y-5 p-4">
+              <Subtasks taskId={taskId} projectId={projectId} />
             </div>
           </TabsContent>
         </div>
