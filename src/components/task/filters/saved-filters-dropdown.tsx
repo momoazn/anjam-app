@@ -41,7 +41,7 @@ interface SavedFiltersDropdownProps {
   onSetDefault: (id: string | null) => void;
   onOpenSaveDialog: () => void;
   onOpenManageDialog: () => void;
-  disabled?: boolean;
+  disableSave?: boolean;
 }
 
 export function SavedFiltersDropdown({
@@ -53,7 +53,7 @@ export function SavedFiltersDropdown({
   onSetDefault,
   onOpenSaveDialog,
   onOpenManageDialog,
-  disabled,
+  disableSave = false,
 }: SavedFiltersDropdownProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [filterToDelete, setFilterToDelete] = useState<SavedFilter | null>(
@@ -84,7 +84,7 @@ export function SavedFiltersDropdown({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="gap-2" disabled={disabled}>
+          <Button variant="outline" className="gap-2">
             <BookmarkIcon className="h-4 w-4" />
             {currentFilterMatch ? (
               <>
@@ -110,7 +110,11 @@ export function SavedFiltersDropdown({
           <DropdownMenuSeparator />
 
           {/* Save current filter option */}
-          <DropdownMenuItem onClick={onOpenSaveDialog} className="gap-2">
+          <DropdownMenuItem
+            onClick={onOpenSaveDialog}
+            className="gap-2"
+            disabled={disableSave}
+          >
             <Save className="h-4 w-4" />
             {savedFiltersText.saveCurrentFilter}
           </DropdownMenuItem>

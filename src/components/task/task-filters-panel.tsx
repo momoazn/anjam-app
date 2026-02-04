@@ -102,7 +102,7 @@ export function TaskFiltersPanel({
           onSetDefault={onSetDefault}
           onOpenSaveDialog={() => setSaveFilterDialogOpen(true)}
           onOpenManageDialog={() => setManageFiltersDialogOpen(true)}
-          disabled={disableSave}
+          disableSave={disableSave}
         />
       </div>
 

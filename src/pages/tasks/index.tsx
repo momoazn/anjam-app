@@ -1,7 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { CheckSquare, LayoutGrid, ListTodo, Plus } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
@@ -33,6 +33,7 @@ type TasksProps = {
 
 export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const openModal = useOpenModal();
   const [selectionMode, setSelectionMode] = useState(false);
@@ -79,7 +80,17 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     selectedTag,
   };
 
+  const hasActiveFilters = !!(
+    searchTerm ||
+    selectedStatus !== "all" ||
+    selectedPriority !== "all" ||
+    selectedAssignee !== "all" ||
+    selectedDateRange !== "all" ||
+    selectedTag !== "all"
+  );
+
   const currentFilterMatch = getCurrentFilterMatch(currentFilters);
+  const hasAutoAppliedDefaultRef = useRef(false);
 
   const handleSaveFilter = (name: string, setAsDefaultFilter: boolean) => {
     try {
@@ -98,7 +109,11 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     }
   };
 
-  const handleApplyFilter = async (filter: (typeof savedFiltersData)[0]) => {
+  const applyFilter = async (
+    filter: (typeof savedFiltersData)[0],
+    options: { toastOnSuccess?: boolean } = {},
+  ) => {
+    const { toastOnSuccess = true } = options;
     try {
       await setSearchTerm(filter.filters.searchTerm || "");
       await setSelectedStatus(
@@ -113,9 +128,11 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       await setSelectedDateRange(filter.filters.selectedDateRange || "all");
       await setSelectedTag(filter.filters.selectedTag || "all");
 
-      toast({
-        title: savedFiltersText.toast.applied,
-      });
+      if (toastOnSuccess) {
+        toast({
+          title: savedFiltersText.toast.applied,
+        });
+      }
     } catch {
       toast({
         title: savedFiltersText.toast.applyError,
@@ -123,6 +140,35 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       });
     }
   };
+
+  const handleApplyFilter = async (filter: (typeof savedFiltersData)[0]) => {
+    await applyFilter(filter);
+  };
+
+  // Auto-apply default filter on first load of `/tasks` when there are no query params.
+  useEffect(() => {
+    if (hasAutoAppliedDefaultRef.current) return;
+    if (location.search) return;
+    if (!defaultFilterId) return;
+    if (currentFilterMatch?.id === defaultFilterId) return;
+
+    const defaultFilter = savedFiltersData.find(
+      (filter) => filter.id === defaultFilterId,
+    );
+
+    if (!defaultFilter) return;
+    if (hasActiveFilters) return;
+
+    hasAutoAppliedDefaultRef.current = true;
+    void applyFilter(defaultFilter, { toastOnSuccess: false });
+  }, [
+    applyFilter,
+    currentFilterMatch?.id,
+    defaultFilterId,
+    hasActiveFilters,
+    location.search,
+    savedFiltersData,
+  ]);
 
   const handleDeleteFilter = (id: string) => {
     try {
@@ -204,15 +250,6 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       {} as Record<TaskStatus, TaskWithProject[]>,
     );
   }, [taskQuery.data?.items, taskQuery.isPending]);
-
-  const hasActiveFilters = !!(
-    searchTerm ||
-    selectedStatus !== "all" ||
-    selectedPriority !== "all" ||
-    selectedAssignee !== "all" ||
-    selectedDateRange !== "all" ||
-    selectedTag !== "all"
-  );
 
   const handleBulkDelete = async () => {
     await bulkDelete.mutate(selectedTasks);
