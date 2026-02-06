@@ -4,8 +4,15 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # Provide your Convex deployment URL, e.g. https://robust-viper-987.convex.cloud
-        VITE_CONVEX_URL: ${VITE_CONVEX_URL}
+        # Public Convex API origin used by the frontend runtime.
+        VITE_CONVEX_URL: ${VITE_CONVEX_URL:?set VITE_CONVEX_URL}
+        # Public Convex HTTP actions/site origin (required for self-hosted Convex).
+        VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL:-}
     ports:
-      - "5173:80"
+      - "${WEB_PORT:-5173}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
     restart: unless-stopped

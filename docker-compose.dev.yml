@@ -2,16 +2,19 @@ services:
   web:
     image: oven/bun:1.3.5
     working_dir: /app
-    command: bun run dev:vite
+    command: sh -c "bun install --frozen-lockfile && bun run dev:vite"
     environment:
       # Vite reads VITE_* from the environment in dev.
-      VITE_CONVEX_URL: ${VITE_CONVEX_URL}
+      VITE_CONVEX_URL: ${VITE_CONVEX_URL:?set VITE_CONVEX_URL}
+      VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL:-}
     ports:
-      - "5173:5173"
+      - "${WEB_PORT:-5173}:5173"
     volumes:
       - .:/app
       - bun-cache:/root/.bun
+      - node-modules:/app/node_modules
     restart: unless-stopped
 
 volumes:
   bun-cache:
+  node-modules:
