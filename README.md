@@ -135,6 +135,27 @@ E2E tests run against `http://localhost:5173`. Test directory: `e2e/`
 
 ## 🚀 Deployment
 
+### Self-Hosted Convex Runtime
+
+Self-hosted Convex infrastructure is intentionally split out of this app repository and lives in:
+
+- `/Users/mohamadhosein/Workspace/side/anjam-convex-self-hosted`
+
+Run Convex backend + dashboard from that repo, then point this app to it with:
+
+```bash
+VITE_CONVEX_URL="http://localhost:3210"
+VITE_CONVEX_SITE_URL="http://localhost:3211"
+```
+
+From this repo, deploy functions/schema to that runtime with:
+
+```bash
+CONVEX_SELF_HOSTED_URL="http://localhost:3210" \
+CONVEX_SELF_HOSTED_ADMIN_KEY="<admin-key>" \
+bunx convex deploy
+```
+
 ### Convex Deployment
 
 ```bash
