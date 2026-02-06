@@ -25,6 +25,7 @@
     "type:check": "bun x --bun tsc -p tsconfig.app.json --noEmit --incremental && bun x --bun tsc -p tsconfig.node.json --noEmit --incremental",
     "check": "bun run type:check && bun run lint && bun run format",
     "fix": "bun run lint:fix && bun run format:fix",
+    "clean": "node scripts/clean.mjs",
     "prepare": "husky"
   },
   "dependencies": {
@@ -81,6 +82,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/ui": "^4.0.18",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.26",
@@ -95,8 +97,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.54.0",
     "vite": "^7.3.1",
-    "vitest": "^4.0.18",
-    "concurrently": "^9.2.1"
+    "vitest": "^4.0.18"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
