@@ -1,10 +1,13 @@
 ### Build stage
-FROM oven/bun:1.3.5 AS build
+FROM oven/bun:1.3.8 AS build
 
 WORKDIR /app
 
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN rm -rf /root/.bun/install/cache \
+  && (bun install --frozen-lockfile \
+    || bun install --frozen-lockfile \
+    || bun install --frozen-lockfile)
 
 COPY index.html vite.config.ts tsconfig*.json components.json ./
 COPY public ./public
