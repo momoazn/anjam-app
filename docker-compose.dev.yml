@@ -8,7 +8,7 @@ services:
       VITE_CONVEX_URL: ${VITE_CONVEX_URL:?set VITE_CONVEX_URL}
       VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL:-}
     ports:
-      - "${WEB_PORT:-5173}:5173"
+      - "${WEB_PORT:-4112}:4112"
     volumes:
       - .:/app
       - bun-cache:/root/.bun

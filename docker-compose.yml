@@ -9,7 +9,7 @@ services:
         # Public Convex HTTP actions/site origin (required for self-hosted Convex).
         VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL:-}
     ports:
-      - "${WEB_PORT:-5173}:80"
+      - "${WEB_PORT:-4112}:80"
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/ || exit 1"]
       interval: 30s
