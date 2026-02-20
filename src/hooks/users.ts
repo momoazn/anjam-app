@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 
 import {
   useAuthIsAuthenticatedStrict,
+  useAuthUser,
   useCurrentOrganization,
 } from "@/store/app-context-store";
 
@@ -93,27 +94,33 @@ export function useProjectUsers({
 // For now, providing stubs or mapping to existing ones if available
 
 export function useCreateUser() {
-  // Stub for create user if needed, though usually handled via auth
   return {
-    mutate: async (_data: unknown) => {
-      void _data;
-      console.warn("useCreateUser not implemented");
-      return null;
+    mutate: async (_args: unknown) => {
+      void _args;
+      throw new Error(
+        "Creating users directly is not supported. Use invite/register flows instead.",
+      );
     },
     isPending: false,
   };
 }
 
 export function useUpdateUser() {
-  // Username mutation is no longer available
+  const currentUser = useAuthUser();
+  const updateProfileMutation = useMutation(api.users.updateProfile);
+
   return {
-    mutate: async (_args: {
-      id: string;
-      updates: { displayName?: string };
-    }) => {
-      void _args;
-      console.warn("useUpdateUser not implemented");
-      return null;
+    mutate: async (args: { id: string; updates: { displayName?: string } }) => {
+      if (!currentUser?._id) {
+        throw new Error("You must be authenticated to update a user profile.");
+      }
+      if (args.id !== currentUser._id) {
+        throw new Error("Only your own profile can be updated.");
+      }
+
+      await updateProfileMutation({
+        displayName: args.updates.displayName,
+      });
     },
     isPending: false,
   };

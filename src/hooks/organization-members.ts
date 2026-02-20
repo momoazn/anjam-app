@@ -150,11 +150,29 @@ export function useInviteOrgMember() {
 }
 
 export function useUpdateOrgMemberRole() {
-  // Not implemented in Convex yet, adding placeholder
+  const updateRoleMutation = useMutation(api.orgMembers.updateRole);
+  const currentOrg = useCurrentOrganization();
+
   return {
-    mutate: async (_args: { memberId: string; role: OrgRole }) => {
-      void _args;
-      toast.error("Role updates not yet implemented in Convex");
+    mutate: async ({
+      memberId,
+      userId,
+      role,
+    }: {
+      memberId?: string;
+      userId?: string;
+      role: OrgRole;
+    }) => {
+      if (!currentOrg) throw new Error("No organization selected");
+      const targetUserId = userId ?? memberId;
+      if (!targetUserId) throw new Error("Target member is required");
+
+      await updateRoleMutation({
+        organizationId: currentOrg._id as Id<"organizations">,
+        userId: targetUserId as Id<"users">,
+        role,
+      });
+      toast.success("Member role updated");
     },
     isPending: false,
   };
