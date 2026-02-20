@@ -12,8 +12,8 @@ const getAllowedOrigins = (): string[] => {
   origins.add(siteUrl);
 
   // Allow both loopback hostnames during local development.
-  const localhost = "http://localhost:5173";
-  const loopback = "http://127.0.0.1:5173";
+  const localhost = "http://localhost:4112";
+  const loopback = "http://127.0.0.1:4112";
   if (siteUrl === localhost || siteUrl === loopback) {
     origins.add(localhost);
     origins.add(loopback);

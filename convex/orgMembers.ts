@@ -83,3 +83,62 @@ export const remove = mutation({
     await ctx.db.delete(targetMembership._id);
   },
 });
+
+export const updateRole = mutation({
+  args: {
+    organizationId: v.id("organizations"),
+    userId: v.id("users"),
+    role: v.union(v.literal("owner"), v.literal("member")),
+  },
+  handler: async (ctx, args) => {
+    const requesterId = await getAuthUserId(ctx);
+
+    const requesterMembership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_org_user", (q) =>
+        q.eq("organizationId", args.organizationId).eq("userId", requesterId),
+      )
+      .first();
+
+    if (!requesterMembership || requesterMembership.role !== "owner") {
+      throw new Error("Only owners can update member roles");
+    }
+
+    const targetMembership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_org_user", (q) =>
+        q.eq("organizationId", args.organizationId).eq("userId", args.userId),
+      )
+      .first();
+
+    if (!targetMembership) {
+      throw new Error("Member not found in organization");
+    }
+
+    if (targetMembership.role === args.role) {
+      return targetMembership;
+    }
+
+    if (targetMembership.role === "owner" && args.role === "member") {
+      const owners = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_org", (q) => q.eq("organizationId", args.organizationId))
+        .filter((q) =>
+          q.and(
+            q.eq(q.field("role"), "owner"),
+            q.eq(q.field("status"), "active"),
+          ),
+        )
+        .collect();
+
+      const isLastOwner =
+        owners.length === 1 && owners[0]?.userId === targetMembership.userId;
+      if (isLastOwner) {
+        throw new Error("Cannot demote the last organization owner");
+      }
+    }
+
+    await ctx.db.patch(targetMembership._id, { role: args.role });
+    return await ctx.db.get(targetMembership._id);
+  },
+});
