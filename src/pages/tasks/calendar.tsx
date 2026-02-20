@@ -98,12 +98,13 @@ function CalendarTask({ task }: CalendarTaskProps) {
 export default function TaskCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const tasksQuery = useAllTasks();
-  const allTasks = tasksQuery.data || [];
+  const allTasks = tasksQuery.data;
   const isLoadingTasks = tasksQuery.isLoading;
   const openModal = useOpenModal();
 
   const tasksWithDeadlines = useMemo(() => {
-    return allTasks?.filter((task) => task.deadline && !task.deletedAt) || [];
+    if (!allTasks) return [];
+    return allTasks.filter((task) => task.deadline && !task.deletedAt);
   }, [allTasks]);
 
   const tasksByDate = useMemo(() => {
@@ -176,13 +177,18 @@ export default function TaskCalendar() {
       </div>
       <Button size="sm" onClick={() => openModal("create-task")}>
         <IconPlus className="size-5" />
-        <span>{tasksText.addTask.buttons.newTask}</span>
+        <span data-testid="calendar-new-task-label">
+          {tasksText.addTask.buttons.newTask}
+        </span>
       </Button>
     </div>
   );
 
   return (
-    <PageTransition className="container mx-auto p-4 md:p-6">
+    <PageTransition
+      data-testid="task-calendar-page"
+      className="container mx-auto p-4 md:p-6"
+    >
       <PageHeader
         title={tasksText.calendar.title}
         description={tasksText.calendar.description}
@@ -222,7 +228,10 @@ export default function TaskCalendar() {
       {isLoadingTasks ? (
         <CalendarSkeleton />
       ) : (
-        <div className="border-border/40 bg-border/40 overflow-hidden rounded-2xl border shadow-xl">
+        <div
+          data-testid="task-calendar-grid"
+          className="border-border/40 bg-border/40 overflow-hidden rounded-2xl border shadow-xl"
+        >
           {/* Weekday Headers */}
           <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px border-b">
             {weekdayNames.map((day) => (

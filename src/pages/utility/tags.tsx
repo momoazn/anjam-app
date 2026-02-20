@@ -55,6 +55,7 @@ export default function TagsManagement() {
 
   const headerActions = (
     <Button
+      data-testid="new-tag-button"
       className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold shadow-sm transition-all"
       onClick={() => setCreateDialogOpen(true)}
     >
@@ -64,7 +65,10 @@ export default function TagsManagement() {
   );
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="tags-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         title={tagsManagement.title}
         description={

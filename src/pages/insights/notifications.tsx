@@ -195,7 +195,10 @@ export default function Notifications() {
   );
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="notifications-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         title={notificationsText.pageTitle}
         subtitle={notificationsText.pageDescription}

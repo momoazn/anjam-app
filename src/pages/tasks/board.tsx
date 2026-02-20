@@ -339,7 +339,10 @@ export function TaskBoardPage() {
   );
 
   return (
-    <PageTransition className="flex min-h-0 flex-1 flex-col">
+    <PageTransition
+      data-testid="task-board-page"
+      className="flex min-h-0 flex-1 flex-col"
+    >
       <div className="border-b border-border/40 bg-transparent">
         <div className="w-full px-3 py-3">
           <PageHeader

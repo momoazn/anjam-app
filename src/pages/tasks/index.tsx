@@ -109,37 +109,48 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     }
   };
 
-  const applyFilter = async (
-    filter: (typeof savedFiltersData)[0],
-    options: { toastOnSuccess?: boolean } = {},
-  ) => {
-    const { toastOnSuccess = true } = options;
-    try {
-      await setSearchTerm(filter.filters.searchTerm || "");
-      await setSelectedStatus(
-        filter.filters.selectedStatus || ALL_FILTER_VALUE,
-      );
-      await setSelectedPriority(
-        filter.filters.selectedPriority || ALL_FILTER_VALUE,
-      );
-      await setSelectedAssignee(
-        filter.filters.selectedAssignee || ALL_FILTER_VALUE,
-      );
-      await setSelectedDateRange(filter.filters.selectedDateRange || "all");
-      await setSelectedTag(filter.filters.selectedTag || "all");
+  const applyFilter = useCallback(
+    async (
+      filter: (typeof savedFiltersData)[0],
+      options: { toastOnSuccess?: boolean } = {},
+    ) => {
+      const { toastOnSuccess = true } = options;
+      try {
+        await setSearchTerm(filter.filters.searchTerm || "");
+        await setSelectedStatus(
+          filter.filters.selectedStatus || ALL_FILTER_VALUE,
+        );
+        await setSelectedPriority(
+          filter.filters.selectedPriority || ALL_FILTER_VALUE,
+        );
+        await setSelectedAssignee(
+          filter.filters.selectedAssignee || ALL_FILTER_VALUE,
+        );
+        await setSelectedDateRange(filter.filters.selectedDateRange || "all");
+        await setSelectedTag(filter.filters.selectedTag || "all");
 
-      if (toastOnSuccess) {
+        if (toastOnSuccess) {
+          toast({
+            title: savedFiltersText.toast.applied,
+          });
+        }
+      } catch {
         toast({
-          title: savedFiltersText.toast.applied,
+          title: savedFiltersText.toast.applyError,
+          variant: "destructive",
         });
       }
-    } catch {
-      toast({
-        title: savedFiltersText.toast.applyError,
-        variant: "destructive",
-      });
-    }
-  };
+    },
+    [
+      setSearchTerm,
+      setSelectedStatus,
+      setSelectedPriority,
+      setSelectedAssignee,
+      setSelectedDateRange,
+      setSelectedTag,
+      toast,
+    ],
+  );
 
   const handleApplyFilter = async (filter: (typeof savedFiltersData)[0]) => {
     await applyFilter(filter);
@@ -313,7 +324,10 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     }));
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="tasks-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         icon={ListTodo}
         title={viewMode === "issues" ? "مشکلات گزارش شده" : tasks.allTasks}
@@ -343,6 +357,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
 
               <Button
                 variant="ghost"
+                data-testid="selection-mode-toggle"
                 onClick={toggleSelectionMode}
                 className={cn(
                   "gap-2",
@@ -361,6 +376,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
             </Toolbar>
 
             <Button
+              data-testid="new-task-button"
               className={cn(
                 "gap-2 rounded-lg shadow-sm transition-all",
                 "h-8 px-3 text-xs font-semibold",

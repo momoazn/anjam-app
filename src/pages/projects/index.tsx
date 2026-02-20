@@ -27,7 +27,10 @@ export default function Projects() {
   const canEditDelete = isOrgOwner || isOrgAdmin;
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="projects-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         icon={Target}
         title={projects.title}
@@ -38,6 +41,7 @@ export default function Projects() {
         actions={
           canCreateProject ? (
             <Button
+              data-testid="new-project-button"
               className="h-8 gap-2 rounded-lg px-3 text-xs font-semibold"
               onClick={() => openModal("create-project")}
             >

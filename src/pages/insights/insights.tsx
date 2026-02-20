@@ -37,11 +37,20 @@ export default function Insights() {
     "rounded-xl border border-border/40 bg-background/30 shadow-none";
 
   // Date calculations for this week and last week
-  const now = new Date();
-  const thisWeekStart = startOfWeek(now, { weekStartsOn: 1 });
-  const thisWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
-  const lastWeekStart = startOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
-  const lastWeekEnd = endOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
+  const now = useMemo(() => new Date(), []);
+  const thisWeekStart = useMemo(
+    () => startOfWeek(now, { weekStartsOn: 1 }),
+    [now],
+  );
+  const thisWeekEnd = useMemo(() => endOfWeek(now, { weekStartsOn: 1 }), [now]);
+  const lastWeekStart = useMemo(
+    () => startOfWeek(subWeeks(now, 1), { weekStartsOn: 1 }),
+    [now],
+  );
+  const lastWeekEnd = useMemo(
+    () => endOfWeek(subWeeks(now, 1), { weekStartsOn: 1 }),
+    [now],
+  );
 
   // Fetch all tasks for current organization
   const { data: allTasks, isLoading } = useTasks();
@@ -213,7 +222,15 @@ export default function Insights() {
       workloadByAssignee,
       weeklyCycleTime,
     };
-  }, [allTasks, users, thisWeekStart, thisWeekEnd, lastWeekStart, lastWeekEnd]);
+  }, [
+    allTasks,
+    users,
+    now,
+    thisWeekStart,
+    thisWeekEnd,
+    lastWeekStart,
+    lastWeekEnd,
+  ]);
 
   // Calculate percentage change
   const getPercentageChange = (current: number, previous: number) => {
@@ -225,7 +242,10 @@ export default function Insights() {
 
   if (isLoading) {
     return (
-      <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+      <PageTransition
+        data-testid="insights-page"
+        className="container mx-auto max-w-7xl p-4 md:p-6"
+      >
         <PageHeader
           title={insightsLabels.title}
           subtitle={insightsLabels.description}
@@ -237,7 +257,10 @@ export default function Insights() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="insights-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         title={insightsLabels.title}
         subtitle={insightsLabels.description}

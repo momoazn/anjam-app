@@ -82,7 +82,10 @@ export default function Views() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="views-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         title={savedFiltersConstants.views.title}
         subtitle={savedFiltersConstants.views.description}

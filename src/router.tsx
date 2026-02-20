@@ -249,18 +249,10 @@ const PermissionProtectedRoute = ({
   children: React.ReactNode;
   permission: Permission;
 }) => {
-  const { isPending: isAuthLoading } = authClient.useSession();
   const user = useAuthUser();
   const { can } = usePermissions();
   const isLoggedIn = useAuthIsAuthenticated();
 
-  if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading...</div>
-      </div>
-    );
-  }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
@@ -398,6 +390,14 @@ const routes: RouteType[] = [
     requiresOrg: true,
     title: inbox.title,
   },
+  // Backward-compatible alias for legacy links/tests.
+  {
+    path: "/dashboard",
+    element: <Inbox />,
+    protected: true,
+    requiresOrg: true,
+    title: inbox.title,
+  },
   {
     path: "/members",
     element: (
@@ -418,6 +418,21 @@ const routes: RouteType[] = [
   },
   {
     path: "/insights",
+    element: <Insights />,
+    protected: true,
+    requiresOrg: true,
+    title: insights.title,
+  },
+  // Backward-compatible aliases for legacy analytics/reporting routes.
+  {
+    path: "/reports",
+    element: <Insights />,
+    protected: true,
+    requiresOrg: true,
+    title: insights.title,
+  },
+  {
+    path: "/audit-logs",
     element: <Insights />,
     protected: true,
     requiresOrg: true,
@@ -529,6 +544,14 @@ const routes: RouteType[] = [
     requiresOrg: true,
     title: tasks.calendar.title,
   },
+  // Backward-compatible alias for legacy links/tests.
+  {
+    path: "/calendar",
+    element: <TaskCalendar />,
+    protected: true,
+    requiresOrg: true,
+    title: tasks.calendar.title,
+  },
   {
     path: "/projects/:id/tasks",
     element: <ProjectTasks />,
@@ -555,11 +578,51 @@ const routes: RouteType[] = [
     title: navigation.helps,
   },
   {
+    path: "/help",
+    element: <Helps />,
+    protected: true,
+    requiresOrg: true,
+    title: navigation.helps,
+  },
+  {
     path: "/settings",
     element: <Settings />,
     protected: true,
     requiresOrg: true,
     title: navigation.settings,
+  },
+  // Backward-compatible aliases for legacy settings/profile routes.
+  {
+    path: "/settings/profile",
+    element: <Settings />,
+    protected: true,
+    requiresOrg: true,
+    title: navigation.settings,
+  },
+  {
+    path: "/settings/security",
+    element: <Settings />,
+    protected: true,
+    requiresOrg: true,
+    title: navigation.settings,
+  },
+  {
+    path: "/settings/appearance",
+    element: <PreferencesPage />,
+    protected: true,
+    requiresOrg: false,
+    title: settings.preferences.title,
+  },
+  {
+    path: "/users",
+    element: (
+      <PermissionProtectedRoute permission="org.manage_members">
+        <OrgMembers />
+      </PermissionProtectedRoute>
+    ),
+    protected: true,
+    requiresOrg: true,
+    title: organization.members.title,
   },
   {
     path: "/settings/preferences",

@@ -177,7 +177,10 @@ export default function Inbox() {
   // Loading state
   if (isLoading) {
     return (
-      <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+      <PageTransition
+        data-testid="inbox-page"
+        className="container mx-auto max-w-7xl p-4 md:p-6"
+      >
         <PageHeader
           title={inbox.title}
           icon={IconInbox}
@@ -223,7 +226,10 @@ export default function Inbox() {
   }
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="inbox-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         title={inbox.title}
         subtitle={totalCount === 0 ? inbox.description : undefined}

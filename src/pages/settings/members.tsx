@@ -164,7 +164,10 @@ export function OrgMembersPage() {
   };
 
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="org-members-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         title={organization.members.title}
         subtitle="Manage your organization members and their roles"

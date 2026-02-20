@@ -7,7 +7,10 @@ import { settings } from "@/constants";
 
 export default function PreferencesPage() {
   return (
-    <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
+    <PageTransition
+      data-testid="preferences-page"
+      className="container mx-auto max-w-7xl p-4 md:p-6"
+    >
       <PageHeader
         title={settings.preferences.title}
         description={settings.preferences.description}
