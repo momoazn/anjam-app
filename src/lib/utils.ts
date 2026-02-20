@@ -9,19 +9,23 @@ export function cn(...inputs: ClassValue[]) {
  * Get initials from display name or email.
  */
 export function getUserInitials(displayName?: string, email?: string): string {
-  if (displayName) {
-    const parts = displayName.trim().split(" ");
+  const normalizedDisplayName = displayName?.trim();
+  if (normalizedDisplayName) {
+    const parts = normalizedDisplayName.split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
       return `${parts[0]!.substring(0, 1)}${parts[1]!.substring(0, 1)}`.toUpperCase();
     }
     if (parts.length === 1 && parts[0]!.length > 1) {
       return parts[0]!.substring(0, 2).toUpperCase();
     }
-    return displayName.substring(0, 2).toUpperCase();
+    return normalizedDisplayName.substring(0, 2).toUpperCase();
   }
 
   if (email) {
-    return email.substring(0, 2).toUpperCase();
+    const localPart = email.split("@")[0]?.trim() ?? "";
+    if (localPart) {
+      return localPart.substring(0, 2).toUpperCase();
+    }
   }
 
   return "?";
@@ -31,7 +35,12 @@ export function getUserInitials(displayName?: string, email?: string): string {
  * Format user name for display - uses displayName or falls back to email.
  */
 export function formatUserName(displayName?: string, email?: string): string {
-  return displayName || email || "";
+  const normalizedDisplayName = displayName?.trim();
+  if (normalizedDisplayName) {
+    return normalizedDisplayName;
+  }
+
+  return email?.trim() || "";
 }
 
 export function stripHtml(html: string | null | undefined): string {
