@@ -18,24 +18,30 @@ async function loginAs(
   credentials: (typeof TEST_USERS)[keyof typeof TEST_USERS],
 ) {
   await page.goto("/login");
-  await page.getByPlaceholder(/ایمیل|email/i).fill(credentials.email);
-  await page.getByPlaceholder(/رمز عبور|password/i).fill(credentials.password);
+  await page
+    .locator('input[type="email"], input[type="text"]')
+    .first()
+    .fill(credentials.email);
+  await page
+    .locator('input[type="password"]')
+    .first()
+    .fill(credentials.password);
 
   // Click login button
   const loginButton = page.getByRole("button", { name: /ورود|login/i });
   await loginButton.click();
 
-  // Wait for navigation (dashboard or select organization)
-  await page.waitForURL(/\/(dashboard|select-organization|onboarding)/);
+  // Wait for navigation (inbox or org/onboarding screens)
+  await page.waitForURL(/\/(inbox|select-organization|onboarding)/);
 
-  // If on select-organization, select first org
-  const orgCards = page
-    .locator('[role="button"]')
-    .filter({ has: page.locator("text=/[A-Z]{3}/") });
-  const count = await orgCards.count();
-  if (count > 0) {
-    await orgCards.first().click();
-    await page.waitForURL(/\/dashboard/);
+  // If on select-organization, select the first organization card (skip create card).
+  if (page.url().includes("/select-organization")) {
+    const orgButtons = page.locator('button[type="button"]');
+    const count = await orgButtons.count();
+    if (count > 1) {
+      await orgButtons.nth(1).click();
+      await page.waitForURL(/\/inbox/);
+    }
   }
 }
 
@@ -43,6 +49,11 @@ async function loginAs(
  * Auth fixtures for different user roles
  */
 export const test = base.extend<AuthFixtures>({
+  page: async ({ page }, use) => {
+    await loginAs(page, TEST_USERS.manager);
+    await use(page);
+  },
+
   adminPage: async ({ page }, use) => {
     await loginAs(page, TEST_USERS.admin);
     await use(page);

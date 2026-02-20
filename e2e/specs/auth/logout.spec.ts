@@ -1,27 +1,34 @@
-import { expect, test } from "../../fixtures/auth";
+import { expect, test } from "@playwright/test";
+
 import { TEST_USERS } from "../../fixtures/test-data";
 import { DashboardPage } from "../../pages/dashboard.page";
 
 test.describe("Authentication - Logout (US-004)", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({ page }) => {
     // Login before each test
     await page.goto("/login");
-    await page.getByPlaceholder(/ایمیل|email/i).fill(TEST_USERS.manager.email);
     await page
-      .getByPlaceholder(/رمز عبور|password/i)
+      .locator('input[type="email"], input[type="text"]')
+      .first()
+      .fill(TEST_USERS.manager.email);
+    await page
+      .locator('input[type="password"]')
+      .first()
       .fill(TEST_USERS.manager.password);
     await page.getByRole("button", { name: /ورود|login/i }).click();
 
-    await page.waitForURL(/\/(dashboard|select-organization|onboarding)/);
+    await page.waitForURL(/\/(inbox|select-organization|onboarding)/);
 
     // Select organization if needed
-    const orgSelector = page
-      .locator('[role="button"]')
-      .filter({ has: page.locator("text=/[A-Z]{3}/") });
-    const orgCount = await orgSelector.count();
-    if (orgCount > 0) {
-      await orgSelector.first().click();
-      await page.waitForURL(/\/dashboard/);
+    if (page.url().includes("/select-organization")) {
+      const orgButtons = page.locator('button[type="button"]');
+      const orgCount = await orgButtons.count();
+      if (orgCount > 1) {
+        await orgButtons.nth(1).click();
+        await page.waitForURL(/\/inbox/);
+      }
     }
   });
 
@@ -49,7 +56,7 @@ test.describe("Authentication - Logout (US-004)", () => {
     await page.waitForURL("/login");
 
     // Try to access dashboard directly
-    await page.goto("/dashboard");
+    await page.goto("/inbox");
 
     // Should be redirected to login
     await expect(page).toHaveURL("/login");
@@ -64,14 +71,18 @@ test.describe("Authentication - Logout (US-004)", () => {
     await page.waitForURL("/login");
 
     // Login again with same credentials
-    await page.getByPlaceholder(/ایمیل|email/i).fill(TEST_USERS.manager.email);
     await page
-      .getByPlaceholder(/رمز عبور|password/i)
+      .locator('input[type="email"], input[type="text"]')
+      .first()
+      .fill(TEST_USERS.manager.email);
+    await page
+      .locator('input[type="password"]')
+      .first()
       .fill(TEST_USERS.manager.password);
     await page.getByRole("button", { name: /ورود|login/i }).click();
 
     // Should redirect to dashboard
-    await page.waitForURL(/\/(dashboard|select-organization)/);
+    await page.waitForURL(/\/(inbox|select-organization)/);
 
     // Verify logged in
     await expect(
@@ -111,7 +122,9 @@ test.describe("Authentication - Logout (US-004)", () => {
     page,
   }) => {
     // Verify logged in on dashboard
-    await expect(page).toHaveURL(/\/dashboard|\/select-organization/);
+    await expect(page).toHaveURL(
+      /\/inbox|\/dashboard|\/select-organization|\/onboarding/,
+    );
 
     // Navigate to different page
     await page.goto("/tasks");

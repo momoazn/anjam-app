@@ -8,11 +8,14 @@ export class LoginPage {
   }
 
   async fillEmail(email: string) {
-    await this.page.getByPlaceholder(/ایمیل|email/i).fill(email);
+    await this.page
+      .locator('input[type="email"], input[type="text"]')
+      .first()
+      .fill(email);
   }
 
   async fillPassword(password: string) {
-    await this.page.getByPlaceholder(/رمز عبور|password/i).fill(password);
+    await this.page.locator('input[type="password"]').first().fill(password);
   }
 
   async clickLogin() {
@@ -24,6 +27,17 @@ export class LoginPage {
     await this.fillEmail(email);
     await this.fillPassword(password);
     await this.clickLogin();
+
+    await this.page.waitForURL(/\/(inbox|select-organization|onboarding)/);
+
+    if (this.page.url().includes("/select-organization")) {
+      const orgButtons = this.page.locator('button[type="button"]');
+      const count = await orgButtons.count();
+      if (count > 1) {
+        await orgButtons.nth(1).click();
+        await this.page.waitForURL(/\/inbox/);
+      }
+    }
   }
 
   async expectErrorMessage(message: string) {
@@ -31,6 +45,6 @@ export class LoginPage {
   }
 
   async expectRedirectToDashboard() {
-    await this.page.waitForURL(/\/(dashboard|select-organization)/);
+    await this.page.waitForURL(/\/(inbox|select-organization)/);
   }
 }

@@ -5,26 +5,37 @@ import { Page } from "@playwright/test";
  */
 export async function loginAs(page: Page, email: string, password: string) {
   await page.goto("/login");
-  await page.getByPlaceholder(/ایمیل|email/i).fill(email);
-  await page.getByPlaceholder(/رمز عبور|password/i).fill(password);
+  await page
+    .locator('input[type="email"], input[type="text"]')
+    .first()
+    .fill(email);
+  await page.locator('input[type="password"]').first().fill(password);
   await page.getByRole("button", { name: /ورود|login/i }).click();
 
   // Wait for navigation
-  await page.waitForURL(/\/(dashboard|select-organization|onboarding)/);
+  await page.waitForURL(/\/(inbox|select-organization|onboarding)/);
+
+  if (page.url().includes("/select-organization")) {
+    const orgButtons = page.locator('button[type="button"]');
+    const count = await orgButtons.count();
+    if (count > 1) {
+      await orgButtons.nth(1).click();
+      await page.waitForURL(/\/inbox/);
+    }
+  }
 }
 
 /**
  * Select organization helper
  */
 export async function selectOrganization(page: Page, orgIndex: number = 0) {
-  const orgCards = page
-    .locator('[role="button"]')
-    .filter({ has: page.locator("text=/[A-Z]{3}/") });
-  const count = await orgCards.count();
+  const orgButtons = page.locator('button[type="button"]');
+  const count = await orgButtons.count();
+  const targetIndex = orgIndex + 1; // Index 0 is "create organization".
 
-  if (count > orgIndex) {
-    await orgCards.nth(orgIndex).click();
-    await page.waitForURL(/\/dashboard/);
+  if (count > targetIndex) {
+    await orgButtons.nth(targetIndex).click();
+    await page.waitForURL(/\/inbox/);
   }
 }
 
