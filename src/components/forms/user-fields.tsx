@@ -48,7 +48,7 @@ export function UserFields({
 
     // Members can't change roles
     return [];
-  }, [user, userRole, users.table.roles.employee]);
+  }, [user, userRole]);
 
   return (
     <div className="space-y-6">

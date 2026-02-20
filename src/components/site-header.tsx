@@ -19,7 +19,10 @@ export function SiteHeader() {
   return (
     <header className="bg-background/60 sticky top-0 z-50 flex shrink-0 items-center border-b border-border/40 backdrop-blur-md">
       <div className="flex h-14 items-center px-3">
-        <SidebarTrigger className="hover:bg-muted/50 size-9 rounded-lg transition-all active:scale-95" />
+        <SidebarTrigger
+          data-testid="sidebar-trigger"
+          className="hover:bg-muted/50 size-9 rounded-lg transition-all active:scale-95"
+        />
       </div>
 
       <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden px-4">
@@ -27,6 +30,7 @@ export function SiteHeader() {
 
         <div className="w-full max-w-[420px]">
           <Button
+            data-testid="command-menu-trigger"
             variant="outline"
             className="bg-muted/30 hover:bg-muted/50 relative h-9 w-full justify-start rounded-lg border-border/40 px-4 font-medium transition-all"
             onClick={() => {
@@ -54,6 +58,7 @@ export function SiteHeader() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  data-testid="theme-toggle"
                   variant="ghost"
                   size="icon"
                   onClick={toggleTheme}

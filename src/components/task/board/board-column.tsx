@@ -50,7 +50,11 @@ export function BoardColumn({
     .replace("/20", "");
 
   return (
-    <div className="relative flex h-full flex-col transition-all w-[280px] min-w-[280px] overflow-hidden rounded-xl border border-border/40 bg-background/30">
+    <div
+      data-testid="kanban-column"
+      data-status={status.key}
+      className="relative flex h-full min-w-[280px] w-[280px] flex-col overflow-hidden rounded-xl border border-border/40 bg-background/30 transition-all"
+    >
       {/* Column Header */}
       <div
         className={cn(

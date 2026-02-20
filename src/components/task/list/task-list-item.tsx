@@ -120,6 +120,8 @@ function TaskListItemInner({
     <div
       role="button"
       tabIndex={0}
+      data-testid="task-row"
+      data-task-id={taskId}
       className={cn(
         "group relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b border-border/40 bg-transparent p-0 text-right transition-colors hover:z-10 focus-visible:ring-0",
         "hover:bg-muted/30",

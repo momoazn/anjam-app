@@ -149,7 +149,11 @@ export function TaskDetailsContent({
         </TabsList>
 
         <div className="mt-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 shadow-none">
-          <TabsContent value="comments" className="m-0 outline-none">
+          <TabsContent
+            value="comments"
+            data-testid="task-comments-panel"
+            className="m-0 outline-none"
+          >
             <div className="space-y-5 p-4">
               {commentsLoading ? (
                 <div className="flex justify-center py-12 opacity-20">
@@ -174,7 +178,11 @@ export function TaskDetailsContent({
             </div>
           </TabsContent>
 
-          <TabsContent value="subtasks" className="m-0 outline-none">
+          <TabsContent
+            value="subtasks"
+            data-testid="task-subtasks-panel"
+            className="m-0 outline-none"
+          >
             <div className="space-y-5 p-4">
               <Subtasks taskId={taskId} projectId={projectId} />
             </div>

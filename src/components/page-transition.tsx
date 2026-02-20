@@ -1,10 +1,9 @@
-import { type ReactNode } from "react";
+import { type ComponentPropsWithoutRef, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-interface PageTransitionProps {
+interface PageTransitionProps extends ComponentPropsWithoutRef<"div"> {
   children: ReactNode;
-  className?: string;
   disableStagger?: boolean;
 }
 
@@ -12,9 +11,11 @@ export function PageTransition({
   children,
   className,
   disableStagger = false,
+  ...props
 }: PageTransitionProps) {
   return (
     <div
+      {...props}
       data-page-transition
       {...(!disableStagger && { "data-animate-stagger": "" })}
       className={cn("page-transition", className)}

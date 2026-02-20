@@ -79,6 +79,7 @@ export function HeaderUserMenu() {
         <Button
           variant="ghost"
           size="icon"
+          data-testid="user-menu-trigger"
           className="hover:bg-muted/50 flex h-9 w-9 items-center justify-center rounded-full p-0 transition-all"
           title={`${user.displayName || user.email}`}
         >
@@ -106,6 +107,7 @@ export function HeaderUserMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="mx-1" />
         <DropdownMenuItem
+          data-testid="logout-menu-item"
           className="flex cursor-pointer items-center gap-3 rounded-lg p-2.5 text-right text-sm font-bold text-rose-500 transition-colors hover:bg-rose-500/10 focus:bg-rose-500/10 focus:text-rose-500"
           onClick={handleLogout}
         >
