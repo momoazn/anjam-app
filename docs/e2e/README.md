@@ -49,7 +49,7 @@ e2e/
 
 - Bun package manager
 - Playwright browsers installed
-- Frontend dev server running on `http://localhost:5173`
+- Frontend dev server running on `http://localhost:4112`
 - Convex development server running
 
 ### Initial Setup

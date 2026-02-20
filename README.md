@@ -23,7 +23,7 @@ bunx convex dev
 bun run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:4112`
 
 ### Build
 
@@ -131,7 +131,7 @@ Test files are co-located as `*.test.ts(x)`. Coverage thresholds: 60% (lines, fu
 - `bun run test:e2e:debug` - Debug E2E tests
 - `bun run test:all` - Run unit tests (once) + E2E tests
 
-E2E tests run against `http://localhost:5173`. Test directory: `e2e/`
+E2E tests run against `http://localhost:4112`. Test directory: `e2e/`
 
 ## 🚀 Deployment
 
@@ -178,6 +178,7 @@ CONVEX_DEPLOY_KEY=... bun run build:deploy
 
 - [ ] Configure Convex deployment
 - [ ] Set environment variables (see `.env.example`)
+- [ ] Tune Better Auth rate limits for production (`AUTH_SIGNIN_RATE_LIMIT_*`, `AUTH_SIGNUP_RATE_LIMIT_*`)
 - [ ] Run `bun run check` - all checks must pass
 - [ ] Run `bun run build` - build must succeed
 - [ ] Test the application in production mode

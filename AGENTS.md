@@ -38,7 +38,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Development
 
 - `bun run dev` - Start Convex + Vite dev servers concurrently (hot reload)
-- `bun run dev:vite` - Vite dev server only (runs on 0.0.0.0:5173)
+- `bun run dev:vite` - Vite dev server only (runs on 0.0.0.0:4112)
 - `bun run dev:convex` - Convex dev server only
 
 **DO NOT run the app after each change.** Make changes, then run quality checks.

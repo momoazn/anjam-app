@@ -23,7 +23,7 @@ bunx convex dev
 bun run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:4112`
 
 ### Development Commands
 
@@ -87,7 +87,7 @@ bun run test:all         # Run unit (once) + E2E tests
 ```
 
 - Test directory: `e2e/`
-- Runs against `http://localhost:5173` (dev client)
+- Runs against `http://localhost:4112` (dev client)
 - Auto-starts dev server via `webServer` config
 
 ## Building
@@ -162,7 +162,7 @@ Convex provides automatic real-time synchronization:
 1. **Type errors after schema changes**: Wait for Convex to regenerate types or run `bunx convex dev`
 2. **Build failures**: Run `bun run clean` and rebuild
 3. **Convex connection issues**: Ensure `bunx convex dev` is running
-4. **Port conflicts**: Frontend dev uses 5173
+4. **Port conflicts**: Frontend dev uses 4112
 
 ### Debug Mode
 
