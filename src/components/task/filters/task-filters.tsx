@@ -27,7 +27,7 @@ import {
   type UseTaskFiltersReturn,
 } from "@/hooks/use-task-filters";
 import type { FilterableTask } from "@/lib/filter-utils";
-import { statusOrder } from "@/lib/status-utils";
+import { TASK_STATUS_ORDER } from "@/lib/status-utils";
 import { formatUserName } from "@/lib/utils";
 import { TaskPriority, TaskStatus } from "@/types/tasks";
 
@@ -250,7 +250,7 @@ export function TaskFilters({
               >
                 {tasks.filters.allStatuses}
               </SelectItem>
-              {statusOrder.map((status) => (
+              {TASK_STATUS_ORDER.map((status) => (
                 <SelectItem
                   key={status}
                   value={status}

@@ -27,7 +27,7 @@ const TAG_COLORS = [
   { value: "#EC4899", label: tagsManagement.colors.pink },
 ];
 
-export type TagFormDialogProps = {
+type TagFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tag?: Tag;

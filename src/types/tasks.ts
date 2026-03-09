@@ -10,9 +10,6 @@ export const TASK_STATUSES = [
 ] as const;
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
-export const TASK_TYPES = ["task", "bug", "feature", "chore"] as const;
-export type TaskType = (typeof TASK_TYPES)[number];
-
 export interface Task {
   _id: string;
   _creationTime: number;

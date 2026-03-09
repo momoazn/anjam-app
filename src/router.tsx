@@ -79,10 +79,7 @@ const ProjectDetails = createLazyPage(
   errors.pageLoad.projects,
 );
 const TaskBoardPage = createLazyPage(
-  () =>
-    import("@/pages/tasks/board").then((module) => ({
-      default: module.TaskBoardPage,
-    })),
+  () => import("@/pages/tasks/board"),
   errors.pageLoad.tasks,
 );
 const Tasks = createLazyPage(
@@ -165,10 +162,7 @@ const OrgMembers = createLazyPage(
   errors.pageLoad.notFound,
 );
 const InviteAccept = createLazyPage(
-  () =>
-    import("@/pages/auth/invite-accept").then((module) => ({
-      default: module.InviteAccept,
-    })),
+  () => import("@/pages/auth/invite-accept"),
   errors.pageLoad.notFound,
 );
 const Onboarding = createLazyPage(
@@ -176,16 +170,18 @@ const Onboarding = createLazyPage(
   errors.pageLoad.notFound,
 );
 
+const AuthLoadingScreen = () => (
+  <div className="flex min-h-screen items-center justify-center">
+    <div className="text-muted-foreground animate-pulse">Loading...</div>
+  </div>
+);
+
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
   if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading...</div>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -204,11 +200,7 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   const onboardingCompleted = useCurrentOrgOnboardingCompleted();
 
   if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading...</div>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -216,11 +208,7 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
 
   // Don't redirect while loading organizations
   if (isLoadingOrgs || !hasLoadedOrgs) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading...</div>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
 
   // If user has no organizations at all, redirect to onboarding to create one
@@ -276,35 +264,12 @@ const PermissionProtectedRoute = ({
   return <>{children}</>;
 };
 
-// PublicRoute component (redirects authenticated users to inbox)
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+const GuestOnlyRoute = ({ children }: { children: React.ReactNode }) => {
   const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
 
   if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading...</div>
-      </div>
-    );
-  }
-  if (isLoggedIn) {
-    return <Navigate to="/inbox" replace />;
-  }
-  return <>{children}</>;
-};
-
-// LandingRoute component (redirects authenticated users to inbox, shows landing for guests)
-const LandingRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isPending: isAuthLoading } = authClient.useSession();
-  const isLoggedIn = useAuthIsAuthenticated();
-
-  if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading...</div>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
   if (isLoggedIn) {
     return <Navigate to="/inbox" replace />;
@@ -345,9 +310,9 @@ const routes: RouteType[] = [
   {
     path: "/",
     element: (
-      <LandingRoute>
+      <GuestOnlyRoute>
         <Landing />
-      </LandingRoute>
+      </GuestOnlyRoute>
     ),
     protected: false,
     title: navigation.dashboard,
@@ -689,7 +654,7 @@ export const AppRoutes = () => {
             route.path === "/register" ||
             route.path === "/pending-activation"
           ) {
-            element = <PublicRoute>{content}</PublicRoute>;
+            element = <GuestOnlyRoute>{content}</GuestOnlyRoute>;
           }
 
           return <Route key={route.path} path={route.path} element={element} />;

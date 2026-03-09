@@ -2,7 +2,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { comments } from "@/constants";
 import { formatUserName } from "@/lib/utils";
 
-export type MentionOption = {
+type MentionOption = {
   id: string;
   displayName: string;
   email?: string;

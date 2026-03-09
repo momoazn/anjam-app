@@ -1,8 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useMemo } from "react";
 
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { Id, api } from "@/lib/convex";
 
 export function useSubtasks(
   taskId: string | undefined,

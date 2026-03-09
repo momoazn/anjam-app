@@ -38,15 +38,15 @@ export const DEFAULT_TASK_FILTERS: TaskFilterValues = {
   selectedTag: "all",
 };
 
-export function isValidStatus(value: string): value is TaskStatus {
+function isValidStatus(value: string): value is TaskStatus {
   return TASK_STATUSES.includes(value as TaskStatus);
 }
 
-export function isValidPriority(value: string): value is TaskPriority {
+function isValidPriority(value: string): value is TaskPriority {
   return TASK_PRIORITIES.includes(value as TaskPriority);
 }
 
-export function matchesStatusFilter(
+function matchesStatusFilter(
   task: FilterableTask,
   selectedStatus: string,
   selectedAssignee: string,
@@ -78,7 +78,7 @@ export function matchesStatusFilter(
   return true;
 }
 
-export function matchesPriorityFilter(
+function matchesPriorityFilter(
   task: FilterableTask,
   selectedPriority: string,
 ): boolean {
@@ -87,7 +87,7 @@ export function matchesPriorityFilter(
   return task.priority === selectedPriority;
 }
 
-export function matchesAssigneeFilter(
+function matchesAssigneeFilter(
   task: FilterableTask,
   selectedAssignee: string,
 ): boolean {
@@ -96,7 +96,7 @@ export function matchesAssigneeFilter(
   return task.assigneeUserId === selectedAssignee;
 }
 
-export function matchesDateRangeFilter(
+function matchesDateRangeFilter(
   task: FilterableTask,
   selectedDateRange: string,
 ): boolean {
@@ -119,16 +119,13 @@ export function matchesDateRangeFilter(
   }
 }
 
-export function matchesTagFilter(
-  task: FilterableTask,
-  selectedTag: string,
-): boolean {
+function matchesTagFilter(task: FilterableTask, selectedTag: string): boolean {
   if (selectedTag === "all") return true;
   if (!task.tags || task.tags.length === 0) return false;
   return task.tags.includes(selectedTag);
 }
 
-export function matchesSearchFilter(
+function matchesSearchFilter(
   task: FilterableTask,
   searchTerm: string,
 ): boolean {

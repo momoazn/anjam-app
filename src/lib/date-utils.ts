@@ -15,8 +15,6 @@ export const formatTaskDate = (d: string | number | null | undefined) =>
   formatDate(d, "dd MMMM yyyy");
 export const formatDateShort = (d: string | number | null | undefined) =>
   formatDate(d, "dd MMMM");
-export const formatDateISO = (d: string | number | null | undefined) =>
-  formatDate(d, "yyyy/MM/dd");
 
 export function formatDateLocale(dateValue?: string | number | null): string {
   if (!dateValue) return "-";

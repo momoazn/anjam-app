@@ -3,7 +3,7 @@ import { TaskListSkeleton } from "@/components/task/list/task-list-skeleton";
 import { TaskEmptyState } from "@/components/task/task-empty-state";
 import { TaskStatus, TaskWithProject } from "@/types/tasks";
 
-export type TaskListViewProps = {
+type TaskListViewProps = {
   isLoading: boolean;
   totalTasks: number;
   hasActiveFilters: boolean;

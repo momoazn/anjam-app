@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
-export type UserPreferences = {
+type UserPreferences = {
   ui: {
     showActivityFeed: boolean;
   };
@@ -29,11 +29,6 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   },
 };
 
-export const DEFAULT_NOTIFICATION_PREFERENCES = {
-  taskAssigned: true,
-  projectUpdated: true,
-} as const;
-
 interface PreferencesState {
   preferences: UserPreferences;
   isLoading: boolean;
@@ -50,7 +45,7 @@ const initialState = {
   "updatePreferences" | "toggleProjectFavorite"
 >;
 
-export const usePreferencesStore = create<PreferencesState>()(
+const usePreferencesStore = create<PreferencesState>()(
   devtools(
     persist(
       (set, get) => ({
@@ -94,8 +89,3 @@ export const useUpdateUserPreferences = () => {
     isPending: false,
   } as const;
 };
-
-export const usePreferences = () =>
-  usePreferencesStore((state) => state.preferences);
-export const useUpdatePreferences = () =>
-  usePreferencesStore((state) => state.updatePreferences);

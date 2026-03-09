@@ -113,10 +113,7 @@ export function useUpdateComment() {
   };
 }
 
-/**
- * Hook to soft-delete a comment.
- */
-export function useDeleteComment() {
+export function useSoftDeleteComment() {
   const softDeleteMutation = useMutation(api.comments.softDelete);
 
   return {
@@ -128,5 +125,3 @@ export function useDeleteComment() {
     isPending: false,
   };
 }
-
-export const useSoftDeleteComment = useDeleteComment;

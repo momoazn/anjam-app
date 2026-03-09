@@ -32,15 +32,10 @@ const iconBoxVariants = cva(
   },
 );
 
-export type IconBoxSize = "xs" | "sm" | "md" | "lg";
-export type IconBoxTone =
-  | "primary"
-  | "primarySolid"
-  | "muted"
-  | "accent"
-  | "custom";
+type IconBoxSize = "xs" | "sm" | "md" | "lg";
+type IconBoxTone = "primary" | "primarySolid" | "muted" | "accent" | "custom";
 
-export interface IconBoxProps
+interface IconBoxProps
   extends
     React.HTMLAttributes<HTMLDivElement>,
     Omit<VariantProps<typeof iconBoxVariants>, "variant" | "size"> {

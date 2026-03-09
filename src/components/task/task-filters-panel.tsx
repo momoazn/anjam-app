@@ -20,7 +20,7 @@ interface UserWithCompat {
   lastName?: string;
 }
 
-export type TaskFiltersPanelProps = {
+type TaskFiltersPanelProps = {
   currentFilters: TaskFilterValues;
   savedFilters: SavedFilter[];
   currentFilterMatch: SavedFilter | null;

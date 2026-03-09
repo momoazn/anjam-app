@@ -7,10 +7,10 @@ import {
   useCurrentOrganization,
 } from "@/store/app-context-store";
 
-export type OrgRole = "owner" | "member";
-export type MemberStatus = "invited" | "active" | "suspended";
+type OrgRole = "owner" | "member";
+type MemberStatus = "invited" | "active" | "suspended";
 
-export interface OrgMemberWithUser extends Omit<
+interface OrgMemberWithUser extends Omit<
   Doc<"organizationMembers">,
   "role" | "status"
 > {
@@ -130,49 +130,16 @@ export function useInviteOrgMember() {
     mutate: async ({ email }: { email: string; role: OrgRole }) => {
       if (!currentOrg) throw new Error("No organization selected");
 
-      // For now, we still use invite links but maybe we'll send an email in the future
-      // The current implementation in members.tsx expects an email based invite
       const token = await createInviteLink({
         organizationId: currentOrg._id,
       });
 
       const inviteUrl = `${window.location.origin}/invite/${token}`;
 
-      // In a real app, you'd send an email here.
-      // For now, we'll just copy the link as a fallback.
       await navigator.clipboard.writeText(inviteUrl);
       toast.success(`Invite link for ${email} created and copied to clipboard`);
 
       return token;
-    },
-    isPending: false,
-  };
-}
-
-export function useUpdateOrgMemberRole() {
-  const updateRoleMutation = useMutation(api.orgMembers.updateRole);
-  const currentOrg = useCurrentOrganization();
-
-  return {
-    mutate: async ({
-      memberId,
-      userId,
-      role,
-    }: {
-      memberId?: string;
-      userId?: string;
-      role: OrgRole;
-    }) => {
-      if (!currentOrg) throw new Error("No organization selected");
-      const targetUserId = userId ?? memberId;
-      if (!targetUserId) throw new Error("Target member is required");
-
-      await updateRoleMutation({
-        organizationId: currentOrg._id as Id<"organizations">,
-        userId: targetUserId as Id<"users">,
-        role,
-      });
-      toast.success("Member role updated");
     },
     isPending: false,
   };
@@ -206,41 +173,9 @@ export function useAcceptOrgInvitation() {
   };
 }
 
-export function useInviteByToken(token: string) {
-  const invite = useQuery(
-    api.invites.getByToken,
-
-    token ? { token } : "skip",
-  );
-
-  return {
-    data: invite,
-
-    isLoading: invite === undefined,
-
-    error: (invite === null ? new Error("Invite not found") : undefined) as
-      | Error
-      | undefined,
-  };
-}
-
-export function useOrgMemberCount() {
-  const { data: members } = useOrganizationMembers({ status: "active" });
-  return members?.length ?? 0;
-}
-
-export function usePendingInvitationsCount() {
-  const { data: members } = useOrganizationMembers({ status: "invited" });
-  return members?.length ?? 0;
-}
-
 export function getInviteStatus(
   invite: Doc<"invites">,
 ): "active" | "expired" | "exhausted" | "revoked" {
-  // Convex doesn't have a 'revoked' field in schema yet, but it can be deleted.
-  // If we want 'revoked', we'd need a field. For now, since 'revoke' mutation deletes it,
-  // we won't see 'revoked' status in the list.
-
   const expiresAt = invite.expiresAt ? new Date(invite.expiresAt) : null;
   if (expiresAt && expiresAt < new Date()) return "expired";
 

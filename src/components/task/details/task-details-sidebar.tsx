@@ -30,7 +30,7 @@ interface TaskWithDetails extends Task {
   }>;
 }
 
-export type TaskDetailsSidebarProps = {
+type TaskDetailsSidebarProps = {
   task: TaskWithDetails;
   onEdit: () => void;
   onDelete: () => void;

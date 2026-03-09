@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
-export type NavMainItem = {
+type NavMainItem = {
   title: string;
   url: string;
   icon?: React.ComponentType<{ className?: string }>;

@@ -160,5 +160,3 @@ export function getStatusColorVariant(
       return "text-gray-500";
   }
 }
-
-export const statusOrder = TASK_STATUS_ORDER;

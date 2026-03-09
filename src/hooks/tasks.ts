@@ -21,7 +21,7 @@ type TaskDetails = Doc<"tasks"> & {
   tagsData?: Array<Doc<"tags">>;
 };
 
-function toTaskWithProject(task: ListedTask): TaskWithProject {
+function toBaseTask(task: ListedTask | TaskDetails) {
   return {
     ...task,
     displayId: task.displayId,
@@ -44,27 +44,12 @@ function toTaskWithProject(task: ListedTask): TaskWithProject {
   };
 }
 
+function toTaskWithProject(task: ListedTask): TaskWithProject {
+  return toBaseTask(task) as TaskWithProject;
+}
+
 function toTaskWithDetails(task: TaskDetails): TaskWithDetails {
-  return {
-    ...task,
-    displayId: task.displayId,
-    project: task.project
-      ? {
-          _id: task.project._id,
-          name: task.project.name,
-          code: task.project.code,
-        }
-      : {
-          _id: task.projectId,
-          name: "Loading...",
-          code: "",
-        },
-    assignee:
-      task.assignee ??
-      (task.assigneeUserId ? { _id: task.assigneeUserId } : null),
-    creator: task.creator ?? null,
-    updatedAt: task.updatedAt,
-  };
+  return toBaseTask(task) as TaskWithDetails;
 }
 
 /**
@@ -106,7 +91,7 @@ export function useTasks(
           status,
           priority,
           searchTerm,
-          paginationOpts: { numItems: perPage, cursor: null }, // Simplified pagination for now
+          paginationOpts: { numItems: perPage, cursor: null },
         }
       : "skip",
   );
@@ -115,8 +100,8 @@ export function useTasks(
     data: result
       ? {
           items: result.page.map((t) => toTaskWithProject(t as ListedTask)),
-          totalItems: result.page.length, // Rough estimate
-          totalPages: result.isDone ? page : page + 1, // Simplified
+          totalItems: result.page.length,
+          totalPages: result.isDone ? page : page + 1,
         }
       : undefined,
     isPending: result === undefined,

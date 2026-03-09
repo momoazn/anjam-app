@@ -2,14 +2,12 @@ import { useQuery } from "convex/react";
 import { isPast, isToday } from "date-fns";
 import { useMemo } from "react";
 
+import { Id, api } from "@/lib/convex";
 import {
   useAuthIsAuthenticatedStrict,
   useAuthUser,
   useCurrentOrganization,
 } from "@/store/app-context-store";
-
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 
 export function useTaskCounts() {
   const isAuthenticated = useAuthIsAuthenticatedStrict();

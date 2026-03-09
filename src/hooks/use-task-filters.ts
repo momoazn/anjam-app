@@ -6,12 +6,10 @@ import {
   DEFAULT_TASK_FILTERS,
   FilterableTask,
   filterTasks,
-  isValidPriority,
-  isValidStatus,
 } from "@/lib/filter-utils";
 import type { TaskFilterValues } from "@/lib/filter-utils";
 
-export { ALL_FILTER_VALUE, DEFAULT_TASK_FILTERS };
+export { ALL_FILTER_VALUE };
 export type { TaskFilterValues };
 
 export type UseTaskFiltersReturn<T extends FilterableTask> = {
@@ -115,5 +113,3 @@ export function useTaskFilters<T extends FilterableTask>(
     filteredTasks,
   };
 }
-
-export { isValidStatus, isValidPriority };

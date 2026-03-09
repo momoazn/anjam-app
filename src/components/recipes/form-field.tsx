@@ -160,5 +160,3 @@ export function FormField<T extends FieldValues>({
     />
   );
 }
-
-export type { FieldType, FormFieldProps, SelectOption };

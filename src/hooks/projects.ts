@@ -72,19 +72,6 @@ export function useProject(options: {
 }
 
 /**
- * Hook to get a project with supervisor details.
- * In Convex v1, supervisor is just a field on the project.
- */
-export function useProjectWithSupervisor(options: {
-  id: string | undefined;
-  enabled?: boolean;
-}) {
-  // For now, this is same as useProject as we don't have complex expands in Convex yet
-  // User details can be fetched separately or joined in the query if needed.
-  return useProject(options);
-}
-
-/**
  * Hook to create a project.
  */
 export function useCreateProject(options?: {

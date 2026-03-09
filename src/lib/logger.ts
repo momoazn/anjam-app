@@ -14,23 +14,3 @@ export function logError(
     console.error("[Error Details]", JSON.stringify(error, null, 2));
   }
 }
-
-export function logDebug(message: string, data?: unknown): void {
-  if (!isDev) return;
-
-  if (data !== undefined) {
-    console.log(`[Debug] ${message}`, data);
-  } else {
-    console.log(`[Debug] ${message}`);
-  }
-}
-
-export function logWarning(message: string, data?: unknown): void {
-  if (!isDev) return;
-
-  if (data !== undefined) {
-    console.warn(`[Warning] ${message}`, data);
-  } else {
-    console.warn(`[Warning] ${message}`);
-  }
-}

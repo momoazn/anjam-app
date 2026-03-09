@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -152,17 +151,4 @@ export function useKeyboardShortcuts() {
     // Ref objects are stable and don't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, isInputFocused, location.pathname]);
-}
-
-/**
- * Hook to enable keyboard shortcuts globally
- * Should be called once in the app root
- */
-export function KeyboardShortcutsProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  useKeyboardShortcuts();
-  return <>{children}</>;
 }

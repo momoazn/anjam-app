@@ -4,17 +4,6 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-// ============================================================================
-// Types
-// ============================================================================
-
-type PageHeaderVariant =
-  | "default" // Standard card header
-  | "hero" // Large, impactful header for main pages
-  | "minimal" // Minimal header without card wrapper
-  | "toolbar" // Toolbar-style header with multiple actions
-  | "breadcrumb"; // Header with breadcrumb trail
-
 type IconType = TablerIcon | LucideIcon;
 
 type BasePageHeaderProps = {
@@ -120,5 +109,3 @@ export function PageHeader(props: PageHeaderProps) {
 // ============================================================================
 // Exports
 // ============================================================================
-
-export type { PageHeaderProps, PageHeaderVariant };

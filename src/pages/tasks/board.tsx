@@ -94,7 +94,7 @@ const insertAt = <T,>(items: T[], index: number, item: T) => {
   return next;
 };
 
-export function TaskBoardPage() {
+function TaskBoardPage() {
   const navigate = useNavigate();
   const openModal = useOpenModal();
   const { id: projectId } = useParams<{ id: string }>();

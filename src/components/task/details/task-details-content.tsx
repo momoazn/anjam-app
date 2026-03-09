@@ -20,7 +20,7 @@ import { formatTaskDate } from "@/lib/date-utils";
 import { cn, formatUserName } from "@/lib/utils";
 import { TaskWithDetails } from "@/types/tasks";
 
-export type TaskDetailsContentProps = {
+type TaskDetailsContentProps = {
   task: TaskWithDetails;
   comments: CommentWithUser[];
   commentsLoading: boolean;

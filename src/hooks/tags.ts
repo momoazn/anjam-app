@@ -1,12 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
 
+import { Id, api } from "@/lib/convex";
 import {
   useAuthIsAuthenticatedStrict,
   useCurrentOrganization,
 } from "@/store/app-context-store";
-
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 
 export interface Tag {
   id: Id<"tags">;

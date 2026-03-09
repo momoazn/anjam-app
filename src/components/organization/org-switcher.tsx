@@ -16,6 +16,7 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { organization as organizationConstants } from "@/constants";
+import type { Doc } from "@/lib/convex";
 import { cn } from "@/lib/utils";
 import {
   useAuthStore,
@@ -23,8 +24,6 @@ import {
   useCurrentOrganization,
   useUserOrganizations,
 } from "@/store/app-context-store";
-
-import type { Doc } from "../../../convex/_generated/dataModel";
 
 // =============================================================================
 // Types

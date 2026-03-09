@@ -12,7 +12,7 @@ import {
   validateFile,
 } from "@/lib/file-utils";
 
-export type FileUploadOptions = {
+type FileUploadOptions = {
   maxSize?: number;
   allowedTypes?: string[];
   maxFiles?: number;
@@ -20,7 +20,7 @@ export type FileUploadOptions = {
   onError?: (error: string) => void;
 };
 
-export { type FileWithPreview, getFileIcon, formatFileSize };
+export type { FileWithPreview };
 
 export function useFileUpload(options?: FileUploadOptions) {
   const {

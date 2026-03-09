@@ -50,11 +50,9 @@ import {
   useRemoveOrgMember,
   useRevokeOrgInvite,
 } from "@/hooks/organization-members";
-import type { Id } from "@/lib/convex";
+import type { Doc, Id } from "@/lib/convex";
 import { getUserInitials } from "@/lib/utils";
 import { useAuthUser } from "@/store/app-context-store";
-
-import type { Doc } from "../../../convex/_generated/dataModel";
 
 function getUserDisplayName(user: Doc<"users"> | null | undefined): string {
   if (!user) return organization.members.unknownUser;

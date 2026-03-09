@@ -1,11 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { statusOrder } from "@/lib/status-utils";
+import { TASK_STATUS_ORDER } from "@/lib/status-utils";
 
 export function TaskListSkeleton() {
   return (
     <div className="space-y-4" data-animate-stagger>
-      {statusOrder?.map((status) => (
+      {TASK_STATUS_ORDER?.map((status) => (
         <Card key={status} className="overflow-hidden">
           <div className="bg-muted/30 flex items-center justify-between border-b px-4 py-2">
             <div className="flex items-center gap-2">

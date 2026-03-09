@@ -47,7 +47,7 @@ const initialState = {
   | "isDefaultFilters"
 >;
 
-export const useFiltersStore = create<FiltersState>()(
+const useFiltersStore = create<FiltersState>()(
   devtools(
     persist(
       (set, get) => ({
@@ -169,30 +169,5 @@ export const useSavedFilters = () =>
       defaultFilterId: state.defaultFilterId,
       getCurrentFilterMatch: state.getCurrentFilterMatch,
       isDefaultFilters: state.isDefaultFilters,
-    })),
-  );
-export const useDefaultFilterId = () =>
-  useFiltersStore((state) => state.defaultFilterId);
-export const useSaveFilter = () => useFiltersStore((state) => state.saveFilter);
-export const useUpdateFilter = () =>
-  useFiltersStore((state) => state.updateFilter);
-export const useDeleteFilter = () =>
-  useFiltersStore((state) => state.deleteFilter);
-export const useSetAsDefault = () =>
-  useFiltersStore((state) => state.setAsDefault);
-export const useGetDefaultFilter = () =>
-  useFiltersStore((state) => state.getDefaultFilter);
-export const useGetCurrentFilterMatch = () =>
-  useFiltersStore((state) => state.getCurrentFilterMatch);
-export const useIsDefaultFilters = () =>
-  useFiltersStore((state) => state.isDefaultFilters);
-
-export const useFiltersActions = () =>
-  useFiltersStore(
-    useShallow((state) => ({
-      saveFilter: state.saveFilter,
-      updateFilter: state.updateFilter,
-      deleteFilter: state.deleteFilter,
-      setAsDefault: state.setAsDefault,
     })),
   );

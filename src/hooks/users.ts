@@ -1,13 +1,10 @@
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 
+import { Id, api } from "@/lib/convex";
 import {
   useAuthIsAuthenticatedStrict,
-  useAuthUser,
   useCurrentOrganization,
 } from "@/store/app-context-store";
-
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 
 /**
  * Hook to list all users in the current organization.
@@ -87,73 +84,5 @@ export function useProjectUsers({
     isPending: users === undefined,
     isLoading: users === undefined,
     error: null,
-  };
-}
-
-// Mutations - these would need backend implementation if we want to support them
-// For now, providing stubs or mapping to existing ones if available
-
-export function useCreateUser() {
-  return {
-    mutate: async (_args: unknown) => {
-      void _args;
-      throw new Error(
-        "Creating users directly is not supported. Use invite/register flows instead.",
-      );
-    },
-    isPending: false,
-  };
-}
-
-export function useUpdateUser() {
-  const currentUser = useAuthUser();
-  const updateProfileMutation = useMutation(api.users.updateProfile);
-
-  return {
-    mutate: async (args: { id: string; updates: { displayName?: string } }) => {
-      if (!currentUser?._id) {
-        throw new Error("You must be authenticated to update a user profile.");
-      }
-      if (args.id !== currentUser._id) {
-        throw new Error("Only your own profile can be updated.");
-      }
-
-      await updateProfileMutation({
-        displayName: args.updates.displayName,
-      });
-    },
-    isPending: false,
-  };
-}
-
-// Mutations - these would need backend implementation if we want to support them
-// For now, providing stubs or mapping to existing ones if available
-
-/**
- * Hook to remove a user from the organization.
- */
-export function useDeleteUser(options?: {
-  onSuccess?: () => void;
-  onError?: (error: unknown) => void;
-}) {
-  const removeMutation = useMutation(api.orgMembers.remove);
-  const currentOrg = useCurrentOrganization();
-
-  return {
-    mutate: async (userId: string) => {
-      if (!currentOrg) return;
-      try {
-        await removeMutation({
-          organizationId: currentOrg._id,
-          userId: userId as Id<"users">,
-        });
-        options?.onSuccess?.();
-      } catch (error) {
-        options?.onError?.(error);
-        throw error;
-      }
-    },
-
-    isPending: false,
   };
 }

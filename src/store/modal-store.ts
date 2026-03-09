@@ -22,7 +22,7 @@ interface ModalState {
   closeModal: () => void;
 }
 
-export const useModalStore = create<ModalState>()(
+const useModalStore = create<ModalState>()(
   devtools(
     (set) => ({
       type: null,

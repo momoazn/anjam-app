@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { tasks } from "@/constants";
 
-export type TaskPaginationProps = {
+type TaskPaginationProps = {
   totalTasks: number;
   pageStart: number;
   pageEnd: number;

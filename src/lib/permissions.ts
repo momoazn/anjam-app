@@ -3,17 +3,6 @@ import { type OrgRole } from "@/types/user";
 export type { OrgRole };
 export type ProjectRole = "owner" | "admin" | "member" | "viewer";
 
-export interface PermissionContext {
-  userId: string;
-  organizationId: string;
-  organizationRole: OrgRole | null;
-  projectId: string | null;
-  projectRole: ProjectRole | null;
-  isOrgOwner: boolean;
-  isOrgAdmin: boolean;
-  permissions: Record<string, boolean>;
-}
-
 export const PERMISSIONS = {
   "org.view": "View organization details",
   "org.update": "Update organization settings",
@@ -56,19 +45,7 @@ export function isOrgMember(role: OrgRole | null | undefined): boolean {
   return role === "owner" || role === "member";
 }
 
-export function canManageProjects(
-  orgRole: OrgRole | null | undefined,
-): boolean {
-  return isOrgAdmin(orgRole);
-}
-
-export function canManageOrgMembers(
-  orgRole: OrgRole | null | undefined,
-): boolean {
-  return isOrgAdmin(orgRole);
-}
-
-export function canViewProject(
+function canViewProject(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
 ): boolean {
@@ -76,7 +53,7 @@ export function canViewProject(
   return !!projectRole;
 }
 
-export function canManageProject(
+function canManageProject(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
 ): boolean {
@@ -84,7 +61,7 @@ export function canManageProject(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-export function canManageProjectMembers(
+function canManageProjectMembers(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
 ): boolean {
@@ -92,7 +69,7 @@ export function canManageProjectMembers(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-export function canCreateTasks(
+function canCreateTasks(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
 ): boolean {
@@ -104,7 +81,7 @@ export function canCreateTasks(
   );
 }
 
-export function canEditAnyTask(
+function canEditAnyTask(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
 ): boolean {
@@ -112,19 +89,7 @@ export function canEditAnyTask(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-export function canEditTask(
-  orgRole: OrgRole | null | undefined,
-  projectRole: ProjectRole | null | undefined,
-  taskAssigneeId: string | null | undefined,
-  currentUserId: string,
-): boolean {
-  if (isOrgAdmin(orgRole)) return true;
-  if (projectRole === "owner" || projectRole === "admin") return true;
-  if (projectRole === "member" && taskAssigneeId === currentUserId) return true;
-  return false;
-}
-
-export function canDeleteTasks(
+function canDeleteTasks(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
 ): boolean {
@@ -132,7 +97,7 @@ export function canDeleteTasks(
   return projectRole === "owner" || projectRole === "admin";
 }
 
-export function canComment(
+function canComment(
   orgRole: OrgRole | null | undefined,
   projectRole: ProjectRole | null | undefined,
 ): boolean {

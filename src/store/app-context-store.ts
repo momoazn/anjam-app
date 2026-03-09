@@ -209,22 +209,8 @@ export const useCurrentOrgOnboardingCompleted = () =>
     if (orgWithRole.role !== "owner") return true;
     return orgWithRole.onboardingCompleted ?? true;
   });
-export const useAuthRole = () =>
-  useAuthStore((state) => (state.user ? "admin" : null));
 export const useUserOrganizations = () =>
   useAuthStore((state) => state.userOrganizations);
-export const useAuthLogin = () => useAuthStore((state) => state.login);
-export const useAuthUpdateUser = () =>
-  useAuthStore((state) => state.updateUser);
-export const useAuthSetUser = () => useAuthStore((state) => state.setUser);
-export const useAuthSetCurrentOrganization = () =>
-  useAuthStore((state) => state.setCurrentOrganization);
-export const useAuthFetchOrganizations = () =>
-  useAuthStore((state) => state.fetchUserOrganizations);
-export const useAuthSwitchOrganization = () =>
-  useAuthStore((state) => state.switchOrganization);
-export const useAuthLogout = () => useAuthStore((state) => state.logout);
-export const useAuthClear = () => useAuthStore((state) => state.clear);
 
 export const useAuthActions = () =>
   useAuthStore(
@@ -234,5 +220,3 @@ export const useAuthActions = () =>
       updateUser: state.updateUser,
     })),
   );
-
-export const useAuthOrgsError = () => useAuthStore((state) => state.orgsError);

@@ -20,7 +20,7 @@ import {
 import { ALL_FILTER_VALUE, useTaskFilters } from "@/hooks/use-task-filters";
 import { useToast } from "@/hooks/use-toast";
 import { useUsers } from "@/hooks/users";
-import { TASK_STATUS_CONFIG, statusOrder } from "@/lib/status-utils";
+import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/app-context-store";
 import { useSavedFilters } from "@/store/filters-store";
@@ -422,11 +422,11 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
           isLoading={taskQuery.isPending}
           totalTasks={totalTasks}
           hasActiveFilters={hasActiveFilters}
-          statusOrder={statusOrder}
           groupedTasks={groupedTasks}
           selectionMode={selectionMode}
           selectedTasks={selectedTasks}
           onSelectionChange={handleSelectionChange}
+          statusOrder={TASK_STATUS_ORDER}
         />
       </div>
 

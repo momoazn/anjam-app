@@ -229,16 +229,6 @@ export const datePicker = {
   placeholder: "تاریخ را انتخاب کنید",
 } as const;
 
-export const navigationLabels = {
-  timesheet: "تایم‌شیت",
-  ownership: "مالکیت",
-  time: "زمان",
-  status: "وضعیت",
-  workspace: "فضای کاری",
-  admin: "مدیریت",
-  index: "شاخص",
-} as const;
-
 export const themeLabels = {
   dark: "حالت تیره",
   light: "حالت روشن",

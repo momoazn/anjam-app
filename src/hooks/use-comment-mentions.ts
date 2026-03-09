@@ -4,13 +4,6 @@ import { useOrganizationMembers } from "@/hooks/organization-members";
 import { formatUserName } from "@/lib/utils";
 import { useAuthUser } from "@/store/app-context-store";
 
-export type MentionOption = {
-  id: string;
-  displayName: string;
-  email?: string;
-  image?: string;
-};
-
 export function useCommentMentions() {
   const [content, setContent] = useState("");
   const [mentionQuery, setMentionQuery] = useState("");

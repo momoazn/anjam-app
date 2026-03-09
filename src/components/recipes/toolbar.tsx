@@ -48,5 +48,3 @@ export function ToolbarSeparator({
     />
   );
 }
-
-export type { ToolbarProps };

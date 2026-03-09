@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { tagsManagement } from "@/constants";
 
-export type TagsDeleteDialogProps = {
+type TagsDeleteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;

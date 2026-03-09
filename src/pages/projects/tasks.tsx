@@ -15,8 +15,11 @@ import { useProject } from "@/hooks/projects";
 import { useAllTasks } from "@/hooks/tasks";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { useUsers } from "@/hooks/users";
-import { statusOrder } from "@/lib/status-utils";
-import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
+import {
+  TASK_STATUS_ORDER,
+  isTaskCanceled,
+  isTaskCompleted,
+} from "@/lib/status-utils";
 import { useOpenModal } from "@/store/modal-store";
 import type { Task } from "@/types/tasks";
 import { TaskStatus } from "@/types/tasks";
@@ -204,7 +207,7 @@ export default function ProjectTasks() {
         {isLoadingTasks ? (
           <TaskListSkeleton />
         ) : (
-          statusOrder?.map((status) => {
+          TASK_STATUS_ORDER?.map((status) => {
             const tasks = groupedTasks?.[status] ?? [];
             if (tasks.length === 0) return null;
 

@@ -69,10 +69,7 @@ export function formatFileSize(bytes: number): string {
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 }
 
-export function isAllowedType(
-  fileType: string,
-  allowedTypes: string[],
-): boolean {
+function isAllowedType(fileType: string, allowedTypes: string[]): boolean {
   return allowedTypes.some((allowedType) => {
     if (allowedType.endsWith("/*")) {
       const baseType = allowedType.split("/")[0];
@@ -90,7 +87,7 @@ export function addPreviewIfNeeded(file: File): FileWithPreview {
   return fileWithPreview;
 }
 
-export function validateFileSize(
+function validateFileSize(
   file: File,
   maxSize: number,
 ): { valid: boolean; error?: string } {
@@ -107,7 +104,7 @@ export function validateFileSize(
   return { valid: true };
 }
 
-export function validateFileType(
+function validateFileType(
   file: File,
   allowedTypes: string[],
 ): { valid: boolean; error?: string } {

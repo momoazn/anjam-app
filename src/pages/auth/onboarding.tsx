@@ -17,13 +17,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/constants";
+import { Id, api } from "@/lib/convex";
 import {
   useAuthStore,
   useCurrentOrganization,
 } from "@/store/app-context-store";
-
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 
 const STEPS = [
   {

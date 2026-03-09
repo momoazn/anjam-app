@@ -60,6 +60,13 @@ export default defineConfig(({ mode }) => {
               "react-day-picker",
               "@persian-tools/persian-tools",
             ],
+            dnd: ["@dnd-kit/core", "@dnd-kit/sortable", "@dnd-kit/utilities"],
+            icons: [
+              "lucide-react",
+              "@tabler/icons-react",
+              "@phosphor-icons/react",
+            ],
+            auth: ["better-auth", "@convex-dev/better-auth"],
             charts: ["recharts"],
             ui: [
               "@radix-ui/react-accordion",
