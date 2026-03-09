@@ -36,12 +36,6 @@ export const TEST_USERS = {
   },
 } as const;
 
-export const TEST_ORG = {
-  name: "E2E Test Organization",
-  slug: "e2e-test-org",
-  description: "Organization for E2E testing",
-} as const;
-
 export const TEST_PROJECT = {
   name: "E2E Test Project",
   code: "ETP",
@@ -52,33 +46,4 @@ export const TEST_TASK = {
   title: "E2E Test Task",
   description: "Task for E2E testing",
   priority: "high",
-} as const;
-
-export const TEST_TAG = {
-  name: "e2e-test",
-  color: "#FF6B6B",
-} as const;
-
-export const UI_TEXT = {
-  buttons: {
-    login: "ورود",
-    register: "ثبت نام",
-    create: "ایجاد",
-    save: "ذخیره",
-    cancel: "لغو",
-    delete: "حذف",
-    edit: "ویرایش",
-    add: "اضافه کردن",
-    submit: "تایید",
-  },
-  labels: {
-    email: "ایمیل",
-    password: "رمز عبور",
-    name: "نام",
-    organization: "سازمان",
-    project: "پروژه",
-    task: "تسک",
-    priority: "اولویت",
-    status: "وضعیت",
-  },
 } as const;

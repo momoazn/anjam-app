@@ -24,42 +24,37 @@ export class TasksPage {
   }
 
   async clickNewTask() {
-    let openedTaskForm = false;
-
-    const taskButtons = [
-      this.page.locator('[data-testid="new-task-button"]'),
-      this.page
-        .getByRole("button", {
-          name: /تسک جدید|ساخت تسک|ایجاد تسک|new task|create task/i,
-        })
-        .first(),
-    ];
-
-    for (const button of taskButtons) {
-      const isVisible = await button
-        .isVisible({ timeout: 5000 })
-        .catch(() => false);
-      if (!isVisible) continue;
-
-      await button.click();
-      const isDialogReady = await this.getTaskDialog()
-        .locator('input[name="title"]')
-        .first()
-        .isVisible({ timeout: 3000 })
-        .catch(() => false);
-      if (isDialogReady) {
-        openedTaskForm = true;
-        break;
+    const primaryTrigger = this.page.locator('[data-testid="new-task-button"]');
+    if ((await primaryTrigger.count()) > 0) {
+      await expect(primaryTrigger.first()).toBeVisible();
+      await primaryTrigger.first().click();
+      if (this.page.url().includes("/tasks/new")) {
+        await expect(this.getTaskTitleInput()).toBeVisible();
+        return;
       }
+      await expect(this.getTaskDialog()).toBeVisible();
+      await expect(this.getTaskTitleInput()).toBeVisible();
+      return;
     }
 
-    if (!openedTaskForm) {
-      // Fallback path for environments where modal opening is flaky.
-      await this.page.goto("/tasks/new");
-      await expect(this.page).toHaveURL(/\/tasks\/new/);
+    const secondaryTrigger = this.page.getByRole("button", {
+      name: /تسک جدید|ساخت تسک|ایجاد تسک|new task|create task/i,
+    });
+    if ((await secondaryTrigger.count()) > 0) {
+      await expect(secondaryTrigger.first()).toBeVisible();
+      await secondaryTrigger.first().click();
+      if (this.page.url().includes("/tasks/new")) {
+        await expect(this.getTaskTitleInput()).toBeVisible();
+        return;
+      }
+      await expect(this.getTaskDialog()).toBeVisible();
+      await expect(this.getTaskTitleInput()).toBeVisible();
+      return;
     }
 
-    await expect(this.getTaskTitleInput()).toBeVisible({ timeout: 10000 });
+    await this.page.goto("/tasks/new");
+    await expect(this.page).toHaveURL(/\/tasks\/new/);
+    await expect(this.getTaskTitleInput()).toBeVisible();
   }
 
   async fillTaskForm(data: {
@@ -68,9 +63,9 @@ export class TasksPage {
     priority?: string;
     dueDate?: string;
   }) {
-    const dialog = this.getTaskDialog();
-    const isDialogVisible = await dialog.isVisible().catch(() => false);
-    const root = isDialogVisible ? dialog : this.page;
+    const root = this.page.url().includes("/tasks/new")
+      ? this.page
+      : this.getTaskDialog();
     const titleInput = root.locator('input[name="title"]').first();
     await expect(titleInput).toBeVisible();
     await titleInput.fill(data.title);
@@ -92,10 +87,9 @@ export class TasksPage {
   }
 
   async selectProject(projectName: string) {
-    const dialog = this.getTaskDialog();
-    const root = (await dialog.isVisible().catch(() => false))
-      ? dialog
-      : this.page;
+    const root = this.page.url().includes("/tasks/new")
+      ? this.page
+      : this.getTaskDialog();
     const projectTrigger = root.locator('[data-slot="select-trigger"]').first();
     await expect(projectTrigger).toBeVisible();
     await projectTrigger.click();
@@ -103,21 +97,20 @@ export class TasksPage {
   }
 
   async submitTask() {
-    const dialog = this.page.getByRole("dialog").last();
-    if (await dialog.isVisible().catch(() => false)) {
-      const submitInDialog = dialog
+    if (this.page.url().includes("/tasks/new")) {
+      const submitOnPage = this.page
         .locator('form button[type="submit"]')
         .first();
-      await expect(submitInDialog).toBeVisible();
-      await submitInDialog.click({ force: true });
+      await expect(submitOnPage).toBeVisible();
+      await submitOnPage.click({ force: true });
       return;
     }
 
-    const submitOnPage = this.page
+    const submitInDialog = this.getTaskDialog()
       .locator('form button[type="submit"]')
       .first();
-    await expect(submitOnPage).toBeVisible();
-    await submitOnPage.click({ force: true });
+    await expect(submitInDialog).toBeVisible();
+    await submitInDialog.click({ force: true });
   }
 
   async expectTaskInList(taskTitle: string) {

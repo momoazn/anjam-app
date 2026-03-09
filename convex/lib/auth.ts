@@ -29,6 +29,19 @@ export async function requireOrgMembership(
   return membership;
 }
 
+export async function requireOrgOwnerMembership(
+  ctx: QueryCtx | MutationCtx,
+  organizationId: Id<"organizations">,
+  userId?: Id<"users">,
+  errorMessage = "Only owners can perform this action",
+): Promise<Doc<"organizationMembers">> {
+  const membership = await requireOrgMembership(ctx, organizationId, userId);
+  if (membership.role !== "owner") {
+    throw new Error(errorMessage);
+  }
+  return membership;
+}
+
 /**
  * Requires that the current user is a member of the organization that owns the project.
  * Throws an error if not authenticated, project not found, or not a member.
@@ -88,4 +101,24 @@ export async function requireTaskAccess(
   );
 
   return { task, project, membership };
+}
+
+export function canEditTask(
+  membership: Doc<"organizationMembers">,
+  task: Doc<"tasks">,
+  userId: Id<"users">,
+) {
+  return (
+    membership.role === "owner" ||
+    task.creatorUserId === userId ||
+    task.assigneeUserId === userId
+  );
+}
+
+export function canDeleteTask(
+  membership: Doc<"organizationMembers">,
+  task: Doc<"tasks">,
+  userId: Id<"users">,
+) {
+  return membership.role === "owner" || task.creatorUserId === userId;
 }

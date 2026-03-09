@@ -3,8 +3,29 @@ import { v } from "convex/values";
 
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { requireProjectAccess } from "./lib/auth";
+import {
+  canDeleteTask,
+  canEditTask,
+  requireOrgMembership,
+  requireProjectAccess,
+  requireTaskAccess,
+} from "./lib/auth";
 import { getAuthUserId } from "./utils";
+
+const taskStatusValidator = v.union(
+  v.literal("todo"),
+  v.literal("in_progress"),
+  v.literal("in_review"),
+  v.literal("done"),
+  v.literal("cancelled"),
+);
+
+const taskPriorityValidator = v.union(
+  v.literal("low"),
+  v.literal("medium"),
+  v.literal("high"),
+  v.literal("urgent"),
+);
 
 export const create = mutation({
   args: {
@@ -12,19 +33,8 @@ export const create = mutation({
     title: v.string(),
     description: v.optional(v.string()),
     assigneeUserId: v.optional(v.id("users")),
-    priority: v.union(
-      v.literal("low"),
-      v.literal("medium"),
-      v.literal("high"),
-      v.literal("urgent"),
-    ),
-    status: v.union(
-      v.literal("todo"),
-      v.literal("in_progress"),
-      v.literal("in_review"),
-      v.literal("done"),
-      v.literal("cancelled"),
-    ),
+    priority: taskPriorityValidator,
+    status: taskStatusValidator,
     deadline: v.optional(v.number()),
     tags: v.optional(v.array(v.id("tags"))),
     taskType: v.optional(v.string()),
@@ -34,7 +44,6 @@ export const create = mutation({
     const userId = await getAuthUserId(ctx);
     const { project } = await requireProjectAccess(ctx, args.projectId, userId);
 
-    // Task Numbering (Transactional)
     const counter = await ctx.db
       .query("projectCounters")
       .withIndex("by_projectId", (q) => q.eq("projectId", args.projectId))
@@ -51,29 +60,9 @@ export const create = mutation({
       });
     }
 
-    const displayId = `${project.code}-${taskNumber.toString().padStart(3, "0")}`; // Matches typical convention, although plan says {000001} which is 6 digits?
-    // Plan: "{PROJECT_CODE}-{000001}"
-    // Code says: "e.g. ABC-001" in CLAUDE.md.
-    // Plan says: "displayId format {PROJECT_CODE}-{000001}" in 9.6.
-    // I'll stick to a reasonable padding. CLAUDE.md says 001. Plan says 000001.
-    // I'll use 3 digits for now as it's more standard for smaller apps, but 6 is safer for scale.
-    // Let's go with 3 to match CLAUDE.md example unless strict.
-    // Wait, let's check existing code if I can.
-    // `backend/hooks/tasks.go` isn't readable easily.
-    // I will use 3 digits padding: .padStart(3, "0").
+    const displayId = `${project.code}-${taskNumber.toString().padStart(3, "0")}`;
 
-    // Default order: Put at end of list? Or top?
-    // Board usually puts new tasks in Todo.
-    // Order is a number. Let's just use Date.now() for simple sorting or find max order.
-    // Finding max order requires query.
-    // "order" can be fractional.
-    // Let's assign order = Date.now() * 1000 to be safe, or just Date.now().
-    // If we want it at the bottom, we need max(order) + step.
-    // If we want it at the top, min(order) - step.
-    // Let's assume top for now or just Date.now().
-    const order = Date.now();
-
-    const taskId = await ctx.db.insert("tasks", {
+    return await ctx.db.insert("tasks", {
       projectId: args.projectId,
       organizationId: project.organizationId,
       creatorUserId: userId,
@@ -83,20 +72,14 @@ export const create = mutation({
       priority: args.priority,
       status: args.status,
       deadline: args.deadline,
-      order,
+      order: Date.now(),
       tags: args.tags || [],
       displayId,
       taskNumber,
       taskType: args.taskType,
       storyPoints: args.storyPoints,
       updatedAt: Date.now(),
-      // watchers: [userId], // Auto-watch created task? Plan doesn't strictly say.
     });
-
-    // We can do this in an internal mutation call or here.
-    // Plan 9.10: "Create notifications for: task assigned..."
-
-    return taskId;
   },
 });
 
@@ -107,16 +90,9 @@ export const get = query({
     const task = await ctx.db.get(args.taskId);
     if (!task) return null;
 
-    const project = await ctx.db.get(task.projectId);
-    if (!project) return null;
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-    if (!membership) {
+    try {
+      await requireOrgMembership(ctx, task.organizationId, userId);
+    } catch {
       throw new Error("Forbidden");
     }
 
@@ -124,21 +100,17 @@ export const get = query({
     const assignee = task.assigneeUserId
       ? await ctx.db.get(task.assigneeUserId)
       : null;
-    const projectDoc = await ctx.db.get(task.projectId);
-
-    // Fetch tags
+    const project = await ctx.db.get(task.projectId);
     const tagsData = await Promise.all(
-      (task.tags || []).map(async (tagId) => {
-        return await ctx.db.get(tagId);
-      }),
+      (task.tags || []).map((tagId) => ctx.db.get(tagId)),
     );
 
     return {
       ...task,
       creator,
       assignee,
-      project: projectDoc,
-      tagsData: tagsData.filter((t) => t !== null),
+      project,
+      tagsData: tagsData.filter((tag) => tag !== null),
     };
   },
 });
@@ -148,7 +120,7 @@ export const list = query({
     organizationId: v.id("organizations"),
     projectId: v.optional(v.id("projects")),
     assigneeUserId: v.optional(v.id("users")),
-    status: v.optional(v.string()), // Can be specific status
+    status: v.optional(v.string()),
     priority: v.optional(v.string()),
     searchTerm: v.optional(v.string()),
     paginationOpts: paginationOptsValidator,
@@ -156,14 +128,11 @@ export const list = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    try {
+      await requireOrgMembership(ctx, args.organizationId, userId);
+    } catch {
+      throw new Error("Not a member");
+    }
 
     const baseQuery = ctx.db.query("tasks");
     let q:
@@ -171,8 +140,8 @@ export const list = query({
       | ReturnType<typeof baseQuery.withIndex>;
 
     if (args.searchTerm) {
-      q = baseQuery.withSearchIndex("search_title", (q) => {
-        let search = q.search("title", args.searchTerm!);
+      q = baseQuery.withSearchIndex("search_title", (index) => {
+        let search = index.search("title", args.searchTerm!);
         if (args.projectId) {
           search = search.eq("projectId", args.projectId);
         }
@@ -181,53 +150,55 @@ export const list = query({
           .eq("deletedAt", undefined);
       });
     } else if (args.projectId) {
-      q = baseQuery.withIndex("by_projectId", (q) =>
-        q.eq("projectId", args.projectId!),
+      q = baseQuery.withIndex("by_projectId", (index) =>
+        index.eq("projectId", args.projectId!),
       );
     } else {
-      q = baseQuery.withIndex("by_org", (q) =>
-        q.eq("organizationId", args.organizationId),
+      q = baseQuery.withIndex("by_org", (index) =>
+        index.eq("organizationId", args.organizationId),
       );
     }
 
     if (args.assigneeUserId) {
-      q = q.filter((q) => q.eq(q.field("assigneeUserId"), args.assigneeUserId));
+      q = q.filter((filter) =>
+        filter.eq(filter.field("assigneeUserId"), args.assigneeUserId),
+      );
     }
 
     if (args.status) {
-      q = q.filter((q) => q.eq(q.field("status"), args.status));
+      q = q.filter((filter) => filter.eq(filter.field("status"), args.status));
     }
 
     if (args.priority) {
-      q = q.filter((q) => q.eq(q.field("priority"), args.priority));
+      q = q.filter((filter) =>
+        filter.eq(filter.field("priority"), args.priority),
+      );
     }
 
     if (!args.searchTerm) {
-      q = q.filter((q) => q.eq(q.field("deletedAt"), undefined));
+      q = q.filter((filter) => filter.eq(filter.field("deletedAt"), undefined));
     }
 
     const page = await q.paginate(args.paginationOpts);
 
-    const enrichedPage = await Promise.all(
-      page.page.map(async (task) => {
-        const creator = await ctx.db.get(task.creatorUserId);
-        const assignee = task.assigneeUserId
-          ? await ctx.db.get(task.assigneeUserId)
-          : null;
-        const project = await ctx.db.get(task.projectId);
-
-        return {
-          ...task,
-          creator,
-          assignee,
-          project,
-        };
-      }),
-    );
-
     return {
       ...page,
-      page: enrichedPage,
+      page: await Promise.all(
+        page.page.map(async (task) => {
+          const creator = await ctx.db.get(task.creatorUserId);
+          const assignee = task.assigneeUserId
+            ? await ctx.db.get(task.assigneeUserId)
+            : null;
+          const project = await ctx.db.get(task.projectId);
+
+          return {
+            ...task,
+            creator,
+            assignee,
+            project,
+          };
+        }),
+      ),
     };
   },
 });
@@ -238,7 +209,7 @@ export const update = mutation({
     updates: v.object({
       title: v.optional(v.string()),
       description: v.optional(v.string()),
-      status: v.optional(v.string()), // Validate enum values?
+      status: v.optional(v.string()),
       priority: v.optional(v.string()),
       assigneeUserId: v.optional(v.id("users")),
       deadline: v.optional(v.number()),
@@ -249,37 +220,18 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    const task = await ctx.db.get(args.taskId);
-    if (!task) throw new Error("Task not found");
+    const { task, membership } = await requireTaskAccess(
+      ctx,
+      args.taskId,
+      userId,
+    );
 
-    const project = await ctx.db.get(task.projectId);
-    if (!project) throw new Error("Project not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
-
-    // Permissions:
-    // Members can edit tasks they created OR are assigned to.
-    // Owners can edit any task.
-    if (membership.role !== "owner") {
-      if (task.creatorUserId !== userId && task.assigneeUserId !== userId) {
-        throw new Error(
-          "You can only edit tasks you created or are assigned to",
-        );
-      }
+    if (!canEditTask(membership, task, userId)) {
+      throw new Error("You can only edit tasks you created or are assigned to");
     }
 
-    // If status updates to 'done', maybe set completedAt? Not in schema.
-    // Just patch updates.
-    const updates = { ...args.updates } as Partial<Doc<"tasks">>;
     await ctx.db.patch(args.taskId, {
-      ...updates,
+      ...(args.updates as Partial<Doc<"tasks">>),
       updatedAt: Date.now(),
     });
   },
@@ -292,25 +244,18 @@ export const softDelete = mutation({
     const task = await ctx.db.get(args.taskId);
     if (!task) return;
 
-    const project = await ctx.db.get(task.projectId);
-    if (!project) return;
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
-
-    // Permissions:
-    // Members can soft-delete tasks they created only.
-    // Owners can delete any task.
-    if (membership.role !== "owner") {
-      if (task.creatorUserId !== userId) {
-        throw new Error("You can only delete tasks you created");
+    let membership: Doc<"organizationMembers">;
+    try {
+      ({ membership } = await requireTaskAccess(ctx, args.taskId, userId));
+    } catch (error) {
+      if (error instanceof Error && error.message === "Project not found") {
+        return;
       }
+      throw error;
+    }
+
+    if (!canDeleteTask(membership, task, userId)) {
+      throw new Error("You can only delete tasks you created");
     }
 
     await ctx.db.patch(args.taskId, { deletedAt: Date.now() });
@@ -320,39 +265,19 @@ export const softDelete = mutation({
 export const updateBoardPosition = mutation({
   args: {
     taskId: v.id("tasks"),
-    status: v.union(
-      v.literal("todo"),
-      v.literal("in_progress"),
-      v.literal("in_review"),
-      v.literal("done"),
-      v.literal("cancelled"),
-    ),
+    status: taskStatusValidator,
     order: v.number(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    const task = await ctx.db.get(args.taskId);
-    if (!task) throw new Error("Task not found");
+    const { task, membership } = await requireTaskAccess(
+      ctx,
+      args.taskId,
+      userId,
+    );
 
-    // We reuse update logic permissions?
-    // "Persist drag-and-drop updates to status and order."
-    // Usually moving a card on board is considered "editing".
-    const project = await ctx.db.get(task.projectId);
-    if (!project) throw new Error("Project not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
-
-    if (membership.role !== "owner") {
-      if (task.creatorUserId !== userId && task.assigneeUserId !== userId) {
-        throw new Error("You don't have permission to move this task");
-      }
+    if (!canEditTask(membership, task, userId)) {
+      throw new Error("You don't have permission to move this task");
     }
 
     await ctx.db.patch(args.taskId, {
@@ -371,31 +296,31 @@ export const listAll = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
+    try {
+      await requireOrgMembership(ctx, args.organizationId, userId);
+    } catch {
+      throw new Error("Not a member");
+    }
 
-    if (!membership) throw new Error("Not a member");
-
-    const q = args.projectId
+    const taskQuery = args.projectId
       ? ctx.db
           .query("tasks")
-          .withIndex("by_projectId", (q) => q.eq("projectId", args.projectId!))
+          .withIndex("by_projectId", (index) =>
+            index.eq("projectId", args.projectId!),
+          )
       : ctx.db
           .query("tasks")
-          .withIndex("by_org", (q) =>
-            q.eq("organizationId", args.organizationId),
+          .withIndex("by_org", (index) =>
+            index.eq("organizationId", args.organizationId),
           );
 
-    const tasks = await q
-      .filter((q) => q.eq(q.field("deletedAt"), undefined))
+    const tasks = await taskQuery
+      .filter((filter) => filter.eq(filter.field("deletedAt"), undefined))
       .collect();
 
     return await Promise.all(
       tasks.map(async (task) => {
+        const creator = await ctx.db.get(task.creatorUserId);
         const assignee = task.assigneeUserId
           ? await ctx.db.get(task.assigneeUserId)
           : null;
@@ -403,6 +328,7 @@ export const listAll = query({
 
         return {
           ...task,
+          creator,
           assignee,
           project,
         };
@@ -415,48 +341,25 @@ export const bulkUpdate = mutation({
   args: {
     ids: v.array(v.id("tasks")),
     updates: v.object({
-      status: v.optional(
-        v.union(
-          v.literal("todo"),
-          v.literal("in_progress"),
-          v.literal("in_review"),
-          v.literal("done"),
-          v.literal("cancelled"),
-        ),
-      ),
-      priority: v.optional(
-        v.union(
-          v.literal("low"),
-          v.literal("medium"),
-          v.literal("high"),
-          v.literal("urgent"),
-        ),
-      ),
+      status: v.optional(taskStatusValidator),
+      priority: v.optional(taskPriorityValidator),
       assigneeUserId: v.optional(v.id("users")),
     }),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
+
     for (const id of args.ids) {
       const task = await ctx.db.get(id);
       if (!task) continue;
 
-      const project = await ctx.db.get(task.projectId);
-      if (!project) continue;
-
-      const membership = await ctx.db
-        .query("organizationMembers")
-        .withIndex("by_org_user", (q) =>
-          q.eq("organizationId", project.organizationId).eq("userId", userId),
-        )
-        .first();
-
-      if (!membership) continue;
-
-      if (membership.role !== "owner") {
-        if (task.creatorUserId !== userId && task.assigneeUserId !== userId) {
+      try {
+        const { membership } = await requireTaskAccess(ctx, id, userId);
+        if (!canEditTask(membership, task, userId)) {
           continue;
         }
+      } catch {
+        continue;
       }
 
       await ctx.db.patch(id, {
@@ -473,23 +376,17 @@ export const bulkDelete = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
+
     for (const id of args.ids) {
       const task = await ctx.db.get(id);
       if (!task) continue;
 
-      const project = await ctx.db.get(task.projectId);
-      if (!project) continue;
-
-      const membership = await ctx.db
-        .query("organizationMembers")
-        .withIndex("by_org_user", (q) =>
-          q.eq("organizationId", project.organizationId).eq("userId", userId),
-        )
-        .first();
-
-      if (!membership) continue;
-
-      if (membership.role !== "owner" && task.creatorUserId !== userId) {
+      try {
+        const { membership } = await requireTaskAccess(ctx, id, userId);
+        if (!canDeleteTask(membership, task, userId)) {
+          continue;
+        }
+      } catch {
         continue;
       }
 
