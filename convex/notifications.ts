@@ -41,7 +41,8 @@ export const markAllRead = mutation({
       .withIndex("by_user_read", (q) =>
         q.eq("userId", userId).eq("read", false),
       )
-      .collect();
+      // ponytail: batch of 500 per call; the UI can call again for the rest.
+      .take(500);
 
     await Promise.all(unread.map((n) => ctx.db.patch(n._id, { read: true })));
   },
@@ -69,7 +70,8 @@ export const clearRead = mutation({
     const read = await ctx.db
       .query("notifications")
       .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("read", true))
-      .collect();
+      // ponytail: batch of 500 per call; the UI can call again for the rest.
+      .take(500);
 
     await Promise.all(read.map((n) => ctx.db.delete(n._id)));
   },
@@ -83,7 +85,8 @@ export const clearAll = mutation({
     const all = await ctx.db
       .query("notifications")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+      // ponytail: batch of 500 per call; the UI can call again for the rest.
+      .take(500);
 
     await Promise.all(all.map((n) => ctx.db.delete(n._id)));
   },

@@ -383,3 +383,52 @@ describe("organizations", () => {
     });
   });
 });
+
+describe("invites", () => {
+  it("validates limits and exposes only public fields", async () => {
+    const { ownerA, ids } = await setup();
+    await expect(
+      ownerA.mutation(api.invites.createLink, {
+        organizationId: ids.orgA,
+        maxUses: 0,
+      }),
+    ).rejects.toThrow("Max uses");
+    await expect(
+      ownerA.mutation(api.invites.createLink, {
+        organizationId: ids.orgA,
+        expiresAt: 1,
+      }),
+    ).rejects.toThrow("future");
+    const token = await ownerA.mutation(api.invites.createLink, {
+      organizationId: ids.orgA,
+      maxUses: 1,
+    });
+    const info = await ownerA.query(api.invites.getByToken, { token });
+    expect(Object.keys(info ?? {}).sort()).toEqual([
+      "inviterName",
+      "organizationName",
+      "status",
+    ]);
+    expect(
+      await ownerA.query(api.invites.list, { organizationId: ids.orgA }),
+    ).toHaveLength(1);
+  });
+});
+
+describe("mentions.listForMe", () => {
+  it("drops mentions of deleted tasks", async () => {
+    const { ownerA, memberA, ids, t } = await setup();
+    await t.run((ctx) => ctx.db.patch(ids.memberA, { email: "mem@x.test" }));
+    const taskId = await ownerA.mutation(
+      api.tasks.create,
+      newTask(ids.projectA),
+    );
+    await ownerA.mutation(api.comments.create, {
+      taskId,
+      content: "hi @mem",
+    });
+    expect(await memberA.query(api.mentions.listForMe, {})).toHaveLength(1);
+    await ownerA.mutation(api.tasks.softDelete, { taskId });
+    expect(await memberA.query(api.mentions.listForMe, {})).toHaveLength(0);
+  });
+});

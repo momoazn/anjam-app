@@ -20,6 +20,16 @@ export const createLink = mutation({
       "Only owners can create invite links",
     );
 
+    if (
+      args.maxUses !== undefined &&
+      (!Number.isInteger(args.maxUses) || args.maxUses < 1)
+    ) {
+      throw new Error("Max uses must be a whole number of at least 1");
+    }
+    if (args.expiresAt !== undefined && !(args.expiresAt > Date.now())) {
+      throw new Error("Expiry must be in the future");
+    }
+
     // Generate token
     const token = crypto.randomUUID();
 
@@ -51,7 +61,7 @@ export const list = query({
 
     const invites = await ctx.db
       .query("invites")
-      .filter((q) => q.eq(q.field("organizationId"), args.organizationId))
+      .withIndex("by_org", (q) => q.eq("organizationId", args.organizationId))
       .collect();
 
     return invites;
@@ -86,10 +96,10 @@ export const getByToken = query({
 
     if (!invite) return null;
 
-    if (invite.expiresAt && invite.expiresAt < Date.now()) {
+    if (invite.expiresAt !== undefined && invite.expiresAt < Date.now()) {
       return { status: "expired" as const };
     }
-    if (invite.maxUses && invite.uses >= invite.maxUses) {
+    if (invite.maxUses !== undefined && invite.uses >= invite.maxUses) {
       return { status: "exhausted" as const };
     }
 
@@ -98,8 +108,7 @@ export const getByToken = query({
 
     return {
       status: "valid" as const,
-      invite,
-      orgName: org?.name,
+      organizationName: org?.name,
       inviterName: inviter?.displayName || inviter?.email || "Someone",
     };
   },
@@ -118,10 +127,10 @@ export const acceptExistingUser = mutation({
     if (!invite) throw new Error("Invalid invite");
 
     // Validation
-    if (invite.expiresAt && invite.expiresAt < Date.now()) {
+    if (invite.expiresAt !== undefined && invite.expiresAt < Date.now()) {
       throw new Error("Invite expired");
     }
-    if (invite.maxUses && invite.uses >= invite.maxUses) {
+    if (invite.maxUses !== undefined && invite.uses >= invite.maxUses) {
       throw new Error("Invite exhausted");
     }
 

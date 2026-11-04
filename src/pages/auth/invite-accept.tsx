@@ -155,7 +155,7 @@ export default function InviteAccept() {
     );
   }
 
-  const { orgName } = inviteData;
+  const { organizationName: orgName } = inviteData;
 
   return (
     <div className="bg-background relative flex h-svh items-stretch overflow-hidden">

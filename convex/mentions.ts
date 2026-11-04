@@ -1,4 +1,5 @@
 import { query } from "./_generated/server";
+import { getActiveMembership } from "./lib/auth";
 import { getAuthUserIdIfExists } from "./utils";
 
 export const listForMe = query({
@@ -13,11 +14,15 @@ export const listForMe = query({
       .order("desc") // Newest first
       .take(50); // Limit?
 
-    // Enrich
-    return await Promise.all(
+    // Enrich; drop rows whose task is gone or whose org the user left.
+    const rows = await Promise.all(
       mentions.map(async (m) => {
-        const comment = m.commentId ? await ctx.db.get(m.commentId) : null;
         const task = m.taskId ? await ctx.db.get(m.taskId) : null;
+        if (!task || task.deletedAt !== undefined) return null;
+        if (!(await getActiveMembership(ctx, task.organizationId, userId))) {
+          return null;
+        }
+        const comment = m.commentId ? await ctx.db.get(m.commentId) : null;
         const project = m.projectId ? await ctx.db.get(m.projectId) : null;
         const author = comment ? await ctx.db.get(comment.userId) : null;
 
@@ -30,5 +35,6 @@ export const listForMe = query({
         };
       }),
     );
+    return rows.filter((row) => row !== null);
   },
 });
