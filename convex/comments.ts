@@ -1,8 +1,11 @@
 import { v } from "convex/values";
 
+import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { requireOrgMembership, requireTaskAccess } from "./lib/auth";
 import { getAuthUserId } from "./utils";
+
+const REACTION_KEYS = ["+1", "-1", "laugh", "heart", "rocket", "eyes"];
 
 export const listByTask = query({
   args: { taskId: v.id("tasks") },
@@ -67,6 +70,9 @@ export const create = mutation({
       mentionedUsernames.add(match[1].toLowerCase());
     }
 
+    // Users already notified for this comment (dedupe recipients).
+    const notified = new Set<Id<"users">>();
+
     if (mentionedUsernames.size > 0) {
       // Query organization members and join with user data for efficient mention matching
       // This is much more efficient than querying all users
@@ -112,38 +118,44 @@ export const create = mutation({
         if (duplicatePrefixes.has(username)) continue;
         const match = memberByEmailPrefix.get(username);
 
-        if (match) {
-          const { user, membership: isMember } = match;
-          if (isMember) {
-            await ctx.db.insert("mentions", {
-              mentionedUserId: user._id,
-              commentId,
-              taskId: args.taskId,
-              projectId: task.projectId,
-              createdAt: Date.now(),
-            });
+        if (
+          match &&
+          match.user._id !== userId &&
+          !notified.has(match.user._id)
+        ) {
+          notified.add(match.user._id);
+          await ctx.db.insert("mentions", {
+            mentionedUserId: match.user._id,
+            commentId,
+            taskId: args.taskId,
+            projectId: task.projectId,
+            createdAt: Date.now(),
+          });
 
-            const currentUser = await ctx.db.get(userId);
-            await ctx.db.insert("notifications", {
-              userId: user._id,
-              type: "comment", // or system? "comment added"
-              title: "You were mentioned",
-              message: `${currentUser?.displayName || currentUser?.email || "Someone"} mentioned you in a comment`,
-              data: {
-                taskId: args.taskId,
-                commentId,
-                projectId: task.projectId,
-              },
-              read: false,
-              createdAt: Date.now(),
-            });
-          }
+          const currentUser = await ctx.db.get(userId);
+          await ctx.db.insert("notifications", {
+            userId: match.user._id,
+            type: "comment",
+            title: "You were mentioned",
+            message: `${currentUser?.displayName || currentUser?.email || "Someone"} mentioned you in a comment`,
+            data: {
+              taskId: args.taskId,
+              commentId,
+              projectId: task.projectId,
+            },
+            read: false,
+            createdAt: Date.now(),
+          });
         }
       }
     }
 
     // Notify assignee if not the commenter
-    if (task.assigneeUserId && task.assigneeUserId !== userId) {
+    if (
+      task.assigneeUserId &&
+      task.assigneeUserId !== userId &&
+      !notified.has(task.assigneeUserId)
+    ) {
       const currentUser = await ctx.db.get(userId);
       await ctx.db.insert("notifications", {
         userId: task.assigneeUserId,
@@ -181,7 +193,6 @@ export const update = mutation({
     commentId: v.id("comments"),
     updates: v.object({
       content: v.optional(v.string()),
-      reactions: v.optional(v.any()),
     }),
   },
   handler: async (ctx, args) => {
@@ -201,15 +212,35 @@ export const update = mutation({
       updates.updatedAt = Date.now();
     }
 
-    if (args.updates.reactions !== undefined) {
-      updates.reactions = args.updates.reactions;
-      updates.updatedAt = Date.now();
-    }
-
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(args.commentId, updates);
     }
 
     return args.commentId;
+  },
+});
+
+export const toggleReaction = mutation({
+  args: { commentId: v.id("comments"), emoji: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!REACTION_KEYS.includes(args.emoji)) {
+      throw new Error("Unsupported reaction");
+    }
+    const comment = await ctx.db.get(args.commentId);
+    if (!comment || comment.deletedAt !== undefined) {
+      throw new Error("Comment not found");
+    }
+    await requireTaskAccess(ctx, comment.taskId, userId);
+
+    const reactions: Record<string, string[]> = { ...comment.reactions };
+    const current = reactions[args.emoji] ?? [];
+    const next = current.includes(userId)
+      ? current.filter((id) => id !== userId)
+      : [...current, userId];
+    if (next.length === 0) delete reactions[args.emoji];
+    else reactions[args.emoji] = next;
+
+    await ctx.db.patch(args.commentId, { reactions });
   },
 });

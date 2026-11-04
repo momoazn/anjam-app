@@ -252,3 +252,49 @@ describe("orgMembers.remove", () => {
     expect(task?.assigneeUserId).toBeUndefined();
   });
 });
+
+describe("comments", () => {
+  it("toggles allow-listed reactions only", async () => {
+    const { ownerA, ids, t } = await setup();
+    const taskId = await ownerA.mutation(
+      api.tasks.create,
+      newTask(ids.projectA),
+    );
+    const commentId = await ownerA.mutation(api.comments.create, {
+      taskId,
+      content: "hi",
+    });
+    await ownerA.mutation(api.comments.toggleReaction, {
+      commentId,
+      emoji: "heart",
+    });
+    const reactions = () =>
+      t.run(async (ctx) => (await ctx.db.get(commentId))?.reactions);
+    expect(await reactions()).toEqual({ heart: [ids.ownerA] });
+    await ownerA.mutation(api.comments.toggleReaction, {
+      commentId,
+      emoji: "heart",
+    });
+    expect(await reactions()).toEqual({});
+    await expect(
+      ownerA.mutation(api.comments.toggleReaction, { commentId, emoji: "x" }),
+    ).rejects.toThrow("Unsupported");
+  });
+
+  it("does not notify the author for self-mentions", async () => {
+    const { ownerA, ids, t } = await setup();
+    await t.run((ctx) => ctx.db.patch(ids.ownerA, { email: "boss@x.test" }));
+    const taskId = await ownerA.mutation(api.tasks.create, {
+      ...newTask(ids.projectA),
+      assigneeUserId: ids.ownerA,
+    });
+    await ownerA.mutation(api.comments.create, {
+      taskId,
+      content: "@boss note @boss",
+    });
+    const count = await t.run(
+      async (ctx) => (await ctx.db.query("notifications").collect()).length,
+    );
+    expect(count).toBe(0);
+  });
+});

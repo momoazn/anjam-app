@@ -88,7 +88,7 @@ export function useCreateComment() {
 
 /**
  * Hook to update a comment.
- * Supports updating content and reactions.
+ * Supports updating content.
  */
 export function useUpdateComment() {
   const updateCommentMutation = useMutation(api.comments.update);
@@ -101,7 +101,6 @@ export function useUpdateComment() {
       id: string;
       updates: {
         content?: string;
-        reactions?: Record<string, string[]>;
       };
     }) => {
       return await updateCommentMutation({
@@ -120,6 +119,20 @@ export function useSoftDeleteComment() {
     mutate: async (id: string) => {
       return await softDeleteMutation({
         commentId: id as Id<"comments">,
+      });
+    },
+    isPending: false,
+  };
+}
+
+export function useToggleReaction() {
+  const toggleReactionMutation = useMutation(api.comments.toggleReaction);
+
+  return {
+    mutate: async ({ id, emoji }: { id: string; emoji: string }) => {
+      return await toggleReactionMutation({
+        commentId: id as Id<"comments">,
+        emoji,
       });
     },
     isPending: false,

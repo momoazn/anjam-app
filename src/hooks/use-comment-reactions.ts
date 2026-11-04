@@ -1,4 +1,4 @@
-import { useUpdateComment } from "@/hooks/comments";
+import { useToggleReaction } from "@/hooks/comments";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthUser } from "@/store/app-context-store";
 
@@ -34,31 +34,15 @@ function parseReactions(reactions: unknown): ReactionMap {
 
 export function useCommentReactions(commentId: string, reactions: unknown) {
   const currentUser = useAuthUser();
-  const updateComment = useUpdateComment();
+  const toggle = useToggleReaction();
   const { toast } = useToast();
   const reactionMap = parseReactions(reactions);
 
   const toggleReaction = async (key: string) => {
     if (!currentUser) return;
 
-    const existing = reactionMap[key] ?? [];
-    const hasReacted = existing.includes(currentUser._id || "");
-    const updated: ReactionMap = { ...reactionMap };
-
-    if (hasReacted) {
-      updated[key] = existing.filter((id) => id !== (currentUser._id || ""));
-      if (updated[key].length === 0) {
-        delete updated[key];
-      }
-    } else {
-      updated[key] = [...existing, currentUser._id || ""];
-    }
-
     try {
-      await updateComment.mutate({
-        id: commentId,
-        updates: { reactions: updated },
-      });
+      await toggle.mutate({ id: commentId, emoji: key });
     } catch {
       toast({
         title: "Error",
