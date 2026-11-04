@@ -1,89 +1,70 @@
 # Frontend Architecture
 
-This document outlines architectural patterns, component structure, and state management used in frontend of Anjam.
+Patterns, structure, and state management used in the Anjam frontend.
 
 ## 1. Tech Stack
 
 - **Framework**: React 19 + TypeScript
-- **Build Tool**: Vite
-- **State Management**: Zustand (Auth, Sidebar) + TanStack Query (Server State)
-- **UI Library**: Shadcn UI (Radix Primitives + Tailwind CSS)
-- **Routing**: React Router DOM
-- **Backend**: Convex (fully-managed backend platform)
+- **Build tool**: Vite 7
+- **Server state**: Convex React hooks (`useQuery`, `useMutation`). Queries are live subscriptions.
+- **Client state**: Zustand (`src/store/`)
+- **UI**: shadcn/ui (Radix primitives + Tailwind CSS 4)
+- **Routing**: React Router (`src/router.tsx`)
+- **Forms**: React Hook Form + Zod
+- **Backend**: Convex + Better Auth (see `convex/`)
 
 ## 2. Organization Context
 
-The application is multi-tenant. The "Current Organization" is root context for most data views.
+Anjam is multi-tenant. The current organization is the root context for most data views.
 
-### Auth Store (`src/store/auth-store.ts`)
+### App context store (`src/store/app-context-store.ts`)
 
-Manages a user's session and their active organization.
+Holds the session user and the active organization.
 
-- `currentOrganization`: The organization currently being viewed.
-- `currentOrgRole`: The user's role in that organization (`owner`, `admin`, `member`).
-- `switchOrganization(orgId)`: Updates context and refreshes data.
+- `currentOrganization`: the organization being viewed.
+- `currentOrgRole`: the user's role in it. Roles are `owner` and `member` (see `convex/schema.ts`).
+- `userOrganizations`: all organizations the user belongs to.
+- `switchOrganization(orgId)`: changes the active organization.
 
-### Org Switcher
+### Org switcher
 
-Located in the sidebar, this component allows users to toggle between their organizations or create a new one.
+The sidebar switcher moves the user between organizations or opens the create flow.
 
 ## 3. Component Patterns
 
-### Common Imports
+### Data fetching (hooks)
 
-We use strict path aliases and standard libraries.
+Convex calls live in custom hooks in `src/hooks/`, one file per resource (`tasks.ts`, `projects.ts`, `tags.ts`, and so on).
 
-```tsx
-// UI Components from local shadcn library
-import { zodResolver } from "@hookform/resolvers/zod";
-// Data Fetching
-import { useMutation, useQuery } from "@tanstack/react-query";
-// Form Handling
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+- Hooks wrap `useQuery(api.<module>.<fn>, args | "skip")`. Pass `"skip"` until auth and the organization are ready.
+- Typed access to the generated API and document types goes through `src/lib/convex.ts` (`api`, `Doc`, `Id`).
+- Errors from mutations go through `handleError` in `src/lib/error-handler.ts`.
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-```
+### Permissions
 
-### Data Fetching (Hooks)
+`src/lib/permissions.ts` maps a role to a set of permissions. Components use `usePermissions()` (`src/hooks/use-permissions.ts`) and `can("task.delete")`. Convex functions check roles again on the server. The client check only hides UI.
 
-All API interaction is encapsulated in custom hooks located in `src/hooks/`.
+### Empty states
 
-- **Pattern**: `use[Resource][Action]` (e.g., `useTasks`, `useCreateTask`).
-- **Keys**: Centralized in `src/hooks/query-keys.ts` to ensure consistent cache invalidation.
-- **Error Handling**: Centralized error utils (`handleConvexError`) used in mutation `onError` callbacks.
+`src/components/ui/empty-state.tsx` has presets such as `EmptyStateNoTasks` and `EmptyStateNoProjects`.
 
-### Empty States
+## 4. Feature Areas
 
-We use a standardized `EmptyState` component for consistent UX when lists are empty.
+- **Projects**: list, details, and per-project task list and board.
+- **Tasks**: list, board (drag and drop with dnd-kit), and calendar views. Subtasks, tags, comments with mentions, and saved filters ("views").
+- **Inbox and notifications**: assigned, mentioned, and recently updated tasks, plus a notification list.
+- **Insights**: simple metrics from `convex/insights.ts`.
+- **Settings**: profile, appearance, preferences, organization, and members (invite links).
 
-- **Usage**: `src/components/ui/empty-state.tsx` provides presets like `EmptyStateNoTasks`, `EmptyStateNoProjects`.
+## 5. Persian and RTL
 
-## 4. Feature Modules
+- The UI is Persian-first and right-to-left.
+- Dates use the Jalali calendar through `date-fns-jalali`.
+- Numbers use Persian digits through `@persian-tools/persian-tools`.
+- User-facing strings live in `src/constants/`.
 
-### Projects
+## 6. Styling Conventions
 
-- **Settings**: Managed via `ProjectSettings` page (admin only).
-- **Members**: `ProjectMembers` component handles adding/removing users and changing roles (`viewer`, `member`, `admin`, `owner`).
-- **Statuses**: Custom `project_statuses` managed per project.
-
-### Tasks
-
-- **Board/List**: Tasks can be viewed in Board (Kanban) or List modes.
-- **Subtasks**: Implemented as a sub-collection, editable inline.
-- **Time Entries**: Logs stored in `time_entries` linked to tasks.
-
-### Activity & Notifications
-
-- **Activity Feed**: Powered by `audit_logs` collection, filtered by project or task.
-- **Real-time**: Convex provides automatic real-time synchronization for tasks and activities.
-
-## 5. Styling Conventions
-
-- **Tailwind**: Utility-first styling.
-- **Typography**:
-  - Small Labels: `text-[10px] font-black tracking-[0.2em] uppercase`
-  - Standard Text: `text-sm` or `text-[13px]`
-- **Colors**: Semantic usage of `muted`, `primary`, `destructive` from theme.
-- **Components**: Shadcn components should be used as primitives. Avoid custom CSS/SCSS files.
+- Tailwind utility classes. Theme tokens are CSS variables in `src/index.css` (OKLCH colors, light and dark).
+- Use semantic tokens (`muted`, `primary`, `destructive`) instead of raw colors.
+- Use shadcn components in `src/components/ui/` as primitives. Avoid custom CSS files.

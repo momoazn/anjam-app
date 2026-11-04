@@ -3,7 +3,8 @@
 ## Pre-setup
 
 - [ ] Confirm `VITE_CONVEX_URL` points to the target environment.
-- [ ] If email auth enabled, confirm `RESEND_API_KEY` and `AUTH_RESEND_FROM` are set.
+- [ ] Confirm `SITE_URL` and `BETTER_AUTH_SECRET` are set on the Convex deployment (`bunx convex env list`).
+- [ ] Note whether `AUTH_REQUIRE_EMAIL_VERIFICATION` is set. It is off by default, and the app has no email sender configured.
 - [ ] Use a clean browser profile (no cached sessions).
 
 ## Registration
@@ -39,18 +40,20 @@
 - [ ] Owner can manage org settings.
 - [ ] Member cannot access owner-only settings.
 
-## Invitations (if enabled)
+## Invitations
 
-- [ ] Send invite from owner account.
+Invites are links. The app sends no email.
+
+- [ ] Create an invite link from an owner account (Settings > Members).
 - [ ] Accept invite as new user.
 - [ ] Existing user accepts invite and sees org in switcher.
 - [ ] Invalid/expired invite token shows correct error.
 
-## Password Management (if enabled)
+## Password Management
 
-- [ ] Change password with correct current password.
-- [ ] Reject incorrect current password.
-- [ ] Confirm new password policy enforced.
+Password change is not implemented yet. The Security settings tab shows a "not implemented" message.
+
+- [ ] Confirm the Security tab shows the expected message and does not crash.
 
 ## Error/Edge Cases
 

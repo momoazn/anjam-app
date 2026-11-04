@@ -107,9 +107,10 @@ bunx vitest run src/lib/utils.test.ts
 
 **Local State** (Zustand):
 
-- `src/store/auth-store.ts` - User, organizations, authentication (persisted)
-- `src/store/sidebar-store.ts` - Sidebar UI state (persisted)
-- Both use `persist` middleware for localStorage persistence
+- `src/store/app-context-store.ts` - Current user, organizations, and active organization role
+- `src/store/filters-store.ts` - Task filters and saved filters (persisted)
+- `src/store/preferences-store.ts` - UI preferences (persisted)
+- `src/store/modal-store.ts` - Modal state
 
 ### Routing
 
@@ -137,21 +138,13 @@ Before committing: run `bun run check`
 **Required**:
 
 - `VITE_CONVEX_URL` - Convex deployment URL (auto-injected during `build:deploy`)
-- `BETTER_AUTH_SECRET` - Better Auth secret for session security (generate with `openssl rand -base64 32`)
-
-**Optional** (email via Resend):
-
-- `RESEND_API_KEY` - Resend API key
-- `AUTH_RESEND_FROM` - Sender email address
+- `SITE_URL` - Public frontend URL (Convex env; `convex/auth.ts` throws without it)
+- `BETTER_AUTH_SECRET` - Better Auth secret for session security (Convex env; generate with `openssl rand -base64 32`)
 
 **Optional** (analytics via PostHog):
 
 - `VITE_PUBLIC_POSTHOG_KEY` - PostHog project key
 - `VITE_PUBLIC_POSTHOG_HOST` - PostHog API host
-
-**System**:
-
-- `TZ=Asia/Tehran` - Application timezone (Persian calendar)
 
 ## Security Notes
 
@@ -165,8 +158,6 @@ Before committing: run `bun run check`
 
 Vite config includes manual code splitting:
 
-- `vendor` chunk: React, React Router, date libraries
-- `charts` chunk: Recharts and dependencies
-- `ui` chunk: Radix UI components
+- `vendor`, `dnd`, `icons`, `auth`, `charts`, and `ui` chunks (see `manualChunks` in `vite.config.ts`)
 
 Run `bun run build:analyze` to visualize bundle size and identify optimization opportunities.

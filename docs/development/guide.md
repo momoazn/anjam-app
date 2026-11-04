@@ -16,19 +16,29 @@ This guide provides technical guidance for developers working on the Anjam appli
 # Install dependencies
 bun install
 
-# Start Convex development server
-bunx convex dev
+# Configure environment (see .env.example)
+cp .env.example .env.local
 
-# Start frontend development server (in another terminal)
+# Start Convex and Vite together
 bun run dev
 ```
+
+The first `bunx convex dev` run creates a Convex deployment and fills `CONVEX_DEPLOYMENT` and `VITE_CONVEX_URL`. Set the Convex-side variables once:
+
+```bash
+bunx convex env set SITE_URL http://localhost:4112
+bunx convex env set BETTER_AUTH_SECRET "$(openssl rand -base64 32)"
+```
+
+`convex/auth.ts` throws if `SITE_URL` or `BETTER_AUTH_SECRET` is missing.
 
 The application will be available at `http://localhost:4112`
 
 ### Development Commands
 
-- `bun run dev` - Start frontend dev server with hot reload
-- `bunx convex dev` - Start Convex dev server (run in parallel)
+- `bun run dev` - Start Convex and the Vite dev server together
+- `bun run dev:vite` - Start only the Vite dev server (port 4112)
+- `bun run dev:convex` - Start only the Convex dev server
 
 ## Code Quality
 
@@ -72,7 +82,7 @@ bun run test:coverage # Generate coverage report
 ```
 
 - Test files are co-located as `*.test.ts(x)` next to source files
-- Coverage thresholds: 60% (lines, functions, branches, statements)
+- Coverage thresholds are set in `vitest.config.ts`
 - Focus on business logic in `src/lib/*` and critical components
 
 ### E2E Tests
@@ -88,7 +98,7 @@ bun run test:all         # Run unit (once) + E2E tests
 
 - Test directory: `e2e/`
 - Runs against `http://localhost:4112` (dev client)
-- Auto-starts dev server via `webServer` config
+- Starts the dev server through the `webServer` config in `playwright.config.ts`
 
 ## Building
 
@@ -100,9 +110,12 @@ bun run build
 
 # Preview production build
 bun run start
+
+# Deploy Convex functions, then build the frontend with the new URL
+bun run build:deploy
 ```
 
-Build outputs are in `dist/` directory.
+Build outputs are in `dist/` directory. For Docker and hosting, see the [runbook](../operations/runbook.md).
 
 ## Database & Schema
 
@@ -121,7 +134,7 @@ Convex functions are organized in `convex/`:
 
 - **Queries**: Read-only data fetching
 - **Mutations**: Data modifications
-- **Actions**: Complex operations that can call external APIs
+- **HTTP routes**: `convex/http.ts` registers the Better Auth routes
 
 ## Project Structure
 
@@ -136,16 +149,16 @@ Convex functions are organized in `convex/`:
 - `src/components/` - Reusable UI components
 - `src/pages/` - Route-level page components
 - `src/lib/` - Business logic, utilities, Convex client
-- `src/store/` - Zustand stores (auth, sidebar) with persistence
-- `src/hooks/` - Custom React hooks and TanStack Query hooks
+- `src/store/` - Zustand stores (app context, filters, modals, preferences)
+- `src/hooks/` - Custom React hooks that wrap Convex queries and mutations
 - `src/constants/` - Application constants
 
 ### Key Patterns
 
-- **Convex Client**: `src/lib/convex.ts` exports Convex client instance
-- **Data Fetching**: Use TanStack Query hooks with Convex functions
-- **Authentication**: Zustand store (`src/store/auth-store.ts`) manages auth state
-- **Type Safety**: Auto-generated types from Convex schema
+- **Convex API**: `src/lib/convex.ts` re-exports the generated `api`, `Doc`, and `Id`
+- **Data Fetching**: Custom hooks call `useQuery` and `useMutation` from `convex/react`
+- **Authentication**: Better Auth client (`src/lib/auth-client.ts`); session and organization state live in `src/store/app-context-store.ts`
+- **Type Safety**: Auto-generated types from the Convex schema
 
 ## Real-time Updates
 
@@ -167,11 +180,10 @@ Convex provides automatic real-time synchronization:
 ### Debug Mode
 
 - Frontend: Use React DevTools and browser devtools
-- Convex: Check Convex dashboard at local URL shown in terminal
+- Convex: Run `bunx convex dashboard` to open logs and data for your dev deployment
 - E2E: Use `bun run test:e2e:debug` for Playwright debugging
 
 ## Related Documentation
 
-- [System Architecture](../architecture/system-architecture.md) - High-level architecture
 - [Frontend Architecture](./frontend-architecture.md) - Frontend structure
-- [Product Design](../product/design.md) - Product design documentation
+- [Runbook](../operations/runbook.md) - Deployment and operations

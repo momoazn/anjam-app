@@ -106,7 +106,7 @@ Use this section to ensure coverage (each feature has at least one journey below
 - Org settings (name/slug/description) (`/settings/organization`)
 - Org members:
   - List members + status/role (`/settings/members`)
-  - Invite member by email (dialog)
+  - Invite member (dialog): creates an invite link and copies it to the clipboard; no email is sent
   - Invite links: create/copy/revoke + status tracking
   - Remove member
 
@@ -233,8 +233,8 @@ Requires Owner role.
 - [ ] Open `/settings/organization`
   - [ ] Update name/slug/description, save, verify toast success
 - [ ] Open `/settings/members`
-  - [ ] Invite member by email (dialog)
-  - [ ] Create invite link (choose role + max uses)
+  - [ ] Invite member (dialog) and verify an invite link is copied (no email is sent)
+  - [ ] Create invite link (set max uses)
   - [ ] Copy invite link and verify clipboard copies a URL
   - [ ] Revoke an invite link and verify status updates
   - [ ] Remove another member (verify they disappear or status changes)
