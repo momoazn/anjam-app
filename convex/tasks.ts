@@ -1,9 +1,11 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 
-import type { Doc } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
+import type { QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import {
+  assertOrgRefs,
   canDeleteTask,
   canEditTask,
   requireOrgMembership,
@@ -27,6 +29,17 @@ const taskPriorityValidator = v.union(
   v.literal("urgent"),
 );
 
+async function requireProjectInOrg(
+  ctx: QueryCtx,
+  organizationId: Id<"organizations">,
+  projectId: Id<"projects">,
+) {
+  const project = await ctx.db.get(projectId);
+  if (project?.organizationId !== organizationId) {
+    throw new Error("Project not found");
+  }
+}
+
 export const create = mutation({
   args: {
     projectId: v.id("projects"),
@@ -43,6 +56,10 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const { project } = await requireProjectAccess(ctx, args.projectId, userId);
+    await assertOrgRefs(ctx, project.organizationId, {
+      userIds: [args.assigneeUserId],
+      tagIds: args.tags,
+    });
 
     const counter = await ctx.db
       .query("projectCounters")
@@ -133,6 +150,9 @@ export const list = query({
     } catch {
       throw new Error("Not a member");
     }
+    if (args.projectId) {
+      await requireProjectInOrg(ctx, args.organizationId, args.projectId);
+    }
 
     const baseQuery = ctx.db.query("tasks");
     let q:
@@ -181,24 +201,27 @@ export const list = query({
 
     const page = await q.paginate(args.paginationOpts);
 
+    const rows = await Promise.all(
+      page.page.map(async (task) => {
+        const project = await ctx.db.get(task.projectId);
+        if (!project) return null;
+        const creator = await ctx.db.get(task.creatorUserId);
+        const assignee = task.assigneeUserId
+          ? await ctx.db.get(task.assigneeUserId)
+          : null;
+
+        return {
+          ...task,
+          creator,
+          assignee,
+          project,
+        };
+      }),
+    );
+
     return {
       ...page,
-      page: await Promise.all(
-        page.page.map(async (task) => {
-          const creator = await ctx.db.get(task.creatorUserId);
-          const assignee = task.assigneeUserId
-            ? await ctx.db.get(task.assigneeUserId)
-            : null;
-          const project = await ctx.db.get(task.projectId);
-
-          return {
-            ...task,
-            creator,
-            assignee,
-            project,
-          };
-        }),
-      ),
+      page: rows.filter((row) => row !== null),
     };
   },
 });
@@ -229,6 +252,11 @@ export const update = mutation({
     if (!canEditTask(membership, task, userId)) {
       throw new Error("You can only edit tasks you created or are assigned to");
     }
+
+    await assertOrgRefs(ctx, task.organizationId, {
+      userIds: [args.updates.assigneeUserId],
+      tagIds: args.updates.tags,
+    });
 
     await ctx.db.patch(args.taskId, {
       ...(args.updates as Partial<Doc<"tasks">>),
@@ -301,6 +329,9 @@ export const listAll = query({
     } catch {
       throw new Error("Not a member");
     }
+    if (args.projectId) {
+      await requireProjectInOrg(ctx, args.organizationId, args.projectId);
+    }
 
     const taskQuery = args.projectId
       ? ctx.db
@@ -318,13 +349,14 @@ export const listAll = query({
       .filter((filter) => filter.eq(filter.field("deletedAt"), undefined))
       .collect();
 
-    return await Promise.all(
+    const rows = await Promise.all(
       tasks.map(async (task) => {
+        const project = await ctx.db.get(task.projectId);
+        if (!project) return null;
         const creator = await ctx.db.get(task.creatorUserId);
         const assignee = task.assigneeUserId
           ? await ctx.db.get(task.assigneeUserId)
           : null;
-        const project = await ctx.db.get(task.projectId);
 
         return {
           ...task,
@@ -334,6 +366,7 @@ export const listAll = query({
         };
       }),
     );
+    return rows.filter((row) => row !== null);
   },
 });
 
@@ -348,6 +381,7 @@ export const bulkUpdate = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
+    const checkedOrgs = new Set<Id<"organizations">>();
 
     for (const id of args.ids) {
       const task = await ctx.db.get(id);
@@ -360,6 +394,13 @@ export const bulkUpdate = mutation({
         }
       } catch {
         continue;
+      }
+
+      if (!checkedOrgs.has(task.organizationId)) {
+        await assertOrgRefs(ctx, task.organizationId, {
+          userIds: [args.updates.assigneeUserId],
+        });
+        checkedOrgs.add(task.organizationId);
       }
 
       await ctx.db.patch(id, {

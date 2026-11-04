@@ -2,6 +2,7 @@ import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import {
+  assertOrgRefs,
   getActiveMembership,
   requireOrgMembership,
   requireOrgOwnerMembership,
@@ -19,6 +20,9 @@ export const create = mutation({
     const userId = await getAuthUserId(ctx);
 
     await requireOrgMembership(ctx, args.organizationId, userId);
+    await assertOrgRefs(ctx, args.organizationId, {
+      userIds: [args.supervisorUserId],
+    });
 
     // Generate unique code (3 letters)
     // In PB this was hooked. Here we do it manually.
@@ -122,6 +126,10 @@ export const update = mutation({
       "Only owners can update projects",
     );
 
+    await assertOrgRefs(ctx, project.organizationId, {
+      userIds: [args.updates.supervisorUserId],
+    });
+
     await ctx.db.patch(args.projectId, args.updates);
   },
 });
@@ -139,6 +147,38 @@ export const deleteProject = mutation({
       userId,
       "Only owners can delete projects",
     );
+
+    // ponytail: one mutation deletes everything. Very large projects can hit
+    // Convex per-mutation limits; move to a scheduled batch delete if needed.
+    const tasks = await ctx.db
+      .query("tasks")
+      .withIndex("by_projectId", (q) => q.eq("projectId", args.projectId))
+      .collect();
+    for (const task of tasks) {
+      const comments = await ctx.db
+        .query("comments")
+        .withIndex("by_taskId", (q) => q.eq("taskId", task._id))
+        .collect();
+      for (const comment of comments) {
+        const mentions = await ctx.db
+          .query("mentions")
+          .withIndex("by_comment", (q) => q.eq("commentId", comment._id))
+          .collect();
+        for (const mention of mentions) await ctx.db.delete(mention._id);
+        await ctx.db.delete(comment._id);
+      }
+      const subtasks = await ctx.db
+        .query("subtasks")
+        .withIndex("by_taskId", (q) => q.eq("taskId", task._id))
+        .collect();
+      for (const subtask of subtasks) await ctx.db.delete(subtask._id);
+      await ctx.db.delete(task._id);
+    }
+    const counters = await ctx.db
+      .query("projectCounters")
+      .withIndex("by_projectId", (q) => q.eq("projectId", args.projectId))
+      .collect();
+    for (const counter of counters) await ctx.db.delete(counter._id);
 
     await ctx.db.delete(args.projectId);
   },

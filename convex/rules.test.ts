@@ -122,3 +122,133 @@ describe("soft-deleted tasks", () => {
     ).rejects.toThrow("Task not found");
   });
 });
+
+const page = { numItems: 50, cursor: null };
+
+describe("tenant isolation", () => {
+  it("tasks.list and listAll reject a project from another org", async () => {
+    const { ownerA, ids } = await setup();
+    await expect(
+      ownerA.query(api.tasks.list, {
+        organizationId: ids.orgA,
+        projectId: ids.projectB,
+        paginationOpts: page,
+      }),
+    ).rejects.toThrow("Project not found");
+    await expect(
+      ownerA.query(api.tasks.listAll, {
+        organizationId: ids.orgA,
+        projectId: ids.projectB,
+      }),
+    ).rejects.toThrow("Project not found");
+  });
+
+  it("rejects tags and assignees from another org", async () => {
+    const { ownerA, ids } = await setup();
+    await expect(
+      ownerA.mutation(api.tasks.create, {
+        ...newTask(ids.projectA),
+        tags: [ids.tagB],
+      }),
+    ).rejects.toThrow("Tag not found");
+    await expect(
+      ownerA.mutation(api.tasks.create, {
+        ...newTask(ids.projectA),
+        assigneeUserId: ids.ownerB,
+      }),
+    ).rejects.toThrow("not a member");
+    const taskId = await ownerA.mutation(
+      api.tasks.create,
+      newTask(ids.projectA),
+    );
+    await expect(
+      ownerA.mutation(api.tasks.update, {
+        taskId,
+        updates: { tags: [ids.tagB] },
+      }),
+    ).rejects.toThrow("Tag not found");
+  });
+
+  it("rejects a parent comment from another task", async () => {
+    const { ownerA, ids } = await setup();
+    const t1 = await ownerA.mutation(api.tasks.create, newTask(ids.projectA));
+    const t2 = await ownerA.mutation(api.tasks.create, newTask(ids.projectA));
+    const parent = await ownerA.mutation(api.comments.create, {
+      taskId: t1,
+      content: "hi",
+    });
+    await expect(
+      ownerA.mutation(api.comments.create, {
+        taskId: t2,
+        content: "reply",
+        parentCommentId: parent,
+      }),
+    ).rejects.toThrow("Parent comment");
+  });
+});
+
+describe("deleteProject", () => {
+  it("removes tasks, comments, subtasks and counters", async () => {
+    const { t, ownerA, ids } = await setup();
+    const taskId = await ownerA.mutation(
+      api.tasks.create,
+      newTask(ids.projectA),
+    );
+    await ownerA.mutation(api.comments.create, { taskId, content: "c" });
+    await ownerA.mutation(api.subtasks.create, {
+      taskId,
+      title: "s",
+      order: 1,
+    });
+    await ownerA.mutation(api.projects.deleteProject, {
+      projectId: ids.projectA,
+    });
+    const left = await t.run(async (ctx) => ({
+      tasks: (await ctx.db.query("tasks").collect()).length,
+      comments: (await ctx.db.query("comments").collect()).length,
+      subtasks: (await ctx.db.query("subtasks").collect()).length,
+      counters: (await ctx.db.query("projectCounters").collect()).length,
+    }));
+    expect(left).toEqual({ tasks: 0, comments: 0, subtasks: 0, counters: 0 });
+  });
+});
+
+describe("orgMembers.remove", () => {
+  it("blocks removing the last owner, including self", async () => {
+    const { ownerA, ids } = await setup();
+    await expect(
+      ownerA.mutation(api.orgMembers.remove, {
+        organizationId: ids.orgA,
+        userId: ids.ownerA,
+      }),
+    ).rejects.toThrow("last organization owner");
+  });
+
+  it("lets a member remove only themselves", async () => {
+    const { memberA, ids } = await setup();
+    await expect(
+      memberA.mutation(api.orgMembers.remove, {
+        organizationId: ids.orgA,
+        userId: ids.ownerA,
+      }),
+    ).rejects.toThrow("Only owners");
+    await memberA.mutation(api.orgMembers.remove, {
+      organizationId: ids.orgA,
+      userId: ids.memberA,
+    });
+  });
+
+  it("unassigns open tasks of the removed user", async () => {
+    const { ownerA, ids } = await setup();
+    const taskId = await ownerA.mutation(api.tasks.create, {
+      ...newTask(ids.projectA),
+      assigneeUserId: ids.memberA,
+    });
+    await ownerA.mutation(api.orgMembers.remove, {
+      organizationId: ids.orgA,
+      userId: ids.memberA,
+    });
+    const task = await ownerA.query(api.tasks.get, { taskId });
+    expect(task?.assigneeUserId).toBeUndefined();
+  });
+});

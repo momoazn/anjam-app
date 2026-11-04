@@ -7,6 +7,11 @@
  * To regenerate, run `npx convex dev`.
  * @module
  */
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
 
 import type * as auth from "../auth.js";
 import type * as comments from "../comments.js";
@@ -27,12 +32,6 @@ import type * as tags from "../tags.js";
 import type * as tasks from "../tasks.js";
 import type * as users from "../users.js";
 import type * as utils from "../utils.js";
-
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;

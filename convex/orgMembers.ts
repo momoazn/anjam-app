@@ -1,7 +1,11 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { requireOrgMembership, requireOrgOwnerMembership } from "./lib/auth";
+import {
+  getActiveMembership,
+  requireOrgMembership,
+  requireOrgOwnerMembership,
+} from "./lib/auth";
 import { getAuthUserId } from "./utils";
 
 export const listByOrg = query({
@@ -34,12 +38,17 @@ export const remove = mutation({
   },
   handler: async (ctx, args) => {
     const requesterId = await getAuthUserId(ctx);
-    await requireOrgOwnerMembership(
+    const requester = await getActiveMembership(
       ctx,
       args.organizationId,
       requesterId,
-      "Only owners can remove members",
     );
+    if (!requester) throw new Error("Not a member");
+
+    const isSelf = args.userId === requesterId;
+    if (!isSelf && requester.role !== "owner") {
+      throw new Error("Only owners can remove members");
+    }
 
     const targetMembership = await ctx.db
       .query("organizationMembers")
@@ -50,6 +59,44 @@ export const remove = mutation({
 
     if (!targetMembership) {
       return;
+    }
+
+    if (
+      targetMembership.role === "owner" &&
+      targetMembership.status === "active"
+    ) {
+      const owners = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_org", (q) => q.eq("organizationId", args.organizationId))
+        .filter((q) =>
+          q.and(
+            q.eq(q.field("role"), "owner"),
+            q.eq(q.field("status"), "active"),
+          ),
+        )
+        .collect();
+      if (owners.length <= 1) {
+        throw new Error("Cannot remove the last organization owner");
+      }
+    }
+
+    // Unassign the removed user's open tasks in this organization.
+    const assigned = await ctx.db
+      .query("tasks")
+      .withIndex("by_assignee", (q) => q.eq("assigneeUserId", args.userId))
+      .collect();
+    for (const task of assigned) {
+      if (
+        task.organizationId === args.organizationId &&
+        task.deletedAt === undefined &&
+        task.status !== "done" &&
+        task.status !== "cancelled"
+      ) {
+        await ctx.db.patch(task._id, {
+          assigneeUserId: undefined,
+          updatedAt: Date.now(),
+        });
+      }
     }
 
     await ctx.db.delete(targetMembership._id);

@@ -4,6 +4,7 @@ import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import {
+  assertOrgRefs,
   canEditTask,
   requireOrgMembership,
   requireTaskAccess,
@@ -61,7 +62,10 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    await requireSubtaskEdit(ctx, args.taskId, userId);
+    const task = await requireSubtaskEdit(ctx, args.taskId, userId);
+    await assertOrgRefs(ctx, task.organizationId, {
+      userIds: [args.assigneeUserId],
+    });
 
     return await ctx.db.insert("subtasks", {
       taskId: args.taskId,
@@ -89,7 +93,10 @@ export const update = mutation({
     const subtask = await ctx.db.get(args.subtaskId);
     if (!subtask) throw new Error("Subtask not found");
 
-    await requireSubtaskEdit(ctx, subtask.taskId, userId);
+    const task = await requireSubtaskEdit(ctx, subtask.taskId, userId);
+    await assertOrgRefs(ctx, task.organizationId, {
+      userIds: [args.updates.assigneeUserId],
+    });
 
     await ctx.db.patch(args.subtaskId, {
       ...args.updates,

@@ -45,6 +45,13 @@ export const create = mutation({
     const userId = await getAuthUserId(ctx);
     const { task, project } = await requireTaskAccess(ctx, args.taskId, userId);
 
+    if (args.parentCommentId) {
+      const parent = await ctx.db.get(args.parentCommentId);
+      if (parent?.taskId !== args.taskId) {
+        throw new Error("Parent comment not found on this task");
+      }
+    }
+
     const commentId = await ctx.db.insert("comments", {
       taskId: args.taskId,
       userId,
