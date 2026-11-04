@@ -388,16 +388,9 @@ const routes: RouteType[] = [
     requiresOrg: true,
     title: insights.title,
   },
-  // Backward-compatible aliases for legacy analytics/reporting routes.
+  // Backward-compatible alias for the legacy reporting route.
   {
     path: "/reports",
-    element: <Insights />,
-    protected: true,
-    requiresOrg: true,
-    title: insights.title,
-  },
-  {
-    path: "/audit-logs",
     element: <Insights />,
     protected: true,
     requiresOrg: true,

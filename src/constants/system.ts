@@ -1,4 +1,4 @@
-// System-level constants (errors, notifications, audit logs, settings, helps, timesheet)
+// System-level constants (errors, notifications, settings, helps, timesheet)
 import { shared } from "./core";
 
 // Error messages module constants
@@ -121,87 +121,6 @@ export const notifications = {
     viewTask: "مشاهده تسک",
     byTask: "در تسک {task}",
   },
-} as const;
-
-export const auditLogs = {
-  title: "لاگ‌های تغییرات",
-  actions: {
-    create: "ایجاد",
-    update: "به‌روزرسانی",
-    delete: "حذف",
-  },
-  resources: {
-    task: "تسک",
-    project: "پروژه",
-    tasks: "تسک‌ها",
-    projects: "پروژه‌ها",
-    users: "کاربران",
-  },
-  actorTypes: {
-    system: "سیستم",
-    unknown: "نامشخص",
-  },
-  filters: {
-    search: shared.search,
-    clear: shared.clear,
-    resource: shared.resource,
-    allPlaceholder: "همه",
-    all: shared.all,
-    action: shared.action,
-    client: "کلاینت",
-  },
-  empty: {
-    empty: "—",
-    noResults: "موردی برای نمایش وجود ندارد",
-  },
-  activityStream: {
-    title: "تاریخچه تغییرات",
-    created: "{actor} یک {resource} ایجاد کرد",
-    deleted: "{actor} یک {resource} حذف کرد",
-    changed: "{actor} یک {resource} را تغییر داد",
-    updated: "{actor} فیلد {field} را از {old} به {new} تغییر داد",
-    defaultMessage: "{actor} عملیات {action} را انجام داد",
-    showDetails: "نمایش جزئیات",
-    hideDetails: "پنهان کردن جزئیات",
-    hideDetailsButton: "پنهان کردن",
-    viewDetailsButton: "مشاهده جزئیات",
-    field: "فیلد",
-    original: "مقدار قبلی",
-    newValue: "مقدار جدید",
-    empty: "تغییری برای نمایش وجود ندارد",
-    collapsed: "بسته شده",
-    clickToLoad: "برای بارگذاری تاریخچه فعالیت کلیک کنید",
-  },
-  table: {
-    changes: "تغییرات",
-    timestamp: "زمان",
-    actor: "کاربر",
-    action: "عملیات",
-    resource: "منبع",
-    client: "کلاینت",
-    message: "پیام",
-    viewChanges: "مشاهده تغییرات",
-    noChanges: "بدون تغییر",
-  },
-  labels: {
-    before: "قبل:",
-    after: "بعد:",
-  },
-  errors: {
-    loadHistoryFailed: "نتوانستیم تاریخچه را بارگذاری کنیم",
-    loadFailed: "بارگذاری لاگ‌ها ناموفق بود",
-  },
-  clients: {
-    web: "وب",
-    cli: "خط فرمان",
-    automation: "اتوماسیون",
-    unknown: "نامشخص",
-  },
-  pagination: {
-    pageOf: "صفحه {page} از {totalPages}",
-  },
-  totalEntries: "{count} مورد ثبت شده",
-  description: "لاگ فعالیت‌های کل سیستم",
 } as const;
 
 export const settings = {

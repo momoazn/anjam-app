@@ -10,13 +10,4 @@ test.describe("Reports", () => {
       '[data-testid="insights-page"]',
     );
   });
-
-  test("audit logs alias routes to insights", async ({ page }) => {
-    await page.goto("/audit-logs");
-    await expectPageReady(
-      page,
-      /\/(audit-logs|insights)/,
-      '[data-testid="insights-page"]',
-    );
-  });
 });
