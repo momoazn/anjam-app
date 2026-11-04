@@ -53,7 +53,7 @@ Convex calls live in custom hooks in `src/hooks/`, one file per resource (`tasks
 - **Projects**: list, details, and per-project task list and board.
 - **Tasks**: list, board (drag and drop with dnd-kit), and calendar views. Subtasks, tags, comments with mentions, and saved filters ("views").
 - **Inbox and notifications**: assigned, mentioned, and recently updated tasks, plus a notification list.
-- **Insights**: simple metrics from `convex/insights.ts`.
+- **Insights**: simple metrics computed on the client from task data.
 - **Settings**: profile, appearance, preferences, organization, and members (invite links).
 
 ## 5. Persian and RTL
