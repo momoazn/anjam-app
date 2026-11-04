@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { projects } from "@/constants";
 import { useDeleteProject } from "@/hooks/projects";
+import { handleError } from "@/lib/error-handler";
 
 type Project = {
   _id: string;
@@ -32,7 +33,11 @@ export function DeleteProjectDialog({
 
   const handleConfirm = async () => {
     if (!project) return;
-    await deleteProject.mutate(project._id);
+    try {
+      await deleteProject.mutate(project._id);
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   return (

@@ -25,6 +25,7 @@ import { useTags } from "@/hooks/tags";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
 import { formatDateShort } from "@/lib/date-utils";
+import { handleError } from "@/lib/error-handler";
 import { getStatusColorVariant } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { TaskWithProject } from "@/types/tasks";
@@ -71,19 +72,23 @@ export function BoardCard({ task }: BoardCardProps) {
   const displayId = task.displayId || "";
 
   const handleAssigneeChange = (value: string) => {
-    updateTask.mutate({
-      id: taskId,
-      updates: { assigneeUserId: value === "__unassigned" ? null : value },
-    });
-    toast.success(tasks.edit.success);
+    updateTask
+      .mutate({
+        id: taskId,
+        updates: { assigneeUserId: value === "__unassigned" ? null : value },
+      })
+      .then(() => toast.success(tasks.edit.success))
+      .catch(handleError);
   };
 
   const handleDueDateChange = (date: Date | undefined) => {
-    updateTask.mutate({
-      id: taskId,
-      updates: { deadline: date ? date.getTime() : null },
-    });
-    toast.success(tasks.edit.success);
+    updateTask
+      .mutate({
+        id: taskId,
+        updates: { deadline: date ? date.getTime() : null },
+      })
+      .then(() => toast.success(tasks.edit.success))
+      .catch(handleError);
   };
 
   const handleCardClick = () => {

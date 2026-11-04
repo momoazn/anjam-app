@@ -8,6 +8,7 @@ import { comments } from "@/constants";
 import { useCreateComment } from "@/hooks/comments";
 import type { CommentWithUser } from "@/hooks/comments";
 import { useCommentMentions } from "@/hooks/use-comment-mentions";
+import { handleError } from "@/lib/error-handler";
 
 type CommentComposerProps = {
   taskId: string;
@@ -39,15 +40,21 @@ export function CommentComposer({
   const trimmedContent = useMemo(() => content.trim(), [content]);
   const isDisabled = !currentUser || createComment.isPending;
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!currentUser || !trimmedContent) return;
 
-    createComment.mutate({
-      taskId,
-      content: trimmedContent,
-      parentCommentId: replyTarget?._id,
-    });
+    try {
+      await createComment.mutate({
+        taskId,
+        content: trimmedContent,
+        parentCommentId: replyTarget?._id,
+      });
+    } catch (error) {
+      // Keep the draft so the user can retry.
+      handleError(error);
+      return;
+    }
 
     setContent("");
     onCommentAdded?.();

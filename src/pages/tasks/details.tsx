@@ -23,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { useComments } from "@/hooks/comments";
 import { useDeleteTask, useTask } from "@/hooks/tasks";
+import { handleError } from "@/lib/error-handler";
 import { canDeleteTask, canEditTask } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
@@ -177,8 +178,12 @@ export default function TaskDetails() {
 
                 pendingDeleteRef.current = window.setTimeout(async () => {
                   pendingDeleteRef.current = null;
-                  await deleteTask.mutate(task._id);
-                  navigate("/tasks");
+                  try {
+                    await deleteTask.mutate(task._id);
+                    navigate("/tasks");
+                  } catch (error) {
+                    handleError(error);
+                  }
                 }, 100);
               }}
               disabled={deleteTask.isPending}

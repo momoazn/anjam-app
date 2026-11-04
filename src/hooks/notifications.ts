@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 
 import { authClient } from "@/lib/auth-client";
 import { Id, api } from "@/lib/convex";
+import { handleError } from "@/lib/error-handler";
 
 export function useNotifications() {
   const { data: session } = authClient.useSession();
@@ -45,6 +46,15 @@ export function useNotificationMutation(action: NotificationMutationAction) {
   const clearReadMutation = useMutation(api.notifications.clearRead);
 
   const mutate = async (id?: string) => {
+    try {
+      return await run(id);
+    } catch (error) {
+      handleError(error);
+      return undefined;
+    }
+  };
+
+  const run = async (id?: string) => {
     switch (action) {
       case "markRead":
         if (!id) return undefined;
