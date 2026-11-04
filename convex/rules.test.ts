@@ -432,3 +432,43 @@ describe("mentions.listForMe", () => {
     expect(await memberA.query(api.mentions.listForMe, {})).toHaveLength(0);
   });
 });
+
+describe("bulk operations and comment moderation", () => {
+  it("returns the real count and skips tasks the caller cannot touch", async () => {
+    const { ownerA, memberA, ids } = await setup();
+    const own = await memberA.mutation(api.tasks.create, newTask(ids.projectA));
+    const foreign = await ownerA.mutation(
+      api.tasks.create,
+      newTask(ids.projectA),
+    );
+    const updates = { priority: "high" as const };
+    expect(
+      await memberA.mutation(api.tasks.bulkUpdate, {
+        ids: [own, foreign],
+        updates,
+      }),
+    ).toBe(1);
+    expect(
+      await memberA.mutation(api.tasks.bulkDelete, { ids: [own, foreign] }),
+    ).toBe(1);
+  });
+
+  it("lets the owner delete but not edit a member's comment", async () => {
+    const { ownerA, memberA, ids } = await setup();
+    const taskId = await ownerA.mutation(
+      api.tasks.create,
+      newTask(ids.projectA),
+    );
+    const commentId = await memberA.mutation(api.comments.create, {
+      taskId,
+      content: "hi",
+    });
+    await expect(
+      ownerA.mutation(api.comments.update, {
+        commentId,
+        updates: { content: "x" },
+      }),
+    ).rejects.toThrow("only edit your own");
+    await ownerA.mutation(api.comments.softDelete, { commentId });
+  });
+});

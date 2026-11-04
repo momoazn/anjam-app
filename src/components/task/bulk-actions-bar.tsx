@@ -18,10 +18,10 @@ import { TaskPriority, TaskStatus } from "@/types/tasks";
 interface BulkActionsBarProps {
   selectedCount: number;
   onClearSelection: () => void;
-  onBulkDelete: () => Promise<void>;
-  onBulkAssign: (assigneeId: string) => Promise<void>;
-  onBulkStatus: (status: TaskStatus) => Promise<void>;
-  onBulkPriority: (priority: TaskPriority) => Promise<void>;
+  onBulkDelete: () => Promise<number>;
+  onBulkAssign: (assigneeId: string) => Promise<number>;
+  onBulkStatus: (status: TaskStatus) => Promise<number>;
+  onBulkPriority: (priority: TaskPriority) => Promise<number>;
   users: Array<{
     _id: string;
     displayName: string;
@@ -46,12 +46,10 @@ export function BulkActionsBar({
   const handleBulkAssign = async (userId: string) => {
     try {
       setIsLoading(true);
-      await onBulkAssign(userId);
+      const count = await onBulkAssign(userId);
+      if (count === 0) throw new Error("none");
       toast.success(
-        tasks.bulkActions.assignSuccess.replace(
-          "{count}",
-          digitsEnToFa(selectedCount),
-        ),
+        tasks.bulkActions.assignSuccess.replace("{count}", digitsEnToFa(count)),
       );
     } catch {
       toast.error(tasks.bulkActions.assignError);
@@ -63,12 +61,10 @@ export function BulkActionsBar({
   const handleBulkStatus = async (status: TaskStatus) => {
     try {
       setIsLoading(true);
-      await onBulkStatus(status);
+      const count = await onBulkStatus(status);
+      if (count === 0) throw new Error("none");
       toast.success(
-        tasks.bulkActions.statusSuccess.replace(
-          "{count}",
-          digitsEnToFa(selectedCount),
-        ),
+        tasks.bulkActions.statusSuccess.replace("{count}", digitsEnToFa(count)),
       );
     } catch {
       toast.error(tasks.bulkActions.statusError);
@@ -80,12 +76,10 @@ export function BulkActionsBar({
   const handleBulkPriority = async (priority: TaskPriority) => {
     try {
       setIsLoading(true);
-      await onBulkPriority(priority);
+      const count = await onBulkPriority(priority);
+      if (count === 0) throw new Error("none");
       toast.success(
-        tasks.bulkActions.prioritySuccess.replace(
-          "{count}",
-          String(selectedCount),
-        ),
+        tasks.bulkActions.prioritySuccess.replace("{count}", String(count)),
       );
     } catch {
       toast.error(tasks.bulkActions.priorityError);
@@ -97,12 +91,10 @@ export function BulkActionsBar({
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      await onBulkDelete();
+      const count = await onBulkDelete();
+      if (count === 0) throw new Error("none");
       toast.success(
-        tasks.bulkActions.deleteSuccess.replace(
-          "{count}",
-          digitsEnToFa(selectedCount),
-        ),
+        tasks.bulkActions.deleteSuccess.replace("{count}", digitsEnToFa(count)),
       );
       setShowDeleteDialog(false);
     } catch {

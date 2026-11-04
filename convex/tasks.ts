@@ -482,6 +482,7 @@ export const bulkUpdate = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const checkedOrgs = new Set<Id<"organizations">>();
+    let updated = 0;
 
     for (const id of args.ids) {
       const task = await ctx.db.get(id);
@@ -511,7 +512,9 @@ export const bulkUpdate = mutation({
         }),
         updatedAt: Date.now(),
       });
+      updated++;
     }
+    return updated;
   },
 });
 
@@ -521,6 +524,7 @@ export const bulkDelete = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
+    let deleted = 0;
 
     for (const id of args.ids) {
       const task = await ctx.db.get(id);
@@ -536,6 +540,8 @@ export const bulkDelete = mutation({
       }
 
       await ctx.db.patch(id, { deletedAt: Date.now() });
+      deleted++;
     }
+    return deleted;
   },
 });

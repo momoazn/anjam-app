@@ -265,33 +265,37 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
   }, [taskQuery.data?.items, taskQuery.isPending]);
 
   const handleBulkDelete = async () => {
-    await bulkDelete.mutate(selectedTasks);
+    const count = await bulkDelete.mutate(selectedTasks);
     setSelectedTasks([]);
     setSelectionMode(false);
+    return count;
   };
 
   const handleBulkAssign = async (assigneeId: string) => {
-    await bulkUpdate.mutate({
+    const count = await bulkUpdate.mutate({
       ids: selectedTasks,
       updates: { assignee: assigneeId },
     });
     setSelectedTasks([]);
+    return count;
   };
 
   const handleBulkStatus = async (status: TaskStatus) => {
-    await bulkUpdate.mutate({
+    const count = await bulkUpdate.mutate({
       ids: selectedTasks,
       updates: { status },
     });
     setSelectedTasks([]);
+    return count;
   };
 
   const handleBulkPriority = async (priority: TaskPriority) => {
-    await bulkUpdate.mutate({
+    const count = await bulkUpdate.mutate({
       ids: selectedTasks,
       updates: { priority },
     });
     setSelectedTasks([]);
+    return count;
   };
 
   const toggleSelectionMode = useCallback(() => {
