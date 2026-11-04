@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  canDeleteTask,
+  canEditTask,
   computePermissions,
   isOrgAdmin,
   isOrgMember,
@@ -44,5 +46,27 @@ describe("computePermissions", () => {
     const permissions = computePermissions("member", "viewer");
     expect(permissions["task.view"]).toBe(true);
     expect(permissions["task.create"]).toBe(false);
+  });
+});
+
+const task = { creatorUserId: "creator", assigneeUserId: "assignee" };
+
+describe("task permissions", () => {
+  it("lets the owner do everything", () => {
+    expect(canEditTask("owner", task, "x")).toBe(true);
+    expect(canDeleteTask("owner", task, "x")).toBe(true);
+  });
+  it("lets the creator edit and delete", () => {
+    expect(canEditTask("member", task, "creator")).toBe(true);
+    expect(canDeleteTask("member", task, "creator")).toBe(true);
+  });
+  it("lets the assignee edit but not delete", () => {
+    expect(canEditTask("member", task, "assignee")).toBe(true);
+    expect(canDeleteTask("member", task, "assignee")).toBe(false);
+  });
+  it("blocks other members and signed-out users", () => {
+    expect(canEditTask("member", task, "other")).toBe(false);
+    expect(canDeleteTask("member", task, "other")).toBe(false);
+    expect(canEditTask("member", task, undefined)).toBe(false);
   });
 });

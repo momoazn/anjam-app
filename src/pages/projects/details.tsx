@@ -15,12 +15,11 @@ import { common, projects } from "@/constants";
 import { useProject, useUpdateProject } from "@/hooks/projects";
 import { useAllTasks } from "@/hooks/tasks";
 import { cn } from "@/lib/utils";
-import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
+import { useCurrentOrgRole } from "@/store/app-context-store";
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const user = useAuthUser();
   const currentOrgRole = useCurrentOrgRole();
   const isAdmin = currentOrgRole === "owner";
 
@@ -39,7 +38,7 @@ export default function ProjectDetails() {
     enabled: !!id,
   });
 
-  const canEdit = isAdmin || project?.supervisorUserId === user?._id;
+  const canEdit = isAdmin;
 
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject({
     onSuccess: () => {

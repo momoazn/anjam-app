@@ -23,7 +23,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { useComments } from "@/hooks/comments";
 import { useDeleteTask, useTask } from "@/hooks/tasks";
+import { canDeleteTask, canEditTask } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
+import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 import { useOpenModal } from "@/store/modal-store";
 
 export default function TaskDetails() {
@@ -44,6 +46,10 @@ export default function TaskDetails() {
   );
 
   const deleteTask = useDeleteTask();
+  const role = useCurrentOrgRole();
+  const user = useAuthUser();
+  const canEdit = !!task && canEditTask(role, task, user?._id);
+  const canDelete = !!task && canDeleteTask(role, task, user?._id);
 
   if (taskLoading) {
     return <TaskDetailsSkeleton />;
@@ -99,25 +105,29 @@ export default function TaskDetails() {
               <ChevronRight className="h-4 w-4 rotate-180" />
               {tasks.details.backToList}
             </Button>
-            <Button
-              variant="outline"
-              size="xs"
-              onClick={() => openModal("edit-task", { taskId: id })}
-              className="gap-2"
-            >
-              <Pencil className="h-4 w-4" />
-              {tasks.details.editButton}
-            </Button>
-            <Button
-              variant="ghost"
-              size="xs"
-              onClick={() => setShowDeleteDialog(true)}
-              disabled={deleteTask.isPending}
-              className="text-destructive hover:bg-destructive/10 gap-2"
-            >
-              <Trash className="h-4 w-4" />
-              {tasks.details.buttons.delete}
-            </Button>
+            {canEdit && (
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={() => openModal("edit-task", { taskId: id })}
+                className="gap-2"
+              >
+                <Pencil className="h-4 w-4" />
+                {tasks.details.editButton}
+              </Button>
+            )}
+            {canDelete && (
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={deleteTask.isPending}
+                className="text-destructive hover:bg-destructive/10 gap-2"
+              >
+                <Trash className="h-4 w-4" />
+                {tasks.details.buttons.delete}
+              </Button>
+            )}
           </div>
         }
       />
@@ -132,8 +142,10 @@ export default function TaskDetails() {
 
         <TaskDetailsSidebar
           task={task}
-          onEdit={() => openModal("edit-task", { taskId: id })}
-          onDelete={() => setShowDeleteDialog(true)}
+          onEdit={
+            canEdit ? () => openModal("edit-task", { taskId: id }) : undefined
+          }
+          onDelete={canDelete ? () => setShowDeleteDialog(true) : undefined}
           isDeleting={deleteTask.isPending}
         />
       </div>

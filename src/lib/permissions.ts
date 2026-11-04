@@ -144,3 +144,26 @@ export function computePermissions(
     "comment.delete_any": canEditAnyTask(orgRole, projectRole),
   };
 }
+
+type TaskActors = { creatorUserId: string; assigneeUserId?: string };
+
+/** Mirrors `canEditTask` in convex/lib/auth.ts. */
+export function canEditTask(
+  role: OrgRole | null | undefined,
+  task: TaskActors,
+  userId: string | null | undefined,
+): boolean {
+  if (isOrgOwner(role)) return true;
+  if (!userId) return false;
+  return task.creatorUserId === userId || task.assigneeUserId === userId;
+}
+
+/** Mirrors `canDeleteTask` in convex/lib/auth.ts. */
+export function canDeleteTask(
+  role: OrgRole | null | undefined,
+  task: TaskActors,
+  userId: string | null | undefined,
+): boolean {
+  if (isOrgOwner(role)) return true;
+  return !!userId && task.creatorUserId === userId;
+}

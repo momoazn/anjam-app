@@ -32,8 +32,8 @@ interface TaskWithDetails extends Task {
 
 type TaskDetailsSidebarProps = {
   task: TaskWithDetails;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   isDeleting: boolean;
 };
 
@@ -145,41 +145,46 @@ export function TaskDetailsSidebar({
         </Card>
       </section>
 
-      {/* Operator Actions Block */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
-            <IconSettings className="size-4" />
+      {(onEdit || onDelete) && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
+              <IconSettings className="size-4" />
+            </div>
+            <span className="text-xs font-bold tracking-tight">
+              {tasks.details.actionsCardTitle}
+            </span>
           </div>
-          <span className="text-xs font-bold tracking-tight">
-            {tasks.details.actionsCardTitle}
-          </span>
-        </div>
 
-        <Card className="relative overflow-hidden p-0">
-          <CardContent className="relative z-10 space-y-2 p-4">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
-              onClick={onEdit}
-            >
-              <IconPencil className="size-4" />
-              {tasks.details.editTaskButton}
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
-              onClick={onDelete}
-              disabled={isDeleting}
-            >
-              <IconTrash className="size-4" />
-              {isDeleting
-                ? tasks.details.buttons.deleting
-                : tasks.details.buttons.delete}
-            </Button>
-          </CardContent>
-        </Card>
-      </section>
+          <Card className="relative overflow-hidden p-0">
+            <CardContent className="relative z-10 space-y-2 p-4">
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
+                  onClick={onEdit}
+                >
+                  <IconPencil className="size-4" />
+                  {tasks.details.editTaskButton}
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
+                  onClick={onDelete}
+                  disabled={isDeleting}
+                >
+                  <IconTrash className="size-4" />
+                  {isDeleting
+                    ? tasks.details.buttons.deleting
+                    : tasks.details.buttons.delete}
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </section>
+      )}
 
       {/* Info Block */}
       <Card className="bg-muted/30 border-dashed p-0">
