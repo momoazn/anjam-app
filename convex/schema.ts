@@ -101,10 +101,7 @@ export default defineSchema({
     .index("by_org", ["organizationId"])
     .index("by_project_taskNumber", ["projectId", "taskNumber"])
     .index("by_assignee", ["assigneeUserId"])
-    .index("by_creator", ["creatorUserId"])
     .index("by_creator_updatedAt", ["creatorUserId", "updatedAt"])
-    .index("by_status", ["status"])
-    .index("by_deletedAt", ["deletedAt"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: [
@@ -134,9 +131,7 @@ export default defineSchema({
     reactions: v.optional(v.any()), // JSON
     deletedAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
-  })
-    .index("by_taskId", ["taskId"])
-    .index("by_deletedAt", ["deletedAt"]),
+  }).index("by_taskId", ["taskId"]),
 
   mentions: defineTable({
     mentionedUserId: v.id("users"),
@@ -173,7 +168,9 @@ export default defineSchema({
     expiresAt: v.optional(v.number()),
     uses: v.number(),
     inviterId: v.id("users"),
-  }).index("by_token", ["token"]),
+  })
+    .index("by_token", ["token"])
+    .index("by_org", ["organizationId"]),
 
   subtasks: defineTable({
     taskId: v.id("tasks"),

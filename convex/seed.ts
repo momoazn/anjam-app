@@ -326,6 +326,11 @@ export const seedDevData = internalAction({
     reset: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    if (process.env.ALLOW_DEV_SEED !== "true") {
+      throw new Error(
+        "Seeding is disabled. Set ALLOW_DEV_SEED=true on a development deployment.",
+      );
+    }
     const authUsers: Array<{
       email: string;
       authUserId: string;

@@ -90,7 +90,10 @@ Open <http://localhost:4112>.
 
 The internal `seed:seedDevData` action creates two demo organizations, five users, one project, and one tag. The end-to-end tests use this data.
 
+The action refuses to run unless the deployment has `ALLOW_DEV_SEED=true`. Set it on development deployments only, and never on production.
+
 ```bash
+bunx convex env set ALLOW_DEV_SEED true
 bunx convex run seed:seedDevData '{"reset": true}'
 ```
 
@@ -153,6 +156,7 @@ The tests need a running dev backend with seeded data. Playwright starts `bun ru
 
 ```bash
 bunx playwright install chromium
+bunx convex env set ALLOW_DEV_SEED true
 bunx convex run seed:seedDevData '{"reset": true}'
 bun run test:e2e
 ```
