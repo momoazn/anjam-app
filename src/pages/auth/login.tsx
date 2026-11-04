@@ -35,7 +35,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { identity?: string; password?: string } = {};
-    if (!identity.trim()) newErrors.identity = auth.errors.usernameRequired;
+    if (!identity.trim()) newErrors.identity = auth.errors.emailRequired;
     if (!password.trim()) newErrors.password = auth.errors.passwordRequired;
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
@@ -106,11 +106,8 @@ export default function Login() {
       <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-125 lg:px-12 xl:w-[600px] xl:px-20">
         <PageTransition className="w-full" disableStagger>
           <ErrorBoundary>
-            <div className="mb-10 lg:hidden">
-              <Logo size={64} className="mb-6" />
-              <h2 className="text-4xl font-bold tracking-tight">
-                {auth.login.title}
-              </h2>
+            <div className="mb-8 lg:hidden">
+              <Logo size={48} showText />
             </div>
 
             <div className="bg-card border-border relative rounded-2xl border p-8 shadow-xl lg:p-10">
@@ -130,12 +127,13 @@ export default function Login() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-muted-foreground text-xs font-bold tracking-tight">
-                      {auth.login.username}
+                      {auth.login.email}
                     </Label>
                     <IconUserBolt className="text-muted-foreground/40 size-3.5" />
                   </div>
                   <Input
-                    type="text"
+                    type="email"
+                    autoComplete="email"
                     value={identity}
                     dir="ltr"
                     onChange={(e) => setIdentity(e.target.value)}
@@ -216,7 +214,9 @@ export default function Login() {
             </div>
 
             <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
-              {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}
+              {digitsEnToFa(
+                `© ${new Date().getFullYear()} ${auth.visual.copyright}`,
+              )}
             </p>
           </ErrorBoundary>
         </PageTransition>

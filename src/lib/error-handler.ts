@@ -42,7 +42,8 @@ export function handleError(error: unknown): void {
     message.includes("already exists")
   ) {
     toast.error(auth.errors.userAlreadyExists);
-  } else if (errorMessage) {
+  } else if (/[\u0600-\u06FF]/.test(errorMessage)) {
+    // Show only Persian messages. English server text goes to the log.
     toast.error(errorMessage);
   } else {
     toast.error(auth.errors.serverError);

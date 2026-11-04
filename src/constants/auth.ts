@@ -3,7 +3,7 @@
 export const auth = {
   login: {
     title: "ورود به سیستم",
-    username: "نام کاربری یا ایمیل",
+    email: "ایمیل",
     password: "رمز عبور",
     loginButton: "ورود",
     loggingIn: "در حال ورود...",
@@ -16,8 +16,8 @@ export const auth = {
     },
     secureAccess: "ورود امن به انجام",
     errors: {
-      credentialsRequired: "لطفاً نام کاربری و رمز عبور را وارد کنید",
-      invalidCredentials: "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید",
+      credentialsRequired: "ایمیل و رمز عبور را وارد کنید",
+      invalidCredentials: "ایمیل یا رمز عبور اشتباه است. دوباره تلاش کنید",
     },
   },
   // Visual content (left side)
@@ -25,7 +25,7 @@ export const auth = {
     systemDevelopment: "سامانه مدیریت پروژه",
     management: "انجام",
     description:
-      "ابزار مهندسی‌شده برای تیم‌هایی که خواستار انضباط و شفافیت مطلق در مدیریت تسک‌ها و پروژه‌های سازمانی هستند.",
+      "تسک‌ها، پروژه‌ها و تیم‌تان را در یک جا مدیریت کنید. بورد، لیست و تقویم شمسی، با همگام‌سازی لحظه‌ای.",
     copyright: "تمامی حقوق محفوظ است.",
   },
   register: {
@@ -42,7 +42,7 @@ export const auth = {
     loginButton: "بازگشت به ورود",
     haveAccountPrompt: "قبلا ثبت‌نام کرده‌اید؟",
     success: "حساب کاربری با موفقیت ایجاد شد",
-    initialAdminMessage: "با ایمیل و نام کاربری و رمز عبور خود ثبت‌نام کنید.",
+    initialAdminMessage: "با ایمیل و رمز عبور خود ثبت‌نام کنید.",
     errors: {
       credentialsRequired: "لطفاً اطلاعات لازم را وارد کنید",
       passwordsMismatch: "رمزهای عبور با هم مطابقت ندارند",
@@ -58,6 +58,7 @@ export const auth = {
   invite: {
     title: "پیوستن به سازمان",
     joining: "پیوستن به {orgName}",
+    orgFallback: "سازمان",
     joinButton: "عضویت",
     joiningButton: "در حال عضویت...",
     welcomeMessage: "با ایمیل و رمز عبور خود ثبت‌نام کنید.",
@@ -129,7 +130,7 @@ export const auth = {
     passwordInvalid: "رمز عبور معتبر نیست",
     userAlreadyExists:
       "این نام کاربری قبلاً استفاده شده. نام دیگری انتخاب کنید",
-    invalidCredentials: "نام کاربری یا رمز عبور اشتباه است",
+    invalidCredentials: "ایمیل یا رمز عبور اشتباه است",
     userInactive:
       "حساب کاربری شما غیرفعال است. لطفاً با ادمین سیستم تماس بگیرید",
     userBlocked:
