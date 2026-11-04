@@ -1,6 +1,7 @@
+import { useConvex } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -13,7 +14,7 @@ import { ModalManager } from "@/components/modals/modal-manager";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { loading } from "@/constants";
+import { app, loading } from "@/constants";
 import { useNotifications } from "@/hooks/notifications";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { useTheme } from "@/hooks/use-theme";
@@ -76,10 +77,34 @@ function AppLayout() {
   );
 }
 
+// Dev only: warns when the Convex websocket is down. Renders nothing otherwise.
+function ConnectionWarning() {
+  const convex = useConvex();
+  const [connected, setConnected] = useState(
+    () => convex.connectionState().isWebSocketConnected,
+  );
+
+  useEffect(
+    () =>
+      convex.subscribeToConnectionState((state) =>
+        setConnected(state.isWebSocketConnected),
+      ),
+    [convex],
+  );
+
+  if (connected) return null;
+  return (
+    <div
+      role="status"
+      className="fixed start-3 bottom-3 z-50 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs text-amber-700 shadow-sm dark:text-amber-400"
+    >
+      {app.connectionLost}
+    </div>
+  );
+}
+
 function App() {
   useTheme();
-  const isDevelopment = import.meta.env.MODE === "development";
-  const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
   return (
     <ErrorBoundary>
@@ -99,17 +124,7 @@ function App() {
                 "rounded-xl border-border/40 bg-card/80 backdrop-blur-md text-foreground shadow-2xl",
             }}
           />
-          {isDevelopment && convexUrl && (
-            <a
-              href={convexUrl}
-              target="_blank"
-              rel="noreferrer"
-              title={convexUrl}
-              className="fixed bottom-3 left-3 z-50 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] text-emerald-600 shadow-sm transition hover:border-emerald-500/70 hover:bg-emerald-500/20"
-            >
-              Convex connected
-            </a>
-          )}
+          {import.meta.env.DEV && <ConnectionWarning />}
         </NuqsAdapter>
       </Router>
     </ErrorBoundary>
