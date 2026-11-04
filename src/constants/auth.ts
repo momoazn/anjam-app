@@ -72,13 +72,6 @@ export const auth = {
     },
     loginPrompt: "قبلاً حساب دارید؟",
   },
-  pendingActivation: {
-    title: "احراز هویت :: فعال‌سازی",
-    status: "وضعیت حساب :: در انتظار",
-    instruction: "دستورالعمل",
-    securityCheck: "بررسی امنیتی :: موفق",
-    secureAuth: "احراز هویت امن",
-  },
   onboarding: {
     title: "خوش آمدید!",
     subtitle: "سازمان خود را آماده کنید",

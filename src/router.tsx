@@ -66,10 +66,6 @@ const Landing = createLazyPage(
   () => import("@/pages/utility/landing"),
   errors.pageLoad.notFound,
 );
-const PendingActivation = createLazyPage(
-  () => import("@/pages/auth/pending-activation"),
-  errors.pageLoad.notFound,
-);
 const Projects = createLazyPage(
   () => import("@/pages/projects/index"),
   errors.pageLoad.projects,
@@ -446,12 +442,6 @@ const routes: RouteType[] = [
     title: auth.register.title,
   },
   {
-    path: "/pending-activation",
-    element: <PendingActivation />,
-    protected: false,
-    title: auth.pendingActivation.title,
-  },
-  {
     path: "/invite/:token",
     element: <InviteAccept />,
     protected: false,
@@ -657,11 +647,7 @@ export const AppRoutes = () => {
             if (route.requiresOrg) {
               element = <RequireOrganization>{element}</RequireOrganization>;
             }
-          } else if (
-            route.path === "/login" ||
-            route.path === "/register" ||
-            route.path === "/pending-activation"
-          ) {
+          } else if (route.path === "/login" || route.path === "/register") {
             element = <GuestOnlyRoute>{content}</GuestOnlyRoute>;
           }
 

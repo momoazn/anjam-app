@@ -40,7 +40,6 @@ For each route:
 - [ ] `/` Landing (theme toggle, CTA links to login)
 - [ ] `/login`
 - [ ] `/register`
-- [ ] `/pending-activation`
 - [ ] `/invite/:token` Invite accept flow
 - [ ] `*` Not found page (unknown route)
 
@@ -92,7 +91,6 @@ Use this section to ensure coverage (each feature has at least one journey below
 
 - Email/password login (`/login`)
 - Registration (`/register`)
-- Pending activation page (`/pending-activation`)
 - Logout (user menu)
 - Invite accept by token (`/invite/:token`)
 - Route guarding:
