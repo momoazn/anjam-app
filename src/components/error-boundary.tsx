@@ -19,7 +19,8 @@ type ErrorBoundaryState = {
 
 type ErrorBoundaryProps = {
   children: ReactNode;
-  fallback?: ReactNode;
+  /** Static node, or a render function that receives a retry callback. */
+  fallback?: ReactNode | ((retry: () => void) => ReactNode);
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 };
 
@@ -56,7 +57,9 @@ export class ErrorBoundary extends Component<
     if (this.state.hasError) {
       // Custom fallback UI
       if (this.props.fallback) {
-        return this.props.fallback;
+        return typeof this.props.fallback === "function"
+          ? this.props.fallback(this.handleRetry)
+          : this.props.fallback;
       }
 
       // Default error UI

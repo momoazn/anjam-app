@@ -290,21 +290,9 @@ export const organization = {
   },
   members: {
     title: "اعضای سازمان",
-    invite: "دعوت عضو",
+    subtitle: "اعضای سازمان و لینک‌های دعوت را مدیریت کنید",
     loading: shared.loading,
-    sending: "در حال ارسال...",
     unknownUser: "کاربر ناشناس",
-    inviteDialog: {
-      title: "دعوت عضو جدید",
-      description: "دعوت‌نامه‌ای به ایمیل وارد شده ارسال می‌شود",
-      email: "ایمیل",
-      emailPlaceholder: "ایمیل فرد را وارد کنید",
-      role: "نقش",
-      rolePlaceholder: "نقش را انتخاب کنید",
-      send: "ارسال دعوت‌نامه",
-      sendSuccess: "دعوت‌نامه با موفقیت ارسال شد",
-      sendError: "نتوانستیم دعوت‌نامه را ارسال کنیم",
-    },
     table: {
       user: shared.user,
       email: "ایمیل",
@@ -315,7 +303,6 @@ export const organization = {
     },
     roles: {
       owner: "مالک",
-      admin: "ادمین",
       member: "عضو",
     },
     status: {
@@ -325,37 +312,38 @@ export const organization = {
     },
     remove: {
       title: "حذف عضو",
-      description: "آیا از حذف این عضو اطمینان دارید؟",
-      success: "عضو با موفقیت حذف شد",
+      description:
+        "آیا از حذف این عضو اطمینان دارید؟ او دیگر به این سازمان دسترسی نخواهد داشت.",
+      confirm: "حذف عضو",
+      success: "عضو حذف شد",
       error: "نتوانستیم عضو را حذف کنیم",
     },
-    updateRole: {
-      title: "تغییر نقش",
-      success: "نقش با موفقیت تغییر کرد",
-      error: "نتوانستیم نقش را تغییر دهیم",
-    },
     empty: "هنوز عضوی در سازمان ندارید",
-    inviteEmpty: "هیچ دعوت‌نامه‌ای در انتظار تأیید نیست",
+    loadError: {
+      title: "بارگذاری فهرست انجام نشد",
+      description: "اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+      retry: "تلاش دوباره",
+    },
   },
   inviteLinks: {
     title: "لینک‌های دعوت",
+    description:
+      "هر کسی که لینک را داشته باشد می‌تواند با نقش «عضو» به سازمان بپیوندد.",
     create: "ایجاد لینک دعوت",
     createDialog: {
       title: "ایجاد لینک دعوت جدید",
-      role: "نقش",
-      rolePlaceholder: "نقش را انتخاب کنید",
-      maxUses: "حداکثر استفاده",
+      maxUses: "حداکثر دفعات استفاده",
       maxUsesPlaceholder: "تعداد دفعات استفاده",
       submit: "ایجاد لینک",
       success: "لینک دعوت ایجاد شد",
-      error: "خطا در ایجاد لینک دعوت",
+      error: "ایجاد لینک دعوت انجام نشد",
     },
     copy: "کپی لینک",
     copied: "لینک کپی شد",
+    copyError: "کپی لینک انجام نشد",
     revoke: "لغو لینک",
-    revokeConfirm: "آیا از لغو این لینک دعوت مطمئن هستید؟",
     revokeSuccess: "لینک دعوت لغو شد",
-    revokeError: "خطا در لغو لینک دعوت",
+    revokeError: "لغو لینک دعوت انجام نشد",
     revokeDialog: {
       title: "لغو لینک دعوت",
       description:
@@ -364,7 +352,6 @@ export const organization = {
     },
     table: {
       link: "لینک",
-      role: "نقش",
       uses: "استفاده",
       expiry: "انقضا",
       status: "وضعیت",

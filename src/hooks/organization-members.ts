@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 
+import { organization } from "@/constants";
 import { Doc, Id, api } from "@/lib/convex";
 import {
   useAuthIsAuthenticatedStrict,
@@ -95,7 +96,7 @@ export function useCreateOrgInvite() {
   const currentOrg = useCurrentOrganization();
 
   return {
-    mutate: async ({ maxUses }: { role: OrgRole; maxUses?: number }) => {
+    mutate: async ({ maxUses }: { maxUses?: number }) => {
       if (!currentOrg) throw new Error("No organization selected");
 
       const token = await createInviteLink({
@@ -116,30 +117,7 @@ export function useRevokeOrgInvite() {
   return {
     mutate: async (inviteId: Id<"invites">) => {
       await revokeMutation({ inviteId });
-      toast.success("Invite revoked");
-    },
-    isPending: false,
-  };
-}
-
-export function useInviteOrgMember() {
-  const createInviteLink = useMutation(api.invites.createLink);
-  const currentOrg = useCurrentOrganization();
-
-  return {
-    mutate: async ({ email }: { email: string; role: OrgRole }) => {
-      if (!currentOrg) throw new Error("No organization selected");
-
-      const token = await createInviteLink({
-        organizationId: currentOrg._id,
-      });
-
-      const inviteUrl = `${window.location.origin}/invite/${token}`;
-
-      await navigator.clipboard.writeText(inviteUrl);
-      toast.success(`Invite link for ${email} created and copied to clipboard`);
-
-      return token;
+      toast.success(organization.inviteLinks.revokeSuccess);
     },
     isPending: false,
   };
@@ -156,7 +134,7 @@ export function useRemoveOrgMember() {
         organizationId: currentOrg._id as Id<"organizations">,
         userId: userId as Id<"users">,
       });
-      toast.success("Member removed");
+      toast.success(organization.members.remove.success);
     },
     isPending: false,
   };
