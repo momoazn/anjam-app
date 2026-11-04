@@ -5,6 +5,7 @@ export const app = {
   description: "مدیریت تسک‌ها",
   logo: "انجام",
   systemReady: "سیستم آماده است",
+  repoUrl: "https://github.com/momoazn/anjam",
 } as const;
 
 // Shared constants used across multiple modules
