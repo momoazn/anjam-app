@@ -160,6 +160,8 @@ export const projects = {
   list: {
     noProjects: "هنوز پروژه‌ای نساخته‌اید",
     count: "{count} پروژه",
+    progress: "{done} از {total} تسک انجام شده",
+    noTasksYet: "هنوز تسکی ندارد",
     viewTasks: "مشاهده تسک‌ها",
   },
   create: {
