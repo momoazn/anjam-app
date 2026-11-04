@@ -1,12 +1,19 @@
 import { useMutation, useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 
 import type { Doc } from "@/lib/convex";
 import { Id, api } from "@/lib/convex";
+import { getDueRange } from "@/lib/filter-utils";
 import {
   useAuthIsAuthenticatedStrict,
   useCurrentOrganization,
 } from "@/store/app-context-store";
-import { TaskWithDetails, TaskWithProject } from "@/types/tasks";
+import {
+  TASK_STATUSES,
+  TaskStatus,
+  TaskWithDetails,
+  TaskWithProject,
+} from "@/types/tasks";
 
 type ListedTask = Doc<"tasks"> & {
   creator: Doc<"users"> | null;
@@ -61,6 +68,9 @@ export function useTasks(
     assigneeUserId?: string;
     status?: string;
     priority?: string;
+    tagId?: string;
+    /** Due filter value: "today" | "week" | "month" | "overdue". */
+    dueRange?: string;
     searchTerm?: string;
     page?: number;
     perPage?: number;
@@ -76,31 +86,73 @@ export function useTasks(
     assigneeUserId,
     status,
     priority,
+    tagId,
+    dueRange,
     searchTerm,
     page = 1,
     perPage = 50,
   } = options;
 
+  // "status" may hold several comma-separated statuses.
+  const statuses = status
+    ?.split(",")
+    .filter((s): s is TaskStatus => TASK_STATUSES.includes(s as TaskStatus));
+
+  // Convex pages are cursor based: page N starts at the cursor that page N-1 returned.
+  // The cursors are only valid for the filters that produced them.
+  const filterKey = JSON.stringify([
+    organizationId,
+    projectId,
+    assigneeUserId,
+    statuses,
+    priority,
+    tagId,
+    dueRange,
+    searchTerm,
+    perPage,
+  ]);
+  const [cursorState, setCursorState] = useState<{
+    key: string;
+    cursors: Array<string | null>;
+  }>({ key: filterKey, cursors: [null] });
+  const cursors = cursorState.key === filterKey ? cursorState.cursors : [null];
+  const cursor = cursors[page - 1];
+
   const result = useQuery(
     api.tasks.list,
-    enabled && isAuthenticated && organizationId
+    enabled && isAuthenticated && organizationId && cursor !== undefined
       ? {
           organizationId,
           projectId: projectId as Id<"projects"> | undefined,
           assigneeUserId: assigneeUserId as Id<"users"> | undefined,
-          status: status as Doc<"tasks">["status"] | undefined,
+          statuses,
           priority: priority as Doc<"tasks">["priority"] | undefined,
+          tagId: tagId as Id<"tags"> | undefined,
+          ...(dueRange ? getDueRange(dueRange) : {}),
           searchTerm,
-          paginationOpts: { numItems: perPage, cursor: null },
+          paginationOpts: { numItems: perPage, cursor },
         }
       : "skip",
   );
+
+  useEffect(() => {
+    if (!result || result.isDone) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCursorState((prev) => {
+      const known = prev.key === filterKey ? prev.cursors : [null];
+      if (known[page] === result.continueCursor) return prev;
+      const next = known.slice(0, page);
+      next[page] = result.continueCursor;
+      return { key: filterKey, cursors: next };
+    });
+  }, [result, page, filterKey]);
 
   return {
     data: result
       ? {
           items: result.page.map((t) => toTaskWithProject(t as ListedTask)),
-          totalItems: result.page.length,
+          // Rows up to and including this page (exact once the last page loads).
+          totalItems: (page - 1) * perPage + result.page.length,
           totalPages: result.isDone ? page : page + 1,
         }
       : undefined,

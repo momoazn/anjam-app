@@ -155,8 +155,14 @@ export const list = query({
     organizationId: v.id("organizations"),
     projectId: v.optional(v.id("projects")),
     assigneeUserId: v.optional(v.id("users")),
-    status: v.optional(taskStatusValidator),
+    statuses: v.optional(v.array(taskStatusValidator)),
     priority: v.optional(taskPriorityValidator),
+    tagId: v.optional(v.id("tags")),
+    // Inclusive deadline window (ms). The client computes it from its local calendar.
+    deadlineFrom: v.optional(v.number()),
+    deadlineTo: v.optional(v.number()),
+    // Open (not done/cancelled) tasks whose deadline is before this instant (ms).
+    overdueBefore: v.optional(v.number()),
     searchTerm: v.optional(v.string()),
     paginationOpts: paginationOptsValidator,
   },
@@ -204,8 +210,41 @@ export const list = query({
       );
     }
 
-    if (args.status) {
-      q = q.filter((filter) => filter.eq(filter.field("status"), args.status));
+    const { statuses, deadlineFrom, deadlineTo, overdueBefore } = args;
+    if (statuses && statuses.length > 0) {
+      q = q.filter((filter) =>
+        filter.or(
+          ...statuses.map((status) =>
+            filter.eq(filter.field("status"), status),
+          ),
+        ),
+      );
+    }
+
+    // A missing deadline sorts below every number, so gte/lte alone exclude it
+    // from a window, but lt needs an explicit existence check.
+    if (deadlineFrom !== undefined) {
+      q = q.filter((filter) =>
+        filter.gte(filter.field("deadline"), deadlineFrom),
+      );
+    }
+    if (deadlineTo !== undefined) {
+      q = q.filter((filter) =>
+        filter.and(
+          filter.neq(filter.field("deadline"), undefined),
+          filter.lte(filter.field("deadline"), deadlineTo),
+        ),
+      );
+    }
+    if (overdueBefore !== undefined) {
+      q = q.filter((filter) =>
+        filter.and(
+          filter.neq(filter.field("deadline"), undefined),
+          filter.lt(filter.field("deadline"), overdueBefore),
+          filter.neq(filter.field("status"), "done"),
+          filter.neq(filter.field("status"), "cancelled"),
+        ),
+      );
     }
 
     if (args.priority) {
@@ -220,8 +259,15 @@ export const list = query({
 
     const page = await q.paginate(args.paginationOpts);
 
+    // ponytail: Convex filters cannot test array membership, so the tag filter
+    // runs per page and a page can hold fewer than numItems rows.
+    const tagId = args.tagId;
+    const tasks = tagId
+      ? page.page.filter((task) => task.tags?.includes(tagId))
+      : page.page;
+
     const rows = await Promise.all(
-      page.page.map(async (task) => {
+      tasks.map(async (task) => {
         const project = await ctx.db.get(task.projectId);
         if (!project) return null;
         const creator = await ctx.db.get(task.creatorUserId);

@@ -234,6 +234,8 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     searchTerm: searchTerm || undefined,
     status: selectedStatus === "all" ? undefined : selectedStatus,
     priority: selectedPriority === "all" ? undefined : selectedPriority,
+    tagId: selectedTag === "all" ? undefined : selectedTag,
+    dueRange: selectedDateRange === "all" ? undefined : selectedDateRange,
     assigneeUserId:
       selectedAssignee === "all"
         ? undefined

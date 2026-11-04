@@ -1,5 +1,13 @@
-import { isPast, isThisMonth, isThisWeek, isToday } from "date-fns-jalali";
+import {
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns-jalali";
 
+import { isTaskOverdue } from "@/lib/date-utils";
 import {
   TASK_PRIORITIES,
   TASK_STATUSES,
@@ -96,27 +104,55 @@ function matchesAssigneeFilter(
   return task.assigneeUserId === selectedAssignee;
 }
 
+/**
+ * Deadline window for a due filter, in ms, from the local calendar.
+ * `overdueBefore` marks the "overdue" filter. Returns undefined for "all".
+ */
+export type DueRange = {
+  deadlineFrom?: number;
+  deadlineTo?: number;
+  overdueBefore?: number;
+};
+
+export function getDueRange(
+  selectedDateRange: string,
+  now: Date = new Date(),
+): DueRange | undefined {
+  switch (selectedDateRange) {
+    case "today":
+      return {
+        deadlineFrom: startOfDay(now).getTime(),
+        deadlineTo: endOfDay(now).getTime(),
+      };
+    case "week":
+      return {
+        deadlineFrom: startOfWeek(now).getTime(),
+        deadlineTo: endOfWeek(now).getTime(),
+      };
+    case "month":
+      return {
+        deadlineFrom: startOfMonth(now).getTime(),
+        deadlineTo: endOfMonth(now).getTime(),
+      };
+    case "overdue":
+      return { overdueBefore: startOfDay(now).getTime() };
+    default:
+      return undefined;
+  }
+}
+
 function matchesDateRangeFilter(
   task: FilterableTask,
   selectedDateRange: string,
 ): boolean {
-  if (selectedDateRange === "all") return true;
-  if (!task.deadline) return selectedDateRange === "overdue";
-
-  const deadline = new Date(task.deadline);
-
-  switch (selectedDateRange) {
-    case "today":
-      return isToday(deadline);
-    case "week":
-      return isThisWeek(deadline);
-    case "month":
-      return isThisMonth(deadline);
-    case "overdue":
-      return isPast(deadline) && task.status !== "done";
-    default:
-      return true;
-  }
+  const range = getDueRange(selectedDateRange);
+  if (!range) return true;
+  if (range.overdueBefore !== undefined) return isTaskOverdue(task);
+  if (!task.deadline) return false;
+  return (
+    task.deadline >= (range.deadlineFrom as number) &&
+    task.deadline <= (range.deadlineTo as number)
+  );
 }
 
 function matchesTagFilter(task: FilterableTask, selectedTag: string): boolean {

@@ -1,5 +1,5 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { format } from "date-fns-jalali";
+import { format, startOfDay } from "date-fns-jalali";
 
 function formatDate(
   dateValue: string | number | null | undefined,
@@ -26,3 +26,23 @@ export function formatDateLocale(dateValue?: string | number | null): string {
     day: "numeric",
   });
 }
+
+/**
+ * True when the deadline's local calendar day is before today.
+ * A deadline at local midnight is not overdue during that day.
+ */
+export function isDeadlinePast(
+  deadline: number | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  if (!deadline) return false;
+  return startOfDay(new Date(deadline)).getTime() < startOfDay(now).getTime();
+}
+
+export const isTaskOverdue = (
+  task: { deadline?: number | null; status: string },
+  now: Date = new Date(),
+) =>
+  task.status !== "done" &&
+  task.status !== "cancelled" &&
+  isDeadlinePast(task.deadline, now);
