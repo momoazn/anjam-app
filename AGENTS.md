@@ -141,11 +141,6 @@ Before committing: run `bun run check`
 - `SITE_URL` - Public frontend URL (Convex env; `convex/auth.ts` throws without it)
 - `BETTER_AUTH_SECRET` - Better Auth secret for session security (Convex env; generate with `openssl rand -base64 32`)
 
-**Optional** (analytics via PostHog):
-
-- `VITE_PUBLIC_POSTHOG_KEY` - PostHog project key
-- `VITE_PUBLIC_POSTHOG_HOST` - PostHog API host
-
 ## Security Notes
 
 - Keep secrets out of version control

@@ -31,11 +31,10 @@ Procedures to deploy, configure, and maintain Anjam. The backend runs on Convex.
 
 ### Frontend build (baked into the bundle)
 
-| Variable                                              | Required | Purpose                                                       |
-| ----------------------------------------------------- | -------- | ------------------------------------------------------------- |
-| `VITE_CONVEX_URL`                                     | Yes      | Convex client origin (`.convex.cloud`).                       |
-| `VITE_CONVEX_SITE_URL`                                | Yes      | Convex HTTP origin (`.convex.site`), used by the auth client. |
-| `VITE_PUBLIC_POSTHOG_KEY`, `VITE_PUBLIC_POSTHOG_HOST` | No       | PostHog analytics. Leave empty to disable.                    |
+| Variable               | Required | Purpose                                                       |
+| ---------------------- | -------- | ------------------------------------------------------------- |
+| `VITE_CONVEX_URL`      | Yes      | Convex client origin (`.convex.cloud`).                       |
+| `VITE_CONVEX_SITE_URL` | Yes      | Convex HTTP origin (`.convex.site`), used by the auth client. |
 
 `.env.example` lists all of these.
 
@@ -125,7 +124,7 @@ The Convex client uses HTTPS and WebSocket connections to your deployment. A pol
 add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://<deployment>.convex.cloud wss://<deployment>.convex.cloud https://<deployment>.convex.site;" always;
 ```
 
-Add the PostHog host to `connect-src` if analytics is on. Test the policy in a browser before you enforce it.
+Test the policy in a browser before you enforce it.
 
 ## 3. Operations
 

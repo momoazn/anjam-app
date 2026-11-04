@@ -16,37 +16,11 @@ if (!convexUrl) {
 }
 const convex = new ConvexReactClient(convexUrl);
 
-const root = createRoot(document.getElementById("root")!);
-const isDevelopment = import.meta.env.MODE === "development";
-
-if (isDevelopment) {
-  root.render(
-    <StrictMode>
-      <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-        <AuthStateSync />
-        <App />
-      </ConvexBetterAuthProvider>
-    </StrictMode>,
-  );
-} else {
-  import("posthog-js/react").then(({ PostHogProvider }) => {
-    root.render(
-      <StrictMode>
-        <PostHogProvider
-          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-          options={{
-            api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-            defaults: "2025-05-24",
-            capture_exceptions: true,
-            debug: false,
-          }}
-        >
-          <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-            <AuthStateSync />
-            <App />
-          </ConvexBetterAuthProvider>
-        </PostHogProvider>
-      </StrictMode>,
-    );
-  });
-}
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+      <AuthStateSync />
+      <App />
+    </ConvexBetterAuthProvider>
+  </StrictMode>,
+);

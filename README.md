@@ -51,15 +51,14 @@ Main choices:
 
 ## Tech stack
 
-| Area      | Tools                                                                           |
-| --------- | ------------------------------------------------------------------------------- |
-| Frontend  | React 19, TypeScript 5.9, Vite 7, React Router 7, Zustand, React Hook Form, Zod |
-| UI        | Tailwind CSS 4, Radix UI / shadcn/ui, dnd-kit, Recharts, cmdk, Sonner           |
-| Locale    | `date-fns-jalali`, `@persian-tools/persian-tools`, RTL layout                   |
-| Backend   | Convex (database, functions, search indexes), Better Auth                       |
-| Analytics | PostHog (production builds only, optional)                                      |
-| Quality   | ESLint, Prettier, Vitest, Testing Library, Playwright, Husky, lint-staged       |
-| Tooling   | Bun, Docker (multi-stage build, nginx), CircleCI                                |
+| Area     | Tools                                                                           |
+| -------- | ------------------------------------------------------------------------------- |
+| Frontend | React 19, TypeScript 5.9, Vite 7, React Router 7, Zustand, React Hook Form, Zod |
+| UI       | Tailwind CSS 4, Radix UI / shadcn/ui, dnd-kit, Recharts, cmdk, Sonner           |
+| Locale   | `date-fns-jalali`, `@persian-tools/persian-tools`, RTL layout                   |
+| Backend  | Convex (database, functions, search indexes), Better Auth                       |
+| Quality  | ESLint, Prettier, Vitest, Testing Library, Playwright, Husky, lint-staged       |
+| Tooling  | Bun, Docker (multi-stage build, nginx), CircleCI                                |
 
 ## Quick start
 
@@ -105,13 +104,11 @@ There are two places for variables. Frontend variables go in `.env.local` (Vite 
 
 Frontend (`.env.local`):
 
-| Variable                   | Required | Purpose                                                                     |
-| -------------------------- | -------- | --------------------------------------------------------------------------- |
-| `CONVEX_DEPLOYMENT`        | yes      | Deployment name. Written by `convex dev`.                                   |
-| `VITE_CONVEX_URL`          | yes      | Convex API URL. Baked into the build.                                       |
-| `VITE_CONVEX_SITE_URL`     | no       | Convex HTTP actions URL. Defaults to `VITE_CONVEX_URL` with `.convex.site`. |
-| `VITE_PUBLIC_POSTHOG_KEY`  | no       | PostHog project key. Used in production builds only.                        |
-| `VITE_PUBLIC_POSTHOG_HOST` | no       | PostHog host.                                                               |
+| Variable               | Required | Purpose                                                                     |
+| ---------------------- | -------- | --------------------------------------------------------------------------- |
+| `CONVEX_DEPLOYMENT`    | yes      | Deployment name. Written by `convex dev`.                                   |
+| `VITE_CONVEX_URL`      | yes      | Convex API URL. Baked into the build.                                       |
+| `VITE_CONVEX_SITE_URL` | no       | Convex HTTP actions URL. Defaults to `VITE_CONVEX_URL` with `.convex.site`. |
 
 Backend (Convex environment):
 
