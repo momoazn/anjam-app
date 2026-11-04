@@ -27,6 +27,13 @@ const taskPriorityValidator = v.union(
   v.literal("urgent"),
 );
 
+/** Keeps `completedAt` in sync when a task enters or leaves "done". */
+function completionPatch(task: Doc<"tasks">, nextStatus?: string) {
+  if (nextStatus === undefined || nextStatus === task.status) return {};
+  if (nextStatus === "done") return { completedAt: Date.now() };
+  return task.status === "done" ? { completedAt: undefined } : {};
+}
+
 export const create = mutation({
   args: {
     projectId: v.id("projects"),
@@ -78,6 +85,8 @@ export const create = mutation({
       taskNumber,
       taskType: args.taskType,
       storyPoints: args.storyPoints,
+      createdAt: Date.now(),
+      completedAt: args.status === "done" ? Date.now() : undefined,
       updatedAt: Date.now(),
     });
   },
@@ -232,6 +241,7 @@ export const update = mutation({
 
     await ctx.db.patch(args.taskId, {
       ...(args.updates as Partial<Doc<"tasks">>),
+      ...completionPatch(task, args.updates.status),
       updatedAt: Date.now(),
     });
   },
@@ -283,6 +293,7 @@ export const updateBoardPosition = mutation({
     await ctx.db.patch(args.taskId, {
       status: args.status,
       order: args.order,
+      ...completionPatch(task, args.status),
       updatedAt: Date.now(),
     });
   },
@@ -364,6 +375,7 @@ export const bulkUpdate = mutation({
 
       await ctx.db.patch(id, {
         ...args.updates,
+        ...completionPatch(task, args.updates.status),
         updatedAt: Date.now(),
       });
     }

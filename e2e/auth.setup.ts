@@ -15,7 +15,9 @@ setup("authenticate as manager (org1)", async ({ page }) => {
     fs.mkdirSync(authDirPath, { recursive: true });
   }
 
-  await loginAs(page, TEST_USERS.manager, { organizationPattern: /^org1$/ });
+  await loginAs(page, TEST_USERS.manager, {
+    organizationPattern: /^تیم محصول$/,
+  });
   await page.context().storageState({ path: authFileUser });
   console.log("✅ Authentication setup complete (org1)");
 });
@@ -26,7 +28,9 @@ setup("authenticate as supervisor (org2)", async ({ page }) => {
     fs.mkdirSync(authDirPath, { recursive: true });
   }
 
-  await loginAs(page, TEST_USERS.supervisor, { organizationPattern: /^org2$/ });
+  await loginAs(page, TEST_USERS.supervisor, {
+    organizationPattern: /^تیم پشتیبانی$/,
+  });
   await page.context().storageState({ path: authFileUser });
   console.log("✅ Authentication setup complete (org2)");
 });
