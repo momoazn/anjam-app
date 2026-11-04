@@ -1,8 +1,9 @@
 import { useQuery } from "convex/react";
-import { isPast, isToday } from "date-fns";
+import { isToday } from "date-fns";
 import { useMemo } from "react";
 
 import { Id, api } from "@/lib/convex";
+import { isTaskOverdue } from "@/lib/date-utils";
 import {
   useAuthIsAuthenticatedStrict,
   useAuthUser,
@@ -49,13 +50,7 @@ export function useTaskCounts() {
       );
     }).length;
 
-    const overdue = tasks.filter((task) => {
-      return (
-        task.deadline &&
-        isPast(new Date(task.deadline)) &&
-        task.status !== "done"
-      );
-    }).length;
+    const overdue = tasks.filter((task) => isTaskOverdue(task)).length;
 
     const inProgress = tasks.filter(
       (task) => task.status === "in_progress",

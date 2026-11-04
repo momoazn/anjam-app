@@ -25,14 +25,13 @@ import { shared, task as taskLabels, tasks } from "@/constants";
 import { useTags } from "@/hooks/tags";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
-import { formatDateShort } from "@/lib/date-utils";
+import { formatDateShort, isTaskOverdue } from "@/lib/date-utils";
 import {
   getStatusColorVariant,
   priorityColors,
   priorityIcons,
   taskStatusIcons,
 } from "@/lib/status-utils";
-import { isTaskCanceled, isTaskCompleted } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
 
@@ -68,12 +67,7 @@ function TaskListItemInner({
 
   const deadlineDate = task.deadline ? new Date(task.deadline) : null;
   const isDeadlineToday = deadlineDate ? isToday(deadlineDate) : false;
-  const now = new Date();
-  const isOverdue =
-    deadlineDate &&
-    deadlineDate.getTime() < now.getTime() &&
-    !isTaskCompleted(task) &&
-    !isTaskCanceled(task);
+  const isOverdue = isTaskOverdue(task);
 
   const updateTask = useUpdateTask();
   const { data: tags } = useTags();

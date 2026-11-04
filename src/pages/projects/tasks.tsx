@@ -15,6 +15,7 @@ import { useProject } from "@/hooks/projects";
 import { useAllTasks } from "@/hooks/tasks";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { useUsers } from "@/hooks/users";
+import { isTaskOverdue } from "@/lib/date-utils";
 import {
   TASK_STATUS_ORDER,
   isTaskCanceled,
@@ -91,7 +92,6 @@ export default function ProjectTasks() {
       return { active: 0, completed: 0, overdue: 0 };
     }
 
-    const now = new Date();
     let active = 0;
     let completed = 0;
     let overdue = 0;
@@ -103,11 +103,8 @@ export default function ProjectTasks() {
         if (!isTaskCanceled(task)) {
           active += 1;
         }
-        if (task.deadline) {
-          const deadlineDate = new Date(task.deadline);
-          if (deadlineDate < now && !isTaskCanceled(task)) {
-            overdue += 1;
-          }
+        if (isTaskOverdue(task)) {
+          overdue += 1;
         }
       }
     });
