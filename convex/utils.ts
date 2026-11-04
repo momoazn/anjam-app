@@ -8,12 +8,14 @@ import { authComponent } from "./auth";
 
 type AuthedCtx = QueryCtx | MutationCtx;
 
+/** Adapts a Convex ctx to the shape Better Auth expects. */
+export const toAuthCtx = (ctx: unknown) =>
+  ctx as unknown as GenericCtx<DataModel>;
+
 export const getAuthUserIdIfExists = async (
   ctx: AuthedCtx & { auth: Auth },
 ): Promise<Id<"users"> | null> => {
-  const authUser = await authComponent.safeGetAuthUser(
-    ctx as unknown as GenericCtx<DataModel>,
-  );
+  const authUser = await authComponent.safeGetAuthUser(toAuthCtx(ctx));
   if (!authUser) return null;
 
   const appUser = await ctx.db
@@ -25,9 +27,7 @@ export const getAuthUserIdIfExists = async (
 };
 
 export const getAuthUserId = async (ctx: AuthedCtx & { auth: Auth }) => {
-  const authUser = await authComponent.getAuthUser(
-    ctx as unknown as GenericCtx<DataModel>,
-  );
+  const authUser = await authComponent.getAuthUser(toAuthCtx(ctx));
   const appUser = await ctx.db
     .query("users")
     .withIndex("by_authUserId", (q) => q.eq("authUserId", authUser._id))
@@ -41,10 +41,11 @@ export const getAuthUserId = async (ctx: AuthedCtx & { auth: Auth }) => {
 };
 
 export const generateSlug = (name: string) => {
-  return name
+  const slug = name
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, "")
+    .replace(/[^\p{L}\p{N}\s-]/gu, "")
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "");
+  return slug || `org-${Math.random().toString(36).slice(2, 8)}`;
 };

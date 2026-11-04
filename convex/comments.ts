@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import { requireOrgMembership, requireTaskAccess } from "./lib/auth";
 import { getAuthUserId } from "./utils";
 
 export const listByTask = query({
@@ -8,19 +9,9 @@ export const listByTask = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const task = await ctx.db.get(args.taskId);
-    if (!task) return []; // Or throw
+    if (!task || task.deletedAt !== undefined) return [];
 
-    const project = await ctx.db.get(task.projectId);
-    if (!project) return [];
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireOrgMembership(ctx, task.organizationId, userId);
 
     // List comments
     const comments = await ctx.db
@@ -52,20 +43,7 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    const task = await ctx.db.get(args.taskId);
-    if (!task) throw new Error("Task not found");
-
-    const project = await ctx.db.get(task.projectId);
-    if (!project) throw new Error("Project not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    const { task, project } = await requireTaskAccess(ctx, args.taskId, userId);
 
     const commentId = await ctx.db.insert("comments", {
       taskId: args.taskId,
@@ -182,26 +160,9 @@ export const softDelete = mutation({
     const comment = await ctx.db.get(args.commentId);
     if (!comment) return;
 
-    if (comment.userId !== userId) {
-      const task = await ctx.db.get(comment.taskId);
-      if (task) {
-        const project = await ctx.db.get(task.projectId);
-        if (project) {
-          const membership = await ctx.db
-            .query("organizationMembers")
-            .withIndex("by_org_user", (q) =>
-              q
-                .eq("organizationId", project.organizationId)
-                .eq("userId", userId),
-            )
-            .first();
-          if (!membership || membership.role !== "owner") {
-            throw new Error("You can only delete your own comments");
-          }
-        }
-      } else {
-        throw new Error("You can only delete your own comments");
-      }
+    const { membership } = await requireTaskAccess(ctx, comment.taskId, userId);
+    if (comment.userId !== userId && membership.role !== "owner") {
+      throw new Error("You can only delete your own comments");
     }
 
     await ctx.db.patch(args.commentId, { deletedAt: Date.now() });
@@ -221,20 +182,7 @@ export const update = mutation({
     const comment = await ctx.db.get(args.commentId);
     if (!comment) throw new Error("Comment not found");
 
-    const task = await ctx.db.get(comment.taskId);
-    if (!task) throw new Error("Task not found");
-
-    const project = await ctx.db.get(task.projectId);
-    if (!project) throw new Error("Project not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    const { membership } = await requireTaskAccess(ctx, comment.taskId, userId);
 
     const updates: Record<string, unknown> = {};
 

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import { requireOrgOwnerMembership } from "./lib/auth";
 import { getAuthUserId } from "./utils";
 
 export const createLink = mutation({
@@ -12,16 +13,12 @@ export const createLink = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership || membership.role !== "owner") {
-      throw new Error("Only owners can create invite links");
-    }
+    await requireOrgOwnerMembership(
+      ctx,
+      args.organizationId,
+      userId,
+      "Only owners can create invite links",
+    );
 
     // Generate token
     const token = crypto.randomUUID();
@@ -45,16 +42,12 @@ export const list = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership || membership.role !== "owner") {
-      throw new Error("Only owners can view invite links");
-    }
+    await requireOrgOwnerMembership(
+      ctx,
+      args.organizationId,
+      userId,
+      "Only owners can view invite links",
+    );
 
     const invites = await ctx.db
       .query("invites")
@@ -72,16 +65,12 @@ export const revoke = mutation({
     const invite = await ctx.db.get(args.inviteId);
     if (!invite) return;
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", invite.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership || membership.role !== "owner") {
-      throw new Error("Only owners can revoke invites");
-    }
+    await requireOrgOwnerMembership(
+      ctx,
+      invite.organizationId,
+      userId,
+      "Only owners can revoke invites",
+    );
 
     await ctx.db.delete(args.inviteId);
   },

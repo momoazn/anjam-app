@@ -1,17 +1,14 @@
-import type { GenericCtx } from "@convex-dev/better-auth";
 import { v } from "convex/values";
 
-import type { DataModel } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
-import { getAuthUserId } from "./utils";
+import { getActiveMembership } from "./lib/auth";
+import { getAuthUserId, toAuthCtx } from "./utils";
 
 export const getMe = query({
   args: {},
   handler: async (ctx) => {
-    const authUser = await authComponent.safeGetAuthUser(
-      ctx as unknown as GenericCtx<DataModel>,
-    );
+    const authUser = await authComponent.safeGetAuthUser(toAuthCtx(ctx));
     if (!authUser) {
       return null;
     }
@@ -26,9 +23,7 @@ export const getMe = query({
 export const ensureProfile = mutation({
   args: {},
   handler: async (ctx) => {
-    const authUser = await authComponent.safeGetAuthUser(
-      ctx as unknown as GenericCtx<DataModel>,
-    );
+    const authUser = await authComponent.safeGetAuthUser(toAuthCtx(ctx));
     // Avoid spamming Convex logs with "Unauthenticated" during logout/session races.
     // Callers can treat a null return as a no-op.
     if (!authUser) {
@@ -88,14 +83,12 @@ export const list = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership || membership.status !== "active") {
+    const membership = await getActiveMembership(
+      ctx,
+      args.organizationId,
+      userId,
+    );
+    if (!membership) {
       throw new Error("Forbidden");
     }
 

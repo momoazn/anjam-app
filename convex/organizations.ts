@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import { requireOrgMembership, requireOrgOwnerMembership } from "./lib/auth";
 import { generateSlug, getAuthUserId, getAuthUserIdIfExists } from "./utils";
 
 export const create = mutation({
@@ -60,6 +61,7 @@ export const listMine = query({
     const memberships = await ctx.db
       .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.eq(q.field("status"), "active"))
       .collect();
 
     const orgs = await Promise.all(
@@ -79,16 +81,11 @@ export const setOnboardingCompleted = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) {
-      throw new Error("Not a member of this organization");
-    }
+    const membership = await requireOrgMembership(
+      ctx,
+      args.organizationId,
+      userId,
+    );
 
     await ctx.db.patch(membership._id, {
       onboardingCompleted: true,
@@ -108,16 +105,12 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership || membership.role !== "owner") {
-      throw new Error("Only owners can update organization settings");
-    }
+    await requireOrgOwnerMembership(
+      ctx,
+      args.organizationId,
+      userId,
+      "Only owners can update organization settings",
+    );
 
     await ctx.db.patch(args.organizationId, args.updates);
   },

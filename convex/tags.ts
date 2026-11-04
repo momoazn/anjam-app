@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import { requireOrgMembership } from "./lib/auth";
 import { getAuthUserId } from "./utils";
 
 export const listByOrg = query({
@@ -8,14 +9,7 @@ export const listByOrg = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireOrgMembership(ctx, args.organizationId, userId);
 
     return await ctx.db
       .query("tags")
@@ -33,14 +27,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireOrgMembership(ctx, args.organizationId, userId);
 
     // Check uniqueness
     const existing = await ctx.db
@@ -72,14 +59,7 @@ export const update = mutation({
     const tag = await ctx.db.get(args.tagId);
     if (!tag) throw new Error("Tag not found");
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", tag.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireOrgMembership(ctx, tag.organizationId, userId);
 
     // Check uniqueness if name changes
     if (args.name && args.name !== tag.name) {
@@ -107,14 +87,7 @@ export const deleteTag = mutation({
     const tag = await ctx.db.get(args.tagId);
     if (!tag) return;
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", tag.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireOrgMembership(ctx, tag.organizationId, userId);
 
     // Remove from all tasks?
     // Convex doesn't enforce referential integrity.

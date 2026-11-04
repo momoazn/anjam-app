@@ -1,6 +1,11 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import {
+  getActiveMembership,
+  requireOrgMembership,
+  requireOrgOwnerMembership,
+} from "./lib/auth";
 import { getAuthUserId } from "./utils";
 
 export const create = mutation({
@@ -13,15 +18,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    // Verify org membership
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member of this organization");
+    await requireOrgMembership(ctx, args.organizationId, userId);
 
     // Generate unique code (3 letters)
     // In PB this was hooked. Here we do it manually.
@@ -70,15 +67,7 @@ export const listByOrg = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    // Verify org membership
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member of this organization");
+    await requireOrgMembership(ctx, args.organizationId, userId);
 
     return await ctx.db
       .query("projects")
@@ -94,14 +83,12 @@ export const get = query({
     const project = await ctx.db.get(args.projectId);
     if (!project) return null;
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) return null; // Or throw
+    const membership = await getActiveMembership(
+      ctx,
+      project.organizationId,
+      userId,
+    );
+    if (!membership) return null;
 
     const supervisor = project.supervisorUserId
       ? await ctx.db.get(project.supervisorUserId)
@@ -128,16 +115,12 @@ export const update = mutation({
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership || membership.role !== "owner") {
-      throw new Error("Only owners can update projects");
-    }
+    await requireOrgOwnerMembership(
+      ctx,
+      project.organizationId,
+      userId,
+      "Only owners can update projects",
+    );
 
     await ctx.db.patch(args.projectId, args.updates);
   },
@@ -150,16 +133,12 @@ export const deleteProject = mutation({
     const project = await ctx.db.get(args.projectId);
     if (!project) return;
 
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", project.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership || membership.role !== "owner") {
-      throw new Error("Only owners can delete projects");
-    }
+    await requireOrgOwnerMembership(
+      ctx,
+      project.organizationId,
+      userId,
+      "Only owners can delete projects",
+    );
 
     await ctx.db.delete(args.projectId);
   },

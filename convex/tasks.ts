@@ -88,7 +88,7 @@ export const get = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const task = await ctx.db.get(args.taskId);
-    if (!task) return null;
+    if (!task || task.deletedAt !== undefined) return null;
 
     try {
       await requireOrgMembership(ctx, task.organizationId, userId);
@@ -242,7 +242,7 @@ export const softDelete = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const task = await ctx.db.get(args.taskId);
-    if (!task) return;
+    if (!task || task.deletedAt !== undefined) return;
 
     let membership: Doc<"organizationMembers">;
     try {

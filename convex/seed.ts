@@ -1,12 +1,11 @@
-import type { GenericCtx } from "@convex-dev/better-auth";
 import type { FunctionReference } from "convex/server";
 import { v } from "convex/values";
 
 import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import type { DataModel } from "./_generated/dataModel";
 import { internalAction, internalMutation } from "./_generated/server";
 import { authComponent, createAuth } from "./auth";
+import { toAuthCtx } from "./utils";
 
 const TEST_USERS = [
   {
@@ -334,7 +333,7 @@ export const seedDevData = internalAction({
     }> = [];
     const { auth, headers } = await authComponent.getAuth(
       createAuth,
-      ctx as unknown as GenericCtx<DataModel>,
+      toAuthCtx(ctx),
     );
 
     for (const user of TEST_USERS) {

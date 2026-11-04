@@ -1,24 +1,37 @@
 import { v } from "convex/values";
 
+import type { Id } from "./_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
+import {
+  canEditTask,
+  requireOrgMembership,
+  requireTaskAccess,
+} from "./lib/auth";
 import { getAuthUserId } from "./utils";
+
+async function requireSubtaskEdit(
+  ctx: QueryCtx | MutationCtx,
+  taskId: Id<"tasks">,
+  userId: Id<"users">,
+) {
+  const { task, membership } = await requireTaskAccess(ctx, taskId, userId);
+  if (!canEditTask(membership, task, userId)) {
+    throw new Error(
+      "You can only edit subtasks of tasks you created or are assigned to",
+    );
+  }
+  return task;
+}
 
 export const listByTask = query({
   args: { taskId: v.id("tasks") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const task = await ctx.db.get(args.taskId);
-    if (!task) return [];
+    if (!task || task.deletedAt !== undefined) return [];
 
-    // Check membership
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", task.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member of this organization");
+    await requireOrgMembership(ctx, task.organizationId, userId);
 
     const subtasks = await ctx.db
       .query("subtasks")
@@ -48,17 +61,7 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    const task = await ctx.db.get(args.taskId);
-    if (!task) throw new Error("Task not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", task.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireSubtaskEdit(ctx, args.taskId, userId);
 
     return await ctx.db.insert("subtasks", {
       taskId: args.taskId,
@@ -86,17 +89,7 @@ export const update = mutation({
     const subtask = await ctx.db.get(args.subtaskId);
     if (!subtask) throw new Error("Subtask not found");
 
-    const task = await ctx.db.get(subtask.taskId);
-    if (!task) throw new Error("Task not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", task.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireSubtaskEdit(ctx, subtask.taskId, userId);
 
     await ctx.db.patch(args.subtaskId, {
       ...args.updates,
@@ -112,17 +105,7 @@ export const remove = mutation({
     const subtask = await ctx.db.get(args.subtaskId);
     if (!subtask) return;
 
-    const task = await ctx.db.get(subtask.taskId);
-    if (!task) throw new Error("Task not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", task.organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member");
+    await requireSubtaskEdit(ctx, subtask.taskId, userId);
 
     await ctx.db.delete(args.subtaskId);
   },
