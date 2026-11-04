@@ -298,3 +298,88 @@ describe("comments", () => {
     expect(count).toBe(0);
   });
 });
+
+describe("task updates", () => {
+  it("clears optional fields with null", async () => {
+    const { ownerA, ids } = await setup();
+    const taskId = await ownerA.mutation(api.tasks.create, {
+      ...newTask(ids.projectA),
+      description: "d",
+      assigneeUserId: ids.memberA,
+      deadline: 1000,
+      storyPoints: 3,
+    });
+    await ownerA.mutation(api.tasks.update, {
+      taskId,
+      updates: {
+        description: null,
+        assigneeUserId: null,
+        deadline: null,
+        storyPoints: null,
+      },
+    });
+    const task = await ownerA.query(api.tasks.get, { taskId });
+    expect(task?.description).toBeUndefined();
+    expect(task?.assigneeUserId).toBeUndefined();
+    expect(task?.deadline).toBeUndefined();
+    expect(task?.storyPoints).toBeUndefined();
+    expect(task?.title).toBe("task");
+  });
+
+  it("validates input", async () => {
+    const { ownerA, ids } = await setup();
+    await expect(
+      ownerA.mutation(api.tasks.create, newTask(ids.projectA, "   ")),
+    ).rejects.toThrow("Title is required");
+    await expect(
+      ownerA.mutation(api.tasks.create, newTask(ids.projectA, "x".repeat(201))),
+    ).rejects.toThrow("too long");
+    await expect(
+      ownerA.mutation(api.tasks.create, {
+        ...newTask(ids.projectA),
+        storyPoints: -1,
+      }),
+    ).rejects.toThrow("Story points");
+  });
+});
+
+describe("tags.update", () => {
+  it("keeps fields that are not sent", async () => {
+    const { ownerA, ids, t } = await setup();
+    await t.run((ctx) => ctx.db.patch(ids.tagA, { color: "red" }));
+    await ownerA.mutation(api.tags.update, { tagId: ids.tagA, name: "new" });
+    const tag = await t.run((ctx) => ctx.db.get(ids.tagA));
+    expect(tag).toMatchObject({ name: "new", color: "red" });
+  });
+});
+
+describe("organizations", () => {
+  it("creates a slug from a Persian name", async () => {
+    const { ownerA } = await setup();
+    const id = await ownerA.mutation(api.organizations.create, {
+      name: "تیم من",
+    });
+    const orgs = await ownerA.query(api.organizations.listMine, {});
+    expect(orgs.find((o) => o?._id === id)?.slug).toBe("تیم-من");
+  });
+
+  it("validates slug format and uniqueness on update", async () => {
+    const { ownerA, ids } = await setup();
+    await expect(
+      ownerA.mutation(api.organizations.update, {
+        organizationId: ids.orgA,
+        updates: { slug: "bad slug!" },
+      }),
+    ).rejects.toThrow("Slug");
+    await expect(
+      ownerA.mutation(api.organizations.update, {
+        organizationId: ids.orgA,
+        updates: { slug: "org-b" },
+      }),
+    ).rejects.toThrow("already taken");
+    await ownerA.mutation(api.organizations.update, {
+      organizationId: ids.orgA,
+      updates: { slug: "تیم-الف" },
+    });
+  });
+});

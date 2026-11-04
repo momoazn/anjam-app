@@ -88,8 +88,8 @@ export function useTasks(
           organizationId,
           projectId: projectId as Id<"projects"> | undefined,
           assigneeUserId: assigneeUserId as Id<"users"> | undefined,
-          status,
-          priority,
+          status: status as Doc<"tasks">["status"] | undefined,
+          priority: priority as Doc<"tasks">["priority"] | undefined,
           searchTerm,
           paginationOpts: { numItems: perPage, cursor: null },
         }
@@ -197,7 +197,7 @@ export function useCreateTask(options?: {
           projectId: projectId as Id<"projects">,
           title: data.title,
           description: data.description,
-          assigneeUserId: (data.assigneeUserId || data.assignee) as
+          assigneeUserId: (data.assigneeUserId ?? data.assignee) as
             | Id<"users">
             | undefined,
           priority: data.priority as "low" | "medium" | "high" | "urgent",
@@ -209,8 +209,8 @@ export function useCreateTask(options?: {
             | "cancelled",
           deadline: data.deadline,
           tags: data.tags as Id<"tags">[] | undefined,
-          taskType: data.taskType || data.task_type,
-          storyPoints: data.storyPoints || data.story_points,
+          taskType: data.taskType ?? data.task_type,
+          storyPoints: data.storyPoints ?? data.story_points,
         });
         options?.onSuccess?.(id);
         return id;
@@ -238,18 +238,19 @@ export function useUpdateTask(options?: {
       updates,
     }: {
       id: string;
+      // null clears the field; undefined leaves it unchanged.
       updates: {
         title?: string;
-        description?: string;
+        description?: string | null;
         status?: string;
         priority?: string;
-        assigneeUserId?: string;
+        assigneeUserId?: string | null;
         assignee?: string;
-        deadline?: number;
+        deadline?: number | null;
         tags?: string[];
         taskType?: string;
         task_type?: string;
-        storyPoints?: number;
+        storyPoints?: number | null;
         story_points?: number;
       };
     }) => {
@@ -259,15 +260,18 @@ export function useUpdateTask(options?: {
           updates: {
             title: updates.title,
             description: updates.description,
-            status: updates.status,
-            priority: updates.priority,
-            assigneeUserId: (updates.assigneeUserId || updates.assignee) as
-              | Id<"users">
-              | undefined,
+            status: updates.status as Doc<"tasks">["status"] | undefined,
+            priority: updates.priority as Doc<"tasks">["priority"] | undefined,
+            assigneeUserId: (updates.assigneeUserId === undefined
+              ? updates.assignee
+              : updates.assigneeUserId) as Id<"users"> | null | undefined,
             deadline: updates.deadline,
             tags: updates.tags as Id<"tags">[] | undefined,
-            taskType: updates.taskType || updates.task_type,
-            storyPoints: updates.storyPoints || updates.story_points,
+            taskType: updates.taskType ?? updates.task_type,
+            storyPoints:
+              updates.storyPoints === undefined
+                ? updates.story_points
+                : updates.storyPoints,
           },
         });
         options?.onSuccess?.();
@@ -350,7 +354,7 @@ export function useBulkUpdateTasks() {
       updates: {
         status?: "todo" | "in_progress" | "in_review" | "done" | "cancelled";
         priority?: "low" | "medium" | "high" | "urgent";
-        assigneeUserId?: string;
+        assigneeUserId?: string | null;
         assignee?: string;
       };
     }) => {
@@ -359,9 +363,9 @@ export function useBulkUpdateTasks() {
         updates: {
           status: updates.status,
           priority: updates.priority,
-          assigneeUserId: (updates.assigneeUserId || updates.assignee) as
-            | Id<"users">
-            | undefined,
+          assigneeUserId: (updates.assigneeUserId === undefined
+            ? updates.assignee
+            : updates.assigneeUserId) as Id<"users"> | null | undefined,
         },
       });
     },

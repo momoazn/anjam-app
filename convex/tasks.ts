@@ -12,6 +12,15 @@ import {
   requireProjectAccess,
   requireTaskAccess,
 } from "./lib/auth";
+import {
+  MAX_NAME,
+  MAX_TEXT,
+  MAX_TITLE,
+  assertNonNegative,
+  capSearch,
+  cleanOptionalText,
+  cleanText,
+} from "./lib/validation";
 import { getAuthUserId } from "./utils";
 
 const taskStatusValidator = v.union(
@@ -60,6 +69,15 @@ export const create = mutation({
       userIds: [args.assigneeUserId],
       tagIds: args.tags,
     });
+    const title = cleanText(args.title, "Title", MAX_TITLE);
+    const description = args.description
+      ? cleanOptionalText(args.description, "Description", MAX_TEXT)
+      : undefined;
+    const taskType = args.taskType
+      ? cleanOptionalText(args.taskType, "Task type", MAX_NAME)
+      : undefined;
+    assertNonNegative(args.deadline, "Deadline");
+    assertNonNegative(args.storyPoints, "Story points");
 
     const counter = await ctx.db
       .query("projectCounters")
@@ -84,8 +102,8 @@ export const create = mutation({
       organizationId: project.organizationId,
       creatorUserId: userId,
       assigneeUserId: args.assigneeUserId,
-      title: args.title,
-      description: args.description,
+      title,
+      description,
       priority: args.priority,
       status: args.status,
       deadline: args.deadline,
@@ -93,7 +111,7 @@ export const create = mutation({
       tags: args.tags || [],
       displayId,
       taskNumber,
-      taskType: args.taskType,
+      taskType,
       storyPoints: args.storyPoints,
       updatedAt: Date.now(),
     });
@@ -137,8 +155,8 @@ export const list = query({
     organizationId: v.id("organizations"),
     projectId: v.optional(v.id("projects")),
     assigneeUserId: v.optional(v.id("users")),
-    status: v.optional(v.string()),
-    priority: v.optional(v.string()),
+    status: v.optional(taskStatusValidator),
+    priority: v.optional(taskPriorityValidator),
     searchTerm: v.optional(v.string()),
     paginationOpts: paginationOptsValidator,
   },
@@ -154,14 +172,15 @@ export const list = query({
       await requireProjectInOrg(ctx, args.organizationId, args.projectId);
     }
 
+    const searchTerm = args.searchTerm ? capSearch(args.searchTerm) : undefined;
     const baseQuery = ctx.db.query("tasks");
     let q:
       | ReturnType<typeof baseQuery.withSearchIndex>
       | ReturnType<typeof baseQuery.withIndex>;
 
-    if (args.searchTerm) {
+    if (searchTerm) {
       q = baseQuery.withSearchIndex("search_title", (index) => {
-        let search = index.search("title", args.searchTerm!);
+        let search = index.search("title", searchTerm);
         if (args.projectId) {
           search = search.eq("projectId", args.projectId);
         }
@@ -195,7 +214,7 @@ export const list = query({
       );
     }
 
-    if (!args.searchTerm) {
+    if (!searchTerm) {
       q = q.filter((filter) => filter.eq(filter.field("deletedAt"), undefined));
     }
 
@@ -229,16 +248,17 @@ export const list = query({
 export const update = mutation({
   args: {
     taskId: v.id("tasks"),
+    // null clears an optional field; undefined leaves it unchanged.
     updates: v.object({
       title: v.optional(v.string()),
-      description: v.optional(v.string()),
-      status: v.optional(v.string()),
-      priority: v.optional(v.string()),
-      assigneeUserId: v.optional(v.id("users")),
-      deadline: v.optional(v.number()),
+      description: v.optional(v.union(v.string(), v.null())),
+      status: v.optional(taskStatusValidator),
+      priority: v.optional(taskPriorityValidator),
+      assigneeUserId: v.optional(v.union(v.id("users"), v.null())),
+      deadline: v.optional(v.union(v.number(), v.null())),
       tags: v.optional(v.array(v.id("tags"))),
       taskType: v.optional(v.string()),
-      storyPoints: v.optional(v.number()),
+      storyPoints: v.optional(v.union(v.number(), v.null())),
     }),
   },
   handler: async (ctx, args) => {
@@ -253,15 +273,46 @@ export const update = mutation({
       throw new Error("You can only edit tasks you created or are assigned to");
     }
 
+    const { updates } = args;
     await assertOrgRefs(ctx, task.organizationId, {
-      userIds: [args.updates.assigneeUserId],
-      tagIds: args.updates.tags,
+      userIds: [updates.assigneeUserId],
+      tagIds: updates.tags,
     });
+    assertNonNegative(updates.deadline ?? undefined, "Deadline");
+    assertNonNegative(updates.storyPoints ?? undefined, "Story points");
 
-    await ctx.db.patch(args.taskId, {
-      ...(args.updates as Partial<Doc<"tasks">>),
-      updatedAt: Date.now(),
-    });
+    // ctx.db.patch removes a field when its value is undefined.
+    const patch: Partial<Doc<"tasks">> = { updatedAt: Date.now() };
+    if (updates.status !== undefined) patch.status = updates.status;
+    if (updates.priority !== undefined) patch.priority = updates.priority;
+    if (updates.tags !== undefined) patch.tags = updates.tags;
+    if (updates.title !== undefined) {
+      patch.title = cleanText(updates.title, "Title", MAX_TITLE);
+    }
+    if (updates.taskType !== undefined) {
+      patch.taskType = cleanOptionalText(
+        updates.taskType,
+        "Task type",
+        MAX_NAME,
+      );
+    }
+    if (updates.description !== undefined) {
+      patch.description =
+        updates.description === null
+          ? undefined
+          : cleanOptionalText(updates.description, "Description", MAX_TEXT);
+    }
+    if (updates.assigneeUserId !== undefined) {
+      patch.assigneeUserId = updates.assigneeUserId ?? undefined;
+    }
+    if (updates.deadline !== undefined) {
+      patch.deadline = updates.deadline ?? undefined;
+    }
+    if (updates.storyPoints !== undefined) {
+      patch.storyPoints = updates.storyPoints ?? undefined;
+    }
+
+    await ctx.db.patch(args.taskId, patch);
   },
 });
 
@@ -306,6 +357,9 @@ export const updateBoardPosition = mutation({
 
     if (!canEditTask(membership, task, userId)) {
       throw new Error("You don't have permission to move this task");
+    }
+    if (!Number.isFinite(args.order)) {
+      throw new Error("Order must be a finite number");
     }
 
     await ctx.db.patch(args.taskId, {
@@ -376,7 +430,7 @@ export const bulkUpdate = mutation({
     updates: v.object({
       status: v.optional(taskStatusValidator),
       priority: v.optional(taskPriorityValidator),
-      assigneeUserId: v.optional(v.id("users")),
+      assigneeUserId: v.optional(v.union(v.id("users"), v.null())),
     }),
   },
   handler: async (ctx, args) => {
@@ -403,8 +457,12 @@ export const bulkUpdate = mutation({
         checkedOrgs.add(task.organizationId);
       }
 
+      const { assigneeUserId, ...rest } = args.updates;
       await ctx.db.patch(id, {
-        ...args.updates,
+        ...rest,
+        ...(assigneeUserId !== undefined && {
+          assigneeUserId: assigneeUserId ?? undefined,
+        }),
         updatedAt: Date.now(),
       });
     }

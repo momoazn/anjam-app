@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { requireOrgMembership, requireTaskAccess } from "./lib/auth";
+import { MAX_TEXT, cleanText } from "./lib/validation";
 import { getAuthUserId } from "./utils";
 
 const REACTION_KEYS = ["+1", "-1", "laugh", "heart", "rocket", "eyes"];
@@ -47,6 +48,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const { task, project } = await requireTaskAccess(ctx, args.taskId, userId);
+    const content = cleanText(args.content, "Comment", MAX_TEXT);
 
     if (args.parentCommentId) {
       const parent = await ctx.db.get(args.parentCommentId);
@@ -58,13 +60,13 @@ export const create = mutation({
     const commentId = await ctx.db.insert("comments", {
       taskId: args.taskId,
       userId,
-      content: args.content,
+      content,
       parentCommentId: args.parentCommentId,
     });
 
     // Parse mentions: @username (allow dots/hyphens for email prefixes)
     const mentionRegex = /@([\w.-]+)/g;
-    const matches = args.content.matchAll(mentionRegex);
+    const matches = content.matchAll(mentionRegex);
     const mentionedUsernames = new Set<string>();
     for (const match of matches) {
       mentionedUsernames.add(match[1].toLowerCase());
@@ -208,7 +210,7 @@ export const update = mutation({
       if (comment.userId !== userId && membership.role !== "owner") {
         throw new Error("You can only edit your own comments");
       }
-      updates.content = args.updates.content;
+      updates.content = cleanText(args.updates.content, "Comment", MAX_TEXT);
       updates.updatedAt = Date.now();
     }
 

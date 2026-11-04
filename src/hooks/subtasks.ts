@@ -71,7 +71,7 @@ export function useUpdateSubtask() {
       id: string;
       updates: {
         title?: string;
-        assigneeUserId?: string;
+        assigneeUserId?: string | null;
         assignee?: string;
         isDone?: boolean;
         is_done?: boolean;
@@ -82,9 +82,9 @@ export function useUpdateSubtask() {
         subtaskId: id as Id<"subtasks">,
         updates: {
           title: updates.title,
-          assigneeUserId: (updates.assigneeUserId || updates.assignee) as
-            | Id<"users">
-            | undefined,
+          assigneeUserId: (updates.assigneeUserId === undefined
+            ? updates.assignee
+            : updates.assigneeUserId) as Id<"users"> | null | undefined,
           isDone: updates.isDone ?? updates.is_done,
           order: updates.order,
         },

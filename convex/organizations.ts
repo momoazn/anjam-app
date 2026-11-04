@@ -2,6 +2,12 @@ import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import { requireOrgMembership, requireOrgOwnerMembership } from "./lib/auth";
+import {
+  MAX_NAME,
+  MAX_TEXT,
+  cleanOptionalText,
+  cleanText,
+} from "./lib/validation";
 import { generateSlug, getAuthUserId, getAuthUserIdIfExists } from "./utils";
 
 export const create = mutation({
@@ -12,7 +18,11 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
-    const slug = generateSlug(args.name);
+    const name = cleanText(args.name, "Name", MAX_NAME);
+    const description = args.description
+      ? cleanOptionalText(args.description, "Description", MAX_TEXT)
+      : undefined;
+    const slug = generateSlug(name);
 
     // Ensure slug uniqueness
     let finalSlug = slug;
@@ -28,9 +38,9 @@ export const create = mutation({
     }
 
     const orgId = await ctx.db.insert("organizations", {
-      name: args.name,
+      name,
       slug: finalSlug,
-      description: args.description,
+      description,
       active: true,
       plan: "free",
       settings: {},
@@ -112,6 +122,36 @@ export const update = mutation({
       "Only owners can update organization settings",
     );
 
-    await ctx.db.patch(args.organizationId, args.updates);
+    const { name, description, slug } = args.updates;
+    const patch: { name?: string; description?: string; slug?: string } = {};
+    if (name !== undefined) patch.name = cleanText(name, "Name", MAX_NAME);
+    if (description !== undefined) {
+      patch.description = cleanOptionalText(
+        description,
+        "Description",
+        MAX_TEXT,
+      );
+    }
+    if (slug !== undefined) {
+      const normalized = slug.trim().toLowerCase();
+      if (
+        normalized.length > MAX_NAME ||
+        !/^[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*$/u.test(normalized)
+      ) {
+        throw new Error(
+          "Slug may contain only letters, numbers and single hyphens",
+        );
+      }
+      const taken = await ctx.db
+        .query("organizations")
+        .withIndex("by_slug", (q) => q.eq("slug", normalized))
+        .first();
+      if (taken && taken._id !== args.organizationId) {
+        throw new Error("Slug is already taken");
+      }
+      patch.slug = normalized;
+    }
+
+    await ctx.db.patch(args.organizationId, patch);
   },
 });

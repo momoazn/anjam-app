@@ -7,6 +7,12 @@ import {
   requireOrgMembership,
   requireOrgOwnerMembership,
 } from "./lib/auth";
+import {
+  MAX_NAME,
+  MAX_TEXT,
+  cleanOptionalText,
+  cleanText,
+} from "./lib/validation";
 import { getAuthUserId } from "./utils";
 
 export const create = mutation({
@@ -23,6 +29,10 @@ export const create = mutation({
     await assertOrgRefs(ctx, args.organizationId, {
       userIds: [args.supervisorUserId],
     });
+    const name = cleanText(args.name, "Name", MAX_NAME);
+    const description = args.description
+      ? cleanOptionalText(args.description, "Description", MAX_TEXT)
+      : undefined;
 
     // Generate unique code (3 letters)
     // In PB this was hooked. Here we do it manually.
@@ -50,9 +60,9 @@ export const create = mutation({
 
     const projectId = await ctx.db.insert("projects", {
       organizationId: args.organizationId,
-      name: args.name,
+      name,
       code,
-      description: args.description,
+      description,
       supervisorUserId: args.supervisorUserId,
     });
 
@@ -130,7 +140,14 @@ export const update = mutation({
       userIds: [args.updates.supervisorUserId],
     });
 
-    await ctx.db.patch(args.projectId, args.updates);
+    const { name, description, supervisorUserId } = args.updates;
+    await ctx.db.patch(args.projectId, {
+      ...(name !== undefined && { name: cleanText(name, "Name", MAX_NAME) }),
+      ...(description !== undefined && {
+        description: cleanOptionalText(description, "Description", MAX_TEXT),
+      }),
+      ...(supervisorUserId !== undefined && { supervisorUserId }),
+    });
   },
 });
 

@@ -2,6 +2,7 @@ import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import { requireOrgMembership } from "./lib/auth";
+import { MAX_NAME, cleanText } from "./lib/validation";
 import { getAuthUserId } from "./utils";
 
 export const listByOrg = query({
@@ -28,12 +29,13 @@ export const create = mutation({
     const userId = await getAuthUserId(ctx);
 
     await requireOrgMembership(ctx, args.organizationId, userId);
+    const name = cleanText(args.name, "Name", MAX_NAME);
 
     // Check uniqueness
     const existing = await ctx.db
       .query("tags")
       .withIndex("by_org_name", (q) =>
-        q.eq("organizationId", args.organizationId).eq("name", args.name),
+        q.eq("organizationId", args.organizationId).eq("name", name),
       )
       .first();
 
@@ -41,7 +43,7 @@ export const create = mutation({
 
     return await ctx.db.insert("tags", {
       organizationId: args.organizationId,
-      name: args.name,
+      name,
       color: args.color,
       creatorUserId: userId,
     });
@@ -61,12 +63,17 @@ export const update = mutation({
 
     await requireOrgMembership(ctx, tag.organizationId, userId);
 
+    const name =
+      args.name !== undefined
+        ? cleanText(args.name, "Name", MAX_NAME)
+        : undefined;
+
     // Check uniqueness if name changes
-    if (args.name && args.name !== tag.name) {
+    if (name !== undefined && name !== tag.name) {
       const existing = await ctx.db
         .query("tags")
         .withIndex("by_org_name", (q) =>
-          q.eq("organizationId", tag.organizationId).eq("name", args.name!),
+          q.eq("organizationId", tag.organizationId).eq("name", name),
         )
         .first();
 
@@ -74,8 +81,8 @@ export const update = mutation({
     }
 
     await ctx.db.patch(args.tagId, {
-      name: args.name,
-      color: args.color,
+      ...(name !== undefined && { name }),
+      ...(args.color !== undefined && { color: args.color }),
     });
   },
 });

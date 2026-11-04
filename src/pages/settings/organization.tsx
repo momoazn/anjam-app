@@ -18,10 +18,10 @@ import { cn } from "@/lib/utils";
 import { useCurrentOrganization } from "@/store/app-context-store";
 
 const orgSettingsSchema = z.object({
-  name: z.string().min(1).max(200),
+  name: z.string().min(1).max(100),
   slug: z
     .string()
-    .regex(/^[a-z0-9-]+$/)
+    .regex(/^[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*$/u)
     .min(1)
     .max(100),
   description: z.string().optional(),

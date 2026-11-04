@@ -9,6 +9,7 @@ import {
   requireOrgMembership,
   requireTaskAccess,
 } from "./lib/auth";
+import { MAX_TITLE, cleanText } from "./lib/validation";
 import { getAuthUserId } from "./utils";
 
 async function requireSubtaskEdit(
@@ -66,10 +67,13 @@ export const create = mutation({
     await assertOrgRefs(ctx, task.organizationId, {
       userIds: [args.assigneeUserId],
     });
+    if (!Number.isFinite(args.order)) {
+      throw new Error("Order must be a finite number");
+    }
 
     return await ctx.db.insert("subtasks", {
       taskId: args.taskId,
-      title: args.title,
+      title: cleanText(args.title, "Title", MAX_TITLE),
       assigneeUserId: args.assigneeUserId,
       isDone: false,
       order: args.order,
@@ -83,7 +87,7 @@ export const update = mutation({
     subtaskId: v.id("subtasks"),
     updates: v.object({
       title: v.optional(v.string()),
-      assigneeUserId: v.optional(v.id("users")),
+      assigneeUserId: v.optional(v.union(v.id("users"), v.null())),
       isDone: v.optional(v.boolean()),
       order: v.optional(v.number()),
     }),
@@ -98,8 +102,19 @@ export const update = mutation({
       userIds: [args.updates.assigneeUserId],
     });
 
+    const { title, assigneeUserId, isDone, order } = args.updates;
+    if (order !== undefined && !Number.isFinite(order)) {
+      throw new Error("Order must be a finite number");
+    }
     await ctx.db.patch(args.subtaskId, {
-      ...args.updates,
+      ...(title !== undefined && {
+        title: cleanText(title, "Title", MAX_TITLE),
+      }),
+      ...(assigneeUserId !== undefined && {
+        assigneeUserId: assigneeUserId ?? undefined,
+      }),
+      ...(isDone !== undefined && { isDone }),
+      ...(order !== undefined && { order }),
       updatedAt: Date.now(),
     });
   },

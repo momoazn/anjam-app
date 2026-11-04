@@ -95,7 +95,7 @@ function TaskListItemInner({
   const handleAssigneeChange = (value: string) => {
     updateTask.mutate({
       id: taskId,
-      updates: { assigneeUserId: value === "__unassigned" ? undefined : value },
+      updates: { assigneeUserId: value === "__unassigned" ? null : value },
     });
     toast.success(tasks.edit.success);
   };
@@ -103,7 +103,7 @@ function TaskListItemInner({
   const handleDueDateChange = (date: Date | undefined) => {
     updateTask.mutate({
       id: taskId,
-      updates: { deadline: date ? date.getTime() : undefined },
+      updates: { deadline: date ? date.getTime() : null },
     });
     toast.success(tasks.edit.success);
   };

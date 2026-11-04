@@ -104,8 +104,8 @@ export function EditTaskModal() {
           assigneeUserId:
             values.assignee !== tasks.addTask.unassigned
               ? values.assignee
-              : undefined,
-          deadline: values.deadline?.getTime(),
+              : null,
+          deadline: values.deadline?.getTime() ?? null,
         },
       });
 
