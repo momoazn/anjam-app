@@ -1,7 +1,8 @@
 {
   "name": "anjam-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n convex,vite -c magenta,cyan \"bun run dev:convex\" \"bun run dev:vite\"",
