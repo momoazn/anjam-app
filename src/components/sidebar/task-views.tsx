@@ -37,7 +37,7 @@ const viewItems = [
   },
   {
     title: navigation.myTasks,
-    url: "/tasks?assigned=me&status=todo,in_progress,pending",
+    url: "/tasks?assignee=me&status=todo,in_progress,in_review",
     icon: IconUser,
     getCount: (counts: ReturnType<typeof useTaskCounts>) => counts.myTasks,
   },
