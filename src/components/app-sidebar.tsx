@@ -1,3 +1,4 @@
+import { digitsEnToFa } from "@persian-tools/persian-tools";
 import {
   IconBell,
   IconHelp,
@@ -102,8 +103,8 @@ function getNavItems(
         icon: IconHelp,
       },
       {
-        title: navigation.alphaFeedback,
-        url: "https://github.com/mohammadhmn/anjam/issues/new?labels=alpha-feedback",
+        title: navigation.reportIssue,
+        url: `${app.repoUrl}/issues/new`,
         icon: IconMessage,
         external: true,
       },
@@ -215,18 +216,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarFooter className="border-border/40 relative z-10 flex flex-col border-t p-0">
         <NavMain items={navItems.navSecondary} title={navigation.helpSection} />
-        <div className="bg-muted/40 flex items-center justify-between border-t px-4 py-3">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground/60 font-mono text-[10px] font-bold uppercase tracking-widest">
-              {navigation.version}
-            </span>
-            <span className="text-muted-foreground/40 text-[9px] font-mono">
-              v0.8.2-alpha
-            </span>
-          </div>
-          <span className="rounded bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 border border-amber-500/20">
-            {navigation.alpha}
-          </span>
+        <div className="bg-muted/40 text-muted-foreground/70 border-t px-4 py-3 text-xs">
+          {navigation.version} {digitsEnToFa(__APP_VERSION__)}
         </div>
       </SidebarFooter>
     </Sidebar>
