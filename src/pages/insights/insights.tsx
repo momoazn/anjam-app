@@ -6,10 +6,19 @@ import {
   IconTrendingUp,
   IconUsers,
 } from "@tabler/icons-react";
-import { endOfWeek, format, startOfWeek, subWeeks } from "date-fns";
-import { faIR } from "date-fns/locale";
+import { endOfWeek, startOfWeek, subWeeks } from "date-fns";
+import { format } from "date-fns-jalali";
+import { faIR } from "date-fns-jalali/locale";
 import { useMemo } from "react";
-import { Bar, BarChart, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
@@ -32,6 +41,19 @@ import { formatUserName } from "@/lib/utils";
  * - On-time rate
  * - Workload by assignee
  */
+const DAY_MS = 1000 * 60 * 60 * 24;
+const AXIS_TICK = { fontSize: 11, fill: "var(--muted-foreground)" };
+const GRID_STROKE = "var(--border)";
+const formatFa = (n: number) => digitsEnToFa(String(n).replace(".", "٫"));
+const TOOLTIP_STYLE = {
+  fontSize: 12,
+  borderRadius: 8,
+  border: "1px solid var(--border)",
+  background: "var(--popover)",
+  color: "var(--popover-foreground)",
+};
+const BAR_FILL = "var(--primary)";
+
 export default function Insights() {
   const cardClassName =
     "rounded-xl border border-border/40 bg-background/30 shadow-none";
@@ -39,16 +61,16 @@ export default function Insights() {
   // Date calculations for this week and last week
   const now = useMemo(() => new Date(), []);
   const thisWeekStart = useMemo(
-    () => startOfWeek(now, { weekStartsOn: 1 }),
+    () => startOfWeek(now, { weekStartsOn: 6 }),
     [now],
   );
-  const thisWeekEnd = useMemo(() => endOfWeek(now, { weekStartsOn: 1 }), [now]);
+  const thisWeekEnd = useMemo(() => endOfWeek(now, { weekStartsOn: 6 }), [now]);
   const lastWeekStart = useMemo(
-    () => startOfWeek(subWeeks(now, 1), { weekStartsOn: 1 }),
+    () => startOfWeek(subWeeks(now, 1), { weekStartsOn: 6 }),
     [now],
   );
   const lastWeekEnd = useMemo(
-    () => endOfWeek(subWeeks(now, 1), { weekStartsOn: 1 }),
+    () => endOfWeek(subWeeks(now, 1), { weekStartsOn: 6 }),
     [now],
   );
 
@@ -68,7 +90,8 @@ export default function Insights() {
         createdLastWeek: 0,
         completedLastWeek: 0,
         cycleTime: 0,
-        onTimeRate: 0,
+        onTimeRate: null as number | null,
+        activeTotal: 0,
         workloadByAssignee: [],
         weeklyCycleTime: [],
       };
@@ -76,17 +99,13 @@ export default function Insights() {
 
     const tasks = allTasks.items;
 
-    // Helper to get created date from task (Convex uses _creationTime)
-    const getCreatedDate = (t: (typeof tasks)[0]): Date => {
-      return new Date(t._creationTime || 0);
-    };
+    const getCreatedDate = (t: (typeof tasks)[0]): Date =>
+      new Date(t.createdAt ?? t._creationTime ?? 0);
 
-    // Helper to get updated date from task (Convex uses updatedAt)
+    // Completion time: explicit completedAt, falling back to last update
     const getUpdatedDate = (t: (typeof tasks)[0]): Date | null => {
-      if (t.updatedAt) {
-        return new Date(t.updatedAt);
-      }
-      return null;
+      const ts = t.completedAt ?? t.updatedAt;
+      return ts ? new Date(ts) : null;
     };
 
     // Basic insightsLabels
@@ -123,8 +142,7 @@ export default function Insights() {
       const updated = getUpdatedDate(t);
       if (!updated) return;
 
-      const cycleDays =
-        (updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+      const cycleDays = (updated.getTime() - created.getTime()) / DAY_MS;
       totalCycleTime += cycleDays;
 
       // On-time calculation
@@ -142,7 +160,10 @@ export default function Insights() {
     const onTimeRate =
       completedWithDeadline > 0
         ? (onTimeCount / completedWithDeadline) * 100
-        : 0;
+        : null;
+    const activeTotal = tasks.filter(
+      (t) => t.status !== "done" && t.status !== "cancelled",
+    ).length;
 
     // Workload by assignee
     const workloadMap = new Map<string, number>();
@@ -176,37 +197,30 @@ export default function Insights() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 8); // Top 8 assignees
 
-    // Weekly cycle time for trend (last 8 weeks)
+    // Weekly cycle time trend (last 8 weeks), bucketed by completion week
     const weeklyCycleTime = [];
     for (let i = 7; i >= 0; i--) {
-      const weekStart = startOfWeek(subWeeks(now, i + 1), { weekStartsOn: 1 });
-      const weekEnd = endOfWeek(subWeeks(now, i), { weekStartsOn: 1 });
+      const weekStart = startOfWeek(subWeeks(now, i), { weekStartsOn: 6 });
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 6 });
 
-      const weekTasks = tasks.filter((t) => {
-        const created = getCreatedDate(t);
-        return created >= weekStart && created <= weekEnd;
+      const weekCompleted = tasks.filter((t) => {
+        const done = getUpdatedDate(t);
+        return (
+          t.status === "done" && done && done >= weekStart && done <= weekEnd
+        );
       });
 
-      const weekCompleted = weekTasks.filter(
-        (t) => t.status === "done" && getUpdatedDate(t) !== null,
-      );
-
-      let weekTotal = 0;
-      weekCompleted.forEach((t) => {
-        const created = getCreatedDate(t);
-        const updated = getUpdatedDate(t);
-        if (updated) {
-          weekTotal +=
-            (updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
-        }
-      });
-
-      const weekAvg =
-        weekCompleted.length > 0 ? weekTotal / weekCompleted.length : 0;
+      const weekTotal = weekCompleted.reduce((sum, t) => {
+        const done = getUpdatedDate(t) as Date;
+        return sum + (done.getTime() - getCreatedDate(t).getTime()) / DAY_MS;
+      }, 0);
 
       weeklyCycleTime.push({
-        week: format(weekEnd, "dd MMM", { locale: faIR }),
-        cycleTime: Math.round(weekAvg * 10) / 10,
+        week: digitsEnToFa(format(weekStart, "d MMM", { locale: faIR })),
+        cycleTime:
+          weekCompleted.length > 0
+            ? Math.round((weekTotal / weekCompleted.length) * 10) / 10
+            : 0,
         tasks: weekCompleted.length,
       });
     }
@@ -218,7 +232,8 @@ export default function Insights() {
       createdLastWeek,
       completedLastWeek,
       cycleTime: Math.round(avgCycleTime * 10) / 10,
-      onTimeRate: Math.round(onTimeRate),
+      onTimeRate: onTimeRate === null ? null : Math.round(onTimeRate),
+      activeTotal,
       workloadByAssignee,
       weeklyCycleTime,
     };
@@ -234,10 +249,11 @@ export default function Insights() {
 
   // Calculate percentage change
   const getPercentageChange = (current: number, previous: number) => {
-    if (previous === 0) return current > 0 ? "+۱۰۰٪" : "۰٪";
-    const change = ((current - previous) / previous) * 100;
-    const formattedChange = digitsEnToFa(Math.abs(change).toFixed(0));
-    return change > 0 ? `+${formattedChange}٪` : `-${formattedChange}٪`;
+    if (previous === 0) return current > 0 ? "جدید" : "—";
+    const change = Math.round(((current - previous) / previous) * 100);
+    if (change === 0) return "۰٪";
+    const formattedChange = digitsEnToFa(Math.abs(change));
+    return change > 0 ? `+${formattedChange}٪` : `−${formattedChange}٪`;
   };
 
   if (isLoading) {
@@ -279,10 +295,12 @@ export default function Insights() {
               {digitsEnToFa(metrics.createdThisWeek)}
             </div>
             <p className="text-muted-foreground text-xs">
-              {getPercentageChange(
-                metrics.createdThisWeek,
-                metrics.createdLastWeek,
-              )}{" "}
+              <span dir="ltr">
+                {getPercentageChange(
+                  metrics.createdThisWeek,
+                  metrics.createdLastWeek,
+                )}
+              </span>{" "}
               {insightsLabels.fromLastWeek}
             </p>
           </CardContent>
@@ -298,10 +316,12 @@ export default function Insights() {
               {digitsEnToFa(metrics.completedThisWeek)}
             </div>
             <p className="text-muted-foreground text-xs">
-              {getPercentageChange(
-                metrics.completedThisWeek,
-                metrics.completedLastWeek,
-              )}{" "}
+              <span dir="ltr">
+                {getPercentageChange(
+                  metrics.completedThisWeek,
+                  metrics.completedLastWeek,
+                )}
+              </span>{" "}
               {insightsLabels.fromLastWeek}
             </p>
           </CardContent>
@@ -333,7 +353,7 @@ export default function Insights() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(metrics.cycleTime)}
+              {formatFa(metrics.cycleTime)}
               <span className="text-sm font-normal text-muted-foreground mr-1">
                 {insightsLabels.cycleTimeUnit}
               </span>
@@ -352,7 +372,9 @@ export default function Insights() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(insightsLabels.onTimeRate)}٪
+              {metrics.onTimeRate === null
+                ? "—"
+                : `${digitsEnToFa(metrics.onTimeRate)}٪`}
             </div>
             <p className="text-muted-foreground text-xs">
               تسک‌های تکمیل‌شده قبل از مهلت
@@ -368,11 +390,7 @@ export default function Insights() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {digitsEnToFa(
-                metrics.inProgress +
-                  metrics.createdThisWeek -
-                  metrics.completedThisWeek,
-              )}
+              {digitsEnToFa(metrics.activeTotal)}
             </div>
             <p className="text-muted-foreground text-xs">
               مجموع تسک‌های در جریان
@@ -392,51 +410,56 @@ export default function Insights() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {metrics.weeklyCycleTime.length > 0 &&
-            metrics.weeklyCycleTime.some((w) => w.tasks > 0) ? (
-              <div className="h-[200px] w-full overflow-hidden">
-                <BarChart
-                  width={560}
-                  height={200}
-                  data={metrics.weeklyCycleTime}
-                >
-                  <XAxis
-                    dataKey="week"
-                    tick={{ fontSize: 10 }}
-                    interval={0}
-                    angle={-45}
-                    textAnchor="end"
-                    height={40}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10 }}
-                    tickFormatter={(v) => digitsEnToFa(v)}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      fontSize: 12,
-                      borderRadius: 8,
-                    }}
-                    formatter={(
-                      value: number | undefined,
-                      name: string | undefined,
-                    ) => [
-                      name === "cycleTime" && value
-                        ? `${digitsEnToFa(value)} روز`
-                        : digitsEnToFa(value || 0),
-                      name === "cycleTime" ? "زمان چرخه" : "تکمیل‌شده",
-                    ]}
-                    labelFormatter={(label) => `هفته ${label}`}
-                  />
-                  <Bar
-                    dataKey="cycleTime"
-                    fill="hsl(var(--primary))"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
+            {metrics.weeklyCycleTime.some((w) => w.tasks > 0) ? (
+              <div className="h-[220px] w-full" dir="ltr">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={metrics.weeklyCycleTime}
+                    margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+                  >
+                    <CartesianGrid
+                      vertical={false}
+                      stroke={GRID_STROKE}
+                      strokeDasharray="3 3"
+                    />
+                    <XAxis
+                      dataKey="week"
+                      tick={AXIS_TICK}
+                      tickLine={false}
+                      axisLine={false}
+                      interval="preserveStartEnd"
+                      minTickGap={16}
+                    />
+                    <YAxis
+                      tick={AXIS_TICK}
+                      tickLine={false}
+                      axisLine={false}
+                      width={32}
+                      allowDecimals={false}
+                      tickFormatter={(v) => digitsEnToFa(v)}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "var(--muted)", opacity: 0.5 }}
+                      contentStyle={{ ...TOOLTIP_STYLE, direction: "rtl" }}
+                      formatter={(value, name) => [
+                        name === "cycleTime"
+                          ? `${formatFa(Number(value))} روز`
+                          : digitsEnToFa(Number(value)),
+                        name === "cycleTime" ? "زمان چرخه" : "تکمیل‌شده",
+                      ]}
+                      labelFormatter={(label) => `هفته‌ی ${label}`}
+                    />
+                    <Bar
+                      dataKey="cycleTime"
+                      fill={BAR_FILL}
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={28}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
+              <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">
                 {insightsLabels.noData}
               </div>
             )}
@@ -453,44 +476,53 @@ export default function Insights() {
           </CardHeader>
           <CardContent>
             {metrics.workloadByAssignee.length > 0 ? (
-              <div className="h-[200px] w-full overflow-hidden">
-                <BarChart
-                  width={560}
-                  height={200}
-                  data={metrics.workloadByAssignee}
-                  layout="vertical"
-                  margin={{ left: 20 }}
-                >
-                  <XAxis
-                    type="number"
-                    tick={{ fontSize: 10 }}
-                    tickFormatter={(v) => digitsEnToFa(v)}
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    width={80}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      fontSize: 12,
-                      borderRadius: 8,
-                    }}
-                    formatter={(value: number | undefined) => [
-                      digitsEnToFa(value || 0),
-                      insightsLabels.tasks,
-                    ]}
-                  />
-                  <Bar
-                    dataKey="count"
-                    fill="hsl(var(--primary))"
-                    radius={[0, 4, 4, 0]}
-                  />
-                </BarChart>
+              <div className="h-[220px] w-full" dir="ltr">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={metrics.workloadByAssignee}
+                    layout="vertical"
+                    margin={{ top: 0, right: 8, bottom: 0, left: 0 }}
+                  >
+                    <CartesianGrid
+                      horizontal={false}
+                      stroke={GRID_STROKE}
+                      strokeDasharray="3 3"
+                    />
+                    <XAxis
+                      type="number"
+                      tick={AXIS_TICK}
+                      tickLine={false}
+                      axisLine={false}
+                      allowDecimals={false}
+                      tickFormatter={(v) => digitsEnToFa(v)}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      tick={AXIS_TICK}
+                      tickLine={false}
+                      axisLine={false}
+                      width={90}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "var(--muted)", opacity: 0.5 }}
+                      contentStyle={{ ...TOOLTIP_STYLE, direction: "rtl" }}
+                      formatter={(value) => [
+                        digitsEnToFa(Number(value)),
+                        insightsLabels.tasks,
+                      ]}
+                    />
+                    <Bar
+                      dataKey="count"
+                      fill={BAR_FILL}
+                      radius={[0, 4, 4, 0]}
+                      maxBarSize={22}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
+              <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">
                 {insightsLabels.noData}
               </div>
             )}

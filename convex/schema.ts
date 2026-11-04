@@ -95,6 +95,8 @@ export default defineSchema({
     estimatedMinutes: v.optional(v.number()),
     watchers: v.optional(v.array(v.id("users"))),
     deletedAt: v.optional(v.number()),
+    createdAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
   })
     .index("by_projectId", ["projectId"])

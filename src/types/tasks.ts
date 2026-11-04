@@ -31,6 +31,8 @@ export interface Task {
   watchers?: string[]; // Id<"users">[]
   deletedAt?: number;
   updatedAt?: number;
+  createdAt?: number;
+  completedAt?: number;
 }
 
 export interface TaskWithProject extends Task {

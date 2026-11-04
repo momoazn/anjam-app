@@ -3,7 +3,6 @@ import {
   IconCalendar,
   IconChevronLeft,
   IconChevronRight,
-  IconHash,
   IconPlus,
 } from "@tabler/icons-react";
 import {
@@ -25,19 +24,27 @@ import { PageHeader } from "@/components/page-header";
 import { PageTransition } from "@/components/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { common, tasks as tasksText } from "@/constants";
 import { useAllTasks } from "@/hooks/tasks";
-import { getTaskStatus, isTaskCompleted } from "@/lib/status-utils";
-import { cn, formatUserName } from "@/lib/utils";
+import { getStatusColorVariant, isTaskCompleted } from "@/lib/status-utils";
+import { cn } from "@/lib/utils";
 import { useOpenModal } from "@/store/modal-store";
-import type { Task } from "@/types/tasks";
+import type { Task, TaskStatus } from "@/types/tasks";
 
+const MAX_CHIPS = 3;
+
+// Static classes so Tailwind can see them.
 const priorityColors = {
-  low: "bg-emerald-500/20 text-emerald-600",
-  medium: "bg-blue-500/20 text-blue-600",
-  high: "bg-orange-500/20 text-orange-600",
-  urgent: "bg-rose-500/20 text-rose-600",
+  low: "bg-emerald-500/15 hover:bg-emerald-500/25",
+  medium: "bg-blue-500/15 hover:bg-blue-500/25",
+  high: "bg-orange-500/15 hover:bg-orange-500/25",
+  urgent: "bg-rose-500/15 hover:bg-rose-500/25",
 };
 
 const CalendarSkeleton = () => (
@@ -54,43 +61,24 @@ const CalendarSkeleton = () => (
   </div>
 );
 
-interface CalendarTaskProps {
-  task: Task & {
-    project?: { _id: string } | null;
-    projectId?: string;
-    assignee?: {
-      displayName?: string;
-      email?: string;
-    } | null;
-  };
-}
-
-function CalendarTask({ task }: CalendarTaskProps) {
-  const status = getTaskStatus(task);
-  const taskId = task._id;
-  const taskUrl = `/tasks/${taskId}`;
-
+function CalendarTask({ task }: { task: Task }) {
   return (
-    <Link to={taskUrl}>
-      <div
+    <Link
+      to={`/tasks/${task._id}`}
+      title={task.title}
+      className={cn(
+        "text-foreground flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-right text-[11px] leading-5 transition-colors",
+        "max-sm:h-1.5 max-sm:p-0",
+        priorityColors[task.priority as keyof typeof priorityColors],
+      )}
+    >
+      <span
         className={cn(
-          "group hover:bg-muted/30 mb-1 rounded-lg border-e-2 p-1.5 text-right transition-all",
-          priorityColors[task.priority as keyof typeof priorityColors],
+          "size-1.5 shrink-0 rounded-full max-sm:hidden",
+          getStatusColorVariant(task.status as TaskStatus, "bar"),
         )}
-        style={{ borderRightColor: status.color }}
-      >
-        <div className="mb-0.5 flex items-center justify-end gap-1.5">
-          <span className="line-clamp-1 flex-1 text-[9px] font-semibold tracking-tight">
-            {task.title}
-          </span>
-          <div className="size-1 rounded-full bg-current" />
-        </div>
-        {task.assignee && (
-          <p className="truncate text-[8px] font-medium tracking-tight opacity-60">
-            {formatUserName(task.assignee.displayName, task.assignee.email)}
-          </p>
-        )}
-      </div>
+      />
+      <span className="truncate max-sm:sr-only">{task.title}</span>
     </Link>
   );
 }
@@ -197,31 +185,32 @@ export default function TaskCalendar() {
       />
 
       {/* Navigation */}
-      <div className="border-border/40 bg-card mb-8 flex items-center justify-between overflow-hidden rounded-2xl border p-4 shadow-sm">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={goToPreviousMonth}>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={tasksText.calendar.previousMonth}
+            onClick={goToPreviousMonth}
+          >
             <IconChevronRight className="size-5" />
           </Button>
-
-          <div className="flex min-w-35 flex-col items-end">
-            <span className="text-muted-foreground/40 mb-1 text-[8px] font-bold tracking-tight">
-              {tasksText.calendar.currentMonth}
-            </span>
-            <h2 className="text-lg font-bold tracking-tight">
-              {format(currentMonth, "MMMM yyyy", { locale: undefined })}
-            </h2>
-          </div>
-
-          <Button variant="ghost" size="icon" onClick={goToNextMonth}>
+          <h2 className="min-w-32 text-center text-lg font-bold tracking-tight">
+            {format(currentMonth, "MMMM yyyy", { locale: undefined })}
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={tasksText.calendar.nextMonth}
+            onClick={goToNextMonth}
+          >
             <IconChevronLeft className="size-5" />
           </Button>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="xs" onClick={goToToday}>
-            {common.today}
-          </Button>
-        </div>
+        <Button variant="outline" size="xs" onClick={goToToday}>
+          {common.today}
+        </Button>
       </div>
 
       {/* Calendar Grid */}
@@ -230,14 +219,14 @@ export default function TaskCalendar() {
       ) : (
         <div
           data-testid="task-calendar-grid"
-          className="border-border/40 bg-border/40 overflow-hidden rounded-2xl border shadow-xl"
+          className="border-border/40 bg-border/40 overflow-hidden rounded-xl border"
         >
           {/* Weekday Headers */}
           <div className="border-border/40 bg-border/40 grid grid-cols-7 gap-px border-b">
             {weekdayNames.map((day) => (
               <div
                 key={day}
-                className="bg-muted/20 text-muted-foreground/60 py-3 text-center text-[10px] font-bold tracking-tight"
+                className="bg-muted text-muted-foreground py-2 text-center text-xs font-medium"
               >
                 {day}
               </div>
@@ -252,53 +241,59 @@ export default function TaskCalendar() {
               const isTodayDate = isToday(day);
               const dateString = day.toISOString();
 
+              const visible = dayTasks.slice(0, MAX_CHIPS);
+              const hidden = dayTasks.slice(MAX_CHIPS);
+
               return (
                 <div
                   key={dateString}
+                  data-today={isTodayDate || undefined}
                   className={cn(
-                    "group flex min-h-35 flex-col p-2 transition-colors",
-                    !isCurrentMonth
-                      ? "bg-muted/10 opacity-40 grayscale"
-                      : "bg-card hover:bg-muted/5",
-                    isTodayDate && "bg-primary/5",
+                    "flex min-h-20 flex-col gap-1 p-1 sm:min-h-28 sm:p-1.5",
+                    isCurrentMonth ? "bg-card" : "bg-muted/20",
+                    isTodayDate && "ring-primary ring-2 ring-inset",
                   )}
                 >
-                  <div className="mb-3 flex items-start justify-between">
-                    <span
-                      className={cn(
-                        "text-xs font-bold tabular-nums transition-all",
-                        isTodayDate
-                          ? "border-primary text-primary border-b-2"
-                          : "text-muted-foreground/40 group-hover:text-foreground",
-                      )}
-                    >
-                      {digitsEnToFa(format(day, "d"))}
-                    </span>
-                    {dayTasks.length > 0 && (
-                      <div className="flex items-center gap-1.5 opacity-40 group-hover:opacity-100">
-                        <IconHash className="size-2.5" />
-                        <span className="text-[9px] font-bold tabular-nums">
-                          {digitsEnToFa(dayTasks.length)}
-                        </span>
-                      </div>
+                  <span
+                    className={cn(
+                      "flex size-6 items-center justify-center self-start rounded-full text-xs font-medium tabular-nums",
+                      isTodayDate
+                        ? "bg-primary text-primary-foreground"
+                        : isCurrentMonth
+                          ? "text-foreground"
+                          : "text-muted-foreground/50",
                     )}
-                  </div>
+                  >
+                    {digitsEnToFa(format(day, "d"))}
+                  </span>
 
-                  <div className="flex-1 space-y-1 overflow-hidden">
-                    {dayTasks.slice(0, 4).map((task) => (
+                  <div
+                    className={cn(
+                      "flex flex-col gap-1",
+                      !isCurrentMonth && "opacity-60",
+                    )}
+                  >
+                    {visible.map((task) => (
                       <CalendarTask key={task._id} task={task} />
                     ))}
-                    {dayTasks.length > 4 && (
-                      <div className="border-border/10 text-muted-foreground/40 mt-2 border-t pt-1 text-center text-[8px] font-bold tracking-tight">
-                        +{digitsEnToFa(dayTasks.length - 4)} {common.more}
-                      </div>
+                    {hidden.length > 0 && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-muted-foreground hover:text-foreground cursor-pointer rounded-md px-1.5 text-start text-[11px] leading-5 transition-colors"
+                          >
+                            +{digitsEnToFa(hidden.length)}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-60 space-y-1 p-2">
+                          {dayTasks.map((task) => (
+                            <CalendarTask key={task._id} task={task} />
+                          ))}
+                        </PopoverContent>
+                      </Popover>
                     )}
                   </div>
-                  {isTodayDate && (
-                    <div className="mt-auto flex justify-end pt-1">
-                      <div className="bg-primary size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -308,8 +303,8 @@ export default function TaskCalendar() {
 
       {/* Empty State */}
       {!isLoadingTasks && tasksWithDeadlines.length === 0 && (
-        <div className="border-border/40 mt-8 flex flex-col items-center justify-center rounded-2xl border border-dashed py-24 text-center opacity-30 grayscale">
-          <IconCalendar className="mb-4 size-12 stroke-1" />
+        <div className="border-border/40 text-muted-foreground mt-6 flex flex-col items-center justify-center rounded-xl border border-dashed py-16 text-center">
+          <IconCalendar className="mb-3 size-10 stroke-1" />
           <h3 className="text-foreground mb-2 text-lg font-bold tracking-tight">
             {tasksText.calendar.noTasks}
           </h3>

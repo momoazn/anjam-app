@@ -7,19 +7,13 @@
  * To regenerate, run `npx convex dev`.
  * @module
  */
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
 
 import type * as auth from "../auth.js";
 import type * as comments from "../comments.js";
 import type * as http from "../http.js";
-import type * as inbox from "../inbox.js";
-import type * as insights from "../insights.js";
 import type * as invites from "../invites.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_validation from "../lib/validation.js";
 import type * as mentions from "../mentions.js";
 import type * as notifications from "../notifications.js";
 import type * as orgMembers from "../orgMembers.js";
@@ -33,14 +27,19 @@ import type * as tasks from "../tasks.js";
 import type * as users from "../users.js";
 import type * as utils from "../utils.js";
 
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   comments: typeof comments;
   http: typeof http;
-  inbox: typeof inbox;
-  insights: typeof insights;
   invites: typeof invites;
   "lib/auth": typeof lib_auth;
+  "lib/validation": typeof lib_validation;
   mentions: typeof mentions;
   notifications: typeof notifications;
   orgMembers: typeof orgMembers;

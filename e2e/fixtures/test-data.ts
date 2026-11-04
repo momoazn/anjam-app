@@ -10,43 +10,43 @@ export const TEST_USERS = {
     email: "admin@example.com",
     password: "admin12345",
     role: "owner",
-    organization: "org1",
-    name: "Admin User",
+    organization: "تیم محصول",
+    name: "سارا احمدی",
   },
   manager: {
     email: "manager@example.com",
     password: "manager123",
     role: "member",
-    organization: "org1",
-    name: "Manager User",
+    organization: "تیم محصول",
+    name: "علی رضایی",
   },
   supervisor: {
     email: "supervisor@example.com",
     password: "supervisor123",
     role: "owner",
-    organization: "org2",
-    name: "Supervisor User",
+    organization: "تیم پشتیبانی",
+    name: "نیلوفر کریمی",
   },
   employee1: {
     email: "employee1@example.com",
     password: "employee123",
     role: "member",
-    organization: "org1",
-    name: "Employee 1",
+    organization: "تیم محصول",
+    name: "محمد حسینی",
   },
   employee2: {
     email: "employee2@example.com",
     password: "employee123",
     role: "member",
-    organization: "org1",
-    name: "Employee 2",
+    organization: "تیم محصول",
+    name: "مریم صادقی",
   },
 } as const;
 
 export const TEST_PROJECT = {
-  name: "E2E Test Project",
-  code: "ETP",
-  description: "Project for E2E testing",
+  name: "اپ موبایل",
+  code: "APP",
+  description: "اپلیکیشن اندروید و iOS برای مدیریت تسک‌ها",
 } as const;
 
 export const TEST_TASK = {

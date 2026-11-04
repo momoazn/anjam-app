@@ -4,7 +4,6 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconHash } from "@tabler/icons-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { tasks as tasksText } from "@/constants";
@@ -69,8 +68,7 @@ export function BoardColumn({
             {Icon && <Icon className={cn("size-5", iconColor)} />}
           </div>
 
-          <span className="bg-muted/30 text-muted-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums">
-            <IconHash className="size-3 opacity-60" />
+          <span className="bg-muted text-muted-foreground inline-flex min-w-6 items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium tabular-nums">
             {digitsEnToFa(tasks.length)}
           </span>
         </div>
@@ -81,7 +79,7 @@ export function BoardColumn({
         <ScrollArea className="scrollbar-none h-full [&>div]:overflow-auto [&>div]:!overflow-visible">
           <div
             ref={setNodeRef}
-            className="flex min-h-full flex-col p-0 divide-y divide-border/40"
+            className="divide-border/40 flex min-h-full flex-col divide-y p-0"
           >
             <SortableContext
               items={tasks.map((t) => t._id)}
@@ -94,11 +92,8 @@ export function BoardColumn({
             </SortableContext>
 
             {tasks.length === 0 && (
-              <div className="flex flex-col items-center justify-center opacity-10 grayscale py-16">
-                <IconHash className="size-12 stroke-1" />
-                <p className="mt-4 text-xs font-bold">
-                  {tasksText.list.noTasks}
-                </p>
+              <div className="border-border/60 text-muted-foreground/70 m-3 flex items-center justify-center rounded-lg border border-dashed py-8 text-xs">
+                {tasksText.list.noTasks}
               </div>
             )}
           </div>

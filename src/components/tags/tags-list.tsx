@@ -1,15 +1,12 @@
-import {
-  IconHash,
-  IconPencil,
-  IconPlus,
-  IconTag,
-  IconTrash,
-} from "@tabler/icons-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { IconPencil, IconPlus, IconTag, IconTrash } from "@tabler/icons-react";
+import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { tagsManagement } from "@/constants";
 import type { Tag } from "@/hooks/tags";
+import { useAllTasks } from "@/hooks/tasks";
 
 type TagsListProps = {
   tags: Tag[] | undefined;
@@ -66,6 +63,15 @@ export function TagsList({
   onEdit,
   onDelete,
 }: TagsListProps) {
+  const { data: allTasks } = useAllTasks();
+  const usage = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const task of allTasks ?? []) {
+      for (const id of task.tags ?? []) map.set(id, (map.get(id) ?? 0) + 1);
+    }
+    return map;
+  }, [allTasks]);
+
   if (isLoading) {
     return <TagsListSkeleton />;
   }
@@ -75,49 +81,51 @@ export function TagsList({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {tags.map((tag) => (
         <div
           key={tag._id}
-          className="border-b border-border/40 last:border-b-0"
+          data-testid="tag-card"
+          className="border-border/60 bg-card hover:border-primary/40 flex items-center justify-between gap-3 rounded-xl border p-3 transition-colors"
         >
-          <div className="flex items-center justify-between gap-3 px-3 py-3">
-            <div className="flex min-w-0 items-center gap-3">
-              <div
-                className="size-2.5 shrink-0 rounded-full"
-                style={{ backgroundColor: tag.color }}
-              />
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold">{tag.name}</div>
-                <div className="text-muted-foreground mt-0.5 flex items-center gap-1 font-mono text-[10px] font-semibold opacity-70">
-                  <IconHash className="size-3 opacity-50" />
-                  {tag._id.slice(0, 6)}
-                </div>
+          <div className="flex min-w-0 items-center gap-3">
+            <div
+              className="size-8 shrink-0 rounded-lg"
+              style={{ backgroundColor: tag.color }}
+              aria-hidden
+            />
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold">{tag.name}</div>
+              <div className="text-muted-foreground mt-0.5 text-xs">
+                {tagsManagement.usageCount.replace(
+                  "{count}",
+                  digitsEnToFa(usage.get(tag._id) ?? 0),
+                )}
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-lg"
+              onClick={() => onEdit(tag)}
+              title={tagsManagement.editButton}
+            >
+              <IconPencil className="h-4 w-4" />
+            </Button>
+            {canDeleteTag ? (
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 rounded-lg"
-                onClick={() => onEdit(tag)}
-                title={tagsManagement.editButton}
+                className="text-destructive hover:text-destructive size-8 rounded-lg"
+                onClick={() => onDelete(tag)}
+                title={tagsManagement.deleteButton}
               >
-                <IconPencil className="h-4 w-4" />
+                <IconTrash className="h-4 w-4" />
               </Button>
-              {canDeleteTag ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive hover:text-destructive size-8 rounded-lg"
-                  onClick={() => onDelete(tag)}
-                  title={tagsManagement.deleteButton}
-                >
-                  <IconTrash className="h-4 w-4" />
-                </Button>
-              ) : null}
-            </div>
+            ) : null}
           </div>
         </div>
       ))}

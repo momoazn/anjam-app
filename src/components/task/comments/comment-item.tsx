@@ -60,13 +60,13 @@ function CommentAuthor({
 }) {
   if (!user) {
     return (
-      <span className="text-[10px] leading-none font-bold tracking-tight">
+      <span className="text-xs leading-none font-semibold">
         {tasks.details.unknownUser}
       </span>
     );
   }
   const name = user.displayName || user.email;
-  return <span className="text-[10px] font-bold tracking-tight">{name}</span>;
+  return <span className="text-xs font-semibold">{name}</span>;
 }
 
 function CommentActionsMenu({
@@ -236,7 +236,7 @@ function CommentEditForm({
                 <textarea
                   {...field}
                   ref={textareaRef}
-                  className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-primary w-full resize-none rounded-xl border px-3 py-2 text-xs font-bold tracking-tight focus:outline-none focus:ring-1"
+                  className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-primary w-full resize-none rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-1"
                   placeholder={commentsConst.item.editPlaceholder}
                   rows={3}
                   value={field.value}
@@ -380,11 +380,11 @@ export function CommentItem({
           className="border-border/40 mt-2 size-8 rounded-full border"
         />
         <div className="flex-1 space-y-1.5">
-          <div className="bg-muted/30 border-border flex flex-col rounded-2xl border p-3">
+          <div className="bg-muted/30 border-border/60 flex flex-col gap-1 rounded-2xl border p-3">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <CommentAuthor user={comment.expand.user} />
-                <span className="text-muted-foreground text-[9px] font-medium">
+                <span className="text-muted-foreground text-[11px]">
                   {formatTaskDate(
                     new Date(comment._creationTime).toISOString(),
                   )}
@@ -405,7 +405,7 @@ export function CommentItem({
                 onCancel={handleCancelEdit}
               />
             ) : (
-              <p className="whitespace-pre-wrap text-xs font-bold leading-relaxed tracking-tight">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">
                 {comment.content}
               </p>
             )}

@@ -1,4 +1,12 @@
-import { IconInbox } from "@tabler/icons-react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import {
+  type Icon,
+  IconAt,
+  IconChevronDown,
+  IconHistory,
+  IconInbox,
+  IconListCheck,
+} from "@tabler/icons-react";
 import { subDays } from "date-fns";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -22,57 +30,80 @@ type FilterOption = "all" | "active" | "done";
 function SectionHeader({
   title,
   count,
+  icon: Icon,
   isCollapsible = false,
   isOpen = true,
   onToggle,
 }: {
   title: string;
   count: number;
+  icon: Icon;
   isCollapsible?: boolean;
   isOpen?: boolean;
   onToggle?: () => void;
 }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-border/40 bg-muted/10 px-3 py-2">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold">{title}</span>
-        <span className="text-muted-foreground text-xs tabular-nums">
-          {count}
-        </span>
-      </div>
-      {isCollapsible ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-7 px-2 text-xs"
-          onClick={onToggle}
-        >
-          {isOpen ? inbox.buttons.close : inbox.buttons.open}
-        </Button>
-      ) : null}
-    </div>
+  const content = (
+    <>
+      <Icon className="text-muted-foreground size-4" />
+      <span className="text-sm font-semibold">{title}</span>
+      <span className="bg-muted text-muted-foreground rounded-full px-2 text-xs tabular-nums">
+        {digitsEnToFa(count)}
+      </span>
+      {isCollapsible && (
+        <IconChevronDown
+          className={cn(
+            "text-muted-foreground ms-auto size-4 transition-transform",
+            !isOpen && "rotate-90",
+          )}
+        />
+      )}
+    </>
+  );
+  const className =
+    "border-border/40 bg-muted/10 flex items-center gap-2 border-b px-3 py-2";
+  return isCollapsible ? (
+    <button
+      type="button"
+      aria-expanded={isOpen}
+      className={cn(
+        className,
+        "hover:bg-muted/30 w-full cursor-pointer text-right transition-colors",
+      )}
+      onClick={onToggle}
+    >
+      {content}
+    </button>
+  ) : (
+    <div className={className}>{content}</div>
   );
 }
 
 function InlineEmptyState({
   title,
-  actionLabel,
-  onAction,
+  icon: Icon,
 }: {
   title: string;
-  actionLabel?: string;
-  onAction?: () => void;
+  icon: Icon;
 }) {
   return (
-    <div className="flex flex-col gap-2 border-b border-border/40 px-3 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-muted-foreground text-sm">{title}</p>
-      {actionLabel && onAction ? (
-        <Button size="sm" className="h-8 px-3" onClick={onAction}>
-          {actionLabel}
-        </Button>
-      ) : null}
+    <div className="text-muted-foreground flex items-center gap-3 px-3 py-5 text-sm">
+      <span className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-full">
+        <Icon className="size-4" />
+      </span>
+      {title}
     </div>
+  );
+}
+
+function TaskRows({ tasks }: { tasks: TaskWithDetails[] }) {
+  return (
+    <ul className="divide-border/40 divide-y">
+      {tasks.map((task) => (
+        <li key={task._id}>
+          <TaskListItem task={task} showProject />
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -81,7 +112,10 @@ export default function Inbox() {
   const user = useAuthUser();
   const userId = user?._id;
   const [searchParams, setSearchParams] = useSearchParams();
-  const [recentlyOpen, setRecentlyOpen] = useState(false);
+  // null = follow the content: open when there are recent updates
+  const [recentlyOverride, setRecentlyOverride] = useState<boolean | null>(
+    null,
+  );
 
   // Filter state from URL or default to 'all'
   const currentFilter = (searchParams.get("filter") as FilterOption) || "all";
@@ -174,56 +208,7 @@ export default function Inbox() {
     sections.mentioned.length +
     sections.recentlyUpdated.length;
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <PageTransition
-        data-testid="inbox-page"
-        className="container mx-auto max-w-7xl p-4 md:p-6"
-      >
-        <PageHeader
-          title={inbox.title}
-          icon={IconInbox}
-          subtitle={totalCount === 0 ? inbox.description : undefined}
-        />
-        <>
-          <>
-            <div className="flex items-center justify-between gap-3">
-              <ToggleGroup
-                type="single"
-                value={currentFilter}
-                onValueChange={(value) => {
-                  if (!value) return;
-                  setFilter(value as FilterOption);
-                }}
-                className="justify-start"
-              >
-                <ToggleGroupItem value="all" className="h-8 px-3 text-xs">
-                  {inbox.buttons.all}
-                </ToggleGroupItem>
-                <ToggleGroupItem value="active" className="h-8 px-3 text-xs">
-                  {inbox.buttons.active}
-                </ToggleGroupItem>
-                <ToggleGroupItem value="done" className="h-8 px-3 text-xs">
-                  {inbox.buttons.done}
-                </ToggleGroupItem>
-              </ToggleGroup>
-              <Button
-                size="sm"
-                className="h-8 px-3"
-                onClick={() => openModal("create-task")}
-              >
-                {inbox.createTask}
-              </Button>
-            </div>
-            <div className="mt-4">
-              <TaskListSkeleton />
-            </div>
-          </>
-        </>
-      </PageTransition>
-    );
-  }
+  const recentlyOpen = recentlyOverride ?? sections.recentlyUpdated.length > 0;
 
   return (
     <PageTransition
@@ -232,101 +217,93 @@ export default function Inbox() {
     >
       <PageHeader
         title={inbox.title}
-        subtitle={totalCount === 0 ? inbox.description : undefined}
+        subtitle={
+          !isLoading && totalCount === 0 ? inbox.description : undefined
+        }
         icon={IconInbox}
       />
 
-      <>
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <ToggleGroup
-            type="single"
-            value={currentFilter}
-            onValueChange={(value) => {
-              if (!value) return;
-              setFilter(value as FilterOption);
-            }}
-            className="justify-start"
-          >
-            <ToggleGroupItem value="all" className="h-8 px-3 text-xs">
-              {inbox.buttons.all}
-            </ToggleGroupItem>
-            <ToggleGroupItem value="active" className="h-8 px-3 text-xs">
-              {inbox.buttons.active}
-            </ToggleGroupItem>
-            <ToggleGroupItem value="done" className="h-8 px-3 text-xs">
-              {inbox.buttons.done}
-            </ToggleGroupItem>
-          </ToggleGroup>
-
-          <Button
-            size="sm"
-            className="h-8 px-3"
-            onClick={() => openModal("create-task")}
-          >
-            {inbox.createTask}
-          </Button>
-        </div>
-
-        {/* Single compact surface (Linear-like) */}
-        <div
-          className={cn(
-            "overflow-hidden rounded-xl border border-border/40",
-            "bg-background/30",
-          )}
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <ToggleGroup
+          type="single"
+          value={currentFilter}
+          onValueChange={(value) => {
+            if (!value) return;
+            setFilter(value as FilterOption);
+          }}
+          className="justify-start"
         >
-          {/* Assigned */}
-          <SectionHeader
-            title={inbox.sections.assigned}
-            count={sections.assigned.length}
-          />
-          {sections.assigned.length === 0 ? (
-            <InlineEmptyState
-              title={inbox.noTodos}
-              actionLabel={inbox.createTask}
-              onAction={() => openModal("create-task")}
+          <ToggleGroupItem value="all" className="h-8 px-3 text-xs">
+            {inbox.buttons.all}
+          </ToggleGroupItem>
+          <ToggleGroupItem value="active" className="h-8 px-3 text-xs">
+            {inbox.buttons.active}
+          </ToggleGroupItem>
+          <ToggleGroupItem value="done" className="h-8 px-3 text-xs">
+            {inbox.buttons.done}
+          </ToggleGroupItem>
+        </ToggleGroup>
+
+        <Button
+          size="sm"
+          className="h-8 px-3"
+          onClick={() => openModal("create-task")}
+        >
+          {inbox.createTask}
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <TaskListSkeleton />
+      ) : (
+        <div className="border-border/40 bg-background/30 divide-border/40 divide-y overflow-hidden rounded-xl border">
+          <section>
+            <SectionHeader
+              title={inbox.sections.assigned}
+              count={sections.assigned.length}
+              icon={IconListCheck}
             />
-          ) : (
-            sections.assigned.map((task) => (
-              <TaskListItem key={task._id} task={task} showProject />
-            ))
-          )}
-
-          {/* Mentioned */}
-          <SectionHeader
-            title={inbox.sections.mentioned}
-            count={sections.mentioned.length}
-          />
-          {sections.mentioned.length === 0 ? (
-            <InlineEmptyState title={inbox.noMentions} />
-          ) : (
-            sections.mentioned.map((task) => (
-              <TaskListItem key={task._id} task={task} showProject />
-            ))
-          )}
-
-          {/* Recently updated (collapsed by default) */}
-          <SectionHeader
-            title={inbox.sections.recentlyUpdated}
-            count={sections.recentlyUpdated.length}
-            isCollapsible
-            isOpen={recentlyOpen}
-            onToggle={() => setRecentlyOpen((v) => !v)}
-          />
-          {recentlyOpen ? (
-            sections.recentlyUpdated.length === 0 ? (
-              <InlineEmptyState title={inbox.noRecentUpdates} />
+            {sections.assigned.length === 0 ? (
+              <InlineEmptyState title={inbox.noTodos} icon={IconListCheck} />
             ) : (
-              sections.recentlyUpdated.map((task) => (
-                <TaskListItem key={task._id} task={task} showProject />
-              ))
-            )
-          ) : (
-            <div className="text-muted-foreground border-b border-border/40 px-3 py-3 text-xs">
-              {inbox.openRecent}
-            </div>
-          )}
+              <TaskRows tasks={sections.assigned} />
+            )}
+          </section>
+
+          <section>
+            <SectionHeader
+              title={inbox.sections.mentioned}
+              count={sections.mentioned.length}
+              icon={IconAt}
+            />
+            {sections.mentioned.length === 0 ? (
+              <InlineEmptyState title={inbox.noMentions} icon={IconAt} />
+            ) : (
+              <TaskRows tasks={sections.mentioned} />
+            )}
+          </section>
+
+          <section>
+            <SectionHeader
+              title={inbox.sections.recentlyUpdated}
+              count={sections.recentlyUpdated.length}
+              icon={IconHistory}
+              isCollapsible
+              isOpen={recentlyOpen}
+              onToggle={() => setRecentlyOverride(!recentlyOpen)}
+            />
+            {recentlyOpen &&
+              (sections.recentlyUpdated.length === 0 ? (
+                <InlineEmptyState
+                  title={inbox.noRecentUpdates}
+                  icon={IconHistory}
+                />
+              ) : (
+                <TaskRows tasks={sections.recentlyUpdated} />
+              ))}
+          </section>
         </div>
-      </>
+      )}
     </PageTransition>
   );
 }

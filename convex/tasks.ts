@@ -49,6 +49,13 @@ async function requireProjectInOrg(
   }
 }
 
+/** Keeps `completedAt` in sync when a task enters or leaves "done". */
+function completionPatch(task: Doc<"tasks">, nextStatus?: string) {
+  if (nextStatus === undefined || nextStatus === task.status) return {};
+  if (nextStatus === "done") return { completedAt: Date.now() };
+  return task.status === "done" ? { completedAt: undefined } : {};
+}
+
 export const create = mutation({
   args: {
     projectId: v.id("projects"),
@@ -113,6 +120,8 @@ export const create = mutation({
       taskNumber,
       taskType,
       storyPoints: args.storyPoints,
+      createdAt: Date.now(),
+      completedAt: args.status === "done" ? Date.now() : undefined,
       updatedAt: Date.now(),
     });
   },
@@ -328,7 +337,10 @@ export const update = mutation({
     assertNonNegative(updates.storyPoints ?? undefined, "Story points");
 
     // ctx.db.patch removes a field when its value is undefined.
-    const patch: Partial<Doc<"tasks">> = { updatedAt: Date.now() };
+    const patch: Partial<Doc<"tasks">> = {
+      ...completionPatch(task, updates.status),
+      updatedAt: Date.now(),
+    };
     if (updates.status !== undefined) patch.status = updates.status;
     if (updates.priority !== undefined) patch.priority = updates.priority;
     if (updates.tags !== undefined) patch.tags = updates.tags;
@@ -411,6 +423,7 @@ export const updateBoardPosition = mutation({
     await ctx.db.patch(args.taskId, {
       status: args.status,
       order: args.order,
+      ...completionPatch(task, args.status),
       updatedAt: Date.now(),
     });
   },
@@ -510,6 +523,7 @@ export const bulkUpdate = mutation({
         ...(assigneeUserId !== undefined && {
           assigneeUserId: assigneeUserId ?? undefined,
         }),
+        ...completionPatch(task, args.updates.status),
         updatedAt: Date.now(),
       });
       updated++;

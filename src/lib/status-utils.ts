@@ -124,39 +124,84 @@ export function isTaskCanceled(task: { status?: string }): boolean {
   return getTaskStatus(task).isCanceled;
 }
 
+type StatusClassVariant =
+  | "icon"
+  | "background"
+  | "badge"
+  | "border"
+  | "borderTop"
+  | "bar";
+
+// Static class map: Tailwind cannot see classes built with template strings.
+const STATUS_CLASSES: Record<string, Record<StatusClassVariant, string>> = {
+  blue: {
+    icon: "text-blue-600 dark:text-blue-400",
+    background: "bg-blue-500/10",
+    border: "border-blue-500/20",
+    borderTop: "border-t-blue-500",
+    bar: "bg-blue-500",
+    badge: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/20",
+  },
+  amber: {
+    icon: "text-amber-600 dark:text-amber-400",
+    background: "bg-amber-500/10",
+    border: "border-amber-500/20",
+    borderTop: "border-t-amber-500",
+    bar: "bg-amber-500",
+    badge:
+      "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/20",
+  },
+  indigo: {
+    icon: "text-indigo-600 dark:text-indigo-400",
+    background: "bg-indigo-500/10",
+    border: "border-indigo-500/20",
+    borderTop: "border-t-indigo-500",
+    bar: "bg-indigo-500",
+    badge:
+      "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-500/20",
+  },
+  emerald: {
+    icon: "text-emerald-600 dark:text-emerald-400",
+    background: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
+    borderTop: "border-t-emerald-500",
+    bar: "bg-emerald-500",
+    badge:
+      "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/20",
+  },
+  gray: {
+    icon: "text-gray-600 dark:text-gray-400",
+    background: "bg-gray-500/10",
+    border: "border-gray-500/20",
+    borderTop: "border-t-gray-500",
+    bar: "bg-gray-500",
+    badge: "bg-gray-500/15 text-gray-700 dark:text-gray-300 border-gray-500/20",
+  },
+};
+
 export function getStatusColorVariant(
   status: TaskStatus,
-  variant: "icon" | "background" | "badge" | "border" | "fill",
+  variant: StatusClassVariant | "fill",
 ): string {
   const config = TASK_STATUS_CONFIG[status];
   if (!config) return "text-gray-500"; // Fallback
 
   const colorName = config.color;
 
-  switch (variant) {
-    case "icon":
-      return `text-${colorName}-600 dark:text-${colorName}-400`;
-    case "background":
-      return `bg-${colorName}-500/10`;
-    case "border":
-      return `border-${colorName}-500/20`;
-    case "badge":
-      return `bg-${colorName}-500/15 text-${colorName}-700 dark:text-${colorName}-300 border-${colorName}-500/20`;
-    case "fill": {
-      const fillColors: Record<string, string> = {
-        blue: "oklch(0.6 0.12 250)",
-        amber: "oklch(0.75 0.15 70)",
-        emerald: "oklch(0.65 0.15 160)",
-        purple: "oklch(0.6 0.15 300)",
-        rose: "oklch(0.6 0.18 25)",
-        indigo: "oklch(0.55 0.15 270)",
-        cyan: "oklch(0.7 0.12 200)",
-        slate: "oklch(0.6 0.05 240)",
-        gray: "oklch(0.6 0.02 240)",
-      };
-      return fillColors[colorName] || "oklch(0.6 0.05 240)";
-    }
-    default:
-      return "text-gray-500";
+  if (variant !== "fill") {
+    return (STATUS_CLASSES[colorName] ?? STATUS_CLASSES.gray)[variant];
   }
+
+  const fillColors: Record<string, string> = {
+    blue: "oklch(0.6 0.12 250)",
+    amber: "oklch(0.75 0.15 70)",
+    emerald: "oklch(0.65 0.15 160)",
+    purple: "oklch(0.6 0.15 300)",
+    rose: "oklch(0.6 0.18 25)",
+    indigo: "oklch(0.55 0.15 270)",
+    cyan: "oklch(0.7 0.12 200)",
+    slate: "oklch(0.6 0.05 240)",
+    gray: "oklch(0.6 0.02 240)",
+  };
+  return fillColors[colorName] || "oklch(0.6 0.05 240)";
 }

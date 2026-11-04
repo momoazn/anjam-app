@@ -84,24 +84,29 @@ export function SavedFiltersDropdown({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <BookmarkIcon className="h-4 w-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 rounded-lg px-2.5 text-xs"
+            aria-label={savedFiltersText.title}
+          >
+            <BookmarkIcon className="size-3.5" />
             {currentFilterMatch ? (
-              <>
+              <span className="flex items-center gap-1.5 max-sm:hidden">
                 {currentFilterMatch.name}
                 {defaultFilterId === currentFilterMatch.id && (
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                 )}
-              </>
+              </span>
             ) : (
-              <>
+              <span className="flex items-center gap-1.5 max-sm:hidden">
                 {savedFiltersText.title}
                 {savedFilters.length > 0 && (
                   <Badge variant="secondary" className="ms-1 h-5 px-1.5">
                     {digitsEnToFa(savedFilters.length)}
                   </Badge>
                 )}
-              </>
+              </span>
             )}
           </Button>
         </DropdownMenuTrigger>

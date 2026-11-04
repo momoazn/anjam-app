@@ -1,15 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import {
-  IconActivity,
-  IconInfoCircle,
-  IconPencil,
-  IconSettings,
-  IconTag,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconActivity, IconTag } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
 import { formatTaskDate } from "@/lib/date-utils";
@@ -32,17 +24,9 @@ interface TaskWithDetails extends Task {
 
 type TaskDetailsSidebarProps = {
   task: TaskWithDetails;
-  onEdit?: () => void;
-  onDelete?: () => void;
-  isDeleting: boolean;
 };
 
-export function TaskDetailsSidebar({
-  task,
-  onEdit,
-  onDelete,
-  isDeleting,
-}: TaskDetailsSidebarProps) {
+export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
   const StatusIcon =
     taskStatusIcons[task.status as keyof typeof taskStatusIcons] ||
     taskStatusIcons.todo;
@@ -65,7 +49,7 @@ export function TaskDetailsSidebar({
         </div>
 
         <Card className="relative overflow-hidden p-0">
-          <CardContent className="relative z-10 space-y-6 p-6">
+          <CardContent className="relative z-10 space-y-5 p-5">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground text-xs font-medium">
                 {tasks.details.statusLabel}
@@ -100,7 +84,7 @@ export function TaskDetailsSidebar({
 
             {tags.length > 0 && (
               <div className="space-y-2 border-t pt-4">
-                <span className="text-muted-foreground flex items-center gap-1.5 text-[10px] font-bold tracking-tight">
+                <span className="text-muted-foreground flex items-center gap-1.5 text-xs font-medium">
                   <IconTag className="size-3" /> {tasks.details.tags}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -112,7 +96,7 @@ export function TaskDetailsSidebar({
                         color: "#FFFFFF",
                         border: "none",
                       }}
-                      className="px-2 py-0 text-[9px] font-bold"
+                      className="px-2 py-0.5 text-[11px] font-semibold"
                     >
                       {tag.name}
                     </Badge>
@@ -144,62 +128,6 @@ export function TaskDetailsSidebar({
           </CardContent>
         </Card>
       </section>
-
-      {(onEdit || onDelete) && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-lg">
-              <IconSettings className="size-4" />
-            </div>
-            <span className="text-xs font-bold tracking-tight">
-              {tasks.details.actionsCardTitle}
-            </span>
-          </div>
-
-          <Card className="relative overflow-hidden p-0">
-            <CardContent className="relative z-10 space-y-2 p-4">
-              {onEdit && (
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
-                  onClick={onEdit}
-                >
-                  <IconPencil className="size-4" />
-                  {tasks.details.editTaskButton}
-                </Button>
-              )}
-              {onDelete && (
-                <Button
-                  variant="ghost"
-                  className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start gap-3 rounded-lg text-xs font-bold transition-all"
-                  onClick={onDelete}
-                  disabled={isDeleting}
-                >
-                  <IconTrash className="size-4" />
-                  {isDeleting
-                    ? tasks.details.buttons.deleting
-                    : tasks.details.buttons.delete}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        </section>
-      )}
-
-      {/* Info Block */}
-      <Card className="bg-muted/30 border-dashed p-0">
-        <CardContent className="flex flex-col items-center gap-3 p-6">
-          <IconInfoCircle className="text-muted-foreground size-6" />
-          <div className="space-y-1 text-center">
-            <p className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              {tasks.details.displayIdLabel}
-            </p>
-            <p className="font-mono text-xs font-bold">
-              {digitsEnToFa(task.displayId)}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

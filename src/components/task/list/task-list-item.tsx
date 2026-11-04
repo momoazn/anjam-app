@@ -1,13 +1,14 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
-import { IconClock, IconHash, IconTarget } from "@tabler/icons-react";
-import { isToday } from "date-fns-jalali";
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { TaskAssigneeAvatar } from "@/components/task/task-assignee-avatar";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
+import {
+  TaskDueDate,
+  TaskPriorityLabel,
+  TaskTags,
+} from "@/components/task/task-meta";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Popover,
@@ -22,19 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { shared, task as taskLabels, tasks } from "@/constants";
-import { useTags } from "@/hooks/tags";
 import { useUpdateTask } from "@/hooks/tasks";
 import { useUsers } from "@/hooks/users";
-import { formatDateShort, isTaskOverdue } from "@/lib/date-utils";
 import { handleError } from "@/lib/error-handler";
-import {
-  getStatusColorVariant,
-  priorityColors,
-  priorityIcons,
-  taskStatusIcons,
-} from "@/lib/status-utils";
+import { getStatusColorVariant, taskStatusIcons } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
-import { TaskPriority, TaskStatus, TaskWithProject } from "@/types/tasks";
+import { TaskStatus, TaskWithProject } from "@/types/tasks";
 
 type TaskListItemProps = {
   task: TaskWithProject;
@@ -62,18 +56,8 @@ function TaskListItemInner({
     "icon",
   );
 
-  const PriorityIcon = priorityIcons[task.priority as TaskPriority];
-  const priorityIconColor = priorityColors[task.priority as TaskPriority];
-  const assigneeRecord = task.assignee;
-
-  const deadlineDate = task.deadline ? new Date(task.deadline) : null;
-  const isDeadlineToday = deadlineDate ? isToday(deadlineDate) : false;
-  const isOverdue = isTaskOverdue(task);
-
   const updateTask = useUpdateTask();
-  const { data: tags } = useTags();
-
-  const { data: users } = useUsers({ enabled: true }); // Removed batch/sort options not supported yet
+  const { data: users } = useUsers({ enabled: true });
 
   const handleClick = () => {
     navigate(`/tasks/${taskId}`);
@@ -83,7 +67,7 @@ function TaskListItemInner({
     updateTask
       .mutate({
         id: taskId,
-        updates: { priority: value as TaskPriority },
+        updates: { priority: value as TaskWithProject["priority"] },
       })
       .then(() => toast.success(tasks.edit.success))
       .catch(handleError);
@@ -99,23 +83,11 @@ function TaskListItemInner({
       .catch(handleError);
   };
 
-  const handleDueDateChange = (date: Date | undefined) => {
-    updateTask
-      .mutate({
-        id: taskId,
-        updates: { deadline: date ? date.getTime() : null },
-      })
-      .then(() => toast.success(tasks.edit.success))
-      .catch(handleError);
-  };
-
   const handleCardKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       handleClick();
     }
   };
-
-  const displayId = task.displayId || "";
 
   return (
     <div
@@ -124,8 +96,8 @@ function TaskListItemInner({
       data-testid="task-row"
       data-task-id={taskId}
       className={cn(
-        "group relative flex h-auto w-full cursor-pointer items-stretch justify-start border-b border-border/40 bg-transparent p-0 text-right transition-colors hover:z-10 focus-visible:ring-0",
-        "hover:bg-muted/30",
+        "group relative flex w-full cursor-pointer flex-col gap-1.5 px-3 py-2.5 text-right transition-colors md:flex-row md:items-center md:gap-4",
+        "hover:bg-muted/30 focus-visible:bg-muted/30 focus-visible:outline-none",
         isSelected && "bg-primary/5",
         className,
       )}
@@ -133,168 +105,82 @@ function TaskListItemInner({
       onKeyDown={handleCardKeyDown}
       aria-label={taskLabels.editTask.replace("{title}", task.title)}
     >
-      {/* Selection & Priority Zone */}
-      <div className="flex w-11 shrink-0 flex-col items-center justify-center gap-2 border-e px-2 py-3">
-        {isSelectable ? (
+      {/* Status, id, title, tags */}
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
+        {isSelectable && (
           <Checkbox
             checked={isSelected}
             onCheckedChange={(checked: boolean) => onSelectionChange?.(checked)}
-            className="size-4 rounded-md transition-transform hover:scale-110"
+            className="size-4 shrink-0 rounded-md"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           />
-        ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  "flex size-7.5 items-center justify-center rounded-lg border transition-all duration-300 cursor-pointer hover:scale-110",
-                  priorityIconColor,
-                )}
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                }}
-              >
-                <PriorityIcon className="size-4" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[140px] p-1.5" align="start">
-              <Select
-                value={task.priority}
-                onValueChange={handlePriorityChange}
-              >
-                <SelectTrigger className="border-transparent bg-transparent h-8 text-right text-xs focus:ring-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="border-border rounded-lg border">
-                  <SelectItem value="low" className="text-xs font-bold">
-                    {tasks.priority.low}
-                  </SelectItem>
-                  <SelectItem value="medium" className="text-xs font-bold">
-                    {tasks.priority.medium}
-                  </SelectItem>
-                  <SelectItem value="high" className="text-xs font-bold">
-                    {tasks.priority.high}
-                  </SelectItem>
-                  <SelectItem value="urgent" className="text-xs font-bold">
-                    {tasks.priority.urgent}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </PopoverContent>
-          </Popover>
         )}
+        <StatusIcon className={cn("size-4.5 shrink-0", statusIconColor)} />
+        <span className="text-muted-foreground w-[4.5rem] shrink-0 font-mono text-xs tabular-nums">
+          {digitsEnToFa(task.displayId || "")}
+        </span>
+        <span className="group-hover:text-primary min-w-0 truncate text-sm font-medium transition-colors">
+          {task.title}
+        </span>
+        <TaskTags tagIds={task.tags} className="hidden shrink-0 lg:flex" />
       </div>
 
-      {/* Main Content Zone */}
-      <div className="flex min-w-0 grow flex-col justify-center px-4 py-3 text-right">
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1 opacity-40">
-            <IconHash className="size-2.5" />
-            <span className="font-mono text-[10px] font-bold">
-              {digitsEnToFa(displayId)}
-            </span>
-          </div>
-
-          {showProject && task.project?.name && (
-            <div className="text-primary/60 flex items-center gap-1">
-              <IconTarget className="size-2.5" />
-              <span className="text-[10px] font-bold">{task.project.name}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-1 flex items-center gap-2.5">
-          <div
-            className={cn(
-              "flex size-5 items-center justify-center rounded border",
-              statusIconColor,
-            )}
-          >
-            <StatusIcon className="size-3.5 shrink-0" />
-          </div>
-          <span className="truncate text-sm font-bold transition-colors group-hover:text-primary">
-            {task.title}
+      {/* Meta columns: stacked under the title on mobile, aligned on desktop */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 ps-7 md:ps-0">
+        {showProject && (
+          <span className="text-muted-foreground truncate text-xs max-md:hidden md:w-28">
+            {task.project?.name}
           </span>
+        )}
+
+        <div className="md:w-28">
+          <TaskDueDate task={task} className="-mx-1.5" />
         </div>
 
-        {task.tags && task.tags.length > 0 && (
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {task.tags.map((tag: string) => {
-              const tagRecord = tags?.find(
-                (candidate) => candidate.id === tag || candidate._id === tag,
-              );
-              return (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="rounded-md px-1.5 py-0 text-[10px] font-medium"
-                >
-                  {tagRecord?.name ?? tag}
-                </Badge>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Meta & Assignee Zone */}
-      <div className="flex items-center gap-5 px-4 py-3">
-        {/* Deadline Indicator */}
-        {task.deadline && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className="hidden flex-col items-end text-right sm:flex cursor-pointer hover:bg-muted/50 rounded p-1"
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                }}
-              >
-                <div className="flex items-center gap-1 opacity-40">
-                  <IconClock className="size-2.5" />
-                  <span className="text-[10px] font-bold tracking-wider">
-                    {tasks.list.deadline}
-                  </span>
-                </div>
-                <span
-                  className={cn(
-                    "mt-0.5 text-xs font-bold tabular-nums",
-                    !isOverdue && !isDeadlineToday && "opacity-60",
-                    isDeadlineToday && "text-amber-600 dark:text-amber-400",
-                    isOverdue && "text-rose-600 dark:text-rose-400",
-                  )}
-                >
-                  {digitsEnToFa(formatDateShort(task.deadline))}
-                </span>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-2" align="start">
-              <Calendar
-                mode="single"
-                selected={task.deadline ? new Date(task.deadline) : undefined}
-                onSelect={handleDueDateChange}
-                autoFocus
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-
-        {/* Assignee */}
         <Popover>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform"
-              onClick={(e: React.MouseEvent) => {
-                e.stopPropagation();
-              }}
+              className="hover:bg-muted/60 -mx-1.5 cursor-pointer rounded-md px-1.5 py-0.5 md:w-20"
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            >
+              <TaskPriorityLabel priority={task.priority} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[140px] p-1.5" align="start">
+            <Select value={task.priority} onValueChange={handlePriorityChange}>
+              <SelectTrigger className="h-8 border-transparent bg-transparent text-right text-xs focus:ring-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="border-border rounded-lg border">
+                {(["low", "medium", "high", "urgent"] as const).map((level) => (
+                  <SelectItem
+                    key={level}
+                    value={level}
+                    className="text-xs font-bold"
+                  >
+                    {tasks.priority[level]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </PopoverContent>
+        </Popover>
+
+        <TaskTags tagIds={task.tags} className="lg:hidden" />
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="ms-auto cursor-pointer transition-transform hover:scale-110 md:ms-0"
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               <TaskAssigneeAvatar
-                assignee={assigneeRecord}
+                assignee={task.assignee}
                 hasAssigneeId={!!task.assigneeUserId}
-                size="md"
-                className="transition-all duration-300"
+                size="sm"
+                showIndicator={false}
               />
             </button>
           </PopoverTrigger>
@@ -303,7 +189,7 @@ function TaskListItemInner({
               value={task.assigneeUserId || "__unassigned"}
               onValueChange={handleAssigneeChange}
             >
-              <SelectTrigger className="border-transparent bg-transparent h-8 text-right text-xs focus:ring-0">
+              <SelectTrigger className="h-8 border-transparent bg-transparent text-right text-xs focus:ring-0">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="border-border rounded-lg border">
@@ -311,18 +197,15 @@ function TaskListItemInner({
                   {tasks.addTask.unassigned}
                 </SelectItem>
                 {users && users.length > 0 ? (
-                  users.map((user: NonNullable<typeof users>[number]) => {
-                    const userId = user._id as string;
-                    return (
-                      <SelectItem
-                        key={userId}
-                        value={userId}
-                        className="text-xs font-bold"
-                      >
-                        {user.displayName || user.email}
-                      </SelectItem>
-                    );
-                  })
+                  users.map((user: NonNullable<typeof users>[number]) => (
+                    <SelectItem
+                      key={user._id}
+                      value={user._id}
+                      className="text-xs font-bold"
+                    >
+                      {user.displayName || user.email}
+                    </SelectItem>
+                  ))
                 ) : (
                   <SelectItem value="__empty" disabled>
                     {shared.noData}
@@ -337,8 +220,8 @@ function TaskListItemInner({
       {/* Active Indicator Bar */}
       <div
         className={cn(
-          "absolute inset-y-0 end-0 w-1 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
-          statusIconColor.replace("text", "bg"),
+          "absolute inset-y-0 end-0 w-0.5 scale-y-0 transition-transform duration-300 group-hover:scale-y-100",
+          getStatusColorVariant(task.status as TaskStatus, "bar"),
         )}
       />
     </div>

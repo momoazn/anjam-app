@@ -20,6 +20,7 @@ import {
 import { ALL_FILTER_VALUE, useTaskFilters } from "@/hooks/use-task-filters";
 import { useToast } from "@/hooks/use-toast";
 import { useUsers } from "@/hooks/users";
+import { filterTasks } from "@/lib/filter-utils";
 import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/app-context-store";
@@ -213,7 +214,6 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
 
   // Reset pagination when filters change
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [
     searchTerm,
@@ -232,7 +232,11 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
     page,
     perPage,
     searchTerm: searchTerm || undefined,
-    status: selectedStatus === "all" ? undefined : selectedStatus,
+    // Multi-status ("a,b") and due/tag filters are applied client-side below
+    status:
+      selectedStatus === "all" || selectedStatus.includes(",")
+        ? undefined
+        : selectedStatus,
     priority: selectedPriority === "all" ? undefined : selectedPriority,
     tagId: selectedTag === "all" ? undefined : selectedTag,
     dueRange: selectedDateRange === "all" ? undefined : selectedDateRange,
@@ -244,11 +248,29 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
           : selectedAssignee,
   });
 
-  const totalTasks = taskQuery.data?.totalItems ?? 0;
+  const filteredItems = useMemo(
+    () =>
+      taskQuery.data?.items
+        ? (filterTasks(taskQuery.data.items, {
+            ...currentFilters,
+            searchTerm: "", // search is handled by the server index
+          }) as TaskWithProject[])
+        : undefined,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      taskQuery.data?.items,
+      selectedStatus,
+      selectedPriority,
+      selectedAssignee,
+      selectedDateRange,
+      selectedTag,
+    ],
+  );
+  const totalTasks = filteredItems?.length ?? 0;
   const totalPages = taskQuery.data?.totalPages ?? 1;
 
   const groupedTasks = useMemo(() => {
-    const items = taskQuery.data?.items;
+    const items = filteredItems;
     if (taskQuery.isPending || !items) {
       return {} as Record<TaskStatus, TaskWithProject[]>;
     }
@@ -262,7 +284,7 @@ export default function Tasks({ viewMode = "tasks" }: TasksProps) {
       },
       {} as Record<TaskStatus, TaskWithProject[]>,
     );
-  }, [taskQuery.data?.items, taskQuery.isPending]);
+  }, [filteredItems, taskQuery.isPending]);
 
   const handleBulkDelete = async () => {
     const count = await bulkDelete.mutate(selectedTasks);
