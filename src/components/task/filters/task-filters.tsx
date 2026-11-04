@@ -1,14 +1,6 @@
-import {
-  Calendar,
-  Eraser,
-  Filter,
-  Hash,
-  Search,
-  Tag,
-  User,
-  X,
-} from "lucide-react";
-import { useMemo } from "react";
+import { digitsEnToFa } from "@persian-tools/persian-tools";
+import { Eraser, Search, SlidersHorizontal, X } from "lucide-react";
+import { type ReactNode, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +20,7 @@ import {
 } from "@/hooks/use-task-filters";
 import type { FilterableTask } from "@/lib/filter-utils";
 import { TASK_STATUS_ORDER } from "@/lib/status-utils";
-import { formatUserName } from "@/lib/utils";
+import { cn, formatUserName } from "@/lib/utils";
 import { TaskPriority, TaskStatus } from "@/types/tasks";
 
 // User type with compatibility fields
@@ -46,7 +38,58 @@ type TaskFiltersProps = Omit<
 > & {
   users: UserWithCompat[] | undefined;
   isLoadingUsers: boolean;
+  /** Extra controls rendered at the end of the search row. */
+  actions?: ReactNode;
 };
+
+const SELECT_TRIGGER =
+  "h-8 w-full gap-2 rounded-lg px-2.5 text-xs font-medium md:w-auto md:min-w-28";
+
+type FilterSelectProps = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  allLabel: string;
+  allValue: string;
+  options: { value: string; label: string }[];
+  disabled?: boolean;
+};
+
+/** Compact select: the placeholder is the filter name, so no extra label is needed. */
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  allLabel,
+  allValue,
+  options,
+  disabled,
+}: FilterSelectProps) {
+  const active = value !== allValue;
+  return (
+    <Select value={value} onValueChange={onChange} disabled={disabled}>
+      <SelectTrigger
+        aria-label={label}
+        className={cn(
+          SELECT_TRIGGER,
+          active && "border-primary/40 bg-primary/5",
+        )}
+      >
+        <SelectValue placeholder={label} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={allValue} className="text-xs">
+          {allLabel}
+        </SelectItem>
+        {options.map((o) => (
+          <SelectItem key={o.value} value={o.value} className="text-xs">
+            {o.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
 const ActiveFilterBadge = ({
   label,
@@ -80,7 +123,9 @@ export function TaskFilters({
   setSelectedTag,
   users,
   isLoadingUsers,
+  actions,
 }: TaskFiltersProps) {
+  const [expanded, setExpanded] = useState(false);
   const { data: tags, isLoading: isLoadingTags } = useTags();
 
   const hasActiveFilters = useMemo(
@@ -191,243 +236,140 @@ export function TaskFilters({
     setSelectedTag("all");
   };
 
-  return (
-    <div className="space-y-3">
-      {/* Search & Global Reset Segment */}
-      <div className="bg-card border-border/40 flex items-center gap-2 overflow-hidden rounded-xl border p-1.5 shadow-sm">
-        <div className="bg-muted/30 flex h-9 shrink-0 items-center gap-2 rounded-lg px-3">
-          <Search className="text-muted-foreground/60 size-3.5" />
-          <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
-            {tasks.filters.labels.search}
-          </span>
-        </div>
+  const filterSelects = (
+    <>
+      <FilterSelect
+        label={tasks.filters.status}
+        value={selectedStatus}
+        onChange={(v) =>
+          setSelectedStatus(v as TaskStatus | typeof ALL_FILTER_VALUE)
+        }
+        allLabel={tasks.filters.allStatuses}
+        allValue={ALL_FILTER_VALUE}
+        options={TASK_STATUS_ORDER.map((s) => ({
+          value: s,
+          label: tasks.status[s],
+        }))}
+      />
+      <FilterSelect
+        label={tasks.filters.priority}
+        value={selectedPriority}
+        onChange={(v) =>
+          setSelectedPriority(v as TaskPriority | typeof ALL_FILTER_VALUE)
+        }
+        allLabel={tasks.filters.allPriorities}
+        allValue={ALL_FILTER_VALUE}
+        options={priorityOrder.map((p) => ({
+          value: p,
+          label: tasks.priority[p],
+        }))}
+      />
+      <FilterSelect
+        label={tasks.filters.labels.assignee}
+        value={selectedAssignee}
+        onChange={(v) =>
+          setSelectedAssignee(v as string | typeof ALL_FILTER_VALUE)
+        }
+        allLabel={tasks.filters.allAssignees}
+        allValue={ALL_FILTER_VALUE}
+        disabled={isLoadingUsers}
+        options={(users ?? []).map((u) => ({
+          value: u._id,
+          label: formatUserName(u.displayName, u.email),
+        }))}
+      />
+      <FilterSelect
+        label={tasks.filters.labels.timeframe}
+        value={selectedDateRange}
+        onChange={setSelectedDateRange}
+        allLabel={tasks.filters.allDates}
+        allValue="all"
+        options={[
+          { value: "today", label: tasks.filters.today },
+          { value: "week", label: tasks.filters.thisWeek },
+          { value: "month", label: tasks.filters.thisMonth },
+          { value: "overdue", label: tasks.filters.overdue },
+        ]}
+      />
+      <FilterSelect
+        label={tasks.filters.labels.tags}
+        value={selectedTag}
+        onChange={setSelectedTag}
+        allLabel={tasks.filters.allTags}
+        allValue="all"
+        disabled={isLoadingTags}
+        options={(tags ?? []).map((t) => ({ value: t.id, label: t.name }))}
+      />
+    </>
+  );
 
-        <div className="group relative h-9 flex-1">
+  const activeCount = activeFilterLabels.length;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative min-w-0 flex-1 max-md:basis-full md:max-w-xs">
+          <Search className="text-muted-foreground pointer-events-none absolute inset-y-0 start-2.5 my-auto size-3.5" />
           <Input
             placeholder={tasks.filters.search}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-full border-none bg-transparent px-3 text-xs font-medium tracking-tight transition-all focus:ring-0"
+            className="h-8 rounded-lg ps-8 text-xs"
           />
         </div>
 
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearAllFilters}
-            className="h-9 gap-2 rounded-lg px-4 text-[10px] font-bold tracking-tight text-rose-500 transition-all hover:bg-rose-500/10 hover:text-rose-600"
-          >
-            <Eraser className="size-3.5" />
-            {tasks.filters.labels.reset}
-          </Button>
-        )}
-      </div>
-
-      {/* Filters Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-        {/* Status Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
-          <div className="mb-2 flex items-center justify-between opacity-60">
-            <span className="text-[9px] font-bold tracking-tight">
-              {tasks.filters.status}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1.5 rounded-lg px-2.5 text-xs md:hidden"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          <SlidersHorizontal className="size-3.5" />
+          {tasks.filters.labels.filters}
+          {activeCount > 0 && (
+            <span className="bg-primary text-primary-foreground rounded-full px-1.5 text-[10px] leading-4">
+              {digitsEnToFa(activeCount)}
             </span>
-            <Filter className="size-3" />
-          </div>
-          <Select
-            value={selectedStatus}
-            onValueChange={(value) =>
-              setSelectedStatus(value as TaskStatus | typeof ALL_FILTER_VALUE)
-            }
-          >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
-              <SelectValue placeholder={tasks.filters.status} />
-            </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
-              <SelectItem
-                value={ALL_FILTER_VALUE}
-                className="text-[11px] font-medium"
-              >
-                {tasks.filters.allStatuses}
-              </SelectItem>
-              {TASK_STATUS_ORDER.map((status) => (
-                <SelectItem
-                  key={status}
-                  value={status}
-                  className="text-[11px] font-medium"
-                >
-                  {tasks.status[status]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          )}
+        </Button>
+
+        <div className="hidden flex-wrap items-center gap-2 md:flex">
+          {filterSelects}
         </div>
 
-        {/* Priority Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
-          <div className="mb-2 flex items-center justify-between opacity-60">
-            <span className="text-[9px] font-bold tracking-tight">
-              {tasks.filters.priority}
-            </span>
-            <Hash className="size-3" />
-          </div>
-          <Select
-            value={selectedPriority}
-            onValueChange={(value) =>
-              setSelectedPriority(
-                value as TaskPriority | typeof ALL_FILTER_VALUE,
-              )
-            }
-          >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
-              <SelectValue placeholder={tasks.filters.priority} />
-            </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
-              <SelectItem
-                value={ALL_FILTER_VALUE}
-                className="text-[11px] font-medium"
-              >
-                {tasks.filters.allPriorities}
-              </SelectItem>
-              {priorityOrder.map((priority) => (
-                <SelectItem
-                  key={priority}
-                  value={priority}
-                  className="text-[11px] font-medium"
-                >
-                  {tasks.priority[priority]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Assignee Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
-          <div className="mb-2 flex items-center justify-between opacity-60">
-            <span className="text-[9px] font-bold tracking-tight">
-              {tasks.filters.labels.assignee}
-            </span>
-            <User className="size-3" />
-          </div>
-          <Select
-            value={selectedAssignee}
-            onValueChange={(value) =>
-              setSelectedAssignee(value as string | typeof ALL_FILTER_VALUE)
-            }
-            disabled={isLoadingUsers}
-          >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
-              <SelectValue placeholder={tasks.filters.assignee} />
-            </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
-              <SelectItem
-                value={ALL_FILTER_VALUE}
-                className="text-[11px] font-medium"
-              >
-                {tasks.filters.allAssignees}
-              </SelectItem>
-              {users?.map((user) => (
-                <SelectItem
-                  key={user._id}
-                  value={user._id}
-                  className="text-[11px] font-medium"
-                >
-                  {formatUserName(user.displayName, user.email)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Date Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
-          <div className="mb-2 flex items-center justify-between opacity-60">
-            <span className="text-[9px] font-bold tracking-tight">
-              {tasks.filters.labels.timeframe}
-            </span>
-            <Calendar className="size-3" />
-          </div>
-          <Select
-            value={selectedDateRange}
-            onValueChange={setSelectedDateRange}
-          >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
-              <SelectValue placeholder={tasks.filters.date} />
-            </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
-              <SelectItem value="all" className="text-[11px] font-medium">
-                {tasks.filters.allDates}
-              </SelectItem>
-              <SelectItem value="today" className="text-[11px] font-medium">
-                {tasks.filters.today}
-              </SelectItem>
-              <SelectItem value="week" className="text-[11px] font-medium">
-                {tasks.filters.thisWeek}
-              </SelectItem>
-              <SelectItem value="month" className="text-[11px] font-medium">
-                {tasks.filters.thisMonth}
-              </SelectItem>
-              <SelectItem value="overdue" className="text-[11px] font-medium">
-                {tasks.filters.overdue}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Tag Filter */}
-        <div className="bg-card border-border/40 flex flex-col justify-between rounded-xl border p-3 shadow-sm">
-          <div className="mb-2 flex items-center justify-between opacity-60">
-            <span className="text-[9px] font-bold tracking-tight">
-              {tasks.filters.labels.tags}
-            </span>
-            <Tag className="size-3" />
-          </div>
-          <Select
-            value={selectedTag}
-            onValueChange={(value) => setSelectedTag(value)}
-            disabled={isLoadingTags}
-          >
-            <SelectTrigger className="bg-muted/30 h-8 w-full rounded-lg border-none px-3 text-[11px] font-bold tracking-tight focus:ring-0">
-              <SelectValue placeholder={tasks.filters.tag} />
-            </SelectTrigger>
-            <SelectContent className="border-border/40 bg-card rounded-lg border shadow-md">
-              <SelectItem value="all" className="text-[11px] font-medium">
-                {tasks.filters.allTags}
-              </SelectItem>
-              {tags?.map((tag) => (
-                <SelectItem
-                  key={tag.id}
-                  value={tag.id}
-                  className="text-[11px] font-medium"
-                >
-                  {tag.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="ms-auto flex items-center gap-2">
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearAllFilters}
+              className="h-8 gap-1.5 rounded-lg px-2 text-xs text-rose-500 hover:bg-rose-500/10 hover:text-rose-600"
+            >
+              <Eraser className="size-3.5" />
+              <span className="max-sm:hidden">
+                {tasks.filters.labels.reset}
+              </span>
+            </Button>
+          )}
+          {actions}
         </div>
       </div>
 
-      {/* Active Filters Display */}
+      {expanded && (
+        <div className="grid grid-cols-2 gap-2 md:hidden">{filterSelects}</div>
+      )}
+
       {hasActiveFilters && (
-        <div className="bg-primary/5 border-primary/10 flex items-center gap-3 overflow-hidden rounded-xl border p-2.5 shadow-sm">
-          <div className="flex shrink-0 items-center gap-2 px-1">
-            <Filter className="text-primary/60 size-3" />
-            <span className="text-primary/60 text-[10px] font-bold tracking-tight">
-              {tasks.filters.labels.activeFilters}
-            </span>
-          </div>
-
-          <div className="flex flex-wrap gap-1.5">
-            {activeFilterLabels.map((filter) => (
-              <ActiveFilterBadge
-                key={filter.label}
-                label={filter.label}
-                onClear={filter.onClear}
-              />
-            ))}
-          </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {activeFilterLabels.map((filter) => (
+            <ActiveFilterBadge
+              key={filter.label}
+              label={filter.label}
+              onClear={filter.onClear}
+            />
+          ))}
         </div>
       )}
     </div>

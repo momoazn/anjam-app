@@ -4,7 +4,6 @@ import { ManageSavedFiltersDialog } from "@/components/task/filters/manage-saved
 import { SaveFilterDialog } from "@/components/task/filters/save-filter-dialog";
 import { SavedFiltersDropdown } from "@/components/task/filters/saved-filters-dropdown";
 import { TaskFilters } from "@/components/task/filters/task-filters";
-import { Button } from "@/components/ui/button";
 import type {
   TaskFilterValues,
   UseTaskFiltersReturn,
@@ -78,56 +77,37 @@ export function TaskFiltersPanel({
 }: TaskFiltersPanelProps) {
   const [saveFilterDialogOpen, setSaveFilterDialogOpen] = useState(false);
   const [manageFiltersDialogOpen, setManageFiltersDialogOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(true);
-
   return (
-    <div className="space-y-5 mb-4" data-animate-stagger>
-      <div className="flex items-center justify-between mb-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-8 rounded-lg px-3 text-xs font-semibold"
-          onClick={() => setFiltersOpen((v) => !v)}
-        >
-          {filtersOpen ? "بستن فیلترها" : "فیلترها"}
-        </Button>
-
-        <SavedFiltersDropdown
-          savedFilters={savedFilters}
-          currentFilterMatch={currentFilterMatch}
-          defaultFilterId={defaultFilterId}
-          onApplyFilter={onApplyFilter}
-          onDeleteFilter={onDeleteFilter}
-          onSetDefault={onSetDefault}
-          onOpenSaveDialog={() => setSaveFilterDialogOpen(true)}
-          onOpenManageDialog={() => setManageFiltersDialogOpen(true)}
-          disableSave={disableSave}
-        />
-      </div>
-
-      {filtersOpen ? (
-        <div className="overflow-hidden rounded-xl border border-border/40 bg-background/30">
-          <div className="p-4">
-            <TaskFilters
-              searchTerm={searchTerm}
-              selectedStatus={selectedStatus}
-              selectedPriority={selectedPriority}
-              selectedAssignee={selectedAssignee}
-              selectedDateRange={selectedDateRange}
-              selectedTag={selectedTag}
-              setSearchTerm={setSearchTerm}
-              setSelectedStatus={setSelectedStatus}
-              setSelectedPriority={setSelectedPriority}
-              setSelectedAssignee={setSelectedAssignee}
-              setSelectedDateRange={setSelectedDateRange}
-              setSelectedTag={setSelectedTag}
-              users={users}
-              isLoadingUsers={isLoadingUsers}
-            />
-          </div>
-        </div>
-      ) : null}
+    <div className="mb-4" data-animate-stagger>
+      <TaskFilters
+        searchTerm={searchTerm}
+        selectedStatus={selectedStatus}
+        selectedPriority={selectedPriority}
+        selectedAssignee={selectedAssignee}
+        selectedDateRange={selectedDateRange}
+        selectedTag={selectedTag}
+        setSearchTerm={setSearchTerm}
+        setSelectedStatus={setSelectedStatus}
+        setSelectedPriority={setSelectedPriority}
+        setSelectedAssignee={setSelectedAssignee}
+        setSelectedDateRange={setSelectedDateRange}
+        setSelectedTag={setSelectedTag}
+        users={users}
+        isLoadingUsers={isLoadingUsers}
+        actions={
+          <SavedFiltersDropdown
+            savedFilters={savedFilters}
+            currentFilterMatch={currentFilterMatch}
+            defaultFilterId={defaultFilterId}
+            onApplyFilter={onApplyFilter}
+            onDeleteFilter={onDeleteFilter}
+            onSetDefault={onSetDefault}
+            onOpenSaveDialog={() => setSaveFilterDialogOpen(true)}
+            onOpenManageDialog={() => setManageFiltersDialogOpen(true)}
+            disableSave={disableSave}
+          />
+        }
+      />
 
       <SaveFilterDialog
         open={saveFilterDialogOpen}

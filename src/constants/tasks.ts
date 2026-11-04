@@ -87,6 +87,7 @@ export const tasks = {
       date: shared.date,
       tag: "برچسب",
       reset: "بازنشانی",
+      filters: "فیلترها",
       activeFilters: "فیلترهای فعال",
       timeframe: "بازه زمانی",
       tags: "برچسب‌ها",
