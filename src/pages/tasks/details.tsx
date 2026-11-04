@@ -130,12 +130,7 @@ export default function TaskDetails() {
           onTaskRefresh={() => {}} // No-op for Convex real-time
         />
 
-        <TaskDetailsSidebar
-          task={task}
-          onEdit={() => openModal("edit-task", { taskId: id })}
-          onDelete={() => setShowDeleteDialog(true)}
-          isDeleting={deleteTask.isPending}
-        />
+        <TaskDetailsSidebar task={task} />
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
