@@ -29,8 +29,8 @@ function Command({
 }
 
 function CommandDialog({
-  title = "Command Palette",
-  description = "Search for a command to run...",
+  title = "منوی دستورها",
+  description = "یک دستور را جستجو و اجرا کنید",
   children,
   className,
   showCloseButton = false,

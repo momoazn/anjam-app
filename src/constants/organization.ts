@@ -267,7 +267,9 @@ export const organization = {
   },
   settings: {
     title: "تنظیمات سازمان",
+    subtitle: "نام، نامک و توضیح سازمان را ویرایش کنید",
     general: "تنظیمات عمومی",
+    generalHint: "اطلاعات پایه سازمان",
     name: "نام سازمان",
     namePlaceholder: "نام سازمان را وارد کنید",
     slug: "نامک (Slug)",
