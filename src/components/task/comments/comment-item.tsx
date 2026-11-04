@@ -32,7 +32,7 @@ import { useCommentReactions } from "@/hooks/use-comment-reactions";
 import { useToast } from "@/hooks/use-toast";
 import { formatTaskDate } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
-import { useAuthUser } from "@/store/app-context-store";
+import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 
 type CommentItemProps = {
   comment: CommentWithUser;
@@ -71,14 +71,16 @@ function CommentAuthor({
 
 function CommentActionsMenu({
   isAuthor,
+  canDelete,
   onEdit,
   onDelete,
 }: {
   isAuthor: boolean;
+  canDelete: boolean;
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  if (!isAuthor) return null;
+  if (!isAuthor && !canDelete) return null;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -87,10 +89,15 @@ function CommentActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem className="flex items-center gap-2" onClick={onEdit}>
-          <IconEdit className="size-3" />
-          <span className="text-xs font-bold">{commentsConst.item.edit}</span>
-        </DropdownMenuItem>
+        {isAuthor && (
+          <DropdownMenuItem
+            className="flex items-center gap-2"
+            onClick={onEdit}
+          >
+            <IconEdit className="size-3" />
+            <span className="text-xs font-bold">{commentsConst.item.edit}</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           className="flex items-center gap-2 text-rose-500"
           onClick={onDelete}
@@ -282,6 +289,7 @@ export function CommentItem({
 
   const currentUser = useAuthUser();
   const isAuthor = currentUser?._id === comment.expand.user?._id;
+  const canModerate = useCurrentOrgRole() === "owner";
   const isDeleted = !!comment.deletedAt;
 
   const updateComment = useUpdateComment();
@@ -384,6 +392,7 @@ export function CommentItem({
               </div>
               <CommentActionsMenu
                 isAuthor={isAuthor}
+                canDelete={isAuthor || canModerate}
                 onEdit={handleEdit}
                 onDelete={handleSoftDelete}
               />

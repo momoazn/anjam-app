@@ -202,12 +202,13 @@ export const update = mutation({
     const comment = await ctx.db.get(args.commentId);
     if (!comment) throw new Error("Comment not found");
 
-    const { membership } = await requireTaskAccess(ctx, comment.taskId, userId);
+    await requireTaskAccess(ctx, comment.taskId, userId);
 
     const updates: Record<string, unknown> = {};
 
     if (args.updates.content !== undefined) {
-      if (comment.userId !== userId && membership.role !== "owner") {
+      // Owners may delete others' comments (moderation) but not rewrite them.
+      if (comment.userId !== userId) {
         throw new Error("You can only edit your own comments");
       }
       updates.content = cleanText(args.updates.content, "Comment", MAX_TEXT);
