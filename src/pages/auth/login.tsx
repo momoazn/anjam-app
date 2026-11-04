@@ -8,7 +8,7 @@ import {
   IconUserBolt,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -20,9 +20,12 @@ import { Label } from "@/components/ui/label";
 import { app, auth } from "@/constants";
 import { authClient } from "@/lib/auth-client";
 import { handleError } from "@/lib/error-handler";
+import { safeReturnTo } from "@/lib/return-to";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnTo = safeReturnTo(searchParams.get("returnTo"));
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -55,7 +58,7 @@ export default function Login() {
       // Redirect is handled by the auth state change usually, or we can force it?
       // Better Auth usually handles session establishment.
       // Redirect to app; RequireOrganization will handle org selection/onboarding.
-      navigate("/inbox", { replace: true });
+      navigate(returnTo ?? "/inbox", { replace: true });
     } catch (error) {
       handleError(error);
     } finally {

@@ -7,7 +7,7 @@ import {
   IconShieldLock,
 } from "@tabler/icons-react";
 import { useMutation } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -22,7 +22,12 @@ import { useInviteByToken } from "@/hooks/invites";
 import { useAcceptOrgInvitation } from "@/hooks/organization-members";
 import { authClient } from "@/lib/auth-client";
 import { api } from "@/lib/convex";
-import { useAuthIsAuthenticated } from "@/store/app-context-store";
+import { loginPathFor } from "@/lib/return-to";
+import {
+  useAuthIsAuthenticated,
+  useAuthStore,
+  useUserOrganizations,
+} from "@/store/app-context-store";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -36,6 +41,9 @@ export default function InviteAccept() {
   const acceptInviteMutation = useAcceptOrgInvitation();
   const ensureProfile = useMutation(api.users.ensureProfile);
 
+  const switchOrganization = useAuthStore((s) => s.switchOrganization);
+  const userOrganizations = useUserOrganizations();
+  const [joinedOrgId, setJoinedOrgId] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -45,12 +53,22 @@ export default function InviteAccept() {
     confirmPassword?: string;
   }>({});
 
+  // Switch once the org list (reactive) includes the joined org.
+  useEffect(() => {
+    if (!joinedOrgId) return;
+    if (!userOrganizations.some((o) => o.organization._id === joinedOrgId)) {
+      return;
+    }
+    void switchOrganization(joinedOrgId);
+    navigate("/inbox", { replace: true });
+  }, [joinedOrgId, userOrganizations, switchOrganization, navigate]);
+
   const acceptAsCurrentUser = async () => {
     try {
       await ensureProfile({});
-      await acceptInviteMutation.mutate(token ?? "");
+      const result = await acceptInviteMutation.mutate(token ?? "");
       toast.success(auth.invite.success);
-      navigate("/inbox", { replace: true });
+      setJoinedOrgId(result.organizationId);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : auth.errors.serverError);
     }
@@ -103,9 +121,9 @@ export default function InviteAccept() {
       }
 
       await ensureProfile({});
-      await acceptInviteMutation.mutate(token ?? "");
+      const result = await acceptInviteMutation.mutate(token ?? "");
       toast.success(auth.invite.success);
-      navigate("/inbox", { replace: true });
+      setJoinedOrgId(result.organizationId);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : auth.errors.serverError);
     }
@@ -343,7 +361,9 @@ export default function InviteAccept() {
                       {auth.invite.loginPrompt}
                     </span>
                     <Button variant="ghost" asChild>
-                      <Link to="/login">{auth.register.loginButton}</Link>
+                      <Link to={loginPathFor(`/invite/${token ?? ""}`)}>
+                        {auth.register.loginButton}
+                      </Link>
                     </Button>
                   </div>
                 </>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { ErrorBoundary } from "@/components/error-boundary";
 import { RouteSuspense } from "@/components/route-suspense";
@@ -22,6 +22,7 @@ import {
 import { usePermissions } from "./hooks/use-permissions";
 import { authClient } from "./lib/auth-client";
 import type { Permission } from "./lib/permissions";
+import { loginPathFor } from "./lib/return-to";
 import {
   useAuthIsAuthenticated,
   useAuthStore,
@@ -175,11 +176,17 @@ const AuthLoadingScreen = () => (
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isPending: isAuthLoading } = authClient.useSession();
   const isLoggedIn = useAuthIsAuthenticated();
+  const location = useLocation();
   if (isAuthLoading) {
     return <AuthLoadingScreen />;
   }
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to={loginPathFor(location.pathname + location.search)}
+        replace
+      />
+    );
   }
   return <>{children}</>;
 };
@@ -193,12 +200,18 @@ const RequireOrganization = ({ children }: { children: React.ReactNode }) => {
   const isLoadingOrgs = useAuthStore((s) => s.isLoadingOrgs);
   const hasLoadedOrgs = useAuthStore((s) => s.hasLoadedOrgs);
   const onboardingCompleted = useCurrentOrgOnboardingCompleted();
+  const location = useLocation();
 
   if (isAuthLoading) {
     return <AuthLoadingScreen />;
   }
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to={loginPathFor(location.pathname + location.search)}
+        replace
+      />
+    );
   }
 
   // Don't redirect while loading organizations
