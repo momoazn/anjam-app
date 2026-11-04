@@ -98,9 +98,19 @@ export const useAuthStore = create<AuthState>()(
         },
 
         setUser: (user) => {
+          // Sign-out: drop the previous account's org state. An account switch is
+          // handled by setOrganizations, which drops orgs the new user is not in.
           set({
             user,
             isAuthenticated: !!user,
+            ...(!user
+              ? {
+                  currentOrganization: null,
+                  currentOrgRole: null,
+                  userOrganizations: [],
+                  hasLoadedOrgs: false,
+                }
+              : {}),
           });
         },
 
@@ -111,11 +121,20 @@ export const useAuthStore = create<AuthState>()(
         setOrganizations: (orgs) => {
           const { currentOrganization } = get();
           const isAuthenticated = get().isAuthenticated;
+          // Keep the persisted org only if the user still belongs to it.
+          const current = currentOrganization
+            ? orgs.find((o) => o.organization._id === currentOrganization._id)
+            : undefined;
           set({
             userOrganizations: orgs,
             isLoadingOrgs: false,
             hasLoadedOrgs: isAuthenticated,
-            ...(currentOrganization ? {} : selectOrgState(orgs)),
+            ...(current
+              ? {
+                  currentOrganization: current.organization,
+                  currentOrgRole: current.role,
+                }
+              : selectOrgState(orgs)),
           });
         },
 

@@ -47,6 +47,8 @@ export function AuthStateSync() {
 
   // Sync user data
   useEffect(() => {
+    // While the session is pending, keep the persisted state (avoid wiping it on reload).
+    if (isAuthLoading) return;
     if (!isAuthenticated) {
       setUser(null);
       return;
@@ -55,7 +57,7 @@ export function AuthStateSync() {
     if (userData) {
       setUser(userData);
     }
-  }, [isAuthenticated, userData, setUser]);
+  }, [isAuthLoading, isAuthenticated, userData, setUser]);
 
   // Ensure we have a user profile created
   useEffect(() => {
@@ -76,10 +78,10 @@ export function AuthStateSync() {
       }));
 
       setOrganizations(mappedOrgs);
-    } else if (!isAuthenticated) {
+    } else if (!isAuthenticated && !isAuthLoading) {
       setOrganizations([]);
     }
-  }, [userOrgs, isAuthenticated, setOrganizations]);
+  }, [userOrgs, isAuthenticated, isAuthLoading, setOrganizations]);
 
   return null;
 }
