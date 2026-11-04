@@ -1,37 +1,44 @@
 /**
  * Test credentials and data constants
- * These match the seeded data from scripts/seed-data.ts
+ * These match the data created by convex/seed.ts.
+ * Seed with: bunx convex run seed:seedDevData '{"reset": true}'
+ * Roles are organization roles: "owner" or "member".
  */
 
 export const TEST_USERS = {
   admin: {
     email: "admin@example.com",
     password: "admin12345",
-    role: "admin",
+    role: "owner",
+    organization: "org1",
     name: "Admin User",
   },
   manager: {
     email: "manager@example.com",
     password: "manager123",
-    role: "manager",
+    role: "member",
+    organization: "org1",
     name: "Manager User",
   },
   supervisor: {
     email: "supervisor@example.com",
     password: "supervisor123",
-    role: "supervisor",
+    role: "owner",
+    organization: "org2",
     name: "Supervisor User",
   },
   employee1: {
     email: "employee1@example.com",
     password: "employee123",
-    role: "employee",
+    role: "member",
+    organization: "org1",
     name: "Employee 1",
   },
   employee2: {
     email: "employee2@example.com",
     password: "employee123",
-    role: "employee",
+    role: "member",
+    organization: "org1",
     name: "Employee 2",
   },
 } as const;

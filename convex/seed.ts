@@ -5,7 +5,7 @@ import { v } from "convex/values";
 import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import type { DataModel } from "./_generated/dataModel";
-import { action, internalMutation } from "./_generated/server";
+import { internalAction, internalMutation } from "./_generated/server";
 import { authComponent, createAuth } from "./auth";
 
 const TEST_USERS = [
@@ -322,7 +322,7 @@ export const writeDevData = internalMutation({
   },
 });
 
-export const seedDevData = action({
+export const seedDevData = internalAction({
   args: {
     reset: v.optional(v.boolean()),
   },
