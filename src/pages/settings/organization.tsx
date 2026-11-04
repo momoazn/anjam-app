@@ -86,7 +86,7 @@ export function OrgSettingsPage() {
     <PageTransition className="container mx-auto max-w-7xl p-4 md:p-6">
       <PageHeader
         title={organization.settings.title}
-        subtitle="Manage your organization settings and metadata"
+        subtitle={organization.settings.subtitle}
         icon={IconBuilding}
       />
 
@@ -114,7 +114,7 @@ export function OrgSettingsPage() {
                       {organization.settings.general}
                     </h3>
                     <p className="text-muted-foreground text-xs font-medium">
-                      General Information
+                      {organization.settings.generalHint}
                     </p>
                   </div>
                 </div>

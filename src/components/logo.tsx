@@ -152,7 +152,7 @@ export const Logo: React.FC<LogoProps> = ({
         </span>
       )}
       {showTelemetry && (
-        <span className="text-muted-foreground font-mono text-xs tracking-wide opacity-60">
+        <span className="text-muted-foreground text-xs opacity-60">
           {app.systemReady}
         </span>
       )}

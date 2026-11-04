@@ -14,7 +14,6 @@ import {
   organization,
   projects,
   savedFilters,
-  settings,
   tagsManagement,
   tasks,
   ui,
@@ -120,10 +119,6 @@ const Helps = createLazyPage(
 );
 const Settings = createLazyPage(
   () => import("@/pages/settings/index"),
-  errors.pageLoad.notFound,
-);
-const PreferencesPage = createLazyPage(
-  () => import("@/pages/settings/preferences"),
   errors.pageLoad.notFound,
 );
 const Notifications = createLazyPage(
@@ -549,7 +544,6 @@ const routes: RouteType[] = [
     requiresOrg: true,
     title: navigation.settings,
   },
-  // Backward-compatible aliases for legacy settings/profile routes.
   {
     path: "/settings/profile",
     element: <Settings />,
@@ -558,18 +552,33 @@ const routes: RouteType[] = [
     title: navigation.settings,
   },
   {
-    path: "/settings/security",
+    path: "/settings/preferences",
     element: <Settings />,
     protected: true,
     requiresOrg: true,
     title: navigation.settings,
   },
   {
-    path: "/settings/appearance",
-    element: <PreferencesPage />,
+    path: "/settings/about",
+    element: <Settings />,
     protected: true,
-    requiresOrg: false,
-    title: settings.preferences.title,
+    requiresOrg: true,
+    title: navigation.settings,
+  },
+  // Legacy URLs: appearance moved into preferences, security page was removed.
+  {
+    path: "/settings/appearance",
+    element: <Navigate to="/settings/preferences" replace />,
+    protected: true,
+    requiresOrg: true,
+    title: navigation.settings,
+  },
+  {
+    path: "/settings/security",
+    element: <Navigate to="/settings/profile" replace />,
+    protected: true,
+    requiresOrg: true,
+    title: navigation.settings,
   },
   {
     path: "/users",
@@ -581,13 +590,6 @@ const routes: RouteType[] = [
     protected: true,
     requiresOrg: true,
     title: organization.members.title,
-  },
-  {
-    path: "/settings/preferences",
-    element: <PreferencesPage />,
-    protected: true,
-    requiresOrg: false,
-    title: settings.preferences.title,
   },
   {
     path: "/notifications",

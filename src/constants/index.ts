@@ -21,12 +21,5 @@ export {
   insights,
 } from "./tasks";
 export { errors, notifications, settings, helps } from "./system";
-export {
-  user,
-  notification,
-  task,
-  notFound,
-  inbox,
-  keyboardShortcuts,
-} from "./misc";
+export { user, notification, task, notFound, inbox } from "./misc";
 export { commandMenu } from "./command-menu";

@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/constants";
 import { Id, api } from "@/lib/convex";
+import { handleError } from "@/lib/error-handler";
 import {
   useAuthStore,
   useCurrentOrganization,
@@ -71,7 +72,7 @@ export default function Onboarding() {
 
       if (!orgId) {
         if (!orgName.trim()) {
-          throw new Error("Organization name is required");
+          throw new Error(auth.register.errors.organizationNameRequired);
         }
         orgId = await createOrg({
           name: orgName.trim(),
@@ -111,7 +112,7 @@ export default function Onboarding() {
       fetchOrgs();
       navigate("/inbox", { replace: true });
     } catch (err) {
-      console.error(err);
+      handleError(err);
     } finally {
       setIsCompleting(false);
     }

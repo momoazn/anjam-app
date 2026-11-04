@@ -175,9 +175,13 @@ export function FileUpload({
                 <p className="text-foreground text-lg font-bold tracking-tight">
                   {projects.files.dropzone}
                 </p>
-                <div className="text-muted-foreground flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-bold tracking-widest">
-                  <span>MAX_SIZE: {formatFileSize(maxSize)}</span>
-                  <span>ALLOWED: PDF, DOC, IMG, ZIP</span>
+                <div className="text-muted-foreground flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs">
+                  <span>
+                    {projects.files.maxSize.replace(
+                      "{size}",
+                      formatFileSize(maxSize),
+                    )}
+                  </span>
                 </div>
               </>
             )}
@@ -213,7 +217,7 @@ export function FileUpload({
                 <p className="text-foreground truncate text-xs font-bold tracking-tight">
                   {file.name}
                 </p>
-                <p className="text-muted-foreground font-mono text-[10px] font-bold">
+                <p className="text-muted-foreground text-[11px] font-bold tabular-nums">
                   {formatFileSize(file.size)}
                 </p>
               </div>

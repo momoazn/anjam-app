@@ -52,9 +52,7 @@ export default function InviteAccept() {
       toast.success(auth.invite.success);
       navigate("/inbox", { replace: true });
     } catch (err: unknown) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to accept invite",
-      );
+      toast.error(err instanceof Error ? err.message : auth.errors.serverError);
     }
   };
 
@@ -92,7 +90,7 @@ export default function InviteAccept() {
           password,
         });
         if (result.error) {
-          throw new Error(result.error.message || "Sign up failed");
+          throw new Error(result.error.message || auth.errors.serverError);
         }
       } catch {
         const result = await authClient.signIn.email({
@@ -100,7 +98,7 @@ export default function InviteAccept() {
           password,
         });
         if (result.error) {
-          throw new Error(result.error.message || "Sign in failed");
+          throw new Error(result.error.message || auth.errors.serverError);
         }
       }
 
@@ -109,9 +107,7 @@ export default function InviteAccept() {
       toast.success(auth.invite.success);
       navigate("/inbox", { replace: true });
     } catch (err: unknown) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to accept invite",
-      );
+      toast.error(err instanceof Error ? err.message : auth.errors.serverError);
     }
   };
 
@@ -196,11 +192,8 @@ export default function InviteAccept() {
 
       <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-[500px] lg:px-12 xl:w-[600px] xl:px-20">
         <PageTransition className="w-full" disableStagger>
-          <div className="mb-10 lg:hidden">
-            <Logo size={48} className="mb-6" />
-            <h2 className="text-4xl font-black tracking-tight">
-              {auth.invite.title}
-            </h2>
+          <div className="mb-8 lg:hidden">
+            <Logo size={48} showText />
           </div>
 
           <Card className="relative rounded-none p-0 shadow-2xl">
@@ -210,7 +203,7 @@ export default function InviteAccept() {
                   <h3 className="text-xl font-black tracking-tight">
                     {auth.invite.joining.replace(
                       "{orgName}",
-                      orgName || "Organization",
+                      orgName || auth.invite.orgFallback,
                     )}
                   </h3>
                   <p className="text-muted-foreground mt-1 text-xs font-medium">
@@ -359,7 +352,9 @@ export default function InviteAccept() {
           </Card>
 
           <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
-            {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}
+            {digitsEnToFa(
+              `© ${new Date().getFullYear()} ${auth.visual.copyright}`,
+            )}
           </p>
         </PageTransition>
       </div>

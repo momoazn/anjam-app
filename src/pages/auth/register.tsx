@@ -73,7 +73,7 @@ export default function Register() {
         password,
       });
       if (result.error) {
-        throw new Error(result.error.message || "Registration failed");
+        throw new Error(result.error.message || auth.errors.serverError);
       }
 
       toast.success(auth.register.success);
@@ -124,11 +124,8 @@ export default function Register() {
 
       <div className="relative z-10 flex w-full flex-col justify-center px-6 lg:w-125 lg:px-12 xl:w-150 xl:px-20">
         <PageTransition className="w-full" disableStagger>
-          <div className="mb-10 lg:hidden">
-            <Logo size={48} className="mb-6" />
-            <h2 className="text-4xl font-bold tracking-tight">
-              {auth.register.title}
-            </h2>
+          <div className="mb-8 lg:hidden">
+            <Logo size={48} showText />
           </div>
 
           <Card className="relative p-0 shadow-2xl">
@@ -279,7 +276,9 @@ export default function Register() {
           </Card>
 
           <p className="text-muted-foreground/50 mt-8 text-center text-xs font-bold">
-            {digitsEnToFa(`© 2025 ${auth.visual.copyright}`)}
+            {digitsEnToFa(
+              `© ${new Date().getFullYear()} ${auth.visual.copyright}`,
+            )}
           </p>
         </PageTransition>
       </div>

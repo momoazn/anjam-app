@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import path from "path";
 
 import tailwindcss from "@tailwindcss/vite";
@@ -13,7 +14,12 @@ export default defineConfig(({ mode }) => {
     convexUrl?.replace(".convex.cloud", ".convex.site") ??
     "";
 
+  const { version } = JSON.parse(readFileSync("package.json", "utf-8")) as {
+    version: string;
+  };
+
   return {
+    define: { __APP_VERSION__: JSON.stringify(version) },
     plugins: [
       react(),
       tailwindcss(),

@@ -1,8 +1,7 @@
-import { IconPalette, IconSettings } from "@tabler/icons-react";
-import type { Icon as IconType } from "@tabler/icons-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { SettingsCard } from "@/components/settings/settings-card";
 import {
   Select,
   SelectContent,
@@ -24,24 +23,24 @@ type PreferencesPayload = typeof DEFAULT_USER_PREFERENCES;
 type DisplayPayload = PreferencesPayload["display"];
 
 const timezoneOptions = [
-  { value: "auto", label: settings.appearance.timezones.auto },
-  { value: "UTC", label: settings.appearance.timezones.utc },
-  { value: "Asia/Tehran", label: settings.appearance.timezones.tehran },
-  { value: "Europe/London", label: settings.appearance.timezones.london },
-  { value: "America/New_York", label: settings.appearance.timezones.newYork },
+  { value: "auto", label: settings.preferences.timezones.auto },
+  { value: "UTC", label: settings.preferences.timezones.utc },
+  { value: "Asia/Tehran", label: settings.preferences.timezones.tehran },
+  { value: "Europe/London", label: settings.preferences.timezones.london },
+  { value: "America/New_York", label: settings.preferences.timezones.newYork },
 ];
 
 const dateFormatOptions = [
-  { value: "locale", label: settings.appearance.dateFormats.locale },
-  { value: "yyyy/MM/dd", label: settings.appearance.dateFormats.ymd },
-  { value: "dd/MM/yyyy", label: settings.appearance.dateFormats.dmy },
-  { value: "MM/dd/yyyy", label: settings.appearance.dateFormats.mdy },
+  { value: "locale", label: settings.preferences.dateFormats.locale },
+  { value: "yyyy/MM/dd", label: settings.preferences.dateFormats.ymd },
+  { value: "dd/MM/yyyy", label: settings.preferences.dateFormats.dmy },
+  { value: "MM/dd/yyyy", label: settings.preferences.dateFormats.mdy },
 ];
 
 const themeOptions = [
-  { value: "light", label: settings.appearance.light },
-  { value: "dark", label: settings.appearance.dark },
-  { value: "system", label: settings.appearance.system },
+  { value: "light", label: settings.preferences.light },
+  { value: "dark", label: settings.preferences.dark },
+  { value: "system", label: settings.preferences.system },
 ];
 
 type ToggleRowProps = {
@@ -60,12 +59,10 @@ function ToggleRow({
   onChange,
 }: ToggleRowProps) {
   return (
-    <div className="group border-border flex items-center justify-between gap-6 border-b py-4 last:border-0">
-      <div className="text-right">
-        <p className="text-sm font-bold tracking-tight">{label}</p>
-        <p className="text-muted-foreground text-xs font-medium">
-          {description}
-        </p>
+    <div className="flex items-center justify-between gap-6">
+      <div>
+        <p className="text-sm font-medium">{label}</p>
+        <p className="text-muted-foreground text-sm">{description}</p>
       </div>
       <Switch
         checked={checked}
@@ -73,32 +70,6 @@ function ToggleRow({
         disabled={disabled}
         aria-label={label}
       />
-    </div>
-  );
-}
-
-function SectionHeader({
-  icon: Icon,
-  title,
-  description,
-}: {
-  icon: IconType;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="border-border mb-6 flex items-center gap-4 border-b pb-4">
-      <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
-        <Icon className="size-6" stroke={1.5} />
-      </div>
-      <div className="text-right">
-        <h3 className="text-lg font-bold tracking-tight">{title}</h3>
-        {description && (
-          <p className="text-muted-foreground text-xs font-medium">
-            {description}
-          </p>
-        )}
-      </div>
     </div>
   );
 }
@@ -131,9 +102,9 @@ export function PreferencesSection() {
           },
         },
       });
-      toast.success(settings.appearance.saveSuccess);
+      toast.success(settings.preferences.saveSuccess);
     } catch {
-      toast.error("خطا در ذخیره تنظیمات");
+      toast.error(settings.preferences.saveError);
     } finally {
       setIsSaving(false);
     }
@@ -152,9 +123,9 @@ export function PreferencesSection() {
       if (updates.theme) {
         setTheme(updates.theme);
       }
-      toast.success(settings.appearance.saveSuccess);
+      toast.success(settings.preferences.saveSuccess);
     } catch {
-      toast.error("خطا در ذخیره تنظیمات");
+      toast.error(settings.preferences.saveError);
     } finally {
       setIsSaving(false);
     }
@@ -162,8 +133,8 @@ export function PreferencesSection() {
 
   if (!user) {
     return (
-      <div className="bg-card border-border rounded-2xl border p-8 text-center shadow-sm">
-        <p className="text-foreground text-base font-bold tracking-tight">
+      <div className="bg-card border-border rounded-xl border p-8 text-center shadow-xs">
+        <p className="text-foreground text-base font-medium">
           {settings.preferences.signinRequired}
         </p>
       </div>
@@ -171,36 +142,30 @@ export function PreferencesSection() {
   }
 
   return (
-    <div className="space-y-6 text-right">
-      {/* UI Preferences */}
-      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
-        <SectionHeader
-          icon={IconSettings}
-          title={settings.preferences.title}
-          description={settings.preferences.description}
-        />
+    <div className="space-y-4">
+      <SettingsCard
+        title={settings.preferences.title}
+        description={settings.preferences.description}
+      >
         <div className="space-y-1">
           <ToggleRow
-            label={settings.preferences.toggles.activityFeed.label}
-            description={settings.preferences.toggles.activityFeed.description}
+            label={settings.preferences.activityFeed.label}
+            description={settings.preferences.activityFeed.description}
             checked={Boolean(uiPreferences.showActivityFeed)}
             disabled={isBusy || !data}
             onChange={handleActivityToggle}
           />
         </div>
-      </section>
+      </SettingsCard>
 
-      {/* Display Settings */}
-      <section className="bg-card border-border rounded-2xl border p-6 shadow-sm">
-        <SectionHeader
-          icon={IconPalette}
-          title={settings.appearance.title}
-          description={settings.appearance.description}
-        />
+      <SettingsCard
+        title={settings.preferences.displayTitle}
+        description={settings.preferences.displayDescription}
+      >
         <div className="grid gap-6 sm:grid-cols-3">
           <div className="space-y-2">
-            <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              {settings.appearance.theme}
+            <label htmlFor="pref-theme" className="text-sm font-medium">
+              {settings.preferences.theme}
             </label>
             <Select
               value={displayPreferences.theme}
@@ -211,16 +176,12 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="text-right">
-                <SelectValue placeholder={settings.appearance.theme} />
+              <SelectTrigger id="pref-theme">
+                <SelectValue placeholder={settings.preferences.theme} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {themeOptions.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="text-right"
-                  >
+                  <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -229,8 +190,8 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              {settings.appearance.timezone}
+            <label htmlFor="pref-timezone" className="text-sm font-medium">
+              {settings.preferences.timezone}
             </label>
             <Select
               value={displayPreferences.timezone}
@@ -241,16 +202,12 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="text-right">
-                <SelectValue placeholder={settings.appearance.timezone} />
+              <SelectTrigger id="pref-timezone">
+                <SelectValue placeholder={settings.preferences.timezone} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {timezoneOptions.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="text-right"
-                  >
+                  <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -259,8 +216,8 @@ export function PreferencesSection() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-muted-foreground text-[10px] font-bold tracking-tight">
-              {settings.appearance.dateFormat}
+            <label htmlFor="pref-dateFormat" className="text-sm font-medium">
+              {settings.preferences.dateFormat}
             </label>
             <Select
               value={displayPreferences.dateFormat}
@@ -271,16 +228,12 @@ export function PreferencesSection() {
               }
               disabled={isBusy || !data}
             >
-              <SelectTrigger className="text-right">
-                <SelectValue placeholder={settings.appearance.dateFormat} />
+              <SelectTrigger id="pref-dateFormat">
+                <SelectValue placeholder={settings.preferences.dateFormat} />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
                 {dateFormatOptions.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="text-right"
-                  >
+                  <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -288,7 +241,7 @@ export function PreferencesSection() {
             </Select>
           </div>
         </div>
-      </section>
+      </SettingsCard>
     </div>
   );
 }

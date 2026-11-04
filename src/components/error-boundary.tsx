@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import { Component, ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { common, errors } from "@/constants";
+import { errors } from "@/constants";
 import { logError } from "@/lib/logger";
 
 type ErrorBoundaryState = {
@@ -19,7 +19,8 @@ type ErrorBoundaryState = {
 
 type ErrorBoundaryProps = {
   children: ReactNode;
-  fallback?: ReactNode;
+  /** Static node, or a render function that receives a retry callback. */
+  fallback?: ReactNode | ((retry: () => void) => ReactNode);
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 };
 
@@ -56,12 +57,17 @@ export class ErrorBoundary extends Component<
     if (this.state.hasError) {
       // Custom fallback UI
       if (this.props.fallback) {
-        return this.props.fallback;
+        return typeof this.props.fallback === "function"
+          ? this.props.fallback(this.handleRetry)
+          : this.props.fallback;
       }
 
       // Default error UI
       return (
-        <div className="flex min-h-screen items-center justify-center p-4">
+        <div
+          dir="rtl"
+          className="bg-background flex min-h-svh items-center justify-center p-4"
+        >
           <Card className="w-full max-w-md rounded-2xl shadow-lg">
             <CardHeader className="text-center">
               <div className="bg-destructive/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
@@ -77,23 +83,25 @@ export class ErrorBoundary extends Component<
             <CardContent className="space-y-4">
               {import.meta.env.DEV && this.state.error && (
                 <div className="bg-muted rounded-xl p-4">
-                  <p className="text-muted-foreground font-mono text-xs leading-relaxed">
+                  <p
+                    dir="ltr"
+                    className="text-muted-foreground font-mono text-xs leading-relaxed"
+                  >
                     {this.state.error.message}
                   </p>
                 </div>
               )}
               <div className="flex gap-3">
                 <Button onClick={this.handleRetry} className="flex-1 gap-2">
-                  <RefreshCw className="me-2 size-4" />
-                  {common.buttons.retry}
+                  <RefreshCw className="size-4" />
+                  {errors.boundary.tryAgain}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.history.back()}
-                  className="flex-1 gap-2"
-                >
-                  <ArrowLeft className="me-2 size-4" />
-                  {common.buttons.back}
+                {/* Plain link: the boundary sits above the router. */}
+                <Button asChild variant="outline" className="flex-1 gap-2">
+                  <a href="/">
+                    <Home className="size-4" />
+                    {errors.boundary.goHome}
+                  </a>
                 </Button>
               </div>
             </CardContent>

@@ -91,14 +91,14 @@ export function DeleteConfirmationDialog({
         <AlertDialogFooter className="mt-6 gap-2">
           <AlertDialogCancel
             disabled={isLoading}
-            className="border-border rounded-xl border text-[10px] font-bold tracking-tight"
+            className="border-border rounded-xl border text-sm font-medium"
           >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
-            className="border-border rounded-xl border bg-rose-500 text-[10px] font-bold tracking-tight text-white shadow-md hover:bg-rose-600 active:shadow-none"
+            className="border-border rounded-xl border bg-rose-500 text-sm font-medium text-white shadow-md hover:bg-rose-600 active:shadow-none"
           >
             {isLoading && <IconLoader2 className="me-2 h-4 w-4 animate-spin" />}
             {confirmText}
