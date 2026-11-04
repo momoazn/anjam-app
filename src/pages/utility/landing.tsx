@@ -327,7 +327,7 @@ const LandingPage = () => {
                 variant="outline"
                 className="border-white/20 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
               >
-                <a href="mailto:support@anjam.ir">
+                <a href="mailto:support@example.com">
                   {landing.requestConsultation}
                 </a>
               </Button>
