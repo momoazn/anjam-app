@@ -43,24 +43,6 @@ export const notFound = {
   lost: "گمشده",
 } as const;
 
-// Keyboard shortcuts
-export const keyboardShortcuts = {
-  keys: {
-    c: "C",
-    cmd: "Cmd",
-    k: "K",
-    question: "؟",
-    g: "G",
-    d: "D",
-    i: "I",
-    t: "T",
-    m: "M",
-    p: "P",
-    n: "N",
-    s: "S",
-  },
-} as const;
-
 export const inbox = {
   title: "صندوق ورودی",
   description: "پیگیری تسک‌ها و به‌روزرسانی‌های شما",
