@@ -461,6 +461,7 @@ export const tagsManagement = {
   selectColor: "انتخاب رنگ",
   loading: shared.loading,
   noTags: "هیچ برچسبی وجود ندارد",
+  usageCount: "{count} تسک",
   noTagsDescription: "برچسب ایجاد کنید تا بتوانید تسک‌ها را دسته‌بندی کنید",
   createFirstTag: "ایجاد اولین برچسب",
   namePlaceholder: "نام برچسب را وارد کنید...",
