@@ -5,6 +5,8 @@ import { useShallow } from "zustand/react/shallow";
 import { DEFAULT_TASK_FILTERS } from "@/lib/filter-utils";
 import type { TaskFilterValues } from "@/lib/filter-utils";
 
+import { useAuthUser, useCurrentOrganization } from "./app-context-store";
+
 export interface SavedFilter {
   id: string;
   name: string;
@@ -13,161 +15,146 @@ export interface SavedFilter {
   isDefault?: boolean;
 }
 
-interface FiltersState {
+interface Scope {
   savedFilters: SavedFilter[];
   defaultFilterId: string | null;
-  saveFilter: (name: string, filters: TaskFilterValues) => SavedFilter;
+}
+
+const EMPTY_SCOPE: Scope = { savedFilters: [], defaultFilterId: null };
+
+/** Saved filters belong to one user inside one organization. */
+export function filterScopeKey(
+  organizationId: string | null | undefined,
+  userId: string | null | undefined,
+): string {
+  return `${organizationId ?? "no-org"}:${userId ?? "no-user"}`;
+}
+
+interface FiltersState {
+  scopes: Record<string, Scope>;
+  saveFilter: (
+    scope: string,
+    name: string,
+    filters: TaskFilterValues,
+  ) => SavedFilter;
   updateFilter: (
+    scope: string,
     id: string,
     updates: Partial<Omit<SavedFilter, "id" | "createdAt">>,
   ) => void;
-  deleteFilter: (id: string) => void;
-  setAsDefault: (id: string | null) => void;
-  getDefaultFilter: () => SavedFilter | null;
-  getCurrentFilterMatch: (
-    currentFilters: TaskFilterValues,
-  ) => SavedFilter | null;
-  isDefaultFilters: (filters: TaskFilterValues) => boolean;
+  deleteFilter: (scope: string, id: string) => void;
+  setAsDefault: (scope: string, id: string | null) => void;
 }
 
 const STORAGE_KEY = "anjam_saved_filters";
-const DEFAULT_FILTER_KEY = "anjam_default_filter";
 
-const initialState = {
-  savedFilters: [],
-  defaultFilterId: null,
-} satisfies Omit<
-  FiltersState,
-  | "saveFilter"
-  | "updateFilter"
-  | "deleteFilter"
-  | "setAsDefault"
-  | "getDefaultFilter"
-  | "getCurrentFilterMatch"
-  | "isDefaultFilters"
->;
+function matches(a: TaskFilterValues, b: TaskFilterValues) {
+  return (
+    a.searchTerm === b.searchTerm &&
+    a.selectedStatus === b.selectedStatus &&
+    a.selectedPriority === b.selectedPriority &&
+    a.selectedAssignee === b.selectedAssignee &&
+    a.selectedDateRange === b.selectedDateRange &&
+    a.selectedTag === b.selectedTag
+  );
+}
 
 const useFiltersStore = create<FiltersState>()(
   devtools(
     persist(
-      (set, get) => ({
-        ...initialState,
+      (set, get) => {
+        const patch = (scope: string, next: Partial<Scope>) =>
+          set((state) => ({
+            scopes: {
+              ...state.scopes,
+              [scope]: { ...(state.scopes[scope] ?? EMPTY_SCOPE), ...next },
+            },
+          }));
+        const read = (scope: string) => get().scopes[scope] ?? EMPTY_SCOPE;
 
-        saveFilter: (name, filters) => {
-          const newFilter: SavedFilter = {
-            id: `filter_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            name,
-            filters,
-            createdAt: new Date().toISOString(),
-          };
+        return {
+          scopes: {},
 
-          const updatedFilters = [...get().savedFilters, newFilter];
-          set({ savedFilters: updatedFilters });
+          saveFilter: (scope, name, filters) => {
+            const newFilter: SavedFilter = {
+              id: `filter_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+              name,
+              filters,
+              createdAt: new Date().toISOString(),
+            };
+            patch(scope, {
+              savedFilters: [...read(scope).savedFilters, newFilter],
+            });
+            return newFilter;
+          },
 
-          return newFilter;
-        },
+          updateFilter: (scope, id, updates) => {
+            patch(scope, {
+              savedFilters: read(scope).savedFilters.map((filter) =>
+                filter.id === id ? { ...filter, ...updates } : filter,
+              ),
+            });
+          },
 
-        updateFilter: (id, updates) => {
-          const updatedFilters = get().savedFilters.map((filter) =>
-            filter.id === id ? { ...filter, ...updates } : filter,
-          );
-          set({ savedFilters: updatedFilters });
-        },
+          deleteFilter: (scope, id) => {
+            const { savedFilters, defaultFilterId } = read(scope);
+            patch(scope, {
+              savedFilters: savedFilters.filter((filter) => filter.id !== id),
+              defaultFilterId: defaultFilterId === id ? null : defaultFilterId,
+            });
+          },
 
-        deleteFilter: (id) => {
-          const { savedFilters, defaultFilterId } = get();
-          const updatedFilters = savedFilters.filter(
-            (filter) => filter.id !== id,
-          );
-          set({ savedFilters: updatedFilters });
-
-          if (defaultFilterId === id) {
-            localStorage.removeItem(DEFAULT_FILTER_KEY);
-            set({ defaultFilterId: null });
-          }
-        },
-
-        setAsDefault: (id) => {
-          if (id) {
-            localStorage.setItem(DEFAULT_FILTER_KEY, id);
-          } else {
-            localStorage.removeItem(DEFAULT_FILTER_KEY);
-          }
-          set({ defaultFilterId: id });
-        },
-
-        getDefaultFilter: () => {
-          const { defaultFilterId, savedFilters } = get();
-          if (!defaultFilterId) return null;
-          return savedFilters.find((f) => f.id === defaultFilterId) ?? null;
-        },
-
-        getCurrentFilterMatch: (currentFilters) => {
-          const { savedFilters } = get();
-          return (
-            savedFilters.find((saved) => {
-              return (
-                saved.filters.searchTerm === currentFilters.searchTerm &&
-                saved.filters.selectedStatus ===
-                  currentFilters.selectedStatus &&
-                saved.filters.selectedPriority ===
-                  currentFilters.selectedPriority &&
-                saved.filters.selectedAssignee ===
-                  currentFilters.selectedAssignee &&
-                saved.filters.selectedDateRange ===
-                  currentFilters.selectedDateRange &&
-                saved.filters.selectedTag === currentFilters.selectedTag
-              );
-            }) ?? null
-          );
-        },
-
-        isDefaultFilters: (filters) => {
-          return (
-            filters.searchTerm === DEFAULT_TASK_FILTERS.searchTerm &&
-            filters.selectedStatus === DEFAULT_TASK_FILTERS.selectedStatus &&
-            filters.selectedPriority ===
-              DEFAULT_TASK_FILTERS.selectedPriority &&
-            filters.selectedAssignee ===
-              DEFAULT_TASK_FILTERS.selectedAssignee &&
-            filters.selectedDateRange ===
-              DEFAULT_TASK_FILTERS.selectedDateRange &&
-            filters.selectedTag === DEFAULT_TASK_FILTERS.selectedTag
-          );
-        },
-      }),
+          setAsDefault: (scope, id) => patch(scope, { defaultFilterId: id }),
+        };
+      },
       {
         name: STORAGE_KEY,
+        version: 1,
+        // v0 kept one global list; its owner is unknown, so drop it.
+        migrate: () => ({ scopes: {} }),
         storage: createJSONStorage(() => localStorage),
-        partialize: (state) => ({
-          savedFilters: state.savedFilters,
-          defaultFilterId: state.defaultFilterId,
-        }),
-        onRehydrateStorage: () => {
-          return (state) => {
-            if (state) {
-              const defaultId = localStorage.getItem(DEFAULT_FILTER_KEY);
-              state.defaultFilterId = defaultId;
-            }
-          };
-        },
+        partialize: (state) => ({ scopes: state.scopes }),
       },
     ),
     { name: "filters-store", enabled: import.meta.env.DEV },
   ),
 );
 
-export const useSavedFilters = () =>
-  useFiltersStore(
+export function isDefaultFilters(filters: TaskFilterValues): boolean {
+  return matches(filters, DEFAULT_TASK_FILTERS);
+}
+
+export const useSavedFilters = () => {
+  const organization = useCurrentOrganization();
+  const user = useAuthUser();
+  const scope = filterScopeKey(organization?._id, user?._id);
+  const { savedFilters, defaultFilterId } = useFiltersStore(
+    (state) => state.scopes[scope] ?? EMPTY_SCOPE,
+  );
+  const actions = useFiltersStore(
     useShallow((state) => ({
-      savedFilters: state.savedFilters,
       saveFilter: state.saveFilter,
       updateFilter: state.updateFilter,
       deleteFilter: state.deleteFilter,
       setAsDefault: state.setAsDefault,
-      getDefaultFilter: state.getDefaultFilter,
-      defaultFilterId: state.defaultFilterId,
-      getCurrentFilterMatch: state.getCurrentFilterMatch,
-      isDefaultFilters: state.isDefaultFilters,
     })),
   );
+
+  return {
+    savedFilters,
+    defaultFilterId,
+    saveFilter: (name: string, filters: TaskFilterValues) =>
+      actions.saveFilter(scope, name, filters),
+    updateFilter: (
+      id: string,
+      updates: Partial<Omit<SavedFilter, "id" | "createdAt">>,
+    ) => actions.updateFilter(scope, id, updates),
+    deleteFilter: (id: string) => actions.deleteFilter(scope, id),
+    setAsDefault: (id: string | null) => actions.setAsDefault(scope, id),
+    getDefaultFilter: () =>
+      savedFilters.find((f) => f.id === defaultFilterId) ?? null,
+    getCurrentFilterMatch: (current: TaskFilterValues) =>
+      savedFilters.find((saved) => matches(saved.filters, current)) ?? null,
+    isDefaultFilters,
+  };
+};
