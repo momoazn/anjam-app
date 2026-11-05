@@ -3,8 +3,6 @@ import {
   IconAlertCircle,
   IconFingerprint,
   IconLoader2,
-  IconMail,
-  IconShieldLock,
 } from "@tabler/icons-react";
 import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
@@ -266,12 +264,15 @@ export default function InviteAccept() {
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                        <Label
+                          htmlFor="invite-email"
+                          className="text-muted-foreground text-xs font-bold tracking-tight"
+                        >
                           {auth.register.email}
                         </Label>
-                        <IconMail className="text-muted-foreground/40 size-3" />
                       </div>
                       <Input
+                        id="invite-email"
                         type="email"
                         value={email}
                         dir="ltr"
@@ -283,7 +284,7 @@ export default function InviteAccept() {
                         disabled={submitting}
                       />
                       {errors.email && (
-                        <p className="text-destructive text-[10px] font-bold">
+                        <p className="text-destructive text-xs font-medium">
                           {errors.email}
                         </p>
                       )}
@@ -291,12 +292,15 @@ export default function InviteAccept() {
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                        <Label
+                          htmlFor="invite-password"
+                          className="text-muted-foreground text-xs font-bold tracking-tight"
+                        >
                           {auth.register.password}
                         </Label>
-                        <IconShieldLock className="text-muted-foreground/40 size-3" />
                       </div>
                       <Input
+                        id="invite-password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -307,7 +311,7 @@ export default function InviteAccept() {
                         disabled={submitting}
                       />
                       {errors.password && (
-                        <p className="text-destructive text-[10px] font-bold">
+                        <p className="text-destructive text-xs font-medium">
                           {errors.password}
                         </p>
                       )}
@@ -315,12 +319,15 @@ export default function InviteAccept() {
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="text-muted-foreground/60 text-[10px] font-black tracking-tight uppercase">
+                        <Label
+                          htmlFor="invite-confirm-password"
+                          className="text-muted-foreground text-xs font-bold tracking-tight"
+                        >
                           {auth.register.confirmPassword}
                         </Label>
-                        <IconShieldLock className="text-muted-foreground/40 size-3" />
                       </div>
                       <Input
+                        id="invite-confirm-password"
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -331,7 +338,7 @@ export default function InviteAccept() {
                         disabled={submitting}
                       />
                       {errors.confirmPassword && (
-                        <p className="text-destructive text-[10px] font-bold">
+                        <p className="text-destructive text-xs font-medium">
                           {errors.confirmPassword}
                         </p>
                       )}

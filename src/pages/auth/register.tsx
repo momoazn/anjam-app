@@ -3,7 +3,6 @@ import {
   IconEye,
   IconEyeOff,
   IconFingerprint,
-  IconMail,
   IconShieldLock,
 } from "@tabler/icons-react";
 import { useState } from "react";
@@ -142,12 +141,15 @@ export default function Register() {
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
+                    <Label
+                      htmlFor="register-email"
+                      className="text-muted-foreground text-xs font-bold tracking-tight"
+                    >
                       {auth.register.email}
                     </Label>
-                    <IconMail className="text-muted-foreground/40 size-3" />
                   </div>
                   <Input
+                    id="register-email"
                     type="email"
                     value={email}
                     dir="ltr"
@@ -159,7 +161,7 @@ export default function Register() {
                     disabled={submitting}
                   />
                   {errors.email && (
-                    <p className="text-destructive text-[10px] font-bold">
+                    <p className="text-destructive text-xs font-medium">
                       {errors.email}
                     </p>
                   )}
@@ -167,13 +169,16 @@ export default function Register() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
+                    <Label
+                      htmlFor="register-password"
+                      className="text-muted-foreground text-xs font-bold tracking-tight"
+                    >
                       {auth.register.password}
                     </Label>
-                    <IconShieldLock className="text-muted-foreground/40 size-3" />
                   </div>
                   <div className="relative">
                     <Input
+                      id="register-password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -202,7 +207,7 @@ export default function Register() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-destructive text-[10px] font-bold">
+                    <p className="text-destructive text-xs font-medium">
                       {errors.password}
                     </p>
                   )}
@@ -210,13 +215,16 @@ export default function Register() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground/60 text-[10px] font-bold tracking-tight">
+                    <Label
+                      htmlFor="register-confirm-password"
+                      className="text-muted-foreground text-xs font-bold tracking-tight"
+                    >
                       {auth.register.confirmPassword}
                     </Label>
-                    <IconShieldLock className="text-muted-foreground/40 size-3" />
                   </div>
                   <div className="relative">
                     <Input
+                      id="register-confirm-password"
                       type={showConfirmPassword ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -247,7 +255,7 @@ export default function Register() {
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-destructive text-[10px] font-bold">
+                    <p className="text-destructive text-xs font-medium">
                       {errors.confirmPassword}
                     </p>
                   )}

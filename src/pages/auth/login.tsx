@@ -124,11 +124,15 @@ export default function Login() {
               <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground text-xs font-bold tracking-tight">
+                    <Label
+                      htmlFor="login-email"
+                      className="text-muted-foreground text-xs font-bold tracking-tight"
+                    >
                       {auth.login.email}
                     </Label>
                   </div>
                   <Input
+                    id="login-email"
                     type="email"
                     autoComplete="email"
                     value={identity}
@@ -141,7 +145,7 @@ export default function Login() {
                     disabled={submitting}
                   />
                   {errors.identity && (
-                    <p className="text-destructive text-[10px] font-bold">
+                    <p className="text-destructive text-xs font-medium">
                       {errors.identity}
                     </p>
                   )}
@@ -149,12 +153,16 @@ export default function Login() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground text-xs font-bold tracking-tight">
+                    <Label
+                      htmlFor="login-password"
+                      className="text-muted-foreground text-xs font-bold tracking-tight"
+                    >
                       {auth.login.password}
                     </Label>
                   </div>
                   <div className="relative">
                     <Input
+                      id="login-password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -183,7 +191,7 @@ export default function Login() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-destructive text-[10px] font-bold">
+                    <p className="text-destructive text-xs font-medium">
                       {errors.password}
                     </p>
                   )}
