@@ -50,6 +50,19 @@ export function TaskPriorityLabel({
   );
 }
 
+/** One tag: a colored dot plus its name. */
+export function TagChip({ name, color }: { name: string; color?: string }) {
+  return (
+    <span className="border-border/60 text-muted-foreground inline-flex items-center gap-1 rounded-md border px-1.5 py-0 text-[11px] leading-5">
+      <span
+        className="size-1.5 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      {name}
+    </span>
+  );
+}
+
 /**
  * Tag chips resolved by id. While tags load we show a skeleton, and unknown
  * ids render nothing so a raw Convex id never reaches the UI.
@@ -85,16 +98,7 @@ export function TaskTags({
   return (
     <div className={cn("flex flex-wrap items-center gap-1", className)}>
       {visible.map((tag) => (
-        <span
-          key={tag._id}
-          className="border-border/60 text-muted-foreground inline-flex items-center gap-1 rounded-md border px-1.5 py-0 text-[11px] leading-5"
-        >
-          <span
-            className="size-1.5 rounded-full"
-            style={{ backgroundColor: tag.color }}
-          />
-          {tag.name}
-        </span>
+        <TagChip key={tag._id} name={tag.name} color={tag.color} />
       ))}
       {hidden > 0 && (
         <span className="text-muted-foreground text-[11px]">+{hidden}</span>

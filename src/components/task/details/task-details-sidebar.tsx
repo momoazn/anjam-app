@@ -1,6 +1,7 @@
 import { digitsEnToFa } from "@persian-tools/persian-tools";
 import { IconActivity, IconTag } from "@tabler/icons-react";
 
+import { TagChip } from "@/components/task/task-meta";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { tasks } from "@/constants";
@@ -89,17 +90,7 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map((tag) => (
-                    <Badge
-                      key={tag._id}
-                      style={{
-                        backgroundColor: tag.color,
-                        color: "#FFFFFF",
-                        border: "none",
-                      }}
-                      className="px-2 py-0.5 text-[11px] font-semibold"
-                    >
-                      {tag.name}
-                    </Badge>
+                    <TagChip key={tag._id} name={tag.name} color={tag.color} />
                   ))}
                 </div>
               </div>
@@ -111,16 +102,20 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
                   {tasks.details.createdLabel}
                 </span>
                 <span className="font-bold">
-                  {digitsEnToFa(formatTaskDate(task._creationTime))}
+                  {digitsEnToFa(
+                    formatTaskDate(task.createdAt ?? task._creationTime),
+                  )}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground font-medium">
                   {tasks.details.updatedLabel}
                 </span>
-                <span className="text-primary font-bold">
+                <span className="font-bold">
                   {digitsEnToFa(
-                    formatTaskDate(task.updatedAt || task._creationTime),
+                    formatTaskDate(
+                      task.updatedAt ?? task.createdAt ?? task._creationTime,
+                    ),
                   )}
                 </span>
               </div>

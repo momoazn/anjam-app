@@ -216,7 +216,7 @@ export default function Insights() {
       }, 0);
 
       weeklyCycleTime.push({
-        week: digitsEnToFa(format(weekStart, "d MMM", { locale: faIR })),
+        week: digitsEnToFa(format(weekStart, "d MMMM", { locale: faIR })),
         cycleTime:
           weekCompleted.length > 0
             ? Math.round((weekTotal / weekCompleted.length) * 10) / 10
@@ -284,7 +284,7 @@ export default function Insights() {
       />
 
       {/* Top Metrics Grid */}
-      <div className="mb-4 grid gap-3 md:grid-cols-3">
+      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3">
         {/* Created This Week */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -328,7 +328,7 @@ export default function Insights() {
         </Card>
 
         {/* In Progress */}
-        <Card className={cardClassName}>
+        <Card className={`${cardClassName} col-span-2 md:col-span-1`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>{insightsLabels.inProgress}</CardTitle>
           </CardHeader>
@@ -344,7 +344,7 @@ export default function Insights() {
       </div>
 
       {/* Advanced Metrics Row */}
-      <div className="mb-4 grid gap-3 md:grid-cols-3">
+      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3">
         {/* Cycle Time */}
         <Card className={cardClassName}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -383,7 +383,7 @@ export default function Insights() {
         </Card>
 
         {/* Total Active */}
-        <Card className={cardClassName}>
+        <Card className={`${cardClassName} col-span-2 md:col-span-1`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>کل تسک‌های فعال</CardTitle>
             <IconTrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -427,8 +427,7 @@ export default function Insights() {
                       tick={AXIS_TICK}
                       tickLine={false}
                       axisLine={false}
-                      interval="preserveStartEnd"
-                      minTickGap={16}
+                      interval={0}
                     />
                     <YAxis
                       tick={AXIS_TICK}

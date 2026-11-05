@@ -9,7 +9,7 @@ export const navigation = {
   settings: "تنظیمات",
   reportIssue: "گزارش مشکل",
   notifications: "پیام‌ها و اعلانات",
-  tags: "تگ‌ها",
+  tags: "برچسب‌ها",
   insights: "بینش‌ها",
   members: "اعضا",
   version: "نسخه",
@@ -26,7 +26,6 @@ export const navigation = {
   organizationSection: "سازمان",
   workspaceSection: "فضای کاری",
   managementSection: "مدیریت",
-  helpSection: "راهنما و تنظیمات",
 } as const;
 
 export const navigationSectionLabels = {

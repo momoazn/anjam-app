@@ -126,7 +126,7 @@ function BoardMockup() {
                     dir="ltr"
                     className="text-muted-foreground font-mono text-[10px]"
                   >
-                    {card.id}
+                    {digitsEnToFa(card.id)}
                   </span>
                   {card.tag && (
                     <span

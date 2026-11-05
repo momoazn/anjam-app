@@ -8,14 +8,12 @@ interface LogoProps extends React.SVGProps<SVGSVGElement> {
   className?: string;
   size?: number;
   showText?: boolean;
-  showTelemetry?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
   className,
   size = 40,
   showText = false,
-  showTelemetry = false,
   ...props
 }) => {
   const { resolvedTheme } = useTheme();
@@ -149,11 +147,6 @@ export const Logo: React.FC<LogoProps> = ({
       {showText && (
         <span className="text-foreground text-xl font-bold tracking-tight">
           {app.name}
-        </span>
-      )}
-      {showTelemetry && (
-        <span className="text-muted-foreground text-xs opacity-60">
-          {app.systemReady}
         </span>
       )}
     </div>

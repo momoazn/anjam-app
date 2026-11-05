@@ -183,17 +183,14 @@ export default function InviteAccept() {
 
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
-          <Logo size={40} showTelemetry />
+          <Logo size={40} />
           <span className="text-sm font-black tracking-tight uppercase opacity-70">
             {app.name} / {auth.invite.title}
           </span>
         </div>
 
         <div className="relative">
-          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-black uppercase select-none">
-            {app.logo}
-          </div>
-          <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter lg:text-7xl xl:text-8xl">
+          <h2 className="relative z-10 text-6xl leading-tight font-black tracking-tighter xl:text-7xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
             <br />
             <span className="text-primary">

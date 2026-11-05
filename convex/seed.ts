@@ -47,13 +47,13 @@ const USER_EMAIL: Record<UserKey, string> = {
 
 const ORG_1 = {
   name: "تیم محصول",
-  slug: "org1",
+  slug: "product-team",
   description: "فضای کاری تیم محصول انجام",
 };
 
 const ORG_2 = {
   name: "تیم پشتیبانی",
-  slug: "org2",
+  slug: "support-team",
   description: "فضای کاری تیم پشتیبانی",
 };
 

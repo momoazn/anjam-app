@@ -30,7 +30,7 @@ export function NavMain({ items, title }: NavMainProps) {
   const { isMobile, setOpenMobile, state } = useSidebar();
 
   return (
-    <SidebarGroup className="py-2">
+    <SidebarGroup className="py-1">
       {title && state === "expanded" && (
         <SidebarGroupLabel className="text-muted-foreground/50 mb-1 px-4 text-[10px] font-bold tracking-widest uppercase">
           {title}
@@ -77,7 +77,7 @@ export function NavMain({ items, title }: NavMainProps) {
                     asChild
                     tooltip={item.title}
                     className={cn(
-                      "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                      "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
                       "text-muted-foreground/90 hover:bg-accent hover:text-foreground hover:scale-[1.01]",
                     )}
                   >
@@ -100,7 +100,7 @@ export function NavMain({ items, title }: NavMainProps) {
                     asChild
                     tooltip={item.title}
                     className={cn(
-                      "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                      "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
                       active
                         ? "bg-accent text-foreground shadow-sm"
                         : "text-muted-foreground/90 hover:bg-accent hover:text-foreground hover:scale-[1.01]",

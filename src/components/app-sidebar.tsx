@@ -31,6 +31,7 @@ import { app, inbox, navigation } from "@/constants";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Permission } from "@/lib/permissions";
 import { isOrgAdmin } from "@/lib/permissions";
+import { cn } from "@/lib/utils";
 import { useAuthUser, useCurrentOrgRole } from "@/store/app-context-store";
 
 type NavItem = {
@@ -116,7 +117,7 @@ function AppSidebarHeader() {
   const { isMobile, setOpenMobile, state } = useSidebar();
 
   return (
-    <SidebarHeader className="border-border/40 h-20 border-b p-2">
+    <SidebarHeader className="border-border/40 h-16 border-b p-2">
       <SidebarMenu className="h-full">
         <SidebarMenuItem className="h-full">
           <SidebarMenuButton
@@ -125,7 +126,7 @@ function AppSidebarHeader() {
           >
             <NavLink
               to="/inbox"
-              className="flex h-full w-full items-center gap-4 px-4"
+              className="flex h-full w-full items-center gap-3 px-3"
               onClick={() => {
                 if (isMobile) {
                   setOpenMobile(false);
@@ -134,7 +135,7 @@ function AppSidebarHeader() {
             >
               <div className="relative">
                 <Logo
-                  size={60}
+                  size={40}
                   className="shrink-0 transition-transform duration-300"
                 />
               </div>
@@ -156,6 +157,54 @@ function AppSidebarHeader() {
   );
 }
 
+function SidebarFooterLinks({ items }: { items: NavItem[] }) {
+  const { state, isMobile, setOpenMobile } = useSidebar();
+  const collapsed = state === "collapsed" && !isMobile;
+  const linkClass =
+    "text-muted-foreground hover:text-foreground hover:bg-accent flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs transition-colors";
+
+  return (
+    <div className={cn("flex items-center gap-1", collapsed && "flex-col")}>
+      {items.map((item) => {
+        const Icon = item.icon;
+        const content = (
+          <>
+            {Icon && <Icon className="size-4 shrink-0" />}
+            {!collapsed && <span>{item.title}</span>}
+          </>
+        );
+        return item.external ? (
+          <a
+            key={item.url}
+            href={item.url}
+            target="_blank"
+            rel="noreferrer"
+            title={item.title}
+            className={linkClass}
+          >
+            {content}
+          </a>
+        ) : (
+          <NavLink
+            key={item.url}
+            to={item.url}
+            title={item.title}
+            className={linkClass}
+            onClick={() => isMobile && setOpenMobile(false)}
+          >
+            {content}
+          </NavLink>
+        );
+      })}
+      {!collapsed && (
+        <span className="text-muted-foreground/60 ms-auto px-2 text-[11px] tabular-nums">
+          {navigation.version} {digitsEnToFa(__APP_VERSION__)}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthUser();
   const { can } = usePermissions();
@@ -174,12 +223,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent className="scrollbar-thin relative z-10 flex flex-col flex-1 overflow-y-auto p-0">
         {/* Organization Switcher */}
-        <div className="border-border/40 border-b bg-muted/20 py-2">
+        <div className="border-border/40 border-b bg-muted/20 py-1">
           <OrgSwitcher />
         </div>
 
         {/* Quick Create */}
-        <div className="border-border/40 border-b p-3">
+        <div className="border-border/40 border-b p-2">
           <QuickCreate />
         </div>
 
@@ -214,11 +263,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-border/40 relative z-10 flex flex-col border-t p-0">
-        <NavMain items={navItems.navSecondary} title={navigation.helpSection} />
-        <div className="bg-muted/40 text-muted-foreground/70 border-t px-4 py-3 text-xs">
-          {navigation.version} {digitsEnToFa(__APP_VERSION__)}
-        </div>
+      <SidebarFooter className="border-border/40 relative z-10 border-t p-2">
+        <SidebarFooterLinks items={navItems.navSecondary} />
       </SidebarFooter>
     </Sidebar>
   );

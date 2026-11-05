@@ -250,7 +250,7 @@ export default function TaskCalendar() {
                   data-today={isTodayDate || undefined}
                   className={cn(
                     "flex min-h-20 flex-col gap-1 p-1 sm:min-h-28 sm:p-1.5",
-                    isCurrentMonth ? "bg-card" : "bg-muted/20",
+                    isCurrentMonth ? "bg-card" : "bg-background",
                     isTodayDate && "ring-primary ring-2 ring-inset",
                   )}
                 >

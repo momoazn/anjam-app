@@ -46,7 +46,7 @@ const formatNotificationTime = (timestamp?: number | null) => {
   if (Number.isNaN(date.getTime())) {
     return "-";
   }
-  return digitsEnToFa(format(date, "dd MMMM HH:mm"));
+  return digitsEnToFa(format(date, "d MMMM HH:mm"));
 };
 
 function NotificationItem({

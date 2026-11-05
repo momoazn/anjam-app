@@ -97,17 +97,14 @@ export default function Register() {
 
       <div className="bg-muted/30 relative hidden flex-1 flex-col justify-between border-s p-12 lg:flex">
         <div className="text-primary flex items-center gap-3">
-          <Logo size={48} showTelemetry />
+          <Logo size={48} />
           <span className="text-muted-foreground/70 text-sm font-bold tracking-tight">
             {app.name}
           </span>
         </div>
 
         <div className="relative">
-          <div className="text-primary/5 absolute -start-12 -top-24 text-[180px] leading-none font-bold select-none">
-            {app.logo}
-          </div>
-          <h2 className="relative z-10 text-6xl leading-tight font-bold tracking-tighter lg:text-7xl xl:text-8xl">
+          <h2 className="relative z-10 text-6xl leading-tight font-bold tracking-tighter xl:text-7xl">
             {digitsEnToFa(auth.visual.systemDevelopment)}
             <br />
             <span className="text-primary">
@@ -189,9 +186,13 @@ export default function Register() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground/ hover:text-muted-foreground absolute inset-y-0 right-0 flex items-center pr-3 transition-colors disabled:opacity-50"
+                      aria-label={
+                        showPassword
+                          ? auth.passwordToggle.hide
+                          : auth.passwordToggle.show
+                      }
+                      className="text-muted-foreground/60 hover:text-muted-foreground absolute inset-y-0 right-0 flex items-center pr-3 transition-colors disabled:opacity-50"
                       disabled={submitting}
-                      tabIndex={-1}
                     >
                       {showPassword ? (
                         <IconEyeOff className="size-4" />
@@ -230,9 +231,13 @@ export default function Register() {
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="text-muted-foreground/ hover:text-muted-foreground absolute inset-y-0 right-0 flex items-center pr-3 transition-colors disabled:opacity-50"
+                      aria-label={
+                        showConfirmPassword
+                          ? auth.passwordToggle.hide
+                          : auth.passwordToggle.show
+                      }
+                      className="text-muted-foreground/60 hover:text-muted-foreground absolute inset-y-0 right-0 flex items-center pr-3 transition-colors disabled:opacity-50"
                       disabled={submitting}
-                      tabIndex={-1}
                     >
                       {showConfirmPassword ? (
                         <IconEyeOff className="size-4" />

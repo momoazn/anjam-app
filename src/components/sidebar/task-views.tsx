@@ -73,7 +73,7 @@ export function TaskViews({ labels }: TaskViewsProps) {
   const sectionTitle = labels?.savedFilters ?? navigationSectionLabels.tasks;
 
   return (
-    <SidebarGroup className="py-2">
+    <SidebarGroup className="py-1">
       <div className="flex items-center justify-between px-4">
         {state === "expanded" && (
           <SidebarGroupLabel className="text-muted-foreground/50 font-semibold tracking-tight">
@@ -102,7 +102,7 @@ export function TaskViews({ labels }: TaskViewsProps) {
                   asChild
                   tooltip={view.title}
                   className={cn(
-                    "group relative h-9 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
+                    "group relative h-8 w-full justify-start gap-3 rounded-lg px-3 transition-all duration-200",
                     isActive
                       ? "text-foreground font-semibold"
                       : "text-muted-foreground/90 hover:bg-accent hover:text-accent-foreground",
@@ -128,10 +128,10 @@ export function TaskViews({ labels }: TaskViewsProps) {
                     {count > 0 && state === "expanded" && (
                       <span
                         className={cn(
-                          "ms-auto text-[10px] font-medium tabular-nums",
+                          "ms-auto min-w-5 rounded-full px-1.5 text-center text-[11px] font-semibold tabular-nums",
                           view.title === navigation.overdue
-                            ? "text-rose-500"
-                            : "opacity-60",
+                            ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                            : "bg-muted text-muted-foreground",
                         )}
                       >
                         {digitsEnToFa(count)}

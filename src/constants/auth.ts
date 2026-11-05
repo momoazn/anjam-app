@@ -1,6 +1,7 @@
 // Authentication module
 
 export const auth = {
+  passwordToggle: { show: "نمایش رمز عبور", hide: "پنهان کردن رمز عبور" },
   login: {
     title: "ورود به سیستم",
     email: "ایمیل",

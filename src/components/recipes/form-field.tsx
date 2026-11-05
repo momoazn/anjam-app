@@ -63,11 +63,12 @@ export function FormField<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className="space-y-2">
-          <FormLabel className="text-foreground/60 flex items-center gap-2 text-[10px] font-bold tracking-tight">
-            <div className="bg-foreground/20 h-1.5 w-1.5 rounded-full" />
+          <FormLabel className="text-foreground/80 flex items-center gap-1 text-xs font-semibold">
             {label}
             {required ? (
-              <span className="text-primary font-bold">*</span>
+              <span aria-hidden="true" className="text-destructive">
+                *
+              </span>
             ) : null}
           </FormLabel>
           <FormControl>

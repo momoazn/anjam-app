@@ -7,6 +7,7 @@ export const tasks = {
   allTasks: "همه تسک‌ها",
   board: {
     title: "برد تسک‌ها",
+    listView: "نمای لیست",
   },
   pagination: {
     range: "نمایش {start} تا {end} از {total}",

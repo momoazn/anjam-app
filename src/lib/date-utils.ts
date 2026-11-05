@@ -12,9 +12,9 @@ function formatDate(
 }
 
 export const formatTaskDate = (d: string | number | null | undefined) =>
-  formatDate(d, "dd MMMM yyyy");
+  formatDate(d, "d MMMM yyyy");
 export const formatDateShort = (d: string | number | null | undefined) =>
-  formatDate(d, "dd MMMM");
+  formatDate(d, "d MMMM");
 
 export function formatDateLocale(dateValue?: string | number | null): string {
   if (!dateValue) return "-";

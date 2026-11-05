@@ -19,6 +19,7 @@ import {
   useRemoveOrgMember,
 } from "@/hooks/organization-members";
 import { getUserInitials } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useAuthUser } from "@/store/app-context-store";
 
 const t = organization.members;
@@ -93,13 +94,18 @@ export function MembersTable() {
                     <Badge variant="outline">{t.roles[member.role]}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        member.status === "active" ? "default" : "secondary"
-                      }
-                    >
+                    <span className="inline-flex items-center gap-1.5 text-xs">
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "size-1.5 rounded-full",
+                          member.status === "active"
+                            ? "bg-emerald-500"
+                            : "bg-muted-foreground/50",
+                        )}
+                      />
                       {t.status[member.status]}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell>
                     {member.joinedAt
@@ -111,6 +117,7 @@ export function MembersTable() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="text-destructive hover:text-destructive"
                         aria-label={`${t.remove.title}: ${name}`}
                         onClick={() =>
                           setPending({ userId: member.userId, name })

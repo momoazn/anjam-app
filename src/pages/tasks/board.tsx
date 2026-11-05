@@ -29,7 +29,7 @@ import { PageTransition } from "@/components/page-transition";
 import { BoardCard } from "@/components/task/board/board-card";
 import { BoardColumn } from "@/components/task/board/board-column";
 import { Button } from "@/components/ui/button";
-import { common, tasks as tasksText } from "@/constants";
+import { tasks as tasksText } from "@/constants";
 import { useProject } from "@/hooks/projects";
 import { useAllTasks, useReorderTask } from "@/hooks/tasks";
 import { TASK_STATUS_CONFIG, TASK_STATUS_ORDER } from "@/lib/status-utils";
@@ -323,7 +323,7 @@ function TaskBoardPage() {
         className="h-8 rounded-lg px-3 text-xs font-semibold"
       >
         <IconList className="ms-2 size-4" />
-        {common.buttons.view}
+        {tasksText.board.listView}
       </Button>
 
       <Button
@@ -350,13 +350,14 @@ function TaskBoardPage() {
             subtitle={undefined}
             icon={IconLayoutGrid}
             eyebrow={
-              <div className="text-muted-foreground flex items-center gap-2">
-                <IconHash className="size-4" />
-                <span className="text-xs font-bold tracking-tight">
-                  {projectId ? project?.code : common.buttons.all} /{" "}
-                  {tasksText.board.title}
-                </span>
-              </div>
+              projectId && project?.code ? (
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <IconHash className="size-4" />
+                  <span className="text-xs font-bold tracking-tight">
+                    {project.code}
+                  </span>
+                </div>
+              ) : undefined
             }
             actions={headerActions}
             className="mb-0"
