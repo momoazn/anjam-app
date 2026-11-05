@@ -25,6 +25,20 @@ Anjam started in 2025 with a Go + PocketBase backend. In January 2026 I moved th
 - **Auth.** Email and password through Better Auth. Rate limits on sign-in and sign-up are configurable.
 - **Themes.** Light and dark mode.
 
+## Screenshots
+
+All data in these screenshots is demo data from the seed script. The people are fictional.
+
+![Kanban board with tasks in four status columns](./docs/screenshots/board.png)
+
+| Inbox                                                                                      | Task details                                                                                            |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| ![Inbox with assigned, mentioned and recently updated tasks](./docs/screenshots/inbox.png) | ![Task details with assignee, deadline, tags and a comment thread](./docs/screenshots/task-details.png) |
+
+| Insights in dark mode                                                                              | Mobile                                                                                    |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![Insights page in dark mode with weekly metrics and charts](./docs/screenshots/insights-dark.png) | <img src="./docs/screenshots/mobile-inbox.png" alt="Inbox on a phone screen" width="260"> |
+
 ## Architecture
 
 ```mermaid
