@@ -415,7 +415,7 @@ export default function Insights() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={metrics.weeklyCycleTime}
-                    margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+                    margin={{ top: 8, right: 0, bottom: 0, left: 8 }}
                   >
                     <CartesianGrid
                       vertical={false}
@@ -428,8 +428,10 @@ export default function Insights() {
                       tickLine={false}
                       axisLine={false}
                       interval={0}
+                      reversed
                     />
                     <YAxis
+                      orientation="right"
                       tick={AXIS_TICK}
                       tickLine={false}
                       axisLine={false}
@@ -480,7 +482,7 @@ export default function Insights() {
                   <BarChart
                     data={metrics.workloadByAssignee}
                     layout="vertical"
-                    margin={{ top: 0, right: 8, bottom: 0, left: 0 }}
+                    margin={{ top: 0, right: 0, bottom: 0, left: 8 }}
                   >
                     <CartesianGrid
                       horizontal={false}
@@ -494,8 +496,10 @@ export default function Insights() {
                       axisLine={false}
                       allowDecimals={false}
                       tickFormatter={(v) => digitsEnToFa(v)}
+                      reversed
                     />
                     <YAxis
+                      orientation="right"
                       type="category"
                       dataKey="name"
                       tick={AXIS_TICK}
@@ -514,7 +518,7 @@ export default function Insights() {
                     <Bar
                       dataKey="count"
                       fill={BAR_FILL}
-                      radius={[0, 4, 4, 0]}
+                      radius={[4, 0, 0, 4]}
                       maxBarSize={22}
                     />
                   </BarChart>
