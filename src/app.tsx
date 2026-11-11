@@ -117,11 +117,11 @@ function App() {
           <ModalManager />
           <Toaster
             position="bottom-right"
-            className="font-arad"
+            className="font-sans!"
             toastOptions={{
               duration: 3000,
               className:
-                "rounded-xl border-border/40 bg-card/80 backdrop-blur-md text-foreground shadow-2xl",
+                "font-sans! rounded-xl border-border/40 bg-card/80 backdrop-blur-md text-foreground shadow-2xl",
             }}
           />
           {import.meta.env.DEV && <ConnectionWarning />}
