@@ -93,7 +93,9 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 
   return betterAuth({
     secret,
-    baseURL: siteUrl,
+    // Origin only: Better Auth uses a path in baseURL as its route prefix,
+    // which breaks /api/auth when the site lives under a sub-path.
+    baseURL: new URL(siteUrl).origin,
     trustedOrigins: getTrustedOrigins(siteUrl),
     database: authComponent.adapter(ctx),
     emailAndPassword: {

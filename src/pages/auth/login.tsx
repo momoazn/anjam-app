@@ -20,6 +20,10 @@ import { authClient } from "@/lib/auth-client";
 import { handleError } from "@/lib/error-handler";
 import { safeReturnTo } from "@/lib/return-to";
 
+// Shown only when the build sets these (the public demo on GitHub Pages).
+const demoEmail = import.meta.env.VITE_DEMO_EMAIL as string | undefined;
+const demoPassword = import.meta.env.VITE_DEMO_PASSWORD as string | undefined;
+
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -120,6 +124,39 @@ export default function Login() {
                 </div>
                 <IconShieldLock className="text-primary/20 size-8" />
               </div>
+
+              {demoEmail && demoPassword && (
+                <div className="bg-muted/50 border-border mb-6 flex items-center justify-between gap-4 rounded-xl border p-4 text-xs">
+                  <div className="space-y-1">
+                    <p className="font-bold">{auth.login.demo.title}</p>
+                    <p className="text-muted-foreground">
+                      {auth.login.demo.email}:{" "}
+                      <span dir="ltr" className="text-foreground font-mono">
+                        {demoEmail}
+                      </span>
+                    </p>
+                    <p className="text-muted-foreground">
+                      {auth.login.demo.password}:{" "}
+                      <span dir="ltr" className="text-foreground font-mono">
+                        {demoPassword}
+                      </span>
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={submitting}
+                    onClick={() => {
+                      setIdentity(demoEmail);
+                      setPassword(demoPassword);
+                      setErrors({});
+                    }}
+                  >
+                    {auth.login.demo.fill}
+                  </Button>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 <div className="space-y-2">

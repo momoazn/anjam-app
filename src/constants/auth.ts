@@ -10,6 +10,12 @@ export const auth = {
     loggingIn: "در حال ورود...",
     registerButton: "ثبت‌نام",
     noAccountPrompt: "حساب کاربری ندارید؟",
+    demo: {
+      title: "حساب دمو",
+      email: "ایمیل",
+      password: "رمز عبور",
+      fill: "پر کردن فرم",
+    },
     subtitle: "خوش آمدید، اطلاعات ورود را وارد کنید",
     placeholders: {
       email: "example@yourcompany.com",

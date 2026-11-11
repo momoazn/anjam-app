@@ -30,6 +30,9 @@ jobs:
       - name: Build
         env:
           VITE_CONVEX_URL: ${{ vars.VITE_CONVEX_URL }}
+          # Public demo account from convex/seed.ts, shown on the login page.
+          VITE_DEMO_EMAIL: admin@example.com
+          VITE_DEMO_PASSWORD: admin12345
         run: |
           test -n "$VITE_CONVEX_URL" || { echo "Set the VITE_CONVEX_URL repository variable"; exit 1; }
           bun x --bun vite build --base=/${{ github.event.repository.name }}/
