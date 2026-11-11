@@ -108,7 +108,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <NuqsAdapter>
           <ScrollToTop />
           <AppLayout />

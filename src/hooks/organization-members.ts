@@ -165,5 +165,5 @@ export function getInviteStatus(
 }
 
 export function getInviteUrl(token: string): string {
-  return `${window.location.origin}/invite/${token}`;
+  return `${window.location.origin}${import.meta.env.BASE_URL}invite/${token}`;
 }

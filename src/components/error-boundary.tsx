@@ -98,7 +98,7 @@ export class ErrorBoundary extends Component<
                 </Button>
                 {/* Plain link: the boundary sits above the router. */}
                 <Button asChild variant="outline" className="flex-1 gap-2">
-                  <a href="/">
+                  <a href={import.meta.env.BASE_URL}>
                     <Home className="size-4" />
                     {errors.boundary.goHome}
                   </a>

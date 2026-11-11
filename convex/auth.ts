@@ -1,5 +1,5 @@
 import { type GenericCtx, createClient } from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
+import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
 
 import { components } from "./_generated/api";
@@ -116,6 +116,8 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
         },
       },
     },
-    plugins: [convex({ authConfig })],
+    // crossDomain keeps the session in the client, so a frontend on another
+    // domain (for example GitHub Pages) works without third-party cookies.
+    plugins: [crossDomain({ siteUrl }), convex({ authConfig })],
   });
 };

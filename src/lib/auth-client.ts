@@ -1,4 +1,7 @@
-import { convexClient } from "@convex-dev/better-auth/client/plugins";
+import {
+  convexClient,
+  crossDomainClient,
+} from "@convex-dev/better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
@@ -16,5 +19,5 @@ export const authClient = createAuthClient({
     : convexSiteUrl
       ? `${convexSiteUrl}/api/auth`
       : "/api/auth",
-  plugins: [convexClient()],
+  plugins: [convexClient(), crossDomainClient()],
 });

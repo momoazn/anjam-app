@@ -1,0 +1,43 @@
+# Builds the static frontend and publishes it to GitHub Pages.
+# Needs the repository variable VITE_CONVEX_URL (Settings → Variables → Actions).
+# The Convex backend is deployed separately with `bunx convex deploy`.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Build
+        env:
+          VITE_CONVEX_URL: ${{ vars.VITE_CONVEX_URL }}
+        run: |
+          test -n "$VITE_CONVEX_URL" || { echo "Set the VITE_CONVEX_URL repository variable"; exit 1; }
+          bun x --bun vite build --base=/${{ github.event.repository.name }}/
+          # SPA fallback: GitHub Pages serves 404.html for unknown paths.
+          cp dist/index.html dist/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
