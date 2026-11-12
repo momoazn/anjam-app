@@ -63,3 +63,4 @@ audit_fallback.jsonl
 
 # Local agent settings
 .claude/settings.local.json
+.vercel
